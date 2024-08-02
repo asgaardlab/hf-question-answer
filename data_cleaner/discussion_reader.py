@@ -43,22 +43,15 @@ def get_all_discussions() -> DataFrame:
 
 
 def get_selected_all_discussions() -> DataFrame:
-    if path.SELECTED_ALL_DISCUSSIONS_FILE.exists():
-        return pd.read_csv(path.SELECTED_ALL_DISCUSSIONS_FILE)
-
-    all_discussions = get_all_discussions()
-    hidden_filtered_discussions = all_discussions[all_discussions['is_hidden'] == False]
-    length_filtered_discussions = hidden_filtered_discussions[hidden_filtered_discussions['length'] >= 50]
-    language_filtered_discussions = length_filtered_discussions[length_filtered_discussions['is_non_english'] == False]
-    save_selected_all_discussions(language_filtered_discussions)
-    return language_filtered_discussions
+    if path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE.exists():
+        return pd.read_csv(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE)
 
 
 def save_selected_all_discussions(dataset: DataFrame = None) -> None:
     if dataset is None:
         get_selected_all_discussions()
     else:
-        dataset.to_csv(path.SELECTED_ALL_DISCUSSIONS_FILE, index=False)
+        dataset.to_csv(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE, index=False)
 
 
 def get_posts_of_selected_discussions() -> list[str]:
