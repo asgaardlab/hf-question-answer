@@ -67,7 +67,6 @@ def get_save_file_path(discussion: Discussion | None, save_dir: Path, has_error=
 def collect_discussions_of_models(force_collect=False) -> None:
     print('Collecting discussions of models...')
     path.DISCUSSIONS_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    # download_discussion('stabilityai/stable-video-diffusion-img2vid-xt', path.DISCUSSIONS_DIRECTORY)
 
     models = pd.read_csv(path.ALL_MODELS_FILE)
     models.apply(
