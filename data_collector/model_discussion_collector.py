@@ -6,7 +6,7 @@ from huggingface_hub import get_repo_discussions, get_discussion_details, Discus
 from huggingface_hub.utils import RevisionNotFoundError, HfHubHTTPError
 
 from util import path
-from util.helper import get_model_dir_name
+from util.helper import get_model_dir_name, list_discussions
 
 
 def is_saved(discussion: Discussion, save_dir: Path) -> bool:
@@ -65,6 +65,7 @@ def get_save_file_path(discussion: Discussion | None, save_dir: Path, has_error=
 
 
 def collect_discussions_of_models(force_collect=False) -> None:
+    print('Collecting discussions of models...')
     path.DISCUSSIONS_DIRECTORY.mkdir(parents=True, exist_ok=True)
     # download_discussion('stabilityai/stable-video-diffusion-img2vid-xt', path.DISCUSSIONS_DIRECTORY)
 
@@ -72,6 +73,7 @@ def collect_discussions_of_models(force_collect=False) -> None:
     models.apply(
         lambda model: download_discussion(model['model_id'], path.DISCUSSIONS_DIRECTORY, force_collect, model.name,
                                           len(models)), axis=1)
+    list_discussions()
 
 
 if __name__ == '__main__':

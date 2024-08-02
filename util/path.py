@@ -37,7 +37,7 @@ DISCUSSIONS_DIRECTORY = DATA_DIRECTORY / 'discussions'
 #
 # PROMPT_FILE = CLASSIFICATION_DIRECTORY / 'prompt.md'
 #
-# ALL_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_discussions.csv'
+ALL_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_discussions.csv'
 # ALL_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_random_discussions.csv'
 #
 # DISCUSSION_POSTS_FILE = CACHE_DIRECTORY / 'discussion_posts.pkl'
