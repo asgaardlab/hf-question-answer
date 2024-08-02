@@ -3,7 +3,7 @@ from datetime import timedelta
 from pandas import DataFrame, Series
 
 from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions
-from data_cleaner.type.discussion import Discussion
+from data_collector.type.discussion import Discussion
 
 
 def calculate_discussions_creation_time(discussions) -> DataFrame:

@@ -1,8 +1,7 @@
 import pandas as pd
-from scipy.stats import mannwhitneyu
 
-from data_analyzer.common_plot_drawer import draw_boxplot, draw_comparison_boxplot
-from data_cleaner.discussion_reader import get_all_questions, get_quality_questions
+from data_cleaner.discussion_reader import get_quality_questions
+from plot_generator.common_plot_drawer import draw_boxplot, draw_comparison_boxplot
 
 
 def visualize_discussion_participants(discussions):

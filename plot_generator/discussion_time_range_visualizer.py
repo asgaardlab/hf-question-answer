@@ -1,10 +1,9 @@
 import pandas as pd
-import pytz
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from data_analyzer.common_plot_drawer import draw_boxplot
-from data_cleaner.discussion_reader import get_all_discussions, get_all_questions, get_quality_questions
+from data_cleaner.discussion_reader import get_all_discussions, get_quality_questions
+from plot_generator.common_plot_drawer import draw_boxplot
 from util import path
 
 
