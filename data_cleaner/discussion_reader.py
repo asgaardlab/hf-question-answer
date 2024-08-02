@@ -6,7 +6,7 @@ import pandas as pd
 from pandas import DataFrame
 from progress.bar import IncrementalBar
 
-from data_cleaner.type.discussion import Discussion
+from data_collector.type.discussion import Discussion
 from util import path
 from util.helper import save_data_in_filepath
 
