@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-from data_cleaner.type.CustomLoader import CustomLoader
+from data_collector.type.CustomLoader import CustomLoader
 
 
 class Discussion:
