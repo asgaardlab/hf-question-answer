@@ -27,15 +27,19 @@ def save_all_discussions_of_quality_models(save_file_name: Path):
     quality_models_discussions.to_csv(save_file_name, index=False)
 
 
+def filter_discussions(discussions: pd.DataFrame) -> pd.DataFrame:
+    hidden_filtered_discussions = discussions[discussions['is_hidden'] == False]
+    length_filtered_discussions = hidden_filtered_discussions[hidden_filtered_discussions['length'] >= 50]
+    language_filtered_discussions = length_filtered_discussions[length_filtered_discussions['is_non_english'] == False]
+    return language_filtered_discussions
+
+
 def save_cleaned_discussions(save_file_name: Path):
     quality_models_discussions = pd.read_csv(path.QUALITY_MODELS_DISCUSSIONS_FILE)
 
-    hidden_filtered_discussions = quality_models_discussions[quality_models_discussions['is_hidden'] == False]
-    length_filtered_discussions = hidden_filtered_discussions[hidden_filtered_discussions['length'] >= 50]
-    language_filtered_discussions = length_filtered_discussions[length_filtered_discussions['is_non_english'] == False]
-
-    print(f'cleaned_discussions: {len(language_filtered_discussions)}')
-    language_filtered_discussions.to_csv(save_file_name, index=False)
+    cleaned_discussions = filter_discussions(quality_models_discussions)
+    print(f'cleaned_discussions: {len(cleaned_discussions)}')
+    cleaned_discussions.to_csv(save_file_name, index=False)
 
 
 if __name__ == '__main__':
