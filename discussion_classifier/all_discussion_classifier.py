@@ -2,7 +2,8 @@ from pathlib import Path
 
 from pandas import DataFrame
 
-from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions
+from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions, \
+    save_all_questions
 from discussion_classifier.classification_result_reader_writer import get_gpt_classes, \
     get_final_class, read_class_from_result_file
 from discussion_classifier.gpt_classifier import classify_discussions
@@ -75,3 +76,4 @@ if __name__ == '__main__':
     write_tie_breaker_class(run_result_directory, tie_indexes, 'contains_question_tie_breaker')
 
     write_final_class()
+    save_all_questions()
