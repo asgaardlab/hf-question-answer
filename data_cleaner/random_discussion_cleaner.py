@@ -1,4 +1,4 @@
-from data_analyzer.discussion_length_calculator import calculate_random_discussion_lengths
+from data_cleaner.discussion_length_calculator import calculate_random_discussion_lengths
 from data_cleaner.discussion_reader import get_all_random_discussions, save_selected_random_discussions
 from data_cleaner.hidden_body_identifier import save_random_hidden_discussions
 from data_cleaner.main import filter_discussions

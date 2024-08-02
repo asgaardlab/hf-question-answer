@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
-from data_analyzer.discussion_length_calculator import calculate_random_discussion_lengths, \
+from data_cleaner.discussion_length_calculator import calculate_random_discussion_lengths, \
     calculate_all_discussion_lengths
 from data_cleaner.discussion_reader import get_all_random_discussions, get_all_discussions
 from util import path

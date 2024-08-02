@@ -2,8 +2,8 @@ from pandas import DataFrame
 
 from data_cleaner.discussion_reader import get_all_random_discussions, save_all_random_discussions, \
     get_all_discussions, save_all_discussions
-from data_analyzer.md_processor import remove_report_emoji, remove_urls_from_images
-from data_analyzer.md_processor import remove_urls_from_hyperlinks, remove_urls
+from data_cleaner.md_processor import remove_report_emoji, remove_urls_from_images
+from data_cleaner.md_processor import remove_urls_from_hyperlinks, remove_urls
 from data_collector.type.discussion import Discussion
 
 

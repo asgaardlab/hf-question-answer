@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from data_analyzer.discussion_length_calculator import calculate_all_discussion_lengths
+from data_cleaner.discussion_length_calculator import calculate_all_discussion_lengths
 from data_cleaner.discussion_reader import get_all_discussions
 from data_cleaner.hidden_body_identifier import save_all_hidden_discussions
 from data_cleaner.main_statistics_provider import data_cleaning_statistics
