@@ -1,10 +1,7 @@
 import pickle
-import re
-from pathlib import Path
 
 import pandas as pd
 from pandas import DataFrame
-from progress.bar import IncrementalBar
 
 from data_collector.type.discussion import Discussion
 from util import path
@@ -84,8 +81,11 @@ def get_all_questions() -> DataFrame:
         return questions
 
 
-def save_all_questions(dataset: DataFrame) -> None:
-    dataset.to_csv(path.ALL_QUESTIONS_FILE, index=False)
+def save_all_questions(dataset: DataFrame = None) -> None:
+    if dataset is None:
+        get_all_questions()
+    else:
+        dataset.to_csv(path.ALL_QUESTIONS_FILE, index=False)
 
 
 def get_posts_of_all_questions() -> list[str]:
