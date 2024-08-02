@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from data_cleaner.discussion_reader import get_all_discussions, get_quality_questions
+from data_cleaner.discussion_reader import get_all_discussions, get_all_questions
 from plot_generator.common_plot_drawer import draw_boxplot
 from util import path
 
@@ -78,5 +78,5 @@ if __name__ == '__main__':
     selected_discussions = get_all_discussions()
     visualize_discussion_creation_time_range(selected_discussions)
 
-    selected_discussions = get_quality_questions()
+    selected_discussions = get_all_questions()
     visualize_discussion_response_delays(selected_discussions)

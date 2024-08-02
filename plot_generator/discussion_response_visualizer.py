@@ -1,6 +1,6 @@
 import pandas as pd
 
-from data_cleaner.discussion_reader import get_quality_questions
+from data_cleaner.discussion_reader import get_all_questions
 from plot_generator.common_plot_drawer import draw_boxplot, draw_owner_response_bar, \
     draw_comparison_boxplot
 
@@ -95,7 +95,7 @@ def compare_response_length_per_status(discussions):
 
 if __name__ == '__main__':
     # selected_discussions = get_selected_all_discussions()
-    selected_discussions = get_quality_questions()
+    selected_discussions = get_all_questions()
 
     visualize_discussion_response(selected_discussions)
     visualize_owner_response_discussion(selected_discussions)

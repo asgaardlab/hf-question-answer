@@ -1,6 +1,6 @@
 from scipy.stats import mannwhitneyu
 
-from data_cleaner.discussion_reader import get_quality_questions
+from data_cleaner.discussion_reader import get_all_questions
 from cliffs_delta import cliffs_delta
 
 
@@ -74,7 +74,7 @@ def length_status_significance_test(discussions):
 if __name__ == '__main__':
     # sample_test()
 
-    questions = get_quality_questions()
+    questions = get_all_questions()
     length_status_significance_test(questions)
     response_status_significance_test(questions)
     response_participants_significance_test(questions)
