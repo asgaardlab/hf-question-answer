@@ -4,7 +4,7 @@ from data_cleaner.discussion_reader import get_all_random_discussions, save_all_
     get_all_discussions, save_all_discussions
 from data_analyzer.md_processor import remove_report_emoji, remove_urls_from_images
 from data_analyzer.md_processor import remove_urls_from_hyperlinks, remove_urls
-from data_cleaner.type.discussion import Discussion
+from data_collector.type.discussion import Discussion
 
 
 def calculate_discussion_length(discussion_path: str) -> int:
