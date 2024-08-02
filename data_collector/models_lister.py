@@ -14,6 +14,7 @@ def to_array(model: ModelInfo) -> list[str | None | dict]:
 
 
 def get_all_models() -> Iterable[ModelInfo]:
+    print('Fetching model list...')
     api = HfApi()
     models = api.list_models(
         full=True,
