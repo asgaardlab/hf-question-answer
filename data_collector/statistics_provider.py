@@ -28,6 +28,9 @@ def model_discussion_statistics():
     print(f'{len(models_having_discussions)} models have discussions')
     print(f'{len(models_having_pull_requests)} models have pull requests')
 
+    saved_discussions = pd.read_csv(path.ALL_DISCUSSIONS_FILE)
+    print(f'{len(saved_discussions)} discussions are saved')
+
 
 if __name__ == '__main__':
     models_statistics()
