@@ -18,8 +18,8 @@ from util.helper import save_data_in_filepath
 
 
 def load_dataset() -> dict:
-    if path.QUALITY_QUESTION_POSTS_FILE.exists():
-        with path.QUALITY_QUESTION_POSTS_FILE.open('rb') as file:
+    if path.QUESTION_POSTS_FILE.exists():
+        with path.QUESTION_POSTS_FILE.open('rb') as file:
             return pickle.load(file)
 
     questions = get_all_questions()
@@ -28,7 +28,7 @@ def load_dataset() -> dict:
     question_posts = questions['post'].values.tolist()
     question_urls = questions['discussion_url'].values.tolist()
     classification_data = {'posts': question_posts, 'urls': question_urls}
-    save_data_in_filepath(classification_data, path.QUALITY_QUESTION_POSTS_FILE)
+    save_data_in_filepath(classification_data, path.QUESTION_POSTS_FILE)
     return classification_data
 
 
@@ -136,8 +136,10 @@ def save_model(topic_model, model_path):
 
 
 if __name__ == '__main__':
+    print('Preprocessing data for BERTopic...')
     posts, urls = preprocess_data()
 
+    print('Training BERTopic model...')
     model = train_model(posts, min_cluster_size=60)
     save_model(model, path.BERTOPIC_MODEL_FILE)
     print(f'Model saved in {path.BERTOPIC_MODEL_FILE}')
