@@ -61,19 +61,24 @@ The performance evaluation of GPT in classifying the random discussion posts as 
 
 
 ## Prepare Results
+
 ### Generate Plots
 To generate all the plots, run the following command from the `plot_generator` directory  
 ```commandline
 python main.py
 ```
+
 ### Topic Modeling Discussion Posts
 To train a BERTopic model on the discussion posts, run the following command from the `discussion_topic_modeller` directory 
 ```commandline
 python bertopic_topic_modeller.py
 ```
 * The trained BERTopic model will be saved in `data/bertopic_model/...` directory
+
 To visualize the topics, run the `bertopic_topic_visualizer.ipynb` notebook. 
+
 To cluster the topics, run the `bertopic_topic_clusterer.ipynb` notebook.
+
 ### Result of Manual Question Mapping
 The result of manual question mapping is saved in `data/manual_question_mapping.csv` file.
 To calculate the inter-rater agreement, run the following command from the `data_analyzer` directory
