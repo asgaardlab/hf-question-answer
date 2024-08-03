@@ -9,6 +9,14 @@ def visualize_discussion_status_by_team_participation(discussions):
         print('Error in data: Call get_discussions_status()')
         return None
 
+    if 'has_owner_responses' not in discussions.columns:
+        print('Error in data: Call calculate_has_owner_responses()')
+        return None
+
+    if 'no_of_contributor_responses' not in discussions.columns:
+        print('Error in data: Call calculate_discussions_contributors_responses()')
+        return None
+
     print(f'Number of discussions: {len(discussions)}')
     # draw_status_bar(all_discussions['status'], 'Distribution of discussion status', 'status')
 

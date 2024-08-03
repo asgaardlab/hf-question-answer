@@ -8,6 +8,10 @@ from util import path
 
 
 def visualize_discussion_creation_time_range(discussions):
+    if 'discussion_created_at' not in discussions.columns:
+        print('Error in data: Call calculate_discussions_creation_time()')
+        return None
+
     print(len(discussions))
     discussion_creation_dates = discussions['discussion_created_at']
     discussion_creation_dates.index = pd.to_datetime(discussion_creation_dates, utc=True)
@@ -34,11 +38,27 @@ def visualize_discussion_creation_time_range(discussions):
     plt.xlabel('Time (Month-Year)')
     plt.ylabel('# of new discussions posted on the month')
     plt.tight_layout()
-    plt.savefig(path.GRAPH_DIRECTORY / 'discussions_increase_rate.pdf', dpi=300)
+    plt.savefig(path.PLOTS_DIRECTORY / 'discussions_increase_rate.pdf', dpi=300)
     plt.show()
 
 
 def visualize_discussion_response_delays(discussions):
+    if 'status' not in discussions.columns:
+        print('Error in data: Call get_discussions_status()')
+        return None
+
+    if 'no_of_responses' not in discussions.columns:
+        print('Error in data: Call calculate_discussions_responses()')
+        return None
+
+    if 'discussion_created_at' not in discussions.columns:
+        print('Error in data: Call calculate_discussions_creation_time()')
+        return None
+
+    if 'discussion_response_delay' not in discussions.columns:
+        print('Error in data: Call calculate_discussions_response_delay()')
+        return None
+
     print(f'Number of discussions: {len(discussions)}')
 
     open_discussions = discussions[discussions['status'] == 'open']
@@ -46,7 +66,7 @@ def visualize_discussion_response_delays(discussions):
     print(f'Open discussions without response: {len(open_discussions_without_response)}')
 
     post_times = pd.to_datetime(open_discussions_without_response['discussion_created_at'])
-    post_times_sorted =  post_times.sort_values(ascending=False)
+    post_times_sorted = post_times.sort_values(ascending=False)
     print(post_times_sorted.head(20))
 
     last_response = post_times.max()
