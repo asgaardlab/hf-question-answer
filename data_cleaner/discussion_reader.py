@@ -52,7 +52,7 @@ def save_all_random_discussions(dataset: DataFrame) -> None:
     dataset.to_csv(path.ALL_RANDOM_DISCUSSIONS_FILE, index=False)
 
 
-def get_selected_random_discussions() -> DataFrame:
+def get_cleaned_random_discussions() -> DataFrame:
     if path.CLEANED_RANDOM_DISCUSSIONS_FILE.exists():
         return pd.read_csv(path.CLEANED_RANDOM_DISCUSSIONS_FILE)
 
@@ -60,13 +60,13 @@ def get_selected_random_discussions() -> DataFrame:
     hidden_filtered_discussions = random_discussions[random_discussions['is_hidden'] == False]
     length_filtered_discussions = hidden_filtered_discussions[hidden_filtered_discussions['length'] >= 50]
     language_filtered_discussions = length_filtered_discussions[length_filtered_discussions['is_non_english'] == False]
-    save_selected_random_discussions(language_filtered_discussions)
+    save_cleaned_random_discussions(language_filtered_discussions)
     return language_filtered_discussions
 
 
-def save_selected_random_discussions(dataset: DataFrame = None):
+def save_cleaned_random_discussions(dataset: DataFrame = None):
     if dataset is None:
-        get_selected_random_discussions()
+        get_cleaned_random_discussions()
     else:
         dataset.to_csv(path.CLEANED_RANDOM_DISCUSSIONS_FILE, index=False)
 
