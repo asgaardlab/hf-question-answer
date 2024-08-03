@@ -15,8 +15,8 @@ To collect list of models and their discussions from Hugging Face Hub, run the f
 ```commandline
 python main.py
 ```
-* List of models will be saved in `data/all_models.csv` file
-* Discussions along with pull requests will be saved inside the `data/discussions` directory. The directory structure is as followed:
+- List of models will be saved in `data/all_models.csv` file
+- Discussions along with pull requests will be saved inside the `data/discussions` directory. The directory structure is as followed:
 ```
 ├── data: all the data generated after running the scripts are saved in this directory
 │   ├── discussions: directory to save all discussions and pull requests
@@ -24,27 +24,29 @@ python main.py
 │   │   │   ├── discussion_<discussion_number>.yaml: a discussion file containing the discussion details
 │   │   │   ├── pull_request_<pull_request_number>.yaml: a pull request file containing the pull request details
 ```
-* A list of the downloaded discussions will be created in `data/all_discussions.csv` file 
+- A list of the downloaded discussions will be created in `data/all_discussions.csv` file 
 
 ### Analyze Sample Data
 To select sample data for manual analysis, run the following command from the `data_analyzer` directory.
 ```commandline
 python random_discussion_selector.py
 ```
-* 378 list of randomly selected discussions will be created in `data/all_random_discussions.csv` file 
+- 378 list of randomly selected discussions will be created in `data/all_random_discussions.csv` file 
 
 ### Filter Data
-To filter the random discussions in `data/all_random_discussions.csv` file, run the following command from `data_filter` directory.
+To filter the random discussions in `data/all_random_discussions.csv` file, run the following command from `data_cleaner` directory.
 ```commandline
 python random_discussion_cleaner.py
 ```
-To filter all the discussions, run the following command from the `data_cleaner` directory.
+- Filtered list of random discussions will be saved in `data/cleaned_random_discussions.csv` file
+
+To filter the models and all the discussions, run the following command from the `data_cleaner` directory.
 ```commandline
 python main.py
 ```
-* Filtered list of models will be saved in `data/quality_models.csv`
-* Discussion list of the filtered models will be saved in `data/quality_models_discussions.csv`
-* Filtered list of discussions will be saved in `data/cleaned_discussions.csv` file
+- Filtered list of models will be saved in `data/quality_models.csv`
+- Discussion list of the filtered models will be saved in `data/quality_models_discussions.csv`
+- Filtered list of discussions will be saved in `data/cleaned_discussions.csv` file
 
 ### Ground truth for GPT's performance evaluation
 * The ground truth we prepared from the filtered random discussions for GPT's performance evaluation is saved in `data/ground_truth.csv`. The ground truth is prepared by manually labeling the discussions.
