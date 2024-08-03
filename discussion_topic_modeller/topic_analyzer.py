@@ -63,43 +63,19 @@ def get_topic_clusters(model_path: Path) -> list[set[int]]:
     return clusters
 
 
-def save_cluster_documents_and_keywords(model_path: Path, clustered_topic_ids: list[set[int]], file_name_prefix: str):
+def save_topic_documents_and_keywords(model_path: Path):
     model = BERTopic.load(str(model_path.resolve()))
-    for index, topic_ids in enumerate(clustered_topic_ids):
-        print(f'Cluster {index + 1}: {topic_ids}')
-        cluster_documents = []
-        cluster_keywords = []
-        for topic_id in topic_ids:
-            cluster_documents.extend(model.representative_docs_[topic_id])
-            cluster_keywords.extend(get_topic_keywords(topic_id, model))
-
-        clusters_directory = path.BERTOPIC_MODEL_FILE.parent / 'clusters'
-        clusters_directory.mkdir(parents=True, exist_ok=True)
-
-        string_topic_ids = map(str, topic_ids)
-        file_name = f'{file_name_prefix}cluster_{"_".join(string_topic_ids)}.txt'
-
-        with open(clusters_directory / file_name, 'w', encoding='utf-8') as file:
-            file.write('### Documents:\n')
-            for document in cluster_documents:
-                file.write(f'- {document}\n')
-
-            file.write('### Keywords: ')
-            file.write(', '.join(cluster_keywords))
-
-
-def save_topic_documents_and_keywords(model_path: Path, highest_topic_id: int, filename_prefix: str):
-    model = BERTopic.load(str(model_path.resolve()))
+    topics = model.get_topic_info()
 
     topics_directory = path.BERTOPIC_MODEL_FILE.parent / 'topics'
     topics_directory.mkdir(parents=True, exist_ok=True)
 
-    for topic_id in range(highest_topic_id + 1):
+    for topic_id in range(topics.shape[0] - 1):
         print(f'Topic {topic_id}')
         topic_documents = (model.representative_docs_[topic_id])
         topic_keywords = get_topic_keywords(topic_id, model)
 
-        file_name = f'{filename_prefix}topic_{topic_id}.txt'
+        file_name = f'topic_{topic_id}.md'
 
         with open(topics_directory / file_name, 'w', encoding='utf-8') as file:
             file.write('### Documents:\n')
@@ -111,5 +87,4 @@ def save_topic_documents_and_keywords(model_path: Path, highest_topic_id: int, f
 
 
 if __name__ == '__main__':
-    # save_cluster_documents_and_keywords(path.BERTOPIC_MODEL.parent / 'outlier_model_min_cluster_size_60_topics_4', [{0, 1, 2}], 'outlier_')
-    save_topic_documents_and_keywords(path.BERTOPIC_MODEL_FILE, 2, 'model_')
+    save_topic_documents_and_keywords(path.BERTOPIC_MODEL_FILE)
