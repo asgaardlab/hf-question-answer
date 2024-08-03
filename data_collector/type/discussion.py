@@ -4,6 +4,7 @@ from pathlib import Path
 import yaml
 
 from data_collector.type.CustomLoader import CustomLoader
+from util import path
 
 
 class Discussion:
@@ -24,7 +25,7 @@ class Discussion:
 
     @staticmethod
     def from_path_str(file_path: str):
-        return Discussion.from_path(Path(file_path))
+        return Discussion.from_path(path.DISCUSSIONS_DIRECTORY / file_path)
 
     @staticmethod
     def from_path(file_path: Path):
