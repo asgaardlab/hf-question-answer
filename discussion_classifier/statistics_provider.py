@@ -1,4 +1,4 @@
-from data_cleaner.discussion_reader import get_selected_all_discussions, get_cleaned_random_discussions
+from data_cleaner.discussion_reader import get_cleaned_all_discussions, get_cleaned_random_discussions
 
 
 def provide_randon_discussion_classification_statistics():
@@ -10,7 +10,7 @@ def provide_randon_discussion_classification_statistics():
 
 
 def provide_all_discussion_classification_statistics():
-    quality_discussions = get_selected_all_discussions()
+    quality_discussions = get_cleaned_all_discussions()
     print(f'Cleaned discussions: {len(quality_discussions)}')
 
     questions = quality_discussions[quality_discussions['contains_question_final_class'] == 'yes']

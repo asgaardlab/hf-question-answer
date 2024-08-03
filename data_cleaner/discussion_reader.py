@@ -32,16 +32,16 @@ def save_all_discussions(dataset: DataFrame) -> None:
     dataset.to_csv(path.ALL_DISCUSSIONS_FILE, index=False)
 
 
-def get_selected_all_discussions() -> DataFrame:
-    if path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE.exists():
-        return pd.read_csv(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE)
+def get_cleaned_all_discussions() -> DataFrame:
+    if path.CLEANED_DISCUSSIONS_FILE.exists():
+        return pd.read_csv(path.CLEANED_DISCUSSIONS_FILE)
 
 
-def save_selected_all_discussions(dataset: DataFrame = None) -> None:
+def save_cleaned_all_discussions(dataset: DataFrame = None) -> None:
     if dataset is None:
-        get_selected_all_discussions()
+        get_cleaned_all_discussions()
     else:
-        dataset.to_csv(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE, index=False)
+        dataset.to_csv(path.CLEANED_DISCUSSIONS_FILE, index=False)
 
 
 def get_all_random_discussions() -> DataFrame:
@@ -75,7 +75,7 @@ def get_all_questions() -> DataFrame:
     if path.ALL_QUESTIONS_FILE.exists():
         return pd.read_csv(path.ALL_QUESTIONS_FILE)
     else:
-        discussions = get_selected_all_discussions()
+        discussions = get_cleaned_all_discussions()
         questions = discussions[discussions['contains_question_final_class'] == 'yes']
         questions.to_csv(path.ALL_QUESTIONS_FILE, index=False)
         return questions

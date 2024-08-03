@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pandas import DataFrame
 
-from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions
+from data_cleaner.discussion_reader import get_cleaned_all_discussions, save_cleaned_all_discussions
 
 
 def read_class_from_result_file(result_file_path: Path) -> str:
@@ -43,5 +43,5 @@ def get_final_class(discussion: DataFrame, tie_breaking_column_name: str) -> str
 
 
 def get_all_questions() -> DataFrame:
-    selected_all_discussions = get_selected_all_discussions()
+    selected_all_discussions = get_cleaned_all_discussions()
     return selected_all_discussions[selected_all_discussions['contains_question_final_class'] == 'yes']

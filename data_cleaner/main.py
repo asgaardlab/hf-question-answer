@@ -50,7 +50,7 @@ if __name__ == '__main__':
     save_all_non_english_discussions()
 
     save_all_discussions_of_quality_models(path.QUALITY_MODELS_DISCUSSIONS_FILE)
-    save_cleaned_discussions(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE)
+    save_cleaned_discussions(path.CLEANED_DISCUSSIONS_FILE)
 
     data_cleaning_statistics()
 

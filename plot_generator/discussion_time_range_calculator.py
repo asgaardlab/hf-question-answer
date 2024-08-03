@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from pandas import DataFrame, Series
 
-from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions
+from data_cleaner.discussion_reader import get_cleaned_all_discussions, save_cleaned_all_discussions
 from data_collector.type.discussion import Discussion
 
 
@@ -25,9 +25,9 @@ def calculate_discussions_response_delay(discussions) -> DataFrame:
 
 
 if __name__ == '__main__':
-    all_discussions = get_selected_all_discussions()
+    all_discussions = get_cleaned_all_discussions()
 
     all_discussions = calculate_discussions_creation_time(all_discussions)
     all_discussions = calculate_discussions_response_delay(all_discussions)
 
-    save_selected_all_discussions(all_discussions)
+    save_cleaned_all_discussions(all_discussions)

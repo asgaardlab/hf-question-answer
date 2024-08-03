@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pandas import DataFrame
 
-from data_cleaner.discussion_reader import get_selected_all_discussions, save_selected_all_discussions, \
+from data_cleaner.discussion_reader import get_cleaned_all_discussions, save_cleaned_all_discussions, \
     save_all_questions
 from discussion_classifier.classification_result_reader_writer import get_gpt_classes, \
     get_final_class, read_class_from_result_file
@@ -12,7 +12,7 @@ from util import path
 
 def write_gpt_classes_of_all_discussions(discussions, result_directory, write_column_name: str):
     discussions = get_gpt_classes(discussions, result_directory, write_column_name)
-    save_selected_all_discussions(discussions)
+    save_cleaned_all_discussions(discussions)
 
 
 def get_ties(discussions) -> DataFrame:
@@ -22,7 +22,7 @@ def get_ties(discussions) -> DataFrame:
 
 
 def break_ties(save_directory: Path) -> list:
-    selected_all_discussions = get_selected_all_discussions()
+    selected_all_discussions = get_cleaned_all_discussions()
 
     ties = get_ties(selected_all_discussions)
     print(f'Breaking ties for {len(ties)} discussions')
@@ -34,14 +34,14 @@ def break_ties(save_directory: Path) -> list:
 
 
 def write_final_class():
-    selected_all_discussions = get_selected_all_discussions()
+    selected_all_discussions = get_cleaned_all_discussions()
     selected_all_discussions['contains_question_final_class'] = selected_all_discussions.apply(
         lambda discussion: get_final_class(discussion, 'contains_question_tie_breaker'), axis=1)
-    save_selected_all_discussions(selected_all_discussions)
+    save_cleaned_all_discussions(selected_all_discussions)
 
 
 def write_tie_breaker_class(result_directory, indexes_to_write, write_column_name: str):
-    discussions = get_selected_all_discussions()
+    discussions = get_cleaned_all_discussions()
     result_files = result_directory.glob('*_result_gpt-3-5.md')
 
     contains_questions = {}
@@ -56,11 +56,11 @@ def write_tie_breaker_class(result_directory, indexes_to_write, write_column_nam
         contains_questions[index] = 'error'
 
     discussions[write_column_name] = discussions['index'].map(contains_questions)
-    save_selected_all_discussions(discussions)
+    save_cleaned_all_discussions(discussions)
 
 
 if __name__ == '__main__':
-    selected_all_discussions = get_selected_all_discussions()
+    selected_all_discussions = get_cleaned_all_discussions()
 
     run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_1'
     classify_discussions(selected_all_discussions, run_result_directory)

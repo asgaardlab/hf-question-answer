@@ -30,7 +30,7 @@ def data_cleaning_statistics() -> None:
     quality_models_discussions = pd.read_csv(path.QUALITY_MODELS_DISCUSSIONS_FILE)
     print(f'Quality models discussions: {len(quality_models_discussions)}')
 
-    cleaned_discussions = pd.read_csv(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE)
+    cleaned_discussions = pd.read_csv(path.CLEANED_DISCUSSIONS_FILE)
     print(f'Cleaned discussions: {len(cleaned_discussions)}')
 
     print('Cleaning step by step:')
