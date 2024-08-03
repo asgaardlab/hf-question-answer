@@ -2,9 +2,8 @@ from data_cleaner.discussion_reader import get_all_questions, get_all_discussion
 from plot_generator.discussion_participants_visualizer import visualize_discussion_participants, \
     compare_response_by_team_participation
 from plot_generator.discussion_response_visualizer import visualize_discussion_response, compare_response_by_status, \
-    visualize_response_length, compare_response_length_per_status, visualize_owner_response_discussion
-from plot_generator.discussion_status_visualizer import visualize_discussion_status_by_team_participation, \
-    visualize_discussion_status_changes_count
+    visualize_response_length, compare_response_length_per_status
+from plot_generator.discussion_status_visualizer import visualize_discussion_status_by_team_participation
 from plot_generator.discussion_time_range_visualizer import visualize_discussion_response_delays, \
     visualize_discussion_creation_time_range
 
