@@ -15,11 +15,16 @@ To collect list of models and their discussions from Hugging Face Hub, run the f
 ```commandline
 python main.py
 ```
-* List of models will be created in `data/all_models.csv` file
-* Discussions will be saved inside the `data/discussions` directory
-  * Discussions from same repository will be saved in a single directory inside the `data/discussions` directory
-  * Each discussion will be saved in a single `yaml` file inside it's repository directory 
-  * A list of all discussions will be created in `data/all_discussions.csv` file 
+* List of models will be saved in `data/all_models.csv` file
+* Discussions along with pull requests will be saved inside the `data/discussions` directory. The directory structure is as followed:
+```
+├── data: all the data generated after running the scripts are saved in this directory
+│   ├── discussions: directory to save all discussions and pull requests
+│   │   ├── <model_id>: model repository to save discussions and pull requests. the `/` in the `model_id` is replaced with '@'. an empty directory means there are no discussions and pull requests in the repository.
+│   │   │   ├── discussion_<discussion_number>.yaml: a discussion file containing the discussion details
+│   │   │   ├── pull_request_<pull_request_number>.yaml: a pull request file containing the pull request details
+```
+* A list of the downloaded discussions will be created in `data/all_discussions.csv` file 
 
 ### Analyze Sample Data
 To select sample data for manual analysis, run the following command from the `data_analyzer` directory.
@@ -67,6 +72,7 @@ To generate all the plots, run the following command from the `plot_generator` d
 ```commandline
 python main.py
 ```
+* Plots will be saved in `data/plots` directory
 
 ### Topic Modeling Discussion Posts
 To train a BERTopic model on the discussion posts, run the following command from the `discussion_topic_modeller` directory 
@@ -74,8 +80,7 @@ To train a BERTopic model on the discussion posts, run the following command fro
 python bertopic_topic_modeller.py
 ```
 * The trained BERTopic model will be saved in `data/bertopic_model/...` directory
-
-To visualize the topics, run the `bertopic_topic_visualizer.ipynb` notebook. 
+* To visualize the topics, run the `bertopic_topic_visualizer.ipynb` notebook. 
 
 To cluster the topics, run the `bertopic_topic_clusterer.ipynb` notebook.
 
