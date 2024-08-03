@@ -25,11 +25,17 @@ def get_discussion_url(discussion_path: str) -> str:
     return discussion.url
 
 
+def get_model_id_from_discussion_url(discussion_url: str) -> str:
+    return discussion_url.split('/')[3] + '/' + discussion_url.split('/')[4]
+
+
 def list_discussions():
+    print('Listing discussions...')
     discussion_paths = [file_path for file_path in path.DISCUSSIONS_DIRECTORY.glob('*/*.yaml') if
                         file_path.name.startswith('discussion_')]
     discussion_paths_df = pd.DataFrame(
         {'discussion_path': [str(discussion_path.relative_to(path.DISCUSSIONS_DIRECTORY)) for discussion_path in discussion_paths]})
     discussion_paths_df['discussion_url'] = discussion_paths_df['discussion_path'].apply(get_discussion_url)
+    discussion_paths_df['model_id'] = discussion_paths_df['discussion_url'].apply(get_model_id_from_discussion_url)
     discussion_paths_df.index.name = 'index'
     discussion_paths_df.to_csv(path.ALL_DISCUSSIONS_FILE, index=True)
