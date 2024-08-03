@@ -46,7 +46,7 @@ ALL_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_random_discussions.csv'
 CACHE_DIRECTORY = DATA_DIRECTORY / 'cache'
 QUALITY_QUESTION_POSTS_FILE = CACHE_DIRECTORY / 'quality_question_posts.pkl'
 #
-SELECTED_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'cleaned_random_discussions.csv'
+CLEANED_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'cleaned_random_discussions.csv'
 # SELECTED_ALL_DISCUSSIONS_FILE = DATA_DIRECTORY / 'selected_all_discussions.csv'
 ALL_QUESTIONS_FILE = DATA_DIRECTORY / 'all_questions.csv'
 #

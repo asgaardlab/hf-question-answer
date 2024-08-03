@@ -53,8 +53,8 @@ def save_all_random_discussions(dataset: DataFrame) -> None:
 
 
 def get_selected_random_discussions() -> DataFrame:
-    if path.SELECTED_RANDOM_DISCUSSIONS_FILE.exists():
-        return pd.read_csv(path.SELECTED_RANDOM_DISCUSSIONS_FILE)
+    if path.CLEANED_RANDOM_DISCUSSIONS_FILE.exists():
+        return pd.read_csv(path.CLEANED_RANDOM_DISCUSSIONS_FILE)
 
     random_discussions = get_all_random_discussions()
     hidden_filtered_discussions = random_discussions[random_discussions['is_hidden'] == False]
@@ -68,7 +68,7 @@ def save_selected_random_discussions(dataset: DataFrame = None):
     if dataset is None:
         get_selected_random_discussions()
     else:
-        dataset.to_csv(path.SELECTED_RANDOM_DISCUSSIONS_FILE, index=False)
+        dataset.to_csv(path.CLEANED_RANDOM_DISCUSSIONS_FILE, index=False)
 
 
 def get_all_questions() -> DataFrame:
