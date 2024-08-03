@@ -26,7 +26,10 @@ def get_discussion_url(discussion_path: str) -> str:
 
 
 def get_model_id_from_discussion_url(discussion_url: str) -> str:
-    return discussion_url.split('/')[3] + '/' + discussion_url.split('/')[4]
+    url_parts = discussion_url.split('/')
+    if len(url_parts) == 6:
+        return url_parts[3]
+    return url_parts[3] + '/' + url_parts[4]
 
 
 def list_discussions():
