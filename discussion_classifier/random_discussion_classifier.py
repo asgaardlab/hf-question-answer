@@ -14,28 +14,28 @@ def write_gpt_classes_of_random_discussions(discussions: DataFrame, result_direc
 
 
 def write_final_class():
-    selected_random_discussions = get_cleaned_random_discussions()
-    selected_random_discussions['contains_question_final_class'] = selected_random_discussions.apply(
+    random_discussions = get_cleaned_random_discussions()
+    random_discussions['contains_question_final_class'] = random_discussions.apply(
         lambda discussion: get_final_class(discussion, 'contains_question_run_3'), axis=1)
-    save_cleaned_random_discussions(selected_random_discussions)
+    save_cleaned_random_discussions(random_discussions)
 
 
 if __name__ == '__main__':
-    selected_random_discussions = get_cleaned_random_discussions()
+    cleaned_random_discussions = get_cleaned_random_discussions()
 
     run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_1'
-    classify_discussions(selected_random_discussions, run_result_directory)
-    write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
+    classify_discussions(cleaned_random_discussions, run_result_directory)
+    write_gpt_classes_of_random_discussions(cleaned_random_discussions, run_result_directory,
                                             'contains_question_run_1')
 
     run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_2'
-    classify_discussions(selected_random_discussions, run_result_directory)
-    write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
+    classify_discussions(cleaned_random_discussions, run_result_directory)
+    write_gpt_classes_of_random_discussions(cleaned_random_discussions, run_result_directory,
                                             'contains_question_run_2')
 
     run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_3'
-    classify_discussions(selected_random_discussions, run_result_directory)
-    write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
+    classify_discussions(cleaned_random_discussions, run_result_directory)
+    write_gpt_classes_of_random_discussions(cleaned_random_discussions, run_result_directory,
                                             'contains_question_run_3')
 
     write_final_class()
