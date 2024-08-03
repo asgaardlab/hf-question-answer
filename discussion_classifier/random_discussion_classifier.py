@@ -23,17 +23,17 @@ def write_final_class():
 if __name__ == '__main__':
     selected_random_discussions = get_selected_random_discussions()
 
-    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run1'
+    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_1'
     classify_discussions(selected_random_discussions, run_result_directory)
     write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
                                             'contains_question_run_1')
 
-    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run2'
+    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_2'
     classify_discussions(selected_random_discussions, run_result_directory)
     write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
                                             'contains_question_run_2')
 
-    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run3'
+    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_3'
     classify_discussions(selected_random_discussions, run_result_directory)
     write_gpt_classes_of_random_discussions(selected_random_discussions, run_result_directory,
                                             'contains_question_run_3')

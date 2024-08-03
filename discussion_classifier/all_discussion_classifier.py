@@ -62,16 +62,16 @@ def write_tie_breaker_class(result_directory, indexes_to_write, write_column_nam
 if __name__ == '__main__':
     selected_all_discussions = get_selected_all_discussions()
 
-    run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run1'
+    run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_1'
     classify_discussions(selected_all_discussions, run_result_directory)
     write_gpt_classes_of_all_discussions(selected_all_discussions, run_result_directory,
                                          'contains_question_run_1')
 
-    run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run2'
+    run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'run_2'
     classify_discussions(selected_all_discussions, run_result_directory)
     write_gpt_classes_of_all_discussions(selected_all_discussions, run_result_directory, 'contains_question_run_2')
 
-    run_result_directory = path.RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY / 'tie_breakers'
+    run_result_directory = path.ALL_DISCUSSION_CLASSIFICATION_DIRECTORY / 'tie_breakers'
     tie_indexes = break_ties(run_result_directory)
     write_tie_breaker_class(run_result_directory, tie_indexes, 'contains_question_tie_breaker')
 
