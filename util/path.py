@@ -13,12 +13,6 @@ DISCUSSIONS_DIRECTORY = DATA_DIRECTORY / 'discussions'
 # DISCUSSIONS_CACHE = CACHE_DIRECTORY / 'discussions.pkl'
 # PREPROCESSED_DISCUSSIONS_FILE = CACHE_DIRECTORY / 'preprocessed_discussions.csv'
 # CLASSIFIED_DISCUSSIONS_FILE = DATA_DIRECTORY / 'classified_discussions.csv'
-# PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'pred_score.png'
-# BUG_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'bug_pred_score_plot.png'
-# FEATURE_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'feature_pred_score_plot.png'
-# QUESTION_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'question_pred_score_plot.png'
-# DOCUMENTATION_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'documentation_pred_score_plot.png'
-#
 
 PLOTS_DIRECTORY = DATA_DIRECTORY / 'plots'
 
@@ -29,15 +23,10 @@ PLOTS_DIRECTORY = DATA_DIRECTORY / 'plots'
 # QUESTION_CLASSIFICATION_DIRECTORY = DATA_DIRECTORY / 'classifications' / '6. question_classification' / 'run_10'
 #
 CLASSIFICATION_DIRECTORY = DATA_DIRECTORY / 'classifications'
+SYSTEM_PROMPT_FILE = CLASSIFICATION_DIRECTORY / 'system_prompt.md'
 RANDOM_DISCUSSION_CLASSIFICATION_DIRECTORY = CLASSIFICATION_DIRECTORY / 'random_discussion_classification'
 ALL_DISCUSSION_CLASSIFICATION_DIRECTORY = CLASSIFICATION_DIRECTORY / 'all_discussion_classification'
 
-#
-SYSTEM_PROMPT_FILE = CLASSIFICATION_DIRECTORY / 'system_prompt.md'
-# USER_PROMPT_FILE = CLASSIFICATION_DIRECTORY / '0_user_prompt.md'
-#
-# PROMPT_FILE = CLASSIFICATION_DIRECTORY / 'prompt.md'
-#
 ALL_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_discussions.csv'
 ALL_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_random_discussions.csv'
 #
@@ -45,7 +34,7 @@ ALL_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'all_random_discussions.csv'
 # RANDOM_DISCUSSION_POSTS_FILE = CACHE_DIRECTORY / 'random_discussion_posts.pkl'
 # ALL_QUESTION_POSTS_FILE = CACHE_DIRECTORY / 'all_question_posts.pkl'
 CACHE_DIRECTORY = DATA_DIRECTORY / 'cache'
-QUALITY_QUESTION_POSTS_FILE = CACHE_DIRECTORY / 'quality_question_posts.pkl'
+QUESTION_POSTS_FILE = CACHE_DIRECTORY / 'question_posts.pkl'
 #
 CLEANED_RANDOM_DISCUSSIONS_FILE = DATA_DIRECTORY / 'cleaned_random_discussions.csv'
 # SELECTED_ALL_DISCUSSIONS_FILE = DATA_DIRECTORY / 'selected_all_discussions.csv'
@@ -58,7 +47,7 @@ ALL_QUESTIONS_FILE = DATA_DIRECTORY / 'all_questions.csv'
 # QUALITY_FILTERED_DIRECTORY = DATA_DIRECTORY / 'quality_filtered'
 QUALITY_MODELS_FILE = DATA_DIRECTORY / 'quality_models.csv'
 QUALITY_MODELS_DISCUSSIONS_FILE = DATA_DIRECTORY / 'quality_models_discussions.csv'
-SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE = DATA_DIRECTORY / 'cleaned_discussions.csv'
+CLEANED_DISCUSSIONS_FILE = DATA_DIRECTORY / 'cleaned_discussions.csv'
 # QUALITY_MODELS_QUESTIONS_FILE = QUALITY_FILTERED_DIRECTORY / 'quality_models_questions.csv'
 #
 # BERTOPIC_MODEL_ON_RAW = DATA_DIRECTORY / 'bertopic_model' / 'v1_raw_data' / 'model'
