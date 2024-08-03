@@ -73,7 +73,7 @@ def save_cluster_documents_and_keywords(model_path: Path, clustered_topic_ids: l
             cluster_documents.extend(model.representative_docs_[topic_id])
             cluster_keywords.extend(get_topic_keywords(topic_id, model))
 
-        clusters_directory = path.BERTOPIC_MODEL.parent / 'clusters'
+        clusters_directory = path.BERTOPIC_MODEL_FILE.parent / 'clusters'
         clusters_directory.mkdir(parents=True, exist_ok=True)
 
         string_topic_ids = map(str, topic_ids)
@@ -91,7 +91,7 @@ def save_cluster_documents_and_keywords(model_path: Path, clustered_topic_ids: l
 def save_topic_documents_and_keywords(model_path: Path, highest_topic_id: int, filename_prefix: str):
     model = BERTopic.load(str(model_path.resolve()))
 
-    topics_directory = path.BERTOPIC_MODEL.parent / 'topics'
+    topics_directory = path.BERTOPIC_MODEL_FILE.parent / 'topics'
     topics_directory.mkdir(parents=True, exist_ok=True)
 
     for topic_id in range(highest_topic_id + 1):
@@ -112,4 +112,4 @@ def save_topic_documents_and_keywords(model_path: Path, highest_topic_id: int, f
 
 if __name__ == '__main__':
     # save_cluster_documents_and_keywords(path.BERTOPIC_MODEL.parent / 'outlier_model_min_cluster_size_60_topics_4', [{0, 1, 2}], 'outlier_')
-    save_topic_documents_and_keywords(path.BERTOPIC_MODEL.parent / 'model_min_cluster_size_60_topics_4', 2, 'model_')
+    save_topic_documents_and_keywords(path.BERTOPIC_MODEL_FILE, 2, 'model_')

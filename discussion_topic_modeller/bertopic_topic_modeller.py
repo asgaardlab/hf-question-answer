@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from umap import UMAP
 
-from data_cleaner.discussion_reader import get_quality_questions
+from data_cleaner.discussion_reader import get_all_questions
 from data_cleaner.md_processor import remove_codeblock, remove_images, remove_emojis, remove_urls_from_hyperlinks, \
     remove_urls
 from data_collector.type.discussion import Discussion
@@ -22,7 +22,7 @@ def load_dataset() -> dict:
         with path.QUALITY_QUESTION_POSTS_FILE.open('rb') as file:
             return pickle.load(file)
 
-    questions = get_quality_questions()
+    questions = get_all_questions()
     questions['post'] = questions['discussion_path'].apply(
         lambda discussion_path: Discussion.from_path_str(discussion_path).get_post())
     question_posts = questions['post'].values.tolist()
@@ -131,25 +131,13 @@ def train_model(dataset, min_cluster_size: int):
 
 def save_model(topic_model, model_path):
     topic_model.representation_model = None  # Remove the representation model to get rid of "TypeError: cannot pickle '_thread.RLock' object" error
-    path.BERTOPIC_MODEL.parent.mkdir(parents=True, exist_ok=True)
+    path.BERTOPIC_MODEL_FILE.parent.mkdir(parents=True, exist_ok=True)
     topic_model.save(str(model_path.resolve()))
-
-
-def split_documents(posts: list[str], model_path: Path):
-    topic_model = BERTopic.load(str(model_path.resolve()))
-    documents = topic_model.get_document_info(posts)
-
-    main_documents_documents = documents[documents['Topic'] != -1]['Document'].values.tolist()
-    print(f'Main documents: {len(main_documents_documents)}')
-    outlier_documents_documents = documents[documents['Topic'] == -1]['Document'].values.tolist()
-    print(f'Outlier documents: {len(outlier_documents_documents)}')
-
-    return main_documents_documents, outlier_documents_documents
 
 
 if __name__ == '__main__':
     posts, urls = preprocess_data()
 
     model = train_model(posts, min_cluster_size=60)
-    save_model(model, path.BERTOPIC_MODEL)
-    print(f'Model saved in {path.BERTOPIC_MODEL}')
+    save_model(model, path.BERTOPIC_MODEL_FILE)
+    print(f'Model saved in {path.BERTOPIC_MODEL_FILE}')
