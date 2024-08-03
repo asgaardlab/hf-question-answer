@@ -5,6 +5,7 @@ from pandas import DataFrame
 from data_cleaner.discussion_reader import get_cleaned_random_discussions, save_cleaned_random_discussions
 from discussion_classifier.classification_result_reader_writer import get_gpt_classes, get_final_class
 from discussion_classifier.gpt_classifier import classify_discussions
+from discussion_classifier.statistics_provider import provide_randon_discussion_classification_statistics
 from util import path
 
 
@@ -39,3 +40,4 @@ if __name__ == '__main__':
                                             'contains_question_run_3')
 
     write_final_class()
+    provide_randon_discussion_classification_statistics()
