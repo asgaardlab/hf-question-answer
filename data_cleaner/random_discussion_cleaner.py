@@ -6,6 +6,7 @@ from data_cleaner.main_statistics_provider import provide_discussion_filtering_s
 from data_cleaner.non_english_identifier import save_random_non_english_discussions
 
 if __name__ == '__main__':
+    print('Cleaning random discussions')
     save_random_hidden_discussions()
     calculate_random_discussion_lengths()
     save_random_non_english_discussions()
