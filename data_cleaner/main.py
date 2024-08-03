@@ -46,8 +46,8 @@ if __name__ == '__main__':
     save_quality_models(path.QUALITY_MODELS_FILE)
 
     save_all_hidden_discussions()
-    save_all_non_english_discussions()
     calculate_all_discussion_lengths()
+    save_all_non_english_discussions()
 
     save_all_discussions_of_quality_models(path.QUALITY_MODELS_DISCUSSIONS_FILE)
     save_cleaned_discussions(path.SELECTED_QUALITY_MODELS_DISCUSSIONS_FILE)
