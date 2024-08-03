@@ -84,15 +84,29 @@ python main.py
 - Plots will be generated in `data/plots` directory in `pdf` and `png` format.
 
 ### Topic Modeling Discussion Posts
-To train a BERTopic model on the discussion posts, run the following command from the `discussion_topic_modeller` directory 
+To train a BERTopic model on the discussion posts, first run the following command from the repository root
+```commandline
+python -m spacy download en_core_web_sm
+```
+Then run the following command from the `discussion_topic_modeller` directory 
 ```commandline
 python bertopic_topic_modeller.py
 ```
-- Trained BERTopic model will be saved in `data/bertopic_model/...` directory
+- Trained BERTopic model file `model_min_cluster_size_60` will be saved in `data/bertopic_model`.
 
-To visualize the topics, run the `bertopic_topic_visualizer.ipynb` notebook. 
+To save the representative topics and keywords for each topic, run the following command from the `discussion_topic_modeller` directory
+```commandline
+python topic_analyzer.py
+```
+- Representative documents and keywords of the topics will be saved in `data/bertopic_model/topics/<topic_id>.md` file.
 
-To cluster the topics, run the `bertopic_topic_clusterer.ipynb` notebook.
+To visualize the topics, run the `discussion_topic_modeller/bertopic_topic_visualizer.ipynb` notebook.    
+
+To visualize the clusters of the topics, run the following command from the `discussion_topic_modeller` directory
+```commandline
+python topic_cluster_visualizer.py
+```
+- Cluster visualization will be saved in `data/bertopic_model/model_min_cluster_size_60_hierarchy_plot.pdf` file.
 
 ### Result of Manual Question Mapping
 The result of manual question mapping is saved in `data/manual_question_mapping.csv` file.
