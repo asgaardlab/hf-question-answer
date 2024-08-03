@@ -14,7 +14,7 @@ def visualize_model_likes_distribution(models):
     plt.title('Model likes')
     plt.xlabel('Likes')
     plt.tight_layout()
-    plt.savefig(path.GRAPH_DIRECTORY / 'model_likes_distribution.png')
+    plt.savefig(path.PLOTS_DIRECTORY / 'model_likes_distribution.png')
     plt.show()
 
     filtered_models = models[models['likes'] > 24]
@@ -36,7 +36,7 @@ def visualize_model_downloads_distribution(models):
     plt.title('Model downloads')
     plt.xlabel('Downloads (M = million)')
     plt.tight_layout()
-    plt.savefig(path.GRAPH_DIRECTORY / 'model_downloads_distribution.png')
+    plt.savefig(path.PLOTS_DIRECTORY / 'model_downloads_distribution.png')
     plt.show()
 
     filtered_models = models[models['downloads'] > 24]

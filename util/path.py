@@ -13,14 +13,15 @@ DISCUSSIONS_DIRECTORY = DATA_DIRECTORY / 'discussions'
 # DISCUSSIONS_CACHE = CACHE_DIRECTORY / 'discussions.pkl'
 # PREPROCESSED_DISCUSSIONS_FILE = CACHE_DIRECTORY / 'preprocessed_discussions.csv'
 # CLASSIFIED_DISCUSSIONS_FILE = DATA_DIRECTORY / 'classified_discussions.csv'
-#
-GRAPH_DIRECTORY = DATA_DIRECTORY / 'graphs'
 # PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'pred_score.png'
 # BUG_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'bug_pred_score_plot.png'
 # FEATURE_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'feature_pred_score_plot.png'
 # QUESTION_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'question_pred_score_plot.png'
 # DOCUMENTATION_PRED_SCORE_PLOT_FILE = GRAPH_DIRECTORY / 'documentation_pred_score_plot.png'
 #
+
+PLOTS_DIRECTORY = DATA_DIRECTORY / 'plots'
+
 # PROMPTS_AND_RESULTS_DIRECTORY = DATA_DIRECTORY / 'prompts_and_results'
 # UPDATED_PROMPT_CLASSIFICATION_DIRECTORY = DATA_DIRECTORY / 'classifications' / '3. updated_prompt'
 # CLASSIFICATION_WITH_DESCRIPTION_DIRECTORY = DATA_DIRECTORY / 'classifications' / '4. classification_with_class_description'

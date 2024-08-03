@@ -40,7 +40,7 @@ def visualize_discussion_length_distribution(discussions: DataFrame, title: str)
     plt.xlabel('Discussion Length')
     plt.ylabel('Frequency')
 
-    plt.savefig(path.GRAPH_DIRECTORY / f'{title.lower()}_discussion_length_distribution.png')
+    plt.savefig(path.PLOTS_DIRECTORY / f'{title.lower()}_discussion_length_distribution.png')
     plt.show()
 
 

@@ -14,7 +14,7 @@ def draw_status_bar(data: Series, plot_title: str, save_file_name: str) -> None:
     plt.ylabel('Count')
     plt.title(plot_title)
     save_file_name = save_file_name + '.png'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name)
     plt.show()
 
 
@@ -42,10 +42,10 @@ def draw_boxplot(data: Series, plot_title: str, x_label: str, save_file_name: st
     fig.tight_layout()
 
     save_file_name_with_extension = save_file_name + '.png'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     save_file_name_with_extension = save_file_name + '.pdf'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     plt.show()
 
@@ -59,7 +59,7 @@ def draw_owner_response_bar(data: Series, plot_title: str, save_file_name: str) 
     plt.ylabel('Count')
     plt.title(plot_title)
     save_file_name = save_file_name + '.png'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name)
     plt.show()
 
 
@@ -107,10 +107,10 @@ def draw_discussion_comparison_multi_bar(data: DataFrame, plot_title: str, save_
     plt.tight_layout()
 
     save_file_name_with_extension = save_file_name + '.png'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     save_file_name_with_extension = save_file_name + '.pdf'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     plt.show()
 
@@ -134,9 +134,9 @@ def draw_comparison_boxplot(data: DataFrame, x_label: str, y_label: str, plot_ti
     fig.tight_layout()
 
     save_file_name_with_extension = save_file_name + '.png'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     save_file_name_with_extension = save_file_name + '.pdf'
-    plt.savefig(path.GRAPH_DIRECTORY / save_file_name_with_extension)
+    plt.savefig(path.PLOTS_DIRECTORY / save_file_name_with_extension)
 
     plt.show()
