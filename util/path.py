@@ -5,7 +5,7 @@ def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
-DATA_DIRECTORY = get_project_root() / 'data_to_upload'
+DATA_DIRECTORY = get_project_root() / 'data'
 
 BERTOPIC_MODEL_DIRECTORY = DATA_DIRECTORY / 'bertopic_model'
 BERTOPIC_MODEL_FILE = BERTOPIC_MODEL_DIRECTORY / 'model_min_cluster_size_60'
