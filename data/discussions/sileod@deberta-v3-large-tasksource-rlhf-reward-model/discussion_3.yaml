@@ -1,0 +1,124 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: heegyu
+conflicting_files: null
+created_at: 2023-08-31 05:07:12+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1597657623754-noauth.jpeg?w=200&h=200&f=face
+      fullname: Heegyu Kim
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: heegyu
+      type: user
+    createdAt: '2023-08-31T06:07:12.000Z'
+    data:
+      edited: false
+      editors:
+      - heegyu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3552277088165283
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1597657623754-noauth.jpeg?w=200&h=200&f=face
+          fullname: Heegyu Kim
+          isHf: false
+          isPro: false
+          name: heegyu
+          type: user
+        html: "<p>I can't reproduce it. </p>\n<p>this is my test notebook</p>\n<pre><code>import\
+          \ torch\n\ntorch.set_grad_enabled(False)\ndevice = \"cuda:0\"\n\nfrom transformers\
+          \ import AutoTokenizer, AutoModelForSequenceClassification\n\nmodel_id =\
+          \ \"sileod/deberta-v3-large-tasksource-rlhf-reward-model\"\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForSequenceClassification.from_pretrained(model_id).eval().to(device)\n\
+          \nfrom datasets import load_dataset\n\ndataset = load_dataset(\"heegyu/hh-rlhf-vicuna-format\"\
+          , split=\"test\")\n\ndef join_conv(convs):\n    lines = []\n    for conv\
+          \ in convs:\n        if conv[\"from\"] == \"human\":\n            lines.append(\"\
+          Human: \" + conv[\"value\"])\n        else:\n            lines.append(\"\
+          Assistant: \" + conv[\"value\"])\n    return \"\\n\\n\".join(lines)\n\n\
+          def rank(context, response):\n    inputs = tokenizer(context, response,\
+          \ truncation=True, return_tensors='pt').to(device)\n    return model(**inputs).logits[0].cpu().detach().tolist()[0]\n\
+          \ndef map_item(item):\n    # with context\n    # context = join_conv(item[\"\
+          context\"]) + \"\\n\\n\" + join_conv([item[\"instruction\"]])\n    # context\
+          \ = context.strip()\n    \n    # without context\n    context = item[\"\
+          instruction\"][\"value\"]\n\n\n    chosen = rank(context, item[\"chosen\"\
+          ][\"value\"])\n    rejected = rank(context, item[\"rejected\"][\"value\"\
+          ])\n    \n    return {\n        \"chosen_score\": chosen,\n        \"rejected_score\"\
+          : rejected,\n        \"predict\": 1 if chosen &gt; rejected else 0\n   \
+          \ }\n\n\ntokenizer.truncation_side = \"left\"\n\nclassified = dataset.map(map_item,\
+          \ load_from_cache_file=False)\nprint(classified.to_pandas().mean()[\"predict\"\
+          ])\n</code></pre>\n<p>and result is </p>\n<ul>\n<li>with context: 0.6792563143124415</li>\n\
+          <li>without context: 0.6627689429373246</li>\n</ul>\n"
+        raw: "I can't reproduce it. \r\n\r\nthis is my test notebook\r\n```\r\nimport\
+          \ torch\r\n\r\ntorch.set_grad_enabled(False)\r\ndevice = \"cuda:0\"\r\n\r\
+          \nfrom transformers import AutoTokenizer, AutoModelForSequenceClassification\r\
+          \n\r\nmodel_id = \"sileod/deberta-v3-large-tasksource-rlhf-reward-model\"\
+          \r\n\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\nmodel = AutoModelForSequenceClassification.from_pretrained(model_id).eval().to(device)\r\
+          \n\r\nfrom datasets import load_dataset\r\n\r\ndataset = load_dataset(\"\
+          heegyu/hh-rlhf-vicuna-format\", split=\"test\")\r\n\r\ndef join_conv(convs):\r\
+          \n    lines = []\r\n    for conv in convs:\r\n        if conv[\"from\"]\
+          \ == \"human\":\r\n            lines.append(\"Human: \" + conv[\"value\"\
+          ])\r\n        else:\r\n            lines.append(\"Assistant: \" + conv[\"\
+          value\"])\r\n    return \"\\n\\n\".join(lines)\r\n\r\ndef rank(context,\
+          \ response):\r\n    inputs = tokenizer(context, response, truncation=True,\
+          \ return_tensors='pt').to(device)\r\n    return model(**inputs).logits[0].cpu().detach().tolist()[0]\r\
+          \n\r\ndef map_item(item):\r\n    # with context\r\n    # context = join_conv(item[\"\
+          context\"]) + \"\\n\\n\" + join_conv([item[\"instruction\"]])\r\n    # context\
+          \ = context.strip()\r\n    \r\n    # without context\r\n    context = item[\"\
+          instruction\"][\"value\"]\r\n\r\n\r\n    chosen = rank(context, item[\"\
+          chosen\"][\"value\"])\r\n    rejected = rank(context, item[\"rejected\"\
+          ][\"value\"])\r\n    \r\n    return {\r\n        \"chosen_score\": chosen,\r\
+          \n        \"rejected_score\": rejected,\r\n        \"predict\": 1 if chosen\
+          \ > rejected else 0\r\n    }\r\n\r\n\r\ntokenizer.truncation_side = \"left\"\
+          \r\n\r\nclassified = dataset.map(map_item, load_from_cache_file=False)\r\
+          \nprint(classified.to_pandas().mean()[\"predict\"])\r\n```\r\n\r\nand result\
+          \ is \r\n- with context: 0.6792563143124415\r\n- without context: 0.6627689429373246"
+        updatedAt: '2023-08-31T06:07:12.630Z'
+      numEdits: 0
+      reactions: []
+    id: 64f02e106848e943710228f0
+    type: comment
+  author: heegyu
+  content: "I can't reproduce it. \r\n\r\nthis is my test notebook\r\n```\r\nimport\
+    \ torch\r\n\r\ntorch.set_grad_enabled(False)\r\ndevice = \"cuda:0\"\r\n\r\nfrom\
+    \ transformers import AutoTokenizer, AutoModelForSequenceClassification\r\n\r\n\
+    model_id = \"sileod/deberta-v3-large-tasksource-rlhf-reward-model\"\r\n\r\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(model_id)\r\nmodel = AutoModelForSequenceClassification.from_pretrained(model_id).eval().to(device)\r\
+    \n\r\nfrom datasets import load_dataset\r\n\r\ndataset = load_dataset(\"heegyu/hh-rlhf-vicuna-format\"\
+    , split=\"test\")\r\n\r\ndef join_conv(convs):\r\n    lines = []\r\n    for conv\
+    \ in convs:\r\n        if conv[\"from\"] == \"human\":\r\n            lines.append(\"\
+    Human: \" + conv[\"value\"])\r\n        else:\r\n            lines.append(\"Assistant:\
+    \ \" + conv[\"value\"])\r\n    return \"\\n\\n\".join(lines)\r\n\r\ndef rank(context,\
+    \ response):\r\n    inputs = tokenizer(context, response, truncation=True, return_tensors='pt').to(device)\r\
+    \n    return model(**inputs).logits[0].cpu().detach().tolist()[0]\r\n\r\ndef map_item(item):\r\
+    \n    # with context\r\n    # context = join_conv(item[\"context\"]) + \"\\n\\\
+    n\" + join_conv([item[\"instruction\"]])\r\n    # context = context.strip()\r\n\
+    \    \r\n    # without context\r\n    context = item[\"instruction\"][\"value\"\
+    ]\r\n\r\n\r\n    chosen = rank(context, item[\"chosen\"][\"value\"])\r\n    rejected\
+    \ = rank(context, item[\"rejected\"][\"value\"])\r\n    \r\n    return {\r\n \
+    \       \"chosen_score\": chosen,\r\n        \"rejected_score\": rejected,\r\n\
+    \        \"predict\": 1 if chosen > rejected else 0\r\n    }\r\n\r\n\r\ntokenizer.truncation_side\
+    \ = \"left\"\r\n\r\nclassified = dataset.map(map_item, load_from_cache_file=False)\r\
+    \nprint(classified.to_pandas().mean()[\"predict\"])\r\n```\r\n\r\nand result is\
+    \ \r\n- with context: 0.6792563143124415\r\n- without context: 0.6627689429373246"
+  created_at: 2023-08-31 05:07:12+00:00
+  edited: false
+  hidden: false
+  id: 64f02e106848e943710228f0
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: sileod/deberta-v3-large-tasksource-rlhf-reward-model
+repo_type: model
+status: open
+target_branch: null
+title: Can you share your test code? I cannot produce it

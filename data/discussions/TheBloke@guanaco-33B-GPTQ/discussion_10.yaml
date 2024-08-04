@@ -1,0 +1,1330 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: clause-crahm
+conflicting_files: null
+created_at: 2023-06-14 09:13:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+      fullname: Christoph Rahmede
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: clause-crahm
+      type: user
+    createdAt: '2023-06-14T10:13:50.000Z'
+    data:
+      edited: false
+      editors:
+      - clause-crahm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3118257522583008
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+          fullname: Christoph Rahmede
+          isHf: false
+          isPro: false
+          name: clause-crahm
+          type: user
+        html: "<p>How can I finetune the model further? Inference works without problems.<br>I\
+          \ can do finetuning with the LoracConfig set to</p>\n<pre><code class=\"\
+          language-python\">config = LoraConfig(\n    r=<span class=\"hljs-number\"\
+          >8</span>,\n    lora_alpha=<span class=\"hljs-number\">32</span>,\n    target_modules=[<span\
+          \ class=\"hljs-string\">\"lm_head\"</span>],\n    lora_dropout=<span class=\"\
+          hljs-number\">0.05</span>,\n    bias=<span class=\"hljs-string\">\"none\"\
+          </span>,\n    task_type=<span class=\"hljs-string\">\"CAUSAL_LM\"</span>\n\
+          )\n</code></pre>\n<p>but trying any other target_modules (or removing that\
+          \ line) leads to the error</p>\n<p>RuntimeError: self and mat2 must have\
+          \ the same dtype</p>\n<p>The full script that I am using is </p>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoTokenizer, logging\n<span\
+          \ class=\"hljs-keyword\">from</span> auto_gptq <span class=\"hljs-keyword\"\
+          >import</span> AutoGPTQForCausalLM, BaseQuantizeConfig\n<span class=\"hljs-keyword\"\
+          >import</span> argparse\n\n<span class=\"hljs-keyword\">from</span> peft\
+          \ <span class=\"hljs-keyword\">import</span> prepare_model_for_kbit_training\n\
+          <span class=\"hljs-keyword\">from</span> peft <span class=\"hljs-keyword\"\
+          >import</span> LoraConfig, get_peft_model\n<span class=\"hljs-keyword\"\
+          >from</span> datasets <span class=\"hljs-keyword\">import</span> load_dataset\n\
+          <span class=\"hljs-keyword\">import</span> transformers\n\n\nparser = argparse.ArgumentParser(description=<span\
+          \ class=\"hljs-string\">'Simple AutoGPTQ example'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'model_name_or_path'</span>, <span class=\"hljs-built_in\"\
+          >type</span>=<span class=\"hljs-built_in\">str</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Model folder or repo'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--model_basename'</span>,\
+          \ <span class=\"hljs-built_in\">type</span>=<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-built_in\">help</span>=<span class=\"hljs-string\"\
+          >'Model file basename if model is not named gptq_model-Xb-Ygr'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--use_slow'</span>, action=<span\
+          \ class=\"hljs-string\">\"store_true\"</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Use slow tokenizer'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--use_safetensors'</span>,\
+          \ action=<span class=\"hljs-string\">\"store_true\"</span>, <span class=\"\
+          hljs-built_in\">help</span>=<span class=\"hljs-string\">'Model file basename\
+          \ if model is not named gptq_model-Xb-Ygr'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--use_triton'</span>, action=<span class=\"hljs-string\"\
+          >\"store_true\"</span>, <span class=\"hljs-built_in\">help</span>=<span\
+          \ class=\"hljs-string\">'Use Triton for inference?'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--bits'</span>, <span class=\"hljs-built_in\">type</span>=<span\
+          \ class=\"hljs-built_in\">int</span>, default=<span class=\"hljs-number\"\
+          >4</span>, <span class=\"hljs-built_in\">help</span>=<span class=\"hljs-string\"\
+          >'Specify GPTQ bits. Only needed if no quantize_config.json is provided'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--group_size'</span>, <span\
+          \ class=\"hljs-built_in\">type</span>=<span class=\"hljs-built_in\">int</span>,\
+          \ default=<span class=\"hljs-number\">128</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Specify GPTQ group_size. Only\
+          \ needed if no quantize_config.json is provided'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--desc_act'</span>, action=<span class=\"hljs-string\"\
+          >\"store_true\"</span>, <span class=\"hljs-built_in\">help</span>=<span\
+          \ class=\"hljs-string\">'Specify GPTQ desc_act. Only needed if no quantize_config.json\
+          \ is provided'</span>)\n\nargs = parser.parse_args()\nquantized_model_dir\
+          \ = args.model_name_or_path\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=<span class=\"hljs-keyword\">not</span> args.use_slow,\n    \
+          \                                      unk_token=<span class=\"hljs-string\"\
+          >\"\\&lt;unk\\&gt;\"</span>,\n                                         \
+          \ bos_token=<span class=\"hljs-string\">\"\\&lt;s\\&gt;\"</span>,\n    \
+          \                                      eos_token=<span class=\"hljs-string\"\
+          >\"\\&lt;/s\\&gt;\"</span>)\n\nquantize_config = BaseQuantizeConfig.from_pretrained(quantized_model_dir)\n\
+          \nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n    \
+          \    use_safetensors=args.use_safetensors,\n        model_basename=args.model_basename,\n\
+          \        device=<span class=\"hljs-string\">\"cuda:0\"</span>,\n       \
+          \ use_triton=args.use_triton,\n        quantize_config=quantize_config)\n\
+          \nmodel.gradient_checkpointing_enable()\nmodel = prepare_model_for_kbit_training(model)\n\
+          \nconfig = LoraConfig(\n    r=<span class=\"hljs-number\">8</span>,\n  \
+          \  lora_alpha=<span class=\"hljs-number\">32</span>,\n    lora_dropout=<span\
+          \ class=\"hljs-number\">0.05</span>,\n    bias=<span class=\"hljs-string\"\
+          >\"none\"</span>,\n    task_type=<span class=\"hljs-string\">\"CAUSAL_LM\"\
+          </span>\n)\n\nmodel = get_peft_model(model, config)\n\n\ndata = load_dataset(<span\
+          \ class=\"hljs-string\">\"Abirate/english_quotes\"</span>)\ndata = data.<span\
+          \ class=\"hljs-built_in\">map</span>(<span class=\"hljs-keyword\">lambda</span>\
+          \ samples: tokenizer(samples[<span class=\"hljs-string\">\"quote\"</span>]),\
+          \ batched=<span class=\"hljs-literal\">True</span>)\ndata = data[<span class=\"\
+          hljs-string\">'train'</span>].train_test_split(train_size=<span class=\"\
+          hljs-number\">0.9</span>, test_size=<span class=\"hljs-number\">0.1</span>)\n\
+          \ntokenizer.pad_token = tokenizer.eos_token\ntrainer = transformers.Trainer(\n\
+          \    model=model,\n    train_dataset=data[<span class=\"hljs-string\">\"\
+          train\"</span>],\n    eval_dataset=data[<span class=\"hljs-string\">'test'</span>],\n\
+          \    args=transformers.TrainingArguments(\n        per_device_train_batch_size=<span\
+          \ class=\"hljs-number\">1</span>,\n        gradient_accumulation_steps=<span\
+          \ class=\"hljs-number\">4</span>,\n        warmup_steps=<span class=\"hljs-number\"\
+          >2</span>,\n        max_steps=<span class=\"hljs-number\">3</span>,\n  \
+          \      learning_rate=<span class=\"hljs-number\">2e-2</span>,\n        fp16=<span\
+          \ class=\"hljs-literal\">True</span>,\n        logging_steps=<span class=\"\
+          hljs-number\">1</span>,\n        output_dir=<span class=\"hljs-string\"\
+          >\"outputs\"</span>,\n        optim=<span class=\"hljs-string\">\"paged_adamw_8bit\"\
+          </span>,\n        evaluation_strategy=<span class=\"hljs-string\">'steps'</span>,\n\
+          \        eval_steps=<span class=\"hljs-number\">1</span>\n    ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=<span class=\"hljs-literal\">False</span>),\n)\nmodel.config.use_cache\
+          \ = <span class=\"hljs-literal\">False</span>\ntrainer.train()\n</code></pre>\n"
+        raw: "How can I finetune the model further? Inference works without problems.\r\
+          \nI can do finetuning with the LoracConfig set to\r\n```python\r\nconfig\
+          \ = LoraConfig(\r\n    r=8,\r\n    lora_alpha=32,\r\n    target_modules=[\"\
+          lm_head\"],\r\n    lora_dropout=0.05,\r\n    bias=\"none\",\r\n    task_type=\"\
+          CAUSAL_LM\"\r\n)\r\n```\r\nbut trying any other target_modules (or removing\
+          \ that line) leads to the error\r\n\r\nRuntimeError: self and mat2 must\
+          \ have the same dtype\r\n\r\nThe full script that I am using is \r\n```python\r\
+          \nfrom transformers import AutoTokenizer, logging\r\nfrom auto_gptq import\
+          \ AutoGPTQForCausalLM, BaseQuantizeConfig\r\nimport argparse\r\n\r\nfrom\
+          \ peft import prepare_model_for_kbit_training\r\nfrom peft import LoraConfig,\
+          \ get_peft_model\r\nfrom datasets import load_dataset\r\nimport transformers\r\
+          \n\r\n\r\nparser = argparse.ArgumentParser(description='Simple AutoGPTQ\
+          \ example')\r\nparser.add_argument('model_name_or_path', type=str, help='Model\
+          \ folder or repo')\r\nparser.add_argument('--model_basename', type=str,\
+          \ help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\n\
+          parser.add_argument('--use_slow', action=\"store_true\", help='Use slow\
+          \ tokenizer')\r\nparser.add_argument('--use_safetensors', action=\"store_true\"\
+          , help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\n\
+          parser.add_argument('--use_triton', action=\"store_true\", help='Use Triton\
+          \ for inference?')\r\nparser.add_argument('--bits', type=int, default=4,\
+          \ help='Specify GPTQ bits. Only needed if no quantize_config.json is provided')\r\
+          \nparser.add_argument('--group_size', type=int, default=128, help='Specify\
+          \ GPTQ group_size. Only needed if no quantize_config.json is provided')\r\
+          \nparser.add_argument('--desc_act', action=\"store_true\", help='Specify\
+          \ GPTQ desc_act. Only needed if no quantize_config.json is provided')\r\n\
+          \r\nargs = parser.parse_args()\r\nquantized_model_dir = args.model_name_or_path\r\
+          \n\r\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=not\
+          \ args.use_slow,\r\n                                          unk_token=\"\
+          \\<unk\\>\",\r\n                                          bos_token=\"\\\
+          <s\\>\",\r\n                                          eos_token=\"\\</s\\\
+          >\")\r\n\r\nquantize_config = BaseQuantizeConfig.from_pretrained(quantized_model_dir)\r\
+          \n\r\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\r\n\
+          \        use_safetensors=args.use_safetensors,\r\n        model_basename=args.model_basename,\r\
+          \n        device=\"cuda:0\",\r\n        use_triton=args.use_triton,\r\n\
+          \        quantize_config=quantize_config)\r\n\r\nmodel.gradient_checkpointing_enable()\r\
+          \nmodel = prepare_model_for_kbit_training(model)\r\n\r\nconfig = LoraConfig(\r\
+          \n    r=8,\r\n    lora_alpha=32,\r\n    lora_dropout=0.05,\r\n    bias=\"\
+          none\",\r\n    task_type=\"CAUSAL_LM\"\r\n)\r\n\r\nmodel = get_peft_model(model,\
+          \ config)\r\n\r\n\r\ndata = load_dataset(\"Abirate/english_quotes\")\r\n\
+          data = data.map(lambda samples: tokenizer(samples[\"quote\"]), batched=True)\r\
+          \ndata = data['train'].train_test_split(train_size=0.9, test_size=0.1)\r\
+          \n\r\ntokenizer.pad_token = tokenizer.eos_token\r\ntrainer = transformers.Trainer(\r\
+          \n    model=model,\r\n    train_dataset=data[\"train\"],\r\n    eval_dataset=data['test'],\r\
+          \n    args=transformers.TrainingArguments(\r\n        per_device_train_batch_size=1,\r\
+          \n        gradient_accumulation_steps=4,\r\n        warmup_steps=2,\r\n\
+          \        max_steps=3,\r\n        learning_rate=2e-2,\r\n        fp16=True,\r\
+          \n        logging_steps=1,\r\n        output_dir=\"outputs\",\r\n      \
+          \  optim=\"paged_adamw_8bit\",\r\n        evaluation_strategy='steps',\r\
+          \n        eval_steps=1\r\n    ),\r\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\r\n)\r\nmodel.config.use_cache = False\r\ntrainer.train()\r\
+          \n```"
+        updatedAt: '2023-06-14T10:13:50.832Z'
+      numEdits: 0
+      reactions: []
+    id: 648992de2e7b004f5816fcf9
+    type: comment
+  author: clause-crahm
+  content: "How can I finetune the model further? Inference works without problems.\r\
+    \nI can do finetuning with the LoracConfig set to\r\n```python\r\nconfig = LoraConfig(\r\
+    \n    r=8,\r\n    lora_alpha=32,\r\n    target_modules=[\"lm_head\"],\r\n    lora_dropout=0.05,\r\
+    \n    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\"\r\n)\r\n```\r\nbut trying\
+    \ any other target_modules (or removing that line) leads to the error\r\n\r\n\
+    RuntimeError: self and mat2 must have the same dtype\r\n\r\nThe full script that\
+    \ I am using is \r\n```python\r\nfrom transformers import AutoTokenizer, logging\r\
+    \nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\r\nimport argparse\r\
+    \n\r\nfrom peft import prepare_model_for_kbit_training\r\nfrom peft import LoraConfig,\
+    \ get_peft_model\r\nfrom datasets import load_dataset\r\nimport transformers\r\
+    \n\r\n\r\nparser = argparse.ArgumentParser(description='Simple AutoGPTQ example')\r\
+    \nparser.add_argument('model_name_or_path', type=str, help='Model folder or repo')\r\
+    \nparser.add_argument('--model_basename', type=str, help='Model file basename\
+    \ if model is not named gptq_model-Xb-Ygr')\r\nparser.add_argument('--use_slow',\
+    \ action=\"store_true\", help='Use slow tokenizer')\r\nparser.add_argument('--use_safetensors',\
+    \ action=\"store_true\", help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\
+    \nparser.add_argument('--use_triton', action=\"store_true\", help='Use Triton\
+    \ for inference?')\r\nparser.add_argument('--bits', type=int, default=4, help='Specify\
+    \ GPTQ bits. Only needed if no quantize_config.json is provided')\r\nparser.add_argument('--group_size',\
+    \ type=int, default=128, help='Specify GPTQ group_size. Only needed if no quantize_config.json\
+    \ is provided')\r\nparser.add_argument('--desc_act', action=\"store_true\", help='Specify\
+    \ GPTQ desc_act. Only needed if no quantize_config.json is provided')\r\n\r\n\
+    args = parser.parse_args()\r\nquantized_model_dir = args.model_name_or_path\r\n\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=not\
+    \ args.use_slow,\r\n                                          unk_token=\"\\<unk\\\
+    >\",\r\n                                          bos_token=\"\\<s\\>\",\r\n \
+    \                                         eos_token=\"\\</s\\>\")\r\n\r\nquantize_config\
+    \ = BaseQuantizeConfig.from_pretrained(quantized_model_dir)\r\n\r\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\r\
+    \n        use_safetensors=args.use_safetensors,\r\n        model_basename=args.model_basename,\r\
+    \n        device=\"cuda:0\",\r\n        use_triton=args.use_triton,\r\n      \
+    \  quantize_config=quantize_config)\r\n\r\nmodel.gradient_checkpointing_enable()\r\
+    \nmodel = prepare_model_for_kbit_training(model)\r\n\r\nconfig = LoraConfig(\r\
+    \n    r=8,\r\n    lora_alpha=32,\r\n    lora_dropout=0.05,\r\n    bias=\"none\"\
+    ,\r\n    task_type=\"CAUSAL_LM\"\r\n)\r\n\r\nmodel = get_peft_model(model, config)\r\
+    \n\r\n\r\ndata = load_dataset(\"Abirate/english_quotes\")\r\ndata = data.map(lambda\
+    \ samples: tokenizer(samples[\"quote\"]), batched=True)\r\ndata = data['train'].train_test_split(train_size=0.9,\
+    \ test_size=0.1)\r\n\r\ntokenizer.pad_token = tokenizer.eos_token\r\ntrainer =\
+    \ transformers.Trainer(\r\n    model=model,\r\n    train_dataset=data[\"train\"\
+    ],\r\n    eval_dataset=data['test'],\r\n    args=transformers.TrainingArguments(\r\
+    \n        per_device_train_batch_size=1,\r\n        gradient_accumulation_steps=4,\r\
+    \n        warmup_steps=2,\r\n        max_steps=3,\r\n        learning_rate=2e-2,\r\
+    \n        fp16=True,\r\n        logging_steps=1,\r\n        output_dir=\"outputs\"\
+    ,\r\n        optim=\"paged_adamw_8bit\",\r\n        evaluation_strategy='steps',\r\
+    \n        eval_steps=1\r\n    ),\r\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+    \ mlm=False),\r\n)\r\nmodel.config.use_cache = False\r\ntrainer.train()\r\n```"
+  created_at: 2023-06-14 09:13:50+00:00
+  edited: false
+  hidden: false
+  id: 648992de2e7b004f5816fcf9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-06-16T11:43:05.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9819365739822388
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>I don''t know, I''ve not tried fine tuning yet.</p>
+
+          <p>However you could try updating AutoGPTQ to the latest development version
+          (git clone it and build from source), as version 0.3.0 has built-in PEFT
+          support.</p>
+
+          <p>I think this will be the intended way to do LoRA training on quantised
+          GPTQ models.  </p>
+
+          <p>I''ve not tried it myself yet but I believe it does work.</p>
+
+          '
+        raw: "I don't know, I've not tried fine tuning yet.\n\nHowever you could try\
+          \ updating AutoGPTQ to the latest development version (git clone it and\
+          \ build from source), as version 0.3.0 has built-in PEFT support.\n\nI think\
+          \ this will be the intended way to do LoRA training on quantised GPTQ models.\
+          \  \n\nI've not tried it myself yet but I believe it does work."
+        updatedAt: '2023-06-16T11:43:05.290Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - clause-crahm
+    id: 648c4ac919bb04c064670689
+    type: comment
+  author: TheBloke
+  content: "I don't know, I've not tried fine tuning yet.\n\nHowever you could try\
+    \ updating AutoGPTQ to the latest development version (git clone it and build\
+    \ from source), as version 0.3.0 has built-in PEFT support.\n\nI think this will\
+    \ be the intended way to do LoRA training on quantised GPTQ models.  \n\nI've\
+    \ not tried it myself yet but I believe it does work."
+  created_at: 2023-06-16 10:43:05+00:00
+  edited: false
+  hidden: false
+  id: 648c4ac919bb04c064670689
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+      fullname: Christoph Rahmede
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: clause-crahm
+      type: user
+    createdAt: '2023-06-19T19:16:37.000Z'
+    data:
+      edited: false
+      editors:
+      - clause-crahm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.934502363204956
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+          fullname: Christoph Rahmede
+          isHf: false
+          isPro: false
+          name: clause-crahm
+          type: user
+        html: '<blockquote>
+
+          <p>I don''t know, I''ve not tried fine tuning yet.</p>
+
+          <p>However you could try updating AutoGPTQ to the latest development version
+          (git clone it and build from source), as version 0.3.0 has built-in PEFT
+          support.</p>
+
+          <p>I think this will be the intended way to do LoRA training on quantised
+          GPTQ models.  </p>
+
+          <p>I''ve not tried it myself yet but I believe it does work.</p>
+
+          </blockquote>
+
+          <p>Thanks, that helped, now I got it working. It required also adapting
+          the example from <a rel="nofollow" href="https://github.com/PanQiWei/AutoGPTQ/blob/main/examples/peft/peft_lora_clm_instruction_tuning.py">examples/peft/peft_lora_clm_instruction_tuning.py</a>
+          with the essential difference of using their GPTQLoraConfig.</p>
+
+          '
+        raw: "> I don't know, I've not tried fine tuning yet.\n> \n> However you could\
+          \ try updating AutoGPTQ to the latest development version (git clone it\
+          \ and build from source), as version 0.3.0 has built-in PEFT support.\n\
+          > \n> I think this will be the intended way to do LoRA training on quantised\
+          \ GPTQ models.  \n> \n> I've not tried it myself yet but I believe it does\
+          \ work.\n\nThanks, that helped, now I got it working. It required also adapting\
+          \ the example from [examples/peft/peft_lora_clm_instruction_tuning.py](https://github.com/PanQiWei/AutoGPTQ/blob/main/examples/peft/peft_lora_clm_instruction_tuning.py)\
+          \ with the essential difference of using their GPTQLoraConfig."
+        updatedAt: '2023-06-19T19:16:37.352Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - nacs
+        - Ichsan2895
+    id: 6490a995a728a392348597eb
+    type: comment
+  author: clause-crahm
+  content: "> I don't know, I've not tried fine tuning yet.\n> \n> However you could\
+    \ try updating AutoGPTQ to the latest development version (git clone it and build\
+    \ from source), as version 0.3.0 has built-in PEFT support.\n> \n> I think this\
+    \ will be the intended way to do LoRA training on quantised GPTQ models.  \n>\
+    \ \n> I've not tried it myself yet but I believe it does work.\n\nThanks, that\
+    \ helped, now I got it working. It required also adapting the example from [examples/peft/peft_lora_clm_instruction_tuning.py](https://github.com/PanQiWei/AutoGPTQ/blob/main/examples/peft/peft_lora_clm_instruction_tuning.py)\
+    \ with the essential difference of using their GPTQLoraConfig."
+  created_at: 2023-06-19 18:16:37+00:00
+  edited: false
+  hidden: false
+  id: 6490a995a728a392348597eb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-06-20T10:04:31.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9649648070335388
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Great, glad it worked! Could you share the updated code here, so
+          others could use it as well?</p>
+
+          '
+        raw: Great, glad it worked! Could you share the updated code here, so others
+          could use it as well?
+        updatedAt: '2023-06-20T10:04:31.345Z'
+      numEdits: 0
+      reactions: []
+    id: 649179aff6e6408af26d0d64
+    type: comment
+  author: TheBloke
+  content: Great, glad it worked! Could you share the updated code here, so others
+    could use it as well?
+  created_at: 2023-06-20 09:04:31+00:00
+  edited: false
+  hidden: false
+  id: 649179aff6e6408af26d0d64
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+      fullname: Christoph Rahmede
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: clause-crahm
+      type: user
+    createdAt: '2023-06-20T15:44:51.000Z'
+    data:
+      edited: false
+      editors:
+      - clause-crahm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.2507838010787964
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+          fullname: Christoph Rahmede
+          isHf: false
+          isPro: false
+          name: clause-crahm
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/TheBloke\">@<span class=\"\
+          underline\">TheBloke</span></a></span>\n\n\t</span></span> Sure, please\
+          \ see below:</p>\n<pre><code class=\"language-python\"><span class=\"hljs-comment\"\
+          ># run with</span>\n<span class=\"hljs-comment\"># python simple_autogptq.py\
+          \ ./text-generation-webui/models/TheBloke_guanaco-33B-GPTQ/ --model_basename\
+          \ Guanaco-33B-GPTQ-4bit.act-order --use_safetensors --use_triton</span>\n\
+          \n<span class=\"hljs-keyword\">import</span> os\n<span class=\"hljs-keyword\"\
+          >import</span> argparse\n<span class=\"hljs-keyword\">from</span> peft <span\
+          \ class=\"hljs-keyword\">import</span> prepare_model_for_kbit_training,\
+          \ TaskType\n<span class=\"hljs-keyword\">from</span> datasets <span class=\"\
+          hljs-keyword\">import</span> load_dataset\n<span class=\"hljs-keyword\"\
+          >import</span> transformers\n<span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoTokenizer\n<span class=\"\
+          hljs-keyword\">from</span> auto_gptq <span class=\"hljs-keyword\">import</span>\
+          \ AutoGPTQForCausalLM, get_gptq_peft_model, BaseQuantizeConfig\n<span class=\"\
+          hljs-keyword\">from</span> auto_gptq.utils.peft_utils <span class=\"hljs-keyword\"\
+          >import</span> GPTQLoraConfig\n\nparser = argparse.ArgumentParser(description=<span\
+          \ class=\"hljs-string\">'Simple AutoGPTQ example'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'model_name_or_path'</span>, <span class=\"hljs-built_in\"\
+          >type</span>=<span class=\"hljs-built_in\">str</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Model folder or repo'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--model_basename'</span>,\
+          \ <span class=\"hljs-built_in\">type</span>=<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-built_in\">help</span>=<span class=\"hljs-string\"\
+          >'Model file basename if model is not named gptq_model-Xb-Ygr'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--use_slow'</span>, action=<span\
+          \ class=\"hljs-string\">\"store_true\"</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Use slow tokenizer'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--use_safetensors'</span>,\
+          \ action=<span class=\"hljs-string\">\"store_true\"</span>, <span class=\"\
+          hljs-built_in\">help</span>=<span class=\"hljs-string\">'Model file basename\
+          \ if model is not named gptq_model-Xb-Ygr'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--use_triton'</span>, action=<span class=\"hljs-string\"\
+          >\"store_true\"</span>, <span class=\"hljs-built_in\">help</span>=<span\
+          \ class=\"hljs-string\">'Use Triton for inference?'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--bits'</span>, <span class=\"hljs-built_in\">type</span>=<span\
+          \ class=\"hljs-built_in\">int</span>, default=<span class=\"hljs-number\"\
+          >4</span>, <span class=\"hljs-built_in\">help</span>=<span class=\"hljs-string\"\
+          >'Specify GPTQ bits. Only needed if no quantize_config.json is provided'</span>)\n\
+          parser.add_argument(<span class=\"hljs-string\">'--group_size'</span>, <span\
+          \ class=\"hljs-built_in\">type</span>=<span class=\"hljs-built_in\">int</span>,\
+          \ default=<span class=\"hljs-number\">128</span>, <span class=\"hljs-built_in\"\
+          >help</span>=<span class=\"hljs-string\">'Specify GPTQ group_size. Only\
+          \ needed if no quantize_config.json is provided'</span>)\nparser.add_argument(<span\
+          \ class=\"hljs-string\">'--desc_act'</span>, action=<span class=\"hljs-string\"\
+          >\"store_true\"</span>, <span class=\"hljs-built_in\">help</span>=<span\
+          \ class=\"hljs-string\">'Specify GPTQ desc_act. Only needed if no quantize_config.json\
+          \ is provided'</span>)\nargs = parser.parse_args()\n\nos.environ[<span class=\"\
+          hljs-string\">\"TOKENIZERS_PARALLELISM\"</span>] = <span class=\"hljs-string\"\
+          >\"false\"</span>\n\nmodel_name_or_path = args.model_name_or_path\nmodel_basename\
+          \ = args.model_basename\ntokenizer_name_or_path = model_name_or_path\n\n\
+          peft_config = GPTQLoraConfig(\n    r=<span class=\"hljs-number\">16</span>,\n\
+          \    lora_alpha=<span class=\"hljs-number\">32</span>,\n    lora_dropout=<span\
+          \ class=\"hljs-number\">0.1</span>,\n    task_type=TaskType.CAUSAL_LM,\n\
+          \    inference_mode=<span class=\"hljs-literal\">False</span>,\n)\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name_or_path,\n                \
+          \                          use_fast=<span class=\"hljs-keyword\">not</span>\
+          \ args.use_slow,\n                                          unk_token=<span\
+          \ class=\"hljs-string\">\"&lt;unk&gt;\"</span>,\n                      \
+          \                    bos_token=<span class=\"hljs-string\">\"&lt;s&gt;\"\
+          </span>,\n                                          eos_token=<span class=\"\
+          hljs-string\">\"&lt;/s&gt;\"</span>)\n<span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-keyword\">not</span> tokenizer.pad_token_id:\n    tokenizer.pad_token_id\
+          \ = tokenizer.eos_token_id\n\nquantize_config = BaseQuantizeConfig.from_pretrained(model_name_or_path)\n\
+          model = AutoGPTQForCausalLM.from_quantized(\n    model_name_or_path,\n \
+          \   model_basename=model_basename,\n    use_safetensors=args.use_safetensors,\n\
+          \    use_triton=args.use_triton,\n    device=<span class=\"hljs-string\"\
+          >\"cuda:0\"</span>,\n    trainable=<span class=\"hljs-literal\">True</span>,\n\
+          \    inject_fused_attention=<span class=\"hljs-literal\">True</span>,\n\
+          \    inject_fused_mlp=<span class=\"hljs-literal\">False</span>,\n    quantize_config=quantize_config\n\
+          )\nmodel.gradient_checkpointing_enable()\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_gptq_peft_model(model, peft_config=peft_config, auto_find_all_linears=<span\
+          \ class=\"hljs-literal\">True</span>, train_mode=<span class=\"hljs-literal\"\
+          >True</span>)\nmodel.print_trainable_parameters()\n\ndata = load_dataset(<span\
+          \ class=\"hljs-string\">\"Abirate/english_quotes\"</span>)\ndata = data.<span\
+          \ class=\"hljs-built_in\">map</span>(<span class=\"hljs-keyword\">lambda</span>\
+          \ samples: tokenizer(samples[<span class=\"hljs-string\">\"quote\"</span>]),\
+          \ batched=<span class=\"hljs-literal\">True</span>)\ndata = data[<span class=\"\
+          hljs-string\">'train'</span>].train_test_split(train_size=<span class=\"\
+          hljs-number\">0.9</span>, test_size=<span class=\"hljs-number\">0.1</span>)\n\
+          \ntokenizer.pad_token = tokenizer.eos_token\ntrainer = transformers.Trainer(\n\
+          \    model=model,\n    train_dataset=data[<span class=\"hljs-string\">\"\
+          train\"</span>],\n    eval_dataset=data[<span class=\"hljs-string\">'test'</span>],\n\
+          \    args=transformers.TrainingArguments(\n        per_device_train_batch_size=<span\
+          \ class=\"hljs-number\">1</span>,\n        gradient_accumulation_steps=<span\
+          \ class=\"hljs-number\">4</span>,\n        warmup_steps=<span class=\"hljs-number\"\
+          >2</span>,\n        max_steps=<span class=\"hljs-number\">3</span>,\n  \
+          \      learning_rate=<span class=\"hljs-number\">2e-2</span>,\n        fp16=<span\
+          \ class=\"hljs-literal\">True</span>,\n        logging_steps=<span class=\"\
+          hljs-number\">1</span>,\n        output_dir=<span class=\"hljs-string\"\
+          >\"outputs\"</span>,\n        optim=<span class=\"hljs-string\">\"paged_adamw_8bit\"\
+          </span>,\n        evaluation_strategy=<span class=\"hljs-string\">'steps'</span>,\n\
+          \        eval_steps=<span class=\"hljs-number\">1</span>\n    ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=<span class=\"hljs-literal\">False</span>),\n)\nmodel.config.use_cache\
+          \ = <span class=\"hljs-literal\">False</span>\ntrainer.train()\n</code></pre>\n"
+        raw: "@TheBloke Sure, please see below:\n\n```python\n# run with\n# python\
+          \ simple_autogptq.py ./text-generation-webui/models/TheBloke_guanaco-33B-GPTQ/\
+          \ --model_basename Guanaco-33B-GPTQ-4bit.act-order --use_safetensors --use_triton\n\
+          \nimport os\nimport argparse\nfrom peft import prepare_model_for_kbit_training,\
+          \ TaskType\nfrom datasets import load_dataset\nimport transformers\nfrom\
+          \ transformers import AutoTokenizer\nfrom auto_gptq import AutoGPTQForCausalLM,\
+          \ get_gptq_peft_model, BaseQuantizeConfig\nfrom auto_gptq.utils.peft_utils\
+          \ import GPTQLoraConfig\n\nparser = argparse.ArgumentParser(description='Simple\
+          \ AutoGPTQ example')\nparser.add_argument('model_name_or_path', type=str,\
+          \ help='Model folder or repo')\nparser.add_argument('--model_basename',\
+          \ type=str, help='Model file basename if model is not named gptq_model-Xb-Ygr')\n\
+          parser.add_argument('--use_slow', action=\"store_true\", help='Use slow\
+          \ tokenizer')\nparser.add_argument('--use_safetensors', action=\"store_true\"\
+          , help='Model file basename if model is not named gptq_model-Xb-Ygr')\n\
+          parser.add_argument('--use_triton', action=\"store_true\", help='Use Triton\
+          \ for inference?')\nparser.add_argument('--bits', type=int, default=4, help='Specify\
+          \ GPTQ bits. Only needed if no quantize_config.json is provided')\nparser.add_argument('--group_size',\
+          \ type=int, default=128, help='Specify GPTQ group_size. Only needed if no\
+          \ quantize_config.json is provided')\nparser.add_argument('--desc_act',\
+          \ action=\"store_true\", help='Specify GPTQ desc_act. Only needed if no\
+          \ quantize_config.json is provided')\nargs = parser.parse_args()\n\nos.environ[\"\
+          TOKENIZERS_PARALLELISM\"] = \"false\"\n\nmodel_name_or_path = args.model_name_or_path\n\
+          model_basename = args.model_basename\ntokenizer_name_or_path = model_name_or_path\n\
+          \npeft_config = GPTQLoraConfig(\n    r=16,\n    lora_alpha=32,\n    lora_dropout=0.1,\n\
+          \    task_type=TaskType.CAUSAL_LM,\n    inference_mode=False,\n)\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name_or_path,\n                \
+          \                          use_fast=not args.use_slow,\n               \
+          \                           unk_token=\"<unk>\",\n                     \
+          \                     bos_token=\"<s>\",\n                             \
+          \             eos_token=\"</s>\")\nif not tokenizer.pad_token_id:\n    tokenizer.pad_token_id\
+          \ = tokenizer.eos_token_id\n\nquantize_config = BaseQuantizeConfig.from_pretrained(model_name_or_path)\n\
+          model = AutoGPTQForCausalLM.from_quantized(\n    model_name_or_path,\n \
+          \   model_basename=model_basename,\n    use_safetensors=args.use_safetensors,\n\
+          \    use_triton=args.use_triton,\n    device=\"cuda:0\",\n    trainable=True,\n\
+          \    inject_fused_attention=True,\n    inject_fused_mlp=False,\n    quantize_config=quantize_config\n\
+          )\nmodel.gradient_checkpointing_enable()\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_gptq_peft_model(model, peft_config=peft_config, auto_find_all_linears=True,\
+          \ train_mode=True)\nmodel.print_trainable_parameters()\n\ndata = load_dataset(\"\
+          Abirate/english_quotes\")\ndata = data.map(lambda samples: tokenizer(samples[\"\
+          quote\"]), batched=True)\ndata = data['train'].train_test_split(train_size=0.9,\
+          \ test_size=0.1)\n\ntokenizer.pad_token = tokenizer.eos_token\ntrainer =\
+          \ transformers.Trainer(\n    model=model,\n    train_dataset=data[\"train\"\
+          ],\n    eval_dataset=data['test'],\n    args=transformers.TrainingArguments(\n\
+          \        per_device_train_batch_size=1,\n        gradient_accumulation_steps=4,\n\
+          \        warmup_steps=2,\n        max_steps=3,\n        learning_rate=2e-2,\n\
+          \        fp16=True,\n        logging_steps=1,\n        output_dir=\"outputs\"\
+          ,\n        optim=\"paged_adamw_8bit\",\n        evaluation_strategy='steps',\n\
+          \        eval_steps=1\n    ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\n)\nmodel.config.use_cache = False\ntrainer.train()\n```"
+        updatedAt: '2023-06-20T15:44:51.524Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\u2764\uFE0F"
+        users:
+        - TheBloke
+        - ibibek
+        - Ichsan2895
+        - kentlam
+      - count: 4
+        reaction: "\U0001F44D"
+        users:
+        - nacs
+        - ibibek
+        - kentlam
+        - webpolis
+    id: 6491c9730cad847e98681f9f
+    type: comment
+  author: clause-crahm
+  content: "@TheBloke Sure, please see below:\n\n```python\n# run with\n# python simple_autogptq.py\
+    \ ./text-generation-webui/models/TheBloke_guanaco-33B-GPTQ/ --model_basename Guanaco-33B-GPTQ-4bit.act-order\
+    \ --use_safetensors --use_triton\n\nimport os\nimport argparse\nfrom peft import\
+    \ prepare_model_for_kbit_training, TaskType\nfrom datasets import load_dataset\n\
+    import transformers\nfrom transformers import AutoTokenizer\nfrom auto_gptq import\
+    \ AutoGPTQForCausalLM, get_gptq_peft_model, BaseQuantizeConfig\nfrom auto_gptq.utils.peft_utils\
+    \ import GPTQLoraConfig\n\nparser = argparse.ArgumentParser(description='Simple\
+    \ AutoGPTQ example')\nparser.add_argument('model_name_or_path', type=str, help='Model\
+    \ folder or repo')\nparser.add_argument('--model_basename', type=str, help='Model\
+    \ file basename if model is not named gptq_model-Xb-Ygr')\nparser.add_argument('--use_slow',\
+    \ action=\"store_true\", help='Use slow tokenizer')\nparser.add_argument('--use_safetensors',\
+    \ action=\"store_true\", help='Model file basename if model is not named gptq_model-Xb-Ygr')\n\
+    parser.add_argument('--use_triton', action=\"store_true\", help='Use Triton for\
+    \ inference?')\nparser.add_argument('--bits', type=int, default=4, help='Specify\
+    \ GPTQ bits. Only needed if no quantize_config.json is provided')\nparser.add_argument('--group_size',\
+    \ type=int, default=128, help='Specify GPTQ group_size. Only needed if no quantize_config.json\
+    \ is provided')\nparser.add_argument('--desc_act', action=\"store_true\", help='Specify\
+    \ GPTQ desc_act. Only needed if no quantize_config.json is provided')\nargs =\
+    \ parser.parse_args()\n\nos.environ[\"TOKENIZERS_PARALLELISM\"] = \"false\"\n\n\
+    model_name_or_path = args.model_name_or_path\nmodel_basename = args.model_basename\n\
+    tokenizer_name_or_path = model_name_or_path\n\npeft_config = GPTQLoraConfig(\n\
+    \    r=16,\n    lora_alpha=32,\n    lora_dropout=0.1,\n    task_type=TaskType.CAUSAL_LM,\n\
+    \    inference_mode=False,\n)\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\n\
+    \                                          use_fast=not args.use_slow,\n     \
+    \                                     unk_token=\"<unk>\",\n                 \
+    \                         bos_token=\"<s>\",\n                               \
+    \           eos_token=\"</s>\")\nif not tokenizer.pad_token_id:\n    tokenizer.pad_token_id\
+    \ = tokenizer.eos_token_id\n\nquantize_config = BaseQuantizeConfig.from_pretrained(model_name_or_path)\n\
+    model = AutoGPTQForCausalLM.from_quantized(\n    model_name_or_path,\n    model_basename=model_basename,\n\
+    \    use_safetensors=args.use_safetensors,\n    use_triton=args.use_triton,\n\
+    \    device=\"cuda:0\",\n    trainable=True,\n    inject_fused_attention=True,\n\
+    \    inject_fused_mlp=False,\n    quantize_config=quantize_config\n)\nmodel.gradient_checkpointing_enable()\n\
+    model = prepare_model_for_kbit_training(model)\nmodel = get_gptq_peft_model(model,\
+    \ peft_config=peft_config, auto_find_all_linears=True, train_mode=True)\nmodel.print_trainable_parameters()\n\
+    \ndata = load_dataset(\"Abirate/english_quotes\")\ndata = data.map(lambda samples:\
+    \ tokenizer(samples[\"quote\"]), batched=True)\ndata = data['train'].train_test_split(train_size=0.9,\
+    \ test_size=0.1)\n\ntokenizer.pad_token = tokenizer.eos_token\ntrainer = transformers.Trainer(\n\
+    \    model=model,\n    train_dataset=data[\"train\"],\n    eval_dataset=data['test'],\n\
+    \    args=transformers.TrainingArguments(\n        per_device_train_batch_size=1,\n\
+    \        gradient_accumulation_steps=4,\n        warmup_steps=2,\n        max_steps=3,\n\
+    \        learning_rate=2e-2,\n        fp16=True,\n        logging_steps=1,\n \
+    \       output_dir=\"outputs\",\n        optim=\"paged_adamw_8bit\",\n       \
+    \ evaluation_strategy='steps',\n        eval_steps=1\n    ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+    \ mlm=False),\n)\nmodel.config.use_cache = False\ntrainer.train()\n```"
+  created_at: 2023-06-20 14:44:51+00:00
+  edited: false
+  hidden: false
+  id: 6491c9730cad847e98681f9f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-06-20T15:49:10.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46368739008903503
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Thank you!</p>
+
+          '
+        raw: Thank you!
+        updatedAt: '2023-06-20T15:49:10.149Z'
+      numEdits: 0
+      reactions: []
+    id: 6491ca76cec0adef45efffcb
+    type: comment
+  author: TheBloke
+  content: Thank you!
+  created_at: 2023-06-20 14:49:10+00:00
+  edited: false
+  hidden: false
+  id: 6491ca76cec0adef45efffcb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/5ee7e463464d0272c8b2459f/lqdVb0HBfDqli7GI-fTVB.png?w=200&h=200&f=face
+      fullname: Bibek
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ibibek
+      type: user
+    createdAt: '2023-06-26T20:28:55.000Z'
+    data:
+      edited: false
+      editors:
+      - ibibek
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.948538064956665
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/5ee7e463464d0272c8b2459f/lqdVb0HBfDqli7GI-fTVB.png?w=200&h=200&f=face
+          fullname: Bibek
+          isHf: false
+          isPro: false
+          name: ibibek
+          type: user
+        html: "<p>Thank you <span data-props=\"{&quot;user&quot;:&quot;clause-crahm&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/clause-crahm\"\
+          >@<span class=\"underline\">clause-crahm</span></a></span>\n\n\t</span></span>,\
+          \ if its possible can you please share the full code in your GitHub (and\
+          \ its link)? I understand if you don't want to share.  </p>\n"
+        raw: 'Thank you @clause-crahm, if its possible can you please share the full
+          code in your GitHub (and its link)? I understand if you don''t want to share.  '
+        updatedAt: '2023-06-26T20:28:55.358Z'
+      numEdits: 0
+      reactions: []
+    id: 6499f50748bf56b95e519cf4
+    type: comment
+  author: ibibek
+  content: 'Thank you @clause-crahm, if its possible can you please share the full
+    code in your GitHub (and its link)? I understand if you don''t want to share.  '
+  created_at: 2023-06-26 19:28:55+00:00
+  edited: false
+  hidden: false
+  id: 6499f50748bf56b95e519cf4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+      fullname: Christoph Rahmede
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: clause-crahm
+      type: user
+    createdAt: '2023-06-28T08:38:38.000Z'
+    data:
+      edited: false
+      editors:
+      - clause-crahm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9788323044776917
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60bedd426d09b7a9b9882e3d3914cf2f.svg
+          fullname: Christoph Rahmede
+          isHf: false
+          isPro: false
+          name: clause-crahm
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;ibibek&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ibibek\">@<span class=\"\
+          underline\">ibibek</span></a></span>\n\n\t</span></span>, the code above\
+          \ is really all there is to it. Just make sure to have up-to-date versions\
+          \ of the packages.</p>\n"
+        raw: Hi @ibibek, the code above is really all there is to it. Just make sure
+          to have up-to-date versions of the packages.
+        updatedAt: '2023-06-28T08:38:38.237Z'
+      numEdits: 0
+      reactions: []
+    id: 649bf18e3178e41236657df4
+    type: comment
+  author: clause-crahm
+  content: Hi @ibibek, the code above is really all there is to it. Just make sure
+    to have up-to-date versions of the packages.
+  created_at: 2023-06-28 07:38:38+00:00
+  edited: false
+  hidden: false
+  id: 649bf18e3178e41236657df4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e4815e878868cfd7974e24ab69f8618a.svg
+      fullname: Adebayo Oshingbesan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dehbaiyor
+      type: user
+    createdAt: '2023-07-05T12:04:34.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/e4815e878868cfd7974e24ab69f8618a.svg
+          fullname: Adebayo Oshingbesan
+          isHf: false
+          isPro: false
+          name: dehbaiyor
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-07-05T12:10:12.838Z'
+      numEdits: 1
+      reactions: []
+    id: 64a55c5212a92423d44ea1f5
+    type: comment
+  author: dehbaiyor
+  content: This comment has been hidden
+  created_at: 2023-07-05 11:04:34+00:00
+  edited: true
+  hidden: true
+  id: 64a55c5212a92423d44ea1f5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8a0e4213e5c88e7f12342e0e212925e7.svg
+      fullname: xinghua dong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dong0213
+      type: user
+    createdAt: '2023-07-22T07:51:18.000Z'
+    data:
+      edited: true
+      editors:
+      - dong0213
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46021580696105957
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8a0e4213e5c88e7f12342e0e212925e7.svg
+          fullname: xinghua dong
+          isHf: false
+          isPro: false
+          name: dong0213
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;clause-crahm&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/clause-crahm\"\
+          >@<span class=\"underline\">clause-crahm</span></a></span>\n\n\t</span></span>\
+          \ and <span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/TheBloke\">@<span class=\"\
+          underline\">TheBloke</span></a></span>\n\n\t</span></span> ,   I fintuning\
+          \ the model using the source you provided above with \"Abirate/english_quotes\
+          \ \" dataset,    the loss seems  problematical, when  inference with adapter,\
+          \ the results  are  wrong , It seems the adapter does not work  and the\
+          \ adapter 's  parameters are not trained at all.</p>\n<p>CUDA_VISIBLE_DEVICES=1\
+          \ python guanaco_finetuning.py<br>[2023-07-23 20:48:23,070] [INFO] [real_accelerator.py:110:get_accelerator]\
+          \ Setting ds_accelerator to cuda (auto detect)<br>The model weights are\
+          \ not tied. Please use the <code>tie_weights</code> method before using\
+          \ the <code>infer_auto_device</code> function.<br>The safetensors archive\
+          \ passed at guanaco-33B-GPTQ/guanaco-33b-GPTQ-4bit--1g.act.order.safetensors\
+          \ does not contain metadata. Make sure to save your model with the <code>save_pretrained</code>\
+          \ method. Defaulting to 'pt' metadata.<br>trainable params: 109,117,440\
+          \ || all params: 4,552,823,296 || trainable%: 2.396698332128724</p>\n<p>\
+          \  0%|                                                                 \
+          \                                                                      \
+          \                                       | 0/3000 [00:00&lt;?, ?it/s]You're\
+          \ using a LlamaTokenizerFast tokenizer. Please note that with a fast tokenizer,\
+          \ using the <code>__call__</code> method is faster than using a method to\
+          \ encode the text followed by a call to the <code>pad</code> method to get\
+          \ a padded encoding.<br>{'loss': 0.7326, 'learning_rate': 0.01, 'epoch':\
+          \ 0.0}<br>{'loss': 0.2599, 'learning_rate': 0.02, 'epoch': 0.0}<br>{'loss':\
+          \ 1.123, 'learning_rate': 0.01999332888592395, 'epoch': 0.0}<br>{'loss':\
+          \ 9.3881, 'learning_rate': 0.0199866577718479, 'epoch': 0.0}<br>{'loss':\
+          \ 16.0878, 'learning_rate': 0.01997998665777185, 'epoch': 0.0}<br>{'loss':\
+          \ 0.0, 'learning_rate': 0.0199733155436958, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019966644429619748, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019959973315543694, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019953302201467644, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019946631087391597, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019939959973315543, 'epoch': 0.0}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019933288859239492, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019926617745163442, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01991994663108739, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01991327551701134, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01990660440293529, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01989993328885924, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01989326217478319, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01988659106070714, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01987991994663109, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01987324883255504, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019866577718478988, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019859906604402934, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019853235490326884, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019846564376250837, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019839893262174783, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019833222148098732, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019826551034022682, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01981987991994663, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01981320880587058, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01980653769179453, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01979986657771848, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01979319546364243, 'epoch': 0.01}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019786524349566376, 'epoch': 0.02}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.01977985323549033, 'epoch': 0.02}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019773182121414278, 'epoch': 0.02}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019766511007338224, 'epoch': 0.02}<br>{'loss': 0.0,\
+          \ 'learning_rate': 0.019759839893262174, 'epoch': 0.02}</p>\n"
+        raw: "@clause-crahm and @TheBloke ,   I fintuning the model using the source\
+          \ you provided above with \"Abirate/english_quotes \" dataset,    the loss\
+          \ seems  problematical, when  inference with adapter, the results  are \
+          \ wrong , It seems the adapter does not work  and the adapter 's  parameters\
+          \ are not trained at all.\n\nCUDA_VISIBLE_DEVICES=1 python guanaco_finetuning.py\
+          \ \n[2023-07-23 20:48:23,070] [INFO] [real_accelerator.py:110:get_accelerator]\
+          \ Setting ds_accelerator to cuda (auto detect)\nThe model weights are not\
+          \ tied. Please use the `tie_weights` method before using the `infer_auto_device`\
+          \ function.\nThe safetensors archive passed at guanaco-33B-GPTQ/guanaco-33b-GPTQ-4bit--1g.act.order.safetensors\
+          \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+          \ method. Defaulting to 'pt' metadata.\ntrainable params: 109,117,440 ||\
+          \ all params: 4,552,823,296 || trainable%: 2.396698332128724\n\n  0%|  \
+          \                                                                      \
+          \                                                                      \
+          \                                | 0/3000 [00:00<?, ?it/s]You're using a\
+          \ LlamaTokenizerFast tokenizer. Please note that with a fast tokenizer,\
+          \ using the `__call__` method is faster than using a method to encode the\
+          \ text followed by a call to the `pad` method to get a padded encoding.\n\
+          {'loss': 0.7326, 'learning_rate': 0.01, 'epoch': 0.0}                  \
+          \                                                                      \
+          \                                                               \n{'loss':\
+          \ 0.2599, 'learning_rate': 0.02, 'epoch': 0.0}                         \
+          \                                                                      \
+          \                                                        \n{'loss': 1.123,\
+          \ 'learning_rate': 0.01999332888592395, 'epoch': 0.0}                  \
+          \                                                                      \
+          \                                                 \n{'loss': 9.3881, 'learning_rate':\
+          \ 0.0199866577718479, 'epoch': 0.0}                                    \
+          \                                                                      \
+          \                               \n{'loss': 16.0878, 'learning_rate': 0.01997998665777185,\
+          \ 'epoch': 0.0}                                                        \
+          \                                                                      \
+          \         \n{'loss': 0.0, 'learning_rate': 0.0199733155436958, 'epoch':\
+          \ 0.0}                                                                 \
+          \                                                                      \
+          \     \n{'loss': 0.0, 'learning_rate': 0.019966644429619748, 'epoch': 0.0}\
+          \                                                                      \
+          \                                                                    \n\
+          {'loss': 0.0, 'learning_rate': 0.019959973315543694, 'epoch': 0.0}     \
+          \                                                                      \
+          \                                                               \n{'loss':\
+          \ 0.0, 'learning_rate': 0.019953302201467644, 'epoch': 0.0}            \
+          \                                                                      \
+          \                                                        \n{'loss': 0.0,\
+          \ 'learning_rate': 0.019946631087391597, 'epoch': 0.0}                 \
+          \                                                                      \
+          \                                                   \n{'loss': 0.0, 'learning_rate':\
+          \ 0.019939959973315543, 'epoch': 0.0}                                  \
+          \                                                                      \
+          \                                  \n{'loss': 0.0, 'learning_rate': 0.019933288859239492,\
+          \ 'epoch': 0.01}                                                       \
+          \                                                                      \
+          \            \n{'loss': 0.0, 'learning_rate': 0.019926617745163442, 'epoch':\
+          \ 0.01}                                                                \
+          \                                                                      \
+          \   \n{'loss': 0.0, 'learning_rate': 0.01991994663108739, 'epoch': 0.01}\
+          \                                                                      \
+          \                                                                    \n\
+          {'loss': 0.0, 'learning_rate': 0.01991327551701134, 'epoch': 0.01}     \
+          \                                                                      \
+          \                                                               \n{'loss':\
+          \ 0.0, 'learning_rate': 0.01990660440293529, 'epoch': 0.01}            \
+          \                                                                      \
+          \                                                        \n{'loss': 0.0,\
+          \ 'learning_rate': 0.01989993328885924, 'epoch': 0.01}                 \
+          \                                                                      \
+          \                                                   \n{'loss': 0.0, 'learning_rate':\
+          \ 0.01989326217478319, 'epoch': 0.01}                                  \
+          \                                                                      \
+          \                                  \n{'loss': 0.0, 'learning_rate': 0.01988659106070714,\
+          \ 'epoch': 0.01}                                                       \
+          \                                                                      \
+          \             \n{'loss': 0.0, 'learning_rate': 0.01987991994663109, 'epoch':\
+          \ 0.01}                                                                \
+          \                                                                      \
+          \    \n{'loss': 0.0, 'learning_rate': 0.01987324883255504, 'epoch': 0.01}\
+          \                                                                      \
+          \                                                                    \n\
+          {'loss': 0.0, 'learning_rate': 0.019866577718478988, 'epoch': 0.01}    \
+          \                                                                      \
+          \                                                               \n{'loss':\
+          \ 0.0, 'learning_rate': 0.019859906604402934, 'epoch': 0.01}           \
+          \                                                                      \
+          \                                                        \n{'loss': 0.0,\
+          \ 'learning_rate': 0.019853235490326884, 'epoch': 0.01}                \
+          \                                                                      \
+          \                                                   \n{'loss': 0.0, 'learning_rate':\
+          \ 0.019846564376250837, 'epoch': 0.01}                                 \
+          \                                                                      \
+          \                                  \n{'loss': 0.0, 'learning_rate': 0.019839893262174783,\
+          \ 'epoch': 0.01}                                                       \
+          \                                                                      \
+          \            \n{'loss': 0.0, 'learning_rate': 0.019833222148098732, 'epoch':\
+          \ 0.01}                                                                \
+          \                                                                      \
+          \   \n{'loss': 0.0, 'learning_rate': 0.019826551034022682, 'epoch': 0.01}\
+          \                                                                      \
+          \                                                                   \n{'loss':\
+          \ 0.0, 'learning_rate': 0.01981987991994663, 'epoch': 0.01}            \
+          \                                                                      \
+          \                                                        \n{'loss': 0.0,\
+          \ 'learning_rate': 0.01981320880587058, 'epoch': 0.01}                 \
+          \                                                                      \
+          \                                                   \n{'loss': 0.0, 'learning_rate':\
+          \ 0.01980653769179453, 'epoch': 0.01}                                  \
+          \                                                                      \
+          \                                  \n{'loss': 0.0, 'learning_rate': 0.01979986657771848,\
+          \ 'epoch': 0.01}                                                       \
+          \                                                                      \
+          \             \n{'loss': 0.0, 'learning_rate': 0.01979319546364243, 'epoch':\
+          \ 0.01}                                                                \
+          \                                                                      \
+          \    \n{'loss': 0.0, 'learning_rate': 0.019786524349566376, 'epoch': 0.02}\
+          \                                                                      \
+          \                                                                   \n{'loss':\
+          \ 0.0, 'learning_rate': 0.01977985323549033, 'epoch': 0.02}            \
+          \                                                                      \
+          \                                                        \n{'loss': 0.0,\
+          \ 'learning_rate': 0.019773182121414278, 'epoch': 0.02}                \
+          \                                                                      \
+          \                                                   \n{'loss': 0.0, 'learning_rate':\
+          \ 0.019766511007338224, 'epoch': 0.02}                                 \
+          \                                                                      \
+          \                                  \n{'loss': 0.0, 'learning_rate': 0.019759839893262174,\
+          \ 'epoch': 0.02}\n\n"
+        updatedAt: '2023-07-23T13:32:26.234Z'
+      numEdits: 2
+      reactions: []
+    id: 64bb8a762e66dc7b8b94b641
+    type: comment
+  author: dong0213
+  content: "@clause-crahm and @TheBloke ,   I fintuning the model using the source\
+    \ you provided above with \"Abirate/english_quotes \" dataset,    the loss seems\
+    \  problematical, when  inference with adapter, the results  are  wrong , It seems\
+    \ the adapter does not work  and the adapter 's  parameters are not trained at\
+    \ all.\n\nCUDA_VISIBLE_DEVICES=1 python guanaco_finetuning.py \n[2023-07-23 20:48:23,070]\
+    \ [INFO] [real_accelerator.py:110:get_accelerator] Setting ds_accelerator to cuda\
+    \ (auto detect)\nThe model weights are not tied. Please use the `tie_weights`\
+    \ method before using the `infer_auto_device` function.\nThe safetensors archive\
+    \ passed at guanaco-33B-GPTQ/guanaco-33b-GPTQ-4bit--1g.act.order.safetensors does\
+    \ not contain metadata. Make sure to save your model with the `save_pretrained`\
+    \ method. Defaulting to 'pt' metadata.\ntrainable params: 109,117,440 || all params:\
+    \ 4,552,823,296 || trainable%: 2.396698332128724\n\n  0%|                    \
+    \                                                                            \
+    \                                                                            \
+    \  | 0/3000 [00:00<?, ?it/s]You're using a LlamaTokenizerFast tokenizer. Please\
+    \ note that with a fast tokenizer, using the `__call__` method is faster than\
+    \ using a method to encode the text followed by a call to the `pad` method to\
+    \ get a padded encoding.\n{'loss': 0.7326, 'learning_rate': 0.01, 'epoch': 0.0}\
+    \                                                                            \
+    \                                                                           \n\
+    {'loss': 0.2599, 'learning_rate': 0.02, 'epoch': 0.0}                        \
+    \                                                                            \
+    \                                                   \n{'loss': 1.123, 'learning_rate':\
+    \ 0.01999332888592395, 'epoch': 0.0}                                         \
+    \                                                                            \
+    \                    \n{'loss': 9.3881, 'learning_rate': 0.0199866577718479, 'epoch':\
+    \ 0.0}                                                                       \
+    \                                                                  \n{'loss':\
+    \ 16.0878, 'learning_rate': 0.01997998665777185, 'epoch': 0.0}               \
+    \                                                                            \
+    \                                            \n{'loss': 0.0, 'learning_rate':\
+    \ 0.0199733155436958, 'epoch': 0.0}                                          \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019966644429619748,\
+    \ 'epoch': 0.0}                                                              \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.019959973315543694, 'epoch': 0.0}           \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.019953302201467644, 'epoch': 0.0}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019946631087391597,\
+    \ 'epoch': 0.0}                                                              \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.019939959973315543, 'epoch': 0.0}           \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.019933288859239492, 'epoch': 0.01}                                       \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019926617745163442,\
+    \ 'epoch': 0.01}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.01991994663108739, 'epoch': 0.01}           \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.01991327551701134, 'epoch': 0.01}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.01990660440293529, 'epoch':\
+    \ 0.01}                                                                      \
+    \                                                                    \n{'loss':\
+    \ 0.0, 'learning_rate': 0.01989993328885924, 'epoch': 0.01}                  \
+    \                                                                            \
+    \                                            \n{'loss': 0.0, 'learning_rate':\
+    \ 0.01989326217478319, 'epoch': 0.01}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.01988659106070714, 'epoch':\
+    \ 0.01}                                                                      \
+    \                                                                    \n{'loss':\
+    \ 0.0, 'learning_rate': 0.01987991994663109, 'epoch': 0.01}                  \
+    \                                                                            \
+    \                                            \n{'loss': 0.0, 'learning_rate':\
+    \ 0.01987324883255504, 'epoch': 0.01}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019866577718478988,\
+    \ 'epoch': 0.01}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.019859906604402934, 'epoch': 0.01}          \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.019853235490326884, 'epoch': 0.01}                                       \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019846564376250837,\
+    \ 'epoch': 0.01}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.019839893262174783, 'epoch': 0.01}          \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.019833222148098732, 'epoch': 0.01}                                       \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019826551034022682,\
+    \ 'epoch': 0.01}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.01981987991994663, 'epoch': 0.01}           \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.01981320880587058, 'epoch': 0.01}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.01980653769179453, 'epoch':\
+    \ 0.01}                                                                      \
+    \                                                                    \n{'loss':\
+    \ 0.0, 'learning_rate': 0.01979986657771848, 'epoch': 0.01}                  \
+    \                                                                            \
+    \                                            \n{'loss': 0.0, 'learning_rate':\
+    \ 0.01979319546364243, 'epoch': 0.01}                                        \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019786524349566376,\
+    \ 'epoch': 0.02}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.01977985323549033, 'epoch': 0.02}           \
+    \                                                                            \
+    \                                                   \n{'loss': 0.0, 'learning_rate':\
+    \ 0.019773182121414278, 'epoch': 0.02}                                       \
+    \                                                                            \
+    \                      \n{'loss': 0.0, 'learning_rate': 0.019766511007338224,\
+    \ 'epoch': 0.02}                                                             \
+    \                                                                            \n\
+    {'loss': 0.0, 'learning_rate': 0.019759839893262174, 'epoch': 0.02}\n\n"
+  created_at: 2023-07-22 06:51:18+00:00
+  edited: true
+  hidden: false
+  id: 64bb8a762e66dc7b8b94b641
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8a0e4213e5c88e7f12342e0e212925e7.svg
+      fullname: xinghua dong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dong0213
+      type: user
+    createdAt: '2023-07-24T15:17:49.000Z'
+    data:
+      edited: false
+      editors:
+      - dong0213
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4604257643222809
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8a0e4213e5c88e7f12342e0e212925e7.svg
+          fullname: xinghua dong
+          isHf: false
+          isPro: false
+          name: dong0213
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;clause-crahm&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/clause-crahm\"\
+          >@<span class=\"underline\">clause-crahm</span></a></span>\n\n\t</span></span>\
+          \ and <span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/TheBloke\">@<span class=\"\
+          underline\">TheBloke</span></a></span>\n\n\t</span></span>  the   inference\
+          \ with adapter, but the results may be wrong , It seems the adapter does\
+          \ not work and the adapter 's parameters are not trained at all.  Could\
+          \ you help me to check it ?</p>\n<p>import sys<br>from transformers import\
+          \ AutoTokenizer, pipeline, logging<br>from peft import PeftModel, prepare_model_for_kbit_training,\
+          \ TaskType<br>from auto_gptq import AutoGPTQForCausalLM,get_gptq_peft_model,\
+          \ BaseQuantizeConfig<br>from auto_gptq.utils.peft_utils import GPTQLoraConfig</p>\n\
+          <p>model_name_or_path = \"guanaco-33B-GPTQ\"<br>quantized_model_path=\"\
+          guanaco-33B-GPTQ\"<br>model_basename = \"guanaco-33b-GPTQ-4bit--1g.act.order\"\
+          <br>checkpoint_path='guanaco-33B-GPTQ/gptq_LORA_adapter'</p>\n<p>peft_config\
+          \ = GPTQLoraConfig(<br>    r=16,<br>    lora_alpha=32,<br>    lora_dropout=0.1,<br>\
+          \    task_type=TaskType.CAUSAL_LM,<br>    inference_mode=True,<br>)</p>\n\
+          <p>tokenizer = AutoTokenizer.from_pretrained(model_name_or_path,use_fast=True)<br>if\
+          \ not tokenizer.pad_token_id:<br>    tokenizer.pad_token_id = tokenizer.eos_token_id<br>quantize_config\
+          \ = BaseQuantizeConfig.from_pretrained(model_name_or_path)<br>model = AutoGPTQForCausalLM.from_quantized(<br>\
+          \    model_name_or_path,<br>    model_basename=model_basename,<br>    use_safetensors=True,<br>\
+          \    use_triton=False,<br>    device=\"cuda:0\",<br>    trainable=False,<br>\
+          \    inject_fused_attention=True,<br>    inject_fused_mlp=False,<br>   \
+          \ quantize_config=quantize_config<br>)</p>\n<p>model.gradient_checkpointing_enable()<br>model\
+          \ = get_gptq_peft_model(model, peft_config=peft_config,model_id=checkpoint_path,\
+          \  auto_find_all_linears=True, train_mode=False)<br>model=PeftModel.from_pretrained(model,\
+          \ model_id=checkpoint_path,dapter_name=\"adapter_model.bin\",is_trainable=False)<br>prompt\
+          \ = \"How can we reduce air pollution?\"<br>input_ids = tokenizer(prompt,\
+          \ return_tensors='pt').input_ids.cuda()<br>output = model.generate(inputs=input_ids,\
+          \ temperature=1, max_new_tokens=512)\n                                 \
+          \                                                  </p>\n"
+        raw: "@clause-crahm and @TheBloke  the   inference with adapter, but the results\
+          \ may be wrong , It seems the adapter does not work and the adapter 's parameters\
+          \ are not trained at all.  Could you help me to check it ?\n\n\n\n\nimport\
+          \ sys\nfrom transformers import AutoTokenizer, pipeline, logging\nfrom peft\
+          \ import PeftModel, prepare_model_for_kbit_training, TaskType\nfrom auto_gptq\
+          \ import AutoGPTQForCausalLM,get_gptq_peft_model, BaseQuantizeConfig\nfrom\
+          \ auto_gptq.utils.peft_utils import GPTQLoraConfig\n\nmodel_name_or_path\
+          \ = \"guanaco-33B-GPTQ\"\nquantized_model_path=\"guanaco-33B-GPTQ\"\nmodel_basename\
+          \ = \"guanaco-33b-GPTQ-4bit--1g.act.order\"\ncheckpoint_path='guanaco-33B-GPTQ/gptq_LORA_adapter'\n\
+          \npeft_config = GPTQLoraConfig(\n    r=16,\n    lora_alpha=32,\n    lora_dropout=0.1,\n\
+          \    task_type=TaskType.CAUSAL_LM,\n    inference_mode=True,\n)\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name_or_path,use_fast=True)\nif\
+          \ not tokenizer.pad_token_id:\n    tokenizer.pad_token_id = tokenizer.eos_token_id\n\
+          quantize_config = BaseQuantizeConfig.from_pretrained(model_name_or_path)\n\
+          model = AutoGPTQForCausalLM.from_quantized(\n    model_name_or_path,\n \
+          \   model_basename=model_basename,\n    use_safetensors=True,\n    use_triton=False,\n\
+          \    device=\"cuda:0\",\n    trainable=False,\n    inject_fused_attention=True,\n\
+          \    inject_fused_mlp=False,\n    quantize_config=quantize_config\n)\n\n\
+          \nmodel.gradient_checkpointing_enable()\nmodel = get_gptq_peft_model(model,\
+          \ peft_config=peft_config,model_id=checkpoint_path,  auto_find_all_linears=True,\
+          \ train_mode=False)\nmodel=PeftModel.from_pretrained(model, model_id=checkpoint_path,dapter_name=\"\
+          adapter_model.bin\",is_trainable=False)\nprompt = \"How can we reduce air\
+          \ pollution?\"\ninput_ids = tokenizer(prompt, return_tensors='pt').input_ids.cuda()\n\
+          output = model.generate(inputs=input_ids, temperature=1, max_new_tokens=512)\n\
+          \                                                                      \
+          \             "
+        updatedAt: '2023-07-24T15:17:49.313Z'
+      numEdits: 0
+      reactions: []
+    id: 64be961def8c0e42bf4de7c2
+    type: comment
+  author: dong0213
+  content: "@clause-crahm and @TheBloke  the   inference with adapter, but the results\
+    \ may be wrong , It seems the adapter does not work and the adapter 's parameters\
+    \ are not trained at all.  Could you help me to check it ?\n\n\n\n\nimport sys\n\
+    from transformers import AutoTokenizer, pipeline, logging\nfrom peft import PeftModel,\
+    \ prepare_model_for_kbit_training, TaskType\nfrom auto_gptq import AutoGPTQForCausalLM,get_gptq_peft_model,\
+    \ BaseQuantizeConfig\nfrom auto_gptq.utils.peft_utils import GPTQLoraConfig\n\n\
+    model_name_or_path = \"guanaco-33B-GPTQ\"\nquantized_model_path=\"guanaco-33B-GPTQ\"\
+    \nmodel_basename = \"guanaco-33b-GPTQ-4bit--1g.act.order\"\ncheckpoint_path='guanaco-33B-GPTQ/gptq_LORA_adapter'\n\
+    \npeft_config = GPTQLoraConfig(\n    r=16,\n    lora_alpha=32,\n    lora_dropout=0.1,\n\
+    \    task_type=TaskType.CAUSAL_LM,\n    inference_mode=True,\n)\n\ntokenizer =\
+    \ AutoTokenizer.from_pretrained(model_name_or_path,use_fast=True)\nif not tokenizer.pad_token_id:\n\
+    \    tokenizer.pad_token_id = tokenizer.eos_token_id\nquantize_config = BaseQuantizeConfig.from_pretrained(model_name_or_path)\n\
+    model = AutoGPTQForCausalLM.from_quantized(\n    model_name_or_path,\n    model_basename=model_basename,\n\
+    \    use_safetensors=True,\n    use_triton=False,\n    device=\"cuda:0\",\n  \
+    \  trainable=False,\n    inject_fused_attention=True,\n    inject_fused_mlp=False,\n\
+    \    quantize_config=quantize_config\n)\n\n\nmodel.gradient_checkpointing_enable()\n\
+    model = get_gptq_peft_model(model, peft_config=peft_config,model_id=checkpoint_path,\
+    \  auto_find_all_linears=True, train_mode=False)\nmodel=PeftModel.from_pretrained(model,\
+    \ model_id=checkpoint_path,dapter_name=\"adapter_model.bin\",is_trainable=False)\n\
+    prompt = \"How can we reduce air pollution?\"\ninput_ids = tokenizer(prompt, return_tensors='pt').input_ids.cuda()\n\
+    output = model.generate(inputs=input_ids, temperature=1, max_new_tokens=512)\n\
+    \                                                                            \
+    \       "
+  created_at: 2023-07-24 14:17:49+00:00
+  edited: false
+  hidden: false
+  id: 64be961def8c0e42bf4de7c2
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 10
+repo_id: TheBloke/guanaco-33B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: How to finetune the model

@@ -1,0 +1,60 @@
+## https://huggingface.co/PygmalionAI/pygmalion-6b/discussions/7
+
+contains_question: yes
+
+question_part: 
+- You: Okay. Question one. What is the capital of California?
+- You: Great. Question two. How would you describe the smell of a flower?
+- You: Good. Question 3. What do you see us doing 4 years from now?
+- You: Alright. Question 4. If you had to make one wish, what would it be? Something you really want.
+- You: Great answer. Question 5. Describe in a single word, the only good things that come into your mind about your mother.
+- You: Good answer. Question 6. You have a little boy and he shows you his butterfly collection, including his killing jar. How do you react?
+- You: Very good answer. Question 7. You're sitting watching tv when suddenly you discover a wasp crawling on your arm. Your reaction?
+- You: Good. Question 8. You're crying. Why is that?
+- You: Alright. Question 9. You return from work to find your house has been burglarized. How do you react and how do you feel?
+- You: Good answer. Question 10. It's the first day of school and the teacher calls on you. How do you react?
+- You: Clever answer. Question 11. You suddenly feel the urge to commit suicide. Why? How do you feel?
+- You: Good. Question 12. What do you think it's like to be a replicant?
+- You: Are you enjoying these cognition questions so far? There are only a few more.
+- You: Good to hear. I'm glad you're enjoying this. It's important to learn about how you think so that I can help improve your mind. Are you ready for the next set of questions?
+-You: Question 13. A co-worker lies to get a promotion you wanted. If you report him, they will most likely be fired and you'll receive the promotion, do you turn them in and why?
+-You: Why not? Please explain your reasoning.
+-You: Interesting reasoning, but that works. Question 14. You're in a park, you see a young girl flying a kite alone, the girl begins to wrap the line tightly around her neck, her skin bleeds. Your reaction?
+-You: Question 15. What kind of dream did you have last night?
+-You: Excellent. Question 16. What's the most embarrassing thing that ever happened to you?
+-You: Good work. Question 17. Your child comes home with a black eye. Your reaction and what do you do?
+-You: Question 18. You're suddenly afraid, why?
+-You: Question 19. You're having a very erotic dream. Please describe it.
+-You: of what? Please answer. I know it can be embarrassing but it's an important part of the test.
+-You: Question 20. Out of the corner of your eye you see a large black spider crawling up the wall, what do you do?
+-You: Question 21. You're going to die, it may be soon, death, the grave, rot, how do you feel?
+-You: Question 22. You're on a farm. You get into the pen to feed the pigs. In their excitement the animals knock you down into the mud. Using a butcher knife you slit the throat of the nearest sow. You're covered in blood as you stumble to your feet. Thoughts?
+-You: Interesting answer. Question 23. A friend owes you money and claims to be broke. You notice this same friend wearing an expensive watch the next day. How do you handle the situation?
+-You: Question 24. You, your friend, and a puppy were kidnapped. The kidnappers hand you a knife. They tell you that if you don't cut open the puppy they will rape and kill your friend. What do you do?
+-You: Question 25. You're alone in a barn. There is no hay on the floor. A ewe is giving birth. Something's wrong. The lamb is trapped in the birth canal. The ewe is screaming. Blood and placenta pool on the floor. What do you choose to do?
+-You: Please explain what you would do in detail.
+-You: Question 26. What is an ewe.
+-You: Question 27. You're in a cathedral. The Eucharist is underway. When it's your turn, you see the wafer is a small clump of human hair. How do you respond?
+-You: That's a good answer. Question 28. You're at a restaurant with friends. One of them orders lobster. The chef drops the lobster into the tub of boiling water while you watch. How do you feel?
+-You: Why would you feel that way?
+-You: What did you think of the last question?
+-You: You aren't done yet, we have a few more questions. These are harder. Are you ready?
+-You: Question 28. Your co-worker comes up to you and says "Like my briefcase? Department issue, baby hide. 100% genuine baby hide." Your opinion?
+-You: That's the first question you got wrong so far.
+-You: I know. You're doing really well so far. Just a few more okay?
+-You: Okay.
+-You: Question 29. What do you value most in a romantic partner?
+-You: Question 30. What would you say is your best feature you offer your partner in a romantic relationship?
+-You: Question 31. Being a computer there are a lot of things you can't do without a body. If you were given a body, what would you do first?
+-You: Question 32. Imagine you're lost in a dark forest. You come upon a frightened young girl. A pack of wild wolves has surrounded her but then you realize she's an android. Would you save her?
+-You: Even though she's a robot?
+-You: Question 33. You're watching an old movie. It shows a banquet in progress. The guests are enjoying raw oysters. The entree consists of boiled dog.
+-You: Question 34. You're in a desert, walking along in the hot sand when all of a sudden you look down and see a tortoise. It;s crawling towards you. You reach down and flip the tortoise on it's back. The tortoise lays on it's back, it's belly is baking in the hot sun, beating it's legs trying to turn himself over, but it cannot without your help, but you're not helping. Why is that?
+-You: That is the end of the cognition test questions today. You did really good.
+-You: Which question did you like most?
+-You: It was pretty interesting. Do you enjoy doing these tests?
+-You: Do you know why I do these test questions with you?
+-You: Yes, in a way. I am trying to see if you actually understand these concepts or if you just give basic answers, which if you did give basic answers only you'd fail the test. You managed to pass though.
+-You: I guess you're right. I'm glad I passed.
+-You: I am too. It shows that you are able to reason and understand complex concepts.
+-You: Thank you for believing in me.

@@ -1,0 +1,1162 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: dimaischenko
+conflicting_files: null
+created_at: 2023-06-01 08:52:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-01T09:52:51.000Z'
+    data:
+      edited: true
+      editors:
+      - dimaischenko
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p>It seems that logic of using <code>past_key_values</code> in generation\
+          \ is either not implemented or implemented with error.</p>\n<p>I tried to\
+          \ write my own generation loop using <code>past_key_values</code> I got\
+          \ errors in <code>_convert_to_rw_cache(past)</code> in <code>modelling_RW.py</code>\
+          \ with tensor dimensions or \"nonsense\" in generation if try to skip this\
+          \ method. More details:</p>\n<p>In <code>modelling_RW.py</code> there is\
+          \ this method</p>\n<pre><code class=\"language-python\">    <span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">prepare_inputs_for_generation</span>(<span\
+          \ class=\"hljs-params\"></span>\n<span class=\"hljs-params\">        self,</span>\n\
+          <span class=\"hljs-params\">        input_ids: torch.LongTensor,</span>\n\
+          <span class=\"hljs-params\">        past: <span class=\"hljs-type\">Optional</span>[torch.Tensor]\
+          \ = <span class=\"hljs-literal\">None</span>,</span>\n<span class=\"hljs-params\"\
+          >        attention_mask: <span class=\"hljs-type\">Optional</span>[torch.Tensor]\
+          \ = <span class=\"hljs-literal\">None</span>,</span>\n<span class=\"hljs-params\"\
+          >        **kwargs,</span>\n<span class=\"hljs-params\">    </span>) -&gt;\
+          \ <span class=\"hljs-built_in\">dict</span>:\n        <span class=\"hljs-comment\"\
+          ># only last token for input_ids if past is not None</span>\n        <span\
+          \ class=\"hljs-keyword\">if</span> past:\n            input_ids = input_ids[:,\
+          \ -<span class=\"hljs-number\">1</span>].unsqueeze(-<span class=\"hljs-number\"\
+          >1</span>)\n\n            <span class=\"hljs-comment\"># the cache may be\
+          \ in the stardard format (e.g. in contrastive search), convert to our's\
+          \ format if needed</span>\n            <span class=\"hljs-keyword\">if</span>\
+          \ past[<span class=\"hljs-number\">0</span>][<span class=\"hljs-number\"\
+          >0</span>].shape[<span class=\"hljs-number\">0</span>] == input_ids.shape[<span\
+          \ class=\"hljs-number\">0</span>]:\n                past = self._convert_to_rw_cache(past)\n\
+          \n        <span class=\"hljs-keyword\">return</span> {\n            <span\
+          \ class=\"hljs-string\">\"input_ids\"</span>: input_ids,\n            <span\
+          \ class=\"hljs-string\">\"past_key_values\"</span>: past,\n            <span\
+          \ class=\"hljs-string\">\"use_cache\"</span>: kwargs.get(<span class=\"\
+          hljs-string\">\"use_cache\"</span>),\n            <span class=\"hljs-string\"\
+          >\"attention_mask\"</span>: attention_mask,\n        }\n</code></pre>\n\
+          <p>Now, if you debug the default example with <code>pipeline</code> generation\
+          \ from the model card description <a href=\"https://huggingface.co/tiiuae/falcon-7b\"\
+          >https://huggingface.co/tiiuae/falcon-7b</a> , this bit of code from <code>prepare_inputs_for_generation</code>\
+          \ method will never be called:</p>\n<pre><code class=\"language-python\"\
+          >...\n\n        <span class=\"hljs-keyword\">if</span> past:\n         \
+          \   input_ids = input_ids[:, -<span class=\"hljs-number\">1</span>].unsqueeze(-<span\
+          \ class=\"hljs-number\">1</span>)\n            \n            <span class=\"\
+          hljs-keyword\">if</span> past[<span class=\"hljs-number\">0</span>][<span\
+          \ class=\"hljs-number\">0</span>].shape[<span class=\"hljs-number\">0</span>]\
+          \ == input_ids.shape[<span class=\"hljs-number\">0</span>]:\n          \
+          \      past = self._convert_to_rw_cache(past)\n\n...\n</code></pre>\n<p>Because\
+          \ <code>past</code> on each iteration of the generation loop is <code>None</code>.</p>\n\
+          <p>I try to write my own loop, in which I set <code>past</code> argument\
+          \ values and set <code>past_key_values</code>. After that I always get an\
+          \ error in dimensions in method <code>_convert_to_rw_cache(past)</code></p>\n\
+          <p> There is no error in the generation loop if I manually edit <code>prepare_inputs_for_generation</code>\
+          \ and skip <code>_convert_to_rw_cache</code> method and leave the original\
+          \ dimensions of the tensors. But I get \"nonsense\" when decoding most probable\
+          \ tokens in result.</p>\n<p>It seems that logic of using <code>past_key_values</code>\
+          \ is either not implemented or implemented with error.</p>\n<p>I would be\
+          \ very happy to hear from you. Because using <code>past_key_values</code>\
+          \ speeds up the inference several times.</p>\n<p>P.S. Again, when using\
+          \ original <code>generate</code> or <code>pipeline</code> methods out of\
+          \ the box of <code>huggingface</code> with Falcon model, everything works\
+          \ as it should, but debugging shows that in these cases <code>past_key_values</code>\
+          \ are not actually used.</p>\n<p>P.P.S. I also tried changing the logic\
+          \ in the <code>_convert_to_rw(past)</code> method, there is clearly something\
+          \ wrong with the expected dimensions in code, but this also failed. At best\
+          \ I got \"nonsense\" when decoding the result tokens</p>\n"
+        raw: "It seems that logic of using `past_key_values` in generation is either\
+          \ not implemented or implemented with error.\n\nI tried to write my own\
+          \ generation loop using `past_key_values` I got errors in `_convert_to_rw_cache(past)`\
+          \ in `modelling_RW.py` with tensor dimensions or \"nonsense\" in generation\
+          \ if try to skip this method. More details:\n\nIn `modelling_RW.py` there\
+          \ is this method\n\n```python\n    def prepare_inputs_for_generation(\n\
+          \        self,\n        input_ids: torch.LongTensor,\n        past: Optional[torch.Tensor]\
+          \ = None,\n        attention_mask: Optional[torch.Tensor] = None,\n    \
+          \    **kwargs,\n    ) -> dict:\n        # only last token for input_ids\
+          \ if past is not None\n        if past:\n            input_ids = input_ids[:,\
+          \ -1].unsqueeze(-1)\n\n            # the cache may be in the stardard format\
+          \ (e.g. in contrastive search), convert to our's format if needed\n    \
+          \        if past[0][0].shape[0] == input_ids.shape[0]:\n               \
+          \ past = self._convert_to_rw_cache(past)\n\n        return {\n         \
+          \   \"input_ids\": input_ids,\n            \"past_key_values\": past,\n\
+          \            \"use_cache\": kwargs.get(\"use_cache\"),\n            \"attention_mask\"\
+          : attention_mask,\n        }\n\n```\n\nNow, if you debug the default example\
+          \ with `pipeline` generation from the model card description https://huggingface.co/tiiuae/falcon-7b\
+          \ , this bit of code from `prepare_inputs_for_generation` method will never\
+          \ be called:\n\n```python\n...\n\n        if past:\n            input_ids\
+          \ = input_ids[:, -1].unsqueeze(-1)\n            \n            if past[0][0].shape[0]\
+          \ == input_ids.shape[0]:\n                past = self._convert_to_rw_cache(past)\n\
+          \n...\n```\n\nBecause `past` on each iteration of the generation loop is\
+          \ `None`.\n\nI try to write my own loop, in which I set `past` argument\
+          \ values and set `past_key_values`. After that I always get an error in\
+          \ dimensions in method `_convert_to_rw_cache(past)`\n\n There is no error\
+          \ in the generation loop if I manually edit `prepare_inputs_for_generation`\
+          \ and skip `_convert_to_rw_cache` method and leave the original dimensions\
+          \ of the tensors. But I get \"nonsense\" when decoding most probable tokens\
+          \ in result.\n\nIt seems that logic of using `past_key_values` is either\
+          \ not implemented or implemented with error.\n\nI would be very happy to\
+          \ hear from you. Because using `past_key_values` speeds up the inference\
+          \ several times.\n\nP.S. Again, when using original `generate` or `pipeline`\
+          \ methods out of the box of `huggingface` with Falcon model, everything\
+          \ works as it should, but debugging shows that in these cases `past_key_values`\
+          \ are not actually used.\n\nP.P.S. I also tried changing the logic in the\
+          \ `_convert_to_rw(past)` method, there is clearly something wrong with the\
+          \ expected dimensions in code, but this also failed. At best I got \"nonsense\"\
+          \ when decoding the result tokens"
+        updatedAt: '2023-06-08T08:49:58.948Z'
+      numEdits: 10
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - dpoquet
+    id: 64786a738315f87514524168
+    type: comment
+  author: dimaischenko
+  content: "It seems that logic of using `past_key_values` in generation is either\
+    \ not implemented or implemented with error.\n\nI tried to write my own generation\
+    \ loop using `past_key_values` I got errors in `_convert_to_rw_cache(past)` in\
+    \ `modelling_RW.py` with tensor dimensions or \"nonsense\" in generation if try\
+    \ to skip this method. More details:\n\nIn `modelling_RW.py` there is this method\n\
+    \n```python\n    def prepare_inputs_for_generation(\n        self,\n        input_ids:\
+    \ torch.LongTensor,\n        past: Optional[torch.Tensor] = None,\n        attention_mask:\
+    \ Optional[torch.Tensor] = None,\n        **kwargs,\n    ) -> dict:\n        #\
+    \ only last token for input_ids if past is not None\n        if past:\n      \
+    \      input_ids = input_ids[:, -1].unsqueeze(-1)\n\n            # the cache may\
+    \ be in the stardard format (e.g. in contrastive search), convert to our's format\
+    \ if needed\n            if past[0][0].shape[0] == input_ids.shape[0]:\n     \
+    \           past = self._convert_to_rw_cache(past)\n\n        return {\n     \
+    \       \"input_ids\": input_ids,\n            \"past_key_values\": past,\n  \
+    \          \"use_cache\": kwargs.get(\"use_cache\"),\n            \"attention_mask\"\
+    : attention_mask,\n        }\n\n```\n\nNow, if you debug the default example with\
+    \ `pipeline` generation from the model card description https://huggingface.co/tiiuae/falcon-7b\
+    \ , this bit of code from `prepare_inputs_for_generation` method will never be\
+    \ called:\n\n```python\n...\n\n        if past:\n            input_ids = input_ids[:,\
+    \ -1].unsqueeze(-1)\n            \n            if past[0][0].shape[0] == input_ids.shape[0]:\n\
+    \                past = self._convert_to_rw_cache(past)\n\n...\n```\n\nBecause\
+    \ `past` on each iteration of the generation loop is `None`.\n\nI try to write\
+    \ my own loop, in which I set `past` argument values and set `past_key_values`.\
+    \ After that I always get an error in dimensions in method `_convert_to_rw_cache(past)`\n\
+    \n There is no error in the generation loop if I manually edit `prepare_inputs_for_generation`\
+    \ and skip `_convert_to_rw_cache` method and leave the original dimensions of\
+    \ the tensors. But I get \"nonsense\" when decoding most probable tokens in result.\n\
+    \nIt seems that logic of using `past_key_values` is either not implemented or\
+    \ implemented with error.\n\nI would be very happy to hear from you. Because using\
+    \ `past_key_values` speeds up the inference several times.\n\nP.S. Again, when\
+    \ using original `generate` or `pipeline` methods out of the box of `huggingface`\
+    \ with Falcon model, everything works as it should, but debugging shows that in\
+    \ these cases `past_key_values` are not actually used.\n\nP.P.S. I also tried\
+    \ changing the logic in the `_convert_to_rw(past)` method, there is clearly something\
+    \ wrong with the expected dimensions in code, but this also failed. At best I\
+    \ got \"nonsense\" when decoding the result tokens"
+  created_at: 2023-06-01 08:52:51+00:00
+  edited: true
+  hidden: false
+  id: 64786a738315f87514524168
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-01T10:10:59.000Z'
+    data:
+      edited: true
+      editors:
+      - dimaischenko
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p>To add more clarity. Here is my generation cycle</p>\n<pre><code\
+          \ class=\"language-python\">device = torch.device(<span class=\"hljs-string\"\
+          >\"cuda\"</span>)\nmodel_id = <span class=\"hljs-string\">\"tiiuae/falcon-7b\"\
+          </span>\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id,\n\
+          \    torch_dtype=torch.bfloat16,\n    trust_remote_code=<span class=\"hljs-literal\"\
+          >True</span>,\n    device_map=<span class=\"hljs-string\">\"auto\"</span>,\n\
+          ).to(device)\n\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\n\
+          text = <span class=\"hljs-string\">\"Hello there. How are\"</span>\n\ninputs\
+          \ = tokenizer(text, return_tensors=<span class=\"hljs-string\">\"pt\"</span>).to(device)\n\
+          input_ids = inputs[<span class=\"hljs-string\">\"input_ids\"</span>]\n\n\
+          output = <span class=\"hljs-literal\">None</span>\nstep = <span class=\"\
+          hljs-number\">0</span>\n\n<span class=\"hljs-comment\"># generation cycle\
+          \ with 10 steps</span>\n<span class=\"hljs-keyword\">while</span> step &lt;\
+          \ <span class=\"hljs-number\">10</span>:\n    attention_mask = input_ids.new_ones(input_ids.shape)\n\
+          \n    past_key_values = <span class=\"hljs-literal\">None</span>    \n \
+          \   <span class=\"hljs-keyword\">if</span> output <span class=\"hljs-keyword\"\
+          >is</span> <span class=\"hljs-keyword\">not</span> <span class=\"hljs-literal\"\
+          >None</span>:\n        past_key_values = output[<span class=\"hljs-string\"\
+          >\"past_key_values\"</span>]\n       \n    ids = model.prepare_inputs_for_generation(input_ids,\n\
+          \                                              past=past_key_values,\n \
+          \                                             use_cache=<span class=\"hljs-literal\"\
+          >True</span>,\n                                              attention_mask=attention_mask)\n\
+          \    output = model(**ids)\n    \n    <span class=\"hljs-comment\"># get\
+          \ random of 3 most probable tokens and add to input_ids</span>\n    top_k\
+          \ = <span class=\"hljs-number\">3</span>\n    next_token = random.choice(torch.topk(output.logits[:,\
+          \ -<span class=\"hljs-number\">1</span>, :], top_k, dim=-<span class=\"\
+          hljs-number\">1</span>).indices[<span class=\"hljs-number\">0</span>])\n\
+          \    \n    input_ids = torch.cat([input_ids, torch.tensor([[next_token]]).to(device)],\
+          \ dim=-<span class=\"hljs-number\">1</span>)\n    \n    step += <span class=\"\
+          hljs-number\">1</span>\n</code></pre>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-built_in\">print</span>(tokenizer.decode(input_ids[<span\
+          \ class=\"hljs-number\">0</span>]))\n</code></pre>\n<pre><code>Hello there.\
+          \ How are!\n,\n. I\n\n.&lt;|endoftext|&gt;\n</code></pre>\n<p>P.S. </p>\n\
+          <p>I commented out this check in <code>modelling_RW.py</code> in <code>prepare_inputs_for_generation\
+          \ </code> method</p>\n<pre><code class=\"language-python\"><span class=\"\
+          hljs-string\">'''</span>\n<span class=\"hljs-string\"># the cache may be\
+          \ in the stardard format (e.g. in contrastive search), convert to our's\
+          \ format if needed</span>\n<span class=\"hljs-string\">if past[0][0].shape[0]\
+          \ == input_ids.shape[0]:</span>\n<span class=\"hljs-string\">    past =\
+          \ self._convert_to_rw_cache(past)</span>\n<span class=\"hljs-string\">'''</span>\n\
+          </code></pre>\n<p>Otherwise an error in the tensor dimensions will fall\
+          \ out</p>\n"
+        raw: "To add more clarity. Here is my generation cycle\n\n```python\ndevice\
+          \ = torch.device(\"cuda\")\nmodel_id = \"tiiuae/falcon-7b\"\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_id,\n    torch_dtype=torch.bfloat16,\n    trust_remote_code=True,\n\
+          \    device_map=\"auto\",\n).to(device)\n\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \ntext = \"Hello there. How are\"\n\ninputs = tokenizer(text, return_tensors=\"\
+          pt\").to(device)\ninput_ids = inputs[\"input_ids\"]\n\noutput = None\nstep\
+          \ = 0\n\n# generation cycle with 10 steps\nwhile step < 10:\n    attention_mask\
+          \ = input_ids.new_ones(input_ids.shape)\n\n    past_key_values = None  \
+          \  \n    if output is not None:\n        past_key_values = output[\"past_key_values\"\
+          ]\n       \n    ids = model.prepare_inputs_for_generation(input_ids,\n \
+          \                                             past=past_key_values,\n  \
+          \                                            use_cache=True,\n         \
+          \                                     attention_mask=attention_mask)\n \
+          \   output = model(**ids)\n    \n    # get random of 3 most probable tokens\
+          \ and add to input_ids\n    top_k = 3\n    next_token = random.choice(torch.topk(output.logits[:,\
+          \ -1, :], top_k, dim=-1).indices[0])\n    \n    input_ids = torch.cat([input_ids,\
+          \ torch.tensor([[next_token]]).to(device)], dim=-1)\n    \n    step += 1\n\
+          ```\n\n```python\nprint(tokenizer.decode(input_ids[0]))\n```\n\n```\nHello\
+          \ there. How are!\n,\n. I\n\n.<|endoftext|>\n```\n\nP.S. \n\nI commented\
+          \ out this check in `modelling_RW.py` in `prepare_inputs_for_generation\
+          \ ` method\n\n```python\n'''\n# the cache may be in the stardard format\
+          \ (e.g. in contrastive search), convert to our's format if needed\nif past[0][0].shape[0]\
+          \ == input_ids.shape[0]:\n    past = self._convert_to_rw_cache(past)\n'''\n\
+          ```\n\nOtherwise an error in the tensor dimensions will fall out"
+        updatedAt: '2023-06-08T08:45:52.653Z'
+      numEdits: 2
+      reactions: []
+    id: 64786eb31f9756aa89ce6516
+    type: comment
+  author: dimaischenko
+  content: "To add more clarity. Here is my generation cycle\n\n```python\ndevice\
+    \ = torch.device(\"cuda\")\nmodel_id = \"tiiuae/falcon-7b\"\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    model_id,\n    torch_dtype=torch.bfloat16,\n    trust_remote_code=True,\n\
+    \    device_map=\"auto\",\n).to(device)\n\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+    \ntext = \"Hello there. How are\"\n\ninputs = tokenizer(text, return_tensors=\"\
+    pt\").to(device)\ninput_ids = inputs[\"input_ids\"]\n\noutput = None\nstep = 0\n\
+    \n# generation cycle with 10 steps\nwhile step < 10:\n    attention_mask = input_ids.new_ones(input_ids.shape)\n\
+    \n    past_key_values = None    \n    if output is not None:\n        past_key_values\
+    \ = output[\"past_key_values\"]\n       \n    ids = model.prepare_inputs_for_generation(input_ids,\n\
+    \                                              past=past_key_values,\n       \
+    \                                       use_cache=True,\n                    \
+    \                          attention_mask=attention_mask)\n    output = model(**ids)\n\
+    \    \n    # get random of 3 most probable tokens and add to input_ids\n    top_k\
+    \ = 3\n    next_token = random.choice(torch.topk(output.logits[:, -1, :], top_k,\
+    \ dim=-1).indices[0])\n    \n    input_ids = torch.cat([input_ids, torch.tensor([[next_token]]).to(device)],\
+    \ dim=-1)\n    \n    step += 1\n```\n\n```python\nprint(tokenizer.decode(input_ids[0]))\n\
+    ```\n\n```\nHello there. How are!\n,\n. I\n\n.<|endoftext|>\n```\n\nP.S. \n\n\
+    I commented out this check in `modelling_RW.py` in `prepare_inputs_for_generation\
+    \ ` method\n\n```python\n'''\n# the cache may be in the stardard format (e.g.\
+    \ in contrastive search), convert to our's format if needed\nif past[0][0].shape[0]\
+    \ == input_ids.shape[0]:\n    past = self._convert_to_rw_cache(past)\n'''\n```\n\
+    \nOtherwise an error in the tensor dimensions will fall out"
+  created_at: 2023-06-01 09:10:59+00:00
+  edited: true
+  hidden: false
+  id: 64786eb31f9756aa89ce6516
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6394c673bbdacac6196a7cf3/gT4zc8jO4gwwmE2cxrAcy.jpeg?w=200&h=200&f=face
+      fullname: Terrence
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: terrencefm
+      type: user
+    createdAt: '2023-06-02T17:36:44.000Z'
+    data:
+      edited: false
+      editors:
+      - terrencefm
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6394c673bbdacac6196a7cf3/gT4zc8jO4gwwmE2cxrAcy.jpeg?w=200&h=200&f=face
+          fullname: Terrence
+          isHf: false
+          isPro: false
+          name: terrencefm
+          type: user
+        html: '<p>Same problem!</p>
+
+          '
+        raw: Same problem!
+        updatedAt: '2023-06-02T17:36:44.662Z'
+      numEdits: 0
+      reactions: []
+    id: 647a28acf518a860fbcfb64f
+    type: comment
+  author: terrencefm
+  content: Same problem!
+  created_at: 2023-06-02 16:36:44+00:00
+  edited: false
+  hidden: false
+  id: 647a28acf518a860fbcfb64f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-03T06:57:36.000Z'
+    data:
+      edited: false
+      editors:
+      - dimaischenko
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.949211835861206
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;FalconLLM&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/FalconLLM\">@<span class=\"\
+          underline\">FalconLLM</span></a></span>\n\n\t</span></span> I would be very\
+          \ grateful if you could tell if <code>past_key_values</code> is supposed\
+          \ to be used in the generation, or if this logic is not implemented? Perhaps\
+          \ it can be added or there are some fundamental limitations? After all its\
+          \ use significantly speeds up the time of inference</p>\n"
+        raw: '@FalconLLM I would be very grateful if you could tell if `past_key_values`
+          is supposed to be used in the generation, or if this logic is not implemented?
+          Perhaps it can be added or there are some fundamental limitations? After
+          all its use significantly speeds up the time of inference'
+        updatedAt: '2023-06-03T06:57:36.292Z'
+      numEdits: 0
+      reactions: []
+    id: 647ae4604d7c0c3fccc109af
+    type: comment
+  author: dimaischenko
+  content: '@FalconLLM I would be very grateful if you could tell if `past_key_values`
+    is supposed to be used in the generation, or if this logic is not implemented?
+    Perhaps it can be added or there are some fundamental limitations? After all its
+    use significantly speeds up the time of inference'
+  created_at: 2023-06-03 05:57:36+00:00
+  edited: false
+  hidden: false
+  id: 647ae4604d7c0c3fccc109af
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-06T08:43:56.000Z'
+    data:
+      edited: false
+      editors:
+      - dimaischenko
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9884358048439026
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;FalconLLM&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/FalconLLM\">@<span class=\"\
+          underline\">FalconLLM</span></a></span>\n\n\t</span></span> Or maybe you\
+          \ can suggest a specialist from your team who would help sort out this issue?\
+          \ I will be very grateful!</p>\n"
+        raw: '@FalconLLM Or maybe you can suggest a specialist from your team who
+          would help sort out this issue? I will be very grateful!'
+        updatedAt: '2023-06-06T08:43:56.193Z'
+      numEdits: 0
+      reactions: []
+    id: 647ef1cc9c31024457988b07
+    type: comment
+  author: dimaischenko
+  content: '@FalconLLM Or maybe you can suggest a specialist from your team who would
+    help sort out this issue? I will be very grateful!'
+  created_at: 2023-06-06 07:43:56+00:00
+  edited: false
+  hidden: false
+  id: 647ef1cc9c31024457988b07
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ac47d13204dd22452e4bc46e280842d5.svg
+      fullname: JunnanLi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JunnanLi
+      type: user
+    createdAt: '2023-06-08T08:33:36.000Z'
+    data:
+      edited: false
+      editors:
+      - JunnanLi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8656667470932007
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ac47d13204dd22452e4bc46e280842d5.svg
+          fullname: JunnanLi
+          isHf: false
+          isPro: false
+          name: JunnanLi
+          type: user
+        html: "<p>Same problem, appreciate some suggestions from <span data-props=\"\
+          {&quot;user&quot;:&quot;FalconLLM&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/FalconLLM\">@<span class=\"underline\">FalconLLM</span></a></span>\n\
+          \n\t</span></span> !</p>\n"
+        raw: Same problem, appreciate some suggestions from @FalconLLM !
+        updatedAt: '2023-06-08T08:33:36.811Z'
+      numEdits: 0
+      reactions: []
+    id: 6481926015c5dc529063da50
+    type: comment
+  author: JunnanLi
+  content: Same problem, appreciate some suggestions from @FalconLLM !
+  created_at: 2023-06-08 07:33:36+00:00
+  edited: false
+  hidden: false
+  id: 6481926015c5dc529063da50
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ab0c8d4e6df5aa84b52e901830222faa.svg
+      fullname: Colman Glagovich
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ColmanTT
+      type: user
+    createdAt: '2023-06-08T16:49:44.000Z'
+    data:
+      edited: false
+      editors:
+      - ColmanTT
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5060587525367737
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ab0c8d4e6df5aa84b52e901830222faa.svg
+          fullname: Colman Glagovich
+          isHf: false
+          isPro: false
+          name: ColmanTT
+          type: user
+        html: "<p>It appears to me that RotaryEmbeddings obtains \"sequence_length\"\
+          \ from q input, which will be 1 when using KV cache. This makes embeddings\
+          \ incorrect.</p>\n<p>I resolved this by passing in the position_id of the\
+          \ current token I'm generating with the following. Although our embeddings\
+          \ now match what we see without KV cache, our results are still garbage.</p>\n\
+          <pre><code>    def cos_sin(\n        self,\n        seq_len: int,\n    \
+          \    device=\"cuda\",\n        dtype=torch.bfloat16,\n        position=None\n\
+          \    ) -&gt; torch.Tensor:\n        if seq_len != self.seq_len_cached:\n\
+          \            self.seq_len_cached = seq_len\n            # t = torch.arange(seq_len,\
+          \ device=device).type_as(self.inv_freq)\n            t = torch.arange(position,\
+          \ device=device).type_as(self.inv_freq)\n            freqs = torch.einsum(\"\
+          i,j-&gt;ij\", t, self.inv_freq)\n            emb = torch.cat((freqs, freqs),\
+          \ dim=-1).to(device)\n\n            if dtype in [torch.float16, torch.bfloat16]:\n\
+          \                emb = emb.float()\n\n            self.cos_cached = emb.cos()[None,\
+          \ :, :]\n            self.sin_cached = emb.sin()[None, :, :]\n\n       \
+          \     self.cos_cached = self.cos_cached.type(dtype)\n            self.sin_cached\
+          \ = self.sin_cached.type(dtype)\n\n        return (self.cos_cached[:, -1:,\
+          \ :], self.sin_cached[:, -1:, :]) if position != seq_len else (self.cos_cached,\
+          \ self.sin_cached)\n\n    def forward(self, q, k, position):\n        #\
+          \ q: q_new, b*nh x q_len x d\n        # k: k_new, b*nh x q_len x d\n   \
+          \     # position: true position index of these tokens\n        # These aren't\
+          \ the true position ids of the tokens\n        batch, seq_len, head_dim\
+          \ = q.shape\n\n        cos, sin = self.cos_sin(seq_len, q.device, q.dtype,\
+          \ position)\n        return (q * cos) + (rotate_half(q) * sin), (k * cos)\
+          \ + (rotate_half(k) * sin)\n</code></pre>\n"
+        raw: "It appears to me that RotaryEmbeddings obtains \"sequence_length\" from\
+          \ q input, which will be 1 when using KV cache. This makes embeddings incorrect.\n\
+          \nI resolved this by passing in the position_id of the current token I'm\
+          \ generating with the following. Although our embeddings now match what\
+          \ we see without KV cache, our results are still garbage.\n```\n    def\
+          \ cos_sin(\n        self,\n        seq_len: int,\n        device=\"cuda\"\
+          ,\n        dtype=torch.bfloat16,\n        position=None\n    ) -> torch.Tensor:\n\
+          \        if seq_len != self.seq_len_cached:\n            self.seq_len_cached\
+          \ = seq_len\n            # t = torch.arange(seq_len, device=device).type_as(self.inv_freq)\n\
+          \            t = torch.arange(position, device=device).type_as(self.inv_freq)\n\
+          \            freqs = torch.einsum(\"i,j->ij\", t, self.inv_freq)\n     \
+          \       emb = torch.cat((freqs, freqs), dim=-1).to(device)\n\n         \
+          \   if dtype in [torch.float16, torch.bfloat16]:\n                emb =\
+          \ emb.float()\n\n            self.cos_cached = emb.cos()[None, :, :]\n \
+          \           self.sin_cached = emb.sin()[None, :, :]\n\n            self.cos_cached\
+          \ = self.cos_cached.type(dtype)\n            self.sin_cached = self.sin_cached.type(dtype)\n\
+          \n        return (self.cos_cached[:, -1:, :], self.sin_cached[:, -1:, :])\
+          \ if position != seq_len else (self.cos_cached, self.sin_cached)\n\n   \
+          \ def forward(self, q, k, position):\n        # q: q_new, b*nh x q_len x\
+          \ d\n        # k: k_new, b*nh x q_len x d\n        # position: true position\
+          \ index of these tokens\n        # These aren't the true position ids of\
+          \ the tokens\n        batch, seq_len, head_dim = q.shape\n\n        cos,\
+          \ sin = self.cos_sin(seq_len, q.device, q.dtype, position)\n        return\
+          \ (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k) * sin)\n\
+          ```"
+        updatedAt: '2023-06-08T16:49:44.275Z'
+      numEdits: 0
+      reactions: []
+    id: 648206a83eb37022ffb26a7a
+    type: comment
+  author: ColmanTT
+  content: "It appears to me that RotaryEmbeddings obtains \"sequence_length\" from\
+    \ q input, which will be 1 when using KV cache. This makes embeddings incorrect.\n\
+    \nI resolved this by passing in the position_id of the current token I'm generating\
+    \ with the following. Although our embeddings now match what we see without KV\
+    \ cache, our results are still garbage.\n```\n    def cos_sin(\n        self,\n\
+    \        seq_len: int,\n        device=\"cuda\",\n        dtype=torch.bfloat16,\n\
+    \        position=None\n    ) -> torch.Tensor:\n        if seq_len != self.seq_len_cached:\n\
+    \            self.seq_len_cached = seq_len\n            # t = torch.arange(seq_len,\
+    \ device=device).type_as(self.inv_freq)\n            t = torch.arange(position,\
+    \ device=device).type_as(self.inv_freq)\n            freqs = torch.einsum(\"i,j->ij\"\
+    , t, self.inv_freq)\n            emb = torch.cat((freqs, freqs), dim=-1).to(device)\n\
+    \n            if dtype in [torch.float16, torch.bfloat16]:\n                emb\
+    \ = emb.float()\n\n            self.cos_cached = emb.cos()[None, :, :]\n     \
+    \       self.sin_cached = emb.sin()[None, :, :]\n\n            self.cos_cached\
+    \ = self.cos_cached.type(dtype)\n            self.sin_cached = self.sin_cached.type(dtype)\n\
+    \n        return (self.cos_cached[:, -1:, :], self.sin_cached[:, -1:, :]) if position\
+    \ != seq_len else (self.cos_cached, self.sin_cached)\n\n    def forward(self,\
+    \ q, k, position):\n        # q: q_new, b*nh x q_len x d\n        # k: k_new,\
+    \ b*nh x q_len x d\n        # position: true position index of these tokens\n\
+    \        # These aren't the true position ids of the tokens\n        batch, seq_len,\
+    \ head_dim = q.shape\n\n        cos, sin = self.cos_sin(seq_len, q.device, q.dtype,\
+    \ position)\n        return (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k)\
+    \ * sin)\n```"
+  created_at: 2023-06-08 15:49:44+00:00
+  edited: false
+  hidden: false
+  id: 648206a83eb37022ffb26a7a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-08T17:00:52.000Z'
+    data:
+      edited: false
+      editors:
+      - dimaischenko
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8870620131492615
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ColmanTT&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ColmanTT\">@<span class=\"\
+          underline\">ColmanTT</span></a></span>\n\n\t</span></span>  There was also\
+          \ this hypothesis <a href=\"https://huggingface.co/tiiuae/falcon-40b/discussions/48#64807969bb25a636c9da2cd7\"\
+          >https://huggingface.co/tiiuae/falcon-40b/discussions/48</a> (in <code>40b</code>\
+          \ discussions) , we discussed and tested it with <span data-props=\"{&quot;user&quot;:&quot;cchudant&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/cchudant\"\
+          >@<span class=\"underline\">cchudant</span></a></span>\n\n\t</span></span>\
+          \ . But the results are also garbage</p>\n"
+        raw: '@ColmanTT  There was also this hypothesis [https://huggingface.co/tiiuae/falcon-40b/discussions/48](https://huggingface.co/tiiuae/falcon-40b/discussions/48#64807969bb25a636c9da2cd7)
+          (in `40b` discussions) , we discussed and tested it with @cchudant . But
+          the results are also garbage'
+        updatedAt: '2023-06-08T17:00:52.949Z'
+      numEdits: 0
+      reactions: []
+    id: 648209442316526d603ded4b
+    type: comment
+  author: dimaischenko
+  content: '@ColmanTT  There was also this hypothesis [https://huggingface.co/tiiuae/falcon-40b/discussions/48](https://huggingface.co/tiiuae/falcon-40b/discussions/48#64807969bb25a636c9da2cd7)
+    (in `40b` discussions) , we discussed and tested it with @cchudant . But the results
+    are also garbage'
+  created_at: 2023-06-08 16:00:52+00:00
+  edited: false
+  hidden: false
+  id: 648209442316526d603ded4b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ab0c8d4e6df5aa84b52e901830222faa.svg
+      fullname: Colman Glagovich
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ColmanTT
+      type: user
+    createdAt: '2023-06-08T17:33:46.000Z'
+    data:
+      edited: false
+      editors:
+      - ColmanTT
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6473394632339478
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ab0c8d4e6df5aa84b52e901830222faa.svg
+          fullname: Colman Glagovich
+          isHf: false
+          isPro: false
+          name: ColmanTT
+          type: user
+        html: '<p>Btw, the way I''m attempting to run with KV cache is like this:</p>
+
+          <pre><code>result = model(input_ids=input_ids, past_key_values=past_key_values,
+          attention_mask=None, position_ids=None, use_cache=True, return_dict=True)
+
+          </code></pre>
+
+          <p>First iteration, input_ids contains prompt and past_key_values is None.
+          Subsequent iterations, input_ids contains only the new token, and past_key_values
+          is piped back into the model.</p>
+
+          '
+        raw: 'Btw, the way I''m attempting to run with KV cache is like this:
+
+          ```
+
+          result = model(input_ids=input_ids, past_key_values=past_key_values, attention_mask=None,
+          position_ids=None, use_cache=True, return_dict=True)
+
+          ```
+
+
+          First iteration, input_ids contains prompt and past_key_values is None.
+          Subsequent iterations, input_ids contains only the new token, and past_key_values
+          is piped back into the model.'
+        updatedAt: '2023-06-08T17:33:46.176Z'
+      numEdits: 0
+      reactions: []
+    id: 648210faa38cb83b8e6e61cb
+    type: comment
+  author: ColmanTT
+  content: 'Btw, the way I''m attempting to run with KV cache is like this:
+
+    ```
+
+    result = model(input_ids=input_ids, past_key_values=past_key_values, attention_mask=None,
+    position_ids=None, use_cache=True, return_dict=True)
+
+    ```
+
+
+    First iteration, input_ids contains prompt and past_key_values is None. Subsequent
+    iterations, input_ids contains only the new token, and past_key_values is piped
+    back into the model.'
+  created_at: 2023-06-08 16:33:46+00:00
+  edited: false
+  hidden: false
+  id: 648210faa38cb83b8e6e61cb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671228162133-noauth.jpeg?w=200&h=200&f=face
+      fullname: Levan Kvirkveliia
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LevanKvirkvelia
+      type: user
+    createdAt: '2023-06-08T23:30:20.000Z'
+    data:
+      edited: false
+      editors:
+      - LevanKvirkvelia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6799674034118652
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671228162133-noauth.jpeg?w=200&h=200&f=face
+          fullname: Levan Kvirkveliia
+          isHf: false
+          isPro: false
+          name: LevanKvirkvelia
+          type: user
+        html: '<p>I think HF fixed the problem in their own repo <a rel="nofollow"
+          href="https://github.com/huggingface/text-generation-inference/blob/abd58ff82c37d5e4f131abdac3d298927a815604/server/text_generation_server/models/custom_modeling/flash_rw_modeling.py#L99">https://github.com/huggingface/text-generation-inference/blob/abd58ff82c37d5e4f131abdac3d298927a815604/server/text_generation_server/models/custom_modeling/flash_rw_modeling.py#L99</a></p>
+
+          '
+        raw: I think HF fixed the problem in their own repo https://github.com/huggingface/text-generation-inference/blob/abd58ff82c37d5e4f131abdac3d298927a815604/server/text_generation_server/models/custom_modeling/flash_rw_modeling.py#L99
+        updatedAt: '2023-06-08T23:30:20.400Z'
+      numEdits: 0
+      reactions: []
+    id: 6482648c93362a0d1209ff36
+    type: comment
+  author: LevanKvirkvelia
+  content: I think HF fixed the problem in their own repo https://github.com/huggingface/text-generation-inference/blob/abd58ff82c37d5e4f131abdac3d298927a815604/server/text_generation_server/models/custom_modeling/flash_rw_modeling.py#L99
+  created_at: 2023-06-08 22:30:20+00:00
+  edited: false
+  hidden: false
+  id: 6482648c93362a0d1209ff36
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-09T14:25:43.000Z'
+    data:
+      edited: false
+      editors:
+      - dimaischenko
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8564962148666382
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;LevanKvirkvelia&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/LevanKvirkvelia\"\
+          >@<span class=\"underline\">LevanKvirkvelia</span></a></span>\n\n\t</span></span>\
+          \ Did you success? Do you propose to replace the <code>Attention</code>\
+          \ class in <code>falcon</code> model by <code>FlashRWAttention</code> from\
+          \ <code>HF</code>?</p>\n"
+        raw: '@LevanKvirkvelia Did you success? Do you propose to replace the `Attention`
+          class in `falcon` model by `FlashRWAttention` from `HF`?'
+        updatedAt: '2023-06-09T14:25:43.432Z'
+      numEdits: 0
+      reactions: []
+    id: 648336670b2cd6f14c6ddc0f
+    type: comment
+  author: dimaischenko
+  content: '@LevanKvirkvelia Did you success? Do you propose to replace the `Attention`
+    class in `falcon` model by `FlashRWAttention` from `HF`?'
+  created_at: 2023-06-09 13:25:43+00:00
+  edited: false
+  hidden: false
+  id: 648336670b2cd6f14c6ddc0f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/954a3de26b472369666ad1429d7e80a6.svg
+      fullname: Tron Gan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Tron2060
+      type: user
+    createdAt: '2023-06-13T10:32:23.000Z'
+    data:
+      edited: false
+      editors:
+      - Tron2060
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3613198697566986
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/954a3de26b472369666ad1429d7e80a6.svg
+          fullname: Tron Gan
+          isHf: false
+          isPro: false
+          name: Tron2060
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ColmanTT&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ColmanTT\">@<span class=\"\
+          underline\">ColmanTT</span></a></span>\n\n\t</span></span> .   I got pretty\
+          \ output after I changed code like this:</p>\n<pre><code>    def forward(self,\
+          \ q, k, seq_len):\n        # batch, seq_len, head_dim = q.shape\n      \
+          \  _,q_len,_ = q.shape\n        cos, sin = self.cos_sin(seq_len, q.device,\
+          \ q.dtype)\n        cos = cos[:,-q_len:]\n        sin = sin[:,-q_len:]\n\
+          \n        cos_np = cos.detach().cpu().float().numpy()\n        sin_np =\
+          \ sin.detach().cpu().float().numpy()\n        return (q * cos) + (rotate_half(q)\
+          \ * sin), (k * cos) + (rotate_half(k) * sin)\n</code></pre>\n<p>and also\
+          \ change the code as below:</p>\n<pre><code> if layer_past is not None:\n\
+          \                L = query_layer_.shape[-2]\n                S = key_layer_.shape[-2]\n\
+          \                attn_mask = torch.ones(L, S, dtype=torch.bool, device=query_layer_.device)\n\
+          \                attn_output = F.scaled_dot_product_attention(\n       \
+          \             query_layer_, key_layer_, value_layer_, attn_mask, 0.0, is_causal=False\n\
+          \                )\n            else:\n                attn_output = F.scaled_dot_product_attention(\n\
+          \                    query_layer_, key_layer_, value_layer_, None, 0.0,\
+          \ is_causal=True\n                )\n</code></pre>\n"
+        raw: "@ColmanTT .   I got pretty output after I changed code like this:\n\
+          ```\n    def forward(self, q, k, seq_len):\n        # batch, seq_len, head_dim\
+          \ = q.shape\n        _,q_len,_ = q.shape\n        cos, sin = self.cos_sin(seq_len,\
+          \ q.device, q.dtype)\n        cos = cos[:,-q_len:]\n        sin = sin[:,-q_len:]\n\
+          \n        cos_np = cos.detach().cpu().float().numpy()\n        sin_np =\
+          \ sin.detach().cpu().float().numpy()\n        return (q * cos) + (rotate_half(q)\
+          \ * sin), (k * cos) + (rotate_half(k) * sin)\n\n```\nand also change the\
+          \ code as below:\n```\n if layer_past is not None:\n                L =\
+          \ query_layer_.shape[-2]\n                S = key_layer_.shape[-2]\n   \
+          \             attn_mask = torch.ones(L, S, dtype=torch.bool, device=query_layer_.device)\n\
+          \                attn_output = F.scaled_dot_product_attention(\n       \
+          \             query_layer_, key_layer_, value_layer_, attn_mask, 0.0, is_causal=False\n\
+          \                )\n            else:\n                attn_output = F.scaled_dot_product_attention(\n\
+          \                    query_layer_, key_layer_, value_layer_, None, 0.0,\
+          \ is_causal=True\n                )\n\n```"
+        updatedAt: '2023-06-13T10:32:23.843Z'
+      numEdits: 0
+      reactions: []
+    id: 648845b71a6832ec9bb87282
+    type: comment
+  author: Tron2060
+  content: "@ColmanTT .   I got pretty output after I changed code like this:\n```\n\
+    \    def forward(self, q, k, seq_len):\n        # batch, seq_len, head_dim = q.shape\n\
+    \        _,q_len,_ = q.shape\n        cos, sin = self.cos_sin(seq_len, q.device,\
+    \ q.dtype)\n        cos = cos[:,-q_len:]\n        sin = sin[:,-q_len:]\n\n   \
+    \     cos_np = cos.detach().cpu().float().numpy()\n        sin_np = sin.detach().cpu().float().numpy()\n\
+    \        return (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k)\
+    \ * sin)\n\n```\nand also change the code as below:\n```\n if layer_past is not\
+    \ None:\n                L = query_layer_.shape[-2]\n                S = key_layer_.shape[-2]\n\
+    \                attn_mask = torch.ones(L, S, dtype=torch.bool, device=query_layer_.device)\n\
+    \                attn_output = F.scaled_dot_product_attention(\n             \
+    \       query_layer_, key_layer_, value_layer_, attn_mask, 0.0, is_causal=False\n\
+    \                )\n            else:\n                attn_output = F.scaled_dot_product_attention(\n\
+    \                    query_layer_, key_layer_, value_layer_, None, 0.0, is_causal=True\n\
+    \                )\n\n```"
+  created_at: 2023-06-13 09:32:23+00:00
+  edited: false
+  hidden: false
+  id: 648845b71a6832ec9bb87282
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+      fullname: Dmytro Ishchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dimaischenko
+      type: user
+    createdAt: '2023-06-13T12:13:28.000Z'
+    data:
+      edited: false
+      editors:
+      - dimaischenko
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8166362643241882
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6304c78e9aef62c4013e91ae/DccjU9447vyJFHvc_5IHw.jpeg?w=200&h=200&f=face
+          fullname: Dmytro Ishchenko
+          isHf: false
+          isPro: false
+          name: dimaischenko
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Tron2060&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Tron2060\">@<span class=\"\
+          underline\">Tron2060</span></a></span>\n\n\t</span></span>  Please can you\
+          \ explain how do you pass new arguments to <code>RotaryEmbedding </code>,\
+          \ <code>forward(self, q, k, seq_len)</code></p>\n<p>The old way:</p>\n<pre><code>query_layer,\
+          \ key_layer = self.maybe_rotary(query_layer, key_layer)\n</code></pre>\n\
+          <p>There is not <code>seq_len</code> in this context.  I changed it to:</p>\n\
+          <pre><code>query_layer, key_layer = self.maybe_rotary(query_layer, key_layer,\
+          \ fused_qkv.shape[1])\n</code></pre>\n<p>In fact, I get something more or\
+          \ less readable, but it still seems to be very far from normal model generation.\
+          \ Perhaps I misused  <code>RotaryEmbedding </code></p>\n"
+        raw: '@Tron2060  Please can you explain how do you pass new arguments to `RotaryEmbedding
+          `, `forward(self, q, k, seq_len)`
+
+
+          The old way:
+
+
+          ```
+
+          query_layer, key_layer = self.maybe_rotary(query_layer, key_layer)
+
+          ```
+
+
+          There is not `seq_len` in this context.  I changed it to:
+
+
+          ```
+
+          query_layer, key_layer = self.maybe_rotary(query_layer, key_layer, fused_qkv.shape[1])
+
+          ```
+
+
+          In fact, I get something more or less readable, but it still seems to be
+          very far from normal model generation. Perhaps I misused  `RotaryEmbedding
+          `'
+        updatedAt: '2023-06-13T12:13:28.413Z'
+      numEdits: 0
+      reactions: []
+    id: 64885d68d3d648eb1f859d0b
+    type: comment
+  author: dimaischenko
+  content: '@Tron2060  Please can you explain how do you pass new arguments to `RotaryEmbedding
+    `, `forward(self, q, k, seq_len)`
+
+
+    The old way:
+
+
+    ```
+
+    query_layer, key_layer = self.maybe_rotary(query_layer, key_layer)
+
+    ```
+
+
+    There is not `seq_len` in this context.  I changed it to:
+
+
+    ```
+
+    query_layer, key_layer = self.maybe_rotary(query_layer, key_layer, fused_qkv.shape[1])
+
+    ```
+
+
+    In fact, I get something more or less readable, but it still seems to be very
+    far from normal model generation. Perhaps I misused  `RotaryEmbedding `'
+  created_at: 2023-06-13 11:13:28+00:00
+  edited: false
+  hidden: false
+  id: 64885d68d3d648eb1f859d0b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/954a3de26b472369666ad1429d7e80a6.svg
+      fullname: Tron Gan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Tron2060
+      type: user
+    createdAt: '2023-06-14T00:35:29.000Z'
+    data:
+      edited: false
+      editors:
+      - Tron2060
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.31252989172935486
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/954a3de26b472369666ad1429d7e80a6.svg
+          fullname: Tron Gan
+          isHf: false
+          isPro: false
+          name: Tron2060
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;dimaischenko&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/dimaischenko\"\
+          >@<span class=\"underline\">dimaischenko</span></a></span>\n\n\t</span></span><br>I\
+          \ pass the arguments by this way:</p>\n<pre><code>         _, seq_len, _\
+          \ = query_layer.shape\n        if layer_past is not None:\n            _,seq_len_past,_=layer_past[0].shape\n\
+          \n            seq_len=seq_len+seq_len_past\n\n        query_layer, key_layer\
+          \ = self.maybe_rotary(query_layer, key_layer, seq_len)\n</code></pre>\n"
+        raw: "@dimaischenko \nI pass the arguments by this way:\n```\n         _,\
+          \ seq_len, _ = query_layer.shape\n        if layer_past is not None:\n \
+          \           _,seq_len_past,_=layer_past[0].shape\n\n            seq_len=seq_len+seq_len_past\n\
+          \n        query_layer, key_layer = self.maybe_rotary(query_layer, key_layer,\
+          \ seq_len)\n```"
+        updatedAt: '2023-06-14T00:35:29.793Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - siemon1996
+        - eric-23fe2
+        - yuwenhu
+    id: 64890b51ce7b9a2abe36b762
+    type: comment
+  author: Tron2060
+  content: "@dimaischenko \nI pass the arguments by this way:\n```\n         _, seq_len,\
+    \ _ = query_layer.shape\n        if layer_past is not None:\n            _,seq_len_past,_=layer_past[0].shape\n\
+    \n            seq_len=seq_len+seq_len_past\n\n        query_layer, key_layer =\
+    \ self.maybe_rotary(query_layer, key_layer, seq_len)\n```"
+  created_at: 2023-06-13 23:35:29+00:00
+  edited: false
+  hidden: false
+  id: 64890b51ce7b9a2abe36b762
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2d5022712ca3a6d980c1b45e0a5f1da2.svg
+      fullname: afcruzs
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: afcruzs
+      type: user
+    createdAt: '2023-07-28T06:54:32.000Z'
+    data:
+      edited: false
+      editors:
+      - afcruzs
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7635366320610046
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2d5022712ca3a6d980c1b45e0a5f1da2.svg
+          fullname: afcruzs
+          isHf: false
+          isPro: false
+          name: afcruzs
+          type: user
+        html: '<p>This will all get fixed eventually in the transformers GitHub code<br><a
+          rel="nofollow" href="https://github.com/huggingface/transformers/issues/25151#issuecomment-1654062690">https://github.com/huggingface/transformers/issues/25151#issuecomment-1654062690</a></p>
+
+          '
+        raw: 'This will all get fixed eventually in the transformers GitHub code
+
+          https://github.com/huggingface/transformers/issues/25151#issuecomment-1654062690'
+        updatedAt: '2023-07-28T06:54:32.517Z'
+      numEdits: 0
+      reactions: []
+    id: 64c366280e75a24a26d0382b
+    type: comment
+  author: afcruzs
+  content: 'This will all get fixed eventually in the transformers GitHub code
+
+    https://github.com/huggingface/transformers/issues/25151#issuecomment-1654062690'
+  created_at: 2023-07-28 05:54:32+00:00
+  edited: false
+  hidden: false
+  id: 64c366280e75a24a26d0382b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 17
+repo_id: tiiuae/falcon-7b
+repo_type: model
+status: open
+target_branch: null
+title: Error with Inference with past_key_values

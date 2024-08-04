@@ -1,0 +1,6 @@
+## https://huggingface.co/Azu/trocr-handwritten-math/discussions/1
+
+contains_question: yes
+
+question_part: How to use this model?
+Would you mind adding a minimal example on how to use this model? The default instructions

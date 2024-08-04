@@ -1,0 +1,5 @@
+## https://huggingface.co/dalle-mini/vqgan_imagenet_f16_16384/discussions/6
+
+contains_question: yes
+
+question_part: please i wanted to ask a question, is it possible to reconstruct from indices that are not returned by the vqgan model, for instance, just to set a list containing integers like this: indices = jnp.array([[123, 334, 453, 554, 34, 53, 54]]), shape of indices is (1, 7), then try to decode it with vqgan_model.decode_code(indices). i tried it but it is returning InconclusiveDimensionOperation: Cannot divide evenly the sizes of shapes (1, 7, 256) and (1, 4, 4, -1). after some checks, i found that the the indices returned by the vqgan_model.decode(image) has some additional properties that normal jnp.array dont have, which may be the reason for the issue. can you please help me figure out a solution for this, i actually don't want to train a vqgan model now which if i didn't find solution i must do train a vqgan from scratch, which i don't want to now.

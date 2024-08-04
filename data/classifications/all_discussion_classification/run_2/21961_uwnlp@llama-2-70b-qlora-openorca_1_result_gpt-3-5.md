@@ -1,0 +1,5 @@
+## https://huggingface.co/uwnlp/llama-2-70b-qlora-openorca/discussions/1
+
+contains_question: yes
+
+question_part: just checking in to see if you wanted more specific details for how the orca model, or our models were trained :) I saw this Qlora yesterday and decided to check in to see if there was anything we could do to contribute, especially if this is for research purposes. I know the paper is a bit vague in parts about how exactly they managed certain elements, but we've been analyzing it rigorously for a couple of months. I'm happy to gather a few of us who worked on it and discuss our solutions if needed. Additionally, if the goal of the Qlora was simply to generate an open and accessible Qlora of our dataset, I'd be very excited to discuss our specific optimizations that allow us to score so highly with each of our releases. We've been meaning to train one for a while now, but we wanted to hold off on the 70b until we had built the new version of the dataset. As we all come out of pocket, we want to be sure we do the best we possibly can when we do it. That being said, it's open-sourced and we're always happy to contribute where we can on that front. ^^

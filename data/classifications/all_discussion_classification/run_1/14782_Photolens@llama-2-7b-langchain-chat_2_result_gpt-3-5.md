@@ -1,0 +1,5 @@
+## https://huggingface.co/Photolens/llama-2-7b-langchain-chat/discussions/2
+
+contains_question: yes
+
+question_part: Hi, I have used your model in localGPT repo and instead of just returning one answer, it returns something like this: Question: {{question}} Answer: ```json {"action": "Final Answer", "action_input": {{answer1}}} ``` [INST] {{somehow rephrased question}} [/INST] ```json {"action": "Final Answer", "action_input": {{answer2}}} ``` [INST] {{somehow rephrased question again}} [/INST] ```json {"action": "Final Answer", "action_input": {{yet another answer}}} and so on. Is this how it is supposed to look like, or I need to make changes to the output? The original model used in localGPT is TheBloke/Llama-2-13b-Chat-GGUF Update: I realized that this is because of the dataset your model was trained on. But how should I format the prompt template so that I just get one answer and not this whole format above? If it is any help, I work with langchain.

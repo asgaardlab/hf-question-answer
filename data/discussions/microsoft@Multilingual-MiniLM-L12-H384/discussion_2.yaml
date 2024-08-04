@@ -1,0 +1,260 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: loretoparisi
+conflicting_files: null
+created_at: 2022-09-29 16:15:55+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1642412329881-5e6b7a61d4cd9779932a7601.png?w=200&h=200&f=face
+      fullname: Loreto Parisi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: loretoparisi
+      type: user
+    createdAt: '2022-09-29T17:15:55.000Z'
+    data:
+      edited: true
+      editors:
+      - loretoparisi
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1642412329881-5e6b7a61d4cd9779932a7601.png?w=200&h=200&f=face
+          fullname: Loreto Parisi
+          isHf: false
+          isPro: false
+          name: loretoparisi
+          type: user
+        html: "<p>I have successfully converted the <code>sentencepiece.bpe.model</code>\
+          \ to JSON vocabulary and text merges. See <a rel=\"nofollow\" href=\"https://github.com/huggingface/tokenizers/issues/1076\"\
+          >here</a> for more details about BPE SentencePiece tokenizer.<br>The tokenization\
+          \ works fine using <code>tokenizers</code> library:</p>\n<pre><code class=\"\
+          language-javascript\"><span class=\"hljs-keyword\">const</span> { <span\
+          \ class=\"hljs-title class_\">SentencePieceBPETokenizer</span> } = <span\
+          \ class=\"hljs-built_in\">require</span>(<span class=\"hljs-string\">\"\
+          tokenizers\"</span>);\n\n<span class=\"hljs-keyword\">const</span> tokenizer\
+          \ = <span class=\"hljs-keyword\">await</span> <span class=\"hljs-title class_\"\
+          >SentencePieceBPETokenizer</span>.<span class=\"hljs-title function_\">fromOptions</span>({\n\
+          \        <span class=\"hljs-attr\">vocabFile</span>: <span class=\"hljs-string\"\
+          >\"sentencepiece-vocab.json\"</span>,\n        <span class=\"hljs-attr\"\
+          >mergesFile</span>: <span class=\"hljs-string\">\"sentencepiece-merges.txt\"\
+          </span>,\n    });\n     \n    <span class=\"hljs-keyword\">let</span> <span\
+          \ class=\"hljs-title function_\">encoder</span> = (<span class=\"hljs-params\"\
+          >tokenizer</span>) =&gt; <span class=\"hljs-title function_\">promisify</span>(tokenizer.<span\
+          \ class=\"hljs-property\">encode</span>.<span class=\"hljs-title function_\"\
+          >bind</span>(tokenizer))\n    encode = <span class=\"hljs-title function_\"\
+          >encoder</span>(tokenizer);\n    \n    encoded = <span class=\"hljs-keyword\"\
+          >await</span> <span class=\"hljs-title function_\">encode</span>(<span class=\"\
+          hljs-string\">\"Hello how are you?\"</span>);\n    <span class=\"hljs-variable\
+          \ language_\">console</span>.<span class=\"hljs-title function_\">log</span>(<span\
+          \ class=\"hljs-string\">\"ids \"</span>, encoded.<span class=\"hljs-title\
+          \ function_\">getIds</span>());\n    <span class=\"hljs-variable language_\"\
+          >console</span>.<span class=\"hljs-title function_\">log</span>(<span class=\"\
+          hljs-string\">\"tokens \"</span>, encoded.<span class=\"hljs-title function_\"\
+          >getTokens</span>());\n    decoded = <span class=\"hljs-keyword\">await</span>\
+          \ tokenizer.<span class=\"hljs-title function_\">decode</span>(encoded.<span\
+          \ class=\"hljs-title function_\">getIds</span>(), skipSpecialTokens);\n\
+          \    <span class=\"hljs-variable language_\">console</span>.<span class=\"\
+          hljs-title function_\">log</span>(decoded); <span class=\"hljs-comment\"\
+          >// hello how are you?</span>\n</code></pre>\n<p>getting the expected result</p>\n\
+          <pre><code>ids  [ 35377, 3641, 620, 397, 31 ]\ntokens  [ '\u2581Hello',\
+          \ '\u2581how', '\u2581are', '\u2581you', '?' ]\nHello how are you?\n</code></pre>\n\
+          <p>When passing the generated ids to the model inference in ONNX I get an\
+          \ error:</p>\n<pre><code class=\"language-javascript\"><span class=\"hljs-keyword\"\
+          >const</span> ort = <span class=\"hljs-built_in\">require</span>(<span class=\"\
+          hljs-string\">'onnxruntime-node'</span>);\n\n<span class=\"hljs-comment\"\
+          >// onnx sesion</span>\nsession = <span class=\"hljs-keyword\">await</span>\
+          \ ort.<span class=\"hljs-property\">InferenceSession</span>.<span class=\"\
+          hljs-title function_\">create</span>(self.<span class=\"hljs-property\"\
+          >_options</span>.<span class=\"hljs-property\">model</span>.<span class=\"\
+          hljs-property\">path</span>, options);\n\n<span class=\"hljs-keyword\">const</span>\
+          \ encoded_ids = (<span class=\"hljs-keyword\">await</span> tokenizer.<span\
+          \ class=\"hljs-title function_\">tokenize</span>(text)).<span class=\"hljs-title\
+          \ function_\">getIds</span>();\n<span class=\"hljs-keyword\">const</span>\
+          \ model_input = <span class=\"hljs-variable constant_\">ONNX</span>.<span\
+          \ class=\"hljs-title function_\">create_model_input</span>(encoded_ids);\n\
+          <span class=\"hljs-keyword\">const</span> output = <span class=\"hljs-keyword\"\
+          >await</span> session.<span class=\"hljs-title function_\">run</span>(model_input,\
+          \ [<span class=\"hljs-string\">'output_0'</span>]);\n</code></pre>\n<p>and\
+          \ getting  <code>invalid expand shape</code> errors</p>\n<pre><code>2022-09-29\
+          \ 18:59:08.039 node[63957:683481] 2022-09-29 17:59:08.039329 [E:onnxruntime:,\
+          \ parallel_executor.cc:210 RunNodeAsync] Non-zero status code returned while\
+          \ running Expand node. Name:'Expand_21' Status Message: invalid expand shape\n\
+          2022-09-29 18:59:08.040 node[63957:683429] 2022-09-29 17:59:08.039978 [E:onnxruntime:,\
+          \ parallel_executor.cc:75 Execute] [ONNXRuntimeError] : 2 : INVALID_ARGUMENT\
+          \ : Non-zero status code returned while running Expand node. Name:'Expand_21'\
+          \ Status Message: invalid expand shape\n</code></pre>\n<p>Model input was</p>\n\
+          <pre><code>model_input  {\n  input_ids: l {\n    dims: [ 1, 604 ],\n   \
+          \ type: 'int64',\n    data: BigInt64Array(604) [\n        101n,     5n,\
+          \     0n,   567n,   807n,  4504n,   91n,   397n,\n       6164n,    75n,\
+          \  1379n,   644n,     0n, 69084n, 1365n,    86n,\n      49781n,   441n,\
+          \  5674n,   515n, 58967n,    69n, 4223n,  1080n,\n      34270n,     0n,\
+          \   283n,   106n,   397n,  3567n, 3677n,    31n,\n      15900n,   397n,\
+          \   220n,  1296n,    31n,     0n,  131n,   617n,\n       4504n,    91n,\
+          \  1671n,   441n,    15n,     0n, 8330n,    89n,\n         18n,    24n,\
+          \    17n, 26865n,     0n, 37838n, 2173n,   441n,\n      30481n,   397n,\
+          \ 12318n,  4126n,  7067n,    86n, 5153n,    53n,\n        441n,     0n,\
+          \   567n,  2300n,    24n,    17n, 3713n,  2366n,\n        397n,    24n,\
+          \   106n, 89288n,    99n,     0n,  918n, 11632n,\n        758n, 79196n,\
+          \   256n,  3407n,  9587n,   213n,    0n, 23388n,\n         24n,     6n,\
+          \  5791n,  5044n, 80096n,     0n,  567n,    24n,\n         38n,   705n,\
+          \   190n,    75n,\n      ... 504 more items\n    ],\n    size: 604\n  },\n\
+          \  attention_mask: l {\n    dims: [ 1, 604 ],\n    type: 'int64',\n    data:\
+          \ BigInt64Array(604) [\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+          \ 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n,\
+          \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+          \ 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n \
+          \     1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n,\n      ...\
+          \ 504 more items\n    ],\n    size: 604\n  },\n  token_type_ids: l {\n \
+          \   dims: [ 1, 604 ],\n    type: 'int64',\n    data: BigInt64Array(604)\
+          \ [\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+          \ 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n     \
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+          \ 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n,\n      ... 504 more items\n   \
+          \ ],\n    size: 604\n  }\n}\n</code></pre>\n"
+        raw: "I have successfully converted the `sentencepiece.bpe.model` to JSON\
+          \ vocabulary and text merges. See [here](https://github.com/huggingface/tokenizers/issues/1076)\
+          \ for more details about BPE SentencePiece tokenizer.\nThe tokenization\
+          \ works fine using `tokenizers` library:\n\n```javascript\nconst { SentencePieceBPETokenizer\
+          \ } = require(\"tokenizers\");\n\nconst tokenizer = await SentencePieceBPETokenizer.fromOptions({\n\
+          \        vocabFile: \"sentencepiece-vocab.json\",\n        mergesFile: \"\
+          sentencepiece-merges.txt\",\n    });\n     \n    let encoder = (tokenizer)\
+          \ => promisify(tokenizer.encode.bind(tokenizer))\n    encode = encoder(tokenizer);\n\
+          \    \n    encoded = await encode(\"Hello how are you?\");\n    console.log(\"\
+          ids \", encoded.getIds());\n    console.log(\"tokens \", encoded.getTokens());\n\
+          \    decoded = await tokenizer.decode(encoded.getIds(), skipSpecialTokens);\n\
+          \    console.log(decoded); // hello how are you?\n```\ngetting the expected\
+          \ result\n\n```\nids  [ 35377, 3641, 620, 397, 31 ]\ntokens  [ '\u2581Hello',\
+          \ '\u2581how', '\u2581are', '\u2581you', '?' ]\nHello how are you?\n```\n\
+          \nWhen passing the generated ids to the model inference in ONNX I get an\
+          \ error:\n\n```javascript\nconst ort = require('onnxruntime-node');\n\n\
+          // onnx sesion\nsession = await ort.InferenceSession.create(self._options.model.path,\
+          \ options);\n\nconst encoded_ids = (await tokenizer.tokenize(text)).getIds();\n\
+          const model_input = ONNX.create_model_input(encoded_ids);\nconst output\
+          \ = await session.run(model_input, ['output_0']);\n```\n\nand getting  `invalid\
+          \ expand shape` errors\n\n```\n2022-09-29 18:59:08.039 node[63957:683481]\
+          \ 2022-09-29 17:59:08.039329 [E:onnxruntime:, parallel_executor.cc:210 RunNodeAsync]\
+          \ Non-zero status code returned while running Expand node. Name:'Expand_21'\
+          \ Status Message: invalid expand shape\n2022-09-29 18:59:08.040 node[63957:683429]\
+          \ 2022-09-29 17:59:08.039978 [E:onnxruntime:, parallel_executor.cc:75 Execute]\
+          \ [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned\
+          \ while running Expand node. Name:'Expand_21' Status Message: invalid expand\
+          \ shape\n```\n\nModel input was\n\n```\nmodel_input  {\n  input_ids: l {\n\
+          \    dims: [ 1, 604 ],\n    type: 'int64',\n    data: BigInt64Array(604)\
+          \ [\n        101n,     5n,     0n,   567n,   807n,  4504n,   91n,   397n,\n\
+          \       6164n,    75n,  1379n,   644n,     0n, 69084n, 1365n,    86n,\n\
+          \      49781n,   441n,  5674n,   515n, 58967n,    69n, 4223n,  1080n,\n\
+          \      34270n,     0n,   283n,   106n,   397n,  3567n, 3677n,    31n,\n\
+          \      15900n,   397n,   220n,  1296n,    31n,     0n,  131n,   617n,\n\
+          \       4504n,    91n,  1671n,   441n,    15n,     0n, 8330n,    89n,\n\
+          \         18n,    24n,    17n, 26865n,     0n, 37838n, 2173n,   441n,\n\
+          \      30481n,   397n, 12318n,  4126n,  7067n,    86n, 5153n,    53n,\n\
+          \        441n,     0n,   567n,  2300n,    24n,    17n, 3713n,  2366n,\n\
+          \        397n,    24n,   106n, 89288n,    99n,     0n,  918n, 11632n,\n\
+          \        758n, 79196n,   256n,  3407n,  9587n,   213n,    0n, 23388n,\n\
+          \         24n,     6n,  5791n,  5044n, 80096n,     0n,  567n,    24n,\n\
+          \         38n,   705n,   190n,    75n,\n      ... 504 more items\n    ],\n\
+          \    size: 604\n  },\n  attention_mask: l {\n    dims: [ 1, 604 ],\n   \
+          \ type: 'int64',\n    data: BigInt64Array(604) [\n      1n, 1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n\
+          \      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+          \ 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+          \ 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n,\
+          \ 1n, 1n, 1n,\n      ... 504 more items\n    ],\n    size: 604\n  },\n \
+          \ token_type_ids: l {\n    dims: [ 1, 604 ],\n    type: 'int64',\n    data:\
+          \ BigInt64Array(604) [\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+          \ 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+          \ 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n \
+          \     0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n,\
+          \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n,\n      ...\
+          \ 504 more items\n    ],\n    size: 604\n  }\n}\n```"
+        updatedAt: '2022-09-29T17:44:55.696Z'
+      numEdits: 2
+      reactions: []
+    id: 6335d2cba8048332fdbd9c11
+    type: comment
+  author: loretoparisi
+  content: "I have successfully converted the `sentencepiece.bpe.model` to JSON vocabulary\
+    \ and text merges. See [here](https://github.com/huggingface/tokenizers/issues/1076)\
+    \ for more details about BPE SentencePiece tokenizer.\nThe tokenization works\
+    \ fine using `tokenizers` library:\n\n```javascript\nconst { SentencePieceBPETokenizer\
+    \ } = require(\"tokenizers\");\n\nconst tokenizer = await SentencePieceBPETokenizer.fromOptions({\n\
+    \        vocabFile: \"sentencepiece-vocab.json\",\n        mergesFile: \"sentencepiece-merges.txt\"\
+    ,\n    });\n     \n    let encoder = (tokenizer) => promisify(tokenizer.encode.bind(tokenizer))\n\
+    \    encode = encoder(tokenizer);\n    \n    encoded = await encode(\"Hello how\
+    \ are you?\");\n    console.log(\"ids \", encoded.getIds());\n    console.log(\"\
+    tokens \", encoded.getTokens());\n    decoded = await tokenizer.decode(encoded.getIds(),\
+    \ skipSpecialTokens);\n    console.log(decoded); // hello how are you?\n```\n\
+    getting the expected result\n\n```\nids  [ 35377, 3641, 620, 397, 31 ]\ntokens\
+    \  [ '\u2581Hello', '\u2581how', '\u2581are', '\u2581you', '?' ]\nHello how are\
+    \ you?\n```\n\nWhen passing the generated ids to the model inference in ONNX I\
+    \ get an error:\n\n```javascript\nconst ort = require('onnxruntime-node');\n\n\
+    // onnx sesion\nsession = await ort.InferenceSession.create(self._options.model.path,\
+    \ options);\n\nconst encoded_ids = (await tokenizer.tokenize(text)).getIds();\n\
+    const model_input = ONNX.create_model_input(encoded_ids);\nconst output = await\
+    \ session.run(model_input, ['output_0']);\n```\n\nand getting  `invalid expand\
+    \ shape` errors\n\n```\n2022-09-29 18:59:08.039 node[63957:683481] 2022-09-29\
+    \ 17:59:08.039329 [E:onnxruntime:, parallel_executor.cc:210 RunNodeAsync] Non-zero\
+    \ status code returned while running Expand node. Name:'Expand_21' Status Message:\
+    \ invalid expand shape\n2022-09-29 18:59:08.040 node[63957:683429] 2022-09-29\
+    \ 17:59:08.039978 [E:onnxruntime:, parallel_executor.cc:75 Execute] [ONNXRuntimeError]\
+    \ : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Expand\
+    \ node. Name:'Expand_21' Status Message: invalid expand shape\n```\n\nModel input\
+    \ was\n\n```\nmodel_input  {\n  input_ids: l {\n    dims: [ 1, 604 ],\n    type:\
+    \ 'int64',\n    data: BigInt64Array(604) [\n        101n,     5n,     0n,   567n,\
+    \   807n,  4504n,   91n,   397n,\n       6164n,    75n,  1379n,   644n,     0n,\
+    \ 69084n, 1365n,    86n,\n      49781n,   441n,  5674n,   515n, 58967n,    69n,\
+    \ 4223n,  1080n,\n      34270n,     0n,   283n,   106n,   397n,  3567n, 3677n,\
+    \    31n,\n      15900n,   397n,   220n,  1296n,    31n,     0n,  131n,   617n,\n\
+    \       4504n,    91n,  1671n,   441n,    15n,     0n, 8330n,    89n,\n      \
+    \   18n,    24n,    17n, 26865n,     0n, 37838n, 2173n,   441n,\n      30481n,\
+    \   397n, 12318n,  4126n,  7067n,    86n, 5153n,    53n,\n        441n,     0n,\
+    \   567n,  2300n,    24n,    17n, 3713n,  2366n,\n        397n,    24n,   106n,\
+    \ 89288n,    99n,     0n,  918n, 11632n,\n        758n, 79196n,   256n,  3407n,\
+    \  9587n,   213n,    0n, 23388n,\n         24n,     6n,  5791n,  5044n, 80096n,\
+    \     0n,  567n,    24n,\n         38n,   705n,   190n,    75n,\n      ... 504\
+    \ more items\n    ],\n    size: 604\n  },\n  attention_mask: l {\n    dims: [\
+    \ 1, 604 ],\n    type: 'int64',\n    data: BigInt64Array(604) [\n      1n, 1n,\
+    \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+    \ 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n   \
+    \   1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n,\
+    \ 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\
+    \ 1n,\n      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n,\
+    \ 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,\n      1n, 1n, 1n, 1n,\n      ... 504 more\
+    \ items\n    ],\n    size: 604\n  },\n  token_type_ids: l {\n    dims: [ 1, 604\
+    \ ],\n    type: 'int64',\n    data: BigInt64Array(604) [\n      0n, 0n, 0n, 0n,\
+    \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+    \ 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n,\
+    \ 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\
+    \ 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n   \
+    \   0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n, 0n,\
+    \ 0n, 0n, 0n, 0n, 0n, 0n, 0n,\n      0n, 0n, 0n, 0n,\n      ... 504 more items\n\
+    \    ],\n    size: 604\n  }\n}\n```"
+  created_at: 2022-09-29 16:15:55+00:00
+  edited: true
+  hidden: false
+  id: 6335d2cba8048332fdbd9c11
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: microsoft/Multilingual-MiniLM-L12-H384
+repo_type: model
+status: open
+target_branch: null
+title: ONNX Inference in NodeJS

@@ -1,0 +1,283 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: charles0120
+conflicting_files: null
+created_at: 2023-05-10 19:59:23+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d48f62d888ecfe360d3b7833f7993c4e.svg
+      fullname: Charles Sun
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: charles0120
+      type: user
+    createdAt: '2023-05-10T20:59:23.000Z'
+    data:
+      edited: false
+      editors:
+      - charles0120
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d48f62d888ecfe360d3b7833f7993c4e.svg
+          fullname: Charles Sun
+          isHf: false
+          isPro: false
+          name: charles0120
+          type: user
+        html: '<p>I use lightning transformers to do model parallelism for inference.
+          alpaca-13b can be loaded successfully, but alpaca-native throws errors.
+          Complete error message is given below. I also tried to load it with HuggingFace
+          Transformers directly and it works well.</p>
+
+          <p>I am a new guy to the HuggingFace Community so please let me know if
+          I should put this issue to anywhere else. Thank you!</p>
+
+          <hr>
+
+          <p>UnpicklingError                           Traceback (most recent call
+          last)<br>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py
+          in load_state_dict(checkpoint_file)<br>    441     try:<br>--&gt; 442         return
+          torch.load(checkpoint_file, map_location="cpu")<br>    443     except Exception
+          as e:</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py
+          in load(f, map_location, pickle_module, weights_only, **pickle_load_args)<br>    794                 raise
+          pickle.UnpicklingError(UNSAFE_MESSAGE + str(e)) from None<br>--&gt; 795         return
+          _legacy_load(opened_file, map_location, pickle_module, **pickle_load_args)<br>    796
+          </p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py
+          in _legacy_load(f, map_location, pickle_module, **pickle_load_args)<br>   1001<br>-&gt;
+          1002     magic_number = pickle_module.load(f, **pickle_load_args)<br>   1003     if
+          magic_number != MAGIC_NUMBER:</p>
+
+          <p>UnpicklingError: invalid load key, ''{''.</p>
+
+          <p>The above exception was the direct cause of the following exception:</p>
+
+          <p>ValueError                                Traceback (most recent call
+          last)<br>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py
+          in load_state_dict(checkpoint_file)<br>    455                         "model.
+          Make sure you have saved the model properly."<br>--&gt; 456                     )
+          from e<br>    457         except (UnicodeDecodeError, ValueError):</p>
+
+          <p>ValueError: Unable to locate the file models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json
+          which is necessary to load this pretrained model. Make sure you have saved
+          the model properly.</p>
+
+          <p>During handling of the above exception, another exception occurred:</p>
+
+          <p>OSError                                   Traceback (most recent call
+          last)<br>/tmp/ipykernel_54854/208673554.py in<br>      8     tokenizer=AutoTokenizer.from_pretrained(model_name,
+          cache_dir=cache_dir),<br>      9     low_cpu_mem_usage=True,<br>---&gt;
+          10     device_map="auto",<br>     11 )</p>
+
+          <p>/tmp/ipykernel_54854/614374815.py in <strong>init</strong>(self, non_padding_token_as_last,
+          downstream_model_type, *args, **kwargs)<br>     11         self, non_padding_token_as_last:
+          bool = False, downstream_model_type: Type[_BaseAutoModelClass] = transformers.AutoModelForCausalLM,
+          *args, **kwargs<br>     12     ) -&gt; None:<br>---&gt; 13         super().<strong>init</strong>(downstream_model_type,
+          *args, **kwargs)<br>     14<br>     15         self.set_new_experiment(non_padding_token_as_last)</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py
+          in <strong>init</strong>(self, downstream_model_type, pretrained_model_name_or_path,
+          tokenizer, pipeline_kwargs, load_weights, deepspeed_sharding, **model_data_kwargs)<br>     62         self.pretrained_model_name_or_path
+          = pretrained_model_name_or_path<br>     63         if not self.deepspeed_sharding:<br>---&gt;
+          64             self.initialize_model(self.pretrained_model_name_or_path)<br>     65         self._tokenizer
+          = tokenizer  # necessary for hf_pipeline<br>     66         self._hf_pipeline
+          = None</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py
+          in initialize_model(self, pretrained_model_name_or_path)<br>     74         if
+          self.load_weights:<br>     75             self.model = self.downstream_model_type.from_pretrained(<br>---&gt;
+          76                 pretrained_model_name_or_path, **self.model_data_kwargs<br>     77             )<br>     78         else:</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/models/auto/auto_factory.py
+          in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)<br>    470             model_class
+          = _get_model_class(config, cls._model_mapping)<br>    471             return
+          model_class.from_pretrained(<br>--&gt; 472                 pretrained_model_name_or_path,
+          *model_args, config=config, **hub_kwargs, **kwargs<br>    473             )<br>    474         raise
+          ValueError(</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py
+          in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)<br>   2558             if
+          not is_sharded and state_dict is None:<br>   2559                 # Time
+          to load the checkpoint<br>-&gt; 2560                 state_dict = load_state_dict(resolved_archive_file)<br>   2561<br>   2562             #
+          set dtype to instantiate the model under:</p>
+
+          <p>/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py
+          in load_state_dict(checkpoint_file)<br>    457         except (UnicodeDecodeError,
+          ValueError):<br>    458             raise OSError(<br>--&gt; 459                 f"Unable
+          to load weights from pytorch checkpoint file for ''{checkpoint_file}'' "<br>    460                 f"at
+          ''{checkpoint_file}''. "<br>    461                 "If you tried to load
+          a PyTorch model from a TF 2.0 checkpoint, please set from_tf=True."</p>
+
+          <p>OSError: Unable to load weights from pytorch checkpoint file for ''models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json''
+          at ''models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json''.
+          If you tried to load a PyTorch model from a TF 2.0 checkpoint, please set
+          from_tf=True.</p>
+
+          '
+        raw: "I use lightning transformers to do model parallelism for inference.\
+          \ alpaca-13b can be loaded successfully, but alpaca-native throws errors.\
+          \ Complete error message is given below. I also tried to load it with HuggingFace\
+          \ Transformers directly and it works well.\r\n\r\nI am a new guy to the\
+          \ HuggingFace Community so please let me know if I should put this issue\
+          \ to anywhere else. Thank you!\r\n\r\n---------------------------------------------------------------------------\r\
+          \nUnpicklingError                           Traceback (most recent call\
+          \ last)\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+          \ in load_state_dict(checkpoint_file)\r\n    441     try:\r\n--> 442   \
+          \      return torch.load(checkpoint_file, map_location=\"cpu\")\r\n    443\
+          \     except Exception as e:\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py\
+          \ in load(f, map_location, pickle_module, weights_only, **pickle_load_args)\r\
+          \n    794                 raise pickle.UnpicklingError(UNSAFE_MESSAGE +\
+          \ str(e)) from None\r\n--> 795         return _legacy_load(opened_file,\
+          \ map_location, pickle_module, **pickle_load_args)\r\n    796 \r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py\
+          \ in _legacy_load(f, map_location, pickle_module, **pickle_load_args)\r\n\
+          \   1001 \r\n-> 1002     magic_number = pickle_module.load(f, **pickle_load_args)\r\
+          \n   1003     if magic_number != MAGIC_NUMBER:\r\n\r\nUnpicklingError: invalid\
+          \ load key, '{'.\r\n\r\nThe above exception was the direct cause of the\
+          \ following exception:\r\n\r\nValueError                               \
+          \ Traceback (most recent call last)\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+          \ in load_state_dict(checkpoint_file)\r\n    455                       \
+          \  \"model. Make sure you have saved the model properly.\"\r\n--> 456  \
+          \                   ) from e\r\n    457         except (UnicodeDecodeError,\
+          \ ValueError):\r\n\r\nValueError: Unable to locate the file models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json\
+          \ which is necessary to load this pretrained model. Make sure you have saved\
+          \ the model properly.\r\n\r\nDuring handling of the above exception, another\
+          \ exception occurred:\r\n\r\nOSError                                   Traceback\
+          \ (most recent call last)\r\n/tmp/ipykernel_54854/208673554.py in \r\n \
+          \     8     tokenizer=AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir),\r\
+          \n      9     low_cpu_mem_usage=True,\r\n---> 10     device_map=\"auto\"\
+          ,\r\n     11 )\r\n\r\n/tmp/ipykernel_54854/614374815.py in __init__(self,\
+          \ non_padding_token_as_last, downstream_model_type, *args, **kwargs)\r\n\
+          \     11         self, non_padding_token_as_last: bool = False, downstream_model_type:\
+          \ Type[_BaseAutoModelClass] = transformers.AutoModelForCausalLM, *args,\
+          \ **kwargs\r\n     12     ) -> None:\r\n---> 13         super().__init__(downstream_model_type,\
+          \ *args, **kwargs)\r\n     14 \r\n     15         self.set_new_experiment(non_padding_token_as_last)\r\
+          \n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py\
+          \ in __init__(self, downstream_model_type, pretrained_model_name_or_path,\
+          \ tokenizer, pipeline_kwargs, load_weights, deepspeed_sharding, **model_data_kwargs)\r\
+          \n     62         self.pretrained_model_name_or_path = pretrained_model_name_or_path\r\
+          \n     63         if not self.deepspeed_sharding:\r\n---> 64           \
+          \  self.initialize_model(self.pretrained_model_name_or_path)\r\n     65\
+          \         self._tokenizer = tokenizer  # necessary for hf_pipeline\r\n \
+          \    66         self._hf_pipeline = None\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py\
+          \ in initialize_model(self, pretrained_model_name_or_path)\r\n     74  \
+          \       if self.load_weights:\r\n     75             self.model = self.downstream_model_type.from_pretrained(\r\
+          \n---> 76                 pretrained_model_name_or_path, **self.model_data_kwargs\r\
+          \n     77             )\r\n     78         else:\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/models/auto/auto_factory.py\
+          \ in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)\r\
+          \n    470             model_class = _get_model_class(config, cls._model_mapping)\r\
+          \n    471             return model_class.from_pretrained(\r\n--> 472   \
+          \              pretrained_model_name_or_path, *model_args, config=config,\
+          \ **hub_kwargs, **kwargs\r\n    473             )\r\n    474         raise\
+          \ ValueError(\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+          \ in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)\r\
+          \n   2558             if not is_sharded and state_dict is None:\r\n   2559\
+          \                 # Time to load the checkpoint\r\n-> 2560             \
+          \    state_dict = load_state_dict(resolved_archive_file)\r\n   2561 \r\n\
+          \   2562             # set dtype to instantiate the model under:\r\n\r\n\
+          /data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+          \ in load_state_dict(checkpoint_file)\r\n    457         except (UnicodeDecodeError,\
+          \ ValueError):\r\n    458             raise OSError(\r\n--> 459        \
+          \         f\"Unable to load weights from pytorch checkpoint file for '{checkpoint_file}'\
+          \ \"\r\n    460                 f\"at '{checkpoint_file}'. \"\r\n    461\
+          \                 \"If you tried to load a PyTorch model from a TF 2.0 checkpoint,\
+          \ please set from_tf=True.\"\r\n\r\nOSError: Unable to load weights from\
+          \ pytorch checkpoint file for 'models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json'\
+          \ at 'models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json'.\
+          \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please\
+          \ set from_tf=True."
+        updatedAt: '2023-05-10T20:59:23.218Z'
+      numEdits: 0
+      reactions: []
+    id: 645c05ab08d9a18f91ee0911
+    type: comment
+  author: charles0120
+  content: "I use lightning transformers to do model parallelism for inference. alpaca-13b\
+    \ can be loaded successfully, but alpaca-native throws errors. Complete error\
+    \ message is given below. I also tried to load it with HuggingFace Transformers\
+    \ directly and it works well.\r\n\r\nI am a new guy to the HuggingFace Community\
+    \ so please let me know if I should put this issue to anywhere else. Thank you!\r\
+    \n\r\n---------------------------------------------------------------------------\r\
+    \nUnpicklingError                           Traceback (most recent call last)\r\
+    \n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+    \ in load_state_dict(checkpoint_file)\r\n    441     try:\r\n--> 442         return\
+    \ torch.load(checkpoint_file, map_location=\"cpu\")\r\n    443     except Exception\
+    \ as e:\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py\
+    \ in load(f, map_location, pickle_module, weights_only, **pickle_load_args)\r\n\
+    \    794                 raise pickle.UnpicklingError(UNSAFE_MESSAGE + str(e))\
+    \ from None\r\n--> 795         return _legacy_load(opened_file, map_location,\
+    \ pickle_module, **pickle_load_args)\r\n    796 \r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/torch/serialization.py\
+    \ in _legacy_load(f, map_location, pickle_module, **pickle_load_args)\r\n   1001\
+    \ \r\n-> 1002     magic_number = pickle_module.load(f, **pickle_load_args)\r\n\
+    \   1003     if magic_number != MAGIC_NUMBER:\r\n\r\nUnpicklingError: invalid\
+    \ load key, '{'.\r\n\r\nThe above exception was the direct cause of the following\
+    \ exception:\r\n\r\nValueError                                Traceback (most\
+    \ recent call last)\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+    \ in load_state_dict(checkpoint_file)\r\n    455                         \"model.\
+    \ Make sure you have saved the model properly.\"\r\n--> 456                  \
+    \   ) from e\r\n    457         except (UnicodeDecodeError, ValueError):\r\n\r\
+    \nValueError: Unable to locate the file models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json\
+    \ which is necessary to load this pretrained model. Make sure you have saved the\
+    \ model properly.\r\n\r\nDuring handling of the above exception, another exception\
+    \ occurred:\r\n\r\nOSError                                   Traceback (most recent\
+    \ call last)\r\n/tmp/ipykernel_54854/208673554.py in \r\n      8     tokenizer=AutoTokenizer.from_pretrained(model_name,\
+    \ cache_dir=cache_dir),\r\n      9     low_cpu_mem_usage=True,\r\n---> 10    \
+    \ device_map=\"auto\",\r\n     11 )\r\n\r\n/tmp/ipykernel_54854/614374815.py in\
+    \ __init__(self, non_padding_token_as_last, downstream_model_type, *args, **kwargs)\r\
+    \n     11         self, non_padding_token_as_last: bool = False, downstream_model_type:\
+    \ Type[_BaseAutoModelClass] = transformers.AutoModelForCausalLM, *args, **kwargs\r\
+    \n     12     ) -> None:\r\n---> 13         super().__init__(downstream_model_type,\
+    \ *args, **kwargs)\r\n     14 \r\n     15         self.set_new_experiment(non_padding_token_as_last)\r\
+    \n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py\
+    \ in __init__(self, downstream_model_type, pretrained_model_name_or_path, tokenizer,\
+    \ pipeline_kwargs, load_weights, deepspeed_sharding, **model_data_kwargs)\r\n\
+    \     62         self.pretrained_model_name_or_path = pretrained_model_name_or_path\r\
+    \n     63         if not self.deepspeed_sharding:\r\n---> 64             self.initialize_model(self.pretrained_model_name_or_path)\r\
+    \n     65         self._tokenizer = tokenizer  # necessary for hf_pipeline\r\n\
+    \     66         self._hf_pipeline = None\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/lightning_transformers/core/model.py\
+    \ in initialize_model(self, pretrained_model_name_or_path)\r\n     74        \
+    \ if self.load_weights:\r\n     75             self.model = self.downstream_model_type.from_pretrained(\r\
+    \n---> 76                 pretrained_model_name_or_path, **self.model_data_kwargs\r\
+    \n     77             )\r\n     78         else:\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/models/auto/auto_factory.py\
+    \ in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)\r\
+    \n    470             model_class = _get_model_class(config, cls._model_mapping)\r\
+    \n    471             return model_class.from_pretrained(\r\n--> 472         \
+    \        pretrained_model_name_or_path, *model_args, config=config, **hub_kwargs,\
+    \ **kwargs\r\n    473             )\r\n    474         raise ValueError(\r\n\r\
+    \n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+    \ in from_pretrained(cls, pretrained_model_name_or_path, *model_args, **kwargs)\r\
+    \n   2558             if not is_sharded and state_dict is None:\r\n   2559   \
+    \              # Time to load the checkpoint\r\n-> 2560                 state_dict\
+    \ = load_state_dict(resolved_archive_file)\r\n   2561 \r\n   2562            \
+    \ # set dtype to instantiate the model under:\r\n\r\n/data2/cxsun/anaconda3/envs/llm_gpu_clean/lib/python3.7/site-packages/transformers/modeling_utils.py\
+    \ in load_state_dict(checkpoint_file)\r\n    457         except (UnicodeDecodeError,\
+    \ ValueError):\r\n    458             raise OSError(\r\n--> 459              \
+    \   f\"Unable to load weights from pytorch checkpoint file for '{checkpoint_file}'\
+    \ \"\r\n    460                 f\"at '{checkpoint_file}'. \"\r\n    461     \
+    \            \"If you tried to load a PyTorch model from a TF 2.0 checkpoint,\
+    \ please set from_tf=True.\"\r\n\r\nOSError: Unable to load weights from pytorch\
+    \ checkpoint file for 'models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json'\
+    \ at 'models/models--chavinlo--alpaca-native/snapshots/cc7773cac2478231807c56ef2f02292d98f85cf5/config.json'.\
+    \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please set from_tf=True."
+  created_at: 2023-05-10 19:59:23+00:00
+  edited: false
+  hidden: false
+  id: 645c05ab08d9a18f91ee0911
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 19
+repo_id: chavinlo/alpaca-native
+repo_type: model
+status: open
+target_branch: null
+title: Unpickling Error when loading model with lightning transformers

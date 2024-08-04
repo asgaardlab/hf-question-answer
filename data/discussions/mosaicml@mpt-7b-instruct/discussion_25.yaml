@@ -1,0 +1,1161 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: datacow
+conflicting_files: null
+created_at: 2023-05-19 13:15:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-05-19T14:15:41.000Z'
+    data:
+      edited: false
+      editors:
+      - datacow
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: "<p>I'm loading in the triton implementation of the model using a custom\
+          \ device map and trying to generate an output as follows (to be clear, I\
+          \ have no issues with the torch implementation):</p>\n<pre><code>torch_dtype\
+          \ = torch.bfloat16\n\nconfig = AutoConfig.from_pretrained(\n  'mosaicml/mpt-7b',\n\
+          \    trust_remote_code=True\n)\nconfig.attn_config['attn_impl'] = 'triton'\n\
+          config.update({\"max_seq_len\": max_len})\nconfig.update({\"torch_dtype\"\
+          : torch_dtype})\n\nwith open('MPT_device_map.pkl', 'rb') as f:\n    dm =\
+          \ pickle.load(f)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    'mosaicml/mpt-7b-instruct',\n\
+          \    torch_dtype=torch_dtype,\n    trust_remote_code=True,\n    device_map=dm,\n\
+          \    config=config,\n    local_files_only=True\n)\n\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          EleutherAI/gpt-neox-20b\", padding_side=\"left\")\n\ntokenizer.pad_token\
+          \ = tokenizer.eos_token\n\ninputs = tokenizer(text, return_tensors=\"pt\"\
+          , padding=True).input_ids.to(device)\n\nstreamer = TextStreamer(tokenizer)\n\
+          \nwith torch.inference_mode():\n    generate_ids = model.generate(inputs,\
+          \ **params, streamer=streamer)\n    generate_ids = generate_ids[:,inputs[0].shape[-1]:]\n\
+          \    output = tokenizer.batch_decode(generate_ids, skip_special_tokens=True)[0]\n\
+          </code></pre>\n<p>And I'm getting the following error:</p>\n<pre><code>/usr/bin/ld:\
+          \ skipping incompatible /usr/lib/libcuda.so when searching for -lcuda\n\
+          ---------------------------------------------------------------------------\n\
+          KeyError                                  Traceback (most recent call last)\n\
+          File &lt;string&gt;:21, in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale,\
+          \ stride_qb, stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb,\
+          \ stride_vh, stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh,\
+          \ stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+          \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N,\
+          \ EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs,\
+          \ stream, warmup)\n\nKeyError: ('2-.-0-.-0-d82511111ad128294e9d31a6ac684238-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+          \ (torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128,\
+          \ False, False, True, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False)))\n\nDuring handling of the\
+          \ above exception, another exception occurred:\n\nRuntimeError         \
+          \                     Traceback (most recent call last)\nCell In[41], line\
+          \ 8\n      4 with torch.inference_mode():\n      5 #     res = nlp(text,\
+          \ max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\n      6\
+          \ #     inputs = input_map(inputs)\n      7     st = time.time()\n----&gt;\
+          \ 8     generate_ids = model.generate(inputs, **params, streamer=streamer)\n\
+          \      9 #     generate_ids = model.module.generate(**inputs, **params,\
+          \ streamer=streamer)\n     10     tt = time.time() - st\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+          \ in _DecoratorContextManager.__call__.&lt;locals&gt;.decorate_context(*args,\
+          \ **kwargs)\n     24 @functools.wraps(func)\n     25 def decorate_context(*args,\
+          \ **kwargs):\n     26     with self.clone():\n---&gt; 27         return\
+          \ func(*args, **kwargs)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\n\
+          \   1558         input_ids=input_ids,\n   1559         expand_size=generation_config.num_return_sequences,\n\
+          \   1560         is_encoder_decoder=self.config.is_encoder_decoder,\n  \
+          \ 1561         **model_kwargs,\n   1562     )\n   1564     # 13. run sample\n\
+          -&gt; 1565     return self.sample(\n   1566         input_ids,\n   1567\
+          \         logits_processor=logits_processor,\n   1568         logits_warper=logits_warper,\n\
+          \   1569         stopping_criteria=stopping_criteria,\n   1570         pad_token_id=generation_config.pad_token_id,\n\
+          \   1571         eos_token_id=generation_config.eos_token_id,\n   1572 \
+          \        output_scores=generation_config.output_scores,\n   1573       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1574         synced_gpus=synced_gpus,\n   1575         streamer=streamer,\n\
+          \   1576         **model_kwargs,\n   1577     )\n   1579 elif is_beam_gen_mode:\n\
+          \   1580     if generation_config.num_return_sequences &gt; generation_config.num_beams:\n\
+          \nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2612,\
+          \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+          \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ streamer, **model_kwargs)\n   2609 model_inputs = self.prepare_inputs_for_generation(input_ids,\
+          \ **model_kwargs)\n   2611 # forward pass to get next token\n-&gt; 2612\
+          \ outputs = self(\n   2613     **model_inputs,\n   2614     return_dict=True,\n\
+          \   2615     output_attentions=output_attentions,\n   2616     output_hidden_states=output_hidden_states,\n\
+          \   2617 )\n   2619 if synced_gpus and this_peer_finished:\n   2620    \
+          \ continue  # don't waste resources running the code we don't need\n\nFile\
+          \ ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1190 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1191 # this function,\
+          \ and just call forward.\n   1192 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1193        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1194  \
+          \   return forward_call(*input, **kwargs)\n   1195 # Do not call functions\
+          \ when jit is used\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.&lt;locals&gt;.new_forward(*args, **kwargs)\n  \
+          \  163         output = old_forward(*args, **kwargs)\n    164 else:\n--&gt;\
+          \ 165     output = old_forward(*args, **kwargs)\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:237,\
+          \ in MPTForCausalLM.forward(self, input_ids, past_key_values, attention_mask,\
+          \ prefix_mask, sequence_id, labels, return_dict, output_attentions, output_hidden_states,\
+          \ use_cache)\n    235 return_dict = return_dict if return_dict is not None\
+          \ else self.config.return_dict\n    236 use_cache = use_cache if use_cache\
+          \ is not None else self.config.use_cache\n--&gt; 237 outputs = self.transformer(input_ids=input_ids,\
+          \ past_key_values=past_key_values, attention_mask=attention_mask, prefix_mask=prefix_mask,\
+          \ sequence_id=sequence_id, return_dict=return_dict, output_attentions=output_attentions,\
+          \ output_hidden_states=output_hidden_states, use_cache=use_cache)\n    238\
+          \ logits = F.linear(outputs.last_hidden_state, self.transformer.wte.weight)\n\
+          \    239 if self.logit_scale is not None:\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1190 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1191 # this function,\
+          \ and just call forward.\n   1192 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1193        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1194  \
+          \   return forward_call(*input, **kwargs)\n   1195 # Do not call functions\
+          \ when jit is used\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:183,\
+          \ in MPTModel.forward(self, input_ids, past_key_values, attention_mask,\
+          \ prefix_mask, sequence_id, return_dict, output_attentions, output_hidden_states,\
+          \ use_cache)\n    181     all_hidden_states = all_hidden_states + (x,)\n\
+          \    182 past_key_value = past_key_values[b_idx] if past_key_values is not\
+          \ None else None\n--&gt; 183 (x, past_key_value) = block(x, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=self.is_causal)\n\
+          \    184 if past_key_values is not None:\n    185     past_key_values[b_idx]\
+          \ = past_key_value\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1190 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1191 # this function,\
+          \ and just call forward.\n   1192 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1193        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1194  \
+          \   return forward_call(*input, **kwargs)\n   1195 # Do not call functions\
+          \ when jit is used\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.&lt;locals&gt;.new_forward(*args, **kwargs)\n  \
+          \  163         output = old_forward(*args, **kwargs)\n    164 else:\n--&gt;\
+          \ 165     output = old_forward(*args, **kwargs)\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/blocks.py:36,\
+          \ in MPTBlock.forward(self, x, past_key_value, attn_bias, attention_mask,\
+          \ is_causal)\n     34 def forward(self, x: torch.Tensor, past_key_value:\
+          \ Optional[Tuple[torch.Tensor]]=None, attn_bias: Optional[torch.Tensor]=None,\
+          \ attention_mask: Optional[torch.ByteTensor]=None, is_causal: bool=True)\
+          \ -&gt; Tuple[torch.Tensor, Optional[Tuple[torch.Tensor]]]:\n     35   \
+          \  a = self.norm_1(x)\n---&gt; 36     (b, _, past_key_value) = self.attn(a,\
+          \ past_key_value=past_key_value, attn_bias=attn_bias, attention_mask=attention_mask,\
+          \ is_causal=is_causal)\n     37     x = x + self.resid_attn_dropout(b)\n\
+          \     38     m = self.norm_2(x)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1190 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1191 # this function,\
+          \ and just call forward.\n   1192 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1193        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1194  \
+          \   return forward_call(*input, **kwargs)\n   1195 # Do not call functions\
+          \ when jit is used\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.&lt;locals&gt;.new_forward(*args, **kwargs)\n  \
+          \  163         output = old_forward(*args, **kwargs)\n    164 else:\n--&gt;\
+          \ 165     output = old_forward(*args, **kwargs)\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:171,\
+          \ in MultiheadAttention.forward(self, x, past_key_value, attn_bias, attention_mask,\
+          \ is_causal, needs_weights)\n    169 if attn_bias is not None:\n    170\
+          \     attn_bias = attn_bias[:, :, -query.size(1):, -key.size(1):]\n--&gt;\
+          \ 171 (context, attn_weights) = self.attn_fn(query, key, value, self.n_heads,\
+          \ softmax_scale=self.softmax_scale, attn_bias=attn_bias, key_padding_mask=key_padding_mask,\
+          \ is_causal=is_causal, dropout_p=self.attn_dropout_p, training=self.training,\
+          \ needs_weights=needs_weights)\n    172 return (self.out_proj(context),\
+          \ attn_weights, past_key_value)\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:111,\
+          \ in triton_flash_attn_fn(query, key, value, n_heads, softmax_scale, attn_bias,\
+          \ key_padding_mask, is_causal, dropout_p, training, needs_weights, multiquery)\n\
+          \    109     value = value.expand(*value.shape[:2], n_heads, value.size(-1))\n\
+          \    110 reset_is_causal = _reset_is_causal(query.size(1), key.size(1),\
+          \ is_causal)\n--&gt; 111 attn_output = flash_attn_triton.flash_attn_func(query,\
+          \ key, value, attn_bias, reset_is_causal, softmax_scale)\n    112 output\
+          \ = attn_output.view(*attn_output.shape[:2], -1)\n    113 return (output,\
+          \ None)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:810,\
+          \ in FlashAttnFunc.forward(ctx, q, k, v, bias, causal, softmax_scale)\n\
+          \    808 # Make sure that the last dimension is contiguous\n    809 q, k,\
+          \ v = [x if x.stride(-1) == 1 else x.contiguous() for x in [q, k, v]]\n\
+          --&gt; 810 o, lse, ctx.softmax_scale = _flash_attn_forward(\n    811   \
+          \  q, k, v, bias=bias, causal=causal, softmax_scale=softmax_scale\n    812\
+          \ )\n    813 ctx.save_for_backward(q, k, v, o, lse, bias)\n    814 ctx.causal\
+          \ = causal\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:623,\
+          \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\n    621\
+          \ num_warps = 4 if d &lt;= 64 else 8\n    622 grid = lambda META: (triton.cdiv(seqlen_q,\
+          \ META[\"BLOCK_M\"]), batch * nheads)\n--&gt; 623 _fwd_kernel[grid](\n \
+          \   624     q, k, v, bias, o,\n    625     lse, tmp,\n    626     softmax_scale,\n\
+          \    627     q.stride(0), q.stride(2), q.stride(1),\n    628     k.stride(0),\
+          \ k.stride(2), k.stride(1),\n    629     v.stride(0), v.stride(2), v.stride(1),\n\
+          \    630     *bias_strides,\n    631     o.stride(0), o.stride(2), o.stride(1),\n\
+          \    632     nheads, seqlen_q, seqlen_k, seqlen_q_rounded, d,\n    633 \
+          \    seqlen_q // 32,  seqlen_k // 32, # key for triton cache (limit number\
+          \ of compilations)\n    634     # Can't use kwargs here because triton autotune\
+          \ expects key to be args, not kwargs\n    635     # IS_CAUSAL=causal, BLOCK_HEADDIM=d,\n\
+          \    636     bias_type, causal, BLOCK_HEADDIM,\n    637     BLOCK_M=BLOCK,\
+          \ BLOCK_N=BLOCK,\n    638     num_warps=num_warps,\n    639     num_stages=1,\n\
+          \    640 )\n    641 return o, lse, softmax_scale\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/jit.py:106,\
+          \ in KernelInterface.__getitem__.&lt;locals&gt;.launcher(*args, **kwargs)\n\
+          \    105 def launcher(*args, **kwargs):\n--&gt; 106     return self.run(*args,\
+          \ grid=grid, **kwargs)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/autotuner.py:200,\
+          \ in Heuristics.run(self, *args, **kwargs)\n    198 for v, heur in self.values.items():\n\
+          \    199     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\n\
+          --&gt; 200 return self.fn.run(*args, **kwargs)\n\nFile &lt;string&gt;:43,\
+          \ in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb,\
+          \ stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh,\
+          \ stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om,\
+          \ nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+          \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N,\
+          \ EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs,\
+          \ stream, warmup)\n\nRuntimeError: Triton Error [CUDA]: invalid argument\n\
+          </code></pre>\n<p>Any ideas what might be causing this? I'm working with:<br>Python:\
+          \ 3.10<br>CUDA: 11.7<br>triton: 2.0.0.dev20221202<br>flash-attn: 1.0.3.post0<br>transformers:\
+          \ 4.29.2<br>torch: 1.13.1+cu117</p>\n"
+        raw: "I'm loading in the triton implementation of the model using a custom\
+          \ device map and trying to generate an output as follows (to be clear, I\
+          \ have no issues with the torch implementation):\r\n```\r\ntorch_dtype =\
+          \ torch.bfloat16\r\n\r\nconfig = AutoConfig.from_pretrained(\r\n  'mosaicml/mpt-7b',\r\
+          \n    trust_remote_code=True\r\n)\r\nconfig.attn_config['attn_impl'] = 'triton'\r\
+          \nconfig.update({\"max_seq_len\": max_len})\r\nconfig.update({\"torch_dtype\"\
+          : torch_dtype})\r\n\r\nwith open('MPT_device_map.pkl', 'rb') as f:\r\n \
+          \   dm = pickle.load(f)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    'mosaicml/mpt-7b-instruct',\r\n    torch_dtype=torch_dtype,\r\n  \
+          \  trust_remote_code=True,\r\n    device_map=dm,\r\n    config=config,\r\
+          \n    local_files_only=True\r\n)\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          EleutherAI/gpt-neox-20b\", padding_side=\"left\")\r\n\r\ntokenizer.pad_token\
+          \ = tokenizer.eos_token\r\n\r\ninputs = tokenizer(text, return_tensors=\"\
+          pt\", padding=True).input_ids.to(device)\r\n\r\nstreamer = TextStreamer(tokenizer)\r\
+          \n\r\nwith torch.inference_mode():\r\n    generate_ids = model.generate(inputs,\
+          \ **params, streamer=streamer)\r\n    generate_ids = generate_ids[:,inputs[0].shape[-1]:]\r\
+          \n    output = tokenizer.batch_decode(generate_ids, skip_special_tokens=True)[0]\r\
+          \n```\r\nAnd I'm getting the following error:\r\n```\r\n/usr/bin/ld: skipping\
+          \ incompatible /usr/lib/libcuda.so when searching for -lcuda\r\n---------------------------------------------------------------------------\r\
+          \nKeyError                                  Traceback (most recent call\
+          \ last)\r\nFile <string>:21, in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP,\
+          \ softmax_scale, stride_qb, stride_qh, stride_qm, stride_kb, stride_kh,\
+          \ stride_kn, stride_vb, stride_vh, stride_vn, stride_bb, stride_bh, stride_bm,\
+          \ stride_ob, stride_oh, stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded,\
+          \ headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL,\
+          \ BLOCK_HEADDIM, EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps,\
+          \ num_stages, extern_libs, stream, warmup)\r\n\r\nKeyError: ('2-.-0-.-0-d82511111ad128294e9d31a6ac684238-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+          \ (torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128,\
+          \ False, False, True, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False)))\r\n\r\nDuring handling of\
+          \ the above exception, another exception occurred:\r\n\r\nRuntimeError \
+          \                             Traceback (most recent call last)\r\nCell\
+          \ In[41], line 8\r\n      4 with torch.inference_mode():\r\n      5 #  \
+          \   res = nlp(text, max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\r\
+          \n      6 #     inputs = input_map(inputs)\r\n      7     st = time.time()\r\
+          \n----> 8     generate_ids = model.generate(inputs, **params, streamer=streamer)\r\
+          \n      9 #     generate_ids = model.module.generate(**inputs, **params,\
+          \ streamer=streamer)\r\n     10     tt = time.time() - st\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+          \ in _DecoratorContextManager.__call__.<locals>.decorate_context(*args,\
+          \ **kwargs)\r\n     24 @functools.wraps(func)\r\n     25 def decorate_context(*args,\
+          \ **kwargs):\r\n     26     with self.clone():\r\n---> 27         return\
+          \ func(*args, **kwargs)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\r\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\r\
+          \n   1558         input_ids=input_ids,\r\n   1559         expand_size=generation_config.num_return_sequences,\r\
+          \n   1560         is_encoder_decoder=self.config.is_encoder_decoder,\r\n\
+          \   1561         **model_kwargs,\r\n   1562     )\r\n   1564     # 13. run\
+          \ sample\r\n-> 1565     return self.sample(\r\n   1566         input_ids,\r\
+          \n   1567         logits_processor=logits_processor,\r\n   1568        \
+          \ logits_warper=logits_warper,\r\n   1569         stopping_criteria=stopping_criteria,\r\
+          \n   1570         pad_token_id=generation_config.pad_token_id,\r\n   1571\
+          \         eos_token_id=generation_config.eos_token_id,\r\n   1572      \
+          \   output_scores=generation_config.output_scores,\r\n   1573         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+          \n   1574         synced_gpus=synced_gpus,\r\n   1575         streamer=streamer,\r\
+          \n   1576         **model_kwargs,\r\n   1577     )\r\n   1579 elif is_beam_gen_mode:\r\
+          \n   1580     if generation_config.num_return_sequences > generation_config.num_beams:\r\
+          \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2612,\
+          \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+          \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ streamer, **model_kwargs)\r\n   2609 model_inputs = self.prepare_inputs_for_generation(input_ids,\
+          \ **model_kwargs)\r\n   2611 # forward pass to get next token\r\n-> 2612\
+          \ outputs = self(\r\n   2613     **model_inputs,\r\n   2614     return_dict=True,\r\
+          \n   2615     output_attentions=output_attentions,\r\n   2616     output_hidden_states=output_hidden_states,\r\
+          \n   2617 )\r\n   2619 if synced_gpus and this_peer_finished:\r\n   2620\
+          \     continue  # don't waste resources running the code we don't need\r\
+          \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1191 #\
+          \ this function, and just call forward.\r\n   1192 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1193         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1194     return forward_call(*input, **kwargs)\r\n   1195 # Do not\
+          \ call functions when jit is used\r\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:237,\
+          \ in MPTForCausalLM.forward(self, input_ids, past_key_values, attention_mask,\
+          \ prefix_mask, sequence_id, labels, return_dict, output_attentions, output_hidden_states,\
+          \ use_cache)\r\n    235 return_dict = return_dict if return_dict is not\
+          \ None else self.config.return_dict\r\n    236 use_cache = use_cache if\
+          \ use_cache is not None else self.config.use_cache\r\n--> 237 outputs =\
+          \ self.transformer(input_ids=input_ids, past_key_values=past_key_values,\
+          \ attention_mask=attention_mask, prefix_mask=prefix_mask, sequence_id=sequence_id,\
+          \ return_dict=return_dict, output_attentions=output_attentions, output_hidden_states=output_hidden_states,\
+          \ use_cache=use_cache)\r\n    238 logits = F.linear(outputs.last_hidden_state,\
+          \ self.transformer.wte.weight)\r\n    239 if self.logit_scale is not None:\r\
+          \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1191 #\
+          \ this function, and just call forward.\r\n   1192 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1193         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1194     return forward_call(*input, **kwargs)\r\n   1195 # Do not\
+          \ call functions when jit is used\r\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:183,\
+          \ in MPTModel.forward(self, input_ids, past_key_values, attention_mask,\
+          \ prefix_mask, sequence_id, return_dict, output_attentions, output_hidden_states,\
+          \ use_cache)\r\n    181     all_hidden_states = all_hidden_states + (x,)\r\
+          \n    182 past_key_value = past_key_values[b_idx] if past_key_values is\
+          \ not None else None\r\n--> 183 (x, past_key_value) = block(x, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=self.is_causal)\r\
+          \n    184 if past_key_values is not None:\r\n    185     past_key_values[b_idx]\
+          \ = past_key_value\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1191 #\
+          \ this function, and just call forward.\r\n   1192 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1193         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1194     return forward_call(*input, **kwargs)\r\n   1195 # Do not\
+          \ call functions when jit is used\r\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/blocks.py:36,\
+          \ in MPTBlock.forward(self, x, past_key_value, attn_bias, attention_mask,\
+          \ is_causal)\r\n     34 def forward(self, x: torch.Tensor, past_key_value:\
+          \ Optional[Tuple[torch.Tensor]]=None, attn_bias: Optional[torch.Tensor]=None,\
+          \ attention_mask: Optional[torch.ByteTensor]=None, is_causal: bool=True)\
+          \ -> Tuple[torch.Tensor, Optional[Tuple[torch.Tensor]]]:\r\n     35    \
+          \ a = self.norm_1(x)\r\n---> 36     (b, _, past_key_value) = self.attn(a,\
+          \ past_key_value=past_key_value, attn_bias=attn_bias, attention_mask=attention_mask,\
+          \ is_causal=is_causal)\r\n     37     x = x + self.resid_attn_dropout(b)\r\
+          \n     38     m = self.norm_2(x)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1191 #\
+          \ this function, and just call forward.\r\n   1192 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1193         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1194     return forward_call(*input, **kwargs)\r\n   1195 # Do not\
+          \ call functions when jit is used\r\n   1196 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:171,\
+          \ in MultiheadAttention.forward(self, x, past_key_value, attn_bias, attention_mask,\
+          \ is_causal, needs_weights)\r\n    169 if attn_bias is not None:\r\n   \
+          \ 170     attn_bias = attn_bias[:, :, -query.size(1):, -key.size(1):]\r\n\
+          --> 171 (context, attn_weights) = self.attn_fn(query, key, value, self.n_heads,\
+          \ softmax_scale=self.softmax_scale, attn_bias=attn_bias, key_padding_mask=key_padding_mask,\
+          \ is_causal=is_causal, dropout_p=self.attn_dropout_p, training=self.training,\
+          \ needs_weights=needs_weights)\r\n    172 return (self.out_proj(context),\
+          \ attn_weights, past_key_value)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:111,\
+          \ in triton_flash_attn_fn(query, key, value, n_heads, softmax_scale, attn_bias,\
+          \ key_padding_mask, is_causal, dropout_p, training, needs_weights, multiquery)\r\
+          \n    109     value = value.expand(*value.shape[:2], n_heads, value.size(-1))\r\
+          \n    110 reset_is_causal = _reset_is_causal(query.size(1), key.size(1),\
+          \ is_causal)\r\n--> 111 attn_output = flash_attn_triton.flash_attn_func(query,\
+          \ key, value, attn_bias, reset_is_causal, softmax_scale)\r\n    112 output\
+          \ = attn_output.view(*attn_output.shape[:2], -1)\r\n    113 return (output,\
+          \ None)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:810,\
+          \ in FlashAttnFunc.forward(ctx, q, k, v, bias, causal, softmax_scale)\r\n\
+          \    808 # Make sure that the last dimension is contiguous\r\n    809 q,\
+          \ k, v = [x if x.stride(-1) == 1 else x.contiguous() for x in [q, k, v]]\r\
+          \n--> 810 o, lse, ctx.softmax_scale = _flash_attn_forward(\r\n    811  \
+          \   q, k, v, bias=bias, causal=causal, softmax_scale=softmax_scale\r\n \
+          \   812 )\r\n    813 ctx.save_for_backward(q, k, v, o, lse, bias)\r\n  \
+          \  814 ctx.causal = causal\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:623,\
+          \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    621\
+          \ num_warps = 4 if d <= 64 else 8\r\n    622 grid = lambda META: (triton.cdiv(seqlen_q,\
+          \ META[\"BLOCK_M\"]), batch * nheads)\r\n--> 623 _fwd_kernel[grid](\r\n\
+          \    624     q, k, v, bias, o,\r\n    625     lse, tmp,\r\n    626     softmax_scale,\r\
+          \n    627     q.stride(0), q.stride(2), q.stride(1),\r\n    628     k.stride(0),\
+          \ k.stride(2), k.stride(1),\r\n    629     v.stride(0), v.stride(2), v.stride(1),\r\
+          \n    630     *bias_strides,\r\n    631     o.stride(0), o.stride(2), o.stride(1),\r\
+          \n    632     nheads, seqlen_q, seqlen_k, seqlen_q_rounded, d,\r\n    633\
+          \     seqlen_q // 32,  seqlen_k // 32, # key for triton cache (limit number\
+          \ of compilations)\r\n    634     # Can't use kwargs here because triton\
+          \ autotune expects key to be args, not kwargs\r\n    635     # IS_CAUSAL=causal,\
+          \ BLOCK_HEADDIM=d,\r\n    636     bias_type, causal, BLOCK_HEADDIM,\r\n\
+          \    637     BLOCK_M=BLOCK, BLOCK_N=BLOCK,\r\n    638     num_warps=num_warps,\r\
+          \n    639     num_stages=1,\r\n    640 )\r\n    641 return o, lse, softmax_scale\r\
+          \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/jit.py:106,\
+          \ in KernelInterface.__getitem__.<locals>.launcher(*args, **kwargs)\r\n\
+          \    105 def launcher(*args, **kwargs):\r\n--> 106     return self.run(*args,\
+          \ grid=grid, **kwargs)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/autotuner.py:200,\
+          \ in Heuristics.run(self, *args, **kwargs)\r\n    198 for v, heur in self.values.items():\r\
+          \n    199     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\r\
+          \n--> 200 return self.fn.run(*args, **kwargs)\r\n\r\nFile <string>:43, in\
+          \ _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb, stride_qh,\
+          \ stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh, stride_vn,\
+          \ stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om, nheads,\
+          \ seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K,\
+          \ BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M,\
+          \ BLOCK_N, grid, num_warps, num_stages, extern_libs, stream, warmup)\r\n\
+          \r\nRuntimeError: Triton Error [CUDA]: invalid argument\r\n```\r\nAny ideas\
+          \ what might be causing this? I'm working with:\r\nPython: 3.10\r\nCUDA:\
+          \ 11.7\r\ntriton: 2.0.0.dev20221202\r\nflash-attn: 1.0.3.post0\r\ntransformers:\
+          \ 4.29.2\r\ntorch: 1.13.1+cu117"
+        updatedAt: '2023-05-19T14:15:41.266Z'
+      numEdits: 0
+      reactions: []
+    id: 6467848de7a6a374fd18aa11
+    type: comment
+  author: datacow
+  content: "I'm loading in the triton implementation of the model using a custom device\
+    \ map and trying to generate an output as follows (to be clear, I have no issues\
+    \ with the torch implementation):\r\n```\r\ntorch_dtype = torch.bfloat16\r\n\r\
+    \nconfig = AutoConfig.from_pretrained(\r\n  'mosaicml/mpt-7b',\r\n    trust_remote_code=True\r\
+    \n)\r\nconfig.attn_config['attn_impl'] = 'triton'\r\nconfig.update({\"max_seq_len\"\
+    : max_len})\r\nconfig.update({\"torch_dtype\": torch_dtype})\r\n\r\nwith open('MPT_device_map.pkl',\
+    \ 'rb') as f:\r\n    dm = pickle.load(f)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+    \n    'mosaicml/mpt-7b-instruct',\r\n    torch_dtype=torch_dtype,\r\n    trust_remote_code=True,\r\
+    \n    device_map=dm,\r\n    config=config,\r\n    local_files_only=True\r\n)\r\
+    \n\r\ntokenizer = AutoTokenizer.from_pretrained(\"EleutherAI/gpt-neox-20b\", padding_side=\"\
+    left\")\r\n\r\ntokenizer.pad_token = tokenizer.eos_token\r\n\r\ninputs = tokenizer(text,\
+    \ return_tensors=\"pt\", padding=True).input_ids.to(device)\r\n\r\nstreamer =\
+    \ TextStreamer(tokenizer)\r\n\r\nwith torch.inference_mode():\r\n    generate_ids\
+    \ = model.generate(inputs, **params, streamer=streamer)\r\n    generate_ids =\
+    \ generate_ids[:,inputs[0].shape[-1]:]\r\n    output = tokenizer.batch_decode(generate_ids,\
+    \ skip_special_tokens=True)[0]\r\n```\r\nAnd I'm getting the following error:\r\
+    \n```\r\n/usr/bin/ld: skipping incompatible /usr/lib/libcuda.so when searching\
+    \ for -lcuda\r\n---------------------------------------------------------------------------\r\
+    \nKeyError                                  Traceback (most recent call last)\r\
+    \nFile <string>:21, in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale,\
+    \ stride_qb, stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb,\
+    \ stride_vh, stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh,\
+    \ stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+    \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N, EVEN_HEADDIM,\
+    \ BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs, stream, warmup)\r\
+    \n\r\nKeyError: ('2-.-0-.-0-d82511111ad128294e9d31a6ac684238-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+    \ (torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16, torch.bfloat16,\
+    \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128, False, False, True,\
+    \ 128, 128), (True, True, True, True, True, True, True, (False,), (True, False),\
+    \ (True, False), (True, False), (True, False), (True, False), (True, False), (True,\
+    \ False), (True, False), (True, False), (True, False), (True, False), (True, False),\
+    \ (True, False), (True, False), (True, False), (True, False), (True, False), (True,\
+    \ False), (True, False), (True, False), (True, False), (True, False)))\r\n\r\n\
+    During handling of the above exception, another exception occurred:\r\n\r\nRuntimeError\
+    \                              Traceback (most recent call last)\r\nCell In[41],\
+    \ line 8\r\n      4 with torch.inference_mode():\r\n      5 #     res = nlp(text,\
+    \ max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\r\n      6 # \
+    \    inputs = input_map(inputs)\r\n      7     st = time.time()\r\n----> 8   \
+    \  generate_ids = model.generate(inputs, **params, streamer=streamer)\r\n    \
+    \  9 #     generate_ids = model.module.generate(**inputs, **params, streamer=streamer)\r\
+    \n     10     tt = time.time() - st\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+    \ in _DecoratorContextManager.__call__.<locals>.decorate_context(*args, **kwargs)\r\
+    \n     24 @functools.wraps(func)\r\n     25 def decorate_context(*args, **kwargs):\r\
+    \n     26     with self.clone():\r\n---> 27         return func(*args, **kwargs)\r\
+    \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ **kwargs)\r\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\r\
+    \n   1558         input_ids=input_ids,\r\n   1559         expand_size=generation_config.num_return_sequences,\r\
+    \n   1560         is_encoder_decoder=self.config.is_encoder_decoder,\r\n   1561\
+    \         **model_kwargs,\r\n   1562     )\r\n   1564     # 13. run sample\r\n\
+    -> 1565     return self.sample(\r\n   1566         input_ids,\r\n   1567     \
+    \    logits_processor=logits_processor,\r\n   1568         logits_warper=logits_warper,\r\
+    \n   1569         stopping_criteria=stopping_criteria,\r\n   1570         pad_token_id=generation_config.pad_token_id,\r\
+    \n   1571         eos_token_id=generation_config.eos_token_id,\r\n   1572    \
+    \     output_scores=generation_config.output_scores,\r\n   1573         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+    \n   1574         synced_gpus=synced_gpus,\r\n   1575         streamer=streamer,\r\
+    \n   1576         **model_kwargs,\r\n   1577     )\r\n   1579 elif is_beam_gen_mode:\r\
+    \n   1580     if generation_config.num_return_sequences > generation_config.num_beams:\r\
+    \n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2612,\
+    \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+    \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+    \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\r\
+    \n   2609 model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)\r\
+    \n   2611 # forward pass to get next token\r\n-> 2612 outputs = self(\r\n   2613\
+    \     **model_inputs,\r\n   2614     return_dict=True,\r\n   2615     output_attentions=output_attentions,\r\
+    \n   2616     output_hidden_states=output_hidden_states,\r\n   2617 )\r\n   2619\
+    \ if synced_gpus and this_peer_finished:\r\n   2620     continue  # don't waste\
+    \ resources running the code we don't need\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1191 # this function,\
+    \ and just call forward.\r\n   1192 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1193         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1194     return forward_call(*input, **kwargs)\r\
+    \n   1195 # Do not call functions when jit is used\r\n   1196 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:237,\
+    \ in MPTForCausalLM.forward(self, input_ids, past_key_values, attention_mask,\
+    \ prefix_mask, sequence_id, labels, return_dict, output_attentions, output_hidden_states,\
+    \ use_cache)\r\n    235 return_dict = return_dict if return_dict is not None else\
+    \ self.config.return_dict\r\n    236 use_cache = use_cache if use_cache is not\
+    \ None else self.config.use_cache\r\n--> 237 outputs = self.transformer(input_ids=input_ids,\
+    \ past_key_values=past_key_values, attention_mask=attention_mask, prefix_mask=prefix_mask,\
+    \ sequence_id=sequence_id, return_dict=return_dict, output_attentions=output_attentions,\
+    \ output_hidden_states=output_hidden_states, use_cache=use_cache)\r\n    238 logits\
+    \ = F.linear(outputs.last_hidden_state, self.transformer.wte.weight)\r\n    239\
+    \ if self.logit_scale is not None:\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1191 # this function,\
+    \ and just call forward.\r\n   1192 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1193         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1194     return forward_call(*input, **kwargs)\r\
+    \n   1195 # Do not call functions when jit is used\r\n   1196 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/modeling_mpt.py:183,\
+    \ in MPTModel.forward(self, input_ids, past_key_values, attention_mask, prefix_mask,\
+    \ sequence_id, return_dict, output_attentions, output_hidden_states, use_cache)\r\
+    \n    181     all_hidden_states = all_hidden_states + (x,)\r\n    182 past_key_value\
+    \ = past_key_values[b_idx] if past_key_values is not None else None\r\n--> 183\
+    \ (x, past_key_value) = block(x, past_key_value=past_key_value, attn_bias=attn_bias,\
+    \ attention_mask=attention_mask, is_causal=self.is_causal)\r\n    184 if past_key_values\
+    \ is not None:\r\n    185     past_key_values[b_idx] = past_key_value\r\n\r\n\
+    File ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1191 # this function,\
+    \ and just call forward.\r\n   1192 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1193         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1194     return forward_call(*input, **kwargs)\r\
+    \n   1195 # Do not call functions when jit is used\r\n   1196 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/blocks.py:36,\
+    \ in MPTBlock.forward(self, x, past_key_value, attn_bias, attention_mask, is_causal)\r\
+    \n     34 def forward(self, x: torch.Tensor, past_key_value: Optional[Tuple[torch.Tensor]]=None,\
+    \ attn_bias: Optional[torch.Tensor]=None, attention_mask: Optional[torch.ByteTensor]=None,\
+    \ is_causal: bool=True) -> Tuple[torch.Tensor, Optional[Tuple[torch.Tensor]]]:\r\
+    \n     35     a = self.norm_1(x)\r\n---> 36     (b, _, past_key_value) = self.attn(a,\
+    \ past_key_value=past_key_value, attn_bias=attn_bias, attention_mask=attention_mask,\
+    \ is_causal=is_causal)\r\n     37     x = x + self.resid_attn_dropout(b)\r\n \
+    \    38     m = self.norm_2(x)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/nn/modules/module.py:1194,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1190 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1191 # this function,\
+    \ and just call forward.\r\n   1192 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1193         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1194     return forward_call(*input, **kwargs)\r\
+    \n   1195 # Do not call functions when jit is used\r\n   1196 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:171,\
+    \ in MultiheadAttention.forward(self, x, past_key_value, attn_bias, attention_mask,\
+    \ is_causal, needs_weights)\r\n    169 if attn_bias is not None:\r\n    170  \
+    \   attn_bias = attn_bias[:, :, -query.size(1):, -key.size(1):]\r\n--> 171 (context,\
+    \ attn_weights) = self.attn_fn(query, key, value, self.n_heads, softmax_scale=self.softmax_scale,\
+    \ attn_bias=attn_bias, key_padding_mask=key_padding_mask, is_causal=is_causal,\
+    \ dropout_p=self.attn_dropout_p, training=self.training, needs_weights=needs_weights)\r\
+    \n    172 return (self.out_proj(context), attn_weights, past_key_value)\r\n\r\n\
+    File ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b/d8304854d4877849c3c0a78f3469512a84419e84/attention.py:111,\
+    \ in triton_flash_attn_fn(query, key, value, n_heads, softmax_scale, attn_bias,\
+    \ key_padding_mask, is_causal, dropout_p, training, needs_weights, multiquery)\r\
+    \n    109     value = value.expand(*value.shape[:2], n_heads, value.size(-1))\r\
+    \n    110 reset_is_causal = _reset_is_causal(query.size(1), key.size(1), is_causal)\r\
+    \n--> 111 attn_output = flash_attn_triton.flash_attn_func(query, key, value, attn_bias,\
+    \ reset_is_causal, softmax_scale)\r\n    112 output = attn_output.view(*attn_output.shape[:2],\
+    \ -1)\r\n    113 return (output, None)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:810,\
+    \ in FlashAttnFunc.forward(ctx, q, k, v, bias, causal, softmax_scale)\r\n    808\
+    \ # Make sure that the last dimension is contiguous\r\n    809 q, k, v = [x if\
+    \ x.stride(-1) == 1 else x.contiguous() for x in [q, k, v]]\r\n--> 810 o, lse,\
+    \ ctx.softmax_scale = _flash_attn_forward(\r\n    811     q, k, v, bias=bias,\
+    \ causal=causal, softmax_scale=softmax_scale\r\n    812 )\r\n    813 ctx.save_for_backward(q,\
+    \ k, v, o, lse, bias)\r\n    814 ctx.causal = causal\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py:623,\
+    \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    621 num_warps\
+    \ = 4 if d <= 64 else 8\r\n    622 grid = lambda META: (triton.cdiv(seqlen_q,\
+    \ META[\"BLOCK_M\"]), batch * nheads)\r\n--> 623 _fwd_kernel[grid](\r\n    624\
+    \     q, k, v, bias, o,\r\n    625     lse, tmp,\r\n    626     softmax_scale,\r\
+    \n    627     q.stride(0), q.stride(2), q.stride(1),\r\n    628     k.stride(0),\
+    \ k.stride(2), k.stride(1),\r\n    629     v.stride(0), v.stride(2), v.stride(1),\r\
+    \n    630     *bias_strides,\r\n    631     o.stride(0), o.stride(2), o.stride(1),\r\
+    \n    632     nheads, seqlen_q, seqlen_k, seqlen_q_rounded, d,\r\n    633    \
+    \ seqlen_q // 32,  seqlen_k // 32, # key for triton cache (limit number of compilations)\r\
+    \n    634     # Can't use kwargs here because triton autotune expects key to be\
+    \ args, not kwargs\r\n    635     # IS_CAUSAL=causal, BLOCK_HEADDIM=d,\r\n   \
+    \ 636     bias_type, causal, BLOCK_HEADDIM,\r\n    637     BLOCK_M=BLOCK, BLOCK_N=BLOCK,\r\
+    \n    638     num_warps=num_warps,\r\n    639     num_stages=1,\r\n    640 )\r\
+    \n    641 return o, lse, softmax_scale\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/jit.py:106,\
+    \ in KernelInterface.__getitem__.<locals>.launcher(*args, **kwargs)\r\n    105\
+    \ def launcher(*args, **kwargs):\r\n--> 106     return self.run(*args, grid=grid,\
+    \ **kwargs)\r\n\r\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/triton/runtime/autotuner.py:200,\
+    \ in Heuristics.run(self, *args, **kwargs)\r\n    198 for v, heur in self.values.items():\r\
+    \n    199     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\r\
+    \n--> 200 return self.fn.run(*args, **kwargs)\r\n\r\nFile <string>:43, in _fwd_kernel(Q,\
+    \ K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb, stride_qh, stride_qm, stride_kb,\
+    \ stride_kh, stride_kn, stride_vb, stride_vh, stride_vn, stride_bb, stride_bh,\
+    \ stride_bm, stride_ob, stride_oh, stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded,\
+    \ headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM,\
+    \ EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages,\
+    \ extern_libs, stream, warmup)\r\n\r\nRuntimeError: Triton Error [CUDA]: invalid\
+    \ argument\r\n```\r\nAny ideas what might be causing this? I'm working with:\r\
+    \nPython: 3.10\r\nCUDA: 11.7\r\ntriton: 2.0.0.dev20221202\r\nflash-attn: 1.0.3.post0\r\
+    \ntransformers: 4.29.2\r\ntorch: 1.13.1+cu117"
+  created_at: 2023-05-19 13:15:41+00:00
+  edited: false
+  hidden: false
+  id: 6467848de7a6a374fd18aa11
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64273f34682e4152bbdd5a70/AZfHmtFjwRSOJXG5nW1oJ.jpeg?w=200&h=200&f=face
+      fullname: Ankit Mathur
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ankitmathur
+      type: user
+    createdAt: '2023-05-20T18:30:05.000Z'
+    data:
+      edited: false
+      editors:
+      - ankitmathur
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64273f34682e4152bbdd5a70/AZfHmtFjwRSOJXG5nW1oJ.jpeg?w=200&h=200&f=face
+          fullname: Ankit Mathur
+          isHf: false
+          isPro: false
+          name: ankitmathur
+          type: user
+        html: '<p>Yeah, I''m getting this too</p>
+
+          '
+        raw: Yeah, I'm getting this too
+        updatedAt: '2023-05-20T18:30:05.057Z'
+      numEdits: 0
+      reactions: []
+    id: 646911ad511e5cdeb0ec0ac7
+    type: comment
+  author: ankitmathur
+  content: Yeah, I'm getting this too
+  created_at: 2023-05-20 17:30:05+00:00
+  edited: false
+  hidden: false
+  id: 646911ad511e5cdeb0ec0ac7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-05-23T02:44:28.000Z'
+    data:
+      edited: false
+      editors:
+      - datacow
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: "<p>Update + additional context for this error. Was using T4 NVIDIA\
+          \ GPUs for above error. Switched to test on V100 GPUs with same packages/installs,\
+          \ and am now getting something different:</p>\n<pre><code>Briefly explain\
+          \ to me what the Reimann Hypothesis \n/usr/bin/ld: skipping incompatible\
+          \ /usr/lib/libcuda.so when searching for -lcuda\nis.\n\xE2-s\uFFFDAN\u2019\
+          s,\n  \n/usr/bin/ld: skipping incompatible /usr/lib/libcuda.so when searching\
+          \ for -lcuda\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[46], line 8\n      4 with torch.inference_mode():\n      5 #   \
+          \  res = nlp(text, max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\n\
+          \      6 #     inputs = input_map(inputs)\n      7     st = time.time()\n\
+          ----&gt; 8     generate_ids = model.generate(inputs, **params, streamer=streamer)\n\
+          \      9 #     generate_ids = model.module.generate(**inputs, **params,\
+          \ streamer=streamer)\n     10     tt = time.time() - st\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+          \ in _DecoratorContextManager.__call__.&lt;locals&gt;.decorate_context(*args,\
+          \ **kwargs)\n     24 @functools.wraps(func)\n     25 def decorate_context(*args,\
+          \ **kwargs):\n     26     with self.clone():\n---&gt; 27         return\
+          \ func(*args, **kwargs)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\n\
+          \   1558         input_ids=input_ids,\n   1559         expand_size=generation_config.num_return_sequences,\n\
+          \   1560         is_encoder_decoder=self.config.is_encoder_decoder,\n  \
+          \ 1561         **model_kwargs,\n   1562     )\n   1564     # 13. run sample\n\
+          -&gt; 1565     return self.sample(\n   1566         input_ids,\n   1567\
+          \         logits_processor=logits_processor,\n   1568         logits_warper=logits_warper,\n\
+          \   1569         stopping_criteria=stopping_criteria,\n   1570         pad_token_id=generation_config.pad_token_id,\n\
+          \   1571         eos_token_id=generation_config.eos_token_id,\n   1572 \
+          \        output_scores=generation_config.output_scores,\n   1573       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1574         synced_gpus=synced_gpus,\n   1575         streamer=streamer,\n\
+          \   1576         **model_kwargs,\n   1577     )\n   1579 elif is_beam_gen_mode:\n\
+          \   1580     if generation_config.num_return_sequences &gt; generation_config.num_beams:\n\
+          \nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2648,\
+          \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+          \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ streamer, **model_kwargs)\n   2646 # sample\n   2647 probs = nn.functional.softmax(next_token_scores,\
+          \ dim=-1)\n-&gt; 2648 next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          \   2650 # finished sentences should have their next token be a padding\
+          \ token\n   2651 if eos_token_id is not None:\n\nRuntimeError: probability\
+          \ tensor contains either `inf`, `nan` or element &lt; 0\n</code></pre>\n\
+          <p>Maybe this can provide more context? At the beginning you can see the\
+          \ prompt given: \"Briefly explain to me what the Reimann Hypothesis is.\"\
+          \ Spits out a gibberish token, then fails. Any thoughts?  <span data-props=\"\
+          {&quot;user&quot;:&quot;sam-mosaic&quot;}\" data-target=\"UserMention\"\
+          \ class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"\
+          ><span class=\"contents\"><a href=\"/sam-mosaic\">@<span class=\"underline\"\
+          >sam-mosaic</span></a></span>\n\n\t</span></span></p>\n"
+        raw: "Update + additional context for this error. Was using T4 NVIDIA GPUs\
+          \ for above error. Switched to test on V100 GPUs with same packages/installs,\
+          \ and am now getting something different:\n```\nBriefly explain to me what\
+          \ the Reimann Hypothesis \n/usr/bin/ld: skipping incompatible /usr/lib/libcuda.so\
+          \ when searching for -lcuda\nis.\n\xE2-s\uFFFDAN\u2019s,\n  \n/usr/bin/ld:\
+          \ skipping incompatible /usr/lib/libcuda.so when searching for -lcuda\n\
+          ---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[46], line 8\n      4 with torch.inference_mode():\n      5 #   \
+          \  res = nlp(text, max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\n\
+          \      6 #     inputs = input_map(inputs)\n      7     st = time.time()\n\
+          ----> 8     generate_ids = model.generate(inputs, **params, streamer=streamer)\n\
+          \      9 #     generate_ids = model.module.generate(**inputs, **params,\
+          \ streamer=streamer)\n     10     tt = time.time() - st\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+          \ in _DecoratorContextManager.__call__.<locals>.decorate_context(*args,\
+          \ **kwargs)\n     24 @functools.wraps(func)\n     25 def decorate_context(*args,\
+          \ **kwargs):\n     26     with self.clone():\n---> 27         return func(*args,\
+          \ **kwargs)\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\n\
+          \   1558         input_ids=input_ids,\n   1559         expand_size=generation_config.num_return_sequences,\n\
+          \   1560         is_encoder_decoder=self.config.is_encoder_decoder,\n  \
+          \ 1561         **model_kwargs,\n   1562     )\n   1564     # 13. run sample\n\
+          -> 1565     return self.sample(\n   1566         input_ids,\n   1567   \
+          \      logits_processor=logits_processor,\n   1568         logits_warper=logits_warper,\n\
+          \   1569         stopping_criteria=stopping_criteria,\n   1570         pad_token_id=generation_config.pad_token_id,\n\
+          \   1571         eos_token_id=generation_config.eos_token_id,\n   1572 \
+          \        output_scores=generation_config.output_scores,\n   1573       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1574         synced_gpus=synced_gpus,\n   1575         streamer=streamer,\n\
+          \   1576         **model_kwargs,\n   1577     )\n   1579 elif is_beam_gen_mode:\n\
+          \   1580     if generation_config.num_return_sequences > generation_config.num_beams:\n\
+          \nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2648,\
+          \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+          \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ streamer, **model_kwargs)\n   2646 # sample\n   2647 probs = nn.functional.softmax(next_token_scores,\
+          \ dim=-1)\n-> 2648 next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          \   2650 # finished sentences should have their next token be a padding\
+          \ token\n   2651 if eos_token_id is not None:\n\nRuntimeError: probability\
+          \ tensor contains either `inf`, `nan` or element < 0\n```\nMaybe this can\
+          \ provide more context? At the beginning you can see the prompt given: \"\
+          Briefly explain to me what the Reimann Hypothesis is.\" Spits out a gibberish\
+          \ token, then fails. Any thoughts?  @sam-mosaic"
+        updatedAt: '2023-05-23T02:44:28.467Z'
+      numEdits: 0
+      reactions: []
+    id: 646c288ced2282721346cdb1
+    type: comment
+  author: datacow
+  content: "Update + additional context for this error. Was using T4 NVIDIA GPUs for\
+    \ above error. Switched to test on V100 GPUs with same packages/installs, and\
+    \ am now getting something different:\n```\nBriefly explain to me what the Reimann\
+    \ Hypothesis \n/usr/bin/ld: skipping incompatible /usr/lib/libcuda.so when searching\
+    \ for -lcuda\nis.\n\xE2-s\uFFFDAN\u2019s,\n  \n/usr/bin/ld: skipping incompatible\
+    \ /usr/lib/libcuda.so when searching for -lcuda\n---------------------------------------------------------------------------\n\
+    RuntimeError                              Traceback (most recent call last)\n\
+    Cell In[46], line 8\n      4 with torch.inference_mode():\n      5 #     res =\
+    \ nlp(text, max_new_tokens=mnt, min_new_tokens=1, return_full_text=False)\n  \
+    \    6 #     inputs = input_map(inputs)\n      7     st = time.time()\n----> 8\
+    \     generate_ids = model.generate(inputs, **params, streamer=streamer)\n   \
+    \   9 #     generate_ids = model.module.generate(**inputs, **params, streamer=streamer)\n\
+    \     10     tt = time.time() - st\n\nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/torch/autograd/grad_mode.py:27,\
+    \ in _DecoratorContextManager.__call__.<locals>.decorate_context(*args, **kwargs)\n\
+    \     24 @functools.wraps(func)\n     25 def decorate_context(*args, **kwargs):\n\
+    \     26     with self.clone():\n---> 27         return func(*args, **kwargs)\n\
+    \nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:1565,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ **kwargs)\n   1557     input_ids, model_kwargs = self._expand_inputs_for_generation(\n\
+    \   1558         input_ids=input_ids,\n   1559         expand_size=generation_config.num_return_sequences,\n\
+    \   1560         is_encoder_decoder=self.config.is_encoder_decoder,\n   1561 \
+    \        **model_kwargs,\n   1562     )\n   1564     # 13. run sample\n-> 1565\
+    \     return self.sample(\n   1566         input_ids,\n   1567         logits_processor=logits_processor,\n\
+    \   1568         logits_warper=logits_warper,\n   1569         stopping_criteria=stopping_criteria,\n\
+    \   1570         pad_token_id=generation_config.pad_token_id,\n   1571       \
+    \  eos_token_id=generation_config.eos_token_id,\n   1572         output_scores=generation_config.output_scores,\n\
+    \   1573         return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+    \   1574         synced_gpus=synced_gpus,\n   1575         streamer=streamer,\n\
+    \   1576         **model_kwargs,\n   1577     )\n   1579 elif is_beam_gen_mode:\n\
+    \   1580     if generation_config.num_return_sequences > generation_config.num_beams:\n\
+    \nFile ~/anaconda3/envs/llm/lib/python3.10/site-packages/transformers/generation/utils.py:2648,\
+    \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+    \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+    \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\n\
+    \   2646 # sample\n   2647 probs = nn.functional.softmax(next_token_scores, dim=-1)\n\
+    -> 2648 next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n   2650\
+    \ # finished sentences should have their next token be a padding token\n   2651\
+    \ if eos_token_id is not None:\n\nRuntimeError: probability tensor contains either\
+    \ `inf`, `nan` or element < 0\n```\nMaybe this can provide more context? At the\
+    \ beginning you can see the prompt given: \"Briefly explain to me what the Reimann\
+    \ Hypothesis is.\" Spits out a gibberish token, then fails. Any thoughts?  @sam-mosaic"
+  created_at: 2023-05-23 01:44:28+00:00
+  edited: false
+  hidden: false
+  id: 646c288ced2282721346cdb1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+      fullname: Abhi Venigalla
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: abhi-mosaic
+      type: user
+    createdAt: '2023-06-03T00:51:38.000Z'
+    data:
+      edited: false
+      editors:
+      - abhi-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8864133358001709
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+          fullname: Abhi Venigalla
+          isHf: false
+          isPro: false
+          name: abhi-mosaic
+          type: user
+        html: '<p>I''m not sure if this is the root cause, but we just added <code>device_map</code>
+          support recently: <a href="https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41">https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41</a></p>
+
+          '
+        raw: 'I''m not sure if this is the root cause, but we just added `device_map`
+          support recently: https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41'
+        updatedAt: '2023-06-03T00:51:38.384Z'
+      numEdits: 0
+      reactions: []
+    id: 647a8e9a44b6a3ae9d2a3d1e
+    type: comment
+  author: abhi-mosaic
+  content: 'I''m not sure if this is the root cause, but we just added `device_map`
+    support recently: https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41'
+  created_at: 2023-06-02 23:51:38+00:00
+  edited: false
+  hidden: false
+  id: 647a8e9a44b6a3ae9d2a3d1e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-06-04T17:15:21.000Z'
+    data:
+      edited: true
+      editors:
+      - datacow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3958877623081207
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;abhi-mosaic&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/abhi-mosaic\"\
+          >@<span class=\"underline\">abhi-mosaic</span></a></span>\n\n\t</span></span>\
+          \ still seeing the same issue (RuntimeError: Triton Error [CUDA]: invalid\
+          \ argument) with auto device map. relevant packages/installs: </p>\n<p>Python\
+          \ 3.10<br>CUDA 11.7<br>4x16GB T4 GPUs<br>einops==0.5.0<br>torch==1.13.1<br>transformers==4.29.2<br>triton-pre-mlir\
+          \ @ git+<a rel=\"nofollow\" href=\"https://github.com/vchiley/triton.git@48b1cc9ff8b1f506ac32f2124471e2582875c008#subdirectory=python\"\
+          >https://github.com/vchiley/triton.git@48b1cc9ff8b1f506ac32f2124471e2582875c008#subdirectory=python</a></p>\n"
+        raw: "@abhi-mosaic still seeing the same issue (RuntimeError: Triton Error\
+          \ [CUDA]: invalid argument) with auto device map. relevant packages/installs:\
+          \ \n\nPython 3.10\nCUDA 11.7\n4x16GB T4 GPUs\neinops==0.5.0\ntorch==1.13.1\n\
+          transformers==4.29.2\ntriton-pre-mlir @ git+https://github.com/vchiley/triton.git@48b1cc9ff8b1f506ac32f2124471e2582875c008#subdirectory=python"
+        updatedAt: '2023-06-05T02:59:30.125Z'
+      numEdits: 1
+      reactions: []
+    id: 647cc6a983c62f324920229b
+    type: comment
+  author: datacow
+  content: "@abhi-mosaic still seeing the same issue (RuntimeError: Triton Error [CUDA]:\
+    \ invalid argument) with auto device map. relevant packages/installs: \n\nPython\
+    \ 3.10\nCUDA 11.7\n4x16GB T4 GPUs\neinops==0.5.0\ntorch==1.13.1\ntransformers==4.29.2\n\
+    triton-pre-mlir @ git+https://github.com/vchiley/triton.git@48b1cc9ff8b1f506ac32f2124471e2582875c008#subdirectory=python"
+  created_at: 2023-06-04 16:15:21+00:00
+  edited: true
+  hidden: false
+  id: 647cc6a983c62f324920229b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-06-05T02:58:52.000Z'
+    data:
+      edited: false
+      editors:
+      - datacow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8451447486877441
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: '<p>Also, testing again on 4x16GB V100 GPUs with the same installs,
+          I get another error as noted above: "RuntimeError: probability tensor contains
+          either <code>inf</code>, <code>nan</code> or element &lt; 0"</p>
+
+          '
+        raw: 'Also, testing again on 4x16GB V100 GPUs with the same installs, I get
+          another error as noted above: "RuntimeError: probability tensor contains
+          either `inf`, `nan` or element < 0"'
+        updatedAt: '2023-06-05T02:58:52.527Z'
+      numEdits: 0
+      reactions: []
+    id: 647d4f6c83c62f324930fb75
+    type: comment
+  author: datacow
+  content: 'Also, testing again on 4x16GB V100 GPUs with the same installs, I get
+    another error as noted above: "RuntimeError: probability tensor contains either
+    `inf`, `nan` or element < 0"'
+  created_at: 2023-06-05 01:58:52+00:00
+  edited: false
+  hidden: false
+  id: 647d4f6c83c62f324930fb75
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-14T06:48:03.000Z'
+    data:
+      edited: false
+      editors:
+      - sam-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8508830070495605
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+          fullname: Sam Havens
+          isHf: false
+          isPro: false
+          name: sam-mosaic
+          type: user
+        html: '<p>We have only tested triton on A10s and A100s. It <a rel="nofollow"
+          href="https://github.com/openai/triton/issues/1567">may not be an option
+          on either of those GPUs</a>.</p>
+
+          '
+        raw: We have only tested triton on A10s and A100s. It [may not be an option
+          on either of those GPUs](https://github.com/openai/triton/issues/1567).
+        updatedAt: '2023-06-14T06:48:03.137Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 648962a3d54072d46f119de4
+    id: 648962a3d54072d46f119dde
+    type: comment
+  author: sam-mosaic
+  content: We have only tested triton on A10s and A100s. It [may not be an option
+    on either of those GPUs](https://github.com/openai/triton/issues/1567).
+  created_at: 2023-06-14 05:48:03+00:00
+  edited: false
+  hidden: false
+  id: 648962a3d54072d46f119dde
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-14T06:48:03.000Z'
+    data:
+      status: closed
+    id: 648962a3d54072d46f119de4
+    type: status-change
+  author: sam-mosaic
+  created_at: 2023-06-14 05:48:03+00:00
+  id: 648962a3d54072d46f119de4
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-14T06:48:23.000Z'
+    data:
+      status: open
+    id: 648962b766685524f2bc757f
+    type: status-change
+  author: sam-mosaic
+  created_at: 2023-06-14 05:48:23+00:00
+  id: 648962b766685524f2bc757f
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-06-14T16:30:23.000Z'
+    data:
+      edited: false
+      editors:
+      - datacow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9029339551925659
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;sam-mosaic&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/sam-mosaic\">@<span class=\"\
+          underline\">sam-mosaic</span></a></span>\n\n\t</span></span> is bfloat16\
+          \ precision required for the triton implementation? T4s and V100s don't\
+          \ support bfloat16 precision, but I've tried with regular float16 precision\
+          \ as well and get the same error. so if the triton implementation can't\
+          \ run on regular float16 precision, then the lack of support for bfloat16\
+          \ precision on those GPUs would explain this issue.</p>\n"
+        raw: '@sam-mosaic is bfloat16 precision required for the triton implementation?
+          T4s and V100s don''t support bfloat16 precision, but I''ve tried with regular
+          float16 precision as well and get the same error. so if the triton implementation
+          can''t run on regular float16 precision, then the lack of support for bfloat16
+          precision on those GPUs would explain this issue.'
+        updatedAt: '2023-06-14T16:30:23.267Z'
+      numEdits: 0
+      reactions: []
+    id: 6489eb1fda6bb0138f57a35b
+    type: comment
+  author: datacow
+  content: '@sam-mosaic is bfloat16 precision required for the triton implementation?
+    T4s and V100s don''t support bfloat16 precision, but I''ve tried with regular
+    float16 precision as well and get the same error. so if the triton implementation
+    can''t run on regular float16 precision, then the lack of support for bfloat16
+    precision on those GPUs would explain this issue.'
+  created_at: 2023-06-14 15:30:23+00:00
+  edited: false
+  hidden: false
+  id: 6489eb1fda6bb0138f57a35b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 25
+repo_id: mosaicml/mpt-7b-instruct
+repo_type: model
+status: open
+target_branch: null
+title: KeyError in triton implementation

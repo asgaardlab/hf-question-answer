@@ -1,0 +1,182 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Macs98
+conflicting_files: null
+created_at: 2024-01-08 16:53:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/bd1df4d6c3d9d00798a521d8c59fb004.svg
+      fullname: "Maximiliano Antonio Ramirez Nu\xF1ez"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Macs98
+      type: user
+    createdAt: '2024-01-08T16:53:41.000Z'
+    data:
+      edited: true
+      editors:
+      - Macs98
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5488676428794861
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/bd1df4d6c3d9d00798a521d8c59fb004.svg
+          fullname: "Maximiliano Antonio Ramirez Nu\xF1ez"
+          isHf: false
+          isPro: false
+          name: Macs98
+          type: user
+        html: "<p>Hello!</p>\n<p>Is it possible to fine tune the model in Google Colab?</p>\n\
+          <p>I'm trying to use Lora and Peft to tune an English to Spanish translation\
+          \ model</p>\n<p>My code is the following</p>\n<p>code<br>from transformers\
+          \ import M2M100Config, M2M100ForConditionalGeneration, M2M100Tokenizer<br>from\
+          \ transformers import AutoModelForSeq2SeqLM, AutoTokenizer<br>from transformers\
+          \ import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments,\
+          \ Seq2SeqTrainer<br>from datasets import load_dataset</p>\n<p>raw_datasets\
+          \ = load_dataset('csv', data_files='Dataset.csv', delimiter=',')</p>\n<p>model_checkpoint\
+          \ = \"facebook/nllb-200-distilled-1.3B\"</p>\n<p>tokenizer = AutoTokenizer.from_pretrained(model_checkpoint,\
+          \ src_lang=\"en\", tgt_lang=\"es\")</p>\n<p>def preprocess_function(examples):<br>\
+          \    inputs = [ex for ex in examples[\"sourceString\"]]<br>    targets =\
+          \ [ex for ex in examples[\"targetString\"]]<br>    model_inputs = tokenizer(inputs,\
+          \ max_length=128, truncation=True)</p>\n<pre><code># Setup the tokenizer\
+          \ for targets\nwith tokenizer.as_target_tokenizer():\n    labels = tokenizer(targets,\
+          \ max_length=128, truncation=True)\n\n# Provide information for the decoder\n\
+          model_inputs[\"labels\"] = labels[\"input_ids\"]\nmodel_inputs[\"decoder_input_ids\"\
+          ] = labels[\"input_ids\"]\n\nreturn model_inputs\n</code></pre>\n<h1 id=\"\
+          tokenize-data\">Tokenize Data</h1>\n<p>tokenized_datasets = raw_datasets.map(preprocess_function,\
+          \ batched=True)</p>\n<h1 id=\"fine-tune-model\">Fine Tune Model</h1>\n<h1\
+          \ id=\"model--automodelforseq2seqlmfrom_pretrainedmodel_checkpoint\">model\
+          \ = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)</h1>\n<h1 id=\"\
+          fine-tune-model-1\">Fine Tune Model</h1>\n<h1 id=\"load-model-with-quantization\"\
+          >Load model with quantization</h1>\n<p>bnb_config = BitsAndBytesConfig(<br>\
+          \    load_in_4bit=True,<br>    bnb_4bit_quant_type=\"nf4\",<br>    bnb_4bit_compute_dtype=torch.bfloat16,<br>\
+          \    bnb_4bit_use_double_quant=False,<br>)</p>\n<p>model = AutoModelForSeq2SeqLM.from_pretrained(<br>\
+          \    model_checkpoint,<br>    load_in_4bit=True,<br>    quantization_config=bnb_config,<br>\
+          \    torch_dtype=torch.bfloat16,<br>    device_map=\"auto\"<br>)</p>\n<p>model\
+          \ = prepare_model_for_kbit_training(model)<br>peft_config = LoraConfig(<br>\
+          \    lora_alpha=16,<br>    lora_dropout=0.1,<br>    r=64,<br>    bias=\"\
+          none\",<br>    task_type=\"CAUSAL_LM\",<br>    target_modules=[\"q_proj\"\
+          , \"k_proj\", \"v_proj\", \"o_proj\"],<br>)<br>model = get_peft_model(model,\
+          \ peft_config)</p>\n<p>args = Seq2SeqTrainingArguments(<br>    f\"Model-{model_checkpoint}\"\
+          ,<br>    #evaluation_strategy = \"steps\",<br>    learning_rate=2e-5,<br>\
+          \    per_device_train_batch_size=8,<br>    per_device_eval_batch_size=8,<br>\
+          \    weight_decay=0.01,<br>    save_total_limit=3,<br>    num_train_epochs=15,<br>\
+          \    predict_with_generate=True,<br>    logging_steps=200,#50,<br>    warmup_steps=500,#100,<br>\
+          \    fp16 = True,<br>    label_smoothing_factor = 0.1,<br>    logging_first_step\
+          \ = True<br>)</p>\n<p>data_collator = DataCollatorForSeq2Seq(tokenizer,\
+          \ model=model)</p>\n<p>trainer = Seq2SeqTrainer(<br>    model,<br>    args,<br>\
+          \    train_dataset=tokenized_datasets[\"train\"],<br>    #eval_dataset=tokenized_datasets[\"\
+          test\"],<br>    data_collator=data_collator,<br>    tokenizer=tokenizer<br>)</p>\n\
+          <p>trainer.train()</p>\n<p>and I get the error</p>\n<p>ValueError: You have\
+          \ to specify either decoder_input_ids or decoder_inputs_embeds</p>\n<p>I\
+          \ assume it is a problem with quantization, because I have tried this code\
+          \ with other models and it does not give me this problem.</p>\n<p>If anyone\
+          \ has a collaborative notebook that they can share with me, I would greatly\
+          \ appreciate it.</p>\n"
+        raw: "Hello!\n\nIs it possible to fine tune the model in Google Colab?\n\n\
+          I'm trying to use Lora and Peft to tune an English to Spanish translation\
+          \ model\n\nMy code is the following\n\ncode\nfrom transformers import M2M100Config,\
+          \ M2M100ForConditionalGeneration, M2M100Tokenizer\nfrom transformers import\
+          \ AutoModelForSeq2SeqLM, AutoTokenizer\nfrom transformers import AutoModelForSeq2SeqLM,\
+          \ DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer\nfrom\
+          \ datasets import load_dataset\n\n\nraw_datasets = load_dataset('csv', data_files='Dataset.csv',\
+          \ delimiter=',')\n\nmodel_checkpoint = \"facebook/nllb-200-distilled-1.3B\"\
+          \n\ntokenizer = AutoTokenizer.from_pretrained(model_checkpoint, src_lang=\"\
+          en\", tgt_lang=\"es\")\n\ndef preprocess_function(examples):\n    inputs\
+          \ = [ex for ex in examples[\"sourceString\"]]\n    targets = [ex for ex\
+          \ in examples[\"targetString\"]]\n    model_inputs = tokenizer(inputs, max_length=128,\
+          \ truncation=True)\n\n    # Setup the tokenizer for targets\n    with tokenizer.as_target_tokenizer():\n\
+          \        labels = tokenizer(targets, max_length=128, truncation=True)\n\n\
+          \    # Provide information for the decoder\n    model_inputs[\"labels\"\
+          ] = labels[\"input_ids\"]\n    model_inputs[\"decoder_input_ids\"] = labels[\"\
+          input_ids\"]\n\n    return model_inputs\n\n# Tokenize Data\n\ntokenized_datasets\
+          \ = raw_datasets.map(preprocess_function, batched=True)\n\n# Fine Tune Model\n\
+          \n# model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)\n\n\
+          # Fine Tune Model\n\n# Load model with quantization\nbnb_config = BitsAndBytesConfig(\n\
+          \    load_in_4bit=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          \    bnb_4bit_use_double_quant=False,\n)\n\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\n\
+          \    model_checkpoint,\n    load_in_4bit=True,\n    quantization_config=bnb_config,\n\
+          \    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\n\nmodel =\
+          \ prepare_model_for_kbit_training(model)\npeft_config = LoraConfig(\n  \
+          \  lora_alpha=16,\n    lora_dropout=0.1,\n    r=64,\n    bias=\"none\",\n\
+          \    task_type=\"CAUSAL_LM\",\n    target_modules=[\"q_proj\", \"k_proj\"\
+          , \"v_proj\", \"o_proj\"],\n)\nmodel = get_peft_model(model, peft_config)\n\
+          \nargs = Seq2SeqTrainingArguments(\n    f\"Model-{model_checkpoint}\",\n\
+          \    #evaluation_strategy = \"steps\",\n    learning_rate=2e-5,\n    per_device_train_batch_size=8,\n\
+          \    per_device_eval_batch_size=8,\n    weight_decay=0.01,\n    save_total_limit=3,\n\
+          \    num_train_epochs=15,\n    predict_with_generate=True,\n    logging_steps=200,#50,\n\
+          \    warmup_steps=500,#100,\n    fp16 = True,\n    label_smoothing_factor\
+          \ = 0.1,\n    logging_first_step = True\n)\n\ndata_collator = DataCollatorForSeq2Seq(tokenizer,\
+          \ model=model)\n\ntrainer = Seq2SeqTrainer(\n    model,\n    args,\n   \
+          \ train_dataset=tokenized_datasets[\"train\"],\n    #eval_dataset=tokenized_datasets[\"\
+          test\"],\n    data_collator=data_collator,\n    tokenizer=tokenizer\n)\n\
+          \ntrainer.train()\n\n\nand I get the error\n\nValueError: You have to specify\
+          \ either decoder_input_ids or decoder_inputs_embeds\n\nI assume it is a\
+          \ problem with quantization, because I have tried this code with other models\
+          \ and it does not give me this problem.\n\nIf anyone has a collaborative\
+          \ notebook that they can share with me, I would greatly appreciate it."
+        updatedAt: '2024-01-08T16:55:14.349Z'
+      numEdits: 2
+      reactions: []
+    id: 659c28956922e4f732f55cb0
+    type: comment
+  author: Macs98
+  content: "Hello!\n\nIs it possible to fine tune the model in Google Colab?\n\nI'm\
+    \ trying to use Lora and Peft to tune an English to Spanish translation model\n\
+    \nMy code is the following\n\ncode\nfrom transformers import M2M100Config, M2M100ForConditionalGeneration,\
+    \ M2M100Tokenizer\nfrom transformers import AutoModelForSeq2SeqLM, AutoTokenizer\n\
+    from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments,\
+    \ Seq2SeqTrainer\nfrom datasets import load_dataset\n\n\nraw_datasets = load_dataset('csv',\
+    \ data_files='Dataset.csv', delimiter=',')\n\nmodel_checkpoint = \"facebook/nllb-200-distilled-1.3B\"\
+    \n\ntokenizer = AutoTokenizer.from_pretrained(model_checkpoint, src_lang=\"en\"\
+    , tgt_lang=\"es\")\n\ndef preprocess_function(examples):\n    inputs = [ex for\
+    \ ex in examples[\"sourceString\"]]\n    targets = [ex for ex in examples[\"targetString\"\
+    ]]\n    model_inputs = tokenizer(inputs, max_length=128, truncation=True)\n\n\
+    \    # Setup the tokenizer for targets\n    with tokenizer.as_target_tokenizer():\n\
+    \        labels = tokenizer(targets, max_length=128, truncation=True)\n\n    #\
+    \ Provide information for the decoder\n    model_inputs[\"labels\"] = labels[\"\
+    input_ids\"]\n    model_inputs[\"decoder_input_ids\"] = labels[\"input_ids\"]\n\
+    \n    return model_inputs\n\n# Tokenize Data\n\ntokenized_datasets = raw_datasets.map(preprocess_function,\
+    \ batched=True)\n\n# Fine Tune Model\n\n# model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)\n\
+    \n# Fine Tune Model\n\n# Load model with quantization\nbnb_config = BitsAndBytesConfig(\n\
+    \    load_in_4bit=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+    \    bnb_4bit_use_double_quant=False,\n)\n\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\n\
+    \    model_checkpoint,\n    load_in_4bit=True,\n    quantization_config=bnb_config,\n\
+    \    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\n\nmodel = prepare_model_for_kbit_training(model)\n\
+    peft_config = LoraConfig(\n    lora_alpha=16,\n    lora_dropout=0.1,\n    r=64,\n\
+    \    bias=\"none\",\n    task_type=\"CAUSAL_LM\",\n    target_modules=[\"q_proj\"\
+    , \"k_proj\", \"v_proj\", \"o_proj\"],\n)\nmodel = get_peft_model(model, peft_config)\n\
+    \nargs = Seq2SeqTrainingArguments(\n    f\"Model-{model_checkpoint}\",\n    #evaluation_strategy\
+    \ = \"steps\",\n    learning_rate=2e-5,\n    per_device_train_batch_size=8,\n\
+    \    per_device_eval_batch_size=8,\n    weight_decay=0.01,\n    save_total_limit=3,\n\
+    \    num_train_epochs=15,\n    predict_with_generate=True,\n    logging_steps=200,#50,\n\
+    \    warmup_steps=500,#100,\n    fp16 = True,\n    label_smoothing_factor = 0.1,\n\
+    \    logging_first_step = True\n)\n\ndata_collator = DataCollatorForSeq2Seq(tokenizer,\
+    \ model=model)\n\ntrainer = Seq2SeqTrainer(\n    model,\n    args,\n    train_dataset=tokenized_datasets[\"\
+    train\"],\n    #eval_dataset=tokenized_datasets[\"test\"],\n    data_collator=data_collator,\n\
+    \    tokenizer=tokenizer\n)\n\ntrainer.train()\n\n\nand I get the error\n\nValueError:\
+    \ You have to specify either decoder_input_ids or decoder_inputs_embeds\n\nI assume\
+    \ it is a problem with quantization, because I have tried this code with other\
+    \ models and it does not give me this problem.\n\nIf anyone has a collaborative\
+    \ notebook that they can share with me, I would greatly appreciate it."
+  created_at: 2024-01-08 16:53:41+00:00
+  edited: true
+  hidden: false
+  id: 659c28956922e4f732f55cb0
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: facebook/nllb-200-3.3B
+repo_type: model
+status: open
+target_branch: null
+title: Fine tuning model Google Colab t4-GPU

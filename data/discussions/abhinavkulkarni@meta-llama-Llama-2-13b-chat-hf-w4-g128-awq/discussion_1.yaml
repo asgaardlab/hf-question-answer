@@ -1,0 +1,488 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AnalogAiBert
+conflicting_files: null
+created_at: 2023-07-19 20:55:05+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/256ad7c9daa1743714962f615ee9f339.svg
+      fullname: Bert
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AnalogAiBert
+      type: user
+    createdAt: '2023-07-19T21:55:05.000Z'
+    data:
+      edited: false
+      editors:
+      - AnalogAiBert
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4728412926197052
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/256ad7c9daa1743714962f615ee9f339.svg
+          fullname: Bert
+          isHf: false
+          isPro: false
+          name: AnalogAiBert
+          type: user
+        html: '<p>at least TextStreamer is not imported but thats an easy one :D,
+          also for the snapshot download i get a 401, config.tokenizer_name does not
+          seem to be there. Anyway if modded the script so it works with a local repo,
+          if i understand snapshot_download it does nothing else than that. But i''m
+          getting a strange error</p>
+
+          <p>The script:<br>`import torch<br>from awq.quantize.quantizer import real_quantize_model_weight<br>from
+          transformers import AutoModelForCausalLM, AutoConfig, AutoTokenizer, TextStreamer<br>from
+          accelerate import init_empty_weights, load_checkpoint_and_dispatch<br>from
+          huggingface_hub import snapshot_download</p>
+
+          <p>model_name = "./meta-llama-Llama-2-13b-chat-hf-w4-g128-awq"</p>
+
+          <h1 id="config">Config</h1>
+
+          <p>config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)</p>
+
+          <p>print(config)</p>
+
+          <h1 id="tokenizer">Tokenizer</h1>
+
+          <p>tokenizer = AutoTokenizer.from_pretrained(model_name)<br>streamer = TextStreamer(tokenizer,
+          skip_special_tokens=True)</p>
+
+          <h1 id="model">Model</h1>
+
+          <p>w_bit = 4<br>q_config = {<br>    "zero_point": True,<br>    "q_group_size":
+          128,<br>}</p>
+
+          <p>#load_quant = snapshot_download(model_name)</p>
+
+          <p>with init_empty_weights():<br>    model = AutoModelForCausalLM.from_config(config=config,
+          torch_dtype=torch.float16, trust_remote_code=True)</p>
+
+          <p>real_quantize_model_weight(model, w_bit=w_bit, q_config=q_config, init_only=True)</p>
+
+          <p>model = load_checkpoint_and_dispatch(model, model_name, device_map="balanced")</p>
+
+          <h1 id="inference">Inference</h1>
+
+          <p>prompt = f''''''What is the difference between nuclear fusion and fission?<br>###Response:''''''</p>
+
+          <p>input_ids = tokenizer(prompt, return_tensors=''pt'').input_ids.cuda()<br>output
+          = model.generate(<br>    inputs=input_ids,<br>    temperature=0.7,<br>    max_new_tokens=512,<br>    top_p=0.15,<br>    top_k=0,<br>    repetition_penalty=1.1,<br>    eos_token_id=tokenizer.eos_token_id,<br>    streamer=streamer)`
+          the stack trace: File "/home/robert/llm/conda/script.py", line 42, in <br>    output
+          = model.generate(<br>             ^^^^^^^^^^^^^^^<br>  File "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/utils/_contextlib.py",
+          line 115, in decorate_context<br>    return func(*args, **kwargs)<br>           ^^^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py",
+          line 1538, in generate<br>    return self.greedy_search(<br>           ^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py",
+          line 2362, in greedy_search<br>    outputs = self(<br>              ^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py",
+          line 806, in forward<br>    outputs = self.model(<br>              ^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py",
+          line 693, in forward<br>    layer_outputs = decoder_layer(<br>                    ^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py",
+          line 408, in forward<br>    hidden_states, self_attn_weights, present_key_value
+          = self.self_attn(<br>                                                          ^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py",
+          line 291, in forward<br>    query_slices = self.q_proj.weight.split((self.num_heads
+          * self.head_dim) // self.pretraining_tp, dim=0)<br>                   ^^^^^^^^^^^^^^^^^^<br>  File
+          "/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          line 1614, in <strong>getattr</strong><br>    raise AttributeError("''{}''
+          object has no attribute ''{}''".format(<br>AttributeError: ''WQLinear''
+          object has no attribute ''weight''. Did you mean: ''qweight''? </p>
+
+          '
+        raw: "at least TextStreamer is not imported but thats an easy one :D, also\
+          \ for the snapshot download i get a 401, config.tokenizer_name does not\
+          \ seem to be there. Anyway if modded the script so it works with a local\
+          \ repo, if i understand snapshot_download it does nothing else than that.\
+          \ But i'm getting a strange error\r\n\r\nThe script:\r\n`import torch\r\n\
+          from awq.quantize.quantizer import real_quantize_model_weight\r\nfrom transformers\
+          \ import AutoModelForCausalLM, AutoConfig, AutoTokenizer, TextStreamer\r\
+          \nfrom accelerate import init_empty_weights, load_checkpoint_and_dispatch\r\
+          \nfrom huggingface_hub import snapshot_download\r\n\r\nmodel_name = \"./meta-llama-Llama-2-13b-chat-hf-w4-g128-awq\"\
+          \r\n\r\n# Config\r\nconfig = AutoConfig.from_pretrained(model_name, trust_remote_code=True)\r\
+          \n\r\nprint(config)\r\n\r\n# Tokenizer\r\ntokenizer = AutoTokenizer.from_pretrained(model_name)\r\
+          \nstreamer = TextStreamer(tokenizer, skip_special_tokens=True)\r\n\r\n#\
+          \ Model\r\nw_bit = 4\r\nq_config = {\r\n    \"zero_point\": True,\r\n  \
+          \  \"q_group_size\": 128,\r\n}\r\n\r\n#load_quant = snapshot_download(model_name)\r\
+          \n\r\nwith init_empty_weights():\r\n    model = AutoModelForCausalLM.from_config(config=config,\
+          \ torch_dtype=torch.float16, trust_remote_code=True)\r\n\r\nreal_quantize_model_weight(model,\
+          \ w_bit=w_bit, q_config=q_config, init_only=True)\r\n\r\nmodel = load_checkpoint_and_dispatch(model,\
+          \ model_name, device_map=\"balanced\")\r\n\r\n# Inference\r\nprompt = f'''What\
+          \ is the difference between nuclear fusion and fission?\r\n###Response:'''\r\
+          \n\r\ninput_ids = tokenizer(prompt, return_tensors='pt').input_ids.cuda()\r\
+          \noutput = model.generate(\r\n    inputs=input_ids,\r\n    temperature=0.7,\r\
+          \n    max_new_tokens=512,\r\n    top_p=0.15,\r\n    top_k=0,\r\n    repetition_penalty=1.1,\r\
+          \n    eos_token_id=tokenizer.eos_token_id,\r\n    streamer=streamer)` the\
+          \ stack trace: File \"/home/robert/llm/conda/script.py\", line 42, in <module>\r\
+          \n    output = model.generate(\r\n             ^^^^^^^^^^^^^^^\r\n  File\
+          \ \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n\
+          \           ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py\"\
+          , line 1538, in generate\r\n    return self.greedy_search(\r\n         \
+          \  ^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py\"\
+          , line 2362, in greedy_search\r\n    outputs = self(\r\n              ^^^^^\r\
+          \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 806, in forward\r\n    outputs = self.model(\r\n              ^^^^^^^^^^^\r\
+          \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 693, in forward\r\n    layer_outputs = decoder_layer(\r\n       \
+          \             ^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 408, in forward\r\n    hidden_states, self_attn_weights, present_key_value\
+          \ = self.self_attn(\r\n                                                \
+          \          ^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 291, in forward\r\n    query_slices = self.q_proj.weight.split((self.num_heads\
+          \ * self.head_dim) // self.pretraining_tp, dim=0)\r\n                  \
+          \ ^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+          , line 1614, in __getattr__\r\n    raise AttributeError(\"'{}' object has\
+          \ no attribute '{}'\".format(\r\nAttributeError: 'WQLinear' object has no\
+          \ attribute 'weight'. Did you mean: 'qweight'? "
+        updatedAt: '2023-07-19T21:55:05.633Z'
+      numEdits: 0
+      reactions: []
+    id: 64b85bb9be76d2ff07f5f5f5
+    type: comment
+  author: AnalogAiBert
+  content: "at least TextStreamer is not imported but thats an easy one :D, also for\
+    \ the snapshot download i get a 401, config.tokenizer_name does not seem to be\
+    \ there. Anyway if modded the script so it works with a local repo, if i understand\
+    \ snapshot_download it does nothing else than that. But i'm getting a strange\
+    \ error\r\n\r\nThe script:\r\n`import torch\r\nfrom awq.quantize.quantizer import\
+    \ real_quantize_model_weight\r\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoConfig, AutoTokenizer, TextStreamer\r\nfrom accelerate import init_empty_weights,\
+    \ load_checkpoint_and_dispatch\r\nfrom huggingface_hub import snapshot_download\r\
+    \n\r\nmodel_name = \"./meta-llama-Llama-2-13b-chat-hf-w4-g128-awq\"\r\n\r\n# Config\r\
+    \nconfig = AutoConfig.from_pretrained(model_name, trust_remote_code=True)\r\n\r\
+    \nprint(config)\r\n\r\n# Tokenizer\r\ntokenizer = AutoTokenizer.from_pretrained(model_name)\r\
+    \nstreamer = TextStreamer(tokenizer, skip_special_tokens=True)\r\n\r\n# Model\r\
+    \nw_bit = 4\r\nq_config = {\r\n    \"zero_point\": True,\r\n    \"q_group_size\"\
+    : 128,\r\n}\r\n\r\n#load_quant = snapshot_download(model_name)\r\n\r\nwith init_empty_weights():\r\
+    \n    model = AutoModelForCausalLM.from_config(config=config, torch_dtype=torch.float16,\
+    \ trust_remote_code=True)\r\n\r\nreal_quantize_model_weight(model, w_bit=w_bit,\
+    \ q_config=q_config, init_only=True)\r\n\r\nmodel = load_checkpoint_and_dispatch(model,\
+    \ model_name, device_map=\"balanced\")\r\n\r\n# Inference\r\nprompt = f'''What\
+    \ is the difference between nuclear fusion and fission?\r\n###Response:'''\r\n\
+    \r\ninput_ids = tokenizer(prompt, return_tensors='pt').input_ids.cuda()\r\noutput\
+    \ = model.generate(\r\n    inputs=input_ids,\r\n    temperature=0.7,\r\n    max_new_tokens=512,\r\
+    \n    top_p=0.15,\r\n    top_k=0,\r\n    repetition_penalty=1.1,\r\n    eos_token_id=tokenizer.eos_token_id,\r\
+    \n    streamer=streamer)` the stack trace: File \"/home/robert/llm/conda/script.py\"\
+    , line 42, in <module>\r\n    output = model.generate(\r\n             ^^^^^^^^^^^^^^^\r\
+    \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n      \
+    \     ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py\"\
+    , line 1538, in generate\r\n    return self.greedy_search(\r\n           ^^^^^^^^^^^^^^^^^^^\r\
+    \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/generation/utils.py\"\
+    , line 2362, in greedy_search\r\n    outputs = self(\r\n              ^^^^^\r\n\
+    \  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n   \
+    \        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 806, in forward\r\n    outputs = self.model(\r\n              ^^^^^^^^^^^\r\
+    \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n   \
+    \        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 693, in forward\r\n    layer_outputs = decoder_layer(\r\n             \
+    \       ^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n   \
+    \        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 408, in forward\r\n    hidden_states, self_attn_weights, present_key_value\
+    \ = self.self_attn(\r\n                                                      \
+    \    ^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n   \
+    \        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 291, in forward\r\n    query_slices = self.q_proj.weight.split((self.num_heads\
+    \ * self.head_dim) // self.pretraining_tp, dim=0)\r\n                   ^^^^^^^^^^^^^^^^^^\r\
+    \n  File \"/opt/conda/envs/transformer/lib/python3.11/site-packages/torch/nn/modules/module.py\"\
+    , line 1614, in __getattr__\r\n    raise AttributeError(\"'{}' object has no attribute\
+    \ '{}'\".format(\r\nAttributeError: 'WQLinear' object has no attribute 'weight'.\
+    \ Did you mean: 'qweight'? "
+  created_at: 2023-07-19 20:55:05+00:00
+  edited: false
+  hidden: false
+  id: 64b85bb9be76d2ff07f5f5f5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+      fullname: Abhinav Kulkarni
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: abhinavkulkarni
+      type: user
+    createdAt: '2023-07-20T00:08:08.000Z'
+    data:
+      edited: true
+      editors:
+      - abhinavkulkarni
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9008099436759949
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+          fullname: Abhinav Kulkarni
+          isHf: false
+          isPro: false
+          name: abhinavkulkarni
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;AnalogAiBert&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/AnalogAiBert\"\
+          >@<span class=\"underline\">AnalogAiBert</span></a></span>\n\n\t</span></span>,</p>\n\
+          <p>Thanks for reporting this.</p>\n<blockquote>\n<p>at least TextStreamer\
+          \ is not imported but thats an easy one :D</p>\n</blockquote>\n<p>I have\
+          \ updated the repo with <code>TextStreamer</code> import.</p>\n<blockquote>\n\
+          <p>also for the snapshot download i get a 401</p>\n</blockquote>\n<p>I'll\
+          \ look into this.</p>\n<blockquote>\n<p>config.tokenizer_name does not seem\
+          \ to be there</p>\n</blockquote>\n<p>I've fixed this, please see the updated\
+          \ instructions in the model card.</p>\n<blockquote>\n<p>But i'm getting\
+          \ a strange error</p>\n</blockquote>\n<p>Please check the <code>config.json</code>\
+          \ for the appropriate version of transformers library: <code>\"transformers_version\"\
+          : \"4.30.2\"</code></p>\n"
+        raw: 'Hey @AnalogAiBert,
+
+
+          Thanks for reporting this.
+
+
+          > at least TextStreamer is not imported but thats an easy one :D
+
+
+          I have updated the repo with `TextStreamer` import.
+
+
+          > also for the snapshot download i get a 401
+
+
+          I''ll look into this.
+
+
+          > config.tokenizer_name does not seem to be there
+
+
+          I''ve fixed this, please see the updated instructions in the model card.
+
+
+          > But i''m getting a strange error
+
+
+          Please check the `config.json` for the appropriate version of transformers
+          library: `"transformers_version": "4.30.2"`'
+        updatedAt: '2023-07-20T00:15:32.048Z'
+      numEdits: 3
+      reactions: []
+    id: 64b87ae825b0493d516b84f1
+    type: comment
+  author: abhinavkulkarni
+  content: 'Hey @AnalogAiBert,
+
+
+    Thanks for reporting this.
+
+
+    > at least TextStreamer is not imported but thats an easy one :D
+
+
+    I have updated the repo with `TextStreamer` import.
+
+
+    > also for the snapshot download i get a 401
+
+
+    I''ll look into this.
+
+
+    > config.tokenizer_name does not seem to be there
+
+
+    I''ve fixed this, please see the updated instructions in the model card.
+
+
+    > But i''m getting a strange error
+
+
+    Please check the `config.json` for the appropriate version of transformers library:
+    `"transformers_version": "4.30.2"`'
+  created_at: 2023-07-19 23:08:08+00:00
+  edited: true
+  hidden: false
+  id: 64b87ae825b0493d516b84f1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+      fullname: Abhinav Kulkarni
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: abhinavkulkarni
+      type: user
+    createdAt: '2023-07-21T05:17:03.000Z'
+    data:
+      edited: false
+      editors:
+      - abhinavkulkarni
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9740309715270996
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+          fullname: Abhinav Kulkarni
+          isHf: false
+          isPro: false
+          name: abhinavkulkarni
+          type: user
+        html: '<p>I''m closing this for now. The <code>snapshot_download</code> method
+          does work most of the times, if more people complain about it, I''ll look
+          at it again.</p>
+
+          <p>Otherwise, I have addressed most of the issues with this post.</p>
+
+          <p>P.S., I just checked one AWQ uploaded model and it seems to work with
+          the latest transformers release (<code>transformers==4.31.0</code>)</p>
+
+          '
+        raw: 'I''m closing this for now. The `snapshot_download` method does work
+          most of the times, if more people complain about it, I''ll look at it again.
+
+
+          Otherwise, I have addressed most of the issues with this post.
+
+
+          P.S., I just checked one AWQ uploaded model and it seems to work with the
+          latest transformers release (`transformers==4.31.0`)'
+        updatedAt: '2023-07-21T05:17:03.956Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64ba14cf50d141739ab8197b
+    id: 64ba14cf50d141739ab8197a
+    type: comment
+  author: abhinavkulkarni
+  content: 'I''m closing this for now. The `snapshot_download` method does work most
+    of the times, if more people complain about it, I''ll look at it again.
+
+
+    Otherwise, I have addressed most of the issues with this post.
+
+
+    P.S., I just checked one AWQ uploaded model and it seems to work with the latest
+    transformers release (`transformers==4.31.0`)'
+  created_at: 2023-07-21 04:17:03+00:00
+  edited: false
+  hidden: false
+  id: 64ba14cf50d141739ab8197a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+      fullname: Abhinav Kulkarni
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: abhinavkulkarni
+      type: user
+    createdAt: '2023-07-21T05:17:03.000Z'
+    data:
+      status: closed
+    id: 64ba14cf50d141739ab8197b
+    type: status-change
+  author: abhinavkulkarni
+  created_at: 2023-07-21 04:17:03+00:00
+  id: 64ba14cf50d141739ab8197b
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/256ad7c9daa1743714962f615ee9f339.svg
+      fullname: Bert
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AnalogAiBert
+      type: user
+    createdAt: '2023-07-24T07:57:41.000Z'
+    data:
+      edited: false
+      editors:
+      - AnalogAiBert
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9527759552001953
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/256ad7c9daa1743714962f615ee9f339.svg
+          fullname: Bert
+          isHf: false
+          isPro: false
+          name: AnalogAiBert
+          type: user
+        html: '<p>Thanks a lot, it works now just fine. I would have answered and
+          thanked you earlier, got rate limited :D 1 message every 48 hours thats
+          why provided the code in Markdown ... any way thanks :D </p>
+
+          '
+        raw: 'Thanks a lot, it works now just fine. I would have answered and thanked
+          you earlier, got rate limited :D 1 message every 48 hours thats why provided
+          the code in Markdown ... any way thanks :D '
+        updatedAt: '2023-07-24T07:57:41.602Z'
+      numEdits: 0
+      reactions: []
+    id: 64be2ef5805e5b64572d5ea2
+    type: comment
+  author: AnalogAiBert
+  content: 'Thanks a lot, it works now just fine. I would have answered and thanked
+    you earlier, got rate limited :D 1 message every 48 hours thats why provided the
+    code in Markdown ... any way thanks :D '
+  created_at: 2023-07-24 06:57:41+00:00
+  edited: false
+  hidden: false
+  id: 64be2ef5805e5b64572d5ea2
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: abhinavkulkarni/meta-llama-Llama-2-13b-chat-hf-w4-g128-awq
+repo_type: model
+status: closed
+target_branch: null
+title: The code provided in the model card does not work

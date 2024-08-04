@@ -1,0 +1,278 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Andyrasika
+conflicting_files: null
+created_at: 2023-08-15 02:47:14+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6290ec00a29097b211b94f0f/7OYU-yroOUxJryJkl33L6.png?w=200&h=200&f=face
+      fullname: Ankush Singal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Andyrasika
+      type: user
+    createdAt: '2023-08-15T03:47:14.000Z'
+    data:
+      edited: true
+      editors:
+      - Andyrasika
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3699207603931427
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6290ec00a29097b211b94f0f/7OYU-yroOUxJryJkl33L6.png?w=200&h=200&f=face
+          fullname: Ankush Singal
+          isHf: false
+          isPro: false
+          name: Andyrasika
+          type: user
+        html: "<pre><code>#https://huggingface.co/TheBloke/stable-vicuna-13B-GPTQ/discussions/19\n\
+          quantized_model_dir = \"/workspace/models/TheBloke_stable-vicuna-13B-GPTQ\"\
+          \n\nmodel_basename = \"stable-vicuna-13B-GPTQ-4bit.compat.no-act-order\"\
+          \n\nuse_strict = False\n\nuse_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=True)\n\nquantize_config = BaseQuantizeConfig(\n        bits=4,\n\
+          \        group_size=128,\n        desc_act=False\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \        use_safetensors=True,\n        strict=use_strict,\n        model_basename=model_basename,\n\
+          \        device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+          \n# Prevent printing spurious transformers error when using pipeline with\
+          \ AutoGPTQ\nlogging.set_verbosity(logging.CRITICAL)\n\npeft_config = PromptTuningConfig(\n\
+          \    task_type=TaskType.CAUSAL_LM,\n    prompt_tuning_init=PromptTuningInit.TEXT,\n\
+          \    num_virtual_tokens=8,\n    prompt_tuning_init_text=\"Human Assistant\
+          \ chat\",\n    tokenizer_name_or_path=MODEL_NAME,\n)\n\n\nmodel = get_peft_model(model,\
+          \ peft_config)\nprint_trainable_parameters(model)\ngc.collect()\ntorch.cuda.empty_cache()\n\
+          gc.collect()\n</code></pre>\n<p>gave error:</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          OutOfMemoryError                          Traceback (most recent call last)\n\
+          Cell In[18], line 25\n     17 tokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=True)\n     19 quantize_config = BaseQuantizeConfig(\n     20\
+          \         bits=4,\n     21         group_size=128,\n     22         desc_act=False\n\
+          \     23     )\n---&gt; 25 model = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \     26         use_safetensors=True,\n     27         strict=use_strict,\n\
+          \     28         device=\"cuda:0\",\n     29         model_basename=model_basename,\n\
+          \     30         use_triton=use_triton,\n     31         quantize_config=quantize_config)\n\
+          \     33 # Prevent printing spurious transformers error when using pipeline\
+          \ with AutoGPTQ\n     34 logging.set_verbosity(logging.CRITICAL)\n\nFile\
+          \ /kaggle/working/AutoGPTQ/auto_gptq/modeling/auto.py:108, in AutoGPTQForCausalLM.from_quantized(cls,\
+          \ model_name_or_path, device_map, max_memory, device, low_cpu_mem_usage,\
+          \ use_triton, inject_fused_attention, inject_fused_mlp, use_cuda_fp16, quantize_config,\
+          \ model_basename, use_safetensors, trust_remote_code, warmup_triton, trainable,\
+          \ disable_exllama, **kwargs)\n    102 # TODO: do we need this filtering\
+          \ of kwargs? @PanQiWei is there a reason we can't just pass all kwargs?\n\
+          \    103 keywords = {\n    104     key: kwargs[key]\n    105     for key\
+          \ in list(signature(quant_func).parameters.keys()) + huggingface_kwargs\n\
+          \    106     if key in kwargs\n    107 }\n--&gt; 108 return quant_func(\n\
+          \    109     model_name_or_path=model_name_or_path,\n    110     device_map=device_map,\n\
+          \    111     max_memory=max_memory,\n    112     device=device,\n    113\
+          \     low_cpu_mem_usage=low_cpu_mem_usage,\n    114     use_triton=use_triton,\n\
+          \    115     inject_fused_attention=inject_fused_attention,\n    116   \
+          \  inject_fused_mlp=inject_fused_mlp,\n    117     use_cuda_fp16=use_cuda_fp16,\n\
+          \    118     quantize_config=quantize_config,\n    119     model_basename=model_basename,\n\
+          \    120     use_safetensors=use_safetensors,\n    121     trust_remote_code=trust_remote_code,\n\
+          \    122     warmup_triton=warmup_triton,\n    123     trainable=trainable,\n\
+          \    124     disable_exllama=disable_exllama,\n    125     **keywords\n\
+          \    126 )\n\nFile /kaggle/working/AutoGPTQ/auto_gptq/modeling/_base.py:875,\
+          \ in BaseGPTQForCausalLM.from_quantized(cls, model_name_or_path, device_map,\
+          \ max_memory, device, low_cpu_mem_usage, use_triton, torch_dtype, inject_fused_attention,\
+          \ inject_fused_mlp, use_cuda_fp16, quantize_config, model_basename, use_safetensors,\
+          \ trust_remote_code, warmup_triton, trainable, disable_exllama, **kwargs)\n\
+          \    872 if low_cpu_mem_usage:\n    873     make_sure_no_tensor_in_meta_device(model,\
+          \ use_triton, quantize_config.desc_act, quantize_config.group_size, bits=quantize_config.bits)\n\
+          --&gt; 875 accelerate.utils.modeling.load_checkpoint_in_model(\n    876\
+          \     model,\n    877     checkpoint=model_save_name,\n    878     device_map=device_map,\n\
+          \    879     offload_state_dict=True,\n    880     offload_buffers=True\n\
+          \    881 )\n    882 model = simple_dispatch_model(model, device_map)\n \
+          \   884 # == step4: set seqlen == #\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1279,\
+          \ in load_checkpoint_in_model(model, checkpoint, device_map, offload_folder,\
+          \ dtype, offload_state_dict, offload_buffers, keep_in_fp32_modules, offload_8bit_bnb)\n\
+          \   1277 buffer_names = [name for name, _ in model.named_buffers()]\n  \
+          \ 1278 for checkpoint_file in checkpoint_files:\n-&gt; 1279     checkpoint\
+          \ = load_state_dict(checkpoint_file, device_map=device_map)\n   1280   \
+          \  if device_map is None:\n   1281         model.load_state_dict(checkpoint,\
+          \ strict=False)\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1111,\
+          \ in load_state_dict(checkpoint_file, device_map)\n   1108 else:\n   1109\
+          \     # if we only have one device we can load everything directly\n   1110\
+          \     if len(set(device_map.values())) == 1:\n-&gt; 1111         return\
+          \ safe_load_file(checkpoint_file, device=list(device_map.values())[0])\n\
+          \   1113     devices = list(set(device_map.values()) - {\"disk\"})\n   1114\
+          \     # cpu device should always exist as fallback option\n\nFile /opt/conda/lib/python3.10/site-packages/safetensors/torch.py:261,\
+          \ in load_file(filename, device)\n    259 with safe_open(filename, framework=\"\
+          pt\", device=device) as f:\n    260     for k in f.keys():\n--&gt; 261 \
+          \        result[k] = f.get_tensor(k)\n    262 return result\n\nOutOfMemoryError:\
+          \ CUDA out of memory. Tried to allocate 14.00 MiB (GPU 0; 15.90 GiB total\
+          \ capacity; 14.90 GiB already allocated; 13.75 MiB free; 15.04 GiB reserved\
+          \ in total by PyTorch) If reserved memory is &gt;&gt; allocated memory try\
+          \ setting max_split_size_mb to avoid fragmentation.  See documentation for\
+          \ Memory Management and PYTORCH_CUDA_ALLOC_CONF\n</code></pre>\n"
+        raw: "```\n#https://huggingface.co/TheBloke/stable-vicuna-13B-GPTQ/discussions/19\n\
+          quantized_model_dir = \"/workspace/models/TheBloke_stable-vicuna-13B-GPTQ\"\
+          \n\nmodel_basename = \"stable-vicuna-13B-GPTQ-4bit.compat.no-act-order\"\
+          \n\nuse_strict = False\n\nuse_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=True)\n\nquantize_config = BaseQuantizeConfig(\n        bits=4,\n\
+          \        group_size=128,\n        desc_act=False\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \        use_safetensors=True,\n        strict=use_strict,\n        model_basename=model_basename,\n\
+          \        device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+          \n# Prevent printing spurious transformers error when using pipeline with\
+          \ AutoGPTQ\nlogging.set_verbosity(logging.CRITICAL)\n\npeft_config = PromptTuningConfig(\n\
+          \    task_type=TaskType.CAUSAL_LM,\n    prompt_tuning_init=PromptTuningInit.TEXT,\n\
+          \    num_virtual_tokens=8,\n    prompt_tuning_init_text=\"Human Assistant\
+          \ chat\",\n    tokenizer_name_or_path=MODEL_NAME,\n)\n\n\nmodel = get_peft_model(model,\
+          \ peft_config)\nprint_trainable_parameters(model)\ngc.collect()\ntorch.cuda.empty_cache()\n\
+          gc.collect()\n```\ngave error:\n```\n---------------------------------------------------------------------------\n\
+          OutOfMemoryError                          Traceback (most recent call last)\n\
+          Cell In[18], line 25\n     17 tokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=True)\n     19 quantize_config = BaseQuantizeConfig(\n     20\
+          \         bits=4,\n     21         group_size=128,\n     22         desc_act=False\n\
+          \     23     )\n---> 25 model = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \     26         use_safetensors=True,\n     27         strict=use_strict,\n\
+          \     28         device=\"cuda:0\",\n     29         model_basename=model_basename,\n\
+          \     30         use_triton=use_triton,\n     31         quantize_config=quantize_config)\n\
+          \     33 # Prevent printing spurious transformers error when using pipeline\
+          \ with AutoGPTQ\n     34 logging.set_verbosity(logging.CRITICAL)\n\nFile\
+          \ /kaggle/working/AutoGPTQ/auto_gptq/modeling/auto.py:108, in AutoGPTQForCausalLM.from_quantized(cls,\
+          \ model_name_or_path, device_map, max_memory, device, low_cpu_mem_usage,\
+          \ use_triton, inject_fused_attention, inject_fused_mlp, use_cuda_fp16, quantize_config,\
+          \ model_basename, use_safetensors, trust_remote_code, warmup_triton, trainable,\
+          \ disable_exllama, **kwargs)\n    102 # TODO: do we need this filtering\
+          \ of kwargs? @PanQiWei is there a reason we can't just pass all kwargs?\n\
+          \    103 keywords = {\n    104     key: kwargs[key]\n    105     for key\
+          \ in list(signature(quant_func).parameters.keys()) + huggingface_kwargs\n\
+          \    106     if key in kwargs\n    107 }\n--> 108 return quant_func(\n \
+          \   109     model_name_or_path=model_name_or_path,\n    110     device_map=device_map,\n\
+          \    111     max_memory=max_memory,\n    112     device=device,\n    113\
+          \     low_cpu_mem_usage=low_cpu_mem_usage,\n    114     use_triton=use_triton,\n\
+          \    115     inject_fused_attention=inject_fused_attention,\n    116   \
+          \  inject_fused_mlp=inject_fused_mlp,\n    117     use_cuda_fp16=use_cuda_fp16,\n\
+          \    118     quantize_config=quantize_config,\n    119     model_basename=model_basename,\n\
+          \    120     use_safetensors=use_safetensors,\n    121     trust_remote_code=trust_remote_code,\n\
+          \    122     warmup_triton=warmup_triton,\n    123     trainable=trainable,\n\
+          \    124     disable_exllama=disable_exllama,\n    125     **keywords\n\
+          \    126 )\n\nFile /kaggle/working/AutoGPTQ/auto_gptq/modeling/_base.py:875,\
+          \ in BaseGPTQForCausalLM.from_quantized(cls, model_name_or_path, device_map,\
+          \ max_memory, device, low_cpu_mem_usage, use_triton, torch_dtype, inject_fused_attention,\
+          \ inject_fused_mlp, use_cuda_fp16, quantize_config, model_basename, use_safetensors,\
+          \ trust_remote_code, warmup_triton, trainable, disable_exllama, **kwargs)\n\
+          \    872 if low_cpu_mem_usage:\n    873     make_sure_no_tensor_in_meta_device(model,\
+          \ use_triton, quantize_config.desc_act, quantize_config.group_size, bits=quantize_config.bits)\n\
+          --> 875 accelerate.utils.modeling.load_checkpoint_in_model(\n    876   \
+          \  model,\n    877     checkpoint=model_save_name,\n    878     device_map=device_map,\n\
+          \    879     offload_state_dict=True,\n    880     offload_buffers=True\n\
+          \    881 )\n    882 model = simple_dispatch_model(model, device_map)\n \
+          \   884 # == step4: set seqlen == #\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1279,\
+          \ in load_checkpoint_in_model(model, checkpoint, device_map, offload_folder,\
+          \ dtype, offload_state_dict, offload_buffers, keep_in_fp32_modules, offload_8bit_bnb)\n\
+          \   1277 buffer_names = [name for name, _ in model.named_buffers()]\n  \
+          \ 1278 for checkpoint_file in checkpoint_files:\n-> 1279     checkpoint\
+          \ = load_state_dict(checkpoint_file, device_map=device_map)\n   1280   \
+          \  if device_map is None:\n   1281         model.load_state_dict(checkpoint,\
+          \ strict=False)\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1111,\
+          \ in load_state_dict(checkpoint_file, device_map)\n   1108 else:\n   1109\
+          \     # if we only have one device we can load everything directly\n   1110\
+          \     if len(set(device_map.values())) == 1:\n-> 1111         return safe_load_file(checkpoint_file,\
+          \ device=list(device_map.values())[0])\n   1113     devices = list(set(device_map.values())\
+          \ - {\"disk\"})\n   1114     # cpu device should always exist as fallback\
+          \ option\n\nFile /opt/conda/lib/python3.10/site-packages/safetensors/torch.py:261,\
+          \ in load_file(filename, device)\n    259 with safe_open(filename, framework=\"\
+          pt\", device=device) as f:\n    260     for k in f.keys():\n--> 261    \
+          \     result[k] = f.get_tensor(k)\n    262 return result\n\nOutOfMemoryError:\
+          \ CUDA out of memory. Tried to allocate 14.00 MiB (GPU 0; 15.90 GiB total\
+          \ capacity; 14.90 GiB already allocated; 13.75 MiB free; 15.04 GiB reserved\
+          \ in total by PyTorch) If reserved memory is >> allocated memory try setting\
+          \ max_split_size_mb to avoid fragmentation.  See documentation for Memory\
+          \ Management and PYTORCH_CUDA_ALLOC_CONF\n```"
+        updatedAt: '2023-08-15T05:59:48.198Z'
+      numEdits: 2
+      reactions: []
+    id: 64daf542a21d6c044b9e53e6
+    type: comment
+  author: Andyrasika
+  content: "```\n#https://huggingface.co/TheBloke/stable-vicuna-13B-GPTQ/discussions/19\n\
+    quantized_model_dir = \"/workspace/models/TheBloke_stable-vicuna-13B-GPTQ\"\n\n\
+    model_basename = \"stable-vicuna-13B-GPTQ-4bit.compat.no-act-order\"\n\nuse_strict\
+    \ = False\n\nuse_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+    \ use_fast=True)\n\nquantize_config = BaseQuantizeConfig(\n        bits=4,\n \
+    \       group_size=128,\n        desc_act=False\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+    \        use_safetensors=True,\n        strict=use_strict,\n        model_basename=model_basename,\n\
+    \        device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+    \n# Prevent printing spurious transformers error when using pipeline with AutoGPTQ\n\
+    logging.set_verbosity(logging.CRITICAL)\n\npeft_config = PromptTuningConfig(\n\
+    \    task_type=TaskType.CAUSAL_LM,\n    prompt_tuning_init=PromptTuningInit.TEXT,\n\
+    \    num_virtual_tokens=8,\n    prompt_tuning_init_text=\"Human Assistant chat\"\
+    ,\n    tokenizer_name_or_path=MODEL_NAME,\n)\n\n\nmodel = get_peft_model(model,\
+    \ peft_config)\nprint_trainable_parameters(model)\ngc.collect()\ntorch.cuda.empty_cache()\n\
+    gc.collect()\n```\ngave error:\n```\n---------------------------------------------------------------------------\n\
+    OutOfMemoryError                          Traceback (most recent call last)\n\
+    Cell In[18], line 25\n     17 tokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+    \ use_fast=True)\n     19 quantize_config = BaseQuantizeConfig(\n     20     \
+    \    bits=4,\n     21         group_size=128,\n     22         desc_act=False\n\
+    \     23     )\n---> 25 model = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+    \     26         use_safetensors=True,\n     27         strict=use_strict,\n \
+    \    28         device=\"cuda:0\",\n     29         model_basename=model_basename,\n\
+    \     30         use_triton=use_triton,\n     31         quantize_config=quantize_config)\n\
+    \     33 # Prevent printing spurious transformers error when using pipeline with\
+    \ AutoGPTQ\n     34 logging.set_verbosity(logging.CRITICAL)\n\nFile /kaggle/working/AutoGPTQ/auto_gptq/modeling/auto.py:108,\
+    \ in AutoGPTQForCausalLM.from_quantized(cls, model_name_or_path, device_map, max_memory,\
+    \ device, low_cpu_mem_usage, use_triton, inject_fused_attention, inject_fused_mlp,\
+    \ use_cuda_fp16, quantize_config, model_basename, use_safetensors, trust_remote_code,\
+    \ warmup_triton, trainable, disable_exllama, **kwargs)\n    102 # TODO: do we\
+    \ need this filtering of kwargs? @PanQiWei is there a reason we can't just pass\
+    \ all kwargs?\n    103 keywords = {\n    104     key: kwargs[key]\n    105   \
+    \  for key in list(signature(quant_func).parameters.keys()) + huggingface_kwargs\n\
+    \    106     if key in kwargs\n    107 }\n--> 108 return quant_func(\n    109\
+    \     model_name_or_path=model_name_or_path,\n    110     device_map=device_map,\n\
+    \    111     max_memory=max_memory,\n    112     device=device,\n    113     low_cpu_mem_usage=low_cpu_mem_usage,\n\
+    \    114     use_triton=use_triton,\n    115     inject_fused_attention=inject_fused_attention,\n\
+    \    116     inject_fused_mlp=inject_fused_mlp,\n    117     use_cuda_fp16=use_cuda_fp16,\n\
+    \    118     quantize_config=quantize_config,\n    119     model_basename=model_basename,\n\
+    \    120     use_safetensors=use_safetensors,\n    121     trust_remote_code=trust_remote_code,\n\
+    \    122     warmup_triton=warmup_triton,\n    123     trainable=trainable,\n\
+    \    124     disable_exllama=disable_exllama,\n    125     **keywords\n    126\
+    \ )\n\nFile /kaggle/working/AutoGPTQ/auto_gptq/modeling/_base.py:875, in BaseGPTQForCausalLM.from_quantized(cls,\
+    \ model_name_or_path, device_map, max_memory, device, low_cpu_mem_usage, use_triton,\
+    \ torch_dtype, inject_fused_attention, inject_fused_mlp, use_cuda_fp16, quantize_config,\
+    \ model_basename, use_safetensors, trust_remote_code, warmup_triton, trainable,\
+    \ disable_exllama, **kwargs)\n    872 if low_cpu_mem_usage:\n    873     make_sure_no_tensor_in_meta_device(model,\
+    \ use_triton, quantize_config.desc_act, quantize_config.group_size, bits=quantize_config.bits)\n\
+    --> 875 accelerate.utils.modeling.load_checkpoint_in_model(\n    876     model,\n\
+    \    877     checkpoint=model_save_name,\n    878     device_map=device_map,\n\
+    \    879     offload_state_dict=True,\n    880     offload_buffers=True\n    881\
+    \ )\n    882 model = simple_dispatch_model(model, device_map)\n    884 # == step4:\
+    \ set seqlen == #\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1279,\
+    \ in load_checkpoint_in_model(model, checkpoint, device_map, offload_folder, dtype,\
+    \ offload_state_dict, offload_buffers, keep_in_fp32_modules, offload_8bit_bnb)\n\
+    \   1277 buffer_names = [name for name, _ in model.named_buffers()]\n   1278 for\
+    \ checkpoint_file in checkpoint_files:\n-> 1279     checkpoint = load_state_dict(checkpoint_file,\
+    \ device_map=device_map)\n   1280     if device_map is None:\n   1281        \
+    \ model.load_state_dict(checkpoint, strict=False)\n\nFile /opt/conda/lib/python3.10/site-packages/accelerate/utils/modeling.py:1111,\
+    \ in load_state_dict(checkpoint_file, device_map)\n   1108 else:\n   1109    \
+    \ # if we only have one device we can load everything directly\n   1110     if\
+    \ len(set(device_map.values())) == 1:\n-> 1111         return safe_load_file(checkpoint_file,\
+    \ device=list(device_map.values())[0])\n   1113     devices = list(set(device_map.values())\
+    \ - {\"disk\"})\n   1114     # cpu device should always exist as fallback option\n\
+    \nFile /opt/conda/lib/python3.10/site-packages/safetensors/torch.py:261, in load_file(filename,\
+    \ device)\n    259 with safe_open(filename, framework=\"pt\", device=device) as\
+    \ f:\n    260     for k in f.keys():\n--> 261         result[k] = f.get_tensor(k)\n\
+    \    262 return result\n\nOutOfMemoryError: CUDA out of memory. Tried to allocate\
+    \ 14.00 MiB (GPU 0; 15.90 GiB total capacity; 14.90 GiB already allocated; 13.75\
+    \ MiB free; 15.04 GiB reserved in total by PyTorch) If reserved memory is >> allocated\
+    \ memory try setting max_split_size_mb to avoid fragmentation.  See documentation\
+    \ for Memory Management and PYTORCH_CUDA_ALLOC_CONF\n```"
+  created_at: 2023-08-15 02:47:14+00:00
+  edited: true
+  hidden: false
+  id: 64daf542a21d6c044b9e53e6
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 29
+repo_id: TheBloke/stable-vicuna-13B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: 'Error running the code:'

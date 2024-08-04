@@ -1,0 +1,207 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Hardy
+conflicting_files: null
+created_at: 2023-08-15 10:42:23+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/324a7c70f9de1b4431057636cbad879a.svg
+      fullname: Hardy Wang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Hardy
+      type: user
+    createdAt: '2023-08-15T11:42:23.000Z'
+    data:
+      edited: false
+      editors:
+      - Hardy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5555313229560852
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/324a7c70f9de1b4431057636cbad879a.svg
+          fullname: Hardy Wang
+          isHf: false
+          isPro: false
+          name: Hardy
+          type: user
+        html: '<p>Have you run any text2sql examples? If you have, please show me
+          some.</p>
+
+          '
+        raw: Have you run any text2sql examples? If you have, please show me some.
+        updatedAt: '2023-08-15T11:42:23.187Z'
+      numEdits: 0
+      reactions: []
+    id: 64db649f7f749b6e345511fc
+    type: comment
+  author: Hardy
+  content: Have you run any text2sql examples? If you have, please show me some.
+  created_at: 2023-08-15 10:42:23+00:00
+  edited: false
+  hidden: false
+  id: 64db649f7f749b6e345511fc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ud53zxCdOLYfNXvxhT64G.jpeg?w=200&h=200&f=face
+      fullname: Jason Van
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: jasonvan
+      type: user
+    createdAt: '2023-08-15T15:28:26.000Z'
+    data:
+      edited: false
+      editors:
+      - jasonvan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5362567901611328
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ud53zxCdOLYfNXvxhT64G.jpeg?w=200&h=200&f=face
+          fullname: Jason Van
+          isHf: false
+          isPro: false
+          name: jasonvan
+          type: user
+        html: "<p>Try the following code:</p>\n<pre><code>import os\nfrom os.path\
+          \ import exists, join, isdir\nimport torch\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer, BitsAndBytesConfig, GenerationConfig\nfrom peft import\
+          \ PeftModel\nfrom peft.tuners.lora import LoraLayer\n\ndef get_last_checkpoint(checkpoint_dir):\n\
+          \    if isdir(checkpoint_dir):\n        is_completed = exists(join(checkpoint_dir,\
+          \ 'completed'))\n        if is_completed: return None, True # already finished\n\
+          \        max_step = 0\n        for filename in os.listdir(checkpoint_dir):\n\
+          \            if isdir(join(checkpoint_dir, filename)) and filename.startswith('checkpoint'):\n\
+          \                max_step = max(max_step, int(filename.replace('checkpoint-',\
+          \ '')))\n        if max_step == 0: return None, is_completed # training\
+          \ started, but no checkpoint\n        checkpoint_dir = join(checkpoint_dir,\
+          \ f'checkpoint-{max_step}')\n        print(f\"Found a previous checkpoint\
+          \ at: {checkpoint_dir}\")\n        return checkpoint_dir, is_completed #\
+          \ checkpoint found!\n    return None, False # first training\n\n\n# TODO:\
+          \ Update variables\nmax_new_tokens = 256\ntop_p = 1\ntemperature = 0.01\n\
+          \n# Base model\nmodel_name_or_path = 'meta-llama/Llama-2-13b-hf'\n# Adapter\
+          \ name on HF hub or local checkpoint path.\n# adapter_path, _ = get_last_checkpoint('qlora/output/guanaco-7b')\n\
+          adapter_path = 'jasonvan/llama-2-13b-text2sql'\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path)\n\
+          # Fixing some of the early LLaMA HF conversion issues.\ntokenizer.bos_token_id\
+          \ = 1\n\n# Load the model (use bf16 for faster inference)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_name_or_path,\n    torch_dtype=torch.bfloat16,\n    device_map={\"\
+          \": 0},\n    load_in_4bit=True,\n    quantization_config=BitsAndBytesConfig(\n\
+          \        load_in_4bit=True,\n        bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          \        bnb_4bit_use_double_quant=True,\n        bnb_4bit_quant_type='nf4',\n\
+          \    )\n)\n\nmodel = PeftModel.from_pretrained(model, adapter_path)\nmodel.eval()\n\
+          \nprompt = (\n    \"A chat between a curious human and an artificial intelligence\
+          \ assistant. \"\n    \"The assistant gives helpful, detailed, and polite\
+          \ answers to the user's questions. \"\n    \"### Human: {user_question}\"\
+          \n    \"### Assistant: \"\n)\n\ndef generate(model, user_question, max_new_tokens=max_new_tokens,\
+          \ top_p=top_p, temperature=temperature):\n    inputs = tokenizer(prompt.format(user_question=user_question),\
+          \ return_tensors=\"pt\").to('cuda')\n\n    outputs = model.generate(\n \
+          \       **inputs,\n        generation_config=GenerationConfig(\n       \
+          \     do_sample=True,\n            max_new_tokens=max_new_tokens,\n    \
+          \        top_p=top_p,\n            temperature=temperature,\n        )\n\
+          \    )\n\n    text = tokenizer.decode(outputs[0], skip_special_tokens=True)\n\
+          \    print(text)\n    return text\n</code></pre>\n"
+        raw: "Try the following code:\n\n```\nimport os\nfrom os.path import exists,\
+          \ join, isdir\nimport torch\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer, BitsAndBytesConfig, GenerationConfig\nfrom peft import\
+          \ PeftModel\nfrom peft.tuners.lora import LoraLayer\n\ndef get_last_checkpoint(checkpoint_dir):\n\
+          \    if isdir(checkpoint_dir):\n        is_completed = exists(join(checkpoint_dir,\
+          \ 'completed'))\n        if is_completed: return None, True # already finished\n\
+          \        max_step = 0\n        for filename in os.listdir(checkpoint_dir):\n\
+          \            if isdir(join(checkpoint_dir, filename)) and filename.startswith('checkpoint'):\n\
+          \                max_step = max(max_step, int(filename.replace('checkpoint-',\
+          \ '')))\n        if max_step == 0: return None, is_completed # training\
+          \ started, but no checkpoint\n        checkpoint_dir = join(checkpoint_dir,\
+          \ f'checkpoint-{max_step}')\n        print(f\"Found a previous checkpoint\
+          \ at: {checkpoint_dir}\")\n        return checkpoint_dir, is_completed #\
+          \ checkpoint found!\n    return None, False # first training\n\n\n# TODO:\
+          \ Update variables\nmax_new_tokens = 256\ntop_p = 1\ntemperature = 0.01\n\
+          \n# Base model\nmodel_name_or_path = 'meta-llama/Llama-2-13b-hf'\n# Adapter\
+          \ name on HF hub or local checkpoint path.\n# adapter_path, _ = get_last_checkpoint('qlora/output/guanaco-7b')\n\
+          adapter_path = 'jasonvan/llama-2-13b-text2sql'\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path)\n\
+          # Fixing some of the early LLaMA HF conversion issues.\ntokenizer.bos_token_id\
+          \ = 1\n\n# Load the model (use bf16 for faster inference)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_name_or_path,\n    torch_dtype=torch.bfloat16,\n    device_map={\"\
+          \": 0},\n    load_in_4bit=True,\n    quantization_config=BitsAndBytesConfig(\n\
+          \        load_in_4bit=True,\n        bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          \        bnb_4bit_use_double_quant=True,\n        bnb_4bit_quant_type='nf4',\n\
+          \    )\n)\n\nmodel = PeftModel.from_pretrained(model, adapter_path)\nmodel.eval()\n\
+          \nprompt = (\n    \"A chat between a curious human and an artificial intelligence\
+          \ assistant. \"\n    \"The assistant gives helpful, detailed, and polite\
+          \ answers to the user's questions. \"\n    \"### Human: {user_question}\"\
+          \n    \"### Assistant: \"\n)\n\ndef generate(model, user_question, max_new_tokens=max_new_tokens,\
+          \ top_p=top_p, temperature=temperature):\n    inputs = tokenizer(prompt.format(user_question=user_question),\
+          \ return_tensors=\"pt\").to('cuda')\n\n    outputs = model.generate(\n \
+          \       **inputs,\n        generation_config=GenerationConfig(\n       \
+          \     do_sample=True,\n            max_new_tokens=max_new_tokens,\n    \
+          \        top_p=top_p,\n            temperature=temperature,\n        )\n\
+          \    )\n\n    text = tokenizer.decode(outputs[0], skip_special_tokens=True)\n\
+          \    print(text)\n    return text\n```"
+        updatedAt: '2023-08-15T15:28:26.792Z'
+      numEdits: 0
+      reactions: []
+    id: 64db999a96f0f217e4321db7
+    type: comment
+  author: jasonvan
+  content: "Try the following code:\n\n```\nimport os\nfrom os.path import exists,\
+    \ join, isdir\nimport torch\nfrom transformers import AutoModelForCausalLM, AutoTokenizer,\
+    \ BitsAndBytesConfig, GenerationConfig\nfrom peft import PeftModel\nfrom peft.tuners.lora\
+    \ import LoraLayer\n\ndef get_last_checkpoint(checkpoint_dir):\n    if isdir(checkpoint_dir):\n\
+    \        is_completed = exists(join(checkpoint_dir, 'completed'))\n        if\
+    \ is_completed: return None, True # already finished\n        max_step = 0\n \
+    \       for filename in os.listdir(checkpoint_dir):\n            if isdir(join(checkpoint_dir,\
+    \ filename)) and filename.startswith('checkpoint'):\n                max_step\
+    \ = max(max_step, int(filename.replace('checkpoint-', '')))\n        if max_step\
+    \ == 0: return None, is_completed # training started, but no checkpoint\n    \
+    \    checkpoint_dir = join(checkpoint_dir, f'checkpoint-{max_step}')\n       \
+    \ print(f\"Found a previous checkpoint at: {checkpoint_dir}\")\n        return\
+    \ checkpoint_dir, is_completed # checkpoint found!\n    return None, False # first\
+    \ training\n\n\n# TODO: Update variables\nmax_new_tokens = 256\ntop_p = 1\ntemperature\
+    \ = 0.01\n\n# Base model\nmodel_name_or_path = 'meta-llama/Llama-2-13b-hf'\n#\
+    \ Adapter name on HF hub or local checkpoint path.\n# adapter_path, _ = get_last_checkpoint('qlora/output/guanaco-7b')\n\
+    adapter_path = 'jasonvan/llama-2-13b-text2sql'\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path)\n\
+    # Fixing some of the early LLaMA HF conversion issues.\ntokenizer.bos_token_id\
+    \ = 1\n\n# Load the model (use bf16 for faster inference)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    model_name_or_path,\n    torch_dtype=torch.bfloat16,\n    device_map={\"\"\
+    : 0},\n    load_in_4bit=True,\n    quantization_config=BitsAndBytesConfig(\n \
+    \       load_in_4bit=True,\n        bnb_4bit_compute_dtype=torch.bfloat16,\n \
+    \       bnb_4bit_use_double_quant=True,\n        bnb_4bit_quant_type='nf4',\n\
+    \    )\n)\n\nmodel = PeftModel.from_pretrained(model, adapter_path)\nmodel.eval()\n\
+    \nprompt = (\n    \"A chat between a curious human and an artificial intelligence\
+    \ assistant. \"\n    \"The assistant gives helpful, detailed, and polite answers\
+    \ to the user's questions. \"\n    \"### Human: {user_question}\"\n    \"### Assistant:\
+    \ \"\n)\n\ndef generate(model, user_question, max_new_tokens=max_new_tokens, top_p=top_p,\
+    \ temperature=temperature):\n    inputs = tokenizer(prompt.format(user_question=user_question),\
+    \ return_tensors=\"pt\").to('cuda')\n\n    outputs = model.generate(\n       \
+    \ **inputs,\n        generation_config=GenerationConfig(\n            do_sample=True,\n\
+    \            max_new_tokens=max_new_tokens,\n            top_p=top_p,\n      \
+    \      temperature=temperature,\n        )\n    )\n\n    text = tokenizer.decode(outputs[0],\
+    \ skip_special_tokens=True)\n    print(text)\n    return text\n```"
+  created_at: 2023-08-15 14:28:26+00:00
+  edited: false
+  hidden: false
+  id: 64db999a96f0f217e4321db7
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: jasonvan/llama-2-13b-text2sql
+repo_type: model
+status: open
+target_branch: null
+title: Are there any examples?

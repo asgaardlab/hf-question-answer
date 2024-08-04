@@ -1,0 +1,212 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: dongZheX
+conflicting_files: null
+created_at: 2023-06-01 05:01:46+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/15c4930b55f16a38342be42d70cd70aa.svg
+      fullname: Zhe Dong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dongZheX
+      type: user
+    createdAt: '2023-06-01T06:01:46.000Z'
+    data:
+      edited: true
+      editors:
+      - dongZheX
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/15c4930b55f16a38342be42d70cd70aa.svg
+          fullname: Zhe Dong
+          isHf: false
+          isPro: false
+          name: dongZheX
+          type: user
+        html: "<p>I launch falcon-40b, and use helm to evaluate humaneval.</p>\n<ul>\n\
+          <li>How I launch falcon-40b</li>\n</ul>\n<pre><code>tokenizer = AutoTokenizer.from_pretrained(args.ckpt_dir,\
+          \ trust_remote_code=True)\nmodel = AutoModelForCausalLM.from_pretrained(args.ckpt_dir,\
+          \ trust_remote_code=True,device_map=\"auto\",torch_dtype=torch.bfloat16)\n\
+          model.eval()\nlock = threading.Lock()\napp = FastAPI()\nclass Config(BaseModel):\n\
+          \    prompts: List[str]\n    max_gen_len: int\n    temperature: float =\
+          \ 0.8\n    top_p: float = 0.95\n    stop_sequences: List[str]\n    top_k_per_token:\
+          \ int = 1\n    repetition_penalty: float = 1\n    length_penalty: float\
+          \ = 1\n    \n\n<span data-props=\"{&quot;user&quot;:&quot;app&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/app\">@<span class=\"\
+          underline\">app</span></a></span>\n\n\t</span></span>.post(\"/generate\"\
+          )\nasync def create_item(config: Config):\n    lock.acquire()\n    try:\n\
+          \        global pipleline, tokenizer\n        prompts = config.prompts\n\
+          \        max_new_tokens = config.max_gen_len\n        top_p = config.top_p\n\
+          \        temperature = config.temperature\n        inputs = tokenizer.encode(prompts[0],\
+          \ return_tensors=\"pt\").cuda()\n        print(inputs)\n        attention_mask\
+          \ = torch.ones(inputs.shape).cuda()\n        outputs = model.generate(inputs,max_new_tokens=max_new_tokens,\n\
+          \                                       num_beams=1,\n                 \
+          \                      attention_mask=attention_mask,\n                \
+          \                       top_p=top_p,\n                                 \
+          \      temperature=temperature,\n                                      \
+          \ repetition_penalty=config.repetition_penalty,\n                      \
+          \                 length_penalty=config.length_penalty,\n              \
+          \                         do_sample=False if temperature == 0 else True,\n\
+          \                                       eos_token_id=tokenizer.eos_token_id,\n\
+          \                                       pad_token_id=tokenizer.pad_token_id)\n\
+          \        response = tokenizer.decode(outputs[0, inputs.shape[1]:], skip_special_tokens=True)\n\
+          \        now = datetime.datetime.now()\n        time = now.strftime(\"%Y-%m-%d\
+          \ %H:%M:%S\")\n        answer = {\n            \"completions\": [\n    \
+          \        {\n                \"text\":response\n            }\n         \
+          \   ],\n        }\n        return answer\n    finally:\n        lock.release()\n\
+          </code></pre>\n<p>When I input:</p>\n<pre><code>from typing import List\n\
+          \n\ndef below_zero(operations: List[int]) -&gt; bool:\n    \"\"\" You're\
+          \ given a list of deposit and withdrawal operations on a bank account that\
+          \ starts with\n    zero balance. Your task is to detect if at any point\
+          \ the balance of account fallls below zero, and\n    at that point function\
+          \ should return True. Otherwise it should return False.\n    &gt;&gt;&gt;\
+          \ below_zero([1, 2, 3])\n    False\n    &gt;&gt;&gt; below_zero([1, 2, -4,\
+          \ 5])\n    True\n    \"\"\"\n</code></pre>\n<p>The model can decode normally.</p>\n\
+          <p>But when I append a \"\\n\" in the end of input code:</p>\n<pre><code>from\
+          \ typing import List\n\n\ndef below_zero(operations: List[int]) -&gt; bool:\n\
+          \    \"\"\" You're given a list of deposit and withdrawal operations on\
+          \ a bank account that starts with\n    zero balance. Your task is to detect\
+          \ if at any point the balance of account fallls below zero, and\n    at\
+          \ that point function should return True. Otherwise it should return False.\n\
+          \    &gt;&gt;&gt; below_zero([1, 2, 3])\n    False\n    &gt;&gt;&gt; below_zero([1,\
+          \ 2, -4, 5])\n    True\n    \"\"\"\n# empty line here\n</code></pre>\n<p>it\
+          \ will decode nothing.</p>\n<p>I would like to ask what caused this problem\uFF1F\
+          </p>\n"
+        raw: "I launch falcon-40b, and use helm to evaluate humaneval.\n+ How I launch\
+          \ falcon-40b\n```\ntokenizer = AutoTokenizer.from_pretrained(args.ckpt_dir,\
+          \ trust_remote_code=True)\nmodel = AutoModelForCausalLM.from_pretrained(args.ckpt_dir,\
+          \ trust_remote_code=True,device_map=\"auto\",torch_dtype=torch.bfloat16)\n\
+          model.eval()\nlock = threading.Lock()\napp = FastAPI()\nclass Config(BaseModel):\n\
+          \    prompts: List[str]\n    max_gen_len: int\n    temperature: float =\
+          \ 0.8\n    top_p: float = 0.95\n    stop_sequences: List[str]\n    top_k_per_token:\
+          \ int = 1\n    repetition_penalty: float = 1\n    length_penalty: float\
+          \ = 1\n    \n\n@app.post(\"/generate\")\nasync def create_item(config: Config):\n\
+          \    lock.acquire()\n    try:\n        global pipleline, tokenizer\n   \
+          \     prompts = config.prompts\n        max_new_tokens = config.max_gen_len\n\
+          \        top_p = config.top_p\n        temperature = config.temperature\n\
+          \        inputs = tokenizer.encode(prompts[0], return_tensors=\"pt\").cuda()\n\
+          \        print(inputs)\n        attention_mask = torch.ones(inputs.shape).cuda()\n\
+          \        outputs = model.generate(inputs,max_new_tokens=max_new_tokens,\n\
+          \                                       num_beams=1,\n                 \
+          \                      attention_mask=attention_mask,\n                \
+          \                       top_p=top_p,\n                                 \
+          \      temperature=temperature,\n                                      \
+          \ repetition_penalty=config.repetition_penalty,\n                      \
+          \                 length_penalty=config.length_penalty,\n              \
+          \                         do_sample=False if temperature == 0 else True,\n\
+          \                                       eos_token_id=tokenizer.eos_token_id,\n\
+          \                                       pad_token_id=tokenizer.pad_token_id)\n\
+          \        response = tokenizer.decode(outputs[0, inputs.shape[1]:], skip_special_tokens=True)\n\
+          \        now = datetime.datetime.now()\n        time = now.strftime(\"%Y-%m-%d\
+          \ %H:%M:%S\")\n        answer = {\n            \"completions\": [\n    \
+          \        {\n                \"text\":response\n            }\n         \
+          \   ],\n        }\n        return answer\n    finally:\n        lock.release()\n\
+          ```\n\nWhen I input:\n```\nfrom typing import List\n\n\ndef below_zero(operations:\
+          \ List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal\
+          \ operations on a bank account that starts with\n    zero balance. Your\
+          \ task is to detect if at any point the balance of account fallls below\
+          \ zero, and\n    at that point function should return True. Otherwise it\
+          \ should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>>\
+          \ below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n```\nThe model can decode\
+          \ normally.\n\nBut when I append a \"\\n\" in the end of input code:\n```\n\
+          from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n\
+          \    \"\"\" You're given a list of deposit and withdrawal operations on\
+          \ a bank account that starts with\n    zero balance. Your task is to detect\
+          \ if at any point the balance of account fallls below zero, and\n    at\
+          \ that point function should return True. Otherwise it should return False.\n\
+          \    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4,\
+          \ 5])\n    True\n    \"\"\"\n# empty line here\n```\nit will decode nothing.\n\
+          \nI would like to ask what caused this problem\uFF1F"
+        updatedAt: '2023-06-01T06:08:03.457Z'
+      numEdits: 1
+      reactions: []
+    id: 6478344a913988561109679a
+    type: comment
+  author: dongZheX
+  content: "I launch falcon-40b, and use helm to evaluate humaneval.\n+ How I launch\
+    \ falcon-40b\n```\ntokenizer = AutoTokenizer.from_pretrained(args.ckpt_dir, trust_remote_code=True)\n\
+    model = AutoModelForCausalLM.from_pretrained(args.ckpt_dir, trust_remote_code=True,device_map=\"\
+    auto\",torch_dtype=torch.bfloat16)\nmodel.eval()\nlock = threading.Lock()\napp\
+    \ = FastAPI()\nclass Config(BaseModel):\n    prompts: List[str]\n    max_gen_len:\
+    \ int\n    temperature: float = 0.8\n    top_p: float = 0.95\n    stop_sequences:\
+    \ List[str]\n    top_k_per_token: int = 1\n    repetition_penalty: float = 1\n\
+    \    length_penalty: float = 1\n    \n\n@app.post(\"/generate\")\nasync def create_item(config:\
+    \ Config):\n    lock.acquire()\n    try:\n        global pipleline, tokenizer\n\
+    \        prompts = config.prompts\n        max_new_tokens = config.max_gen_len\n\
+    \        top_p = config.top_p\n        temperature = config.temperature\n    \
+    \    inputs = tokenizer.encode(prompts[0], return_tensors=\"pt\").cuda()\n   \
+    \     print(inputs)\n        attention_mask = torch.ones(inputs.shape).cuda()\n\
+    \        outputs = model.generate(inputs,max_new_tokens=max_new_tokens,\n    \
+    \                                   num_beams=1,\n                           \
+    \            attention_mask=attention_mask,\n                                \
+    \       top_p=top_p,\n                                       temperature=temperature,\n\
+    \                                       repetition_penalty=config.repetition_penalty,\n\
+    \                                       length_penalty=config.length_penalty,\n\
+    \                                       do_sample=False if temperature == 0 else\
+    \ True,\n                                       eos_token_id=tokenizer.eos_token_id,\n\
+    \                                       pad_token_id=tokenizer.pad_token_id)\n\
+    \        response = tokenizer.decode(outputs[0, inputs.shape[1]:], skip_special_tokens=True)\n\
+    \        now = datetime.datetime.now()\n        time = now.strftime(\"%Y-%m-%d\
+    \ %H:%M:%S\")\n        answer = {\n            \"completions\": [\n          \
+    \  {\n                \"text\":response\n            }\n            ],\n     \
+    \   }\n        return answer\n    finally:\n        lock.release()\n```\n\nWhen\
+    \ I input:\n```\nfrom typing import List\n\n\ndef below_zero(operations: List[int])\
+    \ -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations\
+    \ on a bank account that starts with\n    zero balance. Your task is to detect\
+    \ if at any point the balance of account fallls below zero, and\n    at that point\
+    \ function should return True. Otherwise it should return False.\n    >>> below_zero([1,\
+    \ 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n\
+    ```\nThe model can decode normally.\n\nBut when I append a \"\\n\" in the end\
+    \ of input code:\n```\nfrom typing import List\n\n\ndef below_zero(operations:\
+    \ List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal\
+    \ operations on a bank account that starts with\n    zero balance. Your task is\
+    \ to detect if at any point the balance of account fallls below zero, and\n  \
+    \  at that point function should return True. Otherwise it should return False.\n\
+    \    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n\
+    \    True\n    \"\"\"\n# empty line here\n```\nit will decode nothing.\n\nI would\
+    \ like to ask what caused this problem\uFF1F"
+  created_at: 2023-06-01 05:01:46+00:00
+  edited: true
+  hidden: false
+  id: 6478344a913988561109679a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/15c4930b55f16a38342be42d70cd70aa.svg
+      fullname: Zhe Dong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dongZheX
+      type: user
+    createdAt: '2023-06-01T06:10:55.000Z'
+    data:
+      from: about evaluate on humaneval
+      to: about evaluating on humaneval
+    id: 6478366f1f9756aa89c8c705
+    type: title-change
+  author: dongZheX
+  created_at: 2023-06-01 05:10:55+00:00
+  id: 6478366f1f9756aa89c8c705
+  new_title: about evaluating on humaneval
+  old_title: about evaluate on humaneval
+  type: title-change
+is_pull_request: false
+merge_commit_oid: null
+num: 33
+repo_id: tiiuae/falcon-40b
+repo_type: model
+status: open
+target_branch: null
+title: about evaluating on humaneval

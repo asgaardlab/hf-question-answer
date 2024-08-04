@@ -1,0 +1,383 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: monta
+conflicting_files: null
+created_at: 2023-04-13 07:14:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3a1071943173ffa301ebdc098fc72652.svg
+      fullname: mon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: monta
+      type: user
+    createdAt: '2023-04-13T08:14:06.000Z'
+    data:
+      edited: true
+      editors:
+      - monta
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3a1071943173ffa301ebdc098fc72652.svg
+          fullname: mon
+          isHf: false
+          isPro: false
+          name: monta
+          type: user
+        html: "<h2 id=\"objective\">Objective</h2>\n<p>Trying to fine tune BLOOM for\
+          \ Summarization using Trainer. Would like to get advice/suggestion if the\
+          \ code below can fine-tune the model as there are not many examples for\
+          \ fine-tuning using Trainer for BLOOM. </p>\n<h2 id=\"background\">Background</h2>\n\
+          <p>The pipeline \"summarization\" task does not support BLOOM and AutoModel\
+          \ for Seq2Seq does not work as BLOOM is not encoder/decoder model, hence\
+          \ need to come up with a different approach. BLOOMZ uses Megatron but the\
+          \ learning challenge is too high. There is a discussion <a href=\"https://huggingface.co/bigscience/bloom/discussions/46\"\
+          >Fine-tune the model?#46</a> but conclusion is not clear and it is for QA\
+          \ task.</p>\n<h2 id=\"question\">Question.</h2>\n<p>Thinking that tokenized\
+          \ prompt as the 'input_ids' and tokenized summary as 'labels' as the training\
+          \ data to the model as below but not sure this is a correct approach or\
+          \ not. Please advise if this works, beyond all, if Trainer is fit for purpose.</p>\n\
+          <p>DataCollatorWithPadding class does not pad the 'labels' element, which\
+          \ causes an error at train(). Hence used padding at tokenizer to pad labels\
+          \ but not sure this is correct. Please advise if there is another way to\
+          \ manage labels.</p>\n<p>Please also give correction/suggestion if any.\
+          \ </p>\n<h2 id=\"code\">Code</h2>\n<pre><code>import re\nfrom typing import\
+          \ (\n    List,\n    Dict,\n    Callable,\n)\n\nimport evaluate\nimport numpy\
+          \ as np\nfrom datasets import (\n    load_dataset,\n    get_dataset_split_names\n\
+          )\nfrom promptsource.templates import (\n    DatasetTemplates,\n    Template\n\
+          )\nfrom transformers import (\n    AutoTokenizer,\n    DataCollatorWithPadding,\n\
+          \    DataCollatorForSeq2Seq,\n    BloomForCausalLM,\n    TrainingArguments,\n\
+          \    Trainer\n)\n\n\n# --------------------------------------------------------------------------------\n\
+          # Huggingface Datasets\n# --------------------------------------------------------------------------------\n\
+          DATASET_STREAMING: bool = False\nDATASET_NAME: str = \"xsum\"\nDATASET_TRAIN_NUM_ROWS:\
+          \ int = 204045\n\ntrain = load_dataset(\"xsum\", split=\"train\", streaming=DATASET_STREAMING)\n\
+          validation = load_dataset(\"xsum\", split=\"validation\", streaming=DATASET_STREAMING)\n\
+          \n# --------------------------------------------------------------------------------\n\
+          # BLOOM Model\n# --------------------------------------------------------------------------------\n\
+          MODEL = \"bigscience/bloom-560m\"\nMAX_PROMPT_TOKEN_LENGTH: int = 512  \
+          \   # BLOOM token length is 2048\nPER_DEVICE_BATCH_SIZE: int = 1\n\n# --------------------------------------------------------------------------------\n\
+          # PromptSource Template\n# --------------------------------------------------------------------------------\n\
+          prompt_templates = DatasetTemplates( dataset_name=DATASET_NAME)\ntemplate:\
+          \ Template = prompt_templates['summarize_DOC']\n\n# --------------------------------------------------------------------------------\n\
+          # Tokenization\n# --------------------------------------------------------------------------------\n\
+          tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=True)\n\n\ndef\
+          \ get_convert_to_request_response(template: Template) -&gt; Callable:\n\
+          \    def _convert_to_prompt_response(example: Dict[str, str]) -&gt; Dict[str,\
+          \ str]:\n        \"\"\"Generate prompt, response as a dictionary:\n    \
+          \    {\n            \"prompt\": \"Summarize: ...\",\n            \"response\"\
+          : \"...\"\n        }\n\n        NOTE: DO NOT use with dataset map function(\
+          \ batched=True). Use batch=False\n\n        Args:\n            example:\
+          \ single {document, summary} pair to be able to apply template\n       \
+          \ Returns: a dictionary of pro\n        \"\"\"\n        # assert isinstance(example,\
+          \ dict), f\"expected dict but {type(example)}.\\n{example}\"\n        assert\
+          \ isinstance(example['document'], str), f\"expected str but {type(example['document'])}.\"\
+          \n        prompt, response = template.apply(example=example, truncate=False)\n\
+          \        return {\n            \"prompt\": re.sub(r'[\\s\\'\\\"]+', ' ',\
+          \ prompt),\n            \"response\": re.sub(r'[\\s\\'\\\"]+', ' ', response)\n\
+          \        }\n\n    return _convert_to_prompt_response\n\n\nconvert_to_request_response:\
+          \ Callable = get_convert_to_request_response(template=template)\n\n\ndef\
+          \ tokenize_prompt_response(examples):\n    \"\"\"Generate the model inputs\
+          \ in the dictionary with format:\n    {\n        \"input_ids\": List[int],\
+          \ \n        \"attention_mask\": List[int]\",\n        \"labels\": List[int]\n\
+          \    }\n    \n    Note: Huggngface dataaset map(batched=True, batch_size=n)\
+          \ merges values of \n    n dictionarys into a values of the key. If you\
+          \ have n instances of {\"key\", \"v\"}, then\n    you will get {\"key\"\
+          : [\"v\", \"v\", \"v\", ...] }.\n    \n    Args:\n        examples:   a\
+          \ dictionary of format {\n            \"prompt\": [prompt+],\n         \
+          \   \"response\": [respnse+]\n        } where + means more than one instance\
+          \ because of Dataset.map(batched=True)\n    \"\"\"    \n    inputs: Dict[str,\
+          \ List[int]] = tokenizer(\n        text_target=examples[\"prompt\"], \n\
+          \        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True\n\
+          \    )\n\n    labels: Dict[str, List[int]] = tokenizer(\n        text_target=examples[\"\
+          response\"], \n        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True,\n\
+          \        padding='max_length',\n    )\n    inputs[\"labels\"] = labels[\"\
+          input_ids\"]\n    \n    return inputs\n\n\nprompt_response_train = train.map(\n\
+          \    function=convert_to_request_response, \n    batched=False,\n    # batch_size=2048,\n\
+          \    # drop_last_batch=False,\n    remove_columns=list(train.features.keys()),\n\
+          )\ntokenized_train = prompt_response_train.map(\n    function=tokenize_prompt_response,\
+          \ \n    #batched=True,\n    batched=False,\n    # batch_size=32,\n    #\
+          \ drop_last_batch=True,\n    remove_columns=['prompt', 'response']\n)\n\
+          del train, prompt_response_train\n\nprompt_response_validation = validation.map(\n\
+          \    function=convert_to_request_response, \n    batched=False,\n    # batch_size=2048,\n\
+          \    # drop_last_batch=False,\n    remove_columns=list(validation.features.keys()),\n\
+          )\ntokenized_validation = prompt_response_validation.map(\n    function=tokenize_prompt_response,\
+          \ \n    #batched=True,\n    batched=False,\n    # batch_size=32,\n    #\
+          \ drop_last_batch=True,\n    remove_columns=['prompt', 'response']\n)\n\
+          del validation, prompt_response_validation\n\ntokenized_train.with_format(\"\
+          torch\")\ntokenized_validation.with_format(\"torch\")\n\n\n# --------------------------------------------------------------------------------\n\
+          # Training\n# --------------------------------------------------------------------------------\n\
+          model = BloomForCausalLM.from_pretrained(MODEL)\nmodel.cuda()\n\n\ndef predict(prompt:\
+          \ str) -&gt; str:\n    inputs = tokenizer(prompt, return_tensors='pt')\n\
+          \    print(inputs[\"input_ids\"].shape)\n    \n    response_tokens = model.generate(\n\
+          \        inputs[\"input_ids\"].cuda(), \n        max_new_tokens=1,\n   \
+          \     do_sample=False, \n        top_k=50, \n        top_p=0.9\n    )[0]\n\
+          \    response = tokenizer.decode(response_tokens, skip_special_tokens=True)\n\
+          \    return response\n\n\n# DataCollatorWithPadding does not pad 'labels'\
+          \ which causes an error at train()\n# https://stackoverflow.com/a/74228547/4281353\n\
+          data_collator = DataCollatorWithPadding(\n    tokenizer=tokenizer, \n  \
+          \  padding='max_length',\n    pad_to_multiple_of=8,\n    max_length=MAX_PROMPT_TOKEN_LENGTH,\n\
+          \    return_tensors='pt'\n)\n\nrouge = evaluate.load(\"rouge\")\n\n\ndef\
+          \ compute_metrics(eval_pred):\n    predictions, labels = eval_pred\n   \
+          \ decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)\n\
+          \    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)\n\
+          \    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)\n\
+          \n    result = rouge.compute(predictions=decoded_preds, references=decoded_labels,\
+          \ use_stemmer=True)\n\n    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id)\
+          \ for pred in predictions]\n    result[\"gen_len\"] = np.mean(prediction_lens)\n\
+          \n    return {k: round(v, 4) for k, v in result.items()}\n\n\ntraining_args\
+          \ = TrainingArguments(\n    output_dir=\"bloom_finetuned\",\n    max_steps=DATASET_TRAIN_NUM_ROWS\
+          \ * 3 if DATASET_STREAMING else -1,\n    num_train_epochs=4,\n    per_device_train_batch_size=PER_DEVICE_BATCH_SIZE,\n\
+          \    per_device_eval_batch_size=PER_DEVICE_BATCH_SIZE,\n    learning_rate=2e-5,\n\
+          \    weight_decay=0.01, \n    # fp16=False,\n    no_cuda=False,\n    evaluation_strategy=\"\
+          epoch\",\n    save_strategy=\"epoch\",\n    save_total_limit=3,\n    # log_level=\"\
+          debug\",\n    disable_tqdm=False,\n    push_to_hub=False,\n)\n\n\ntrainer\
+          \ = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=tokenized_train,\n\
+          \    eval_dataset=tokenized_validation,\n    tokenizer=tokenizer,\n    data_collator=data_collator,\n\
+          \    compute_metrics=compute_metrics,\n)\n\n\ntrainer.train()\ntrainer.save_model(\"\
+          finetuned_bloom_model\")\n</code></pre>\n<p>At least, the training seems\
+          \ working.</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/60d5a4ea5e57527c0e86a2b2/khs7jo0K78aRrijgF-R2k.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/60d5a4ea5e57527c0e86a2b2/khs7jo0K78aRrijgF-R2k.png\"\
+          ></a></p>\n"
+        raw: "## Objective\n\nTrying to fine tune BLOOM for Summarization using Trainer.\
+          \ Would like to get advice/suggestion if the code below can fine-tune the\
+          \ model as there are not many examples for fine-tuning using Trainer for\
+          \ BLOOM. \n\n## Background\nThe pipeline \"summarization\" task does not\
+          \ support BLOOM and AutoModel for Seq2Seq does not work as BLOOM is not\
+          \ encoder/decoder model, hence need to come up with a different approach.\
+          \ BLOOMZ uses Megatron but the learning challenge is too high. There is\
+          \ a discussion [Fine-tune the model?#46](https://huggingface.co/bigscience/bloom/discussions/46)\
+          \ but conclusion is not clear and it is for QA task.\n\n## Question. \n\
+          Thinking that tokenized prompt as the 'input_ids' and tokenized summary\
+          \ as 'labels' as the training data to the model as below but not sure this\
+          \ is a correct approach or not. Please advise if this works, beyond all,\
+          \ if Trainer is fit for purpose.\n\nDataCollatorWithPadding class does not\
+          \ pad the 'labels' element, which causes an error at train(). Hence used\
+          \ padding at tokenizer to pad labels but not sure this is correct. Please\
+          \ advise if there is another way to manage labels.\n\nPlease also give correction/suggestion\
+          \ if any. \n\n\n## Code\n```\nimport re\nfrom typing import (\n    List,\n\
+          \    Dict,\n    Callable,\n)\n\nimport evaluate\nimport numpy as np\nfrom\
+          \ datasets import (\n    load_dataset,\n    get_dataset_split_names\n)\n\
+          from promptsource.templates import (\n    DatasetTemplates,\n    Template\n\
+          )\nfrom transformers import (\n    AutoTokenizer,\n    DataCollatorWithPadding,\n\
+          \    DataCollatorForSeq2Seq,\n    BloomForCausalLM,\n    TrainingArguments,\n\
+          \    Trainer\n)\n\n\n# --------------------------------------------------------------------------------\n\
+          # Huggingface Datasets\n# --------------------------------------------------------------------------------\n\
+          DATASET_STREAMING: bool = False\nDATASET_NAME: str = \"xsum\"\nDATASET_TRAIN_NUM_ROWS:\
+          \ int = 204045\n\ntrain = load_dataset(\"xsum\", split=\"train\", streaming=DATASET_STREAMING)\n\
+          validation = load_dataset(\"xsum\", split=\"validation\", streaming=DATASET_STREAMING)\n\
+          \n# --------------------------------------------------------------------------------\n\
+          # BLOOM Model\n# --------------------------------------------------------------------------------\n\
+          MODEL = \"bigscience/bloom-560m\"\nMAX_PROMPT_TOKEN_LENGTH: int = 512  \
+          \   # BLOOM token length is 2048\nPER_DEVICE_BATCH_SIZE: int = 1\n\n# --------------------------------------------------------------------------------\n\
+          # PromptSource Template\n# --------------------------------------------------------------------------------\n\
+          prompt_templates = DatasetTemplates( dataset_name=DATASET_NAME)\ntemplate:\
+          \ Template = prompt_templates['summarize_DOC']\n\n# --------------------------------------------------------------------------------\n\
+          # Tokenization\n# --------------------------------------------------------------------------------\n\
+          tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=True)\n\n\ndef\
+          \ get_convert_to_request_response(template: Template) -> Callable:\n   \
+          \ def _convert_to_prompt_response(example: Dict[str, str]) -> Dict[str,\
+          \ str]:\n        \"\"\"Generate prompt, response as a dictionary:\n    \
+          \    {\n            \"prompt\": \"Summarize: ...\",\n            \"response\"\
+          : \"...\"\n        }\n\n        NOTE: DO NOT use with dataset map function(\
+          \ batched=True). Use batch=False\n\n        Args:\n            example:\
+          \ single {document, summary} pair to be able to apply template\n       \
+          \ Returns: a dictionary of pro\n        \"\"\"\n        # assert isinstance(example,\
+          \ dict), f\"expected dict but {type(example)}.\\n{example}\"\n        assert\
+          \ isinstance(example['document'], str), f\"expected str but {type(example['document'])}.\"\
+          \n        prompt, response = template.apply(example=example, truncate=False)\n\
+          \        return {\n            \"prompt\": re.sub(r'[\\s\\'\\\"]+', ' ',\
+          \ prompt),\n            \"response\": re.sub(r'[\\s\\'\\\"]+', ' ', response)\n\
+          \        }\n\n    return _convert_to_prompt_response\n\n\nconvert_to_request_response:\
+          \ Callable = get_convert_to_request_response(template=template)\n\n\ndef\
+          \ tokenize_prompt_response(examples):\n    \"\"\"Generate the model inputs\
+          \ in the dictionary with format:\n    {\n        \"input_ids\": List[int],\
+          \ \n        \"attention_mask\": List[int]\",\n        \"labels\": List[int]\n\
+          \    }\n    \n    Note: Huggngface dataaset map(batched=True, batch_size=n)\
+          \ merges values of \n    n dictionarys into a values of the key. If you\
+          \ have n instances of {\"key\", \"v\"}, then\n    you will get {\"key\"\
+          : [\"v\", \"v\", \"v\", ...] }.\n    \n    Args:\n        examples:   a\
+          \ dictionary of format {\n            \"prompt\": [prompt+],\n         \
+          \   \"response\": [respnse+]\n        } where + means more than one instance\
+          \ because of Dataset.map(batched=True)\n    \"\"\"    \n    inputs: Dict[str,\
+          \ List[int]] = tokenizer(\n        text_target=examples[\"prompt\"], \n\
+          \        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True\n\
+          \    )\n\n    labels: Dict[str, List[int]] = tokenizer(\n        text_target=examples[\"\
+          response\"], \n        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True,\n\
+          \        padding='max_length',\n    )\n    inputs[\"labels\"] = labels[\"\
+          input_ids\"]\n    \n    return inputs\n\n\nprompt_response_train = train.map(\n\
+          \    function=convert_to_request_response, \n    batched=False,\n    # batch_size=2048,\n\
+          \    # drop_last_batch=False,\n    remove_columns=list(train.features.keys()),\n\
+          )\ntokenized_train = prompt_response_train.map(\n    function=tokenize_prompt_response,\
+          \ \n    #batched=True,\n    batched=False,\n    # batch_size=32,\n    #\
+          \ drop_last_batch=True,\n    remove_columns=['prompt', 'response']\n)\n\
+          del train, prompt_response_train\n\nprompt_response_validation = validation.map(\n\
+          \    function=convert_to_request_response, \n    batched=False,\n    # batch_size=2048,\n\
+          \    # drop_last_batch=False,\n    remove_columns=list(validation.features.keys()),\n\
+          )\ntokenized_validation = prompt_response_validation.map(\n    function=tokenize_prompt_response,\
+          \ \n    #batched=True,\n    batched=False,\n    # batch_size=32,\n    #\
+          \ drop_last_batch=True,\n    remove_columns=['prompt', 'response']\n)\n\
+          del validation, prompt_response_validation\n\ntokenized_train.with_format(\"\
+          torch\")\ntokenized_validation.with_format(\"torch\")\n\n\n# --------------------------------------------------------------------------------\n\
+          # Training\n# --------------------------------------------------------------------------------\n\
+          model = BloomForCausalLM.from_pretrained(MODEL)\nmodel.cuda()\n\n\ndef predict(prompt:\
+          \ str) -> str:\n    inputs = tokenizer(prompt, return_tensors='pt')\n  \
+          \  print(inputs[\"input_ids\"].shape)\n    \n    response_tokens = model.generate(\n\
+          \        inputs[\"input_ids\"].cuda(), \n        max_new_tokens=1,\n   \
+          \     do_sample=False, \n        top_k=50, \n        top_p=0.9\n    )[0]\n\
+          \    response = tokenizer.decode(response_tokens, skip_special_tokens=True)\n\
+          \    return response\n\n\n# DataCollatorWithPadding does not pad 'labels'\
+          \ which causes an error at train()\n# https://stackoverflow.com/a/74228547/4281353\n\
+          data_collator = DataCollatorWithPadding(\n    tokenizer=tokenizer, \n  \
+          \  padding='max_length',\n    pad_to_multiple_of=8,\n    max_length=MAX_PROMPT_TOKEN_LENGTH,\n\
+          \    return_tensors='pt'\n)\n\nrouge = evaluate.load(\"rouge\")\n\n\ndef\
+          \ compute_metrics(eval_pred):\n    predictions, labels = eval_pred\n   \
+          \ decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)\n\
+          \    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)\n\
+          \    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)\n\
+          \n    result = rouge.compute(predictions=decoded_preds, references=decoded_labels,\
+          \ use_stemmer=True)\n\n    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id)\
+          \ for pred in predictions]\n    result[\"gen_len\"] = np.mean(prediction_lens)\n\
+          \n    return {k: round(v, 4) for k, v in result.items()}\n\n\ntraining_args\
+          \ = TrainingArguments(\n    output_dir=\"bloom_finetuned\",\n    max_steps=DATASET_TRAIN_NUM_ROWS\
+          \ * 3 if DATASET_STREAMING else -1,\n    num_train_epochs=4,\n    per_device_train_batch_size=PER_DEVICE_BATCH_SIZE,\n\
+          \    per_device_eval_batch_size=PER_DEVICE_BATCH_SIZE,\n    learning_rate=2e-5,\n\
+          \    weight_decay=0.01, \n    # fp16=False,\n    no_cuda=False,\n    evaluation_strategy=\"\
+          epoch\",\n    save_strategy=\"epoch\",\n    save_total_limit=3,\n    # log_level=\"\
+          debug\",\n    disable_tqdm=False,\n    push_to_hub=False,\n)\n\n\ntrainer\
+          \ = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=tokenized_train,\n\
+          \    eval_dataset=tokenized_validation,\n    tokenizer=tokenizer,\n    data_collator=data_collator,\n\
+          \    compute_metrics=compute_metrics,\n)\n\n\ntrainer.train()\ntrainer.save_model(\"\
+          finetuned_bloom_model\")\n```\n\nAt least, the training seems working.\n\
+          \n![image.png](https://cdn-uploads.huggingface.co/production/uploads/60d5a4ea5e57527c0e86a2b2/khs7jo0K78aRrijgF-R2k.png)"
+        updatedAt: '2023-04-17T07:20:30.724Z'
+      numEdits: 3
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - renyanda
+    id: 6437b9ce961bb61e46390cf5
+    type: comment
+  author: monta
+  content: "## Objective\n\nTrying to fine tune BLOOM for Summarization using Trainer.\
+    \ Would like to get advice/suggestion if the code below can fine-tune the model\
+    \ as there are not many examples for fine-tuning using Trainer for BLOOM. \n\n\
+    ## Background\nThe pipeline \"summarization\" task does not support BLOOM and\
+    \ AutoModel for Seq2Seq does not work as BLOOM is not encoder/decoder model, hence\
+    \ need to come up with a different approach. BLOOMZ uses Megatron but the learning\
+    \ challenge is too high. There is a discussion [Fine-tune the model?#46](https://huggingface.co/bigscience/bloom/discussions/46)\
+    \ but conclusion is not clear and it is for QA task.\n\n## Question. \nThinking\
+    \ that tokenized prompt as the 'input_ids' and tokenized summary as 'labels' as\
+    \ the training data to the model as below but not sure this is a correct approach\
+    \ or not. Please advise if this works, beyond all, if Trainer is fit for purpose.\n\
+    \nDataCollatorWithPadding class does not pad the 'labels' element, which causes\
+    \ an error at train(). Hence used padding at tokenizer to pad labels but not sure\
+    \ this is correct. Please advise if there is another way to manage labels.\n\n\
+    Please also give correction/suggestion if any. \n\n\n## Code\n```\nimport re\n\
+    from typing import (\n    List,\n    Dict,\n    Callable,\n)\n\nimport evaluate\n\
+    import numpy as np\nfrom datasets import (\n    load_dataset,\n    get_dataset_split_names\n\
+    )\nfrom promptsource.templates import (\n    DatasetTemplates,\n    Template\n\
+    )\nfrom transformers import (\n    AutoTokenizer,\n    DataCollatorWithPadding,\n\
+    \    DataCollatorForSeq2Seq,\n    BloomForCausalLM,\n    TrainingArguments,\n\
+    \    Trainer\n)\n\n\n# --------------------------------------------------------------------------------\n\
+    # Huggingface Datasets\n# --------------------------------------------------------------------------------\n\
+    DATASET_STREAMING: bool = False\nDATASET_NAME: str = \"xsum\"\nDATASET_TRAIN_NUM_ROWS:\
+    \ int = 204045\n\ntrain = load_dataset(\"xsum\", split=\"train\", streaming=DATASET_STREAMING)\n\
+    validation = load_dataset(\"xsum\", split=\"validation\", streaming=DATASET_STREAMING)\n\
+    \n# --------------------------------------------------------------------------------\n\
+    # BLOOM Model\n# --------------------------------------------------------------------------------\n\
+    MODEL = \"bigscience/bloom-560m\"\nMAX_PROMPT_TOKEN_LENGTH: int = 512     # BLOOM\
+    \ token length is 2048\nPER_DEVICE_BATCH_SIZE: int = 1\n\n# --------------------------------------------------------------------------------\n\
+    # PromptSource Template\n# --------------------------------------------------------------------------------\n\
+    prompt_templates = DatasetTemplates( dataset_name=DATASET_NAME)\ntemplate: Template\
+    \ = prompt_templates['summarize_DOC']\n\n# --------------------------------------------------------------------------------\n\
+    # Tokenization\n# --------------------------------------------------------------------------------\n\
+    tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=True)\n\n\ndef get_convert_to_request_response(template:\
+    \ Template) -> Callable:\n    def _convert_to_prompt_response(example: Dict[str,\
+    \ str]) -> Dict[str, str]:\n        \"\"\"Generate prompt, response as a dictionary:\n\
+    \        {\n            \"prompt\": \"Summarize: ...\",\n            \"response\"\
+    : \"...\"\n        }\n\n        NOTE: DO NOT use with dataset map function( batched=True).\
+    \ Use batch=False\n\n        Args:\n            example: single {document, summary}\
+    \ pair to be able to apply template\n        Returns: a dictionary of pro\n  \
+    \      \"\"\"\n        # assert isinstance(example, dict), f\"expected dict but\
+    \ {type(example)}.\\n{example}\"\n        assert isinstance(example['document'],\
+    \ str), f\"expected str but {type(example['document'])}.\"\n        prompt, response\
+    \ = template.apply(example=example, truncate=False)\n        return {\n      \
+    \      \"prompt\": re.sub(r'[\\s\\'\\\"]+', ' ', prompt),\n            \"response\"\
+    : re.sub(r'[\\s\\'\\\"]+', ' ', response)\n        }\n\n    return _convert_to_prompt_response\n\
+    \n\nconvert_to_request_response: Callable = get_convert_to_request_response(template=template)\n\
+    \n\ndef tokenize_prompt_response(examples):\n    \"\"\"Generate the model inputs\
+    \ in the dictionary with format:\n    {\n        \"input_ids\": List[int], \n\
+    \        \"attention_mask\": List[int]\",\n        \"labels\": List[int]\n   \
+    \ }\n    \n    Note: Huggngface dataaset map(batched=True, batch_size=n) merges\
+    \ values of \n    n dictionarys into a values of the key. If you have n instances\
+    \ of {\"key\", \"v\"}, then\n    you will get {\"key\": [\"v\", \"v\", \"v\",\
+    \ ...] }.\n    \n    Args:\n        examples:   a dictionary of format {\n   \
+    \         \"prompt\": [prompt+],\n            \"response\": [respnse+]\n     \
+    \   } where + means more than one instance because of Dataset.map(batched=True)\n\
+    \    \"\"\"    \n    inputs: Dict[str, List[int]] = tokenizer(\n        text_target=examples[\"\
+    prompt\"], \n        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True\n\
+    \    )\n\n    labels: Dict[str, List[int]] = tokenizer(\n        text_target=examples[\"\
+    response\"], \n        max_length=MAX_PROMPT_TOKEN_LENGTH, \n        truncation=True,\n\
+    \        padding='max_length',\n    )\n    inputs[\"labels\"] = labels[\"input_ids\"\
+    ]\n    \n    return inputs\n\n\nprompt_response_train = train.map(\n    function=convert_to_request_response,\
+    \ \n    batched=False,\n    # batch_size=2048,\n    # drop_last_batch=False,\n\
+    \    remove_columns=list(train.features.keys()),\n)\ntokenized_train = prompt_response_train.map(\n\
+    \    function=tokenize_prompt_response, \n    #batched=True,\n    batched=False,\n\
+    \    # batch_size=32,\n    # drop_last_batch=True,\n    remove_columns=['prompt',\
+    \ 'response']\n)\ndel train, prompt_response_train\n\nprompt_response_validation\
+    \ = validation.map(\n    function=convert_to_request_response, \n    batched=False,\n\
+    \    # batch_size=2048,\n    # drop_last_batch=False,\n    remove_columns=list(validation.features.keys()),\n\
+    )\ntokenized_validation = prompt_response_validation.map(\n    function=tokenize_prompt_response,\
+    \ \n    #batched=True,\n    batched=False,\n    # batch_size=32,\n    # drop_last_batch=True,\n\
+    \    remove_columns=['prompt', 'response']\n)\ndel validation, prompt_response_validation\n\
+    \ntokenized_train.with_format(\"torch\")\ntokenized_validation.with_format(\"\
+    torch\")\n\n\n# --------------------------------------------------------------------------------\n\
+    # Training\n# --------------------------------------------------------------------------------\n\
+    model = BloomForCausalLM.from_pretrained(MODEL)\nmodel.cuda()\n\n\ndef predict(prompt:\
+    \ str) -> str:\n    inputs = tokenizer(prompt, return_tensors='pt')\n    print(inputs[\"\
+    input_ids\"].shape)\n    \n    response_tokens = model.generate(\n        inputs[\"\
+    input_ids\"].cuda(), \n        max_new_tokens=1,\n        do_sample=False, \n\
+    \        top_k=50, \n        top_p=0.9\n    )[0]\n    response = tokenizer.decode(response_tokens,\
+    \ skip_special_tokens=True)\n    return response\n\n\n# DataCollatorWithPadding\
+    \ does not pad 'labels' which causes an error at train()\n# https://stackoverflow.com/a/74228547/4281353\n\
+    data_collator = DataCollatorWithPadding(\n    tokenizer=tokenizer, \n    padding='max_length',\n\
+    \    pad_to_multiple_of=8,\n    max_length=MAX_PROMPT_TOKEN_LENGTH,\n    return_tensors='pt'\n\
+    )\n\nrouge = evaluate.load(\"rouge\")\n\n\ndef compute_metrics(eval_pred):\n \
+    \   predictions, labels = eval_pred\n    decoded_preds = tokenizer.batch_decode(predictions,\
+    \ skip_special_tokens=True)\n    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)\n\
+    \    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)\n\
+    \n    result = rouge.compute(predictions=decoded_preds, references=decoded_labels,\
+    \ use_stemmer=True)\n\n    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id)\
+    \ for pred in predictions]\n    result[\"gen_len\"] = np.mean(prediction_lens)\n\
+    \n    return {k: round(v, 4) for k, v in result.items()}\n\n\ntraining_args =\
+    \ TrainingArguments(\n    output_dir=\"bloom_finetuned\",\n    max_steps=DATASET_TRAIN_NUM_ROWS\
+    \ * 3 if DATASET_STREAMING else -1,\n    num_train_epochs=4,\n    per_device_train_batch_size=PER_DEVICE_BATCH_SIZE,\n\
+    \    per_device_eval_batch_size=PER_DEVICE_BATCH_SIZE,\n    learning_rate=2e-5,\n\
+    \    weight_decay=0.01, \n    # fp16=False,\n    no_cuda=False,\n    evaluation_strategy=\"\
+    epoch\",\n    save_strategy=\"epoch\",\n    save_total_limit=3,\n    # log_level=\"\
+    debug\",\n    disable_tqdm=False,\n    push_to_hub=False,\n)\n\n\ntrainer = Trainer(\n\
+    \    model=model,\n    args=training_args,\n    train_dataset=tokenized_train,\n\
+    \    eval_dataset=tokenized_validation,\n    tokenizer=tokenizer,\n    data_collator=data_collator,\n\
+    \    compute_metrics=compute_metrics,\n)\n\n\ntrainer.train()\ntrainer.save_model(\"\
+    finetuned_bloom_model\")\n```\n\nAt least, the training seems working.\n\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/60d5a4ea5e57527c0e86a2b2/khs7jo0K78aRrijgF-R2k.png)"
+  created_at: 2023-04-13 07:14:06+00:00
+  edited: true
+  hidden: false
+  id: 6437b9ce961bb61e46390cf5
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 234
+repo_id: bigscience/bloom
+repo_type: model
+status: open
+target_branch: null
+title: Fine-tuning BLOOM for Summarization with Trainer API

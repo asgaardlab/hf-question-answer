@@ -1,0 +1,357 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: zwd125
+conflicting_files: null
+created_at: 2023-11-18 13:04:56+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4643ab23721d4ed6aeb1ebbc717adc43.svg
+      fullname: Wendi Zheng
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zwd125
+      type: user
+    createdAt: '2023-11-18T13:04:56.000Z'
+    data:
+      edited: false
+      editors:
+      - zwd125
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.930875837802887
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4643ab23721d4ed6aeb1ebbc717adc43.svg
+          fullname: Wendi Zheng
+          isHf: false
+          isPro: false
+          name: zwd125
+          type: user
+        html: '<p>Thank you for the great work!<br>Still a little bit curious about
+          the methodology. May I ask how this was done, to finetune the weight while
+          keeping distribution of the latent unmoved? Was the encoder and the decoder
+          finetuned separately or not? Thanks very much.</p>
+
+          '
+        raw: "Thank you for the great work!\r\nStill a little bit curious about the\
+          \ methodology. May I ask how this was done, to finetune the weight while\
+          \ keeping distribution of the latent unmoved? Was the encoder and the decoder\
+          \ finetuned separately or not? Thanks very much."
+        updatedAt: '2023-11-18T13:04:56.063Z'
+      numEdits: 0
+      reactions: []
+    id: 6558b678f6711fa143e702d1
+    type: comment
+  author: zwd125
+  content: "Thank you for the great work!\r\nStill a little bit curious about the\
+    \ methodology. May I ask how this was done, to finetune the weight while keeping\
+    \ distribution of the latent unmoved? Was the encoder and the decoder finetuned\
+    \ separately or not? Thanks very much."
+  created_at: 2023-11-18 13:04:56+00:00
+  edited: false
+  hidden: false
+  id: 6558b678f6711fa143e702d1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630447d40547362a22a969a2/eWxGBQdUjL3xkk-I_XKwm.png?w=200&h=200&f=face
+      fullname: madebyollin
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: madebyollin
+      type: user
+    createdAt: '2023-11-18T15:58:26.000Z'
+    data:
+      edited: true
+      editors:
+      - madebyollin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6683893203735352
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630447d40547362a22a969a2/eWxGBQdUjL3xkk-I_XKwm.png?w=200&h=200&f=face
+          fullname: madebyollin
+          isHf: false
+          isPro: false
+          name: madebyollin
+          type: user
+        html: "<p>Yeah, separate, something like this (the fixed encoder outputs are\
+          \ never sent to the fixed decoder):</p>\n<pre><code class=\"language-python3\"\
+          >def compute_loss(ims, ref_vae, fix_vae, train_encoder=True, train_decoder=True):\n\
+          \    ref_latents, _ref_features = run_model_and_capture_features(ref_vae.encoder,\
+          \ ims)\n    loss = 0\n    if train_encoder:\n        fix_latents, fix_features\
+          \ = run_model_and_capture_features(fix_vae.encoder, ims)\n        loss =\
+          \ loss + F.l1_loss(fix_latents, ref_latents) + 0.0001 * F.relu(th.abs(fix_features)\
+          \ - 100).mean()\n    if train_decoder:\n        ref_ims, _ref_features =\
+          \ run_model_and_capture_features(ref_vae.decoder, ref_latents)\n       \
+          \ fix_ims, fix_features = run_model_and_capture_features(fix_vae.decoder,\
+          \ ref_latents)\n        loss = loss + F.l1_loss(fix_ims, ref_ims) + 0.0001\
+          \ * F.relu(th.abs(fix_features) - 100).mean()\n    return loss\n</code></pre>\n\
+          <p>I trained both enc/dec in the same training run initially, but later\
+          \ switched to individual training of enc / dec at a larger batch size.</p>\n"
+        raw: "Yeah, separate, something like this (the fixed encoder outputs are never\
+          \ sent to the fixed decoder):\n```python3\ndef compute_loss(ims, ref_vae,\
+          \ fix_vae, train_encoder=True, train_decoder=True):\n    ref_latents, _ref_features\
+          \ = run_model_and_capture_features(ref_vae.encoder, ims)\n    loss = 0\n\
+          \    if train_encoder:\n        fix_latents, fix_features = run_model_and_capture_features(fix_vae.encoder,\
+          \ ims)\n        loss = loss + F.l1_loss(fix_latents, ref_latents) + 0.0001\
+          \ * F.relu(th.abs(fix_features) - 100).mean()\n    if train_decoder:\n \
+          \       ref_ims, _ref_features = run_model_and_capture_features(ref_vae.decoder,\
+          \ ref_latents)\n        fix_ims, fix_features = run_model_and_capture_features(fix_vae.decoder,\
+          \ ref_latents)\n        loss = loss + F.l1_loss(fix_ims, ref_ims) + 0.0001\
+          \ * F.relu(th.abs(fix_features) - 100).mean()\n    return loss\n```\nI trained\
+          \ both enc/dec in the same training run initially, but later switched to\
+          \ individual training of enc / dec at a larger batch size."
+        updatedAt: '2023-11-18T15:59:26.671Z'
+      numEdits: 1
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - zwd125
+        - ShoufaChen
+        - jucic
+    id: 6558df22a75de9cef1870a9d
+    type: comment
+  author: madebyollin
+  content: "Yeah, separate, something like this (the fixed encoder outputs are never\
+    \ sent to the fixed decoder):\n```python3\ndef compute_loss(ims, ref_vae, fix_vae,\
+    \ train_encoder=True, train_decoder=True):\n    ref_latents, _ref_features = run_model_and_capture_features(ref_vae.encoder,\
+    \ ims)\n    loss = 0\n    if train_encoder:\n        fix_latents, fix_features\
+    \ = run_model_and_capture_features(fix_vae.encoder, ims)\n        loss = loss\
+    \ + F.l1_loss(fix_latents, ref_latents) + 0.0001 * F.relu(th.abs(fix_features)\
+    \ - 100).mean()\n    if train_decoder:\n        ref_ims, _ref_features = run_model_and_capture_features(ref_vae.decoder,\
+    \ ref_latents)\n        fix_ims, fix_features = run_model_and_capture_features(fix_vae.decoder,\
+    \ ref_latents)\n        loss = loss + F.l1_loss(fix_ims, ref_ims) + 0.0001 * F.relu(th.abs(fix_features)\
+    \ - 100).mean()\n    return loss\n```\nI trained both enc/dec in the same training\
+    \ run initially, but later switched to individual training of enc / dec at a larger\
+    \ batch size."
+  created_at: 2023-11-18 15:58:26+00:00
+  edited: true
+  hidden: false
+  id: 6558df22a75de9cef1870a9d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4643ab23721d4ed6aeb1ebbc717adc43.svg
+      fullname: Wendi Zheng
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zwd125
+      type: user
+    createdAt: '2023-11-18T18:03:35.000Z'
+    data:
+      edited: false
+      editors:
+      - zwd125
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9835298657417297
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4643ab23721d4ed6aeb1ebbc717adc43.svg
+          fullname: Wendi Zheng
+          isHf: false
+          isPro: false
+          name: zwd125
+          type: user
+        html: '<p>Got it. Thank you very much for explanation!</p>
+
+          '
+        raw: Got it. Thank you very much for explanation!
+        updatedAt: '2023-11-18T18:03:35.728Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F91D"
+        users:
+        - madebyollin
+    id: 6558fc77b158b94c3a9cf1ec
+    type: comment
+  author: zwd125
+  content: Got it. Thank you very much for explanation!
+  created_at: 2023-11-18 18:03:35+00:00
+  edited: false
+  hidden: false
+  id: 6558fc77b158b94c3a9cf1ec
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6eec07553658ab22f8058caa0bfbed49.svg
+      fullname: tengjiayan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tengjiayan
+      type: user
+    createdAt: '2024-01-10T09:13:01.000Z'
+    data:
+      edited: false
+      editors:
+      - tengjiayan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8784772157669067
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6eec07553658ab22f8058caa0bfbed49.svg
+          fullname: tengjiayan
+          isHf: false
+          isPro: false
+          name: tengjiayan
+          type: user
+        html: '<p>As you say "I watched activation-map magnitudes + output deltas
+          on a test image and manually rebalanced the match-original-output and make-activation-maps-smaller
+          losses occasionally.":<br>Is "fix_features" the concatenation of all intermediate
+          layers'' outputs? And did you rebalance two loss items by adjusting the
+          scale 0.0001 above?<br>Thank you very much!</p>
+
+          '
+        raw: 'As you say "I watched activation-map magnitudes + output deltas on a
+          test image and manually rebalanced the match-original-output and make-activation-maps-smaller
+          losses occasionally.":
+
+          Is "fix_features" the concatenation of all intermediate layers'' outputs?
+          And did you rebalance two loss items by adjusting the scale 0.0001 above?
+
+          Thank you very much!'
+        updatedAt: '2024-01-10T09:13:01.513Z'
+      numEdits: 0
+      reactions: []
+    id: 659e5f9d270690be02f0e808
+    type: comment
+  author: tengjiayan
+  content: 'As you say "I watched activation-map magnitudes + output deltas on a test
+    image and manually rebalanced the match-original-output and make-activation-maps-smaller
+    losses occasionally.":
+
+    Is "fix_features" the concatenation of all intermediate layers'' outputs? And
+    did you rebalance two loss items by adjusting the scale 0.0001 above?
+
+    Thank you very much!'
+  created_at: 2024-01-10 09:13:01+00:00
+  edited: false
+  hidden: false
+  id: 659e5f9d270690be02f0e808
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630447d40547362a22a969a2/eWxGBQdUjL3xkk-I_XKwm.png?w=200&h=200&f=face
+      fullname: madebyollin
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: madebyollin
+      type: user
+    createdAt: '2024-01-10T16:44:09.000Z'
+    data:
+      edited: false
+      editors:
+      - madebyollin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6413073539733887
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630447d40547362a22a969a2/eWxGBQdUjL3xkk-I_XKwm.png?w=200&h=200&f=face
+          fullname: madebyollin
+          isHf: false
+          isPro: false
+          name: madebyollin
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;tengjiayan&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/tengjiayan\">@<span class=\"\
+          underline\">tengjiayan</span></a></span>\n\n\t</span></span> Correct.</p>\n"
+        raw: '@tengjiayan Correct.'
+        updatedAt: '2024-01-10T16:44:09.868Z'
+      numEdits: 0
+      reactions: []
+    id: 659ec9596d965b555b404c9b
+    type: comment
+  author: madebyollin
+  content: '@tengjiayan Correct.'
+  created_at: 2024-01-10 16:44:09+00:00
+  edited: false
+  hidden: false
+  id: 659ec9596d965b555b404c9b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6eec07553658ab22f8058caa0bfbed49.svg
+      fullname: tengjiayan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tengjiayan
+      type: user
+    createdAt: '2024-01-11T02:23:29.000Z'
+    data:
+      edited: false
+      editors:
+      - tengjiayan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46368739008903503
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6eec07553658ab22f8058caa0bfbed49.svg
+          fullname: tengjiayan
+          isHf: false
+          isPro: false
+          name: tengjiayan
+          type: user
+        html: '<p>Thank you!</p>
+
+          '
+        raw: Thank you!
+        updatedAt: '2024-01-11T02:23:29.804Z'
+      numEdits: 0
+      reactions: []
+    id: 659f5121c0b775ab965c6544
+    type: comment
+  author: tengjiayan
+  content: Thank you!
+  created_at: 2024-01-11 02:23:29+00:00
+  edited: false
+  hidden: false
+  id: 659f5121c0b775ab965c6544
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 15
+repo_id: madebyollin/sdxl-vae-fp16-fix
+repo_type: model
+status: open
+target_branch: null
+title: Curious about the methodology of finetuning

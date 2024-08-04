@@ -1,0 +1,246 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: anuragrawal
+conflicting_files: null
+created_at: 2023-11-02 21:05:53+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+      fullname: Anurag Agrawal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anuragrawal
+      type: user
+    createdAt: '2023-11-02T22:05:53.000Z'
+    data:
+      edited: false
+      editors:
+      - anuragrawal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4838539958000183
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+          fullname: Anurag Agrawal
+          isHf: false
+          isPro: false
+          name: anuragrawal
+          type: user
+        html: "<p>Hi,</p>\n<p>I am just testing this new model. I used openai's whisper\
+          \ for transcribing an audio (~ 4 mins length) and it transcribes the whole\
+          \ audio.</p>\n<p>I used short form transcription using distil-medium.en\
+          \ using the code shown on the model card page but it only transcribes the\
+          \ first 30 seconds. Why is that so?</p>\n<p>Here's the code:</p>\n<p>import\
+          \ os<br>import argparse<br>import whisper<br>import time<br>import torch<br>from\
+          \ transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline<br>from\
+          \ writeToJSON import createJSON</p>\n<p>def openai_transcript(vid_path):<br>\
+          \    model = whisper.load_model('medium.en', device = \"cpu\")<br>    print(f\"\
+          Transcribing {vid_path} using openai whisper...\")<br>    start_time = time.time()<br>\
+          \    result = model.transcribe(vid_path)<br>    end_time = time.time()<br>\
+          \    return result[\"text\"], f\"{end_time - start_time:.2f} seconds\"<br>\
+          \    # print(f\"{vid_path} using openai whisper took =&gt; {end_time - start_time:.2f}\
+          \ seconds\")</p>\n<p>def distil_whisper_transcript(vid_path):<br>    device\
+          \ = \"cpu\"<br>    torch_dtype = torch.float32<br>    model_id = \"distil-whisper/distil-medium.en\"\
+          </p>\n<pre><code>model = AutoModelForSpeechSeq2Seq.from_pretrained(\n  \
+          \  model_id, torch_dtype=torch_dtype, use_safetensors=True #low_cpu_mem_usage=True,\n\
+          )\nmodel.to(device)\nprocessor = AutoProcessor.from_pretrained(model_id)\n\
+          pipe = pipeline(\n    \"automatic-speech-recognition\",\n    model=model,\n\
+          \    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+          \    # max_new_tokens=128,\n    torch_dtype=torch_dtype,\n    device=device,\n\
+          )\nprint(f\"Transcribing {vid_path} using distil-whisper...\")\nstart_time\
+          \ = time.time()\nresult = pipe(vid_path)\nend_time = time.time()\nreturn\
+          \ result[\"text\"], f\"{end_time - start_time:.2f} seconds\"\n# print(f\"\
+          {vid_path} using distil-whisper took =&gt; {end_time - start_time:.2f} seconds\"\
+          )\n</code></pre>\n<p>if <strong>name</strong> == \"<strong>main</strong>\"\
+          :<br>    # Create an argument parser<br>    parser = argparse.ArgumentParser(description=\"\
+          Transcription-summarization pipeline\")</p>\n<pre><code># Define expected\
+          \ command-line arguments\nparser.add_argument('--vid_folder', type=str,\
+          \ help='Enter the video file path')\n# Parse the command-line arguments\n\
+          args = parser.parse_args()\nvid_folder = args.vid_folder\n\nfor vid in os.listdir(vid_folder):\n\
+          \    vid_path = os.path.join(vid_folder, vid)\n    # Transcribe using openai\
+          \ whisper medium.en\n    transcript_openai, time_openai = openai_transcript(vid_path)\n\
+          \    # Transcribe using distil-whisper medium.en\n    transcript_distil,\
+          \ time_distil = distil_whisper_transcript(vid_path)\n    createJSON(vid_path,\
+          \ transcript_openai, time_openai, transcript_distil, time_distil, \"output.json\"\
+          )\n</code></pre>\n"
+        raw: "Hi,\r\n\r\nI am just testing this new model. I used openai's whisper\
+          \ for transcribing an audio (~ 4 mins length) and it transcribes the whole\
+          \ audio.\r\n\r\nI used short form transcription using distil-medium.en using\
+          \ the code shown on the model card page but it only transcribes the first\
+          \ 30 seconds. Why is that so?\r\n\r\nHere's the code:\r\n\r\nimport os\r\
+          \nimport argparse\r\nimport whisper\r\nimport time\r\nimport torch\r\nfrom\
+          \ transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline\r\
+          \nfrom writeToJSON import createJSON\r\n\r\ndef openai_transcript(vid_path):\r\
+          \n    model = whisper.load_model('medium.en', device = \"cpu\")\r\n    print(f\"\
+          Transcribing {vid_path} using openai whisper...\")\r\n    start_time = time.time()\r\
+          \n    result = model.transcribe(vid_path)\r\n    end_time = time.time()\r\
+          \n    return result[\"text\"], f\"{end_time - start_time:.2f} seconds\"\r\
+          \n    # print(f\"{vid_path} using openai whisper took => {end_time - start_time:.2f}\
+          \ seconds\")\r\n\r\ndef distil_whisper_transcript(vid_path):\r\n    device\
+          \ = \"cpu\"\r\n    torch_dtype = torch.float32\r\n    model_id = \"distil-whisper/distil-medium.en\"\
+          \r\n\r\n    model = AutoModelForSpeechSeq2Seq.from_pretrained(\r\n     \
+          \   model_id, torch_dtype=torch_dtype, use_safetensors=True #low_cpu_mem_usage=True,\r\
+          \n    )\r\n    model.to(device)\r\n    processor = AutoProcessor.from_pretrained(model_id)\r\
+          \n    pipe = pipeline(\r\n        \"automatic-speech-recognition\",\r\n\
+          \        model=model,\r\n        tokenizer=processor.tokenizer,\r\n    \
+          \    feature_extractor=processor.feature_extractor,\r\n        # max_new_tokens=128,\r\
+          \n        torch_dtype=torch_dtype,\r\n        device=device,\r\n    )\r\n\
+          \    print(f\"Transcribing {vid_path} using distil-whisper...\")\r\n   \
+          \ start_time = time.time()\r\n    result = pipe(vid_path)\r\n    end_time\
+          \ = time.time()\r\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+          \ seconds\"\r\n    # print(f\"{vid_path} using distil-whisper took => {end_time\
+          \ - start_time:.2f} seconds\")\r\n\r\nif __name__ == \"__main__\":\r\n \
+          \   # Create an argument parser\r\n    parser = argparse.ArgumentParser(description=\"\
+          Transcription-summarization pipeline\")\r\n\r\n    # Define expected command-line\
+          \ arguments\r\n    parser.add_argument('--vid_folder', type=str, help='Enter\
+          \ the video file path')\r\n    # Parse the command-line arguments\r\n  \
+          \  args = parser.parse_args()\r\n    vid_folder = args.vid_folder\r\n\r\n\
+          \    for vid in os.listdir(vid_folder):\r\n        vid_path = os.path.join(vid_folder,\
+          \ vid)\r\n        # Transcribe using openai whisper medium.en\r\n      \
+          \  transcript_openai, time_openai = openai_transcript(vid_path)\r\n    \
+          \    # Transcribe using distil-whisper medium.en\r\n        transcript_distil,\
+          \ time_distil = distil_whisper_transcript(vid_path)\r\n        createJSON(vid_path,\
+          \ transcript_openai, time_openai, transcript_distil, time_distil, \"output.json\"\
+          )\r\n"
+        updatedAt: '2023-11-02T22:05:53.956Z'
+      numEdits: 0
+      reactions: []
+    id: 65441d41961a757b8b6c61c3
+    type: comment
+  author: anuragrawal
+  content: "Hi,\r\n\r\nI am just testing this new model. I used openai's whisper for\
+    \ transcribing an audio (~ 4 mins length) and it transcribes the whole audio.\r\
+    \n\r\nI used short form transcription using distil-medium.en using the code shown\
+    \ on the model card page but it only transcribes the first 30 seconds. Why is\
+    \ that so?\r\n\r\nHere's the code:\r\n\r\nimport os\r\nimport argparse\r\nimport\
+    \ whisper\r\nimport time\r\nimport torch\r\nfrom transformers import AutoModelForSpeechSeq2Seq,\
+    \ AutoProcessor, pipeline\r\nfrom writeToJSON import createJSON\r\n\r\ndef openai_transcript(vid_path):\r\
+    \n    model = whisper.load_model('medium.en', device = \"cpu\")\r\n    print(f\"\
+    Transcribing {vid_path} using openai whisper...\")\r\n    start_time = time.time()\r\
+    \n    result = model.transcribe(vid_path)\r\n    end_time = time.time()\r\n  \
+    \  return result[\"text\"], f\"{end_time - start_time:.2f} seconds\"\r\n    #\
+    \ print(f\"{vid_path} using openai whisper took => {end_time - start_time:.2f}\
+    \ seconds\")\r\n\r\ndef distil_whisper_transcript(vid_path):\r\n    device = \"\
+    cpu\"\r\n    torch_dtype = torch.float32\r\n    model_id = \"distil-whisper/distil-medium.en\"\
+    \r\n\r\n    model = AutoModelForSpeechSeq2Seq.from_pretrained(\r\n        model_id,\
+    \ torch_dtype=torch_dtype, use_safetensors=True #low_cpu_mem_usage=True,\r\n \
+    \   )\r\n    model.to(device)\r\n    processor = AutoProcessor.from_pretrained(model_id)\r\
+    \n    pipe = pipeline(\r\n        \"automatic-speech-recognition\",\r\n      \
+    \  model=model,\r\n        tokenizer=processor.tokenizer,\r\n        feature_extractor=processor.feature_extractor,\r\
+    \n        # max_new_tokens=128,\r\n        torch_dtype=torch_dtype,\r\n      \
+    \  device=device,\r\n    )\r\n    print(f\"Transcribing {vid_path} using distil-whisper...\"\
+    )\r\n    start_time = time.time()\r\n    result = pipe(vid_path)\r\n    end_time\
+    \ = time.time()\r\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+    \ seconds\"\r\n    # print(f\"{vid_path} using distil-whisper took => {end_time\
+    \ - start_time:.2f} seconds\")\r\n\r\nif __name__ == \"__main__\":\r\n    # Create\
+    \ an argument parser\r\n    parser = argparse.ArgumentParser(description=\"Transcription-summarization\
+    \ pipeline\")\r\n\r\n    # Define expected command-line arguments\r\n    parser.add_argument('--vid_folder',\
+    \ type=str, help='Enter the video file path')\r\n    # Parse the command-line\
+    \ arguments\r\n    args = parser.parse_args()\r\n    vid_folder = args.vid_folder\r\
+    \n\r\n    for vid in os.listdir(vid_folder):\r\n        vid_path = os.path.join(vid_folder,\
+    \ vid)\r\n        # Transcribe using openai whisper medium.en\r\n        transcript_openai,\
+    \ time_openai = openai_transcript(vid_path)\r\n        # Transcribe using distil-whisper\
+    \ medium.en\r\n        transcript_distil, time_distil = distil_whisper_transcript(vid_path)\r\
+    \n        createJSON(vid_path, transcript_openai, time_openai, transcript_distil,\
+    \ time_distil, \"output.json\")\r\n"
+  created_at: 2023-11-02 21:05:53+00:00
+  edited: false
+  hidden: false
+  id: 65441d41961a757b8b6c61c3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+      fullname: Sanchit Gandhi
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sanchit-gandhi
+      type: user
+    createdAt: '2023-11-03T09:41:37.000Z'
+    data:
+      edited: false
+      editors:
+      - sanchit-gandhi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7747793197631836
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+          fullname: Sanchit Gandhi
+          isHf: true
+          isPro: false
+          name: sanchit-gandhi
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;anuragrawal&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/anuragrawal\"\
+          >@<span class=\"underline\">anuragrawal</span></a></span>\n\n\t</span></span>\
+          \ - by 'short-form' audio we refer to audio segments less than 30s. To transcribe\
+          \ 'long-form' audio (&gt;30s) please see the example usage: <a href=\"https://huggingface.co/distil-whisper/distil-medium.en#long-form-transcription\"\
+          >https://huggingface.co/distil-whisper/distil-medium.en#long-form-transcription</a></p>\n"
+        raw: 'Hey @anuragrawal - by ''short-form'' audio we refer to audio segments
+          less than 30s. To transcribe ''long-form'' audio (>30s) please see the example
+          usage: https://huggingface.co/distil-whisper/distil-medium.en#long-form-transcription'
+        updatedAt: '2023-11-03T09:41:37.164Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - anuragrawal
+      relatedEventId: 6544c051b4c6738b45eb4c90
+    id: 6544c051b4c6738b45eb4c8e
+    type: comment
+  author: sanchit-gandhi
+  content: 'Hey @anuragrawal - by ''short-form'' audio we refer to audio segments
+    less than 30s. To transcribe ''long-form'' audio (>30s) please see the example
+    usage: https://huggingface.co/distil-whisper/distil-medium.en#long-form-transcription'
+  created_at: 2023-11-03 08:41:37+00:00
+  edited: false
+  hidden: false
+  id: 6544c051b4c6738b45eb4c8e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+      fullname: Sanchit Gandhi
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sanchit-gandhi
+      type: user
+    createdAt: '2023-11-03T09:41:37.000Z'
+    data:
+      status: closed
+    id: 6544c051b4c6738b45eb4c90
+    type: status-change
+  author: sanchit-gandhi
+  created_at: 2023-11-03 08:41:37+00:00
+  id: 6544c051b4c6738b45eb4c90
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: distil-whisper/distil-medium.en
+repo_type: model
+status: closed
+target_branch: null
+title: Short form transcription - Does distil-medium.en only transcribe for max 30
+  seconds of a video/audio?

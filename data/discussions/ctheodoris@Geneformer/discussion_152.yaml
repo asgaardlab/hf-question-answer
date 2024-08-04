@@ -1,0 +1,255 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: EyalItskov
+conflicting_files: null
+created_at: 2023-08-01 09:44:42+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c4d1fb27910da06b90060bd94db708c9.svg
+      fullname: Eyal Itskovits
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: EyalItskov
+      type: user
+    createdAt: '2023-08-01T10:44:42.000Z'
+    data:
+      edited: false
+      editors:
+      - EyalItskov
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44905170798301697
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c4d1fb27910da06b90060bd94db708c9.svg
+          fullname: Eyal Itskovits
+          isHf: false
+          isPro: false
+          name: EyalItskov
+          type: user
+        html: "<p>Hi,</p>\n<p>The </p>\n<pre><code class=\"language-{python}\">output_dataset\
+          \ = Dataset.from_dict(dataset_dict)\n</code></pre>\n<p>call from within\
+          \ the Tokenizer causes an Int32 overflow when the dataset is too big (exciting\
+          \ max(int32) in size):</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/64c79379baa60107a673ce55/eboSG4pUd3b6yz8OPENFM.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64c79379baa60107a673ce55/eboSG4pUd3b6yz8OPENFM.png\"\
+          ></a></p>\n<p>This is due to this function in the Huggingface code:</p>\n\
+          <pre><code class=\"language-{python}\">def numpy_to_pyarrow_listarray(arr:\
+          \ np.ndarray, type: pa.DataType = None) -&gt; pa.ListArray:\n    \"\"\"\
+          Build a PyArrow ListArray from a multidimensional NumPy array\"\"\"\n  \
+          \  arr = np.array(arr)\n    values = pa.array(arr.flatten(), type=type)\n\
+          \    for i in range(arr.ndim - 1):\n        n_offsets = reduce(mul, arr.shape[:\
+          \ arr.ndim - i - 1], 1)\n        step_offsets = arr.shape[arr.ndim - i -\
+          \ 1]\n        offsets = pa.array(np.arange(n_offsets + 1) * step_offsets,\
+          \ type=pa.int32())\n        values = pa.ListArray.from_arrays(offsets, values)\n\
+          \    return values\n</code></pre>\n<p>I found that in the dictionary values\
+          \ are saved as np.array rather than python List. This doesn't happen:</p>\n\
+          <pre><code class=\"language-{python}\">        ## DEBUG\n        print('Changing\
+          \ lists to np.arrays..')\n        dataset_dict['input_ids'] = np.array(dataset_dict['input_ids'],\
+          \ dtype='object')\n        dataset_dict['gene'] = np.array(dataset_dict['gene'],\
+          \ dtype='object')\n        ## DEBUG\n\n\n        # create dataset\n    \
+          \    output_dataset = Dataset.from_dict(dataset_dict)\n</code></pre>\n<p>Has\
+          \ someone came across this?</p>\n<p>Kind regards,<br>Eyal.</p>\n"
+        raw: "Hi,\r\n\r\nThe \r\n```{python}\r\noutput_dataset = Dataset.from_dict(dataset_dict)\r\
+          \n```\r\n\r\ncall from within the Tokenizer causes an Int32 overflow when\
+          \ the dataset is too big (exciting max(int32) in size):\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64c79379baa60107a673ce55/eboSG4pUd3b6yz8OPENFM.png)\r\
+          \n\r\nThis is due to this function in the Huggingface code:\r\n```{python}\r\
+          \ndef numpy_to_pyarrow_listarray(arr: np.ndarray, type: pa.DataType = None)\
+          \ -> pa.ListArray:\r\n    \"\"\"Build a PyArrow ListArray from a multidimensional\
+          \ NumPy array\"\"\"\r\n    arr = np.array(arr)\r\n    values = pa.array(arr.flatten(),\
+          \ type=type)\r\n    for i in range(arr.ndim - 1):\r\n        n_offsets =\
+          \ reduce(mul, arr.shape[: arr.ndim - i - 1], 1)\r\n        step_offsets\
+          \ = arr.shape[arr.ndim - i - 1]\r\n        offsets = pa.array(np.arange(n_offsets\
+          \ + 1) * step_offsets, type=pa.int32())\r\n        values = pa.ListArray.from_arrays(offsets,\
+          \ values)\r\n    return values\r\n```\r\n\r\nI found that in the dictionary\
+          \ values are saved as np.array rather than python List. This doesn't happen:\r\
+          \n```{python}\r\n        ## DEBUG\r\n        print('Changing lists to np.arrays..')\r\
+          \n        dataset_dict['input_ids'] = np.array(dataset_dict['input_ids'],\
+          \ dtype='object')\r\n        dataset_dict['gene'] = np.array(dataset_dict['gene'],\
+          \ dtype='object')\r\n        ## DEBUG\r\n\r\n\r\n        # create dataset\r\
+          \n        output_dataset = Dataset.from_dict(dataset_dict)\r\n```\r\n\r\n\
+          Has someone came across this?\r\n\r\nKind regards,\r\nEyal."
+        updatedAt: '2023-08-01T10:44:42.425Z'
+      numEdits: 0
+      reactions: []
+    id: 64c8e21a4524c2aea70ea32f
+    type: comment
+  author: EyalItskov
+  content: "Hi,\r\n\r\nThe \r\n```{python}\r\noutput_dataset = Dataset.from_dict(dataset_dict)\r\
+    \n```\r\n\r\ncall from within the Tokenizer causes an Int32 overflow when the\
+    \ dataset is too big (exciting max(int32) in size):\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64c79379baa60107a673ce55/eboSG4pUd3b6yz8OPENFM.png)\r\
+    \n\r\nThis is due to this function in the Huggingface code:\r\n```{python}\r\n\
+    def numpy_to_pyarrow_listarray(arr: np.ndarray, type: pa.DataType = None) -> pa.ListArray:\r\
+    \n    \"\"\"Build a PyArrow ListArray from a multidimensional NumPy array\"\"\"\
+    \r\n    arr = np.array(arr)\r\n    values = pa.array(arr.flatten(), type=type)\r\
+    \n    for i in range(arr.ndim - 1):\r\n        n_offsets = reduce(mul, arr.shape[:\
+    \ arr.ndim - i - 1], 1)\r\n        step_offsets = arr.shape[arr.ndim - i - 1]\r\
+    \n        offsets = pa.array(np.arange(n_offsets + 1) * step_offsets, type=pa.int32())\r\
+    \n        values = pa.ListArray.from_arrays(offsets, values)\r\n    return values\r\
+    \n```\r\n\r\nI found that in the dictionary values are saved as np.array rather\
+    \ than python List. This doesn't happen:\r\n```{python}\r\n        ## DEBUG\r\n\
+    \        print('Changing lists to np.arrays..')\r\n        dataset_dict['input_ids']\
+    \ = np.array(dataset_dict['input_ids'], dtype='object')\r\n        dataset_dict['gene']\
+    \ = np.array(dataset_dict['gene'], dtype='object')\r\n        ## DEBUG\r\n\r\n\
+    \r\n        # create dataset\r\n        output_dataset = Dataset.from_dict(dataset_dict)\r\
+    \n```\r\n\r\nHas someone came across this?\r\n\r\nKind regards,\r\nEyal."
+  created_at: 2023-08-01 09:44:42+00:00
+  edited: false
+  hidden: false
+  id: 64c8e21a4524c2aea70ea32f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-08-02T09:49:38.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9582117795944214
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for noting this! We did not come across this when tokenizing
+          Genecorpus-30M. It would be very helpful if you could check the Huggingface
+          Datasets issues to see if there is a suggested solution to this, or open
+          a new issue if this question has not already been raised. It would be great
+          if you could update this discussion with any resolution you may find from
+          Huggingface to help other users who may encounter this issue.</p>
+
+          '
+        raw: Thank you for noting this! We did not come across this when tokenizing
+          Genecorpus-30M. It would be very helpful if you could check the Huggingface
+          Datasets issues to see if there is a suggested solution to this, or open
+          a new issue if this question has not already been raised. It would be great
+          if you could update this discussion with any resolution you may find from
+          Huggingface to help other users who may encounter this issue.
+        updatedAt: '2023-08-02T09:49:38.842Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - EyalItskov
+      relatedEventId: 64ca26b2e5a1e97e76b8b98c
+    id: 64ca26b2e5a1e97e76b8b989
+    type: comment
+  author: ctheodoris
+  content: Thank you for noting this! We did not come across this when tokenizing
+    Genecorpus-30M. It would be very helpful if you could check the Huggingface Datasets
+    issues to see if there is a suggested solution to this, or open a new issue if
+    this question has not already been raised. It would be great if you could update
+    this discussion with any resolution you may find from Huggingface to help other
+    users who may encounter this issue.
+  created_at: 2023-08-02 08:49:38+00:00
+  edited: false
+  hidden: false
+  id: 64ca26b2e5a1e97e76b8b989
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-08-02T09:49:38.000Z'
+    data:
+      status: closed
+    id: 64ca26b2e5a1e97e76b8b98c
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-08-02 08:49:38+00:00
+  id: 64ca26b2e5a1e97e76b8b98c
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7495ceb26df3d8cd447cbf9204b77ad5.svg
+      fullname: Yanjun Shao
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: DanielShao
+      type: user
+    createdAt: '2023-08-28T10:02:28.000Z'
+    data:
+      edited: false
+      editors:
+      - DanielShao
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5712682604789734
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7495ceb26df3d8cd447cbf9204b77ad5.svg
+          fullname: Yanjun Shao
+          isHf: false
+          isPro: false
+          name: DanielShao
+          type: user
+        html: '<p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/62970df979f193515da13dc0/5HimebxAmouBOXbEhcw5-.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/62970df979f193515da13dc0/5HimebxAmouBOXbEhcw5-.png"></a><br>you
+          can split the dataset and then concatenate them together</p>
+
+          '
+        raw: '
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/62970df979f193515da13dc0/5HimebxAmouBOXbEhcw5-.png)
+
+          you can split the dataset and then concatenate them together'
+        updatedAt: '2023-08-28T10:02:28.114Z'
+      numEdits: 0
+      reactions: []
+    id: 64ec70b42beaa8c4108a49ba
+    type: comment
+  author: DanielShao
+  content: '
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/62970df979f193515da13dc0/5HimebxAmouBOXbEhcw5-.png)
+
+    you can split the dataset and then concatenate them together'
+  created_at: 2023-08-28 09:02:28+00:00
+  edited: false
+  hidden: false
+  id: 64ec70b42beaa8c4108a49ba
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 152
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: int32 overflow when using a large enough dataset

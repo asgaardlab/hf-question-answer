@@ -1,0 +1,4 @@
+## https://huggingface.co/ctheodoris/Geneformer/discussions/151
+
+contains_question: yes
+question_part: After you have the initial embedding and disease-specific embedding and the embedding of the knockout cell, when you calculate the embedding shift after the knockout, The cos_sim_values are calculated using the average of all embedding values of each batch_size on which a specific gene has been knocked out and the embedding of a cell with a specific disease state, rather than the embedding of a single gene knocked out cell. Therefore, when batch_size=400, this would cause a very obvious logical error. Obviously batch_size=1 is correct. I really want to know the detailed parameters of perturbation of the code running when executing In_silico_perturbation task in the article, please tell me, thank you

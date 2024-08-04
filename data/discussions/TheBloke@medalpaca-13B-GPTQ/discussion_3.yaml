@@ -1,0 +1,314 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: krish14388
+conflicting_files: null
+created_at: 2023-05-31 15:51:39+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1880bd7ede7df946d37e6db5c8130448.svg
+      fullname: hari
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: krish14388
+      type: user
+    createdAt: '2023-05-31T16:51:39.000Z'
+    data:
+      edited: false
+      editors:
+      - krish14388
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1880bd7ede7df946d37e6db5c8130448.svg
+          fullname: hari
+          isHf: false
+          isPro: false
+          name: krish14388
+          type: user
+        html: '<p>I keep getting this error ...any idea?</p>
+
+          <p>OSError: Could not locate pytorch_model-00001-of-00006.bin inside TheBloke/medalpaca-13B-GPTQ-4bit.</p>
+
+          '
+        raw: "I keep getting this error ...any idea?\r\n\r\nOSError: Could not locate\
+          \ pytorch_model-00001-of-00006.bin inside TheBloke/medalpaca-13B-GPTQ-4bit.\r\
+          \n"
+        updatedAt: '2023-05-31T16:51:39.478Z'
+      numEdits: 0
+      reactions: []
+    id: 64777b1bc21496284db46042
+    type: comment
+  author: krish14388
+  content: "I keep getting this error ...any idea?\r\n\r\nOSError: Could not locate\
+    \ pytorch_model-00001-of-00006.bin inside TheBloke/medalpaca-13B-GPTQ-4bit.\r\n"
+  created_at: 2023-05-31 15:51:39+00:00
+  edited: false
+  hidden: false
+  id: 64777b1bc21496284db46042
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-05-31T16:56:03.000Z'
+    data:
+      edited: true
+      editors:
+      - TheBloke
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: "<p>You can't load this GPTQ model using standard transformers.   To\
+          \ load GPTQ models from Python code and use it transformers style, please\
+          \ use AutoGPTQ.</p>\n<p>Firstly, you need to compile the latest AutoGPTQ\
+          \ from source as the code is still under active development, and pre-compiled\
+          \ binaries are not yet provided.  Compiling requires that you have the CUDA\
+          \ toolkit installed.  Do the following:</p>\n<pre><code>git clone https://github.com/PanQiWei/AutoGPTQ\n\
+          cd AutoGPTQ\npip install .\n</code></pre>\n<p>Then download the TheBloke/medalpaca-13B-GPTQ-4bit\
+          \ model locally (I guess you already have), and run code like the following:</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer,\
+          \ pipeline, logging\n<span class=\"hljs-keyword\">from</span> auto_gptq\
+          \ <span class=\"hljs-keyword\">import</span> AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+          <span class=\"hljs-keyword\">import</span> argparse\n\n<span class=\"hljs-comment\"\
+          ># change this path to match where you downloaded the model</span>\nquantized_model_dir\
+          \ = <span class=\"hljs-string\">\"/workspace/models/TheBloke_medalpaca-13B-GPTQ-4bit\"\
+          </span>\n\nmodel_basename = <span class=\"hljs-string\">\"medalpaca-13B-GPTQ-4bit-128g.compat.no-act-order\"\
+          </span>\n\nuse_triton = <span class=\"hljs-literal\">False</span>\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=<span class=\"\
+          hljs-literal\">True</span>)\n\nquantize_config = BaseQuantizeConfig(\n \
+          \       bits=<span class=\"hljs-number\">4</span>,\n        group_size=<span\
+          \ class=\"hljs-number\">128</span>,\n        desc_act=<span class=\"hljs-literal\"\
+          >False</span>\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \        use_safetensors=<span class=\"hljs-literal\">True</span>,\n   \
+          \     model_basename=model_basename,\n        device=<span class=\"hljs-string\"\
+          >\"cuda:0\"</span>,\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+          \n<span class=\"hljs-comment\"># Prevent printing spurious transformers\
+          \ error when using pipeline with AutoGPTQ</span>\nlogging.set_verbosity(logging.CRITICAL)\n\
+          \nprompt = <span class=\"hljs-string\">\"Tell me about AI\"</span>\nprompt_template=<span\
+          \ class=\"hljs-string\">f'''### Human: <span class=\"hljs-subst\">{prompt}</span></span>\n\
+          <span class=\"hljs-string\">### Assistant:'''</span>\n\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"*** Pipeline:\"</span>)\npipe\
+          \ = pipeline(\n    <span class=\"hljs-string\">\"text-generation\"</span>,\n\
+          \    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=<span class=\"\
+          hljs-number\">512</span>,\n    temperature=<span class=\"hljs-number\">0.7</span>,\n\
+          \    top_p=<span class=\"hljs-number\">0.95</span>,\n    repetition_penalty=<span\
+          \ class=\"hljs-number\">1.15</span>\n)\n\n<span class=\"hljs-built_in\"\
+          >print</span>(pipe(prompt_template)[<span class=\"hljs-number\">0</span>][<span\
+          \ class=\"hljs-string\">'generated_text'</span>])\n\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"\\n\\n*** Generate:\"</span>)\n\
+          \ninput_ids = tokenizer(prompt_template, return_tensors=<span class=\"hljs-string\"\
+          >'pt'</span>).input_ids.cuda()\noutput = model.generate(inputs=input_ids,\
+          \ temperature=<span class=\"hljs-number\">0.7</span>, max_new_tokens=<span\
+          \ class=\"hljs-number\">512</span>)\n<span class=\"hljs-built_in\">print</span>(tokenizer.decode(output[<span\
+          \ class=\"hljs-number\">0</span>]))\n</code></pre>\n<p>Then you can use\
+          \ that code as a base for whatever you want to do.</p>\n"
+        raw: "You can't load this GPTQ model using standard transformers.   To load\
+          \ GPTQ models from Python code and use it transformers style, please use\
+          \ AutoGPTQ.\n\nFirstly, you need to compile the latest AutoGPTQ from source\
+          \ as the code is still under active development, and pre-compiled binaries\
+          \ are not yet provided.  Compiling requires that you have the CUDA toolkit\
+          \ installed.  Do the following:\n```\ngit clone https://github.com/PanQiWei/AutoGPTQ\n\
+          cd AutoGPTQ\npip install .\n```\n\nThen download the TheBloke/medalpaca-13B-GPTQ-4bit\
+          \ model locally (I guess you already have), and run code like the following:\n\
+          \n```python\nfrom transformers import AutoTokenizer, pipeline, logging\n\
+          from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\nimport argparse\n\
+          \n# change this path to match where you downloaded the model\nquantized_model_dir\
+          \ = \"/workspace/models/TheBloke_medalpaca-13B-GPTQ-4bit\"\n\nmodel_basename\
+          \ = \"medalpaca-13B-GPTQ-4bit-128g.compat.no-act-order\"\n\nuse_triton =\
+          \ False\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+          \ use_fast=True)\n\nquantize_config = BaseQuantizeConfig(\n        bits=4,\n\
+          \        group_size=128,\n        desc_act=False\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+          \        use_safetensors=True,\n        model_basename=model_basename,\n\
+          \        device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+          \n# Prevent printing spurious transformers error when using pipeline with\
+          \ AutoGPTQ\nlogging.set_verbosity(logging.CRITICAL)\n\nprompt = \"Tell me\
+          \ about AI\"\nprompt_template=f'''### Human: {prompt}\n### Assistant:'''\n\
+          \nprint(\"*** Pipeline:\")\npipe = pipeline(\n    \"text-generation\",\n\
+          \    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=512,\n \
+          \   temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n)\n\n\
+          print(pipe(prompt_template)[0]['generated_text'])\n\nprint(\"\\n\\n*** Generate:\"\
+          )\n\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+          output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+          print(tokenizer.decode(output[0]))\n```\n\nThen you can use that code as\
+          \ a base for whatever you want to do."
+        updatedAt: '2023-05-31T16:56:32.623Z'
+      numEdits: 1
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - AlonMine
+        - victorp
+    id: 64777c23f911e9e76c650d29
+    type: comment
+  author: TheBloke
+  content: "You can't load this GPTQ model using standard transformers.   To load\
+    \ GPTQ models from Python code and use it transformers style, please use AutoGPTQ.\n\
+    \nFirstly, you need to compile the latest AutoGPTQ from source as the code is\
+    \ still under active development, and pre-compiled binaries are not yet provided.\
+    \  Compiling requires that you have the CUDA toolkit installed.  Do the following:\n\
+    ```\ngit clone https://github.com/PanQiWei/AutoGPTQ\ncd AutoGPTQ\npip install\
+    \ .\n```\n\nThen download the TheBloke/medalpaca-13B-GPTQ-4bit model locally (I\
+    \ guess you already have), and run code like the following:\n\n```python\nfrom\
+    \ transformers import AutoTokenizer, pipeline, logging\nfrom auto_gptq import\
+    \ AutoGPTQForCausalLM, BaseQuantizeConfig\nimport argparse\n\n# change this path\
+    \ to match where you downloaded the model\nquantized_model_dir = \"/workspace/models/TheBloke_medalpaca-13B-GPTQ-4bit\"\
+    \n\nmodel_basename = \"medalpaca-13B-GPTQ-4bit-128g.compat.no-act-order\"\n\n\
+    use_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+    \ use_fast=True)\n\nquantize_config = BaseQuantizeConfig(\n        bits=4,\n \
+    \       group_size=128,\n        desc_act=False\n    )\n\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\n\
+    \        use_safetensors=True,\n        model_basename=model_basename,\n     \
+    \   device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=quantize_config)\n\
+    \n# Prevent printing spurious transformers error when using pipeline with AutoGPTQ\n\
+    logging.set_verbosity(logging.CRITICAL)\n\nprompt = \"Tell me about AI\"\nprompt_template=f'''###\
+    \ Human: {prompt}\n### Assistant:'''\n\nprint(\"*** Pipeline:\")\npipe = pipeline(\n\
+    \    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=512,\n\
+    \    temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n)\n\nprint(pipe(prompt_template)[0]['generated_text'])\n\
+    \nprint(\"\\n\\n*** Generate:\")\n\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+    output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+    print(tokenizer.decode(output[0]))\n```\n\nThen you can use that code as a base\
+    \ for whatever you want to do."
+  created_at: 2023-05-31 15:56:03+00:00
+  edited: true
+  hidden: false
+  id: 64777c23f911e9e76c650d29
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1880bd7ede7df946d37e6db5c8130448.svg
+      fullname: hari
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: krish14388
+      type: user
+    createdAt: '2023-06-01T16:09:18.000Z'
+    data:
+      edited: false
+      editors:
+      - krish14388
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1880bd7ede7df946d37e6db5c8130448.svg
+          fullname: hari
+          isHf: false
+          isPro: false
+          name: krish14388
+          type: user
+        html: '<p>Thanks a lot, that worked.</p>
+
+          '
+        raw: Thanks a lot, that worked.
+        updatedAt: '2023-06-01T16:09:18.798Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6478c2ae25e06d2ffe887626
+    id: 6478c2ae25e06d2ffe887625
+    type: comment
+  author: krish14388
+  content: Thanks a lot, that worked.
+  created_at: 2023-06-01 15:09:18+00:00
+  edited: false
+  hidden: false
+  id: 6478c2ae25e06d2ffe887625
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/1880bd7ede7df946d37e6db5c8130448.svg
+      fullname: hari
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: krish14388
+      type: user
+    createdAt: '2023-06-01T16:09:18.000Z'
+    data:
+      status: closed
+    id: 6478c2ae25e06d2ffe887626
+    type: status-change
+  author: krish14388
+  created_at: 2023-06-01 15:09:18+00:00
+  id: 6478c2ae25e06d2ffe887626
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/49ea25d58acd0682ccbaacb325929aaf.svg
+      fullname: Krishnan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Gowthamkrishnan
+      type: user
+    createdAt: '2023-07-27T11:39:06.000Z'
+    data:
+      edited: false
+      editors:
+      - Gowthamkrishnan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9554493427276611
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/49ea25d58acd0682ccbaacb325929aaf.svg
+          fullname: Krishnan
+          isHf: false
+          isPro: false
+          name: Gowthamkrishnan
+          type: user
+        html: '<p>Works fine.<br>But it is generating gibrish?<br>How to resolve it
+          </p>
+
+          '
+        raw: "Works fine.\nBut it is generating gibrish? \nHow to resolve it "
+        updatedAt: '2023-07-27T11:39:06.154Z'
+      numEdits: 0
+      reactions: []
+    id: 64c2575ad94bf805a3d0e3e5
+    type: comment
+  author: Gowthamkrishnan
+  content: "Works fine.\nBut it is generating gibrish? \nHow to resolve it "
+  created_at: 2023-07-27 10:39:06+00:00
+  edited: false
+  hidden: false
+  id: 64c2575ad94bf805a3d0e3e5
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: TheBloke/medalpaca-13B-GPTQ
+repo_type: model
+status: closed
+target_branch: null
+title: how to load this in transformers python

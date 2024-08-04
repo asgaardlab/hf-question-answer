@@ -1,0 +1,5 @@
+## https://huggingface.co/riffusion/riffusion-model-v1/discussions/12
+
+contains_question: yes
+
+question_part: I would be interested in pushing the limits a bit, seeing how we can produce "events" that last less than 10 seconds.  Saying like : groovy rock music with a 4 seconds sax reel".  I'm curious how we could deal with ambiophonic events, like dog barking or bird signing?  What do you suggest we do if we have smaller audio clips, (like a 2 sec bird song)?  Should we just loop the sound to reach 10 secs or pad the audio with silence? What if we're trying to capture something that exceed 10 secs, like long fog horn? I understand the 10 secs is a choice you made to match the image size, but once we pick a limit, we're kind of stuck with it... Finally, any chance you would share your fine-tuning setup?  It would save us lots of time to try to push the envelope of what you've accomplished!

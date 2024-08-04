@@ -1,0 +1,164 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: yixliu1
+conflicting_files: null
+created_at: 2023-12-22 03:21:02+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/98156acde9b8a55614269cb7ad89373a.svg
+      fullname: Yixuan Liu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yixliu1
+      type: user
+    createdAt: '2023-12-22T03:21:02.000Z'
+    data:
+      edited: false
+      editors:
+      - yixliu1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.605649471282959
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/98156acde9b8a55614269cb7ad89373a.svg
+          fullname: Yixuan Liu
+          isHf: false
+          isPro: false
+          name: yixliu1
+          type: user
+        html: '<p>I fully parameter fine tuned a mistral-7B model. Here is my part
+          of FT code:<br>training_arguments = TrainingArguments(<br>    output_dir=
+          "",<br>    num_train_epochs= 5,<br>    per_device_train_batch_size= 8,<br>    gradient_accumulation_steps=
+          2,<br>    optim = "paged_adamw_32bit",<br>    save_steps= 1000,<br>    logging_steps=
+          30,<br>    learning_rate= 2e-4,<br>    weight_decay= 0.001,<br>    fp16=
+          False,<br>    bf16= False,<br>    max_grad_norm= 0.3,<br>    max_steps=
+          -1,<br>    warmup_ratio= 0.3,<br>    group_by_length= True,<br>    lr_scheduler_type=
+          "constant",<br>    report_to="wandb"<br>)</p>
+
+          <h1 id="setting-sft-parameters">Setting sft parameters</h1>
+
+          <p>trainer = SFTTrainer(<br>    model=model,<br>    train_dataset=dataset,</p>
+
+          <h1 id="peft_configpeft_config">peft_config=peft_config,</h1>
+
+          <pre><code>max_seq_length= None,
+
+          dataset_text_field="text",
+
+          tokenizer=tokenizer,
+
+          args=training_arguments,
+
+          packing= False,
+
+          </code></pre>
+
+          <p>)</p>
+
+          <p>Here is what I got:</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/64422b76b0328ddab62f7f11/2uGsac6OxuP2dBn0Gu0nv.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/64422b76b0328ddab62f7f11/2uGsac6OxuP2dBn0Gu0nv.png"></a></p>
+
+          <p>Here is my inference code:<br>tokenizer = AutoTokenizer.from_pretrained(model_id)<br>tokenizer.padding_side
+          = "right"<br>model = AutoModelForCausalLM.from_pretrained(model_id, device_map="auto")</p>
+
+          <p>def mixtral_inf(text, token_len=512):<br>    inputs = tokenizer(text,
+          return_tensors="pt").to("cuda")<br>    outputs = model.generate(**inputs,
+          max_new_tokens=token_len,<br>        do_sample=True,<br>        repetition_penalty=1.0,<br>        temperature=0.8,<br>        top_p=0.75,<br>        top_k=40<br>)<br>    return
+          tokenizer.decode(outputs[0])</p>
+
+          <p>My generation speed is so slow. It requires about 40-50s to generate
+          one inference with max_new_token_length=128. It is much slower compared
+          with mistral-8*7B. I wonder if I get wrong model files or my inference method
+          is wrong. Also, it keeps notice me that <code>A decoder-only architecture
+          is being used, but right-padding was detected! For correct generation results,
+          please set </code>padding_side=''left''<code> when initializing the tokenizer.</code>
+          I am a bit confused about this part. I haven''t set padding while training,
+          is it a default value? Also, if my padding during training is right, why
+          should I set it to left while generation?</p>
+
+          '
+        raw: "I fully parameter fine tuned a mistral-7B model. Here is my part of\
+          \ FT code:\r\ntraining_arguments = TrainingArguments(\r\n    output_dir=\
+          \ \"\",\r\n    num_train_epochs= 5,\r\n    per_device_train_batch_size=\
+          \ 8,\r\n    gradient_accumulation_steps= 2,\r\n    optim = \"paged_adamw_32bit\"\
+          ,\r\n    save_steps= 1000,\r\n    logging_steps= 30,\r\n    learning_rate=\
+          \ 2e-4,\r\n    weight_decay= 0.001,\r\n    fp16= False,\r\n    bf16= False,\r\
+          \n    max_grad_norm= 0.3,\r\n    max_steps= -1,\r\n    warmup_ratio= 0.3,\r\
+          \n    group_by_length= True,\r\n    lr_scheduler_type= \"constant\",\r\n\
+          \    report_to=\"wandb\"\r\n)\r\n# Setting sft parameters\r\ntrainer = SFTTrainer(\r\
+          \n    model=model,\r\n    train_dataset=dataset,\r\n#     peft_config=peft_config,\r\
+          \n    max_seq_length= None,\r\n    dataset_text_field=\"text\",\r\n    tokenizer=tokenizer,\r\
+          \n    args=training_arguments,\r\n    packing= False,\r\n)\r\n\r\nHere is\
+          \ what I got:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64422b76b0328ddab62f7f11/2uGsac6OxuP2dBn0Gu0nv.png)\r\
+          \n\r\nHere is my inference code:\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+          \ntokenizer.padding_side = \"right\"\r\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+          \ device_map=\"auto\")\r\n\r\ndef mixtral_inf(text, token_len=512):\r\n\
+          \    inputs = tokenizer(text, return_tensors=\"pt\").to(\"cuda\") \r\n \
+          \   outputs = model.generate(**inputs, max_new_tokens=token_len,\r\n   \
+          \     do_sample=True, \r\n        repetition_penalty=1.0, \r\n        temperature=0.8,\
+          \ \r\n        top_p=0.75, \r\n        top_k=40\r\n)\r\n    return tokenizer.decode(outputs[0])\r\
+          \n\r\nMy generation speed is so slow. It requires about 40-50s to generate\
+          \ one inference with max_new_token_length=128. It is much slower compared\
+          \ with mistral-8*7B. I wonder if I get wrong model files or my inference\
+          \ method is wrong. Also, it keeps notice me that `A decoder-only architecture\
+          \ is being used, but right-padding was detected! For correct generation\
+          \ results, please set `padding_side='left'` when initializing the tokenizer.`\
+          \ I am a bit confused about this part. I haven't set padding while training,\
+          \ is it a default value? Also, if my padding during training is right, why\
+          \ should I set it to left while generation?"
+        updatedAt: '2023-12-22T03:21:02.062Z'
+      numEdits: 0
+      reactions: []
+    id: 6585009e0292cbbde252d35a
+    type: comment
+  author: yixliu1
+  content: "I fully parameter fine tuned a mistral-7B model. Here is my part of FT\
+    \ code:\r\ntraining_arguments = TrainingArguments(\r\n    output_dir= \"\",\r\n\
+    \    num_train_epochs= 5,\r\n    per_device_train_batch_size= 8,\r\n    gradient_accumulation_steps=\
+    \ 2,\r\n    optim = \"paged_adamw_32bit\",\r\n    save_steps= 1000,\r\n    logging_steps=\
+    \ 30,\r\n    learning_rate= 2e-4,\r\n    weight_decay= 0.001,\r\n    fp16= False,\r\
+    \n    bf16= False,\r\n    max_grad_norm= 0.3,\r\n    max_steps= -1,\r\n    warmup_ratio=\
+    \ 0.3,\r\n    group_by_length= True,\r\n    lr_scheduler_type= \"constant\",\r\
+    \n    report_to=\"wandb\"\r\n)\r\n# Setting sft parameters\r\ntrainer = SFTTrainer(\r\
+    \n    model=model,\r\n    train_dataset=dataset,\r\n#     peft_config=peft_config,\r\
+    \n    max_seq_length= None,\r\n    dataset_text_field=\"text\",\r\n    tokenizer=tokenizer,\r\
+    \n    args=training_arguments,\r\n    packing= False,\r\n)\r\n\r\nHere is what\
+    \ I got:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64422b76b0328ddab62f7f11/2uGsac6OxuP2dBn0Gu0nv.png)\r\
+    \n\r\nHere is my inference code:\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+    \ntokenizer.padding_side = \"right\"\r\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+    \ device_map=\"auto\")\r\n\r\ndef mixtral_inf(text, token_len=512):\r\n    inputs\
+    \ = tokenizer(text, return_tensors=\"pt\").to(\"cuda\") \r\n    outputs = model.generate(**inputs,\
+    \ max_new_tokens=token_len,\r\n        do_sample=True, \r\n        repetition_penalty=1.0,\
+    \ \r\n        temperature=0.8, \r\n        top_p=0.75, \r\n        top_k=40\r\n\
+    )\r\n    return tokenizer.decode(outputs[0])\r\n\r\nMy generation speed is so\
+    \ slow. It requires about 40-50s to generate one inference with max_new_token_length=128.\
+    \ It is much slower compared with mistral-8*7B. I wonder if I get wrong model\
+    \ files or my inference method is wrong. Also, it keeps notice me that `A decoder-only\
+    \ architecture is being used, but right-padding was detected! For correct generation\
+    \ results, please set `padding_side='left'` when initializing the tokenizer.`\
+    \ I am a bit confused about this part. I haven't set padding while training, is\
+    \ it a default value? Also, if my padding during training is right, why should\
+    \ I set it to left while generation?"
+  created_at: 2023-12-22 03:21:02+00:00
+  edited: false
+  hidden: false
+  id: 6585009e0292cbbde252d35a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 112
+repo_id: mistralai/Mistral-7B-v0.1
+repo_type: model
+status: open
+target_branch: null
+title: FT Mistral Generate Slowly

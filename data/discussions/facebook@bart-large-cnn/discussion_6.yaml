@@ -1,0 +1,261 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: shreyansj
+conflicting_files: null
+created_at: 2022-08-11 08:01:45+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4f80b5865855692f75ffce9e84e28514.svg
+      fullname: Shreyans J
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shreyansj
+      type: user
+    createdAt: '2022-08-11T09:01:45.000Z'
+    data:
+      edited: false
+      editors:
+      - shreyansj
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4f80b5865855692f75ffce9e84e28514.svg
+          fullname: Shreyans J
+          isHf: false
+          isPro: false
+          name: shreyansj
+          type: user
+        html: "<p>Hi,<br>I followed this Huggingface <a href=\"https://huggingface.co/blog/tf-xla-generate\"\
+          >blogpost</a> to accelerate the performance of text generation using TF\
+          \ with XLA. On wrapping<code>model.generate</code> with <code>xla_generate\
+          \ = tf.function(model.generate, jit_compile=True)</code>, we get the following\
+          \ error:</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          NotImplementedError                       Traceback (most recent call last)\n\
+          &lt;ipython-input-8-0858aef5d3e2&gt; in &lt;module&gt;()\n     26     tokenized_inputs\
+          \ = tokenizer([input_prompt], **tokenization_kwargs)\n     27     start\
+          \ = time.time_ns()\n---&gt; 28     generated_text = xla_generate(**tokenized_inputs,\
+          \ **generation_kwargs)\n     29     end = time.time_ns()\n     30     decoded_text\
+          \ = tokenizer.decode(generated_text[0], skip_special_tokens=True)\n\n1 frames\n\
+          /usr/local/lib/python3.7/dist-packages/tensorflow/python/framework/func_graph.py\
+          \ in autograph_handler(*args, **kwargs)\n   1145           except Exception\
+          \ as e:  # pylint:disable=broad-except\n   1146             if hasattr(e,\
+          \ \"ag_error_metadata\"):\n-&gt; 1147               raise e.ag_error_metadata.to_exception(e)\n\
+          \   1148             else:\n   1149               raise\n\nNotImplementedError:\
+          \ in user code:\n\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 605, in generate  *\n        seed=model_kwargs.pop(\"seed\", None),\n\
+          \    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 1687, in _generate  *\n        input_ids,\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 2854, in beam_search_body_fn  *\n        log_probs = logits_processor(flatten_beam_dim(running_sequences),\
+          \ flatten_beam_dim(log_probs), cur_len)\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+          , line 94, in __call__  *\n        scores = processor(input_ids, scores,\
+          \ cur_len)\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+          , line 427, in __call__  *\n        raise NotImplementedError(\"TFNoRepeatNGramLogitsProcessor\
+          \ is only implemented for eager execution.\")\n\n    NotImplementedError:\
+          \ TFNoRepeatNGramLogitsProcessor is only implemented for eager execution.\n\
+          </code></pre>\n<p>Example code for reproducing this error:</p>\n<pre><code>#\
+          \ Stand-alone TF XLA generate example for Decoder-Only Models.\n\n# Note:\
+          \ execution times are deeply dependent on hardware.\n# If you have a machine\
+          \ with a powerful GPU, I highly recommend you to try this example there!\n\
+          import time\nimport tensorflow as tf\nfrom transformers import AutoTokenizer,\
+          \ TFAutoModelForSeq2SeqLM\n\n# 1. Load model and tokenizer\nmodel_name =\
+          \ \"facebook/bart-large-cnn\"\n# remember: decoder-only models need left-padding\n\
+          tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side=\"left\"\
+          , pad_token=\"&lt;/s&gt;\")\nmodel = TFAutoModelForSeq2SeqLM.from_pretrained(model_name)\n\
+          \n# 2. Prepare tokenization and generation arguments -- don't forget padding\
+          \ to avoid retracing!\ntokenization_kwargs = {\"pad_to_multiple_of\": 32,\
+          \ \"padding\": True, \"return_tensors\": \"tf\"}\ngeneration_kwargs = {\"\
+          num_beams\": 4, \"max_new_tokens\": 64}\n\n# 3. Create your XLA generate\
+          \ function a\u0336n\u0336d\u0336 \u0336m\u0336a\u0336k\u0336e\u0336 \u0336\
+          P\u0336y\u0336T\u0336o\u0336r\u0336c\u0336h\u0336 \u0336e\u0336a\u0336t\u0336\
+          \ \u0336d\u0336u\u0336s\u0336t\u0336\n# This is the only change with respect\
+          \ to original generate workflow!\nxla_generate = tf.function(model.generate,\
+          \ jit_compile=True)\n\n# 4. Generate! Remember -- the first call will be\
+          \ slow, but all subsequent calls will be fast if you've done things right.\n\
+          input_prompts = [f\"The best thing about {country} is\" for country in [\"\
+          Spain\", \"Japan\", \"Angola\"]]\nfor input_prompt in input_prompts:\n \
+          \   tokenized_inputs = tokenizer([input_prompt], **tokenization_kwargs)\n\
+          \    start = time.time_ns()\n    generated_text = xla_generate(**tokenized_inputs,\
+          \ **generation_kwargs)\n    end = time.time_ns()\n    decoded_text = tokenizer.decode(generated_text[0],\
+          \ skip_special_tokens=True)\n    print(f\"Original prompt -- {input_prompt}\"\
+          )\n    print(f\"Generated -- {decoded_text}\")\n    print(f\"Execution time\
+          \ -- {(end - start) / 1e6:.1f} ms\\n\")\n</code></pre>\n<p>Other models\
+          \ work fine and the issue seems to be with BART. Is BART not supported to\
+          \ work with XLA? </p>\n"
+        raw: "Hi,\r\nI followed this Huggingface [blogpost](https://huggingface.co/blog/tf-xla-generate)\
+          \ to accelerate the performance of text generation using TF with XLA. On\
+          \ wrapping`model.generate` with `xla_generate = tf.function(model.generate,\
+          \ jit_compile=True)`, we get the following error:\r\n```\r\n---------------------------------------------------------------------------\r\
+          \nNotImplementedError                       Traceback (most recent call\
+          \ last)\r\n<ipython-input-8-0858aef5d3e2> in <module>()\r\n     26     tokenized_inputs\
+          \ = tokenizer([input_prompt], **tokenization_kwargs)\r\n     27     start\
+          \ = time.time_ns()\r\n---> 28     generated_text = xla_generate(**tokenized_inputs,\
+          \ **generation_kwargs)\r\n     29     end = time.time_ns()\r\n     30  \
+          \   decoded_text = tokenizer.decode(generated_text[0], skip_special_tokens=True)\r\
+          \n\r\n1 frames\r\n/usr/local/lib/python3.7/dist-packages/tensorflow/python/framework/func_graph.py\
+          \ in autograph_handler(*args, **kwargs)\r\n   1145           except Exception\
+          \ as e:  # pylint:disable=broad-except\r\n   1146             if hasattr(e,\
+          \ \"ag_error_metadata\"):\r\n-> 1147               raise e.ag_error_metadata.to_exception(e)\r\
+          \n   1148             else:\r\n   1149               raise\r\n\r\nNotImplementedError:\
+          \ in user code:\r\n\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 605, in generate  *\r\n        seed=model_kwargs.pop(\"seed\", None),\r\
+          \n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 1687, in _generate  *\r\n        input_ids,\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+          , line 2854, in beam_search_body_fn  *\r\n        log_probs = logits_processor(flatten_beam_dim(running_sequences),\
+          \ flatten_beam_dim(log_probs), cur_len)\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+          , line 94, in __call__  *\r\n        scores = processor(input_ids, scores,\
+          \ cur_len)\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+          , line 427, in __call__  *\r\n        raise NotImplementedError(\"TFNoRepeatNGramLogitsProcessor\
+          \ is only implemented for eager execution.\")\r\n\r\n    NotImplementedError:\
+          \ TFNoRepeatNGramLogitsProcessor is only implemented for eager execution.\r\
+          \n```\r\n\r\nExample code for reproducing this error:\r\n```\r\n# Stand-alone\
+          \ TF XLA generate example for Decoder-Only Models.\r\n\r\n# Note: execution\
+          \ times are deeply dependent on hardware.\r\n# If you have a machine with\
+          \ a powerful GPU, I highly recommend you to try this example there!\r\n\
+          import time\r\nimport tensorflow as tf\r\nfrom transformers import AutoTokenizer,\
+          \ TFAutoModelForSeq2SeqLM\r\n\r\n# 1. Load model and tokenizer\r\nmodel_name\
+          \ = \"facebook/bart-large-cnn\"\r\n# remember: decoder-only models need\
+          \ left-padding\r\ntokenizer = AutoTokenizer.from_pretrained(model_name,\
+          \ padding_side=\"left\", pad_token=\"</s>\")\r\nmodel = TFAutoModelForSeq2SeqLM.from_pretrained(model_name)\r\
+          \n\r\n# 2. Prepare tokenization and generation arguments -- don't forget\
+          \ padding to avoid retracing!\r\ntokenization_kwargs = {\"pad_to_multiple_of\"\
+          : 32, \"padding\": True, \"return_tensors\": \"tf\"}\r\ngeneration_kwargs\
+          \ = {\"num_beams\": 4, \"max_new_tokens\": 64}\r\n\r\n# 3. Create your XLA\
+          \ generate function a\u0336n\u0336d\u0336 \u0336m\u0336a\u0336k\u0336e\u0336\
+          \ \u0336P\u0336y\u0336T\u0336o\u0336r\u0336c\u0336h\u0336 \u0336e\u0336\
+          a\u0336t\u0336 \u0336d\u0336u\u0336s\u0336t\u0336\r\n# This is the only\
+          \ change with respect to original generate workflow!\r\nxla_generate = tf.function(model.generate,\
+          \ jit_compile=True)\r\n\r\n# 4. Generate! Remember -- the first call will\
+          \ be slow, but all subsequent calls will be fast if you've done things right.\r\
+          \ninput_prompts = [f\"The best thing about {country} is\" for country in\
+          \ [\"Spain\", \"Japan\", \"Angola\"]]\r\nfor input_prompt in input_prompts:\r\
+          \n    tokenized_inputs = tokenizer([input_prompt], **tokenization_kwargs)\r\
+          \n    start = time.time_ns()\r\n    generated_text = xla_generate(**tokenized_inputs,\
+          \ **generation_kwargs)\r\n    end = time.time_ns()\r\n    decoded_text =\
+          \ tokenizer.decode(generated_text[0], skip_special_tokens=True)\r\n    print(f\"\
+          Original prompt -- {input_prompt}\")\r\n    print(f\"Generated -- {decoded_text}\"\
+          )\r\n    print(f\"Execution time -- {(end - start) / 1e6:.1f} ms\\n\")\r\
+          \n```\r\n\r\nOther models work fine and the issue seems to be with BART.\
+          \ Is BART not supported to work with XLA? "
+        updatedAt: '2022-08-11T09:01:45.749Z'
+      numEdits: 0
+      reactions: []
+    id: 62f4c57931ee3f3670f56f2c
+    type: comment
+  author: shreyansj
+  content: "Hi,\r\nI followed this Huggingface [blogpost](https://huggingface.co/blog/tf-xla-generate)\
+    \ to accelerate the performance of text generation using TF with XLA. On wrapping`model.generate`\
+    \ with `xla_generate = tf.function(model.generate, jit_compile=True)`, we get\
+    \ the following error:\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nNotImplementedError                       Traceback (most recent call last)\r\
+    \n<ipython-input-8-0858aef5d3e2> in <module>()\r\n     26     tokenized_inputs\
+    \ = tokenizer([input_prompt], **tokenization_kwargs)\r\n     27     start = time.time_ns()\r\
+    \n---> 28     generated_text = xla_generate(**tokenized_inputs, **generation_kwargs)\r\
+    \n     29     end = time.time_ns()\r\n     30     decoded_text = tokenizer.decode(generated_text[0],\
+    \ skip_special_tokens=True)\r\n\r\n1 frames\r\n/usr/local/lib/python3.7/dist-packages/tensorflow/python/framework/func_graph.py\
+    \ in autograph_handler(*args, **kwargs)\r\n   1145           except Exception\
+    \ as e:  # pylint:disable=broad-except\r\n   1146             if hasattr(e, \"\
+    ag_error_metadata\"):\r\n-> 1147               raise e.ag_error_metadata.to_exception(e)\r\
+    \n   1148             else:\r\n   1149               raise\r\n\r\nNotImplementedError:\
+    \ in user code:\r\n\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+    , line 605, in generate  *\r\n        seed=model_kwargs.pop(\"seed\", None),\r\
+    \n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+    , line 1687, in _generate  *\r\n        input_ids,\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_utils.py\"\
+    , line 2854, in beam_search_body_fn  *\r\n        log_probs = logits_processor(flatten_beam_dim(running_sequences),\
+    \ flatten_beam_dim(log_probs), cur_len)\r\n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+    , line 94, in __call__  *\r\n        scores = processor(input_ids, scores, cur_len)\r\
+    \n    File \"/usr/local/lib/python3.7/dist-packages/transformers/generation_tf_logits_process.py\"\
+    , line 427, in __call__  *\r\n        raise NotImplementedError(\"TFNoRepeatNGramLogitsProcessor\
+    \ is only implemented for eager execution.\")\r\n\r\n    NotImplementedError:\
+    \ TFNoRepeatNGramLogitsProcessor is only implemented for eager execution.\r\n\
+    ```\r\n\r\nExample code for reproducing this error:\r\n```\r\n# Stand-alone TF\
+    \ XLA generate example for Decoder-Only Models.\r\n\r\n# Note: execution times\
+    \ are deeply dependent on hardware.\r\n# If you have a machine with a powerful\
+    \ GPU, I highly recommend you to try this example there!\r\nimport time\r\nimport\
+    \ tensorflow as tf\r\nfrom transformers import AutoTokenizer, TFAutoModelForSeq2SeqLM\r\
+    \n\r\n# 1. Load model and tokenizer\r\nmodel_name = \"facebook/bart-large-cnn\"\
+    \r\n# remember: decoder-only models need left-padding\r\ntokenizer = AutoTokenizer.from_pretrained(model_name,\
+    \ padding_side=\"left\", pad_token=\"</s>\")\r\nmodel = TFAutoModelForSeq2SeqLM.from_pretrained(model_name)\r\
+    \n\r\n# 2. Prepare tokenization and generation arguments -- don't forget padding\
+    \ to avoid retracing!\r\ntokenization_kwargs = {\"pad_to_multiple_of\": 32, \"\
+    padding\": True, \"return_tensors\": \"tf\"}\r\ngeneration_kwargs = {\"num_beams\"\
+    : 4, \"max_new_tokens\": 64}\r\n\r\n# 3. Create your XLA generate function a\u0336\
+    n\u0336d\u0336 \u0336m\u0336a\u0336k\u0336e\u0336 \u0336P\u0336y\u0336T\u0336\
+    o\u0336r\u0336c\u0336h\u0336 \u0336e\u0336a\u0336t\u0336 \u0336d\u0336u\u0336\
+    s\u0336t\u0336\r\n# This is the only change with respect to original generate\
+    \ workflow!\r\nxla_generate = tf.function(model.generate, jit_compile=True)\r\n\
+    \r\n# 4. Generate! Remember -- the first call will be slow, but all subsequent\
+    \ calls will be fast if you've done things right.\r\ninput_prompts = [f\"The best\
+    \ thing about {country} is\" for country in [\"Spain\", \"Japan\", \"Angola\"\
+    ]]\r\nfor input_prompt in input_prompts:\r\n    tokenized_inputs = tokenizer([input_prompt],\
+    \ **tokenization_kwargs)\r\n    start = time.time_ns()\r\n    generated_text =\
+    \ xla_generate(**tokenized_inputs, **generation_kwargs)\r\n    end = time.time_ns()\r\
+    \n    decoded_text = tokenizer.decode(generated_text[0], skip_special_tokens=True)\r\
+    \n    print(f\"Original prompt -- {input_prompt}\")\r\n    print(f\"Generated\
+    \ -- {decoded_text}\")\r\n    print(f\"Execution time -- {(end - start) / 1e6:.1f}\
+    \ ms\\n\")\r\n```\r\n\r\nOther models work fine and the issue seems to be with\
+    \ BART. Is BART not supported to work with XLA? "
+  created_at: 2022-08-11 08:01:45+00:00
+  edited: false
+  hidden: false
+  id: 62f4c57931ee3f3670f56f2c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4f80b5865855692f75ffce9e84e28514.svg
+      fullname: Shreyans J
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shreyansj
+      type: user
+    createdAt: '2022-08-11T09:04:02.000Z'
+    data:
+      edited: false
+      editors:
+      - shreyansj
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4f80b5865855692f75ffce9e84e28514.svg
+          fullname: Shreyans J
+          isHf: false
+          isPro: false
+          name: shreyansj
+          type: user
+        html: "<p>tagging <span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ to get your opinion on this according to the docs.</p>\n"
+        raw: tagging @patrickvonplaten to get your opinion on this according to the
+          docs.
+        updatedAt: '2022-08-11T09:04:02.177Z'
+      numEdits: 0
+      reactions: []
+    id: 62f4c602b5673ac3f51d221e
+    type: comment
+  author: shreyansj
+  content: tagging @patrickvonplaten to get your opinion on this according to the
+    docs.
+  created_at: 2022-08-11 08:04:02+00:00
+  edited: false
+  hidden: false
+  id: 62f4c602b5673ac3f51d221e
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: facebook/bart-large-cnn
+repo_type: model
+status: open
+target_branch: null
+title: TFBartForConditionalGeneration does not work with XLA compiler

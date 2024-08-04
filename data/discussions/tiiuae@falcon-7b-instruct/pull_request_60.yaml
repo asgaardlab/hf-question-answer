@@ -1,0 +1,264 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: purunfer22
+conflicting_files:
+- modelling_RW.py
+created_at: 2023-07-11 09:14:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: purunfer22
+      type: user
+    createdAt: '2023-07-11T10:14:41.000Z'
+    data:
+      edited: false
+      editors:
+      - purunfer22
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8261879086494446
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+          fullname: Purushottam Sinha
+          isHf: false
+          isPro: false
+          name: purunfer22
+          type: user
+        html: '<p>The current code has missed out passing past_key_values in every
+          forward pass for fast generation of tokens. This results in lot of recompute.
+          This "modelling_RW.py" I am uploading deals with this in the way pytorch
+          huggingface transformers package generation/utils.py wants. All the changes
+          are basically around including past_key_values everywhere. I think this
+          will apply on all falcon models These are the changes specifically</p>
+
+          <ol>
+
+          <li><p>Class RotaryEmbedding forward method<br>  Include past_seq_length
+          in forward pass and apply rotary embedding according to the position of
+          the query token ----  if else condition added (line number 100-103)</p>
+
+          </li>
+
+          <li><p>_make_causal_mask function<br>   to give masking according to the
+          way F.scaled dot product attention behaves. F.scaled_dot_product attention
+          treats the attention_mask matrix as receiving attentions. For example if
+          attention_mask is<br>[[True, False], [True, True]]. It would mean the first
+          token is "receiving" attentions from first token and not second token. This
+          is unlike what we generally end up thinking which is first token is giving
+          attention to itself and not to the second one. Due to reason the past_key_values
+          attentions are all True in make_causal mask function. Also I have reversed
+          the inequality above that due to the same reason. ---- (line number 114
+          inequality, line number 117 attention mask to be True)</p>
+
+          </li>
+
+          <li><p>Class Attention forward method<br>a)  past_key_value length is passed
+          in rotary function ---- if,else loop added (line number 271-277)<br>b)  concatenation
+          of past key and current key is done after permuting the past key shape to
+          match the current key shape ---- (line number 280-284)<br>c)  to keep key_layer
+          shape consistent with the output expectation which is (batch_size, head_dim,
+          seq_length), another permutation done before creating "present" to return
+          in the output ---- (line number 289-293) </p>
+
+          </li>
+
+          <li><p>RW Model prepare_attn_mask<br>  Have removed src_length &gt; 1 criteria
+          for making causal mask (line number 554). </p>
+
+          </li>
+
+          <li><p>RW causal LM prepare inputs for generation<br>  Read pastkey values
+          from the input coming from huggingface generate method and dont call convert_to_rw_cache
+          method (line number 740-748)</p>
+
+          </li>
+
+          </ol>
+
+          '
+        raw: "The current code has missed out passing past_key_values in every forward\
+          \ pass for fast generation of tokens. This results in lot of recompute.\
+          \ This \"modelling_RW.py\" I am uploading deals with this in the way pytorch\
+          \ huggingface transformers package generation/utils.py wants. All the changes\
+          \ are basically around including past_key_values everywhere. I think this\
+          \ will apply on all falcon models These are the changes specifically\n\n\
+          1) Class RotaryEmbedding forward method\n     Include past_seq_length in\
+          \ forward pass and apply rotary embedding according to the position of the\
+          \ query token ----  if else condition added (line number 100-103)\n\n2)\
+          \ _make_causal_mask function\n      to give masking according to the way\
+          \ F.scaled dot product attention behaves. F.scaled_dot_product attention\
+          \ treats the attention_mask matrix as receiving attentions. For example\
+          \ if attention_mask is \n[[True, False], [True, True]]. It would mean the\
+          \ first token is \"receiving\" attentions from first token and not second\
+          \ token. This is unlike what we generally end up thinking which is first\
+          \ token is giving attention to itself and not to the second one. Due to\
+          \ reason the past_key_values attentions are all True in make_causal mask\
+          \ function. Also I have reversed the inequality above that due to the same\
+          \ reason. ---- (line number 114 inequality, line number 117 attention mask\
+          \ to be True)\n\n3) Class Attention forward method \na)  past_key_value\
+          \ length is passed in rotary function ---- if,else loop added (line number\
+          \ 271-277)\nb)  concatenation of past key and current key is done after\
+          \ permuting the past key shape to match the current key shape ---- (line\
+          \ number 280-284) \nc)  to keep key_layer shape consistent with the output\
+          \ expectation which is (batch_size, head_dim, seq_length), another permutation\
+          \ done before creating \"present\" to return in the output ---- (line number\
+          \ 289-293) \n\n4) RW Model prepare_attn_mask\n     Have removed src_length\
+          \ > 1 criteria for making causal mask (line number 554). \n\n5) RW causal\
+          \ LM prepare inputs for generation\n     Read pastkey values from the input\
+          \ coming from huggingface generate method and dont call convert_to_rw_cache\
+          \ method (line number 740-748)"
+        updatedAt: '2023-07-11T10:14:41.779Z'
+      numEdits: 0
+      reactions: []
+    id: 64ad2b91b7e4b2c1ce4193cb
+    type: comment
+  author: purunfer22
+  content: "The current code has missed out passing past_key_values in every forward\
+    \ pass for fast generation of tokens. This results in lot of recompute. This \"\
+    modelling_RW.py\" I am uploading deals with this in the way pytorch huggingface\
+    \ transformers package generation/utils.py wants. All the changes are basically\
+    \ around including past_key_values everywhere. I think this will apply on all\
+    \ falcon models These are the changes specifically\n\n1) Class RotaryEmbedding\
+    \ forward method\n     Include past_seq_length in forward pass and apply rotary\
+    \ embedding according to the position of the query token ----  if else condition\
+    \ added (line number 100-103)\n\n2) _make_causal_mask function\n      to give\
+    \ masking according to the way F.scaled dot product attention behaves. F.scaled_dot_product\
+    \ attention treats the attention_mask matrix as receiving attentions. For example\
+    \ if attention_mask is \n[[True, False], [True, True]]. It would mean the first\
+    \ token is \"receiving\" attentions from first token and not second token. This\
+    \ is unlike what we generally end up thinking which is first token is giving attention\
+    \ to itself and not to the second one. Due to reason the past_key_values attentions\
+    \ are all True in make_causal mask function. Also I have reversed the inequality\
+    \ above that due to the same reason. ---- (line number 114 inequality, line number\
+    \ 117 attention mask to be True)\n\n3) Class Attention forward method \na)  past_key_value\
+    \ length is passed in rotary function ---- if,else loop added (line number 271-277)\n\
+    b)  concatenation of past key and current key is done after permuting the past\
+    \ key shape to match the current key shape ---- (line number 280-284) \nc)  to\
+    \ keep key_layer shape consistent with the output expectation which is (batch_size,\
+    \ head_dim, seq_length), another permutation done before creating \"present\"\
+    \ to return in the output ---- (line number 289-293) \n\n4) RW Model prepare_attn_mask\n\
+    \     Have removed src_length > 1 criteria for making causal mask (line number\
+    \ 554). \n\n5) RW causal LM prepare inputs for generation\n     Read pastkey values\
+    \ from the input coming from huggingface generate method and dont call convert_to_rw_cache\
+    \ method (line number 740-748)"
+  created_at: 2023-07-11 09:14:41+00:00
+  edited: false
+  hidden: false
+  id: 64ad2b91b7e4b2c1ce4193cb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: purunfer22
+      type: user
+    createdAt: '2023-07-11T10:14:42.000Z'
+    data:
+      oid: eca0280760f2a642ffb5231502184b329436333b
+      parents:
+      - c7f670a03d987254220f343c6b026ea0c5147185
+      subject: Changes in modelling_RW.py to be able to handle past_key_values for
+        faster model generations
+    id: 64ad2b920000000000000000
+    type: commit
+  author: purunfer22
+  created_at: 2023-07-11 09:14:42+00:00
+  id: 64ad2b920000000000000000
+  oid: eca0280760f2a642ffb5231502184b329436333b
+  summary: Changes in modelling_RW.py to be able to handle past_key_values for faster
+    model generations
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: purunfer22
+      type: user
+    createdAt: '2023-07-11T10:27:20.000Z'
+    data:
+      status: closed
+    id: 64ad2e88c4e03b989f88b69e
+    type: status-change
+  author: purunfer22
+  created_at: 2023-07-11 09:27:20+00:00
+  id: 64ad2e88c4e03b989f88b69e
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: purunfer22
+      type: user
+    createdAt: '2023-07-11T10:27:58.000Z'
+    data:
+      edited: false
+      editors:
+      - purunfer22
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9869211912155151
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/73e11ceebc041472c4fb2ed7e2d2a6d4.svg
+          fullname: Purushottam Sinha
+          isHf: false
+          isPro: false
+          name: purunfer22
+          type: user
+        html: '<p>There are some excerpts in the file which should be removed and
+          hence I have closed this pull request and will raise another</p>
+
+          '
+        raw: There are some excerpts in the file which should be removed and hence
+          I have closed this pull request and will raise another
+        updatedAt: '2023-07-11T10:27:58.072Z'
+      numEdits: 0
+      reactions: []
+    id: 64ad2eae4beffa272de2610c
+    type: comment
+  author: purunfer22
+  content: There are some excerpts in the file which should be removed and hence I
+    have closed this pull request and will raise another
+  created_at: 2023-07-11 09:27:58+00:00
+  edited: false
+  hidden: false
+  id: 64ad2eae4beffa272de2610c
+  type: comment
+is_pull_request: true
+merge_commit_oid: null
+num: 60
+repo_id: tiiuae/falcon-7b-instruct
+repo_type: model
+status: closed
+target_branch: refs/heads/main
+title: Changes in modelling_RW.py to be able to handle past_key_values for faster
+  model generations

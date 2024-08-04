@@ -1,0 +1,387 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Shun-onoo
+conflicting_files: null
+created_at: 2023-09-04 08:04:58+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c349eaa6766f0bf39ad4949f09f87e8c.svg
+      fullname: Shunsuke Onoo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Shun-onoo
+      type: user
+    createdAt: '2023-09-04T09:04:58.000Z'
+    data:
+      edited: false
+      editors:
+      - Shun-onoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5600005984306335
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c349eaa6766f0bf39ad4949f09f87e8c.svg
+          fullname: Shunsuke Onoo
+          isHf: false
+          isPro: false
+          name: Shun-onoo
+          type: user
+        html: "<p>Hello. First, I appreciate you sharing this great work.</p>\n<p>By\
+          \ default, your model always inserts an image at the beginning of the input\
+          \ text. However, I wanted to use text interleaved with an image as an input,\
+          \ such as \"This image {image comes here} is ...\". So I made a wrapper\
+          \ class for the processor to accept an image in an arbitrary position in\
+          \ the text. Here's the code. When using this wrapped processor, you can\
+          \ use <code>&lt;image&gt;</code> to specify the location of the image in\
+          \ the input text.<br>I tried this, and it seemed to work (it can't accept\
+          \ bounding boxes, though). Do you think this wrapper is reasonable and works\
+          \ fine?<br>Also, I want to insert multiple images in the input, but I haven't\
+          \ figured out how. Do you have any plans to release codes for multiple images?</p>\n\
+          <p>Thank you in advance.</p>\n<pre><code>class ProcessorWrapper:\n\n   \
+          \ def __init__(self, processor):\n        self.processor = processor\n\n\
+          \    def __call__(\n        self,\n        images = None,\n        text\
+          \ = None,\n        bboxes = None,\n        num_image_tokens = 64,\n    \
+          \    first_image_token_id = None,\n        add_special_tokens = True,\n\
+          \        padding = False,\n        truncation = None,\n        max_length\
+          \ = None,\n        stride = 0,\n        pad_to_multiple_of = None,\n   \
+          \     return_attention_mask = None,\n        return_overflowing_tokens:\
+          \ bool = False,\n        return_special_tokens_mask: bool = False,\n   \
+          \     return_offsets_mapping: bool = False,\n        return_token_type_ids:\
+          \ bool = False,\n        return_length: bool = False,\n        verbose:\
+          \ bool = True,\n        return_tensors = None,\n        **kwargs,\n    ):\n\
+          \        \"\"\"\n        Preprocess text and image for Kosmos-2 model.\n\
+          \n        Args:\n            text (str): The text to be encoded. &lt;image&gt;\
+          \ specifies the location of the image embeddings in the text.\n        \"\
+          \"\"\n        # add fake &lt;image&gt;&lt;image&gt;...&lt;image&gt;&lt;/image&gt;\
+          \ to the text\n        # these tokens represent the location of the image\
+          \ embeddings\n        # the space at the end of suffix is necessary to match\
+          \ the original behavior\n        text = insert_images(text, num_image_tokens=num_image_tokens,\
+          \ suffix='&lt;/image&gt; ')  \n        text_encoding = self.processor.tokenizer(\n\
+          \            text=text,\n            add_special_tokens=add_special_tokens,\n\
+          \            padding=padding,\n            truncation=truncation,\n    \
+          \        max_length=max_length,\n            stride=stride,\n          \
+          \  pad_to_multiple_of=pad_to_multiple_of,\n            return_attention_mask=return_attention_mask,\n\
+          \            return_overflowing_tokens=return_overflowing_tokens,\n    \
+          \        return_special_tokens_mask=return_special_tokens_mask,\n      \
+          \      return_offsets_mapping=return_offsets_mapping,\n            return_token_type_ids=return_token_type_ids,\n\
+          \            return_length=return_length,\n            verbose=verbose,\n\
+          \            return_tensors=return_tensors,\n            **kwargs,\n   \
+          \     )\n\n        # find the start of the image tokens\n        input_ids\
+          \ = np.array(text_encoding['input_ids'])\n        # here, start_index shows\
+          \ the actual encoding position of the first image token\n        # don't\
+          \ forget to add 1 for the first &lt;image&gt;\n        start_index = np.where(input_ids[0]==64003)[0][0]\
+          \ + 1\n\n        # Replace fake &lt;image&gt; tokens with range\n      \
+          \  first_image_token_id = self.processor.tokenizer.unk_token_id + 1\n  \
+          \      input_ids[:, start_index : (start_index + num_image_tokens)] = np.arange(\n\
+          \            first_image_token_id, first_image_token_id + num_image_tokens\n\
+          \        )\n\n        # make image attention mask\n        # which is zero\
+          \ except for the image tokens\n        img_attn_mask = np.zeros_like(input_ids)\n\
+          \        img_attn_mask[:, start_index : (start_index + num_image_tokens)]\
+          \ = 1\n\n        # process image itself\n        image_encoding = self.processor.image_processor(images,\
+          \ return_tensors=return_tensors)\n\n        # turn to return_tensors\n \
+          \       if return_tensors == 'pt':\n            input_ids = torch.from_numpy(input_ids)\n\
+          \            img_attn_mask = torch.from_numpy(img_attn_mask)\n        elif\
+          \ return_tensors == None:\n            pass\n        else:\n           \
+          \ raise ValueError(f'Invalid return_tensors: {return_tensors}')\n\n    \
+          \    # wrap everything up\n        encoding = BatchFeature()\n        encoding['input_ids']\
+          \ = input_ids\n        encoding['attention_mask'] = text_encoding['attention_mask']\n\
+          \        encoding['img_attn_mask'] = img_attn_mask\n        encoding['pixel_values']\
+          \ = image_encoding['pixel_values']\n\n        return encoding\n\n    def\
+          \ __getattr__(self, attr):\n        return getattr(self.processor, attr)\n\
+          \n# Usage\nmodel = ...\nprocessor = ...\nmyprocessor = ProcessorWrapper(processor)\n\
+          text = 'This image &lt;image&gt; is'\ninputs = myprocessor(text=text, images=image,\
+          \ return_tensors=\"pt\").to(model.device)\n</code></pre>\n"
+        raw: "Hello. First, I appreciate you sharing this great work.\r\n\r\nBy default,\
+          \ your model always inserts an image at the beginning of the input text.\
+          \ However, I wanted to use text interleaved with an image as an input, such\
+          \ as \"This image {image comes here} is ...\". So I made a wrapper class\
+          \ for the processor to accept an image in an arbitrary position in the text.\
+          \ Here's the code. When using this wrapped processor, you can use `<image>`\
+          \ to specify the location of the image in the input text.\r\nI tried this,\
+          \ and it seemed to work (it can't accept bounding boxes, though). Do you\
+          \ think this wrapper is reasonable and works fine?\r\nAlso, I want to insert\
+          \ multiple images in the input, but I haven't figured out how. Do you have\
+          \ any plans to release codes for multiple images?\r\n\r\nThank you in advance.\r\
+          \n```\r\nclass ProcessorWrapper:\r\n\r\n    def __init__(self, processor):\r\
+          \n        self.processor = processor\r\n\r\n    def __call__(\r\n      \
+          \  self,\r\n        images = None,\r\n        text = None,\r\n        bboxes\
+          \ = None,\r\n        num_image_tokens = 64,\r\n        first_image_token_id\
+          \ = None,\r\n        add_special_tokens = True,\r\n        padding = False,\r\
+          \n        truncation = None,\r\n        max_length = None,\r\n        stride\
+          \ = 0,\r\n        pad_to_multiple_of = None,\r\n        return_attention_mask\
+          \ = None,\r\n        return_overflowing_tokens: bool = False,\r\n      \
+          \  return_special_tokens_mask: bool = False,\r\n        return_offsets_mapping:\
+          \ bool = False,\r\n        return_token_type_ids: bool = False,\r\n    \
+          \    return_length: bool = False,\r\n        verbose: bool = True,\r\n \
+          \       return_tensors = None,\r\n        **kwargs,\r\n    ):\r\n      \
+          \  \"\"\"\r\n        Preprocess text and image for Kosmos-2 model.\r\n\r\
+          \n        Args:\r\n            text (str): The text to be encoded. <image>\
+          \ specifies the location of the image embeddings in the text.\r\n      \
+          \  \"\"\"\r\n        # add fake <image><image>...<image></image> to the\
+          \ text\r\n        # these tokens represent the location of the image embeddings\r\
+          \n        # the space at the end of suffix is necessary to match the original\
+          \ behavior\r\n        text = insert_images(text, num_image_tokens=num_image_tokens,\
+          \ suffix='</image> ')  \r\n        text_encoding = self.processor.tokenizer(\r\
+          \n            text=text,\r\n            add_special_tokens=add_special_tokens,\r\
+          \n            padding=padding,\r\n            truncation=truncation,\r\n\
+          \            max_length=max_length,\r\n            stride=stride,\r\n  \
+          \          pad_to_multiple_of=pad_to_multiple_of,\r\n            return_attention_mask=return_attention_mask,\r\
+          \n            return_overflowing_tokens=return_overflowing_tokens,\r\n \
+          \           return_special_tokens_mask=return_special_tokens_mask,\r\n \
+          \           return_offsets_mapping=return_offsets_mapping,\r\n         \
+          \   return_token_type_ids=return_token_type_ids,\r\n            return_length=return_length,\r\
+          \n            verbose=verbose,\r\n            return_tensors=return_tensors,\r\
+          \n            **kwargs,\r\n        )\r\n\r\n        # find the start of\
+          \ the image tokens\r\n        input_ids = np.array(text_encoding['input_ids'])\r\
+          \n        # here, start_index shows the actual encoding position of the\
+          \ first image token\r\n        # don't forget to add 1 for the first <image>\r\
+          \n        start_index = np.where(input_ids[0]==64003)[0][0] + 1\r\n\r\n\
+          \        # Replace fake <image> tokens with range\r\n        first_image_token_id\
+          \ = self.processor.tokenizer.unk_token_id + 1\r\n        input_ids[:, start_index\
+          \ : (start_index + num_image_tokens)] = np.arange(\r\n            first_image_token_id,\
+          \ first_image_token_id + num_image_tokens\r\n        )\r\n\r\n        #\
+          \ make image attention mask\r\n        # which is zero except for the image\
+          \ tokens\r\n        img_attn_mask = np.zeros_like(input_ids)\r\n       \
+          \ img_attn_mask[:, start_index : (start_index + num_image_tokens)] = 1\r\
+          \n\r\n        # process image itself\r\n        image_encoding = self.processor.image_processor(images,\
+          \ return_tensors=return_tensors)\r\n\r\n        # turn to return_tensors\r\
+          \n        if return_tensors == 'pt':\r\n            input_ids = torch.from_numpy(input_ids)\r\
+          \n            img_attn_mask = torch.from_numpy(img_attn_mask)\r\n      \
+          \  elif return_tensors == None:\r\n            pass\r\n        else:\r\n\
+          \            raise ValueError(f'Invalid return_tensors: {return_tensors}')\r\
+          \n\r\n        # wrap everything up\r\n        encoding = BatchFeature()\r\
+          \n        encoding['input_ids'] = input_ids\r\n        encoding['attention_mask']\
+          \ = text_encoding['attention_mask']\r\n        encoding['img_attn_mask']\
+          \ = img_attn_mask\r\n        encoding['pixel_values'] = image_encoding['pixel_values']\r\
+          \n\r\n        return encoding\r\n\r\n    def __getattr__(self, attr):\r\n\
+          \        return getattr(self.processor, attr)\r\n\r\n# Usage\r\nmodel =\
+          \ ...\r\nprocessor = ...\r\nmyprocessor = ProcessorWrapper(processor)\r\n\
+          text = 'This image <image> is'\r\ninputs = myprocessor(text=text, images=image,\
+          \ return_tensors=\"pt\").to(model.device)\r\n```\r\n"
+        updatedAt: '2023-09-04T09:04:58.663Z'
+      numEdits: 0
+      reactions: []
+    id: 64f59dba3cd4ab07d652e09e
+    type: comment
+  author: Shun-onoo
+  content: "Hello. First, I appreciate you sharing this great work.\r\n\r\nBy default,\
+    \ your model always inserts an image at the beginning of the input text. However,\
+    \ I wanted to use text interleaved with an image as an input, such as \"This image\
+    \ {image comes here} is ...\". So I made a wrapper class for the processor to\
+    \ accept an image in an arbitrary position in the text. Here's the code. When\
+    \ using this wrapped processor, you can use `<image>` to specify the location\
+    \ of the image in the input text.\r\nI tried this, and it seemed to work (it can't\
+    \ accept bounding boxes, though). Do you think this wrapper is reasonable and\
+    \ works fine?\r\nAlso, I want to insert multiple images in the input, but I haven't\
+    \ figured out how. Do you have any plans to release codes for multiple images?\r\
+    \n\r\nThank you in advance.\r\n```\r\nclass ProcessorWrapper:\r\n\r\n    def __init__(self,\
+    \ processor):\r\n        self.processor = processor\r\n\r\n    def __call__(\r\
+    \n        self,\r\n        images = None,\r\n        text = None,\r\n        bboxes\
+    \ = None,\r\n        num_image_tokens = 64,\r\n        first_image_token_id =\
+    \ None,\r\n        add_special_tokens = True,\r\n        padding = False,\r\n\
+    \        truncation = None,\r\n        max_length = None,\r\n        stride =\
+    \ 0,\r\n        pad_to_multiple_of = None,\r\n        return_attention_mask =\
+    \ None,\r\n        return_overflowing_tokens: bool = False,\r\n        return_special_tokens_mask:\
+    \ bool = False,\r\n        return_offsets_mapping: bool = False,\r\n        return_token_type_ids:\
+    \ bool = False,\r\n        return_length: bool = False,\r\n        verbose: bool\
+    \ = True,\r\n        return_tensors = None,\r\n        **kwargs,\r\n    ):\r\n\
+    \        \"\"\"\r\n        Preprocess text and image for Kosmos-2 model.\r\n\r\
+    \n        Args:\r\n            text (str): The text to be encoded. <image> specifies\
+    \ the location of the image embeddings in the text.\r\n        \"\"\"\r\n    \
+    \    # add fake <image><image>...<image></image> to the text\r\n        # these\
+    \ tokens represent the location of the image embeddings\r\n        # the space\
+    \ at the end of suffix is necessary to match the original behavior\r\n       \
+    \ text = insert_images(text, num_image_tokens=num_image_tokens, suffix='</image>\
+    \ ')  \r\n        text_encoding = self.processor.tokenizer(\r\n            text=text,\r\
+    \n            add_special_tokens=add_special_tokens,\r\n            padding=padding,\r\
+    \n            truncation=truncation,\r\n            max_length=max_length,\r\n\
+    \            stride=stride,\r\n            pad_to_multiple_of=pad_to_multiple_of,\r\
+    \n            return_attention_mask=return_attention_mask,\r\n            return_overflowing_tokens=return_overflowing_tokens,\r\
+    \n            return_special_tokens_mask=return_special_tokens_mask,\r\n     \
+    \       return_offsets_mapping=return_offsets_mapping,\r\n            return_token_type_ids=return_token_type_ids,\r\
+    \n            return_length=return_length,\r\n            verbose=verbose,\r\n\
+    \            return_tensors=return_tensors,\r\n            **kwargs,\r\n     \
+    \   )\r\n\r\n        # find the start of the image tokens\r\n        input_ids\
+    \ = np.array(text_encoding['input_ids'])\r\n        # here, start_index shows\
+    \ the actual encoding position of the first image token\r\n        # don't forget\
+    \ to add 1 for the first <image>\r\n        start_index = np.where(input_ids[0]==64003)[0][0]\
+    \ + 1\r\n\r\n        # Replace fake <image> tokens with range\r\n        first_image_token_id\
+    \ = self.processor.tokenizer.unk_token_id + 1\r\n        input_ids[:, start_index\
+    \ : (start_index + num_image_tokens)] = np.arange(\r\n            first_image_token_id,\
+    \ first_image_token_id + num_image_tokens\r\n        )\r\n\r\n        # make image\
+    \ attention mask\r\n        # which is zero except for the image tokens\r\n  \
+    \      img_attn_mask = np.zeros_like(input_ids)\r\n        img_attn_mask[:, start_index\
+    \ : (start_index + num_image_tokens)] = 1\r\n\r\n        # process image itself\r\
+    \n        image_encoding = self.processor.image_processor(images, return_tensors=return_tensors)\r\
+    \n\r\n        # turn to return_tensors\r\n        if return_tensors == 'pt':\r\
+    \n            input_ids = torch.from_numpy(input_ids)\r\n            img_attn_mask\
+    \ = torch.from_numpy(img_attn_mask)\r\n        elif return_tensors == None:\r\n\
+    \            pass\r\n        else:\r\n            raise ValueError(f'Invalid return_tensors:\
+    \ {return_tensors}')\r\n\r\n        # wrap everything up\r\n        encoding =\
+    \ BatchFeature()\r\n        encoding['input_ids'] = input_ids\r\n        encoding['attention_mask']\
+    \ = text_encoding['attention_mask']\r\n        encoding['img_attn_mask'] = img_attn_mask\r\
+    \n        encoding['pixel_values'] = image_encoding['pixel_values']\r\n\r\n  \
+    \      return encoding\r\n\r\n    def __getattr__(self, attr):\r\n        return\
+    \ getattr(self.processor, attr)\r\n\r\n# Usage\r\nmodel = ...\r\nprocessor = ...\r\
+    \nmyprocessor = ProcessorWrapper(processor)\r\ntext = 'This image <image> is'\r\
+    \ninputs = myprocessor(text=text, images=image, return_tensors=\"pt\").to(model.device)\r\
+    \n```\r\n"
+  created_at: 2023-09-04 08:04:58+00:00
+  edited: false
+  hidden: false
+  id: 64f59dba3cd4ab07d652e09e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625150194719-6058c8cbcbe9c7542f3501ff.png?w=200&h=200&f=face
+      fullname: Yih-Dar SHIEH
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ydshieh
+      type: user
+    createdAt: '2023-09-04T19:27:59.000Z'
+    data:
+      edited: false
+      editors:
+      - ydshieh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8518235087394714
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625150194719-6058c8cbcbe9c7542f3501ff.png?w=200&h=200&f=face
+          fullname: Yih-Dar SHIEH
+          isHf: true
+          isPro: false
+          name: ydshieh
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Shun-onoo&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Shun-onoo\"\
+          >@<span class=\"underline\">Shun-onoo</span></a></span>\n\n\t</span></span>\
+          \ </p>\n<p>The current implemention takes the original demo <a rel=\"nofollow\"\
+          \ href=\"https://github.com/microsoft/unilm/blob/b60c741f746877293bb85eed6806736fc8fa0ffd/kosmos-2/demo/gradio_app.py#L99\"\
+          >here</a> as reference.<br>Where it has a comment <code># TODO: input interleave\
+          \ image and text</code>. And yes, currently this repository made by me only\
+          \ deal with a single image and the information is put to beginning of the\
+          \ token sequences.</p>\n<p>I don't want to give my promise to the approach\
+          \ that I am not 100% sure. You can however asking the Kosmos-2 authors on\
+          \ <a rel=\"nofollow\" href=\"https://github.com/microsoft/unilm/issues\"\
+          >here</a>.</p>\n"
+        raw: "Hi @Shun-onoo \n\nThe current implemention takes the original demo [here](https://github.com/microsoft/unilm/blob/b60c741f746877293bb85eed6806736fc8fa0ffd/kosmos-2/demo/gradio_app.py#L99)\
+          \ as reference.\nWhere it has a comment `# TODO: input interleave image\
+          \ and text`. And yes, currently this repository made by me only deal with\
+          \ a single image and the information is put to beginning of the token sequences.\n\
+          \nI don't want to give my promise to the approach that I am not 100% sure.\
+          \ You can however asking the Kosmos-2 authors on [here](https://github.com/microsoft/unilm/issues)."
+        updatedAt: '2023-09-04T19:27:59.232Z'
+      numEdits: 0
+      reactions: []
+    id: 64f62fbff277a413f323051f
+    type: comment
+  author: ydshieh
+  content: "Hi @Shun-onoo \n\nThe current implemention takes the original demo [here](https://github.com/microsoft/unilm/blob/b60c741f746877293bb85eed6806736fc8fa0ffd/kosmos-2/demo/gradio_app.py#L99)\
+    \ as reference.\nWhere it has a comment `# TODO: input interleave image and text`.\
+    \ And yes, currently this repository made by me only deal with a single image\
+    \ and the information is put to beginning of the token sequences.\n\nI don't want\
+    \ to give my promise to the approach that I am not 100% sure. You can however\
+    \ asking the Kosmos-2 authors on [here](https://github.com/microsoft/unilm/issues)."
+  created_at: 2023-09-04 18:27:59+00:00
+  edited: false
+  hidden: false
+  id: 64f62fbff277a413f323051f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625150194719-6058c8cbcbe9c7542f3501ff.png?w=200&h=200&f=face
+      fullname: Yih-Dar SHIEH
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ydshieh
+      type: user
+    createdAt: '2023-09-04T19:29:26.000Z'
+    data:
+      edited: false
+      editors:
+      - ydshieh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9508522748947144
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625150194719-6058c8cbcbe9c7542f3501ff.png?w=200&h=200&f=face
+          fullname: Yih-Dar SHIEH
+          isHf: true
+          isPro: false
+          name: ydshieh
+          type: user
+        html: '<p>But from what I know (roughtly), different inputs (image info +
+          associated text) can be interleaved, but for things <code>This image {image
+          comes here} is ...</code>, I have to say I didn''t see this format being
+          mentioned.</p>
+
+          '
+        raw: But from what I know (roughtly), different inputs (image info + associated
+          text) can be interleaved, but for things `This image {image comes here}
+          is ...`, I have to say I didn't see this format being mentioned.
+        updatedAt: '2023-09-04T19:29:26.434Z'
+      numEdits: 0
+      reactions: []
+    id: 64f6301633753a192d749337
+    type: comment
+  author: ydshieh
+  content: But from what I know (roughtly), different inputs (image info + associated
+    text) can be interleaved, but for things `This image {image comes here} is ...`,
+    I have to say I didn't see this format being mentioned.
+  created_at: 2023-09-04 18:29:26+00:00
+  edited: false
+  hidden: false
+  id: 64f6301633753a192d749337
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625150194719-6058c8cbcbe9c7542f3501ff.png?w=200&h=200&f=face
+      fullname: Yih-Dar SHIEH
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ydshieh
+      type: user
+    createdAt: '2023-09-04T19:32:12.000Z'
+    data:
+      status: closed
+    id: 64f630bce87e6083cb3c517c
+    type: status-change
+  author: ydshieh
+  created_at: 2023-09-04 18:32:12+00:00
+  id: 64f630bce87e6083cb3c517c
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 14
+repo_id: ydshieh/kosmos-2-patch14-224
+repo_type: model
+status: closed
+target_branch: null
+title: Image in an arbitrary position in the input text (Plus multiple images as input)

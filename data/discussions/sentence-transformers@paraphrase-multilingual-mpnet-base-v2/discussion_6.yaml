@@ -1,0 +1,202 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: jokokojote
+conflicting_files: null
+created_at: 2023-10-05 13:44:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f617a53ff87acd18ff74c699a7f1e271.svg
+      fullname: Felix Rothe
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jokokojote
+      type: user
+    createdAt: '2023-10-05T14:44:51.000Z'
+    data:
+      edited: true
+      editors:
+      - jokokojote
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5863723754882812
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f617a53ff87acd18ff74c699a7f1e271.svg
+          fullname: Felix Rothe
+          isHf: false
+          isPro: false
+          name: jokokojote
+          type: user
+        html: "<p>Using the provided example code for sentence_transformers and transformers\
+          \ library leads to different embeddings for the same sentence. This is due\
+          \ to a different truncation of the inputs. sentence_transformers uses a\
+          \ max. sequence length of 128 tokens while transformers version uses 512.\
+          \ </p>\n<pre><code>import torch \nfrom transformers import AutoTokenizer,\
+          \ AutoModel\nfrom sentence_transformers import SentenceTransformer\n\nst_model_id\
+          \ = 'paraphrase-multilingual-mpnet-base-v2'\nhf_model_id = 'sentence-transformers/'\
+          \ + st_model_id\n\nsentences = [\n    'S' * 10000 # dummy sentence\n   \
+          \ ]\n\ndevice = 'cuda:0'\n\nst_model = SentenceTransformer(st_model_id,\
+          \ device=device)\nst_tokenizer = st_model.tokenizer\n\nprint(st_model.get_max_seq_length())\
+          \ # max seq length 128\n\nst_tokens = st_model.tokenize(sentences)\nprint(st_tokens['input_ids'].shape)\
+          \ # seq length 128\n\n\n# Load model from HuggingFace Hub\nhf_tokenizer\
+          \ = AutoTokenizer.from_pretrained(hf_model_id)\n# Tokenize sentences\nhf_tokens\
+          \ = hf_tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')\n\
+          \nprint(hf_tokens['input_ids'].shape) # seq length 512 ?\n\n# get embeddings\
+          \ with transforms and sentence transformers\nst_embedding = st_model.encode(sentences)\n\
+          \nhf_model = AutoModel.from_pretrained(hf_model_id)\n# Compute token embeddings\n\
+          with torch.no_grad():\n    hf_out = hf_model(**hf_tokens)\n\ndef mean_pooling(model_output,\
+          \ attention_mask):\n    token_embeddings = model_output[0] #First element\
+          \ of model_output contains all token embeddings\n    input_mask_expanded\
+          \ = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+          \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+          \ min=1e-9)\n\n\n# # Perform pooling like written in Readme\nhf_embedding\
+          \ = mean_pooling(hf_out, hf_tokens['attention_mask'])\n\n# compare embeddings\n\
+          embedding_diff = torch.abs(torch.tensor(st_embedding).to(device)- hf_embedding.to(device))\n\
+          print(embedding_diff)\nprint(torch.sum(embedding_diff &gt; 1e-6)) # embeddings\
+          \ for same sentence are different!\n\n# use sequence length of 128 explicitly\
+          \ with transformers\nhf_tokens = hf_tokenizer(sentences, padding=True, truncation='longest_first',\
+          \ return_tensors=\"pt\", max_length=128) # get tokens with max. 128 sequence\
+          \ length\n\n# Compute token embeddings again with new tokens\nwith torch.no_grad():\n\
+          \    hf_out = hf_model(**hf_tokens)\n\nhf_embedding = mean_pooling(hf_out,\
+          \ hf_tokens['attention_mask'])\n\n# Compare embeddings again\nprint(torch.sum(torch.abs(torch.tensor(st_embedding).to(device)-\
+          \ hf_embedding.to(device)) &gt; 1e-6)) # embeddings match!\n</code></pre>\n\
+          <p>Is this on purpose or is it an error in the tokenizer configuration for\
+          \ transformers version? I would suggest updating the transformers example\
+          \ code in the Readme at last to give a hint about this. Getting different\
+          \ \"default\" results for the same model can cause some confusion.</p>\n\
+          <p>Additional question: Why is the max. input sequence set to 128 tokens\
+          \ at default with sentence_transformers at all when the architecture can\
+          \ support longer sequences?</p>\n<p>PS: I think this problem is the same\
+          \ for other models as well like paraphrase-xlm-r-multilingual-v1, etc.</p>\n"
+        raw: "Using the provided example code for sentence_transformers and transformers\
+          \ library leads to different embeddings for the same sentence. This is due\
+          \ to a different truncation of the inputs. sentence_transformers uses a\
+          \ max. sequence length of 128 tokens while transformers version uses 512.\
+          \ \n\n```\nimport torch \nfrom transformers import AutoTokenizer, AutoModel\n\
+          from sentence_transformers import SentenceTransformer\n\nst_model_id = 'paraphrase-multilingual-mpnet-base-v2'\n\
+          hf_model_id = 'sentence-transformers/' + st_model_id\n\nsentences = [\n\
+          \    'S' * 10000 # dummy sentence\n    ]\n\ndevice = 'cuda:0'\n\nst_model\
+          \ = SentenceTransformer(st_model_id, device=device)\nst_tokenizer = st_model.tokenizer\n\
+          \nprint(st_model.get_max_seq_length()) # max seq length 128\n\nst_tokens\
+          \ = st_model.tokenize(sentences)\nprint(st_tokens['input_ids'].shape) #\
+          \ seq length 128\n\n\n# Load model from HuggingFace Hub\nhf_tokenizer =\
+          \ AutoTokenizer.from_pretrained(hf_model_id)\n# Tokenize sentences\nhf_tokens\
+          \ = hf_tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')\n\
+          \nprint(hf_tokens['input_ids'].shape) # seq length 512 ?\n\n# get embeddings\
+          \ with transforms and sentence transformers\nst_embedding = st_model.encode(sentences)\n\
+          \nhf_model = AutoModel.from_pretrained(hf_model_id)\n# Compute token embeddings\n\
+          with torch.no_grad():\n    hf_out = hf_model(**hf_tokens)\n\ndef mean_pooling(model_output,\
+          \ attention_mask):\n    token_embeddings = model_output[0] #First element\
+          \ of model_output contains all token embeddings\n    input_mask_expanded\
+          \ = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+          \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+          \ min=1e-9)\n\n\n# # Perform pooling like written in Readme\nhf_embedding\
+          \ = mean_pooling(hf_out, hf_tokens['attention_mask'])\n\n# compare embeddings\n\
+          embedding_diff = torch.abs(torch.tensor(st_embedding).to(device)- hf_embedding.to(device))\n\
+          print(embedding_diff)\nprint(torch.sum(embedding_diff > 1e-6)) # embeddings\
+          \ for same sentence are different!\n\n# use sequence length of 128 explicitly\
+          \ with transformers\nhf_tokens = hf_tokenizer(sentences, padding=True, truncation='longest_first',\
+          \ return_tensors=\"pt\", max_length=128) # get tokens with max. 128 sequence\
+          \ length\n\n# Compute token embeddings again with new tokens\nwith torch.no_grad():\n\
+          \    hf_out = hf_model(**hf_tokens)\n\nhf_embedding = mean_pooling(hf_out,\
+          \ hf_tokens['attention_mask'])\n\n# Compare embeddings again\nprint(torch.sum(torch.abs(torch.tensor(st_embedding).to(device)-\
+          \ hf_embedding.to(device)) > 1e-6)) # embeddings match!\n```\n\n\nIs this\
+          \ on purpose or is it an error in the tokenizer configuration for transformers\
+          \ version? I would suggest updating the transformers example code in the\
+          \ Readme at last to give a hint about this. Getting different \"default\"\
+          \ results for the same model can cause some confusion.\n\nAdditional question:\
+          \ Why is the max. input sequence set to 128 tokens at default with sentence_transformers\
+          \ at all when the architecture can support longer sequences?\n\nPS: I think\
+          \ this problem is the same for other models as well like paraphrase-xlm-r-multilingual-v1,\
+          \ etc."
+        updatedAt: '2023-10-05T14:47:51.288Z'
+      numEdits: 1
+      reactions: []
+    id: 651ecbe3736eb79aa0bb972b
+    type: comment
+  author: jokokojote
+  content: "Using the provided example code for sentence_transformers and transformers\
+    \ library leads to different embeddings for the same sentence. This is due to\
+    \ a different truncation of the inputs. sentence_transformers uses a max. sequence\
+    \ length of 128 tokens while transformers version uses 512. \n\n```\nimport torch\
+    \ \nfrom transformers import AutoTokenizer, AutoModel\nfrom sentence_transformers\
+    \ import SentenceTransformer\n\nst_model_id = 'paraphrase-multilingual-mpnet-base-v2'\n\
+    hf_model_id = 'sentence-transformers/' + st_model_id\n\nsentences = [\n    'S'\
+    \ * 10000 # dummy sentence\n    ]\n\ndevice = 'cuda:0'\n\nst_model = SentenceTransformer(st_model_id,\
+    \ device=device)\nst_tokenizer = st_model.tokenizer\n\nprint(st_model.get_max_seq_length())\
+    \ # max seq length 128\n\nst_tokens = st_model.tokenize(sentences)\nprint(st_tokens['input_ids'].shape)\
+    \ # seq length 128\n\n\n# Load model from HuggingFace Hub\nhf_tokenizer = AutoTokenizer.from_pretrained(hf_model_id)\n\
+    # Tokenize sentences\nhf_tokens = hf_tokenizer(sentences, padding=True, truncation=True,\
+    \ return_tensors='pt')\n\nprint(hf_tokens['input_ids'].shape) # seq length 512\
+    \ ?\n\n# get embeddings with transforms and sentence transformers\nst_embedding\
+    \ = st_model.encode(sentences)\n\nhf_model = AutoModel.from_pretrained(hf_model_id)\n\
+    # Compute token embeddings\nwith torch.no_grad():\n    hf_out = hf_model(**hf_tokens)\n\
+    \ndef mean_pooling(model_output, attention_mask):\n    token_embeddings = model_output[0]\
+    \ #First element of model_output contains all token embeddings\n    input_mask_expanded\
+    \ = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n   \
+    \ return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+    \ min=1e-9)\n\n\n# # Perform pooling like written in Readme\nhf_embedding = mean_pooling(hf_out,\
+    \ hf_tokens['attention_mask'])\n\n# compare embeddings\nembedding_diff = torch.abs(torch.tensor(st_embedding).to(device)-\
+    \ hf_embedding.to(device))\nprint(embedding_diff)\nprint(torch.sum(embedding_diff\
+    \ > 1e-6)) # embeddings for same sentence are different!\n\n# use sequence length\
+    \ of 128 explicitly with transformers\nhf_tokens = hf_tokenizer(sentences, padding=True,\
+    \ truncation='longest_first', return_tensors=\"pt\", max_length=128) # get tokens\
+    \ with max. 128 sequence length\n\n# Compute token embeddings again with new tokens\n\
+    with torch.no_grad():\n    hf_out = hf_model(**hf_tokens)\n\nhf_embedding = mean_pooling(hf_out,\
+    \ hf_tokens['attention_mask'])\n\n# Compare embeddings again\nprint(torch.sum(torch.abs(torch.tensor(st_embedding).to(device)-\
+    \ hf_embedding.to(device)) > 1e-6)) # embeddings match!\n```\n\n\nIs this on purpose\
+    \ or is it an error in the tokenizer configuration for transformers version? I\
+    \ would suggest updating the transformers example code in the Readme at last to\
+    \ give a hint about this. Getting different \"default\" results for the same model\
+    \ can cause some confusion.\n\nAdditional question: Why is the max. input sequence\
+    \ set to 128 tokens at default with sentence_transformers at all when the architecture\
+    \ can support longer sequences?\n\nPS: I think this problem is the same for other\
+    \ models as well like paraphrase-xlm-r-multilingual-v1, etc."
+  created_at: 2023-10-05 13:44:51+00:00
+  edited: true
+  hidden: false
+  id: 651ecbe3736eb79aa0bb972b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/f617a53ff87acd18ff74c699a7f1e271.svg
+      fullname: Felix Rothe
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jokokojote
+      type: user
+    createdAt: '2023-10-05T14:46:16.000Z'
+    data:
+      from: Default tokenization differs between sentence_transformer and transformers
+        version
+      to: Default tokenization differs between sentence_transformers and transformers
+        version
+    id: 651ecc38e0c419d0681dafe7
+    type: title-change
+  author: jokokojote
+  created_at: 2023-10-05 13:46:16+00:00
+  id: 651ecc38e0c419d0681dafe7
+  new_title: Default tokenization differs between sentence_transformers and transformers
+    version
+  old_title: Default tokenization differs between sentence_transformer and transformers
+    version
+  type: title-change
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
+repo_type: model
+status: open
+target_branch: null
+title: Default tokenization differs between sentence_transformers and transformers
+  version

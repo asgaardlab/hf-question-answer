@@ -1,0 +1,4 @@
+## https://huggingface.co/TheBloke/WizardLM-30B-Uncensored-GPTQ/discussions/7
+
+contains_question: yes
+question_part: As title. With a powerful enough card (for context, 24G VRAM), would it make more sense to run an unquantized 13B parameter model, or a 4bit quantized 30B model. I think this question actually translates to - how much does quantization affect performance. I've seen some of the synthetic benchmarks and perplexity scores, but I know that doesn't usually translate 1-1 for real world tasks. I also don't see a lot of evaluations done from an open-ended content generation perspective, so I'd love any anecdotal evidence that you may have come across.

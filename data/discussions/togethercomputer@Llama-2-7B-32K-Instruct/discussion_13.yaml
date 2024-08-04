@@ -1,0 +1,232 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: joehakim
+conflicting_files: null
+created_at: 2023-10-05 13:52:57+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/dc2d146daf75d03ac76d948be96fc632.svg
+      fullname: Joe Hakim
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: joehakim
+      type: user
+    createdAt: '2023-10-05T14:52:57.000Z'
+    data:
+      edited: false
+      editors:
+      - joehakim
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5654637813568115
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/dc2d146daf75d03ac76d948be96fc632.svg
+          fullname: Joe Hakim
+          isHf: false
+          isPro: false
+          name: joehakim
+          type: user
+        html: "<p>From this discussion thread [<a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/issues/26601%5D\"\
+          >https://github.com/huggingface/transformers/issues/26601]</a>, moved to\
+          \ here. Basically this seems to be an issue with padding, only when <code>trust_remote_code=True</code>,\
+          \ so maybe related to <code>FlashAttention</code>?</p>\n<p>Here's a script\
+          \ to reproduce, </p>\n<pre><code>import torch\nfrom transformers import\
+          \ AutoTokenizer, AutoModelForCausalLM, LlamaTokenizerFast\n\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(\"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          )\n\ntokenizer = LlamaTokenizerFast.from_pretrained(\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          \n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          ,\n    trust_remote_code=True, # this works when this is False\n    torch_dtype=torch.float16,\n\
+          ).cuda()\n\n\"\"\" THIS works in both cases\nmodel = MT5ForConditionalGeneration.from_pretrained(\n\
+          \    'google/mt5-xl'\n\"\"\"\n\nencoded = tokenizer(\n    [\n        \"\
+          [INST]\\nWrite a poem about cats\\n[/INST]\\n\\n\",\n        \"[INST]\\\
+          nWrite \" + \"a poem about\" * 400 + \" cats\\n[/INST]\\n\\n\",\n    ],\n\
+          \    return_tensors=\"pt\",\n    padding=\"longest\",\n).to(model.device)\n\
+          \nencoded_firstelem = {\n    \"input_ids\": encoded[\"input_ids\"][:1, :],\n\
+          \    \"attention_mask\": encoded[\"attention_mask\"][:1, :],\n}\nbreakpoint()\n\
+          \nprint(encoded_firstelem)\n# {'input_ids': tensor([[    0,     0,     0,\
+          \  ..., 29962,    13,    13]], device='cuda:0'), 'attention_mask': tensor([[0,\
+          \ 0, 0,  ..., 1, 1, 1]], device='cuda:0')}\n\n# works\nprint(model(**encoded))\n\
+          \n# breaks\nprint(model(**encoded_firstelem))\n</code></pre>\n"
+        raw: "From this discussion thread [https://github.com/huggingface/transformers/issues/26601],\
+          \ moved to here. Basically this seems to be an issue with padding, only\
+          \ when `trust_remote_code=True`, so maybe related to `FlashAttention`?\r\
+          \n\r\nHere's a script to reproduce, \r\n\r\n\r\n```\r\nimport torch\r\n\
+          from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizerFast\r\
+          \n\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          )\r\n\r\ntokenizer = LlamaTokenizerFast.from_pretrained(\r\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          \r\n)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+          ,\r\n    trust_remote_code=True, # this works when this is False\r\n   \
+          \ torch_dtype=torch.float16,\r\n).cuda()\r\n\r\n\"\"\" THIS works in both\
+          \ cases\r\nmodel = MT5ForConditionalGeneration.from_pretrained(\r\n    'google/mt5-xl'\r\
+          \n\"\"\"\r\n\r\nencoded = tokenizer(\r\n    [\r\n        \"[INST]\\nWrite\
+          \ a poem about cats\\n[/INST]\\n\\n\",\r\n        \"[INST]\\nWrite \" +\
+          \ \"a poem about\" * 400 + \" cats\\n[/INST]\\n\\n\",\r\n    ],\r\n    return_tensors=\"\
+          pt\",\r\n    padding=\"longest\",\r\n).to(model.device)\r\n\r\nencoded_firstelem\
+          \ = {\r\n    \"input_ids\": encoded[\"input_ids\"][:1, :],\r\n    \"attention_mask\"\
+          : encoded[\"attention_mask\"][:1, :],\r\n}\r\nbreakpoint()\r\n\r\nprint(encoded_firstelem)\r\
+          \n# {'input_ids': tensor([[    0,     0,     0,  ..., 29962,    13,    13]],\
+          \ device='cuda:0'), 'attention_mask': tensor([[0, 0, 0,  ..., 1, 1, 1]],\
+          \ device='cuda:0')}\r\n\r\n# works\r\nprint(model(**encoded))\r\n\r\n# breaks\r\
+          \nprint(model(**encoded_firstelem))\r\n```"
+        updatedAt: '2023-10-05T14:52:57.722Z'
+      numEdits: 0
+      reactions: []
+    id: 651ecdc9a2ef3eb14d22feb4
+    type: comment
+  author: joehakim
+  content: "From this discussion thread [https://github.com/huggingface/transformers/issues/26601],\
+    \ moved to here. Basically this seems to be an issue with padding, only when `trust_remote_code=True`,\
+    \ so maybe related to `FlashAttention`?\r\n\r\nHere's a script to reproduce, \r\
+    \n\r\n\r\n```\r\nimport torch\r\nfrom transformers import AutoTokenizer, AutoModelForCausalLM,\
+    \ LlamaTokenizerFast\r\n\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"togethercomputer/Llama-2-7B-32K-Instruct\"\
+    )\r\n\r\ntokenizer = LlamaTokenizerFast.from_pretrained(\r\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+    \r\n)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    \"togethercomputer/Llama-2-7B-32K-Instruct\"\
+    ,\r\n    trust_remote_code=True, # this works when this is False\r\n    torch_dtype=torch.float16,\r\
+    \n).cuda()\r\n\r\n\"\"\" THIS works in both cases\r\nmodel = MT5ForConditionalGeneration.from_pretrained(\r\
+    \n    'google/mt5-xl'\r\n\"\"\"\r\n\r\nencoded = tokenizer(\r\n    [\r\n     \
+    \   \"[INST]\\nWrite a poem about cats\\n[/INST]\\n\\n\",\r\n        \"[INST]\\\
+    nWrite \" + \"a poem about\" * 400 + \" cats\\n[/INST]\\n\\n\",\r\n    ],\r\n\
+    \    return_tensors=\"pt\",\r\n    padding=\"longest\",\r\n).to(model.device)\r\
+    \n\r\nencoded_firstelem = {\r\n    \"input_ids\": encoded[\"input_ids\"][:1, :],\r\
+    \n    \"attention_mask\": encoded[\"attention_mask\"][:1, :],\r\n}\r\nbreakpoint()\r\
+    \n\r\nprint(encoded_firstelem)\r\n# {'input_ids': tensor([[    0,     0,     0,\
+    \  ..., 29962,    13,    13]], device='cuda:0'), 'attention_mask': tensor([[0,\
+    \ 0, 0,  ..., 1, 1, 1]], device='cuda:0')}\r\n\r\n# works\r\nprint(model(**encoded))\r\
+    \n\r\n# breaks\r\nprint(model(**encoded_firstelem))\r\n```"
+  created_at: 2023-10-05 13:52:57+00:00
+  edited: false
+  hidden: false
+  id: 651ecdc9a2ef3eb14d22feb4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6329ee3dab49d487dd1439ec/vxGvdBK0XMZaCpc5dGOIa.jpeg?w=200&h=200&f=face
+      fullname: Maurice Weber
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: mauriceweber
+      type: user
+    createdAt: '2023-10-09T09:10:20.000Z'
+    data:
+      edited: false
+      editors:
+      - mauriceweber
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6823250651359558
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6329ee3dab49d487dd1439ec/vxGvdBK0XMZaCpc5dGOIa.jpeg?w=200&h=200&f=face
+          fullname: Maurice Weber
+          isHf: false
+          isPro: false
+          name: mauriceweber
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;joehakim&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/joehakim\"\
+          >@<span class=\"underline\">joehakim</span></a></span>\n\n\t</span></span>\
+          \ and thanks for reporting this!</p>\n<p>I think the error you see when\
+          \ feeding only the first element comes from a mismatch between <code>q_len</code>\
+          \ and <code>max_seqlen_q</code>, because of the unnecessary padding of the\
+          \ first element.</p>\n<p>For your specific example, this is caused by the\
+          \ following steps in `modelling_flash_llama.py:</p>\n<ol>\n<li><code>bsz,\
+          \ q_len, h_size = hidden_states.size()</code> (<a href=\"https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L311\"\
+          >L311</a>) -- this reads the sequence length from the <em>padded</em> input\
+          \ which is 1215.</li>\n<li><code>unpadded_q, indices_q, cu_seqlens_q, max_seqlen_q\
+          \ = unpad_input(q, attention_mask[:, -q.size(1):])</code> (<a href=\"https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L371\"\
+          >L371</a>) -- here the padding gets removed and your <code>max_seqlen_q</code>\
+          \ becomes 18.</li>\n<li><code>attn_output = pad_input(attn_output, indices_q,\
+          \ bsz, max_seqlen_q).reshape(bsz, q_len, h_size)</code> (<a href=\"https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L380-L382\"\
+          >L380-382</a>) -- this is were the error happens due to the mismatch between\
+          \ <code>q_len</code> and <code>max_seqlen_q</code></li>\n</ol>\n<p>So that\
+          \ means that you can't process a batch where the actual (unpadded) sequence\
+          \ length is smaller than the longest (padded) sequence in your batch.</p>\n"
+        raw: 'Hi @joehakim and thanks for reporting this!
+
+
+          I think the error you see when feeding only the first element comes from
+          a mismatch between `q_len` and `max_seqlen_q`, because of the unnecessary
+          padding of the first element.
+
+
+          For your specific example, this is caused by the following steps in `modelling_flash_llama.py:
+
+
+          1. `bsz, q_len, h_size = hidden_states.size()` ([L311](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L311))
+          -- this reads the sequence length from the _padded_ input which is 1215.
+
+          2. `unpadded_q, indices_q, cu_seqlens_q, max_seqlen_q = unpad_input(q, attention_mask[:,
+          -q.size(1):])` ([L371](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L371))
+          -- here the padding gets removed and your `max_seqlen_q` becomes 18.
+
+          3. `attn_output = pad_input(attn_output, indices_q, bsz, max_seqlen_q).reshape(bsz,
+          q_len, h_size)` ([L380-382](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L380-L382))
+          -- this is were the error happens due to the mismatch between `q_len` and
+          `max_seqlen_q`
+
+
+          So that means that you can''t process a batch where the actual (unpadded)
+          sequence length is smaller than the longest (padded) sequence in your batch.'
+        updatedAt: '2023-10-09T09:10:20.237Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - joehakim
+    id: 6523c37c0f935fa8fd74406d
+    type: comment
+  author: mauriceweber
+  content: 'Hi @joehakim and thanks for reporting this!
+
+
+    I think the error you see when feeding only the first element comes from a mismatch
+    between `q_len` and `max_seqlen_q`, because of the unnecessary padding of the
+    first element.
+
+
+    For your specific example, this is caused by the following steps in `modelling_flash_llama.py:
+
+
+    1. `bsz, q_len, h_size = hidden_states.size()` ([L311](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L311))
+    -- this reads the sequence length from the _padded_ input which is 1215.
+
+    2. `unpadded_q, indices_q, cu_seqlens_q, max_seqlen_q = unpad_input(q, attention_mask[:,
+    -q.size(1):])` ([L371](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L371))
+    -- here the padding gets removed and your `max_seqlen_q` becomes 18.
+
+    3. `attn_output = pad_input(attn_output, indices_q, bsz, max_seqlen_q).reshape(bsz,
+    q_len, h_size)` ([L380-382](https://huggingface.co/togethercomputer/Llama-2-7B-32K-Instruct/blob/b050a6f17d46e32c4b90a30492f14746589f74b7/modeling_flash_llama.py#L380-L382))
+    -- this is were the error happens due to the mismatch between `q_len` and `max_seqlen_q`
+
+
+    So that means that you can''t process a batch where the actual (unpadded) sequence
+    length is smaller than the longest (padded) sequence in your batch.'
+  created_at: 2023-10-09 08:10:20+00:00
+  edited: false
+  hidden: false
+  id: 6523c37c0f935fa8fd74406d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 13
+repo_id: togethercomputer/Llama-2-7B-32K-Instruct
+repo_type: model
+status: open
+target_branch: null
+title: llama2 forward pass seemingly not working with padded inputs, unless one element
+  in batch is not padded

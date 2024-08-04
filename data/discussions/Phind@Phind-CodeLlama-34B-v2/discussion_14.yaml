@@ -1,0 +1,340 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: GaaraOtheSand
+conflicting_files: null
+created_at: 2023-09-16 18:13:39+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668367507109-noauth.jpeg?w=200&h=200&f=face
+      fullname: Kalvin Tipton
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: GaaraOtheSand
+      type: user
+    createdAt: '2023-09-16T19:13:39.000Z'
+    data:
+      edited: false
+      editors:
+      - GaaraOtheSand
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7107433080673218
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668367507109-noauth.jpeg?w=200&h=200&f=face
+          fullname: Kalvin Tipton
+          isHf: false
+          isPro: false
+          name: GaaraOtheSand
+          type: user
+        html: "<p>I'm getting this odd error and not entirely sure why, it may be\
+          \ to do with the model and how I'm using the device_map not the actual input_ids.\
+          \ It also states that the attention mask and the pad token id aren't set,\
+          \ in the example of how to run the script there's no mention of these, and\
+          \ unfortunately the error message in console doesn't say where that issue\
+          \ is coming from so not a lot of clues to run off of, but this is the error\
+          \ it provides:</p>\n<p>The attention mask and the pad token id were not\
+          \ set. As a consequence, you may observe unexpected behavior. Please pass\
+          \ your input's <code>attention_mask</code> to obtain reliable results.<br>Setting\
+          \ <code>pad_token_id</code> to <code>eos_token_id</code>:2 for open-end\
+          \ generation.<br>/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1535:\
+          \ UserWarning: You are calling .generate() with the <code>input_ids</code>\
+          \ being on a device type different than your model's device. <code>input_ids</code>\
+          \ is on cpu, whereas the model is on cuda. You may experience unexpected\
+          \ behaviors or slower generation. Please make sure that you have put <code>input_ids</code>\
+          \ to the correct device by calling for example input_ids = input_ids.to('cuda')\
+          \ before running <code>.generate()</code>.<br>  warnings.warn(<br>Traceback\
+          \ (most recent call last):<br>  File \"/usr/local/llamaengineer.py\", line\
+          \ 498, in <br>    generated_text = generate(prompt)<br>  File \"/usr/local/llamaengineer.py\"\
+          , line 488, in generate<br>    generate_ids = model.generate(inputs.input_ids.to(\"\
+          cpu\"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context<br>    return func(*args, **kwargs)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+          , line 1648, in generate<br>    return self.sample(<br>  File \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+          , line 2730, in sample<br>    outputs = self(<br>  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/accelerate/hooks.py\"\
+          , line 165, in new_forward<br>    output = old_forward(*args, **kwargs)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 820, in forward<br>    outputs = self.model(<br>  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 708, in forward<br>    layer_outputs = decoder_layer(<br>  File \"\
+          /usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line\
+          \ 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>  File\
+          \ \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 424, in forward<br>    hidden_states, self_attn_weights, present_key_value\
+          \ = self.self_attn(<br>  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl<br>    return forward_call(*args, **kwargs)<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 333, in forward<br>    query_states, key_states = apply_rotary_pos_emb(query_states,\
+          \ key_states, cos, sin, position_ids)<br>  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 184, in apply_rotary_pos_emb<br>    cos = cos[position_ids].unsqueeze(1)\
+          \  # [bs, 1, seq_len, dim]<br>RuntimeError: indices should be either on\
+          \ cpu or on the same device as the indexed tensor (cpu)</p>\n<p>That's was\
+          \ the error I got when I tried running it like this:</p>\n<pre><code> generate_ids\
+          \ = model.generate(inputs.input_ids.to(\"cpu\"), max_new_tokens=384, do_sample=True,\
+          \ top_p=0.75, top_k=40, temperature=0.1)\n</code></pre>\n<p>That was only\
+          \ tried because an almost identical issue occurred when I tried running\
+          \ it with input_ids.to(\"cuda\"), the difference is that instead of getting\
+          \ the warning about the input_ids being run on a different device than my\
+          \ model's device. I just got this message:</p>\n<pre><code> The attention\
+          \ mask and the pad token id were not set. As a consequence, you may observe\
+          \ unexpected behavior. Please pass your input's `attention_mask` \n to obtain\
+          \ reliable results.\n Setting `pad_token_id` to `eos_token_id`:2 for open-end\
+          \ generation.\n</code></pre>\n<p>Any help would be greatly appreciated,\
+          \ I'll provide the important part of my script that I'm running for reference:</p>\n\
+          <pre><code> model_path = \"Phind/Phind-CodeLlama-34B-v2\"\n model = LlamaForCausalLM.from_pretrained(model_path,\
+          \ quantization_config=bnb_config, device_map=device_map)\n tokenizer = AutoTokenizer.from_pretrained(model_path)\n\
+          \n def generate(prompt: str):\n\n     tokenizer.pad_token = tokenizer.eos_token\n\
+          \     inputs = tokenizer(prompt, return_tensors=\"pt\", truncation=True,\
+          \ max_length=4096)\n\n     # Generate\n     generate_ids = model.generate(inputs.input_ids.to(\"\
+          cuda\"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)\n\
+          \     completion = tokenizer.batch_decode(generate_ids, skip_special_tokens=True,\
+          \ clean_up_tokenization_spaces=False)[0]\n     completion = completion.replace(prompt,\
+          \ \"\").split(\"\\n\\n\\n\")[0]\n\n     # Print the completion to the console\n\
+          \     print(\"Generated Completion:\")\n     print(completion)\n\n     return\
+          \ completion\n prompt = \"Please write a small script that prints the numbers\
+          \ 1-10 in the console\"\n generated_text = generate(prompt) \n</code></pre>\n"
+        raw: "I'm getting this odd error and not entirely sure why, it may be to do\
+          \ with the model and how I'm using the device_map not the actual input_ids.\
+          \ It also states that the attention mask and the pad token id aren't set,\
+          \ in the example of how to run the script there's no mention of these, and\
+          \ unfortunately the error message in console doesn't say where that issue\
+          \ is coming from so not a lot of clues to run off of, but this is the error\
+          \ it provides:\r\n\r\nThe attention mask and the pad token id were not set.\
+          \ As a consequence, you may observe unexpected behavior. Please pass your\
+          \ input's `attention_mask` to obtain reliable results.\r\nSetting `pad_token_id`\
+          \ to `eos_token_id`:2 for open-end generation.\r\n/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1535:\
+          \ UserWarning: You are calling .generate() with the `input_ids` being on\
+          \ a device type different than your model's device. `input_ids` is on cpu,\
+          \ whereas the model is on cuda. You may experience unexpected behaviors\
+          \ or slower generation. Please make sure that you have put `input_ids` to\
+          \ the correct device by calling for example input_ids = input_ids.to('cuda')\
+          \ before running `.generate()`.\r\n  warnings.warn(\r\nTraceback (most recent\
+          \ call last):\r\n  File \"/usr/local/llamaengineer.py\", line 498, in <module>\r\
+          \n    generated_text = generate(prompt)\r\n  File \"/usr/local/llamaengineer.py\"\
+          , line 488, in generate\r\n    generate_ids = model.generate(inputs.input_ids.to(\"\
+          cpu\"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n\
+          \  File \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+          , line 1648, in generate\r\n    return self.sample(\r\n  File \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+          , line 2730, in sample\r\n    outputs = self(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/accelerate/hooks.py\"\
+          , line 165, in new_forward\r\n    output = old_forward(*args, **kwargs)\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 820, in forward\r\n    outputs = self.model(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 708, in forward\r\n    layer_outputs = decoder_layer(\r\n  File \"\
+          /usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line\
+          \ 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+          \ \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 424, in forward\r\n    hidden_states, self_attn_weights, present_key_value\
+          \ = self.self_attn(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 333, in forward\r\n    query_states, key_states = apply_rotary_pos_emb(query_states,\
+          \ key_states, cos, sin, position_ids)\r\n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+          , line 184, in apply_rotary_pos_emb\r\n    cos = cos[position_ids].unsqueeze(1)\
+          \  # [bs, 1, seq_len, dim]\r\nRuntimeError: indices should be either on\
+          \ cpu or on the same device as the indexed tensor (cpu)\r\n\r\nThat's was\
+          \ the error I got when I tried running it like this:\r\n\r\n     generate_ids\
+          \ = model.generate(inputs.input_ids.to(\"cpu\"), max_new_tokens=384, do_sample=True,\
+          \ top_p=0.75, top_k=40, temperature=0.1)\r\n\r\nThat was only tried because\
+          \ an almost identical issue occurred when I tried running it with input_ids.to(\"\
+          cuda\"), the difference is that instead of getting the warning about the\
+          \ input_ids being run on a different device than my model's device. I just\
+          \ got this message:\r\n\r\n     The attention mask and the pad token id\
+          \ were not set. As a consequence, you may observe unexpected behavior. Please\
+          \ pass your input's `attention_mask` \r\n     to obtain reliable results.\r\
+          \n     Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.\r\
+          \n\r\nAny help would be greatly appreciated, I'll provide the important\
+          \ part of my script that I'm running for reference:\r\n\r\n     model_path\
+          \ = \"Phind/Phind-CodeLlama-34B-v2\"\r\n     model = LlamaForCausalLM.from_pretrained(model_path,\
+          \ quantization_config=bnb_config, device_map=device_map)\r\n     tokenizer\
+          \ = AutoTokenizer.from_pretrained(model_path)\r\n\r\n     def generate(prompt:\
+          \ str):\r\n    \r\n         tokenizer.pad_token = tokenizer.eos_token\r\n\
+          \         inputs = tokenizer(prompt, return_tensors=\"pt\", truncation=True,\
+          \ max_length=4096)\r\n\r\n         # Generate\r\n         generate_ids =\
+          \ model.generate(inputs.input_ids.to(\"cuda\"), max_new_tokens=384, do_sample=True,\
+          \ top_p=0.75, top_k=40, temperature=0.1)\r\n         completion = tokenizer.batch_decode(generate_ids,\
+          \ skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]\r\n \
+          \        completion = completion.replace(prompt, \"\").split(\"\\n\\n\\\
+          n\")[0]\r\n\r\n         # Print the completion to the console\r\n      \
+          \   print(\"Generated Completion:\")\r\n         print(completion)\r\n\r\
+          \n         return completion\r\n     prompt = \"Please write a small script\
+          \ that prints the numbers 1-10 in the console\"\r\n     generated_text =\
+          \ generate(prompt) "
+        updatedAt: '2023-09-16T19:13:39.259Z'
+      numEdits: 0
+      reactions: []
+    id: 6505fe63c53e1a7f17a7da79
+    type: comment
+  author: GaaraOtheSand
+  content: "I'm getting this odd error and not entirely sure why, it may be to do\
+    \ with the model and how I'm using the device_map not the actual input_ids. It\
+    \ also states that the attention mask and the pad token id aren't set, in the\
+    \ example of how to run the script there's no mention of these, and unfortunately\
+    \ the error message in console doesn't say where that issue is coming from so\
+    \ not a lot of clues to run off of, but this is the error it provides:\r\n\r\n\
+    The attention mask and the pad token id were not set. As a consequence, you may\
+    \ observe unexpected behavior. Please pass your input's `attention_mask` to obtain\
+    \ reliable results.\r\nSetting `pad_token_id` to `eos_token_id`:2 for open-end\
+    \ generation.\r\n/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1535:\
+    \ UserWarning: You are calling .generate() with the `input_ids` being on a device\
+    \ type different than your model's device. `input_ids` is on cpu, whereas the\
+    \ model is on cuda. You may experience unexpected behaviors or slower generation.\
+    \ Please make sure that you have put `input_ids` to the correct device by calling\
+    \ for example input_ids = input_ids.to('cuda') before running `.generate()`.\r\
+    \n  warnings.warn(\r\nTraceback (most recent call last):\r\n  File \"/usr/local/llamaengineer.py\"\
+    , line 498, in <module>\r\n    generated_text = generate(prompt)\r\n  File \"\
+    /usr/local/llamaengineer.py\", line 488, in generate\r\n    generate_ids = model.generate(inputs.input_ids.to(\"\
+    cpu\"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)\r\
+    \n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+    , line 1648, in generate\r\n    return self.sample(\r\n  File \"/usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py\"\
+    , line 2730, in sample\r\n    outputs = self(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/accelerate/hooks.py\", line 165, in\
+    \ new_forward\r\n    output = old_forward(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 820, in forward\r\n    outputs = self.model(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 708, in forward\r\n    layer_outputs = decoder_layer(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 424, in forward\r\n    hidden_states, self_attn_weights, present_key_value\
+    \ = self.self_attn(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 333, in forward\r\n    query_states, key_states = apply_rotary_pos_emb(query_states,\
+    \ key_states, cos, sin, position_ids)\r\n  File \"/usr/local/lib/python3.10/dist-packages/transformers/models/llama/modeling_llama.py\"\
+    , line 184, in apply_rotary_pos_emb\r\n    cos = cos[position_ids].unsqueeze(1)\
+    \  # [bs, 1, seq_len, dim]\r\nRuntimeError: indices should be either on cpu or\
+    \ on the same device as the indexed tensor (cpu)\r\n\r\nThat's was the error I\
+    \ got when I tried running it like this:\r\n\r\n     generate_ids = model.generate(inputs.input_ids.to(\"\
+    cpu\"), max_new_tokens=384, do_sample=True, top_p=0.75, top_k=40, temperature=0.1)\r\
+    \n\r\nThat was only tried because an almost identical issue occurred when I tried\
+    \ running it with input_ids.to(\"cuda\"), the difference is that instead of getting\
+    \ the warning about the input_ids being run on a different device than my model's\
+    \ device. I just got this message:\r\n\r\n     The attention mask and the pad\
+    \ token id were not set. As a consequence, you may observe unexpected behavior.\
+    \ Please pass your input's `attention_mask` \r\n     to obtain reliable results.\r\
+    \n     Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.\r\n\
+    \r\nAny help would be greatly appreciated, I'll provide the important part of\
+    \ my script that I'm running for reference:\r\n\r\n     model_path = \"Phind/Phind-CodeLlama-34B-v2\"\
+    \r\n     model = LlamaForCausalLM.from_pretrained(model_path, quantization_config=bnb_config,\
+    \ device_map=device_map)\r\n     tokenizer = AutoTokenizer.from_pretrained(model_path)\r\
+    \n\r\n     def generate(prompt: str):\r\n    \r\n         tokenizer.pad_token\
+    \ = tokenizer.eos_token\r\n         inputs = tokenizer(prompt, return_tensors=\"\
+    pt\", truncation=True, max_length=4096)\r\n\r\n         # Generate\r\n       \
+    \  generate_ids = model.generate(inputs.input_ids.to(\"cuda\"), max_new_tokens=384,\
+    \ do_sample=True, top_p=0.75, top_k=40, temperature=0.1)\r\n         completion\
+    \ = tokenizer.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]\r\
+    \n         completion = completion.replace(prompt, \"\").split(\"\\n\\n\\n\")[0]\r\
+    \n\r\n         # Print the completion to the console\r\n         print(\"Generated\
+    \ Completion:\")\r\n         print(completion)\r\n\r\n         return completion\r\
+    \n     prompt = \"Please write a small script that prints the numbers 1-10 in\
+    \ the console\"\r\n     generated_text = generate(prompt) "
+  created_at: 2023-09-16 18:13:39+00:00
+  edited: false
+  hidden: false
+  id: 6505fe63c53e1a7f17a7da79
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668367507109-noauth.jpeg?w=200&h=200&f=face
+      fullname: Kalvin Tipton
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: GaaraOtheSand
+      type: user
+    createdAt: '2023-09-16T21:14:22.000Z'
+    data:
+      edited: false
+      editors:
+      - GaaraOtheSand
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.968618631362915
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668367507109-noauth.jpeg?w=200&h=200&f=face
+          fullname: Kalvin Tipton
+          isHf: false
+          isPro: false
+          name: GaaraOtheSand
+          type: user
+        html: '<p>So turns out I was able to solve my problem and now have the model
+          working, very excited to see it in action, if anyone''s interested I put
+          the model script up on my GitHub, solely because I''m using a technique
+          that allows me to run this model on my limited GPU and that''s pretty cool
+          I think. Shikamaru5/LlamaEngineer</p>
+
+          '
+        raw: So turns out I was able to solve my problem and now have the model working,
+          very excited to see it in action, if anyone's interested I put the model
+          script up on my GitHub, solely because I'm using a technique that allows
+          me to run this model on my limited GPU and that's pretty cool I think. Shikamaru5/LlamaEngineer
+        updatedAt: '2023-09-16T21:14:22.405Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65061aae9db6e2495c8743d4
+    id: 65061aae9db6e2495c8743d2
+    type: comment
+  author: GaaraOtheSand
+  content: So turns out I was able to solve my problem and now have the model working,
+    very excited to see it in action, if anyone's interested I put the model script
+    up on my GitHub, solely because I'm using a technique that allows me to run this
+    model on my limited GPU and that's pretty cool I think. Shikamaru5/LlamaEngineer
+  created_at: 2023-09-16 20:14:22+00:00
+  edited: false
+  hidden: false
+  id: 65061aae9db6e2495c8743d2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668367507109-noauth.jpeg?w=200&h=200&f=face
+      fullname: Kalvin Tipton
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: GaaraOtheSand
+      type: user
+    createdAt: '2023-09-16T21:14:22.000Z'
+    data:
+      status: closed
+    id: 65061aae9db6e2495c8743d4
+    type: status-change
+  author: GaaraOtheSand
+  created_at: 2023-09-16 20:14:22+00:00
+  id: 65061aae9db6e2495c8743d4
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 14
+repo_id: Phind/Phind-CodeLlama-34B-v2
+repo_type: model
+status: closed
+target_branch: null
+title: Input_Id's issue

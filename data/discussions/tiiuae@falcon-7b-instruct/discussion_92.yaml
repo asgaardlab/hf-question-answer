@@ -1,0 +1,181 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Annorita
+conflicting_files: null
+created_at: 2023-10-18 07:58:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+      fullname: Anna Hung
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Annorita
+      type: user
+    createdAt: '2023-10-18T08:58:06.000Z'
+    data:
+      edited: true
+      editors:
+      - Annorita
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5132381319999695
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+          fullname: Anna Hung
+          isHf: false
+          isPro: false
+          name: Annorita
+          type: user
+        html: "<p>In the latest transformers (4.34.0), they have a function called\
+          \ \"apply_chat_template\" that allows us to get the prompt. For example:</p>\n\
+          <pre><code>from transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          tiiuae/falcon-40b-instruct\")\nchat = [\n  {\"role\": \"user\", \"content\"\
+          : \"USER_INSTRUCTION_1\"},\n  {\"role\": \"assistant\", \"content\": \"\
+          RESPONSE_1\"},\n  {\"role\": \"user\", \"content\": \"USER_INSTRUCTION_2\"\
+          },\n  {\"role\": \"assistant\", \"content\": \"RESPONSE_2\"},\n]\nres =\
+          \ tokenizer.apply_chat_template(chat, tokenize=False)\n</code></pre>\n<p>Falcon\
+          \ does not have its own tokenizer class, so transformers will directly call\
+          \ the <code>PreTrainedTokenizerFast</code> and apply the following template:<br><code>\"\
+          {% for message in messages %}{{'&lt;|im_start|&gt;' + message['role'] +\
+          \ '\\n' + message['content'] + '&lt;|im_end|&gt;' + '\\n'}}{% endfor %}\"\
+          </code></p>\n<p>(check here: <a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/blob/ef42cb62744e2be04f5b41b7e36dd1d609734675/src/transformers/tokenization_utils_base.py#L1816\"\
+          >default_chat_template</a>)<br>So the result of the example will be:</p>\n\
+          <pre><code>'&lt;|im_start|&gt;user\\nUSER_INSTRUCTION_1&lt;|im_end|&gt;\\\
+          n&lt;|im_start|&gt;assistant\\nRESPONSE_1&lt;|im_end|&gt;\\n&lt;|im_start|&gt;user\\\
+          nUSER_INSTRUCTION_2&lt;|im_end|&gt;\\n&lt;|im_start|&gt;assistant\\nRESPONSE_2&lt;|im_end|&gt;\\\
+          n'\n</code></pre>\n<p>However, if we encode this sentence and then decode\
+          \ them back, we can find that the tokenizer cannot recognize the special\
+          \ tokens such as <code>&lt;|im_start|&gt;</code>:</p>\n<pre><code>res_space\
+          \ = '&lt;|im_start|&gt;'\nids = tokenizer.encode(res_space)\ntmp = []\n\
+          for id in ids:\n    tmp.append(tokenizer.decode(id))\n#tmp = ['&lt;', '|',\
+          \ 'im', '_', 'start', '|&gt;']\n</code></pre>\n<p>Is this the right template\
+          \ for us to use Falcon model?</p>\n"
+        raw: "In the latest transformers (4.34.0), they have a function called \"\
+          apply_chat_template\" that allows us to get the prompt. For example:\n\n\
+          ```\nfrom transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          tiiuae/falcon-40b-instruct\")\nchat = [\n  {\"role\": \"user\", \"content\"\
+          : \"USER_INSTRUCTION_1\"},\n  {\"role\": \"assistant\", \"content\": \"\
+          RESPONSE_1\"},\n  {\"role\": \"user\", \"content\": \"USER_INSTRUCTION_2\"\
+          },\n  {\"role\": \"assistant\", \"content\": \"RESPONSE_2\"},\n]\nres =\
+          \ tokenizer.apply_chat_template(chat, tokenize=False)\n```\nFalcon does\
+          \ not have its own tokenizer class, so transformers will directly call the\
+          \ `PreTrainedTokenizerFast` and apply the following template:\n`\"{% for\
+          \ message in messages %}{{'<|im_start|>' + message['role'] + '\\n' + message['content']\
+          \ + '<|im_end|>' + '\\n'}}{% endfor %}\"`\n\n(check here: [default_chat_template](https://github.com/huggingface/transformers/blob/ef42cb62744e2be04f5b41b7e36dd1d609734675/src/transformers/tokenization_utils_base.py#L1816))\n\
+          So the result of the example will be:\n\n```\n'<|im_start|>user\\nUSER_INSTRUCTION_1<|im_end|>\\\
+          n<|im_start|>assistant\\nRESPONSE_1<|im_end|>\\n<|im_start|>user\\nUSER_INSTRUCTION_2<|im_end|>\\\
+          n<|im_start|>assistant\\nRESPONSE_2<|im_end|>\\n'\n```\n\nHowever, if we\
+          \ encode this sentence and then decode them back, we can find that the tokenizer\
+          \ cannot recognize the special tokens such as `<|im_start|>`:\n```\nres_space\
+          \ = '<|im_start|>'\nids = tokenizer.encode(res_space)\ntmp = []\nfor id\
+          \ in ids:\n    tmp.append(tokenizer.decode(id))\n#tmp = ['<', '|', 'im',\
+          \ '_', 'start', '|>']\n```\n\nIs this the right template for us to use Falcon\
+          \ model?"
+        updatedAt: '2023-10-18T08:58:57.182Z'
+      numEdits: 1
+      reactions: []
+    id: 652f9e1eed5d17edd79a1f50
+    type: comment
+  author: Annorita
+  content: "In the latest transformers (4.34.0), they have a function called \"apply_chat_template\"\
+    \ that allows us to get the prompt. For example:\n\n```\nfrom transformers import\
+    \ AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"tiiuae/falcon-40b-instruct\"\
+    )\nchat = [\n  {\"role\": \"user\", \"content\": \"USER_INSTRUCTION_1\"},\n  {\"\
+    role\": \"assistant\", \"content\": \"RESPONSE_1\"},\n  {\"role\": \"user\", \"\
+    content\": \"USER_INSTRUCTION_2\"},\n  {\"role\": \"assistant\", \"content\":\
+    \ \"RESPONSE_2\"},\n]\nres = tokenizer.apply_chat_template(chat, tokenize=False)\n\
+    ```\nFalcon does not have its own tokenizer class, so transformers will directly\
+    \ call the `PreTrainedTokenizerFast` and apply the following template:\n`\"{%\
+    \ for message in messages %}{{'<|im_start|>' + message['role'] + '\\n' + message['content']\
+    \ + '<|im_end|>' + '\\n'}}{% endfor %}\"`\n\n(check here: [default_chat_template](https://github.com/huggingface/transformers/blob/ef42cb62744e2be04f5b41b7e36dd1d609734675/src/transformers/tokenization_utils_base.py#L1816))\n\
+    So the result of the example will be:\n\n```\n'<|im_start|>user\\nUSER_INSTRUCTION_1<|im_end|>\\\
+    n<|im_start|>assistant\\nRESPONSE_1<|im_end|>\\n<|im_start|>user\\nUSER_INSTRUCTION_2<|im_end|>\\\
+    n<|im_start|>assistant\\nRESPONSE_2<|im_end|>\\n'\n```\n\nHowever, if we encode\
+    \ this sentence and then decode them back, we can find that the tokenizer cannot\
+    \ recognize the special tokens such as `<|im_start|>`:\n```\nres_space = '<|im_start|>'\n\
+    ids = tokenizer.encode(res_space)\ntmp = []\nfor id in ids:\n    tmp.append(tokenizer.decode(id))\n\
+    #tmp = ['<', '|', 'im', '_', 'start', '|>']\n```\n\nIs this the right template\
+    \ for us to use Falcon model?"
+  created_at: 2023-10-18 07:58:06+00:00
+  edited: true
+  hidden: false
+  id: 652f9e1eed5d17edd79a1f50
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/58bb326d973629176ce639bfa1cebb42.svg
+      fullname: J Jordan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Gnurro2
+      type: user
+    createdAt: '2023-10-25T13:11:27.000Z'
+    data:
+      edited: false
+      editors:
+      - Gnurro2
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8912844061851501
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/58bb326d973629176ce639bfa1cebb42.svg
+          fullname: J Jordan
+          isHf: false
+          isPro: false
+          name: Gnurro2
+          type: user
+        html: '<p>No, that''s the default template in tokenizers.<br>Proper format
+          (...well, at least somewhat official): <a href="https://huggingface.co/tiiuae/falcon-7b-instruct/discussions/1#64708b0a3df93fddece002a4">https://huggingface.co/tiiuae/falcon-7b-instruct/discussions/1#64708b0a3df93fddece002a4</a><br>Apparently
+          the model wasn''t trained on any concise format, so it seems like "whatever
+          works". The format is the whole point of instruct training, and I really
+          do not know why so many model trainers do not properly share the used format...</p>
+
+          '
+        raw: 'No, that''s the default template in tokenizers.
+
+          Proper format (...well, at least somewhat official): https://huggingface.co/tiiuae/falcon-7b-instruct/discussions/1#64708b0a3df93fddece002a4
+
+          Apparently the model wasn''t trained on any concise format, so it seems
+          like "whatever works". The format is the whole point of instruct training,
+          and I really do not know why so many model trainers do not properly share
+          the used format...'
+        updatedAt: '2023-10-25T13:11:27.879Z'
+      numEdits: 0
+      reactions: []
+    id: 653913ffd1ca3238d0c6bdca
+    type: comment
+  author: Gnurro2
+  content: 'No, that''s the default template in tokenizers.
+
+    Proper format (...well, at least somewhat official): https://huggingface.co/tiiuae/falcon-7b-instruct/discussions/1#64708b0a3df93fddece002a4
+
+    Apparently the model wasn''t trained on any concise format, so it seems like "whatever
+    works". The format is the whole point of instruct training, and I really do not
+    know why so many model trainers do not properly share the used format...'
+  created_at: 2023-10-25 12:11:27+00:00
+  edited: false
+  hidden: false
+  id: 653913ffd1ca3238d0c6bdca
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 92
+repo_id: tiiuae/falcon-7b-instruct
+repo_type: model
+status: open
+target_branch: null
+title: The correctness of the result using transformers apply_chat_template

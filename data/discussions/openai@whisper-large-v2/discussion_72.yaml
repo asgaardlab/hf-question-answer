@@ -1,0 +1,195 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: RaysDipesh
+conflicting_files: null
+created_at: 2023-09-28 08:59:05+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/56cb4fbc983f4efa4bd883b51bb8e35f.svg
+      fullname: Dipesh Koirala
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RaysDipesh
+      type: user
+    createdAt: '2023-09-28T09:59:05.000Z'
+    data:
+      edited: true
+      editors:
+      - RaysDipesh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9278003573417664
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/56cb4fbc983f4efa4bd883b51bb8e35f.svg
+          fullname: Dipesh Koirala
+          isHf: false
+          isPro: false
+          name: RaysDipesh
+          type: user
+        html: '<p>Is there any way, so that we can transcribe the audio having length
+          more than 30 seconds without converting it to chunks and to use through
+          Inference API? Thanks in advance.</p>
+
+          '
+        raw: Is there any way, so that we can transcribe the audio having length more
+          than 30 seconds without converting it to chunks and to use through Inference
+          API? Thanks in advance.
+        updatedAt: '2023-09-28T10:00:39.016Z'
+      numEdits: 1
+      reactions: []
+    id: 65154e69eca347cc8d565138
+    type: comment
+  author: RaysDipesh
+  content: Is there any way, so that we can transcribe the audio having length more
+    than 30 seconds without converting it to chunks and to use through Inference API?
+    Thanks in advance.
+  created_at: 2023-09-28 08:59:05+00:00
+  edited: true
+  hidden: false
+  id: 65154e69eca347cc8d565138
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+      fullname: Sanchit Gandhi
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sanchit-gandhi
+      type: user
+    createdAt: '2023-09-28T18:08:31.000Z'
+    data:
+      edited: false
+      editors:
+      - sanchit-gandhi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8361912369728088
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+          fullname: Sanchit Gandhi
+          isHf: true
+          isPro: false
+          name: sanchit-gandhi
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;RaysDipesh&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/RaysDipesh\"\
+          >@<span class=\"underline\">RaysDipesh</span></a></span>\n\n\t</span></span>.\
+          \ The behaviour you've encountered here is the way the Whisper model gets\
+          \ around dealing with padded/truncated inputs: all input audios are padded/truncated\
+          \ to 30 seconds, regardless of their length, before being converted to log-mel\
+          \ spectrogram inputs. The model is then trained without an attention mask.\
+          \ Instead, it learns to ignore the padded inputs from the spectrogram inputs\
+          \ directly.</p>\n<p>At inference time, we have to match the paradigm the\
+          \ model was trained on, i.e. always pad/truncate audios to 30 seconds. This\
+          \ is why the feature extractor and positional embeddings always expect log-mel\
+          \ spectrograms with a sequence length of 1500, which corresponds to 30 seconds\
+          \ of audio input. You'll find that the OpenAI Whisper implementation also\
+          \ forces the inputs to always be 30 seconds. The Transformers' implementation\
+          \ thus matches this for strict one-to-one equivalence.</p>\n<p>The way we\
+          \ can run the model on longer audio samples is by chunking them into smaller\
+          \ 30 second chunks, and then running inference to get the chunked transcriptions.\
+          \ Here's a code snippet on how you can achieve this in Transformers:</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> transformers <span class=\"\
+          hljs-keyword\">import</span> pipeline\n<span class=\"hljs-keyword\">from</span>\
+          \ datasets <span class=\"hljs-keyword\">import</span> load_dataset\n\ndevice\
+          \ = <span class=\"hljs-string\">\"cuda:0\"</span> <span class=\"hljs-keyword\"\
+          >if</span> torch.cuda.is_available() <span class=\"hljs-keyword\">else</span>\
+          \ <span class=\"hljs-string\">\"cpu\"</span>\n\npipe = pipeline(\n  <span\
+          \ class=\"hljs-string\">\"automatic-speech-recognition\"</span>,\n  model=<span\
+          \ class=\"hljs-string\">\"openai/whisper-large-v2\"</span>,\n  chunk_length_s=<span\
+          \ class=\"hljs-number\">30</span>,\n  device=device,\n)\n\nds = load_dataset(<span\
+          \ class=\"hljs-string\">\"hf-internal-testing/librispeech_asr_dummy\"</span>,\
+          \ <span class=\"hljs-string\">\"clean\"</span>, split=<span class=\"hljs-string\"\
+          >\"validation\"</span>)\nsample = ds[<span class=\"hljs-number\">0</span>][<span\
+          \ class=\"hljs-string\">\"audio\"</span>]\n\nprediction = pipe(sample.copy(),\
+          \ batch_size=<span class=\"hljs-number\">8</span>)[<span class=\"hljs-string\"\
+          >\"text\"</span>]\n\n<span class=\"hljs-comment\"># we can also return timestamps\
+          \ for the predictions</span>\nprediction = pipe(sample, batch_size=<span\
+          \ class=\"hljs-number\">8</span>, return_timestamps=<span class=\"hljs-literal\"\
+          >True</span>)[<span class=\"hljs-string\">\"chunks\"</span>]\n</code></pre>\n"
+        raw: "Hey @RaysDipesh. The behaviour you've encountered here is the way the\
+          \ Whisper model gets around dealing with padded/truncated inputs: all input\
+          \ audios are padded/truncated to 30 seconds, regardless of their length,\
+          \ before being converted to log-mel spectrogram inputs. The model is then\
+          \ trained without an attention mask. Instead, it learns to ignore the padded\
+          \ inputs from the spectrogram inputs directly.\n\nAt inference time, we\
+          \ have to match the paradigm the model was trained on, i.e. always pad/truncate\
+          \ audios to 30 seconds. This is why the feature extractor and positional\
+          \ embeddings always expect log-mel spectrograms with a sequence length of\
+          \ 1500, which corresponds to 30 seconds of audio input. You'll find that\
+          \ the OpenAI Whisper implementation also forces the inputs to always be\
+          \ 30 seconds. The Transformers' implementation thus matches this for strict\
+          \ one-to-one equivalence.\n\nThe way we can run the model on longer audio\
+          \ samples is by chunking them into smaller 30 second chunks, and then running\
+          \ inference to get the chunked transcriptions. Here's a code snippet on\
+          \ how you can achieve this in Transformers:\n```python\nimport torch\nfrom\
+          \ transformers import pipeline\nfrom datasets import load_dataset\n\ndevice\
+          \ = \"cuda:0\" if torch.cuda.is_available() else \"cpu\"\n\npipe = pipeline(\n\
+          \  \"automatic-speech-recognition\",\n  model=\"openai/whisper-large-v2\"\
+          ,\n  chunk_length_s=30,\n  device=device,\n)\n\nds = load_dataset(\"hf-internal-testing/librispeech_asr_dummy\"\
+          , \"clean\", split=\"validation\")\nsample = ds[0][\"audio\"]\n\nprediction\
+          \ = pipe(sample.copy(), batch_size=8)[\"text\"]\n\n# we can also return\
+          \ timestamps for the predictions\nprediction = pipe(sample, batch_size=8,\
+          \ return_timestamps=True)[\"chunks\"]\n```"
+        updatedAt: '2023-09-28T18:08:31.069Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - bt-nia
+    id: 6515c11fd93a51ceda1d7ef2
+    type: comment
+  author: sanchit-gandhi
+  content: "Hey @RaysDipesh. The behaviour you've encountered here is the way the\
+    \ Whisper model gets around dealing with padded/truncated inputs: all input audios\
+    \ are padded/truncated to 30 seconds, regardless of their length, before being\
+    \ converted to log-mel spectrogram inputs. The model is then trained without an\
+    \ attention mask. Instead, it learns to ignore the padded inputs from the spectrogram\
+    \ inputs directly.\n\nAt inference time, we have to match the paradigm the model\
+    \ was trained on, i.e. always pad/truncate audios to 30 seconds. This is why the\
+    \ feature extractor and positional embeddings always expect log-mel spectrograms\
+    \ with a sequence length of 1500, which corresponds to 30 seconds of audio input.\
+    \ You'll find that the OpenAI Whisper implementation also forces the inputs to\
+    \ always be 30 seconds. The Transformers' implementation thus matches this for\
+    \ strict one-to-one equivalence.\n\nThe way we can run the model on longer audio\
+    \ samples is by chunking them into smaller 30 second chunks, and then running\
+    \ inference to get the chunked transcriptions. Here's a code snippet on how you\
+    \ can achieve this in Transformers:\n```python\nimport torch\nfrom transformers\
+    \ import pipeline\nfrom datasets import load_dataset\n\ndevice = \"cuda:0\" if\
+    \ torch.cuda.is_available() else \"cpu\"\n\npipe = pipeline(\n  \"automatic-speech-recognition\"\
+    ,\n  model=\"openai/whisper-large-v2\",\n  chunk_length_s=30,\n  device=device,\n\
+    )\n\nds = load_dataset(\"hf-internal-testing/librispeech_asr_dummy\", \"clean\"\
+    , split=\"validation\")\nsample = ds[0][\"audio\"]\n\nprediction = pipe(sample.copy(),\
+    \ batch_size=8)[\"text\"]\n\n# we can also return timestamps for the predictions\n\
+    prediction = pipe(sample, batch_size=8, return_timestamps=True)[\"chunks\"]\n\
+    ```"
+  created_at: 2023-09-28 17:08:31+00:00
+  edited: false
+  hidden: false
+  id: 6515c11fd93a51ceda1d7ef2
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 72
+repo_id: openai/whisper-large-v2
+repo_type: model
+status: open
+target_branch: null
+title: About length of audio

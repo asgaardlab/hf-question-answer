@@ -1,0 +1,1559 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Maykeye
+conflicting_files: null
+created_at: 2023-06-05 06:56:48+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a3c6507abdaa25a81ce659/Z7e4xiH7sjQYt2Qga4W8o.png?w=200&h=200&f=face
+      fullname: M
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maykeye
+      type: user
+    createdAt: '2023-06-05T07:56:48.000Z'
+    data:
+      edited: false
+      editors:
+      - Maykeye
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3810195326805115
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a3c6507abdaa25a81ce659/Z7e4xiH7sjQYt2Qga4W8o.png?w=200&h=200&f=face
+          fullname: M
+          isHf: false
+          isPro: false
+          name: Maykeye
+          type: user
+        html: "<p>I tried as per readme first.</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoModelForMaskedLM, BertTokenizer, pipeline\n\ntokenizer\
+          \ = BertTokenizer.from_pretrained(<span class=\"hljs-string\">'bert-base-uncased'</span>)\n\
+          mlm = AutoModelForMaskedLM.from_pretrained(<span class=\"hljs-string\">'mosaicml/mosaic-bert-base'</span>,\
+          \ trust_remote_code=<span class=\"hljs-literal\">True</span>, \n   revision=<span\
+          \ class=\"hljs-string\">'24512df'</span>) <span class=\"hljs-comment\">#\
+          \ I tried  with or without revision</span>\n\nclassifier = pipeline(<span\
+          \ class=\"hljs-string\">'fill-mask'</span>, model=mlm, tokenizer=tokenizer)\n\
+          \nclassifier(<span class=\"hljs-string\">\"I [MASK] to the store yesterday.\"\
+          </span>)\n</code></pre>\n<p>The example is not working.</p>\n<pre><code\
+          \ class=\"language-python\">File ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:<span\
+          \ class=\"hljs-number\">781</span>, <span class=\"hljs-keyword\">in</span>\
+          \ _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\n    <span class=\"\
+          hljs-number\">778</span> <span class=\"hljs-keyword\">assert</span> q.dtype\
+          \ == k.dtype == v.dtype, <span class=\"hljs-string\">'All tensors must have\
+          \ the same type'</span>\n    <span class=\"hljs-number\">779</span> <span\
+          \ class=\"hljs-keyword\">assert</span> q.dtype <span class=\"hljs-keyword\"\
+          >in</span> [torch.float16,\n    <span class=\"hljs-number\">780</span> \
+          \                   torch.bfloat16], <span class=\"hljs-string\">'Only support\
+          \ fp16 and bf16'</span>\n--&gt; <span class=\"hljs-number\">781</span> <span\
+          \ class=\"hljs-keyword\">assert</span> q.is_cuda <span class=\"hljs-keyword\"\
+          >and</span> k.is_cuda <span class=\"hljs-keyword\">and</span> v.is_cuda\n\
+          </code></pre>\n<p>This is trivial to fix:</p>\n<pre><code class=\"language-python\"\
+          >mlm = AutoModelForMaskedLM.from_pretrained(<span class=\"hljs-string\"\
+          >'mosaicml/mosaic-bert-base'</span>, trust_remote_code=<span class=\"hljs-literal\"\
+          >True</span>, revision=<span class=\"hljs-string\">'24512df'</span>).cuda()\n\
+          classifier = pipeline(<span class=\"hljs-string\">'fill-mask'</span>, model=mlm,\
+          \ tokenizer=tokenizer,device=<span class=\"hljs-string\">\"cuda:0\"</span>)\n\
+          classifier(<span class=\"hljs-string\">\"I [MASK] to the store yesterday.\"\
+          </span>)\n</code></pre>\n<p>And ...</p>\n<pre><code>KeyError           \
+          \                       Traceback (most recent call last)\nFile &lt;string&gt;:21,\
+          \ in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb,\
+          \ stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh,\
+          \ stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om,\
+          \ nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+          \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N,\
+          \ EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs,\
+          \ stream, warmup)\n\nKeyError: ('2-.-0-.-0-83ca8b715a9dc5f32dc1110973485f64-d6252949da17ceb5f3a278a70250af13-3b85c7bef5f0a641282f3b73af50f599-975a5a907f067e8e36a802ec0cd5bc10-3498c340fd4b6ee7805fd54b882a04f5-e1f133f98d04093da2078dfc51c36b72-b26258bf01f839199e39d64851821f26-d7c06e3b46e708006c15224aac7a1378-f585402118c8a136948ce0a49cfe122c',\
+          \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('matrix', False, 64,\
+          \ False, False, True, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (False, False), (False, False), (False, False), (True, False), (True,\
+          \ False), (True, False), (False, False), (False, False), (False, False),\
+          \ (True, False), (True, False), (True, False), (True, False)))\n\nDuring\
+          \ handling of the above exception, another exception occurred:\n\nTypeError\
+          \                                 Traceback (most recent call last)\nFile\
+          \ ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:937, in build_triton_ir(fn,\
+          \ signature, specialization, constants)\n    936 try:\n--&gt; 937     generator.visit(fn.parse())\n\
+          \    938 except Exception as e:\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:183,\
+          \ in CodeGenerator.visit_Module(self, node)\n    182 def visit_Module(self,\
+          \ node):\n--&gt; 183     ast.NodeVisitor.generic_visit(self, node)\n\nFile\
+          \ /usr/lib/python3.11/ast.py:426, in NodeVisitor.generic_visit(self, node)\n\
+          \    425         if isinstance(item, AST):\n--&gt; 426             self.visit(item)\n\
+          \    427 elif isinstance(value, AST):\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:252,\
+          \ in CodeGenerator.visit_FunctionDef(self, node)\n    251 # visit function\
+          \ body\n--&gt; 252 has_ret = self.visit_compound_statement(node.body)\n\
+          \    253 # finalize function\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177,\
+          \ in CodeGenerator.visit_compound_statement(self, stmts)\n    176 for stmt\
+          \ in stmts:\n--&gt; 177     self.last_ret_type = self.visit(stmt)\n    178\
+          \     if isinstance(stmt, ast.Return):\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:678,\
+          \ in CodeGenerator.visit_For(self, node)\n    677 self.scf_stack.append(node)\n\
+          --&gt; 678 self.visit_compound_statement(node.body)\n    679 self.scf_stack.pop()\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177,\
+          \ in CodeGenerator.visit_compound_statement(self, stmts)\n    176 for stmt\
+          \ in stmts:\n--&gt; 177     self.last_ret_type = self.visit(stmt)\n    178\
+          \     if isinstance(stmt, ast.Return):\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:319,\
+          \ in CodeGenerator.visit_AugAssign(self, node)\n    318 assign = ast.Assign(targets=[node.target],\
+          \ value=rhs)\n--&gt; 319 self.visit(assign)\n    320 return self.get_value(name)\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:301,\
+          \ in CodeGenerator.visit_Assign(self, node)\n    300 names = _names[0]\n\
+          --&gt; 301 values = self.visit(node.value)\n    302 if not isinstance(names,\
+          \ tuple):\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:339,\
+          \ in CodeGenerator.visit_BinOp(self, node)\n    338 lhs = self.visit(node.left)\n\
+          --&gt; 339 rhs = self.visit(node.right)\n    340 fn = {\n    341     ast.Add:\
+          \ '__add__',\n    342     ast.Sub: '__sub__',\n   (...)\n    352     ast.BitXor:\
+          \ '__xor__',\n    353 }[type(node.op)]\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\n--&gt; 855 return super().visit(node)\n\
+          \nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\n\
+          \    417 visitor = getattr(self, method, self.generic_visit)\n--&gt; 418\
+          \ return visitor(node)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:797,\
+          \ in CodeGenerator.visit_Call(self, node)\n    795 if (hasattr(fn, '__self__')\
+          \ and self.is_triton_tensor(fn.__self__)) \\\n    796         or impl.is_builtin(fn):\n\
+          --&gt; 797     return fn(*args, _builder=self.builder, **kws)\n    798 if\
+          \ fn in self.builtins.values():\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/impl/base.py:22,\
+          \ in builtin.&lt;locals&gt;.wrapper(*args, **kwargs)\n     18     raise\
+          \ ValueError(\n     19         \"Did you forget to add <span data-props=\"\
+          {&quot;user&quot;:&quot;triton&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/triton\">@<span class=\"underline\">triton</span></a></span>\n\
+          \n\t</span></span>.jit ? \"\n     20         \"(`_builder` argument must\
+          \ be provided outside of JIT functions.)\"\n     21     )\n---&gt; 22 return\
+          \ fn(*args, **kwargs)\n\nTypeError: dot() got an unexpected keyword argument\
+          \ 'trans_b'\n\nThe above exception was the direct cause of the following\
+          \ exception:\n\nCompilationError                          Traceback (most\
+          \ recent call last)\nCell In[3], line 8\n      4 mlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+          \ trust_remote_code=True, revision='24512df').cuda()\n      6 classifier\
+          \ = pipeline('fill-mask', model=mlm, tokenizer=tokenizer,device=\"cuda:0\"\
+          )\n----&gt; 8 classifier(\"I [MASK] to the store yesterday.\")\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:239,\
+          \ in FillMaskPipeline.__call__(self, inputs, *args, **kwargs)\n    217 def\
+          \ __call__(self, inputs, *args, **kwargs):\n    218     \"\"\"\n    219\
+          \     Fill the masked token in the text(s) given as inputs.\n    220 \n\
+          \   (...)\n    237         - **token_str** (`str`) -- The predicted token\
+          \ (to replace the masked one).\n    238     \"\"\"\n--&gt; 239     outputs\
+          \ = super().__call__(inputs, **kwargs)\n    240     if isinstance(inputs,\
+          \ list) and len(inputs) == 1:\n    241         return outputs[0]\n\nFile\
+          \ ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1118,\
+          \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\n\
+          \   1110     return next(\n   1111         iter(\n   1112             self.get_iterator(\n\
+          \   (...)\n   1115         )\n   1116     )\n   1117 else:\n-&gt; 1118 \
+          \    return self.run_single(inputs, preprocess_params, forward_params, postprocess_params)\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1125,\
+          \ in Pipeline.run_single(self, inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\n   1123 def run_single(self, inputs, preprocess_params,\
+          \ forward_params, postprocess_params):\n   1124     model_inputs = self.preprocess(inputs,\
+          \ **preprocess_params)\n-&gt; 1125     model_outputs = self.forward(model_inputs,\
+          \ **forward_params)\n   1126     outputs = self.postprocess(model_outputs,\
+          \ **postprocess_params)\n   1127     return outputs\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1024,\
+          \ in Pipeline.forward(self, model_inputs, **forward_params)\n   1022   \
+          \  with inference_context():\n   1023         model_inputs = self._ensure_tensor_on_device(model_inputs,\
+          \ device=self.device)\n-&gt; 1024         model_outputs = self._forward(model_inputs,\
+          \ **forward_params)\n   1025         model_outputs = self._ensure_tensor_on_device(model_outputs,\
+          \ device=torch.device(\"cpu\"))\n   1026 else:\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:101,\
+          \ in FillMaskPipeline._forward(self, model_inputs)\n    100 def _forward(self,\
+          \ model_inputs):\n--&gt; 101     model_outputs = self.model(**model_inputs)\n\
+          \    102     model_outputs[\"input_ids\"] = model_inputs[\"input_ids\"]\n\
+          \    103     return model_outputs\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:850,\
+          \ in BertForMaskedLM.forward(self, input_ids, attention_mask, token_type_ids,\
+          \ position_ids, head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ labels, output_attentions, output_hidden_states, return_dict)\n    846\
+          \     masked_tokens_mask = labels &gt; 0\n    848 return_dict = return_dict\
+          \ if return_dict is not None else self.config.use_return_dict\n--&gt; 850\
+          \ outputs = self.bert(\n    851     input_ids,\n    852     attention_mask=attention_mask,\n\
+          \    853     token_type_ids=token_type_ids,\n    854     position_ids=position_ids,\n\
+          \    855     head_mask=head_mask,\n    856     inputs_embeds=inputs_embeds,\n\
+          \    857     encoder_hidden_states=encoder_hidden_states,\n    858     encoder_attention_mask=encoder_attention_mask,\n\
+          \    859     output_attentions=output_attentions,\n    860     output_hidden_states=output_hidden_states,\n\
+          \    861     return_dict=return_dict,\n    862     masked_tokens_mask=masked_tokens_mask,\n\
+          \    863 )\n    865 sequence_output = outputs[0]\n    866 prediction_scores\
+          \ = self.cls(sequence_output)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:669,\
+          \ in BertModel.forward(self, input_ids, token_type_ids, attention_mask,\
+          \ position_ids, output_all_encoded_layers, masked_tokens_mask, **kwargs)\n\
+          \    666     first_col_mask[:, 0] = True\n    667     subset_mask = masked_tokens_mask\
+          \ | first_col_mask\n--&gt; 669 encoder_outputs = self.encoder(\n    670\
+          \     embedding_output,\n    671     attention_mask,\n    672     output_all_encoded_layers=output_all_encoded_layers,\n\
+          \    673     subset_mask=subset_mask)\n    675 if masked_tokens_mask is\
+          \ None:\n    676     sequence_output = encoder_outputs[-1]\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:507,\
+          \ in BertEncoder.forward(self, hidden_states, attention_mask, output_all_encoded_layers,\
+          \ subset_mask)\n    505 if subset_mask is None:\n    506     for layer_module\
+          \ in self.layer:\n--&gt; 507         hidden_states = layer_module(hidden_states,\n\
+          \    508                                      cu_seqlens,\n    509     \
+          \                                 seqlen,\n    510                     \
+          \                 None,\n    511                                      indices,\n\
+          \    512                                      attn_mask=attention_mask,\n\
+          \    513                                      bias=alibi_attn_mask)\n  \
+          \  514         if output_all_encoded_layers:\n    515             all_encoder_layers.append(hidden_states)\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:388,\
+          \ in BertLayer.forward(self, hidden_states, cu_seqlens, seqlen, subset_idx,\
+          \ indices, attn_mask, bias)\n    366 def forward(\n    367     self,\n \
+          \   368     hidden_states: torch.Tensor,\n   (...)\n    374     bias: Optional[torch.Tensor]\
+          \ = None,\n    375 ) -&gt; torch.Tensor:\n    376     \"\"\"Forward pass\
+          \ for a BERT layer, including both attention and MLP.\n    377 \n    378\
+          \     Args:\n   (...)\n    386         bias: None or (batch, heads, max_seqlen_in_batch,\
+          \ max_seqlen_in_batch)\n    387     \"\"\"\n--&gt; 388     attention_output\
+          \ = self.attention(hidden_states, cu_seqlens, seqlen,\n    389         \
+          \                              subset_idx, indices, attn_mask, bias)\n \
+          \   390     layer_output = self.mlp(attention_output)\n    391     return\
+          \ layer_output\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:301,\
+          \ in BertUnpadAttention.forward(self, input_tensor, cu_seqlens, max_s, subset_idx,\
+          \ indices, attn_mask, bias)\n    279 def forward(\n    280     self,\n \
+          \   281     input_tensor: torch.Tensor,\n   (...)\n    287     bias: Optional[torch.Tensor]\
+          \ = None,\n    288 ) -&gt; torch.Tensor:\n    289     \"\"\"Forward pass\
+          \ for scaled self-attention without padding.\n    290 \n    291     Arguments:\n\
+          \   (...)\n    299         bias: None or (batch, heads, max_seqlen_in_batch,\
+          \ max_seqlen_in_batch)\n    300     \"\"\"\n--&gt; 301     self_output =\
+          \ self.self(input_tensor, cu_seqlens, max_s, indices,\n    302         \
+          \                    attn_mask, bias)\n    303     if subset_idx is not\
+          \ None:\n    304         return self.output(index_first_axis(self_output,\
+          \ subset_idx),\n    305                            index_first_axis(input_tensor,\
+          \ subset_idx))\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1497 # this function,\
+          \ and just call forward.\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1500        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1501  \
+          \   return forward_call(*args, **kwargs)\n   1502 # Do not call functions\
+          \ when jit is used\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:233,\
+          \ in BertUnpadSelfAttention.forward(self, hidden_states, cu_seqlens, max_seqlen_in_batch,\
+          \ indices, attn_mask, bias)\n    231 bias_dtype = bias.dtype\n    232 bias\
+          \ = bias.to(torch.float16)\n--&gt; 233 attention = flash_attn_qkvpacked_func(qkv,\
+          \ bias)\n    234 attention = attention.to(orig_dtype)\n    235 bias = bias.to(bias_dtype)\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/autograd/function.py:506,\
+          \ in Function.apply(cls, *args, **kwargs)\n    503 if not torch._C._are_functorch_transforms_active():\n\
+          \    504     # See NOTE: [functorch vjp and autograd interaction]\n    505\
+          \     args = _functorch.utils.unwrap_dead_wrappers(args)\n--&gt; 506   \
+          \  return super().apply(*args, **kwargs)  # type: ignore[misc]\n    508\
+          \ if cls.setup_context == _SingleLevelFunction.setup_context:\n    509 \
+          \    raise RuntimeError(\n    510         'In order to use an autograd.Function\
+          \ with functorch transforms '\n    511         '(vmap, grad, jvp, jacrev,\
+          \ ...), it must override the setup_context '\n    512         'staticmethod.\
+          \ For more details, please see '\n    513         'https://pytorch.org/docs/master/notes/extending.func.html')\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:1021,\
+          \ in _FlashAttnQKVPackedFunc.forward(ctx, qkv, bias, causal, softmax_scale)\n\
+          \   1019 if qkv.stride(-1) != 1:\n   1020     qkv = qkv.contiguous()\n-&gt;\
+          \ 1021 o, lse, ctx.softmax_scale = _flash_attn_forward(\n   1022     qkv[:,\
+          \ :, 0],\n   1023     qkv[:, :, 1],\n   1024     qkv[:, :, 2],\n   1025\
+          \     bias=bias,\n   1026     causal=causal,\n   1027     softmax_scale=softmax_scale)\n\
+          \   1028 ctx.save_for_backward(qkv, o, lse, bias)\n   1029 ctx.causal =\
+          \ causal\n\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:826,\
+          \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\n    823\
+          \ # BLOCK = 128\n    824 # num_warps = 4 if d &lt;= 64 else 8\n    825 grid\
+          \ = lambda META: (triton.cdiv(seqlen_q, META['BLOCK_M']), batch * nheads)\n\
+          --&gt; 826 _fwd_kernel[grid](  # type: ignore\n    827     q,\n    828 \
+          \    k,\n    829     v,\n    830     bias,\n    831     o,\n    832    \
+          \ lse,\n    833     tmp,\n    834     softmax_scale,\n    835     q.stride(0),\n\
+          \    836     q.stride(2),\n    837     q.stride(1),\n    838     k.stride(0),\n\
+          \    839     k.stride(2),\n    840     k.stride(1),\n    841     v.stride(0),\n\
+          \    842     v.stride(2),\n    843     v.stride(1),\n    844     *bias_strides,\n\
+          \    845     o.stride(0),\n    846     o.stride(2),\n    847     o.stride(1),\n\
+          \    848     nheads,\n    849     seqlen_q,\n    850     seqlen_k,\n   \
+          \ 851     seqlen_q_rounded,\n    852     d,\n    853     seqlen_q // 32,\n\
+          \    854     seqlen_k // 32,  # key for triton cache (limit number of compilations)\n\
+          \    855     # Can't use kwargs here because triton autotune expects key\
+          \ to be args, not kwargs\n    856     # IS_CAUSAL=causal, BLOCK_HEADDIM=d,\n\
+          \    857     bias_type,\n    858     causal,\n    859     BLOCK_HEADDIM,\n\
+          \    860     # BLOCK_M=BLOCK, BLOCK_N=BLOCK,\n    861     # num_warps=num_warps,\n\
+          \    862     # num_stages=1,\n    863 )\n    864 return o, lse, softmax_scale\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:90,\
+          \ in Autotuner.run(self, *args, **kwargs)\n     88 if config.pre_hook is\
+          \ not None:\n     89     config.pre_hook(self.nargs)\n---&gt; 90 return\
+          \ self.fn.run(*args, num_warps=config.num_warps, num_stages=config.num_stages,\
+          \ **kwargs, **config.kwargs)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:199,\
+          \ in Heuristics.run(self, *args, **kwargs)\n    197 for v, heur in self.values.items():\n\
+          \    198     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\n\
+          --&gt; 199 return self.fn.run(*args, **kwargs)\n\nFile &lt;string&gt;:41,\
+          \ in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb,\
+          \ stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh,\
+          \ stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om,\
+          \ nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+          \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N,\
+          \ EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs,\
+          \ stream, warmup)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1621,\
+          \ in compile(fn, **kwargs)\n   1619     next_module = parse(path)\n   1620\
+          \ else:\n-&gt; 1621     next_module = compile(module)\n   1622     fn_cache_manager.put(next_module,\
+          \ f\"{name}.{ir}\")\n   1623 if os.path.exists(path):\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1550,\
+          \ in compile.&lt;locals&gt;.&lt;lambda&gt;(src)\n   1545 extern_libs = kwargs.get(\"\
+          extern_libs\", dict())\n   1546 # build compilation stages\n   1547 stages\
+          \ = {\n   1548     \"ast\": (lambda path: fn, None),\n   1549     \"ttir\"\
+          : (lambda path: parse_mlir_module(path, context),\n-&gt; 1550          \
+          \    lambda src: ast_to_ttir(src, signature, configs[0], constants)),\n\
+          \   1551     \"ttgir\": (lambda path: parse_mlir_module(path, context),\n\
+          \   1552               lambda src: ttir_to_ttgir(src, num_warps, num_stages,\
+          \ capability)),\n   1553     \"llir\": (lambda path: Path(path).read_text(),\n\
+          \   1554              lambda src: ttgir_to_llir(src, extern_libs, capability)),\n\
+          \   1555     \"ptx\": (lambda path: Path(path).read_text(),\n   1556   \
+          \          lambda src: llir_to_ptx(src, capability)),\n   1557     \"cubin\"\
+          : (lambda path: Path(path).read_bytes(),\n   1558               lambda src:\
+          \ ptx_to_cubin(src, capability))\n   1559 }\n   1560 # find out the signature\
+          \ of the function\n   1561 if isinstance(fn, triton.runtime.JITFunction):\n\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:962,\
+          \ in ast_to_ttir(fn, signature, specialization, constants)\n    961 def\
+          \ ast_to_ttir(fn, signature, specialization, constants):\n--&gt; 962   \
+          \  mod, _ = build_triton_ir(fn, signature, specialization, constants)\n\
+          \    963     return optimize_triton_ir(mod)\n\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:942,\
+          \ in build_triton_ir(fn, signature, specialization, constants)\n    940\
+          \     if node is None or isinstance(e, (NotImplementedError, CompilationError)):\n\
+          \    941         raise e\n--&gt; 942     raise CompilationError(fn.src,\
+          \ node) from e\n    943 ret = generator.module\n    944 # module takes ownership\
+          \ of the context\n\nCompilationError: at 114:24:\ndef _fwd_kernel(\n   \
+          \ Q,\n    K,\n    V,\n    Bias,\n    Out,\n    Lse,\n    TMP,  # NOTE: TMP\
+          \ is a scratchpad buffer to workaround a compiler bug\n    softmax_scale,\n\
+          \    stride_qb,\n    stride_qh,\n    stride_qm,\n    stride_kb,\n    stride_kh,\n\
+          \    stride_kn,\n    stride_vb,\n    stride_vh,\n    stride_vn,\n    stride_bb,\n\
+          \    stride_bh,\n    stride_bm,\n    stride_ob,\n    stride_oh,\n    stride_om,\n\
+          \    nheads,\n    seqlen_q,\n    seqlen_k,\n    seqlen_q_rounded,\n    headdim,\n\
+          \    CACHE_KEY_SEQLEN_Q,\n    CACHE_KEY_SEQLEN_K,\n    BIAS_TYPE: tl.constexpr,\n\
+          \    IS_CAUSAL: tl.constexpr,\n    BLOCK_HEADDIM: tl.constexpr,\n    EVEN_M:\
+          \ tl.constexpr,\n    EVEN_N: tl.constexpr,\n    EVEN_HEADDIM: tl.constexpr,\n\
+          \    BLOCK_M: tl.constexpr,\n    BLOCK_N: tl.constexpr,\n):\n    start_m\
+          \ = tl.program_id(0)\n    off_hb = tl.program_id(1)\n    off_b = off_hb\
+          \ // nheads\n    off_h = off_hb % nheads\n    # off_b = tl.program_id(1)\n\
+          \    # off_h = tl.program_id(2)\n    # off_hb = off_b * nheads + off_h\n\
+          \    # initialize offsets\n    offs_m = start_m * BLOCK_M + tl.arange(0,\
+          \ BLOCK_M)\n    offs_n = tl.arange(0, BLOCK_N)\n    offs_d = tl.arange(0,\
+          \ BLOCK_HEADDIM)\n    # Initialize pointers to Q, K, V\n    # Adding parenthesis\
+          \ around indexing might use int32 math instead of int64 math?\n    # https://github.com/openai/triton/issues/741\n\
+          \    # I'm seeing a tiny bit of difference (5-7us)\n    q_ptrs = Q + off_b\
+          \ * stride_qb + off_h * stride_qh + (\n        offs_m[:, None] * stride_qm\
+          \ + offs_d[None, :])\n    k_ptrs = K + off_b * stride_kb + off_h * stride_kh\
+          \ + (\n        offs_n[:, None] * stride_kn + offs_d[None, :])\n    v_ptrs\
+          \ = V + off_b * stride_vb + off_h * stride_vh + (\n        offs_n[:, None]\
+          \ * stride_vn + offs_d[None, :])\n    if BIAS_TYPE == 'vector':\n      \
+          \  b_ptrs = Bias + off_b * stride_bb + off_h * stride_bh + offs_n\n    elif\
+          \ BIAS_TYPE == 'matrix':\n        b_ptrs = Bias + off_b * stride_bb + off_h\
+          \ * stride_bh + (\n            offs_m[:, None] * stride_bm + offs_n[None,\
+          \ :])\n    else:\n        raise ValueError(\"BIAS_TYPE must be one of {'vector',\
+          \ 'matrix'}\")\n    # initialize pointer to m and l\n    t_ptrs = TMP +\
+          \ off_hb * seqlen_q_rounded + offs_m\n    lse_i = tl.zeros([BLOCK_M], dtype=tl.float32)\
+          \ - float('inf')\n    m_i = tl.zeros([BLOCK_M], dtype=tl.float32) - float('inf')\n\
+          \    acc_o = tl.zeros([BLOCK_M, BLOCK_HEADDIM], dtype=tl.float32)\n    #\
+          \ load q: it will stay in SRAM throughout\n    # [2022-10-30] TD: Triton\
+          \ bug - in the case of EVEN_M=True and EVEN_N=False, if we just call\n \
+          \   # tl.load(q_ptrs), we get the wrong output!\n    if EVEN_M &amp; EVEN_N:\n\
+          \        if EVEN_HEADDIM:\n            q = tl.load(q_ptrs)\n        else:\n\
+          \            q = tl.load(q_ptrs, mask=offs_d[None, :] &lt; headdim, other=0.0)\n\
+          \    else:\n        if EVEN_HEADDIM:\n            q = tl.load(q_ptrs, mask=offs_m[:,\
+          \ None] &lt; seqlen_q, other=0.0)\n        else:\n            q = tl.load(q_ptrs,\n\
+          \                        mask=(offs_m[:, None] &lt; seqlen_q) &amp;\n  \
+          \                      (offs_d[None, :] &lt; headdim),\n               \
+          \         other=0.0)\n    # loop over k, v and update accumulator\n    end_n\
+          \ = seqlen_k if not IS_CAUSAL else tl.minimum(\n        (start_m + 1) *\
+          \ BLOCK_M, seqlen_k)\n    for start_n in range(0, end_n, BLOCK_N):\n   \
+          \     start_n = tl.multiple_of(start_n, BLOCK_N)\n        # -- compute qk\
+          \ ----\n        if EVEN_N &amp; EVEN_M:  # If we just do \"if EVEN_N\",\
+          \ there seems to be some race condition\n            if EVEN_HEADDIM:\n\
+          \                k = tl.load(k_ptrs + start_n * stride_kn)\n           \
+          \ else:\n                k = tl.load(k_ptrs + start_n * stride_kn,\n   \
+          \                         mask=offs_d[None, :] &lt; headdim,\n         \
+          \                   other=0.0)\n        else:\n            if EVEN_HEADDIM:\n\
+          \                k = tl.load(k_ptrs + start_n * stride_kn,\n           \
+          \                 mask=(start_n + offs_n)[:, None] &lt; seqlen_k,\n    \
+          \                        other=0.0)\n            else:\n               \
+          \ k = tl.load(k_ptrs + start_n * stride_kn,\n                          \
+          \  mask=((start_n + offs_n)[:, None] &lt; seqlen_k) &amp;\n            \
+          \                (offs_d[None, :] &lt; headdim),\n                     \
+          \       other=0.0)\n        qk = tl.zeros([BLOCK_M, BLOCK_N], dtype=tl.float32)\n\
+          \        qk += tl.dot(q, k, trans_b=True)\n</code></pre>\n<p>I use</p>\n\
+          <pre><code>In [8]: sys.version_info\nOut[8]: sys.version_info(major=3, minor=11,\
+          \ micro=3, releaselevel='final', serial=0)\n\nIn [9]: torch.__version__\n\
+          Out[9]: '2.0.1+cu117'\n\nIn [10]: import triton\n\nIn [11]: triton.__version__\n\
+          Out[12]: '2.0.0'\n\nIn [13]: import triton.language as tl\n\nIn [14]: tl.__version__\n\
+          ---------------------------------------------------------------------------\n\
+          AttributeError                            Traceback (most recent call last)\n\
+          Cell In[14], line 1\n----&gt; 1 tl.__version__\n\nAttributeError: module\
+          \ 'triton.language' has no attribute '__version__'\n\nIn [15]: tl.dot\n\
+          Out[15]: &lt;function triton.language.core.dot(input, other, allow_tf32=True,\
+          \ _builder=None)&gt;\n</code></pre>\n<p>Do I need special  revision= string\
+          \ to make it work? Did triton language have breaking changes?</p>\n"
+        raw: "I tried as per readme first.\r\n```python\r\nfrom transformers import\
+          \ AutoModelForMaskedLM, BertTokenizer, pipeline\r\n\r\ntokenizer = BertTokenizer.from_pretrained('bert-base-uncased')\r\
+          \nmlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+          \ trust_remote_code=True, \r\n   revision='24512df') # I tried  with or\
+          \ without revision\r\n\r\nclassifier = pipeline('fill-mask', model=mlm,\
+          \ tokenizer=tokenizer)\r\n\r\nclassifier(\"I [MASK] to the store yesterday.\"\
+          )\r\n```\r\n\r\nThe example is not working.\r\n\r\n```python\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:781,\
+          \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    778\
+          \ assert q.dtype == k.dtype == v.dtype, 'All tensors must have the same\
+          \ type'\r\n    779 assert q.dtype in [torch.float16,\r\n    780        \
+          \            torch.bfloat16], 'Only support fp16 and bf16'\r\n--> 781 assert\
+          \ q.is_cuda and k.is_cuda and v.is_cuda\r\n```\r\n\r\nThis is trivial to\
+          \ fix:\r\n```python\r\nmlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+          \ trust_remote_code=True, revision='24512df').cuda()\r\nclassifier = pipeline('fill-mask',\
+          \ model=mlm, tokenizer=tokenizer,device=\"cuda:0\")\r\nclassifier(\"I [MASK]\
+          \ to the store yesterday.\")\r\n```\r\n\r\nAnd ...\r\n```\r\nKeyError  \
+          \                                Traceback (most recent call last)\r\nFile\
+          \ <string>:21, in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale,\
+          \ stride_qb, stride_qh, stride_qm, stride_kb, stride_kh, stride_kn, stride_vb,\
+          \ stride_vh, stride_vn, stride_bb, stride_bh, stride_bm, stride_ob, stride_oh,\
+          \ stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q,\
+          \ CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N,\
+          \ EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages, extern_libs,\
+          \ stream, warmup)\r\n\r\nKeyError: ('2-.-0-.-0-83ca8b715a9dc5f32dc1110973485f64-d6252949da17ceb5f3a278a70250af13-3b85c7bef5f0a641282f3b73af50f599-975a5a907f067e8e36a802ec0cd5bc10-3498c340fd4b6ee7805fd54b882a04f5-e1f133f98d04093da2078dfc51c36b72-b26258bf01f839199e39d64851821f26-d7c06e3b46e708006c15224aac7a1378-f585402118c8a136948ce0a49cfe122c',\
+          \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('matrix', False, 64,\
+          \ False, False, True, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (False, False), (False, False), (False, False), (True, False), (True,\
+          \ False), (True, False), (False, False), (False, False), (False, False),\
+          \ (True, False), (True, False), (True, False), (True, False)))\r\n\r\nDuring\
+          \ handling of the above exception, another exception occurred:\r\n\r\nTypeError\
+          \                                 Traceback (most recent call last)\r\n\
+          File ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:937, in\
+          \ build_triton_ir(fn, signature, specialization, constants)\r\n    936 try:\r\
+          \n--> 937     generator.visit(fn.parse())\r\n    938 except Exception as\
+          \ e:\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"\
+          ignore\", PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:183,\
+          \ in CodeGenerator.visit_Module(self, node)\r\n    182 def visit_Module(self,\
+          \ node):\r\n--> 183     ast.NodeVisitor.generic_visit(self, node)\r\n\r\n\
+          File /usr/lib/python3.11/ast.py:426, in NodeVisitor.generic_visit(self,\
+          \ node)\r\n    425         if isinstance(item, AST):\r\n--> 426        \
+          \     self.visit(item)\r\n    427 elif isinstance(value, AST):\r\n\r\nFile\
+          \ ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855, in CodeGenerator.visit(self,\
+          \ node)\r\n    854 warnings.simplefilter(\"ignore\", PendingDeprecationWarning)\
+          \  # python 3.8\r\n--> 855 return super().visit(node)\r\n\r\nFile /usr/lib/python3.11/ast.py:418,\
+          \ in NodeVisitor.visit(self, node)\r\n    417 visitor = getattr(self, method,\
+          \ self.generic_visit)\r\n--> 418 return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:252,\
+          \ in CodeGenerator.visit_FunctionDef(self, node)\r\n    251 # visit function\
+          \ body\r\n--> 252 has_ret = self.visit_compound_statement(node.body)\r\n\
+          \    253 # finalize function\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177,\
+          \ in CodeGenerator.visit_compound_statement(self, stmts)\r\n    176 for\
+          \ stmt in stmts:\r\n--> 177     self.last_ret_type = self.visit(stmt)\r\n\
+          \    178     if isinstance(stmt, ast.Return):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"\
+          ignore\", PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:678,\
+          \ in CodeGenerator.visit_For(self, node)\r\n    677 self.scf_stack.append(node)\r\
+          \n--> 678 self.visit_compound_statement(node.body)\r\n    679 self.scf_stack.pop()\r\
+          \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177,\
+          \ in CodeGenerator.visit_compound_statement(self, stmts)\r\n    176 for\
+          \ stmt in stmts:\r\n--> 177     self.last_ret_type = self.visit(stmt)\r\n\
+          \    178     if isinstance(stmt, ast.Return):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"\
+          ignore\", PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:319,\
+          \ in CodeGenerator.visit_AugAssign(self, node)\r\n    318 assign = ast.Assign(targets=[node.target],\
+          \ value=rhs)\r\n--> 319 self.visit(assign)\r\n    320 return self.get_value(name)\r\
+          \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"\
+          ignore\", PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:301,\
+          \ in CodeGenerator.visit_Assign(self, node)\r\n    300 names = _names[0]\r\
+          \n--> 301 values = self.visit(node.value)\r\n    302 if not isinstance(names,\
+          \ tuple):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+          \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"\
+          ignore\", PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:339,\
+          \ in CodeGenerator.visit_BinOp(self, node)\r\n    338 lhs = self.visit(node.left)\r\
+          \n--> 339 rhs = self.visit(node.right)\r\n    340 fn = {\r\n    341    \
+          \ ast.Add: '__add__',\r\n    342     ast.Sub: '__sub__',\r\n   (...)\r\n\
+          \    352     ast.BitXor: '__xor__',\r\n    353 }[type(node.op)]\r\n\r\n\
+          File ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855, in\
+          \ CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+          , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+          \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\
+          \n    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418\
+          \ return visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:797,\
+          \ in CodeGenerator.visit_Call(self, node)\r\n    795 if (hasattr(fn, '__self__')\
+          \ and self.is_triton_tensor(fn.__self__)) \\\r\n    796         or impl.is_builtin(fn):\r\
+          \n--> 797     return fn(*args, _builder=self.builder, **kws)\r\n    798\
+          \ if fn in self.builtins.values():\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/impl/base.py:22,\
+          \ in builtin.<locals>.wrapper(*args, **kwargs)\r\n     18     raise ValueError(\r\
+          \n     19         \"Did you forget to add @triton.jit ? \"\r\n     20  \
+          \       \"(`_builder` argument must be provided outside of JIT functions.)\"\
+          \r\n     21     )\r\n---> 22 return fn(*args, **kwargs)\r\n\r\nTypeError:\
+          \ dot() got an unexpected keyword argument 'trans_b'\r\n\r\nThe above exception\
+          \ was the direct cause of the following exception:\r\n\r\nCompilationError\
+          \                          Traceback (most recent call last)\r\nCell In[3],\
+          \ line 8\r\n      4 mlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+          \ trust_remote_code=True, revision='24512df').cuda()\r\n      6 classifier\
+          \ = pipeline('fill-mask', model=mlm, tokenizer=tokenizer,device=\"cuda:0\"\
+          )\r\n----> 8 classifier(\"I [MASK] to the store yesterday.\")\r\n\r\nFile\
+          \ ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:239,\
+          \ in FillMaskPipeline.__call__(self, inputs, *args, **kwargs)\r\n    217\
+          \ def __call__(self, inputs, *args, **kwargs):\r\n    218     \"\"\"\r\n\
+          \    219     Fill the masked token in the text(s) given as inputs.\r\n \
+          \   220 \r\n   (...)\r\n    237         - **token_str** (`str`) -- The predicted\
+          \ token (to replace the masked one).\r\n    238     \"\"\"\r\n--> 239  \
+          \   outputs = super().__call__(inputs, **kwargs)\r\n    240     if isinstance(inputs,\
+          \ list) and len(inputs) == 1:\r\n    241         return outputs[0]\r\n\r\
+          \nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1118,\
+          \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\r\
+          \n   1110     return next(\r\n   1111         iter(\r\n   1112         \
+          \    self.get_iterator(\r\n   (...)\r\n   1115         )\r\n   1116    \
+          \ )\r\n   1117 else:\r\n-> 1118     return self.run_single(inputs, preprocess_params,\
+          \ forward_params, postprocess_params)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1125,\
+          \ in Pipeline.run_single(self, inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\r\n   1123 def run_single(self, inputs, preprocess_params,\
+          \ forward_params, postprocess_params):\r\n   1124     model_inputs = self.preprocess(inputs,\
+          \ **preprocess_params)\r\n-> 1125     model_outputs = self.forward(model_inputs,\
+          \ **forward_params)\r\n   1126     outputs = self.postprocess(model_outputs,\
+          \ **postprocess_params)\r\n   1127     return outputs\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1024,\
+          \ in Pipeline.forward(self, model_inputs, **forward_params)\r\n   1022 \
+          \    with inference_context():\r\n   1023         model_inputs = self._ensure_tensor_on_device(model_inputs,\
+          \ device=self.device)\r\n-> 1024         model_outputs = self._forward(model_inputs,\
+          \ **forward_params)\r\n   1025         model_outputs = self._ensure_tensor_on_device(model_outputs,\
+          \ device=torch.device(\"cpu\"))\r\n   1026 else:\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:101,\
+          \ in FillMaskPipeline._forward(self, model_inputs)\r\n    100 def _forward(self,\
+          \ model_inputs):\r\n--> 101     model_outputs = self.model(**model_inputs)\r\
+          \n    102     model_outputs[\"input_ids\"] = model_inputs[\"input_ids\"\
+          ]\r\n    103     return model_outputs\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:850,\
+          \ in BertForMaskedLM.forward(self, input_ids, attention_mask, token_type_ids,\
+          \ position_ids, head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ labels, output_attentions, output_hidden_states, return_dict)\r\n    846\
+          \     masked_tokens_mask = labels > 0\r\n    848 return_dict = return_dict\
+          \ if return_dict is not None else self.config.use_return_dict\r\n--> 850\
+          \ outputs = self.bert(\r\n    851     input_ids,\r\n    852     attention_mask=attention_mask,\r\
+          \n    853     token_type_ids=token_type_ids,\r\n    854     position_ids=position_ids,\r\
+          \n    855     head_mask=head_mask,\r\n    856     inputs_embeds=inputs_embeds,\r\
+          \n    857     encoder_hidden_states=encoder_hidden_states,\r\n    858  \
+          \   encoder_attention_mask=encoder_attention_mask,\r\n    859     output_attentions=output_attentions,\r\
+          \n    860     output_hidden_states=output_hidden_states,\r\n    861    \
+          \ return_dict=return_dict,\r\n    862     masked_tokens_mask=masked_tokens_mask,\r\
+          \n    863 )\r\n    865 sequence_output = outputs[0]\r\n    866 prediction_scores\
+          \ = self.cls(sequence_output)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:669,\
+          \ in BertModel.forward(self, input_ids, token_type_ids, attention_mask,\
+          \ position_ids, output_all_encoded_layers, masked_tokens_mask, **kwargs)\r\
+          \n    666     first_col_mask[:, 0] = True\r\n    667     subset_mask = masked_tokens_mask\
+          \ | first_col_mask\r\n--> 669 encoder_outputs = self.encoder(\r\n    670\
+          \     embedding_output,\r\n    671     attention_mask,\r\n    672     output_all_encoded_layers=output_all_encoded_layers,\r\
+          \n    673     subset_mask=subset_mask)\r\n    675 if masked_tokens_mask\
+          \ is None:\r\n    676     sequence_output = encoder_outputs[-1]\r\n\r\n\
+          File ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:507,\
+          \ in BertEncoder.forward(self, hidden_states, attention_mask, output_all_encoded_layers,\
+          \ subset_mask)\r\n    505 if subset_mask is None:\r\n    506     for layer_module\
+          \ in self.layer:\r\n--> 507         hidden_states = layer_module(hidden_states,\r\
+          \n    508                                      cu_seqlens,\r\n    509  \
+          \                                    seqlen,\r\n    510                \
+          \                      None,\r\n    511                                \
+          \      indices,\r\n    512                                      attn_mask=attention_mask,\r\
+          \n    513                                      bias=alibi_attn_mask)\r\n\
+          \    514         if output_all_encoded_layers:\r\n    515             all_encoder_layers.append(hidden_states)\r\
+          \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:388,\
+          \ in BertLayer.forward(self, hidden_states, cu_seqlens, seqlen, subset_idx,\
+          \ indices, attn_mask, bias)\r\n    366 def forward(\r\n    367     self,\r\
+          \n    368     hidden_states: torch.Tensor,\r\n   (...)\r\n    374     bias:\
+          \ Optional[torch.Tensor] = None,\r\n    375 ) -> torch.Tensor:\r\n    376\
+          \     \"\"\"Forward pass for a BERT layer, including both attention and\
+          \ MLP.\r\n    377 \r\n    378     Args:\r\n   (...)\r\n    386         bias:\
+          \ None or (batch, heads, max_seqlen_in_batch, max_seqlen_in_batch)\r\n \
+          \   387     \"\"\"\r\n--> 388     attention_output = self.attention(hidden_states,\
+          \ cu_seqlens, seqlen,\r\n    389                                       subset_idx,\
+          \ indices, attn_mask, bias)\r\n    390     layer_output = self.mlp(attention_output)\r\
+          \n    391     return layer_output\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:301,\
+          \ in BertUnpadAttention.forward(self, input_tensor, cu_seqlens, max_s, subset_idx,\
+          \ indices, attn_mask, bias)\r\n    279 def forward(\r\n    280     self,\r\
+          \n    281     input_tensor: torch.Tensor,\r\n   (...)\r\n    287     bias:\
+          \ Optional[torch.Tensor] = None,\r\n    288 ) -> torch.Tensor:\r\n    289\
+          \     \"\"\"Forward pass for scaled self-attention without padding.\r\n\
+          \    290 \r\n    291     Arguments:\r\n   (...)\r\n    299         bias:\
+          \ None or (batch, heads, max_seqlen_in_batch, max_seqlen_in_batch)\r\n \
+          \   300     \"\"\"\r\n--> 301     self_output = self.self(input_tensor,\
+          \ cu_seqlens, max_s, indices,\r\n    302                             attn_mask,\
+          \ bias)\r\n    303     if subset_idx is not None:\r\n    304         return\
+          \ self.output(index_first_axis(self_output, subset_idx),\r\n    305    \
+          \                        index_first_axis(input_tensor, subset_idx))\r\n\
+          \r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:233,\
+          \ in BertUnpadSelfAttention.forward(self, hidden_states, cu_seqlens, max_seqlen_in_batch,\
+          \ indices, attn_mask, bias)\r\n    231 bias_dtype = bias.dtype\r\n    232\
+          \ bias = bias.to(torch.float16)\r\n--> 233 attention = flash_attn_qkvpacked_func(qkv,\
+          \ bias)\r\n    234 attention = attention.to(orig_dtype)\r\n    235 bias\
+          \ = bias.to(bias_dtype)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/autograd/function.py:506,\
+          \ in Function.apply(cls, *args, **kwargs)\r\n    503 if not torch._C._are_functorch_transforms_active():\r\
+          \n    504     # See NOTE: [functorch vjp and autograd interaction]\r\n \
+          \   505     args = _functorch.utils.unwrap_dead_wrappers(args)\r\n--> 506\
+          \     return super().apply(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \  508 if cls.setup_context == _SingleLevelFunction.setup_context:\r\n \
+          \   509     raise RuntimeError(\r\n    510         'In order to use an autograd.Function\
+          \ with functorch transforms '\r\n    511         '(vmap, grad, jvp, jacrev,\
+          \ ...), it must override the setup_context '\r\n    512         'staticmethod.\
+          \ For more details, please see '\r\n    513         'https://pytorch.org/docs/master/notes/extending.func.html')\r\
+          \n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:1021,\
+          \ in _FlashAttnQKVPackedFunc.forward(ctx, qkv, bias, causal, softmax_scale)\r\
+          \n   1019 if qkv.stride(-1) != 1:\r\n   1020     qkv = qkv.contiguous()\r\
+          \n-> 1021 o, lse, ctx.softmax_scale = _flash_attn_forward(\r\n   1022  \
+          \   qkv[:, :, 0],\r\n   1023     qkv[:, :, 1],\r\n   1024     qkv[:, :,\
+          \ 2],\r\n   1025     bias=bias,\r\n   1026     causal=causal,\r\n   1027\
+          \     softmax_scale=softmax_scale)\r\n   1028 ctx.save_for_backward(qkv,\
+          \ o, lse, bias)\r\n   1029 ctx.causal = causal\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:826,\
+          \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    823\
+          \ # BLOCK = 128\r\n    824 # num_warps = 4 if d <= 64 else 8\r\n    825\
+          \ grid = lambda META: (triton.cdiv(seqlen_q, META['BLOCK_M']), batch * nheads)\r\
+          \n--> 826 _fwd_kernel[grid](  # type: ignore\r\n    827     q,\r\n    828\
+          \     k,\r\n    829     v,\r\n    830     bias,\r\n    831     o,\r\n  \
+          \  832     lse,\r\n    833     tmp,\r\n    834     softmax_scale,\r\n  \
+          \  835     q.stride(0),\r\n    836     q.stride(2),\r\n    837     q.stride(1),\r\
+          \n    838     k.stride(0),\r\n    839     k.stride(2),\r\n    840     k.stride(1),\r\
+          \n    841     v.stride(0),\r\n    842     v.stride(2),\r\n    843     v.stride(1),\r\
+          \n    844     *bias_strides,\r\n    845     o.stride(0),\r\n    846    \
+          \ o.stride(2),\r\n    847     o.stride(1),\r\n    848     nheads,\r\n  \
+          \  849     seqlen_q,\r\n    850     seqlen_k,\r\n    851     seqlen_q_rounded,\r\
+          \n    852     d,\r\n    853     seqlen_q // 32,\r\n    854     seqlen_k\
+          \ // 32,  # key for triton cache (limit number of compilations)\r\n    855\
+          \     # Can't use kwargs here because triton autotune expects key to be\
+          \ args, not kwargs\r\n    856     # IS_CAUSAL=causal, BLOCK_HEADDIM=d,\r\
+          \n    857     bias_type,\r\n    858     causal,\r\n    859     BLOCK_HEADDIM,\r\
+          \n    860     # BLOCK_M=BLOCK, BLOCK_N=BLOCK,\r\n    861     # num_warps=num_warps,\r\
+          \n    862     # num_stages=1,\r\n    863 )\r\n    864 return o, lse, softmax_scale\r\
+          \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:90,\
+          \ in Autotuner.run(self, *args, **kwargs)\r\n     88 if config.pre_hook\
+          \ is not None:\r\n     89     config.pre_hook(self.nargs)\r\n---> 90 return\
+          \ self.fn.run(*args, num_warps=config.num_warps, num_stages=config.num_stages,\
+          \ **kwargs, **config.kwargs)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:199,\
+          \ in Heuristics.run(self, *args, **kwargs)\r\n    197 for v, heur in self.values.items():\r\
+          \n    198     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\r\
+          \n--> 199 return self.fn.run(*args, **kwargs)\r\n\r\nFile <string>:41, in\
+          \ _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb, stride_qh,\
+          \ stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh, stride_vn,\
+          \ stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om, nheads,\
+          \ seqlen_q, seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K,\
+          \ BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M,\
+          \ BLOCK_N, grid, num_warps, num_stages, extern_libs, stream, warmup)\r\n\
+          \r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1621,\
+          \ in compile(fn, **kwargs)\r\n   1619     next_module = parse(path)\r\n\
+          \   1620 else:\r\n-> 1621     next_module = compile(module)\r\n   1622 \
+          \    fn_cache_manager.put(next_module, f\"{name}.{ir}\")\r\n   1623 if os.path.exists(path):\r\
+          \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1550,\
+          \ in compile.<locals>.<lambda>(src)\r\n   1545 extern_libs = kwargs.get(\"\
+          extern_libs\", dict())\r\n   1546 # build compilation stages\r\n   1547\
+          \ stages = {\r\n   1548     \"ast\": (lambda path: fn, None),\r\n   1549\
+          \     \"ttir\": (lambda path: parse_mlir_module(path, context),\r\n-> 1550\
+          \              lambda src: ast_to_ttir(src, signature, configs[0], constants)),\r\
+          \n   1551     \"ttgir\": (lambda path: parse_mlir_module(path, context),\r\
+          \n   1552               lambda src: ttir_to_ttgir(src, num_warps, num_stages,\
+          \ capability)),\r\n   1553     \"llir\": (lambda path: Path(path).read_text(),\r\
+          \n   1554              lambda src: ttgir_to_llir(src, extern_libs, capability)),\r\
+          \n   1555     \"ptx\": (lambda path: Path(path).read_text(),\r\n   1556\
+          \             lambda src: llir_to_ptx(src, capability)),\r\n   1557    \
+          \ \"cubin\": (lambda path: Path(path).read_bytes(),\r\n   1558         \
+          \      lambda src: ptx_to_cubin(src, capability))\r\n   1559 }\r\n   1560\
+          \ # find out the signature of the function\r\n   1561 if isinstance(fn,\
+          \ triton.runtime.JITFunction):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:962,\
+          \ in ast_to_ttir(fn, signature, specialization, constants)\r\n    961 def\
+          \ ast_to_ttir(fn, signature, specialization, constants):\r\n--> 962    \
+          \ mod, _ = build_triton_ir(fn, signature, specialization, constants)\r\n\
+          \    963     return optimize_triton_ir(mod)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:942,\
+          \ in build_triton_ir(fn, signature, specialization, constants)\r\n    940\
+          \     if node is None or isinstance(e, (NotImplementedError, CompilationError)):\r\
+          \n    941         raise e\r\n--> 942     raise CompilationError(fn.src,\
+          \ node) from e\r\n    943 ret = generator.module\r\n    944 # module takes\
+          \ ownership of the context\r\n\r\nCompilationError: at 114:24:\r\ndef _fwd_kernel(\r\
+          \n    Q,\r\n    K,\r\n    V,\r\n    Bias,\r\n    Out,\r\n    Lse,\r\n  \
+          \  TMP,  # NOTE: TMP is a scratchpad buffer to workaround a compiler bug\r\
+          \n    softmax_scale,\r\n    stride_qb,\r\n    stride_qh,\r\n    stride_qm,\r\
+          \n    stride_kb,\r\n    stride_kh,\r\n    stride_kn,\r\n    stride_vb,\r\
+          \n    stride_vh,\r\n    stride_vn,\r\n    stride_bb,\r\n    stride_bh,\r\
+          \n    stride_bm,\r\n    stride_ob,\r\n    stride_oh,\r\n    stride_om,\r\
+          \n    nheads,\r\n    seqlen_q,\r\n    seqlen_k,\r\n    seqlen_q_rounded,\r\
+          \n    headdim,\r\n    CACHE_KEY_SEQLEN_Q,\r\n    CACHE_KEY_SEQLEN_K,\r\n\
+          \    BIAS_TYPE: tl.constexpr,\r\n    IS_CAUSAL: tl.constexpr,\r\n    BLOCK_HEADDIM:\
+          \ tl.constexpr,\r\n    EVEN_M: tl.constexpr,\r\n    EVEN_N: tl.constexpr,\r\
+          \n    EVEN_HEADDIM: tl.constexpr,\r\n    BLOCK_M: tl.constexpr,\r\n    BLOCK_N:\
+          \ tl.constexpr,\r\n):\r\n    start_m = tl.program_id(0)\r\n    off_hb =\
+          \ tl.program_id(1)\r\n    off_b = off_hb // nheads\r\n    off_h = off_hb\
+          \ % nheads\r\n    # off_b = tl.program_id(1)\r\n    # off_h = tl.program_id(2)\r\
+          \n    # off_hb = off_b * nheads + off_h\r\n    # initialize offsets\r\n\
+          \    offs_m = start_m * BLOCK_M + tl.arange(0, BLOCK_M)\r\n    offs_n =\
+          \ tl.arange(0, BLOCK_N)\r\n    offs_d = tl.arange(0, BLOCK_HEADDIM)\r\n\
+          \    # Initialize pointers to Q, K, V\r\n    # Adding parenthesis around\
+          \ indexing might use int32 math instead of int64 math?\r\n    # https://github.com/openai/triton/issues/741\r\
+          \n    # I'm seeing a tiny bit of difference (5-7us)\r\n    q_ptrs = Q +\
+          \ off_b * stride_qb + off_h * stride_qh + (\r\n        offs_m[:, None] *\
+          \ stride_qm + offs_d[None, :])\r\n    k_ptrs = K + off_b * stride_kb + off_h\
+          \ * stride_kh + (\r\n        offs_n[:, None] * stride_kn + offs_d[None,\
+          \ :])\r\n    v_ptrs = V + off_b * stride_vb + off_h * stride_vh + (\r\n\
+          \        offs_n[:, None] * stride_vn + offs_d[None, :])\r\n    if BIAS_TYPE\
+          \ == 'vector':\r\n        b_ptrs = Bias + off_b * stride_bb + off_h * stride_bh\
+          \ + offs_n\r\n    elif BIAS_TYPE == 'matrix':\r\n        b_ptrs = Bias +\
+          \ off_b * stride_bb + off_h * stride_bh + (\r\n            offs_m[:, None]\
+          \ * stride_bm + offs_n[None, :])\r\n    else:\r\n        raise ValueError(\"\
+          BIAS_TYPE must be one of {'vector', 'matrix'}\")\r\n    # initialize pointer\
+          \ to m and l\r\n    t_ptrs = TMP + off_hb * seqlen_q_rounded + offs_m\r\n\
+          \    lse_i = tl.zeros([BLOCK_M], dtype=tl.float32) - float('inf')\r\n  \
+          \  m_i = tl.zeros([BLOCK_M], dtype=tl.float32) - float('inf')\r\n    acc_o\
+          \ = tl.zeros([BLOCK_M, BLOCK_HEADDIM], dtype=tl.float32)\r\n    # load q:\
+          \ it will stay in SRAM throughout\r\n    # [2022-10-30] TD: Triton bug -\
+          \ in the case of EVEN_M=True and EVEN_N=False, if we just call\r\n    #\
+          \ tl.load(q_ptrs), we get the wrong output!\r\n    if EVEN_M & EVEN_N:\r\
+          \n        if EVEN_HEADDIM:\r\n            q = tl.load(q_ptrs)\r\n      \
+          \  else:\r\n            q = tl.load(q_ptrs, mask=offs_d[None, :] < headdim,\
+          \ other=0.0)\r\n    else:\r\n        if EVEN_HEADDIM:\r\n            q =\
+          \ tl.load(q_ptrs, mask=offs_m[:, None] < seqlen_q, other=0.0)\r\n      \
+          \  else:\r\n            q = tl.load(q_ptrs,\r\n                        mask=(offs_m[:,\
+          \ None] < seqlen_q) &\r\n                        (offs_d[None, :] < headdim),\r\
+          \n                        other=0.0)\r\n    # loop over k, v and update\
+          \ accumulator\r\n    end_n = seqlen_k if not IS_CAUSAL else tl.minimum(\r\
+          \n        (start_m + 1) * BLOCK_M, seqlen_k)\r\n    for start_n in range(0,\
+          \ end_n, BLOCK_N):\r\n        start_n = tl.multiple_of(start_n, BLOCK_N)\r\
+          \n        # -- compute qk ----\r\n        if EVEN_N & EVEN_M:  # If we just\
+          \ do \"if EVEN_N\", there seems to be some race condition\r\n          \
+          \  if EVEN_HEADDIM:\r\n                k = tl.load(k_ptrs + start_n * stride_kn)\r\
+          \n            else:\r\n                k = tl.load(k_ptrs + start_n * stride_kn,\r\
+          \n                            mask=offs_d[None, :] < headdim,\r\n      \
+          \                      other=0.0)\r\n        else:\r\n            if EVEN_HEADDIM:\r\
+          \n                k = tl.load(k_ptrs + start_n * stride_kn,\r\n        \
+          \                    mask=(start_n + offs_n)[:, None] < seqlen_k,\r\n  \
+          \                          other=0.0)\r\n            else:\r\n         \
+          \       k = tl.load(k_ptrs + start_n * stride_kn,\r\n                  \
+          \          mask=((start_n + offs_n)[:, None] < seqlen_k) &\r\n         \
+          \                   (offs_d[None, :] < headdim),\r\n                   \
+          \         other=0.0)\r\n        qk = tl.zeros([BLOCK_M, BLOCK_N], dtype=tl.float32)\r\
+          \n        qk += tl.dot(q, k, trans_b=True)\r\n```\r\n\r\nI use\r\n```\r\n\
+          In [8]: sys.version_info\r\nOut[8]: sys.version_info(major=3, minor=11,\
+          \ micro=3, releaselevel='final', serial=0)\r\n\r\nIn [9]: torch.__version__\r\
+          \nOut[9]: '2.0.1+cu117'\r\n\r\nIn [10]: import triton\r\n\r\nIn [11]: triton.__version__\r\
+          \nOut[12]: '2.0.0'\r\n\r\nIn [13]: import triton.language as tl\r\n\r\n\
+          In [14]: tl.__version__\r\n---------------------------------------------------------------------------\r\
+          \nAttributeError                            Traceback (most recent call\
+          \ last)\r\nCell In[14], line 1\r\n----> 1 tl.__version__\r\n\r\nAttributeError:\
+          \ module 'triton.language' has no attribute '__version__'\r\n\r\nIn [15]:\
+          \ tl.dot\r\nOut[15]: <function triton.language.core.dot(input, other, allow_tf32=True,\
+          \ _builder=None)>\r\n\r\n```\r\n\r\nDo I need special  revision= string\
+          \ to make it work? Did triton language have breaking changes?"
+        updatedAt: '2023-06-05T07:56:48.029Z'
+      numEdits: 0
+      reactions: []
+    id: 647d95409bb822b5cd3c8725
+    type: comment
+  author: Maykeye
+  content: "I tried as per readme first.\r\n```python\r\nfrom transformers import\
+    \ AutoModelForMaskedLM, BertTokenizer, pipeline\r\n\r\ntokenizer = BertTokenizer.from_pretrained('bert-base-uncased')\r\
+    \nmlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base', trust_remote_code=True,\
+    \ \r\n   revision='24512df') # I tried  with or without revision\r\n\r\nclassifier\
+    \ = pipeline('fill-mask', model=mlm, tokenizer=tokenizer)\r\n\r\nclassifier(\"\
+    I [MASK] to the store yesterday.\")\r\n```\r\n\r\nThe example is not working.\r\
+    \n\r\n```python\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:781,\
+    \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    778 assert\
+    \ q.dtype == k.dtype == v.dtype, 'All tensors must have the same type'\r\n   \
+    \ 779 assert q.dtype in [torch.float16,\r\n    780                    torch.bfloat16],\
+    \ 'Only support fp16 and bf16'\r\n--> 781 assert q.is_cuda and k.is_cuda and v.is_cuda\r\
+    \n```\r\n\r\nThis is trivial to fix:\r\n```python\r\nmlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+    \ trust_remote_code=True, revision='24512df').cuda()\r\nclassifier = pipeline('fill-mask',\
+    \ model=mlm, tokenizer=tokenizer,device=\"cuda:0\")\r\nclassifier(\"I [MASK] to\
+    \ the store yesterday.\")\r\n```\r\n\r\nAnd ...\r\n```\r\nKeyError           \
+    \                       Traceback (most recent call last)\r\nFile <string>:21,\
+    \ in _fwd_kernel(Q, K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb, stride_qh,\
+    \ stride_qm, stride_kb, stride_kh, stride_kn, stride_vb, stride_vh, stride_vn,\
+    \ stride_bb, stride_bh, stride_bm, stride_ob, stride_oh, stride_om, nheads, seqlen_q,\
+    \ seqlen_k, seqlen_q_rounded, headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K,\
+    \ BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM, EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M,\
+    \ BLOCK_N, grid, num_warps, num_stages, extern_libs, stream, warmup)\r\n\r\nKeyError:\
+    \ ('2-.-0-.-0-83ca8b715a9dc5f32dc1110973485f64-d6252949da17ceb5f3a278a70250af13-3b85c7bef5f0a641282f3b73af50f599-975a5a907f067e8e36a802ec0cd5bc10-3498c340fd4b6ee7805fd54b882a04f5-e1f133f98d04093da2078dfc51c36b72-b26258bf01f839199e39d64851821f26-d7c06e3b46e708006c15224aac7a1378-f585402118c8a136948ce0a49cfe122c',\
+    \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+    \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32'), ('matrix', False, 64, False, False, True,\
+    \ 128, 128), (True, True, True, True, True, True, True, (False,), (True, False),\
+    \ (True, False), (True, False), (True, False), (True, False), (True, False), (True,\
+    \ False), (True, False), (True, False), (False, False), (False, False), (False,\
+    \ False), (True, False), (True, False), (True, False), (False, False), (False,\
+    \ False), (False, False), (True, False), (True, False), (True, False), (True,\
+    \ False)))\r\n\r\nDuring handling of the above exception, another exception occurred:\r\
+    \n\r\nTypeError                                 Traceback (most recent call last)\r\
+    \nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:937, in build_triton_ir(fn,\
+    \ signature, specialization, constants)\r\n    936 try:\r\n--> 937     generator.visit(fn.parse())\r\
+    \n    938 except Exception as e:\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+    \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:183,\
+    \ in CodeGenerator.visit_Module(self, node)\r\n    182 def visit_Module(self,\
+    \ node):\r\n--> 183     ast.NodeVisitor.generic_visit(self, node)\r\n\r\nFile\
+    \ /usr/lib/python3.11/ast.py:426, in NodeVisitor.generic_visit(self, node)\r\n\
+    \    425         if isinstance(item, AST):\r\n--> 426             self.visit(item)\r\
+    \n    427 elif isinstance(value, AST):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+    \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:252,\
+    \ in CodeGenerator.visit_FunctionDef(self, node)\r\n    251 # visit function body\r\
+    \n--> 252 has_ret = self.visit_compound_statement(node.body)\r\n    253 # finalize\
+    \ function\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177,\
+    \ in CodeGenerator.visit_compound_statement(self, stmts)\r\n    176 for stmt in\
+    \ stmts:\r\n--> 177     self.last_ret_type = self.visit(stmt)\r\n    178     if\
+    \ isinstance(stmt, ast.Return):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+    \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:678,\
+    \ in CodeGenerator.visit_For(self, node)\r\n    677 self.scf_stack.append(node)\r\
+    \n--> 678 self.visit_compound_statement(node.body)\r\n    679 self.scf_stack.pop()\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:177, in\
+    \ CodeGenerator.visit_compound_statement(self, stmts)\r\n    176 for stmt in stmts:\r\
+    \n--> 177     self.last_ret_type = self.visit(stmt)\r\n    178     if isinstance(stmt,\
+    \ ast.Return):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+    \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:319,\
+    \ in CodeGenerator.visit_AugAssign(self, node)\r\n    318 assign = ast.Assign(targets=[node.target],\
+    \ value=rhs)\r\n--> 319 self.visit(assign)\r\n    320 return self.get_value(name)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855, in\
+    \ CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:301,\
+    \ in CodeGenerator.visit_Assign(self, node)\r\n    300 names = _names[0]\r\n-->\
+    \ 301 values = self.visit(node.value)\r\n    302 if not isinstance(names, tuple):\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855, in\
+    \ CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:339,\
+    \ in CodeGenerator.visit_BinOp(self, node)\r\n    338 lhs = self.visit(node.left)\r\
+    \n--> 339 rhs = self.visit(node.right)\r\n    340 fn = {\r\n    341     ast.Add:\
+    \ '__add__',\r\n    342     ast.Sub: '__sub__',\r\n   (...)\r\n    352     ast.BitXor:\
+    \ '__xor__',\r\n    353 }[type(node.op)]\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:855,\
+    \ in CodeGenerator.visit(self, node)\r\n    854 warnings.simplefilter(\"ignore\"\
+    , PendingDeprecationWarning)  # python 3.8\r\n--> 855 return super().visit(node)\r\
+    \n\r\nFile /usr/lib/python3.11/ast.py:418, in NodeVisitor.visit(self, node)\r\n\
+    \    417 visitor = getattr(self, method, self.generic_visit)\r\n--> 418 return\
+    \ visitor(node)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:797,\
+    \ in CodeGenerator.visit_Call(self, node)\r\n    795 if (hasattr(fn, '__self__')\
+    \ and self.is_triton_tensor(fn.__self__)) \\\r\n    796         or impl.is_builtin(fn):\r\
+    \n--> 797     return fn(*args, _builder=self.builder, **kws)\r\n    798 if fn\
+    \ in self.builtins.values():\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/impl/base.py:22,\
+    \ in builtin.<locals>.wrapper(*args, **kwargs)\r\n     18     raise ValueError(\r\
+    \n     19         \"Did you forget to add @triton.jit ? \"\r\n     20        \
+    \ \"(`_builder` argument must be provided outside of JIT functions.)\"\r\n   \
+    \  21     )\r\n---> 22 return fn(*args, **kwargs)\r\n\r\nTypeError: dot() got\
+    \ an unexpected keyword argument 'trans_b'\r\n\r\nThe above exception was the\
+    \ direct cause of the following exception:\r\n\r\nCompilationError           \
+    \               Traceback (most recent call last)\r\nCell In[3], line 8\r\n  \
+    \    4 mlm = AutoModelForMaskedLM.from_pretrained('mosaicml/mosaic-bert-base',\
+    \ trust_remote_code=True, revision='24512df').cuda()\r\n      6 classifier = pipeline('fill-mask',\
+    \ model=mlm, tokenizer=tokenizer,device=\"cuda:0\")\r\n----> 8 classifier(\"I\
+    \ [MASK] to the store yesterday.\")\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:239,\
+    \ in FillMaskPipeline.__call__(self, inputs, *args, **kwargs)\r\n    217 def __call__(self,\
+    \ inputs, *args, **kwargs):\r\n    218     \"\"\"\r\n    219     Fill the masked\
+    \ token in the text(s) given as inputs.\r\n    220 \r\n   (...)\r\n    237   \
+    \      - **token_str** (`str`) -- The predicted token (to replace the masked one).\r\
+    \n    238     \"\"\"\r\n--> 239     outputs = super().__call__(inputs, **kwargs)\r\
+    \n    240     if isinstance(inputs, list) and len(inputs) == 1:\r\n    241   \
+    \      return outputs[0]\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1118,\
+    \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\r\
+    \n   1110     return next(\r\n   1111         iter(\r\n   1112             self.get_iterator(\r\
+    \n   (...)\r\n   1115         )\r\n   1116     )\r\n   1117 else:\r\n-> 1118 \
+    \    return self.run_single(inputs, preprocess_params, forward_params, postprocess_params)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1125,\
+    \ in Pipeline.run_single(self, inputs, preprocess_params, forward_params, postprocess_params)\r\
+    \n   1123 def run_single(self, inputs, preprocess_params, forward_params, postprocess_params):\r\
+    \n   1124     model_inputs = self.preprocess(inputs, **preprocess_params)\r\n\
+    -> 1125     model_outputs = self.forward(model_inputs, **forward_params)\r\n \
+    \  1126     outputs = self.postprocess(model_outputs, **postprocess_params)\r\n\
+    \   1127     return outputs\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/base.py:1024,\
+    \ in Pipeline.forward(self, model_inputs, **forward_params)\r\n   1022     with\
+    \ inference_context():\r\n   1023         model_inputs = self._ensure_tensor_on_device(model_inputs,\
+    \ device=self.device)\r\n-> 1024         model_outputs = self._forward(model_inputs,\
+    \ **forward_params)\r\n   1025         model_outputs = self._ensure_tensor_on_device(model_outputs,\
+    \ device=torch.device(\"cpu\"))\r\n   1026 else:\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/transformers/pipelines/fill_mask.py:101,\
+    \ in FillMaskPipeline._forward(self, model_inputs)\r\n    100 def _forward(self,\
+    \ model_inputs):\r\n--> 101     model_outputs = self.model(**model_inputs)\r\n\
+    \    102     model_outputs[\"input_ids\"] = model_inputs[\"input_ids\"]\r\n  \
+    \  103     return model_outputs\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:850,\
+    \ in BertForMaskedLM.forward(self, input_ids, attention_mask, token_type_ids,\
+    \ position_ids, head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask,\
+    \ labels, output_attentions, output_hidden_states, return_dict)\r\n    846   \
+    \  masked_tokens_mask = labels > 0\r\n    848 return_dict = return_dict if return_dict\
+    \ is not None else self.config.use_return_dict\r\n--> 850 outputs = self.bert(\r\
+    \n    851     input_ids,\r\n    852     attention_mask=attention_mask,\r\n   \
+    \ 853     token_type_ids=token_type_ids,\r\n    854     position_ids=position_ids,\r\
+    \n    855     head_mask=head_mask,\r\n    856     inputs_embeds=inputs_embeds,\r\
+    \n    857     encoder_hidden_states=encoder_hidden_states,\r\n    858     encoder_attention_mask=encoder_attention_mask,\r\
+    \n    859     output_attentions=output_attentions,\r\n    860     output_hidden_states=output_hidden_states,\r\
+    \n    861     return_dict=return_dict,\r\n    862     masked_tokens_mask=masked_tokens_mask,\r\
+    \n    863 )\r\n    865 sequence_output = outputs[0]\r\n    866 prediction_scores\
+    \ = self.cls(sequence_output)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:669,\
+    \ in BertModel.forward(self, input_ids, token_type_ids, attention_mask, position_ids,\
+    \ output_all_encoded_layers, masked_tokens_mask, **kwargs)\r\n    666     first_col_mask[:,\
+    \ 0] = True\r\n    667     subset_mask = masked_tokens_mask | first_col_mask\r\
+    \n--> 669 encoder_outputs = self.encoder(\r\n    670     embedding_output,\r\n\
+    \    671     attention_mask,\r\n    672     output_all_encoded_layers=output_all_encoded_layers,\r\
+    \n    673     subset_mask=subset_mask)\r\n    675 if masked_tokens_mask is None:\r\
+    \n    676     sequence_output = encoder_outputs[-1]\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:507,\
+    \ in BertEncoder.forward(self, hidden_states, attention_mask, output_all_encoded_layers,\
+    \ subset_mask)\r\n    505 if subset_mask is None:\r\n    506     for layer_module\
+    \ in self.layer:\r\n--> 507         hidden_states = layer_module(hidden_states,\r\
+    \n    508                                      cu_seqlens,\r\n    509        \
+    \                              seqlen,\r\n    510                            \
+    \          None,\r\n    511                                      indices,\r\n\
+    \    512                                      attn_mask=attention_mask,\r\n  \
+    \  513                                      bias=alibi_attn_mask)\r\n    514 \
+    \        if output_all_encoded_layers:\r\n    515             all_encoder_layers.append(hidden_states)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:388,\
+    \ in BertLayer.forward(self, hidden_states, cu_seqlens, seqlen, subset_idx, indices,\
+    \ attn_mask, bias)\r\n    366 def forward(\r\n    367     self,\r\n    368   \
+    \  hidden_states: torch.Tensor,\r\n   (...)\r\n    374     bias: Optional[torch.Tensor]\
+    \ = None,\r\n    375 ) -> torch.Tensor:\r\n    376     \"\"\"Forward pass for\
+    \ a BERT layer, including both attention and MLP.\r\n    377 \r\n    378     Args:\r\
+    \n   (...)\r\n    386         bias: None or (batch, heads, max_seqlen_in_batch,\
+    \ max_seqlen_in_batch)\r\n    387     \"\"\"\r\n--> 388     attention_output =\
+    \ self.attention(hidden_states, cu_seqlens, seqlen,\r\n    389               \
+    \                        subset_idx, indices, attn_mask, bias)\r\n    390    \
+    \ layer_output = self.mlp(attention_output)\r\n    391     return layer_output\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:301,\
+    \ in BertUnpadAttention.forward(self, input_tensor, cu_seqlens, max_s, subset_idx,\
+    \ indices, attn_mask, bias)\r\n    279 def forward(\r\n    280     self,\r\n \
+    \   281     input_tensor: torch.Tensor,\r\n   (...)\r\n    287     bias: Optional[torch.Tensor]\
+    \ = None,\r\n    288 ) -> torch.Tensor:\r\n    289     \"\"\"Forward pass for\
+    \ scaled self-attention without padding.\r\n    290 \r\n    291     Arguments:\r\
+    \n   (...)\r\n    299         bias: None or (batch, heads, max_seqlen_in_batch,\
+    \ max_seqlen_in_batch)\r\n    300     \"\"\"\r\n--> 301     self_output = self.self(input_tensor,\
+    \ cu_seqlens, max_s, indices,\r\n    302                             attn_mask,\
+    \ bias)\r\n    303     if subset_idx is not None:\r\n    304         return self.output(index_first_axis(self_output,\
+    \ subset_idx),\r\n    305                            index_first_axis(input_tensor,\
+    \ subset_idx))\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/bert_layers.py:233,\
+    \ in BertUnpadSelfAttention.forward(self, hidden_states, cu_seqlens, max_seqlen_in_batch,\
+    \ indices, attn_mask, bias)\r\n    231 bias_dtype = bias.dtype\r\n    232 bias\
+    \ = bias.to(torch.float16)\r\n--> 233 attention = flash_attn_qkvpacked_func(qkv,\
+    \ bias)\r\n    234 attention = attention.to(orig_dtype)\r\n    235 bias = bias.to(bias_dtype)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/torch/autograd/function.py:506,\
+    \ in Function.apply(cls, *args, **kwargs)\r\n    503 if not torch._C._are_functorch_transforms_active():\r\
+    \n    504     # See NOTE: [functorch vjp and autograd interaction]\r\n    505\
+    \     args = _functorch.utils.unwrap_dead_wrappers(args)\r\n--> 506     return\
+    \ super().apply(*args, **kwargs)  # type: ignore[misc]\r\n    508 if cls.setup_context\
+    \ == _SingleLevelFunction.setup_context:\r\n    509     raise RuntimeError(\r\n\
+    \    510         'In order to use an autograd.Function with functorch transforms\
+    \ '\r\n    511         '(vmap, grad, jvp, jacrev, ...), it must override the setup_context\
+    \ '\r\n    512         'staticmethod. For more details, please see '\r\n    513\
+    \         'https://pytorch.org/docs/master/notes/extending.func.html')\r\n\r\n\
+    File ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:1021,\
+    \ in _FlashAttnQKVPackedFunc.forward(ctx, qkv, bias, causal, softmax_scale)\r\n\
+    \   1019 if qkv.stride(-1) != 1:\r\n   1020     qkv = qkv.contiguous()\r\n-> 1021\
+    \ o, lse, ctx.softmax_scale = _flash_attn_forward(\r\n   1022     qkv[:, :, 0],\r\
+    \n   1023     qkv[:, :, 1],\r\n   1024     qkv[:, :, 2],\r\n   1025     bias=bias,\r\
+    \n   1026     causal=causal,\r\n   1027     softmax_scale=softmax_scale)\r\n \
+    \  1028 ctx.save_for_backward(qkv, o, lse, bias)\r\n   1029 ctx.causal = causal\r\
+    \n\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mosaic-bert-base/fcc434c97e2d475d5dd1a69fca9f734af7a41772/flash_attn_triton.py:826,\
+    \ in _flash_attn_forward(q, k, v, bias, causal, softmax_scale)\r\n    823 # BLOCK\
+    \ = 128\r\n    824 # num_warps = 4 if d <= 64 else 8\r\n    825 grid = lambda\
+    \ META: (triton.cdiv(seqlen_q, META['BLOCK_M']), batch * nheads)\r\n--> 826 _fwd_kernel[grid](\
+    \  # type: ignore\r\n    827     q,\r\n    828     k,\r\n    829     v,\r\n  \
+    \  830     bias,\r\n    831     o,\r\n    832     lse,\r\n    833     tmp,\r\n\
+    \    834     softmax_scale,\r\n    835     q.stride(0),\r\n    836     q.stride(2),\r\
+    \n    837     q.stride(1),\r\n    838     k.stride(0),\r\n    839     k.stride(2),\r\
+    \n    840     k.stride(1),\r\n    841     v.stride(0),\r\n    842     v.stride(2),\r\
+    \n    843     v.stride(1),\r\n    844     *bias_strides,\r\n    845     o.stride(0),\r\
+    \n    846     o.stride(2),\r\n    847     o.stride(1),\r\n    848     nheads,\r\
+    \n    849     seqlen_q,\r\n    850     seqlen_k,\r\n    851     seqlen_q_rounded,\r\
+    \n    852     d,\r\n    853     seqlen_q // 32,\r\n    854     seqlen_k // 32,\
+    \  # key for triton cache (limit number of compilations)\r\n    855     # Can't\
+    \ use kwargs here because triton autotune expects key to be args, not kwargs\r\
+    \n    856     # IS_CAUSAL=causal, BLOCK_HEADDIM=d,\r\n    857     bias_type,\r\
+    \n    858     causal,\r\n    859     BLOCK_HEADDIM,\r\n    860     # BLOCK_M=BLOCK,\
+    \ BLOCK_N=BLOCK,\r\n    861     # num_warps=num_warps,\r\n    862     # num_stages=1,\r\
+    \n    863 )\r\n    864 return o, lse, softmax_scale\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:90,\
+    \ in Autotuner.run(self, *args, **kwargs)\r\n     88 if config.pre_hook is not\
+    \ None:\r\n     89     config.pre_hook(self.nargs)\r\n---> 90 return self.fn.run(*args,\
+    \ num_warps=config.num_warps, num_stages=config.num_stages, **kwargs, **config.kwargs)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/runtime/autotuner.py:199,\
+    \ in Heuristics.run(self, *args, **kwargs)\r\n    197 for v, heur in self.values.items():\r\
+    \n    198     kwargs[v] = heur({**dict(zip(self.arg_names, args)), **kwargs})\r\
+    \n--> 199 return self.fn.run(*args, **kwargs)\r\n\r\nFile <string>:41, in _fwd_kernel(Q,\
+    \ K, V, Bias, Out, Lse, TMP, softmax_scale, stride_qb, stride_qh, stride_qm, stride_kb,\
+    \ stride_kh, stride_kn, stride_vb, stride_vh, stride_vn, stride_bb, stride_bh,\
+    \ stride_bm, stride_ob, stride_oh, stride_om, nheads, seqlen_q, seqlen_k, seqlen_q_rounded,\
+    \ headdim, CACHE_KEY_SEQLEN_Q, CACHE_KEY_SEQLEN_K, BIAS_TYPE, IS_CAUSAL, BLOCK_HEADDIM,\
+    \ EVEN_M, EVEN_N, EVEN_HEADDIM, BLOCK_M, BLOCK_N, grid, num_warps, num_stages,\
+    \ extern_libs, stream, warmup)\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1621,\
+    \ in compile(fn, **kwargs)\r\n   1619     next_module = parse(path)\r\n   1620\
+    \ else:\r\n-> 1621     next_module = compile(module)\r\n   1622     fn_cache_manager.put(next_module,\
+    \ f\"{name}.{ir}\")\r\n   1623 if os.path.exists(path):\r\n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:1550,\
+    \ in compile.<locals>.<lambda>(src)\r\n   1545 extern_libs = kwargs.get(\"extern_libs\"\
+    , dict())\r\n   1546 # build compilation stages\r\n   1547 stages = {\r\n   1548\
+    \     \"ast\": (lambda path: fn, None),\r\n   1549     \"ttir\": (lambda path:\
+    \ parse_mlir_module(path, context),\r\n-> 1550              lambda src: ast_to_ttir(src,\
+    \ signature, configs[0], constants)),\r\n   1551     \"ttgir\": (lambda path:\
+    \ parse_mlir_module(path, context),\r\n   1552               lambda src: ttir_to_ttgir(src,\
+    \ num_warps, num_stages, capability)),\r\n   1553     \"llir\": (lambda path:\
+    \ Path(path).read_text(),\r\n   1554              lambda src: ttgir_to_llir(src,\
+    \ extern_libs, capability)),\r\n   1555     \"ptx\": (lambda path: Path(path).read_text(),\r\
+    \n   1556             lambda src: llir_to_ptx(src, capability)),\r\n   1557  \
+    \   \"cubin\": (lambda path: Path(path).read_bytes(),\r\n   1558             \
+    \  lambda src: ptx_to_cubin(src, capability))\r\n   1559 }\r\n   1560 # find out\
+    \ the signature of the function\r\n   1561 if isinstance(fn, triton.runtime.JITFunction):\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:962, in\
+    \ ast_to_ttir(fn, signature, specialization, constants)\r\n    961 def ast_to_ttir(fn,\
+    \ signature, specialization, constants):\r\n--> 962     mod, _ = build_triton_ir(fn,\
+    \ signature, specialization, constants)\r\n    963     return optimize_triton_ir(mod)\r\
+    \n\r\nFile ~/src/sd/sd/lib/python3.11/site-packages/triton/compiler.py:942, in\
+    \ build_triton_ir(fn, signature, specialization, constants)\r\n    940     if\
+    \ node is None or isinstance(e, (NotImplementedError, CompilationError)):\r\n\
+    \    941         raise e\r\n--> 942     raise CompilationError(fn.src, node) from\
+    \ e\r\n    943 ret = generator.module\r\n    944 # module takes ownership of the\
+    \ context\r\n\r\nCompilationError: at 114:24:\r\ndef _fwd_kernel(\r\n    Q,\r\n\
+    \    K,\r\n    V,\r\n    Bias,\r\n    Out,\r\n    Lse,\r\n    TMP,  # NOTE: TMP\
+    \ is a scratchpad buffer to workaround a compiler bug\r\n    softmax_scale,\r\n\
+    \    stride_qb,\r\n    stride_qh,\r\n    stride_qm,\r\n    stride_kb,\r\n    stride_kh,\r\
+    \n    stride_kn,\r\n    stride_vb,\r\n    stride_vh,\r\n    stride_vn,\r\n   \
+    \ stride_bb,\r\n    stride_bh,\r\n    stride_bm,\r\n    stride_ob,\r\n    stride_oh,\r\
+    \n    stride_om,\r\n    nheads,\r\n    seqlen_q,\r\n    seqlen_k,\r\n    seqlen_q_rounded,\r\
+    \n    headdim,\r\n    CACHE_KEY_SEQLEN_Q,\r\n    CACHE_KEY_SEQLEN_K,\r\n    BIAS_TYPE:\
+    \ tl.constexpr,\r\n    IS_CAUSAL: tl.constexpr,\r\n    BLOCK_HEADDIM: tl.constexpr,\r\
+    \n    EVEN_M: tl.constexpr,\r\n    EVEN_N: tl.constexpr,\r\n    EVEN_HEADDIM:\
+    \ tl.constexpr,\r\n    BLOCK_M: tl.constexpr,\r\n    BLOCK_N: tl.constexpr,\r\n\
+    ):\r\n    start_m = tl.program_id(0)\r\n    off_hb = tl.program_id(1)\r\n    off_b\
+    \ = off_hb // nheads\r\n    off_h = off_hb % nheads\r\n    # off_b = tl.program_id(1)\r\
+    \n    # off_h = tl.program_id(2)\r\n    # off_hb = off_b * nheads + off_h\r\n\
+    \    # initialize offsets\r\n    offs_m = start_m * BLOCK_M + tl.arange(0, BLOCK_M)\r\
+    \n    offs_n = tl.arange(0, BLOCK_N)\r\n    offs_d = tl.arange(0, BLOCK_HEADDIM)\r\
+    \n    # Initialize pointers to Q, K, V\r\n    # Adding parenthesis around indexing\
+    \ might use int32 math instead of int64 math?\r\n    # https://github.com/openai/triton/issues/741\r\
+    \n    # I'm seeing a tiny bit of difference (5-7us)\r\n    q_ptrs = Q + off_b\
+    \ * stride_qb + off_h * stride_qh + (\r\n        offs_m[:, None] * stride_qm +\
+    \ offs_d[None, :])\r\n    k_ptrs = K + off_b * stride_kb + off_h * stride_kh +\
+    \ (\r\n        offs_n[:, None] * stride_kn + offs_d[None, :])\r\n    v_ptrs =\
+    \ V + off_b * stride_vb + off_h * stride_vh + (\r\n        offs_n[:, None] * stride_vn\
+    \ + offs_d[None, :])\r\n    if BIAS_TYPE == 'vector':\r\n        b_ptrs = Bias\
+    \ + off_b * stride_bb + off_h * stride_bh + offs_n\r\n    elif BIAS_TYPE == 'matrix':\r\
+    \n        b_ptrs = Bias + off_b * stride_bb + off_h * stride_bh + (\r\n      \
+    \      offs_m[:, None] * stride_bm + offs_n[None, :])\r\n    else:\r\n       \
+    \ raise ValueError(\"BIAS_TYPE must be one of {'vector', 'matrix'}\")\r\n    #\
+    \ initialize pointer to m and l\r\n    t_ptrs = TMP + off_hb * seqlen_q_rounded\
+    \ + offs_m\r\n    lse_i = tl.zeros([BLOCK_M], dtype=tl.float32) - float('inf')\r\
+    \n    m_i = tl.zeros([BLOCK_M], dtype=tl.float32) - float('inf')\r\n    acc_o\
+    \ = tl.zeros([BLOCK_M, BLOCK_HEADDIM], dtype=tl.float32)\r\n    # load q: it will\
+    \ stay in SRAM throughout\r\n    # [2022-10-30] TD: Triton bug - in the case of\
+    \ EVEN_M=True and EVEN_N=False, if we just call\r\n    # tl.load(q_ptrs), we get\
+    \ the wrong output!\r\n    if EVEN_M & EVEN_N:\r\n        if EVEN_HEADDIM:\r\n\
+    \            q = tl.load(q_ptrs)\r\n        else:\r\n            q = tl.load(q_ptrs,\
+    \ mask=offs_d[None, :] < headdim, other=0.0)\r\n    else:\r\n        if EVEN_HEADDIM:\r\
+    \n            q = tl.load(q_ptrs, mask=offs_m[:, None] < seqlen_q, other=0.0)\r\
+    \n        else:\r\n            q = tl.load(q_ptrs,\r\n                       \
+    \ mask=(offs_m[:, None] < seqlen_q) &\r\n                        (offs_d[None,\
+    \ :] < headdim),\r\n                        other=0.0)\r\n    # loop over k, v\
+    \ and update accumulator\r\n    end_n = seqlen_k if not IS_CAUSAL else tl.minimum(\r\
+    \n        (start_m + 1) * BLOCK_M, seqlen_k)\r\n    for start_n in range(0, end_n,\
+    \ BLOCK_N):\r\n        start_n = tl.multiple_of(start_n, BLOCK_N)\r\n        #\
+    \ -- compute qk ----\r\n        if EVEN_N & EVEN_M:  # If we just do \"if EVEN_N\"\
+    , there seems to be some race condition\r\n            if EVEN_HEADDIM:\r\n  \
+    \              k = tl.load(k_ptrs + start_n * stride_kn)\r\n            else:\r\
+    \n                k = tl.load(k_ptrs + start_n * stride_kn,\r\n              \
+    \              mask=offs_d[None, :] < headdim,\r\n                           \
+    \ other=0.0)\r\n        else:\r\n            if EVEN_HEADDIM:\r\n            \
+    \    k = tl.load(k_ptrs + start_n * stride_kn,\r\n                           \
+    \ mask=(start_n + offs_n)[:, None] < seqlen_k,\r\n                           \
+    \ other=0.0)\r\n            else:\r\n                k = tl.load(k_ptrs + start_n\
+    \ * stride_kn,\r\n                            mask=((start_n + offs_n)[:, None]\
+    \ < seqlen_k) &\r\n                            (offs_d[None, :] < headdim),\r\n\
+    \                            other=0.0)\r\n        qk = tl.zeros([BLOCK_M, BLOCK_N],\
+    \ dtype=tl.float32)\r\n        qk += tl.dot(q, k, trans_b=True)\r\n```\r\n\r\n\
+    I use\r\n```\r\nIn [8]: sys.version_info\r\nOut[8]: sys.version_info(major=3,\
+    \ minor=11, micro=3, releaselevel='final', serial=0)\r\n\r\nIn [9]: torch.__version__\r\
+    \nOut[9]: '2.0.1+cu117'\r\n\r\nIn [10]: import triton\r\n\r\nIn [11]: triton.__version__\r\
+    \nOut[12]: '2.0.0'\r\n\r\nIn [13]: import triton.language as tl\r\n\r\nIn [14]:\
+    \ tl.__version__\r\n---------------------------------------------------------------------------\r\
+    \nAttributeError                            Traceback (most recent call last)\r\
+    \nCell In[14], line 1\r\n----> 1 tl.__version__\r\n\r\nAttributeError: module\
+    \ 'triton.language' has no attribute '__version__'\r\n\r\nIn [15]: tl.dot\r\n\
+    Out[15]: <function triton.language.core.dot(input, other, allow_tf32=True, _builder=None)>\r\
+    \n\r\n```\r\n\r\nDo I need special  revision= string to make it work? Did triton\
+    \ language have breaking changes?"
+  created_at: 2023-06-05 06:56:48+00:00
+  edited: false
+  hidden: false
+  id: 647d95409bb822b5cd3c8725
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a3c6507abdaa25a81ce659/Z7e4xiH7sjQYt2Qga4W8o.png?w=200&h=200&f=face
+      fullname: M
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maykeye
+      type: user
+    createdAt: '2023-06-05T11:56:36.000Z'
+    data:
+      from: How to actually run the model without get run time errors?
+      to: How to actually run the model without getting run-time errors?
+    id: 647dcd7432c471a7fa876f0c
+    type: title-change
+  author: Maykeye
+  created_at: 2023-06-05 10:56:36+00:00
+  id: 647dcd7432c471a7fa876f0c
+  new_title: How to actually run the model without getting run-time errors?
+  old_title: How to actually run the model without get run time errors?
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6495d69e5ea27790e45394a9/j0E1TNG9S3oE6YyUZXqvL.png?w=200&h=200&f=face
+      fullname: Griffin McCauley
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gmccaul1
+      type: user
+    createdAt: '2023-06-23T18:08:36.000Z'
+    data:
+      edited: false
+      editors:
+      - gmccaul1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9741880297660828
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6495d69e5ea27790e45394a9/j0E1TNG9S3oE6YyUZXqvL.png?w=200&h=200&f=face
+          fullname: Griffin McCauley
+          isHf: false
+          isPro: false
+          name: gmccaul1
+          type: user
+        html: '<p>This is a great question. Has anyone managed to successfully resolve
+          it yet?<br>Being able to run the example code without errors would certainly
+          increase confidence in the model immensely.</p>
+
+          '
+        raw: 'This is a great question. Has anyone managed to successfully resolve
+          it yet?
+
+          Being able to run the example code without errors would certainly increase
+          confidence in the model immensely.'
+        updatedAt: '2023-06-23T18:08:36.432Z'
+      numEdits: 0
+      reactions: []
+    id: 6495dfa45867a30b7e778117
+    type: comment
+  author: gmccaul1
+  content: 'This is a great question. Has anyone managed to successfully resolve it
+    yet?
+
+    Being able to run the example code without errors would certainly increase confidence
+    in the model immensely.'
+  created_at: 2023-06-23 17:08:36+00:00
+  edited: false
+  hidden: false
+  id: 6495dfa45867a30b7e778117
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a3c6507abdaa25a81ce659/Z7e4xiH7sjQYt2Qga4W8o.png?w=200&h=200&f=face
+      fullname: M
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maykeye
+      type: user
+    createdAt: '2023-06-24T04:17:37.000Z'
+    data:
+      edited: true
+      editors:
+      - Maykeye
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7301048040390015
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a3c6507abdaa25a81ce659/Z7e4xiH7sjQYt2Qga4W8o.png?w=200&h=200&f=face
+          fullname: M
+          isHf: false
+          isPro: false
+          name: Maykeye
+          type: user
+        html: "<blockquote>\n<p>This is a great question. Has anyone managed to successfully\
+          \ resolve it yet?<br>Being able to run the example code without errors would\
+          \ certainly increase confidence in the model immensely.</p>\n</blockquote>\n\
+          <p>I've managed to run it after changing triton versin</p>\n<pre><code class=\"\
+          language-console\">pip uninstall triton\npip install --no-deps triton==2.0.0.dev20221202\
+          \ \n</code></pre>\n<p>I've used --no-deps  as otherwise it wanted to downgrade\
+          \ torch from 2.0.1 to 2.0.0. (No, thank you very much)</p>\n<p>Here's a\
+          \ fully working example to run from directory of downloaded model (hence\
+          \ <code>os.getcwd()</code> - you can't use from_pretrained('.') in this\
+          \ case as it causes weird errors down the line)</p>\n<pre><code class=\"\
+          language-console\"><span class=\"hljs-meta prompt_\">$ </span><span class=\"\
+          language-bash\"><span class=\"hljs-built_in\">cat</span> runme.py</span>\
+          \ \nimport os \nimport torch\nfrom transformers import AutoModelForMaskedLM,\
+          \ BertTokenizer, pipeline\n\nmlm = AutoModelForMaskedLM.from_pretrained(os.getcwd(),\
+          \ trust_remote_code=True, torch_dtype=torch.bfloat16).cuda()\ntokenizer\
+          \ = BertTokenizer.from_pretrained('bert-base-uncased')\nclassifier = pipeline('fill-mask',\
+          \ model=mlm, tokenizer=tokenizer, device=0)\nprint(classifier(\"I [MASK]\
+          \ to the store yesterday.\"))\n<span class=\"hljs-meta prompt_\"></span>\n\
+          <span class=\"hljs-meta prompt_\">$ </span><span class=\"language-bash\"\
+          >python runme.py</span> \n[{'score': 0.8977681398391724, 'token': 2253,\
+          \ 'token_str': 'went', 'sequence': 'i went to the store yesterday.'}, {'score':\
+          \ 0.02546772174537182, 'token': 2234, 'token_str': 'came', 'sequence': 'i\
+          \ came to the store yesterday.'}, {'score': 0.021113483235239983, 'token':\
+          \ 2939, 'token_str': 'walked', 'sequence': 'i walked to the store yesterday.'},\
+          \ {'score': 0.013631888665258884, 'token': 2288, 'token_str': 'got', 'sequence':\
+          \ 'i got to the store yesterday.'}, {'score': 0.00997330341488123, 'token':\
+          \ 5225, 'token_str': 'drove', 'sequence': 'i drove to the store yesterday.'}]\n\
+          </code></pre>\n<p>Things I also tried:</p>\n<ul>\n<li><p>replacing all \
+          \ <code>tl.dot(A, B, trans_a=True)</code> with <code>tl.dot(tl.trans(A),\
+          \ B)</code>, but either I was not accurate or it's too compute-extensive:\
+          \ python either hanged or I lost patience.</p>\n</li>\n<li><p>throwing away\
+          \ flash attention and using torch's scaled_dot_product_attention. I couldn't\
+          \ figure out how  to massage parameters into correct shape</p>\n</li>\n\
+          <li><p>remove local flash_attention_triton and import one from the flash_attention\
+          \ package. It dumped  a giant error log, but that's where I noticed that\
+          \ it was using not triton 2.0.0, but 2.0.0dev</p>\n</li>\n</ul>\n<p>After\
+          \ replacing triton version everything works.</p>\n<p>Magical version string\
+          \ was taken from the python's <a rel=\"nofollow\" href=\"https://github.com/HazyResearch/flash-attention/blob/9818f85fee29ac6b60c9214bce841f8109a18b1b/flash_attn/flash_attn_triton.py#L3\"\
+          >flash-attention package</a></p>\n"
+        raw: "> This is a great question. Has anyone managed to successfully resolve\
+          \ it yet?\n> Being able to run the example code without errors would certainly\
+          \ increase confidence in the model immensely.\n\nI've managed to run it\
+          \ after changing triton versin\n\n```console \npip uninstall triton\npip\
+          \ install --no-deps triton==2.0.0.dev20221202 \n```\n\nI've used --no-deps\
+          \  as otherwise it wanted to downgrade torch from 2.0.1 to 2.0.0. (No, thank\
+          \ you very much)\n\nHere's a fully working example to run from directory\
+          \ of downloaded model (hence `os.getcwd()` - you can't use from_pretrained('.')\
+          \ in this case as it causes weird errors down the line)\n\n```console \n\
+          $ cat runme.py \nimport os \nimport torch\nfrom transformers import AutoModelForMaskedLM,\
+          \ BertTokenizer, pipeline\n\nmlm = AutoModelForMaskedLM.from_pretrained(os.getcwd(),\
+          \ trust_remote_code=True, torch_dtype=torch.bfloat16).cuda()\ntokenizer\
+          \ = BertTokenizer.from_pretrained('bert-base-uncased')\nclassifier = pipeline('fill-mask',\
+          \ model=mlm, tokenizer=tokenizer, device=0)\nprint(classifier(\"I [MASK]\
+          \ to the store yesterday.\"))\n\n$ python runme.py \n[{'score': 0.8977681398391724,\
+          \ 'token': 2253, 'token_str': 'went', 'sequence': 'i went to the store yesterday.'},\
+          \ {'score': 0.02546772174537182, 'token': 2234, 'token_str': 'came', 'sequence':\
+          \ 'i came to the store yesterday.'}, {'score': 0.021113483235239983, 'token':\
+          \ 2939, 'token_str': 'walked', 'sequence': 'i walked to the store yesterday.'},\
+          \ {'score': 0.013631888665258884, 'token': 2288, 'token_str': 'got', 'sequence':\
+          \ 'i got to the store yesterday.'}, {'score': 0.00997330341488123, 'token':\
+          \ 5225, 'token_str': 'drove', 'sequence': 'i drove to the store yesterday.'}]\n\
+          ```\nThings I also tried:\n* replacing all  `tl.dot(A, B, trans_a=True)`\
+          \ with `tl.dot(tl.trans(A), B)`, but either I was not accurate or it's too\
+          \ compute-extensive: python either hanged or I lost patience.\n\n* throwing\
+          \ away flash attention and using torch's scaled_dot_product_attention. I\
+          \ couldn't figure out how  to massage parameters into correct shape\n\n\
+          * remove local flash_attention_triton and import one from the flash_attention\
+          \ package. It dumped  a giant error log, but that's where I noticed that\
+          \ it was using not triton 2.0.0, but 2.0.0dev\n\nAfter replacing triton\
+          \ version everything works.\n\nMagical version string was taken from the\
+          \ python's [flash-attention package](https://github.com/HazyResearch/flash-attention/blob/9818f85fee29ac6b60c9214bce841f8109a18b1b/flash_attn/flash_attn_triton.py#L3)\n"
+        updatedAt: '2023-06-24T04:27:20.411Z'
+      numEdits: 7
+      reactions:
+      - count: 3
+        reaction: "\U0001F917"
+        users:
+        - gmccaul1
+        - murodbek
+        - Jackmin108
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - leocnj
+    id: 64966e61533c317c5c3b65ba
+    type: comment
+  author: Maykeye
+  content: "> This is a great question. Has anyone managed to successfully resolve\
+    \ it yet?\n> Being able to run the example code without errors would certainly\
+    \ increase confidence in the model immensely.\n\nI've managed to run it after\
+    \ changing triton versin\n\n```console \npip uninstall triton\npip install --no-deps\
+    \ triton==2.0.0.dev20221202 \n```\n\nI've used --no-deps  as otherwise it wanted\
+    \ to downgrade torch from 2.0.1 to 2.0.0. (No, thank you very much)\n\nHere's\
+    \ a fully working example to run from directory of downloaded model (hence `os.getcwd()`\
+    \ - you can't use from_pretrained('.') in this case as it causes weird errors\
+    \ down the line)\n\n```console \n$ cat runme.py \nimport os \nimport torch\nfrom\
+    \ transformers import AutoModelForMaskedLM, BertTokenizer, pipeline\n\nmlm = AutoModelForMaskedLM.from_pretrained(os.getcwd(),\
+    \ trust_remote_code=True, torch_dtype=torch.bfloat16).cuda()\ntokenizer = BertTokenizer.from_pretrained('bert-base-uncased')\n\
+    classifier = pipeline('fill-mask', model=mlm, tokenizer=tokenizer, device=0)\n\
+    print(classifier(\"I [MASK] to the store yesterday.\"))\n\n$ python runme.py \n\
+    [{'score': 0.8977681398391724, 'token': 2253, 'token_str': 'went', 'sequence':\
+    \ 'i went to the store yesterday.'}, {'score': 0.02546772174537182, 'token': 2234,\
+    \ 'token_str': 'came', 'sequence': 'i came to the store yesterday.'}, {'score':\
+    \ 0.021113483235239983, 'token': 2939, 'token_str': 'walked', 'sequence': 'i walked\
+    \ to the store yesterday.'}, {'score': 0.013631888665258884, 'token': 2288, 'token_str':\
+    \ 'got', 'sequence': 'i got to the store yesterday.'}, {'score': 0.00997330341488123,\
+    \ 'token': 5225, 'token_str': 'drove', 'sequence': 'i drove to the store yesterday.'}]\n\
+    ```\nThings I also tried:\n* replacing all  `tl.dot(A, B, trans_a=True)` with\
+    \ `tl.dot(tl.trans(A), B)`, but either I was not accurate or it's too compute-extensive:\
+    \ python either hanged or I lost patience.\n\n* throwing away flash attention\
+    \ and using torch's scaled_dot_product_attention. I couldn't figure out how  to\
+    \ massage parameters into correct shape\n\n* remove local flash_attention_triton\
+    \ and import one from the flash_attention package. It dumped  a giant error log,\
+    \ but that's where I noticed that it was using not triton 2.0.0, but 2.0.0dev\n\
+    \nAfter replacing triton version everything works.\n\nMagical version string was\
+    \ taken from the python's [flash-attention package](https://github.com/HazyResearch/flash-attention/blob/9818f85fee29ac6b60c9214bce841f8109a18b1b/flash_attn/flash_attn_triton.py#L3)\n"
+  created_at: 2023-06-24 03:17:37+00:00
+  edited: true
+  hidden: false
+  id: 64966e61533c317c5c3b65ba
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6495d69e5ea27790e45394a9/j0E1TNG9S3oE6YyUZXqvL.png?w=200&h=200&f=face
+      fullname: Griffin McCauley
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gmccaul1
+      type: user
+    createdAt: '2023-06-25T15:48:14.000Z'
+    data:
+      edited: true
+      editors:
+      - gmccaul1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9709895253181458
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6495d69e5ea27790e45394a9/j0E1TNG9S3oE6YyUZXqvL.png?w=200&h=200&f=face
+          fullname: Griffin McCauley
+          isHf: false
+          isPro: false
+          name: gmccaul1
+          type: user
+        html: '<p>This worked beautifully! Thank you so much for sharing this solution.<br>Just
+          out of curiosity, if you did not download the model and use os.getcwd(),
+          were you actually receiving errors or was the model simply producing nonsensical
+          inferences?</p>
+
+          '
+        raw: 'This worked beautifully! Thank you so much for sharing this solution.
+
+          Just out of curiosity, if you did not download the model and use os.getcwd(),
+          were you actually receiving errors or was the model simply producing nonsensical
+          inferences?'
+        updatedAt: '2023-06-26T13:55:52.723Z'
+      numEdits: 1
+      reactions: []
+    id: 649861be8126a020c2bbcacf
+    type: comment
+  author: gmccaul1
+  content: 'This worked beautifully! Thank you so much for sharing this solution.
+
+    Just out of curiosity, if you did not download the model and use os.getcwd(),
+    were you actually receiving errors or was the model simply producing nonsensical
+    inferences?'
+  created_at: 2023-06-25 14:48:14+00:00
+  edited: true
+  hidden: false
+  id: 649861be8126a020c2bbcacf
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: mosaicml/mosaic-bert-base
+repo_type: model
+status: open
+target_branch: null
+title: How to actually run the model without getting run-time errors?

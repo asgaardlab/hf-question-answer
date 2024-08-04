@@ -1,0 +1,876 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Dhurmir
+conflicting_files: null
+created_at: 2023-11-23 00:58:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/07fc264fc952cd93f23aae074d831562.svg
+      fullname: Domingo Benoit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dhurmir
+      type: user
+    createdAt: '2023-11-23T00:58:08.000Z'
+    data:
+      edited: true
+      editors:
+      - Dhurmir
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.15732312202453613
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/07fc264fc952cd93f23aae074d831562.svg
+          fullname: Domingo Benoit
+          isHf: false
+          isPro: false
+          name: Dhurmir
+          type: user
+        html: "<p>Versions<br>Python: 3.10.12<br>Transformers: 4.35.2</p>\n<p>I've\
+          \ been doing some work on migrating a T5 system fine-tuned on a span filling\
+          \ task towards multilingual, I've come across the following problem with\
+          \ sentinel tokens and text generation.</p>\n<p>First, I illustrate how it's\
+          \ done in T5 and what's to be expected</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> T5Tokenizer, T5ForConditionalGeneration, T5Config\n\nt5_config\
+          \ = T5Config.from_pretrained(<span class=\"hljs-string\">\"t5-base\"</span>)\n\
+          model = T5ForConditionalGeneration.from_pretrained(<span class=\"hljs-string\"\
+          >\"t5-base\"</span>,\n                                                 \
+          \   config=t5_config)\ntokenizer = T5Tokenizer.from_pretrained(<span class=\"\
+          hljs-string\">\"t5-base\"</span>, legacy=<span class=\"hljs-literal\">False</span>)\n\
+          <span class=\"hljs-comment\"># illustrative training for fine-tuning</span>\n\
+          input_ids = tokenizer(<span class=\"hljs-string\">\"The &lt;extra_id_0&gt;\
+          \ walks in &lt;extra_id_1&gt; park\"</span>, return_tensors=<span class=\"\
+          hljs-string\">\"pt\"</span>).input_ids\nlabels = tokenizer(<span class=\"\
+          hljs-string\">\"&lt;extra_id_0&gt; cute dog &lt;extra_id_1&gt; the &lt;extra_id_2&gt;\"\
+          </span>, return_tensors=<span class=\"hljs-string\">\"pt\"</span>).input_ids\n\
+          outputs = model(input_ids=input_ids, labels=labels)\nloss = outputs.loss\n\
+          logits = outputs.logits\n\n<span class=\"hljs-comment\"># inference</span>\n\
+          original = <span class=\"hljs-string\">\"\"\"&lt;extra_id_0&gt; &lt;extra_id_1&gt;\
+          \ that &lt;extra_id_2&gt; really&lt;extra_id_3&gt;</span>\n<span class=\"\
+          hljs-string\">    barber from andy griffith&lt;extra_id_4&gt;\"\"\"</span>\n\
+          <span class=\"hljs-built_in\">print</span>(tokenizer.tokenize(original))\n\
+          <span class=\"hljs-built_in\">print</span>(tokenizer.all_special_tokens)\n\
+          input_ids = tokenizer(original, return_tensors=<span class=\"hljs-string\"\
+          >\"pt\"</span>).input_ids  <span class=\"hljs-comment\"># Batch size 1</span>\n\
+          <span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\">in</span>\
+          \ <span class=\"hljs-built_in\">range</span>(<span class=\"hljs-number\"\
+          >5</span>):\n  outputs = model.generate(input_ids, do_sample=<span class=\"\
+          hljs-literal\">True</span>, max_new_tokens=<span class=\"hljs-number\">50</span>)\n\
+          \  inp = tokenizer.decode(outputs[<span class=\"hljs-number\">0</span>])\n\
+          \  <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f'<span class=\"hljs-subst\">{i}</span>: <span class=\"hljs-subst\">{inp}</span>'</span>)\n\
+          </code></pre>\n<pre><code>['&lt;extra_id_0&gt;', '&lt;extra_id_1&gt;', '\u2581\
+          that', '&lt;extra_id_2&gt;', '\u2581really', '&lt;extra_id_3&gt;', 'bar',\
+          \ 'ber', '\u2581from', '\u2581and', 'y', '\u2581', 'griff', 'i', 'th', '&lt;extra_id_4&gt;']\n\
+          ['&lt;/s&gt;', '&lt;unk&gt;', '&lt;pad&gt;', '&lt;extra_id_0&gt;', '&lt;extra_id_1&gt;',\
+          \ '&lt;extra_id_2&gt;', '&lt;extra_id_3&gt;', '&lt;extra_id_4&gt;', '&lt;extra_id_5&gt;',\
+          \ '&lt;extra_id_6&gt;', '&lt;extra_id_7&gt;', '&lt;extra_id_8&gt;', '&lt;extra_id_9&gt;',\
+          \ '&lt;extra_id_10&gt;', '&lt;extra_id_11&gt;', '&lt;extra_id_12&gt;', '&lt;extra_id_13&gt;',\
+          \ '&lt;extra_id_14&gt;', '&lt;extra_id_15&gt;', '&lt;extra_id_16&gt;', '&lt;extra_id_17&gt;',\
+          \ '&lt;extra_id_18&gt;', '&lt;extra_id_19&gt;', '&lt;extra_id_20&gt;', '&lt;extra_id_21&gt;',\
+          \ '&lt;extra_id_22&gt;', '&lt;extra_id_23&gt;', '&lt;extra_id_24&gt;', '&lt;extra_id_25&gt;',\
+          \ '&lt;extra_id_26&gt;', '&lt;extra_id_27&gt;', '&lt;extra_id_28&gt;', '&lt;extra_id_29&gt;',\
+          \ '&lt;extra_id_30&gt;', '&lt;extra_id_31&gt;', '&lt;extra_id_32&gt;', '&lt;extra_id_33&gt;',\
+          \ '&lt;extra_id_34&gt;', '&lt;extra_id_35&gt;', '&lt;extra_id_36&gt;', '&lt;extra_id_37&gt;',\
+          \ '&lt;extra_id_38&gt;', '&lt;extra_id_39&gt;', '&lt;extra_id_40&gt;', '&lt;extra_id_41&gt;',\
+          \ '&lt;extra_id_42&gt;', '&lt;extra_id_43&gt;', '&lt;extra_id_44&gt;', '&lt;extra_id_45&gt;',\
+          \ '&lt;extra_id_46&gt;', '&lt;extra_id_47&gt;', '&lt;extra_id_48&gt;', '&lt;extra_id_49&gt;',\
+          \ '&lt;extra_id_50&gt;', '&lt;extra_id_51&gt;', '&lt;extra_id_52&gt;', '&lt;extra_id_53&gt;',\
+          \ '&lt;extra_id_54&gt;', '&lt;extra_id_55&gt;', '&lt;extra_id_56&gt;', '&lt;extra_id_57&gt;',\
+          \ '&lt;extra_id_58&gt;', '&lt;extra_id_59&gt;', '&lt;extra_id_60&gt;', '&lt;extra_id_61&gt;',\
+          \ '&lt;extra_id_62&gt;', '&lt;extra_id_63&gt;', '&lt;extra_id_64&gt;', '&lt;extra_id_65&gt;',\
+          \ '&lt;extra_id_66&gt;', '&lt;extra_id_67&gt;', '&lt;extra_id_68&gt;', '&lt;extra_id_69&gt;',\
+          \ '&lt;extra_id_70&gt;', '&lt;extra_id_71&gt;', '&lt;extra_id_72&gt;', '&lt;extra_id_73&gt;',\
+          \ '&lt;extra_id_74&gt;', '&lt;extra_id_75&gt;', '&lt;extra_id_76&gt;', '&lt;extra_id_77&gt;',\
+          \ '&lt;extra_id_78&gt;', '&lt;extra_id_79&gt;', '&lt;extra_id_80&gt;', '&lt;extra_id_81&gt;',\
+          \ '&lt;extra_id_82&gt;', '&lt;extra_id_83&gt;', '&lt;extra_id_84&gt;', '&lt;extra_id_85&gt;',\
+          \ '&lt;extra_id_86&gt;', '&lt;extra_id_87&gt;', '&lt;extra_id_88&gt;', '&lt;extra_id_89&gt;',\
+          \ '&lt;extra_id_90&gt;', '&lt;extra_id_91&gt;', '&lt;extra_id_92&gt;', '&lt;extra_id_93&gt;',\
+          \ '&lt;extra_id_94&gt;', '&lt;extra_id_95&gt;', '&lt;extra_id_96&gt;', '&lt;extra_id_97&gt;',\
+          \ '&lt;extra_id_98&gt;', '&lt;extra_id_99&gt;']\n\n0: &lt;pad&gt; &lt;extra_id_0&gt;\
+          \ I didn\u2019t know &lt;extra_id_1&gt; why &lt;extra_id_2&gt; \u2019s &lt;extra_id_3&gt;\
+          \ good. &lt;extra_id_4&gt; y.&lt;/s&gt;\n1: &lt;pad&gt; &lt;extra_id_0&gt;\
+          \ really &lt;extra_id_1&gt; good and &lt;extra_id_2&gt; I &lt;extra_id_3&gt;\
+          \ hate dis &lt;extra_id_4&gt;.&lt;/s&gt;\n2: &lt;pad&gt; &lt;extra_id_0&gt;'s\
+          \ when &lt;extra_id_1&gt; thought &lt;extra_id_2&gt; one &lt;extra_id_3&gt;\
+          \ got cold &lt;extra_id_4&gt;.&lt;/s&gt;\n3: &lt;pad&gt; &lt;extra_id_0&gt;\
+          \ we &lt;extra_id_1&gt; love &lt;extra_id_2&gt; you &lt;extra_id_3&gt; dig\
+          \ s &lt;extra_id_4&gt;!&lt;/s&gt;\n4: &lt;pad&gt; &lt;extra_id_0&gt; I'm\
+          \ &lt;extra_id_1&gt; liking &lt;extra_id_2&gt; pic &lt;extra_id_3&gt;. er\
+          \ &lt;extra_id_4&gt;.&lt;/s&gt;\n</code></pre>\n<p>As we can see the sentinel\
+          \ tokens are kept intact and used as special tokens by the tokenizer which\
+          \ is the expected behavior.<br>However when I use MT5 the following happens.\
+          \ Please notice that the commented lines  showcase other ways of adding\
+          \ the sentinels tokens that seem to be missing in the tokenizer vocabulary.</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> MT5Tokenizer,\
+          \ MT5ForConditionalGeneration, MT5Config\n\nt5_config = MT5Config.from_pretrained(<span\
+          \ class=\"hljs-string\">\"google/mt5-base\"</span>)\nmodel = MT5ForConditionalGeneration.from_pretrained(<span\
+          \ class=\"hljs-string\">\"google/mt5-base\"</span>,\n                  \
+          \                                  config=t5_config)\ntokenizer = MT5Tokenizer.from_pretrained(<span\
+          \ class=\"hljs-string\">\"google/mt5-base\"</span>,\n                  \
+          \                       extra_ids=<span class=\"hljs-number\">100</span>,\n\
+          \                                        <span class=\"hljs-comment\">#truncation=True,</span>\n\
+          \                                        legacy=<span class=\"hljs-literal\"\
+          >False</span>\n                                         )\n<span class=\"\
+          hljs-comment\">#tokenizer.add_tokens([f'&lt;extra_id_{i}&gt;' for i in range(100)],\
+          \ special_tokens=True)</span>\nmodel.resize_token_embeddings(<span class=\"\
+          hljs-built_in\">len</span>(tokenizer))\n<span class=\"hljs-comment\"># training</span>\n\
+          input_ids = tokenizer(<span class=\"hljs-string\">\"The &lt;extra_id_0&gt;\
+          \ walks in &lt;extra_id_1&gt; park\"</span>, return_tensors=<span class=\"\
+          hljs-string\">\"pt\"</span>).input_ids\nlabels = tokenizer(<span class=\"\
+          hljs-string\">\"&lt;extra_id_0&gt; cute dog &lt;extra_id_1&gt; the &lt;extra_id_2&gt;\"\
+          </span>, return_tensors=<span class=\"hljs-string\">\"pt\"</span>).input_ids\n\
+          outputs = model(input_ids=input_ids, labels=labels)\nloss = outputs.loss\n\
+          logits = outputs.logits\n\n<span class=\"hljs-comment\"># inference</span>\n\
+          original = <span class=\"hljs-string\">\"\"\"&lt;extra_id_0&gt; &lt;extra_id_1&gt;\
+          \ that &lt;extra_id_2&gt; really&lt;extra_id_3&gt;</span>\n<span class=\"\
+          hljs-string\">    barber from andy griffith&lt;extra_id_4&gt;.\"\"\"</span>\n\
+          <span class=\"hljs-built_in\">print</span>(tokenizer.tokenize(original))\n\
+          <span class=\"hljs-built_in\">print</span>(tokenizer.all_special_tokens)\n\
+          input_ids = tokenizer(original, return_tensors=<span class=\"hljs-string\"\
+          >\"pt\"</span>).input_ids  <span class=\"hljs-comment\"># Batch size 1</span>\n\
+          <span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\">in</span>\
+          \ <span class=\"hljs-built_in\">range</span>(<span class=\"hljs-number\"\
+          >5</span>):\n  outputs = model.generate(input_ids, do_sample=<span class=\"\
+          hljs-literal\">True</span>, max_new_tokens=<span class=\"hljs-number\">50</span>)\n\
+          \  inp = tokenizer.decode(outputs[<span class=\"hljs-number\">0</span>])\n\
+          \  <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f'<span class=\"hljs-subst\">{i}</span>: <span class=\"hljs-subst\">{inp}</span>'</span>)\n\
+          </code></pre>\n<pre><code>['&lt;extra_id_0&gt;', '&lt;extra_id_1&gt;', '\u2581\
+          that', '&lt;extra_id_2&gt;', '\u2581', 'really', '&lt;', 'extra', '_', 'id',\
+          \ '_', '3&gt;', '\u2581', 'barber', '\u2581from', '\u2581and', 'y', '\u2581\
+          ', 'griff', 'ith', '&lt;', 'extra', '_', 'id', '_', '4&gt;', '\u2581', '.']\n\
+          ['&lt;/s&gt;', '&lt;unk&gt;', '&lt;pad&gt;', '&lt;extra_id_0&gt;', '&lt;extra_id_1&gt;',\
+          \ '&lt;extra_id_2&gt;', '&lt;extra_id_3&gt;', '&lt;extra_id_4&gt;', '&lt;extra_id_5&gt;',\
+          \ '&lt;extra_id_6&gt;', '&lt;extra_id_7&gt;', '&lt;extra_id_8&gt;', '&lt;extra_id_9&gt;',\
+          \ '&lt;extra_id_10&gt;', '&lt;extra_id_11&gt;', '&lt;extra_id_12&gt;', '&lt;extra_id_13&gt;',\
+          \ '&lt;extra_id_14&gt;', '&lt;extra_id_15&gt;', '&lt;extra_id_16&gt;', '&lt;extra_id_17&gt;',\
+          \ '&lt;extra_id_18&gt;', '&lt;extra_id_19&gt;', '&lt;extra_id_20&gt;', '&lt;extra_id_21&gt;',\
+          \ '&lt;extra_id_22&gt;', '&lt;extra_id_23&gt;', '&lt;extra_id_24&gt;', '&lt;extra_id_25&gt;',\
+          \ '&lt;extra_id_26&gt;', '&lt;extra_id_27&gt;', '&lt;extra_id_28&gt;', '&lt;extra_id_29&gt;',\
+          \ '&lt;extra_id_30&gt;', '&lt;extra_id_31&gt;', '&lt;extra_id_32&gt;', '&lt;extra_id_33&gt;',\
+          \ '&lt;extra_id_34&gt;', '&lt;extra_id_35&gt;', '&lt;extra_id_36&gt;', '&lt;extra_id_37&gt;',\
+          \ '&lt;extra_id_38&gt;', '&lt;extra_id_39&gt;', '&lt;extra_id_40&gt;', '&lt;extra_id_41&gt;',\
+          \ '&lt;extra_id_42&gt;', '&lt;extra_id_43&gt;', '&lt;extra_id_44&gt;', '&lt;extra_id_45&gt;',\
+          \ '&lt;extra_id_46&gt;', '&lt;extra_id_47&gt;', '&lt;extra_id_48&gt;', '&lt;extra_id_49&gt;',\
+          \ '&lt;extra_id_50&gt;', '&lt;extra_id_51&gt;', '&lt;extra_id_52&gt;', '&lt;extra_id_53&gt;',\
+          \ '&lt;extra_id_54&gt;', '&lt;extra_id_55&gt;', '&lt;extra_id_56&gt;', '&lt;extra_id_57&gt;',\
+          \ '&lt;extra_id_58&gt;', '&lt;extra_id_59&gt;', '&lt;extra_id_60&gt;', '&lt;extra_id_61&gt;',\
+          \ '&lt;extra_id_62&gt;', '&lt;extra_id_63&gt;', '&lt;extra_id_64&gt;', '&lt;extra_id_65&gt;',\
+          \ '&lt;extra_id_66&gt;', '&lt;extra_id_67&gt;', '&lt;extra_id_68&gt;', '&lt;extra_id_69&gt;',\
+          \ '&lt;extra_id_70&gt;', '&lt;extra_id_71&gt;', '&lt;extra_id_72&gt;', '&lt;extra_id_73&gt;',\
+          \ '&lt;extra_id_74&gt;', '&lt;extra_id_75&gt;', '&lt;extra_id_76&gt;', '&lt;extra_id_77&gt;',\
+          \ '&lt;extra_id_78&gt;', '&lt;extra_id_79&gt;', '&lt;extra_id_80&gt;', '&lt;extra_id_81&gt;',\
+          \ '&lt;extra_id_82&gt;', '&lt;extra_id_83&gt;', '&lt;extra_id_84&gt;', '&lt;extra_id_85&gt;',\
+          \ '&lt;extra_id_86&gt;', '&lt;extra_id_87&gt;', '&lt;extra_id_88&gt;', '&lt;extra_id_89&gt;',\
+          \ '&lt;extra_id_90&gt;', '&lt;extra_id_91&gt;', '&lt;extra_id_92&gt;', '&lt;extra_id_93&gt;',\
+          \ '&lt;extra_id_94&gt;', '&lt;extra_id_95&gt;', '&lt;extra_id_96&gt;', '&lt;extra_id_97&gt;',\
+          \ '&lt;extra_id_98&gt;', '&lt;extra_id_99&gt;']\n0: &lt;pad&gt; &lt;extra_id_24&gt;\
+          \ &lt;extra_id_32&gt; &lt;extra_id_36&gt;. &lt;extra_id_34&gt; &lt;extra_id_9&gt;\
+          \ &lt;extra_id_47&gt; &lt;extra_id_36&gt; &lt;extra_id_17&gt; &lt;extra_id_69&gt;\
+          \ &lt;extra_id_31&gt; &lt;extra_id_5&gt; &lt;extra_id_11&gt; &lt;extra_id_67&gt;\
+          \ &lt;extra_id_31&gt; &lt;extra_id_42&gt; &lt;extra_id_15&gt; &lt;extra_id_42&gt;\
+          \ &lt;extra_id_85&gt; &lt;extra_id_83&gt; &lt;extra_id_47&gt; &lt;extra_id_4&gt;\
+          \ &lt;extra_id_50&gt; &lt;extra_id_52&gt; &lt;extra_id_47&gt; &lt;extra_id_32&gt;\
+          \ &lt;extra_id_3&gt; &lt;extra_id_42&gt; &lt;extra_id_50&gt; &lt;extra_id_6&gt;\
+          \ &lt;extra_id_51&gt; &lt;extra_id_85&gt; &lt;extra_id_47&gt; &lt;extra_id_18&gt;\
+          \ &lt;extra_id_22&gt; &lt;extra_id_47&gt; &lt;extra_id_18&gt; &lt;extra_id_42&gt;\
+          \ &lt;extra_id_67&gt; &lt;extra_id_67&gt; &lt;extra_id_36&gt; &lt;extra_id_11&gt;\
+          \ &lt;extra_id_13&gt; &lt;extra_id_33&gt; &lt;extra_id_47&gt; &lt;extra_id_70&gt;\
+          \ &lt;extra_id_69&gt; &lt;extra_id_30&gt; &lt;extra_id_0&gt; &lt;extra_id_34&gt;\n\
+          1: &lt;pad&gt; &lt;extra_id_63&gt; &lt;extra_id_47&gt; &lt;extra_id_33&gt;\
+          \ &lt;extra_id_11&gt; &lt;extra_id_69&gt; &lt;extra_id_70&gt; &lt;extra_id_15&gt;\
+          \ &lt;extra_id_22&gt; &lt;extra_id_15&gt; &lt;extra_id_35&gt; &lt;extra_id_84&gt;\
+          \ &lt;extra_id_30&gt; &lt;extra_id_34&gt; &lt;extra_id_21&gt; &lt;extra_id_8&gt;\
+          \ &lt;extra_id_15&gt; &lt;extra_id_65&gt; &lt;extra_id_78&gt; &lt;extra_id_18&gt;\
+          \ &lt;extra_id_77&gt; &lt;extra_id_34&gt; &lt;extra_id_69&gt; &lt;extra_id_34&gt;\
+          \ &lt;extra_id_65&gt; &lt;extra_id_84&gt; &lt;extra_id_34&gt; &lt;extra_id_20&gt;\
+          \ &lt;extra_id_31&gt; &lt;extra_id_38&gt; &lt;extra_id_34&gt; &lt;extra_id_61&gt;\
+          \ &lt;extra_id_8&gt; &lt;extra_id_49&gt; &lt;extra_id_31&gt; &lt;extra_id_5&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_8&gt; &lt;extra_id_61&gt; &lt;extra_id_80&gt;\
+          \ &lt;extra_id_75&gt; &lt;extra_id_35&gt; &lt;extra_id_11&gt; &lt;extra_id_54&gt;\
+          \ &lt;extra_id_78&gt; &lt;extra_id_70&gt; &lt;extra_id_76&gt; &lt;extra_id_6&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_11&gt; RTIME\n2: &lt;pad&gt; &lt;extra_id_5&gt;\
+          \ &lt;extra_id_33&gt; &lt;extra_id_70&gt; &lt;extra_id_5&gt; &lt;extra_id_4&gt;\
+          \ \u0440\u043E\u043C &lt;extra_id_59&gt; &lt;extra_id_33&gt; &lt;extra_id_75&gt;\
+          \ &lt;extra_id_54&gt; &lt;extra_id_18&gt; &lt;extra_id_31&gt; &lt;extra_id_43&gt;\
+          \ &lt;extra_id_47&gt; &lt;extra_id_36&gt; &lt;extra_id_32&gt; &lt;extra_id_0&gt;\
+          \ &lt;extra_id_62&gt; &lt;extra_id_66&gt; &lt;extra_id_72&gt; &lt;extra_id_33&gt;\
+          \ &lt;extra_id_31&gt; &lt;extra_id_38&gt; &lt;extra_id_5&gt; &lt;extra_id_85&gt;\
+          \ &lt;extra_id_62&gt; &lt;extra_id_2&gt; &lt;extra_id_84&gt; &lt;extra_id_26&gt;\
+          \ &lt;extra_id_6&gt; &lt;extra_id_34&gt; &lt;extra_id_31&gt; &lt;extra_id_35&gt;\
+          \ &lt;extra_id_84&gt; &lt;extra_id_19&gt; &lt;extra_id_34&gt; &lt;extra_id_54&gt;\
+          \ &lt;extra_id_71&gt; &lt;extra_id_75&gt; &lt;extra_id_51&gt; &lt;extra_id_0&gt;\
+          \ &lt;extra_id_3&gt; &lt;extra_id_67&gt; &lt;extra_id_2&gt; &lt;extra_id_20&gt;\
+          \ &lt;extra_id_65&gt; &lt;extra_id_83&gt; &lt;extra_id_36&gt; &lt;extra_id_85&gt;\
+          \ &lt;extra_id_4&gt;\n3: &lt;pad&gt; &lt;extra_id_34&gt; &lt;extra_id_76&gt;\
+          \ &lt;extra_id_20&gt; &lt;extra_id_86&gt; &lt;extra_id_3&gt; &lt;extra_id_51&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_36&gt; &lt;extra_id_34&gt; &lt;extra_id_22&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_33&gt; &lt;extra_id_84&gt; &lt;extra_id_34&gt;\
+          \ &lt;extra_id_54&gt; &lt;extra_id_67&gt; &lt;extra_id_75&gt; &lt;extra_id_8&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_59&gt; &lt;extra_id_15&gt; &lt;extra_id_42&gt;\
+          \ &lt;extra_id_8&gt; &lt;extra_id_34&gt; &lt;extra_id_50&gt; &lt;extra_id_34&gt;\
+          \ &lt;extra_id_11&gt; &lt;extra_id_22&gt; &lt;extra_id_80&gt; &lt;extra_id_36&gt;\
+          \ &lt;extra_id_33&gt; &lt;extra_id_5&gt; &lt;extra_id_22&gt; &lt;extra_id_38&gt;\
+          \ &lt;extra_id_54&gt; &lt;extra_id_3&gt; &lt;extra_id_33&gt; &lt;extra_id_67&gt;\
+          \ &lt;extra_id_36&gt; &lt;extra_id_78&gt; &lt;extra_id_85&gt; &lt;extra_id_69&gt;\
+          \ &lt;extra_id_73&gt; &lt;extra_id_85&gt; &lt;/s&gt;\n4: &lt;pad&gt; &lt;extra_id_75&gt;\
+          \ &lt;extra_id_0&gt; &lt;extra_id_30&gt; &lt;extra_id_20&gt; &lt;extra_id_65&gt;\
+          \ &lt;extra_id_51&gt; &lt;extra_id_42&gt; &lt;extra_id_15&gt; &lt;extra_id_20&gt;\
+          \ &lt;extra_id_85&gt; &lt;extra_id_18&gt; &lt;extra_id_51&gt; &lt;extra_id_47&gt;\
+          \ &lt;extra_id_15&gt; &lt;extra_id_78&gt; &lt;extra_id_34&gt; &lt;extra_id_15&gt;\
+          \ &lt;extra_id_32&gt; &lt;extra_id_36&gt; tiful &lt;extra_id_8&gt; &lt;extra_id_62&gt;\
+          \ &lt;extra_id_67&gt; &lt;extra_id_11&gt; &lt;extra_id_41&gt; &lt;extra_id_43&gt;\
+          \ &lt;extra_id_75&gt; &lt;extra_id_12&gt; &lt;extra_id_86&gt; &lt;extra_id_70&gt;\
+          \ &lt;extra_id_54&gt; &lt;extra_id_78&gt; &lt;extra_id_15&gt; &lt;extra_id_47&gt;\
+          \ &lt;extra_id_34&gt; &lt;extra_id_48&gt; &lt;extra_id_67&gt; &lt;extra_id_31&gt;\
+          \ &lt;extra_id_15&gt; &lt;extra_id_38&gt; &lt;extra_id_31&gt; &lt;extra_id_33&gt;\
+          \ &lt;extra_id_19&gt; &lt;extra_id_5&gt; &lt;extra_id_6&gt; &lt;extra_id_47&gt;\
+          \ &lt;extra_id_85&gt; &lt;extra_id_21&gt; &lt;extra_id_71&gt; &lt;extra_id_67&gt;\n\
+          </code></pre>\n<p>As we can see the sentinel tokens are not kept intact,\
+          \ instead they are brokendown into several tokens as if they were regular\
+          \ words even when the tokenizer recognises them as special tokens.<br>Is\
+          \ this behavior to be expected?<br>I've read MT5 paper several times already\
+          \ and they seem to make use of the sentinel tokens in pretraining, so it\
+          \ seem to me that they sould be available as special tokens in the vocabulary\
+          \  which doesn't seems to be the case, any help with this would be greatly\
+          \ appreciated.</p>\n"
+        raw: "Versions\nPython: 3.10.12\nTransformers: 4.35.2\n\n\nI've been doing\
+          \ some work on migrating a T5 system fine-tuned on a span filling task towards\
+          \ multilingual, I've come across the following problem with sentinel tokens\
+          \ and text generation.\n\nFirst, I illustrate how it's done in T5 and what's\
+          \ to be expected\n\n```python\nfrom transformers import T5Tokenizer, T5ForConditionalGeneration,\
+          \ T5Config\n\nt5_config = T5Config.from_pretrained(\"t5-base\")\nmodel =\
+          \ T5ForConditionalGeneration.from_pretrained(\"t5-base\",\n            \
+          \                                        config=t5_config)\ntokenizer =\
+          \ T5Tokenizer.from_pretrained(\"t5-base\", legacy=False)\n# illustrative\
+          \ training for fine-tuning\ninput_ids = tokenizer(\"The <extra_id_0> walks\
+          \ in <extra_id_1> park\", return_tensors=\"pt\").input_ids\nlabels = tokenizer(\"\
+          <extra_id_0> cute dog <extra_id_1> the <extra_id_2>\", return_tensors=\"\
+          pt\").input_ids\noutputs = model(input_ids=input_ids, labels=labels)\nloss\
+          \ = outputs.loss\nlogits = outputs.logits\n\n# inference\noriginal = \"\"\
+          \"<extra_id_0> <extra_id_1> that <extra_id_2> really<extra_id_3>\n    barber\
+          \ from andy griffith<extra_id_4>\"\"\"\nprint(tokenizer.tokenize(original))\n\
+          print(tokenizer.all_special_tokens)\ninput_ids = tokenizer(original, return_tensors=\"\
+          pt\").input_ids  # Batch size 1\nfor i in range(5):\n  outputs = model.generate(input_ids,\
+          \ do_sample=True, max_new_tokens=50)\n  inp = tokenizer.decode(outputs[0])\n\
+          \  print(f'{i}: {inp}')\n```\n```\n['<extra_id_0>', '<extra_id_1>', '\u2581\
+          that', '<extra_id_2>', '\u2581really', '<extra_id_3>', 'bar', 'ber', '\u2581\
+          from', '\u2581and', 'y', '\u2581', 'griff', 'i', 'th', '<extra_id_4>']\n\
+          ['</s>', '<unk>', '<pad>', '<extra_id_0>', '<extra_id_1>', '<extra_id_2>',\
+          \ '<extra_id_3>', '<extra_id_4>', '<extra_id_5>', '<extra_id_6>', '<extra_id_7>',\
+          \ '<extra_id_8>', '<extra_id_9>', '<extra_id_10>', '<extra_id_11>', '<extra_id_12>',\
+          \ '<extra_id_13>', '<extra_id_14>', '<extra_id_15>', '<extra_id_16>', '<extra_id_17>',\
+          \ '<extra_id_18>', '<extra_id_19>', '<extra_id_20>', '<extra_id_21>', '<extra_id_22>',\
+          \ '<extra_id_23>', '<extra_id_24>', '<extra_id_25>', '<extra_id_26>', '<extra_id_27>',\
+          \ '<extra_id_28>', '<extra_id_29>', '<extra_id_30>', '<extra_id_31>', '<extra_id_32>',\
+          \ '<extra_id_33>', '<extra_id_34>', '<extra_id_35>', '<extra_id_36>', '<extra_id_37>',\
+          \ '<extra_id_38>', '<extra_id_39>', '<extra_id_40>', '<extra_id_41>', '<extra_id_42>',\
+          \ '<extra_id_43>', '<extra_id_44>', '<extra_id_45>', '<extra_id_46>', '<extra_id_47>',\
+          \ '<extra_id_48>', '<extra_id_49>', '<extra_id_50>', '<extra_id_51>', '<extra_id_52>',\
+          \ '<extra_id_53>', '<extra_id_54>', '<extra_id_55>', '<extra_id_56>', '<extra_id_57>',\
+          \ '<extra_id_58>', '<extra_id_59>', '<extra_id_60>', '<extra_id_61>', '<extra_id_62>',\
+          \ '<extra_id_63>', '<extra_id_64>', '<extra_id_65>', '<extra_id_66>', '<extra_id_67>',\
+          \ '<extra_id_68>', '<extra_id_69>', '<extra_id_70>', '<extra_id_71>', '<extra_id_72>',\
+          \ '<extra_id_73>', '<extra_id_74>', '<extra_id_75>', '<extra_id_76>', '<extra_id_77>',\
+          \ '<extra_id_78>', '<extra_id_79>', '<extra_id_80>', '<extra_id_81>', '<extra_id_82>',\
+          \ '<extra_id_83>', '<extra_id_84>', '<extra_id_85>', '<extra_id_86>', '<extra_id_87>',\
+          \ '<extra_id_88>', '<extra_id_89>', '<extra_id_90>', '<extra_id_91>', '<extra_id_92>',\
+          \ '<extra_id_93>', '<extra_id_94>', '<extra_id_95>', '<extra_id_96>', '<extra_id_97>',\
+          \ '<extra_id_98>', '<extra_id_99>']\n\n0: <pad> <extra_id_0> I didn\u2019\
+          t know <extra_id_1> why <extra_id_2> \u2019s <extra_id_3> good. <extra_id_4>\
+          \ y.</s>\n1: <pad> <extra_id_0> really <extra_id_1> good and <extra_id_2>\
+          \ I <extra_id_3> hate dis <extra_id_4>.</s>\n2: <pad> <extra_id_0>'s when\
+          \ <extra_id_1> thought <extra_id_2> one <extra_id_3> got cold <extra_id_4>.</s>\n\
+          3: <pad> <extra_id_0> we <extra_id_1> love <extra_id_2> you <extra_id_3>\
+          \ dig s <extra_id_4>!</s>\n4: <pad> <extra_id_0> I'm <extra_id_1> liking\
+          \ <extra_id_2> pic <extra_id_3>. er <extra_id_4>.</s>\n```\n\nAs we can\
+          \ see the sentinel tokens are kept intact and used as special tokens by\
+          \ the tokenizer which is the expected behavior.\nHowever when I use MT5\
+          \ the following happens. Please notice that the commented lines  showcase\
+          \ other ways of adding the sentinels tokens that seem to be missing in the\
+          \ tokenizer vocabulary.\n\n```python\nfrom transformers import MT5Tokenizer,\
+          \ MT5ForConditionalGeneration, MT5Config\n\nt5_config = MT5Config.from_pretrained(\"\
+          google/mt5-base\")\nmodel = MT5ForConditionalGeneration.from_pretrained(\"\
+          google/mt5-base\",\n                                                   \
+          \ config=t5_config)\ntokenizer = MT5Tokenizer.from_pretrained(\"google/mt5-base\"\
+          ,\n                                         extra_ids=100,\n           \
+          \                             #truncation=True,\n                      \
+          \                  legacy=False\n                                      \
+          \   )\n#tokenizer.add_tokens([f'<extra_id_{i}>' for i in range(100)], special_tokens=True)\n\
+          model.resize_token_embeddings(len(tokenizer))\n# training\ninput_ids = tokenizer(\"\
+          The <extra_id_0> walks in <extra_id_1> park\", return_tensors=\"pt\").input_ids\n\
+          labels = tokenizer(\"<extra_id_0> cute dog <extra_id_1> the <extra_id_2>\"\
+          , return_tensors=\"pt\").input_ids\noutputs = model(input_ids=input_ids,\
+          \ labels=labels)\nloss = outputs.loss\nlogits = outputs.logits\n\n# inference\n\
+          original = \"\"\"<extra_id_0> <extra_id_1> that <extra_id_2> really<extra_id_3>\n\
+          \    barber from andy griffith<extra_id_4>.\"\"\"\nprint(tokenizer.tokenize(original))\n\
+          print(tokenizer.all_special_tokens)\ninput_ids = tokenizer(original, return_tensors=\"\
+          pt\").input_ids  # Batch size 1\nfor i in range(5):\n  outputs = model.generate(input_ids,\
+          \ do_sample=True, max_new_tokens=50)\n  inp = tokenizer.decode(outputs[0])\n\
+          \  print(f'{i}: {inp}')\n```\n```\n['<extra_id_0>', '<extra_id_1>', '\u2581\
+          that', '<extra_id_2>', '\u2581', 'really', '<', 'extra', '_', 'id', '_',\
+          \ '3>', '\u2581', 'barber', '\u2581from', '\u2581and', 'y', '\u2581', 'griff',\
+          \ 'ith', '<', 'extra', '_', 'id', '_', '4>', '\u2581', '.']\n['</s>', '<unk>',\
+          \ '<pad>', '<extra_id_0>', '<extra_id_1>', '<extra_id_2>', '<extra_id_3>',\
+          \ '<extra_id_4>', '<extra_id_5>', '<extra_id_6>', '<extra_id_7>', '<extra_id_8>',\
+          \ '<extra_id_9>', '<extra_id_10>', '<extra_id_11>', '<extra_id_12>', '<extra_id_13>',\
+          \ '<extra_id_14>', '<extra_id_15>', '<extra_id_16>', '<extra_id_17>', '<extra_id_18>',\
+          \ '<extra_id_19>', '<extra_id_20>', '<extra_id_21>', '<extra_id_22>', '<extra_id_23>',\
+          \ '<extra_id_24>', '<extra_id_25>', '<extra_id_26>', '<extra_id_27>', '<extra_id_28>',\
+          \ '<extra_id_29>', '<extra_id_30>', '<extra_id_31>', '<extra_id_32>', '<extra_id_33>',\
+          \ '<extra_id_34>', '<extra_id_35>', '<extra_id_36>', '<extra_id_37>', '<extra_id_38>',\
+          \ '<extra_id_39>', '<extra_id_40>', '<extra_id_41>', '<extra_id_42>', '<extra_id_43>',\
+          \ '<extra_id_44>', '<extra_id_45>', '<extra_id_46>', '<extra_id_47>', '<extra_id_48>',\
+          \ '<extra_id_49>', '<extra_id_50>', '<extra_id_51>', '<extra_id_52>', '<extra_id_53>',\
+          \ '<extra_id_54>', '<extra_id_55>', '<extra_id_56>', '<extra_id_57>', '<extra_id_58>',\
+          \ '<extra_id_59>', '<extra_id_60>', '<extra_id_61>', '<extra_id_62>', '<extra_id_63>',\
+          \ '<extra_id_64>', '<extra_id_65>', '<extra_id_66>', '<extra_id_67>', '<extra_id_68>',\
+          \ '<extra_id_69>', '<extra_id_70>', '<extra_id_71>', '<extra_id_72>', '<extra_id_73>',\
+          \ '<extra_id_74>', '<extra_id_75>', '<extra_id_76>', '<extra_id_77>', '<extra_id_78>',\
+          \ '<extra_id_79>', '<extra_id_80>', '<extra_id_81>', '<extra_id_82>', '<extra_id_83>',\
+          \ '<extra_id_84>', '<extra_id_85>', '<extra_id_86>', '<extra_id_87>', '<extra_id_88>',\
+          \ '<extra_id_89>', '<extra_id_90>', '<extra_id_91>', '<extra_id_92>', '<extra_id_93>',\
+          \ '<extra_id_94>', '<extra_id_95>', '<extra_id_96>', '<extra_id_97>', '<extra_id_98>',\
+          \ '<extra_id_99>']\n0: <pad> <extra_id_24> <extra_id_32> <extra_id_36>.\
+          \ <extra_id_34> <extra_id_9> <extra_id_47> <extra_id_36> <extra_id_17> <extra_id_69>\
+          \ <extra_id_31> <extra_id_5> <extra_id_11> <extra_id_67> <extra_id_31> <extra_id_42>\
+          \ <extra_id_15> <extra_id_42> <extra_id_85> <extra_id_83> <extra_id_47>\
+          \ <extra_id_4> <extra_id_50> <extra_id_52> <extra_id_47> <extra_id_32> <extra_id_3>\
+          \ <extra_id_42> <extra_id_50> <extra_id_6> <extra_id_51> <extra_id_85> <extra_id_47>\
+          \ <extra_id_18> <extra_id_22> <extra_id_47> <extra_id_18> <extra_id_42>\
+          \ <extra_id_67> <extra_id_67> <extra_id_36> <extra_id_11> <extra_id_13>\
+          \ <extra_id_33> <extra_id_47> <extra_id_70> <extra_id_69> <extra_id_30>\
+          \ <extra_id_0> <extra_id_34>\n1: <pad> <extra_id_63> <extra_id_47> <extra_id_33>\
+          \ <extra_id_11> <extra_id_69> <extra_id_70> <extra_id_15> <extra_id_22>\
+          \ <extra_id_15> <extra_id_35> <extra_id_84> <extra_id_30> <extra_id_34>\
+          \ <extra_id_21> <extra_id_8> <extra_id_15> <extra_id_65> <extra_id_78> <extra_id_18>\
+          \ <extra_id_77> <extra_id_34> <extra_id_69> <extra_id_34> <extra_id_65>\
+          \ <extra_id_84> <extra_id_34> <extra_id_20> <extra_id_31> <extra_id_38>\
+          \ <extra_id_34> <extra_id_61> <extra_id_8> <extra_id_49> <extra_id_31> <extra_id_5>\
+          \ <extra_id_34> <extra_id_8> <extra_id_61> <extra_id_80> <extra_id_75> <extra_id_35>\
+          \ <extra_id_11> <extra_id_54> <extra_id_78> <extra_id_70> <extra_id_76>\
+          \ <extra_id_6> <extra_id_34> <extra_id_11> RTIME\n2: <pad> <extra_id_5>\
+          \ <extra_id_33> <extra_id_70> <extra_id_5> <extra_id_4> \u0440\u043E\u043C\
+          \ <extra_id_59> <extra_id_33> <extra_id_75> <extra_id_54> <extra_id_18>\
+          \ <extra_id_31> <extra_id_43> <extra_id_47> <extra_id_36> <extra_id_32>\
+          \ <extra_id_0> <extra_id_62> <extra_id_66> <extra_id_72> <extra_id_33> <extra_id_31>\
+          \ <extra_id_38> <extra_id_5> <extra_id_85> <extra_id_62> <extra_id_2> <extra_id_84>\
+          \ <extra_id_26> <extra_id_6> <extra_id_34> <extra_id_31> <extra_id_35> <extra_id_84>\
+          \ <extra_id_19> <extra_id_34> <extra_id_54> <extra_id_71> <extra_id_75>\
+          \ <extra_id_51> <extra_id_0> <extra_id_3> <extra_id_67> <extra_id_2> <extra_id_20>\
+          \ <extra_id_65> <extra_id_83> <extra_id_36> <extra_id_85> <extra_id_4>\n\
+          3: <pad> <extra_id_34> <extra_id_76> <extra_id_20> <extra_id_86> <extra_id_3>\
+          \ <extra_id_51> <extra_id_34> <extra_id_36> <extra_id_34> <extra_id_22>\
+          \ <extra_id_34> <extra_id_33> <extra_id_84> <extra_id_34> <extra_id_54>\
+          \ <extra_id_67> <extra_id_75> <extra_id_8> <extra_id_34> <extra_id_59> <extra_id_15>\
+          \ <extra_id_42> <extra_id_8> <extra_id_34> <extra_id_50> <extra_id_34> <extra_id_11>\
+          \ <extra_id_22> <extra_id_80> <extra_id_36> <extra_id_33> <extra_id_5> <extra_id_22>\
+          \ <extra_id_38> <extra_id_54> <extra_id_3> <extra_id_33> <extra_id_67> <extra_id_36>\
+          \ <extra_id_78> <extra_id_85> <extra_id_69> <extra_id_73> <extra_id_85>\
+          \ </s>\n4: <pad> <extra_id_75> <extra_id_0> <extra_id_30> <extra_id_20>\
+          \ <extra_id_65> <extra_id_51> <extra_id_42> <extra_id_15> <extra_id_20>\
+          \ <extra_id_85> <extra_id_18> <extra_id_51> <extra_id_47> <extra_id_15>\
+          \ <extra_id_78> <extra_id_34> <extra_id_15> <extra_id_32> <extra_id_36>\
+          \ tiful <extra_id_8> <extra_id_62> <extra_id_67> <extra_id_11> <extra_id_41>\
+          \ <extra_id_43> <extra_id_75> <extra_id_12> <extra_id_86> <extra_id_70>\
+          \ <extra_id_54> <extra_id_78> <extra_id_15> <extra_id_47> <extra_id_34>\
+          \ <extra_id_48> <extra_id_67> <extra_id_31> <extra_id_15> <extra_id_38>\
+          \ <extra_id_31> <extra_id_33> <extra_id_19> <extra_id_5> <extra_id_6> <extra_id_47>\
+          \ <extra_id_85> <extra_id_21> <extra_id_71> <extra_id_67>\n```\n\nAs we\
+          \ can see the sentinel tokens are not kept intact, instead they are brokendown\
+          \ into several tokens as if they were regular words even when the tokenizer\
+          \ recognises them as special tokens.\nIs this behavior to be expected?\n\
+          I've read MT5 paper several times already and they seem to make use of the\
+          \ sentinel tokens in pretraining, so it seem to me that they sould be available\
+          \ as special tokens in the vocabulary  which doesn't seems to be the case,\
+          \ any help with this would be greatly appreciated."
+        updatedAt: '2023-11-23T15:04:16.827Z'
+      numEdits: 3
+      reactions:
+      - count: 1
+        reaction: "\U0001F614"
+        users:
+        - Dhurmir
+    id: 655ea3a0737830f9945a05e8
+    type: comment
+  author: Dhurmir
+  content: "Versions\nPython: 3.10.12\nTransformers: 4.35.2\n\n\nI've been doing some\
+    \ work on migrating a T5 system fine-tuned on a span filling task towards multilingual,\
+    \ I've come across the following problem with sentinel tokens and text generation.\n\
+    \nFirst, I illustrate how it's done in T5 and what's to be expected\n\n```python\n\
+    from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config\n\n\
+    t5_config = T5Config.from_pretrained(\"t5-base\")\nmodel = T5ForConditionalGeneration.from_pretrained(\"\
+    t5-base\",\n                                                    config=t5_config)\n\
+    tokenizer = T5Tokenizer.from_pretrained(\"t5-base\", legacy=False)\n# illustrative\
+    \ training for fine-tuning\ninput_ids = tokenizer(\"The <extra_id_0> walks in\
+    \ <extra_id_1> park\", return_tensors=\"pt\").input_ids\nlabels = tokenizer(\"\
+    <extra_id_0> cute dog <extra_id_1> the <extra_id_2>\", return_tensors=\"pt\").input_ids\n\
+    outputs = model(input_ids=input_ids, labels=labels)\nloss = outputs.loss\nlogits\
+    \ = outputs.logits\n\n# inference\noriginal = \"\"\"<extra_id_0> <extra_id_1>\
+    \ that <extra_id_2> really<extra_id_3>\n    barber from andy griffith<extra_id_4>\"\
+    \"\"\nprint(tokenizer.tokenize(original))\nprint(tokenizer.all_special_tokens)\n\
+    input_ids = tokenizer(original, return_tensors=\"pt\").input_ids  # Batch size\
+    \ 1\nfor i in range(5):\n  outputs = model.generate(input_ids, do_sample=True,\
+    \ max_new_tokens=50)\n  inp = tokenizer.decode(outputs[0])\n  print(f'{i}: {inp}')\n\
+    ```\n```\n['<extra_id_0>', '<extra_id_1>', '\u2581that', '<extra_id_2>', '\u2581\
+    really', '<extra_id_3>', 'bar', 'ber', '\u2581from', '\u2581and', 'y', '\u2581\
+    ', 'griff', 'i', 'th', '<extra_id_4>']\n['</s>', '<unk>', '<pad>', '<extra_id_0>',\
+    \ '<extra_id_1>', '<extra_id_2>', '<extra_id_3>', '<extra_id_4>', '<extra_id_5>',\
+    \ '<extra_id_6>', '<extra_id_7>', '<extra_id_8>', '<extra_id_9>', '<extra_id_10>',\
+    \ '<extra_id_11>', '<extra_id_12>', '<extra_id_13>', '<extra_id_14>', '<extra_id_15>',\
+    \ '<extra_id_16>', '<extra_id_17>', '<extra_id_18>', '<extra_id_19>', '<extra_id_20>',\
+    \ '<extra_id_21>', '<extra_id_22>', '<extra_id_23>', '<extra_id_24>', '<extra_id_25>',\
+    \ '<extra_id_26>', '<extra_id_27>', '<extra_id_28>', '<extra_id_29>', '<extra_id_30>',\
+    \ '<extra_id_31>', '<extra_id_32>', '<extra_id_33>', '<extra_id_34>', '<extra_id_35>',\
+    \ '<extra_id_36>', '<extra_id_37>', '<extra_id_38>', '<extra_id_39>', '<extra_id_40>',\
+    \ '<extra_id_41>', '<extra_id_42>', '<extra_id_43>', '<extra_id_44>', '<extra_id_45>',\
+    \ '<extra_id_46>', '<extra_id_47>', '<extra_id_48>', '<extra_id_49>', '<extra_id_50>',\
+    \ '<extra_id_51>', '<extra_id_52>', '<extra_id_53>', '<extra_id_54>', '<extra_id_55>',\
+    \ '<extra_id_56>', '<extra_id_57>', '<extra_id_58>', '<extra_id_59>', '<extra_id_60>',\
+    \ '<extra_id_61>', '<extra_id_62>', '<extra_id_63>', '<extra_id_64>', '<extra_id_65>',\
+    \ '<extra_id_66>', '<extra_id_67>', '<extra_id_68>', '<extra_id_69>', '<extra_id_70>',\
+    \ '<extra_id_71>', '<extra_id_72>', '<extra_id_73>', '<extra_id_74>', '<extra_id_75>',\
+    \ '<extra_id_76>', '<extra_id_77>', '<extra_id_78>', '<extra_id_79>', '<extra_id_80>',\
+    \ '<extra_id_81>', '<extra_id_82>', '<extra_id_83>', '<extra_id_84>', '<extra_id_85>',\
+    \ '<extra_id_86>', '<extra_id_87>', '<extra_id_88>', '<extra_id_89>', '<extra_id_90>',\
+    \ '<extra_id_91>', '<extra_id_92>', '<extra_id_93>', '<extra_id_94>', '<extra_id_95>',\
+    \ '<extra_id_96>', '<extra_id_97>', '<extra_id_98>', '<extra_id_99>']\n\n0: <pad>\
+    \ <extra_id_0> I didn\u2019t know <extra_id_1> why <extra_id_2> \u2019s <extra_id_3>\
+    \ good. <extra_id_4> y.</s>\n1: <pad> <extra_id_0> really <extra_id_1> good and\
+    \ <extra_id_2> I <extra_id_3> hate dis <extra_id_4>.</s>\n2: <pad> <extra_id_0>'s\
+    \ when <extra_id_1> thought <extra_id_2> one <extra_id_3> got cold <extra_id_4>.</s>\n\
+    3: <pad> <extra_id_0> we <extra_id_1> love <extra_id_2> you <extra_id_3> dig s\
+    \ <extra_id_4>!</s>\n4: <pad> <extra_id_0> I'm <extra_id_1> liking <extra_id_2>\
+    \ pic <extra_id_3>. er <extra_id_4>.</s>\n```\n\nAs we can see the sentinel tokens\
+    \ are kept intact and used as special tokens by the tokenizer which is the expected\
+    \ behavior.\nHowever when I use MT5 the following happens. Please notice that\
+    \ the commented lines  showcase other ways of adding the sentinels tokens that\
+    \ seem to be missing in the tokenizer vocabulary.\n\n```python\nfrom transformers\
+    \ import MT5Tokenizer, MT5ForConditionalGeneration, MT5Config\n\nt5_config = MT5Config.from_pretrained(\"\
+    google/mt5-base\")\nmodel = MT5ForConditionalGeneration.from_pretrained(\"google/mt5-base\"\
+    ,\n                                                    config=t5_config)\ntokenizer\
+    \ = MT5Tokenizer.from_pretrained(\"google/mt5-base\",\n                      \
+    \                   extra_ids=100,\n                                        #truncation=True,\n\
+    \                                        legacy=False\n                      \
+    \                   )\n#tokenizer.add_tokens([f'<extra_id_{i}>' for i in range(100)],\
+    \ special_tokens=True)\nmodel.resize_token_embeddings(len(tokenizer))\n# training\n\
+    input_ids = tokenizer(\"The <extra_id_0> walks in <extra_id_1> park\", return_tensors=\"\
+    pt\").input_ids\nlabels = tokenizer(\"<extra_id_0> cute dog <extra_id_1> the <extra_id_2>\"\
+    , return_tensors=\"pt\").input_ids\noutputs = model(input_ids=input_ids, labels=labels)\n\
+    loss = outputs.loss\nlogits = outputs.logits\n\n# inference\noriginal = \"\"\"\
+    <extra_id_0> <extra_id_1> that <extra_id_2> really<extra_id_3>\n    barber from\
+    \ andy griffith<extra_id_4>.\"\"\"\nprint(tokenizer.tokenize(original))\nprint(tokenizer.all_special_tokens)\n\
+    input_ids = tokenizer(original, return_tensors=\"pt\").input_ids  # Batch size\
+    \ 1\nfor i in range(5):\n  outputs = model.generate(input_ids, do_sample=True,\
+    \ max_new_tokens=50)\n  inp = tokenizer.decode(outputs[0])\n  print(f'{i}: {inp}')\n\
+    ```\n```\n['<extra_id_0>', '<extra_id_1>', '\u2581that', '<extra_id_2>', '\u2581\
+    ', 'really', '<', 'extra', '_', 'id', '_', '3>', '\u2581', 'barber', '\u2581from',\
+    \ '\u2581and', 'y', '\u2581', 'griff', 'ith', '<', 'extra', '_', 'id', '_', '4>',\
+    \ '\u2581', '.']\n['</s>', '<unk>', '<pad>', '<extra_id_0>', '<extra_id_1>', '<extra_id_2>',\
+    \ '<extra_id_3>', '<extra_id_4>', '<extra_id_5>', '<extra_id_6>', '<extra_id_7>',\
+    \ '<extra_id_8>', '<extra_id_9>', '<extra_id_10>', '<extra_id_11>', '<extra_id_12>',\
+    \ '<extra_id_13>', '<extra_id_14>', '<extra_id_15>', '<extra_id_16>', '<extra_id_17>',\
+    \ '<extra_id_18>', '<extra_id_19>', '<extra_id_20>', '<extra_id_21>', '<extra_id_22>',\
+    \ '<extra_id_23>', '<extra_id_24>', '<extra_id_25>', '<extra_id_26>', '<extra_id_27>',\
+    \ '<extra_id_28>', '<extra_id_29>', '<extra_id_30>', '<extra_id_31>', '<extra_id_32>',\
+    \ '<extra_id_33>', '<extra_id_34>', '<extra_id_35>', '<extra_id_36>', '<extra_id_37>',\
+    \ '<extra_id_38>', '<extra_id_39>', '<extra_id_40>', '<extra_id_41>', '<extra_id_42>',\
+    \ '<extra_id_43>', '<extra_id_44>', '<extra_id_45>', '<extra_id_46>', '<extra_id_47>',\
+    \ '<extra_id_48>', '<extra_id_49>', '<extra_id_50>', '<extra_id_51>', '<extra_id_52>',\
+    \ '<extra_id_53>', '<extra_id_54>', '<extra_id_55>', '<extra_id_56>', '<extra_id_57>',\
+    \ '<extra_id_58>', '<extra_id_59>', '<extra_id_60>', '<extra_id_61>', '<extra_id_62>',\
+    \ '<extra_id_63>', '<extra_id_64>', '<extra_id_65>', '<extra_id_66>', '<extra_id_67>',\
+    \ '<extra_id_68>', '<extra_id_69>', '<extra_id_70>', '<extra_id_71>', '<extra_id_72>',\
+    \ '<extra_id_73>', '<extra_id_74>', '<extra_id_75>', '<extra_id_76>', '<extra_id_77>',\
+    \ '<extra_id_78>', '<extra_id_79>', '<extra_id_80>', '<extra_id_81>', '<extra_id_82>',\
+    \ '<extra_id_83>', '<extra_id_84>', '<extra_id_85>', '<extra_id_86>', '<extra_id_87>',\
+    \ '<extra_id_88>', '<extra_id_89>', '<extra_id_90>', '<extra_id_91>', '<extra_id_92>',\
+    \ '<extra_id_93>', '<extra_id_94>', '<extra_id_95>', '<extra_id_96>', '<extra_id_97>',\
+    \ '<extra_id_98>', '<extra_id_99>']\n0: <pad> <extra_id_24> <extra_id_32> <extra_id_36>.\
+    \ <extra_id_34> <extra_id_9> <extra_id_47> <extra_id_36> <extra_id_17> <extra_id_69>\
+    \ <extra_id_31> <extra_id_5> <extra_id_11> <extra_id_67> <extra_id_31> <extra_id_42>\
+    \ <extra_id_15> <extra_id_42> <extra_id_85> <extra_id_83> <extra_id_47> <extra_id_4>\
+    \ <extra_id_50> <extra_id_52> <extra_id_47> <extra_id_32> <extra_id_3> <extra_id_42>\
+    \ <extra_id_50> <extra_id_6> <extra_id_51> <extra_id_85> <extra_id_47> <extra_id_18>\
+    \ <extra_id_22> <extra_id_47> <extra_id_18> <extra_id_42> <extra_id_67> <extra_id_67>\
+    \ <extra_id_36> <extra_id_11> <extra_id_13> <extra_id_33> <extra_id_47> <extra_id_70>\
+    \ <extra_id_69> <extra_id_30> <extra_id_0> <extra_id_34>\n1: <pad> <extra_id_63>\
+    \ <extra_id_47> <extra_id_33> <extra_id_11> <extra_id_69> <extra_id_70> <extra_id_15>\
+    \ <extra_id_22> <extra_id_15> <extra_id_35> <extra_id_84> <extra_id_30> <extra_id_34>\
+    \ <extra_id_21> <extra_id_8> <extra_id_15> <extra_id_65> <extra_id_78> <extra_id_18>\
+    \ <extra_id_77> <extra_id_34> <extra_id_69> <extra_id_34> <extra_id_65> <extra_id_84>\
+    \ <extra_id_34> <extra_id_20> <extra_id_31> <extra_id_38> <extra_id_34> <extra_id_61>\
+    \ <extra_id_8> <extra_id_49> <extra_id_31> <extra_id_5> <extra_id_34> <extra_id_8>\
+    \ <extra_id_61> <extra_id_80> <extra_id_75> <extra_id_35> <extra_id_11> <extra_id_54>\
+    \ <extra_id_78> <extra_id_70> <extra_id_76> <extra_id_6> <extra_id_34> <extra_id_11>\
+    \ RTIME\n2: <pad> <extra_id_5> <extra_id_33> <extra_id_70> <extra_id_5> <extra_id_4>\
+    \ \u0440\u043E\u043C <extra_id_59> <extra_id_33> <extra_id_75> <extra_id_54> <extra_id_18>\
+    \ <extra_id_31> <extra_id_43> <extra_id_47> <extra_id_36> <extra_id_32> <extra_id_0>\
+    \ <extra_id_62> <extra_id_66> <extra_id_72> <extra_id_33> <extra_id_31> <extra_id_38>\
+    \ <extra_id_5> <extra_id_85> <extra_id_62> <extra_id_2> <extra_id_84> <extra_id_26>\
+    \ <extra_id_6> <extra_id_34> <extra_id_31> <extra_id_35> <extra_id_84> <extra_id_19>\
+    \ <extra_id_34> <extra_id_54> <extra_id_71> <extra_id_75> <extra_id_51> <extra_id_0>\
+    \ <extra_id_3> <extra_id_67> <extra_id_2> <extra_id_20> <extra_id_65> <extra_id_83>\
+    \ <extra_id_36> <extra_id_85> <extra_id_4>\n3: <pad> <extra_id_34> <extra_id_76>\
+    \ <extra_id_20> <extra_id_86> <extra_id_3> <extra_id_51> <extra_id_34> <extra_id_36>\
+    \ <extra_id_34> <extra_id_22> <extra_id_34> <extra_id_33> <extra_id_84> <extra_id_34>\
+    \ <extra_id_54> <extra_id_67> <extra_id_75> <extra_id_8> <extra_id_34> <extra_id_59>\
+    \ <extra_id_15> <extra_id_42> <extra_id_8> <extra_id_34> <extra_id_50> <extra_id_34>\
+    \ <extra_id_11> <extra_id_22> <extra_id_80> <extra_id_36> <extra_id_33> <extra_id_5>\
+    \ <extra_id_22> <extra_id_38> <extra_id_54> <extra_id_3> <extra_id_33> <extra_id_67>\
+    \ <extra_id_36> <extra_id_78> <extra_id_85> <extra_id_69> <extra_id_73> <extra_id_85>\
+    \ </s>\n4: <pad> <extra_id_75> <extra_id_0> <extra_id_30> <extra_id_20> <extra_id_65>\
+    \ <extra_id_51> <extra_id_42> <extra_id_15> <extra_id_20> <extra_id_85> <extra_id_18>\
+    \ <extra_id_51> <extra_id_47> <extra_id_15> <extra_id_78> <extra_id_34> <extra_id_15>\
+    \ <extra_id_32> <extra_id_36> tiful <extra_id_8> <extra_id_62> <extra_id_67> <extra_id_11>\
+    \ <extra_id_41> <extra_id_43> <extra_id_75> <extra_id_12> <extra_id_86> <extra_id_70>\
+    \ <extra_id_54> <extra_id_78> <extra_id_15> <extra_id_47> <extra_id_34> <extra_id_48>\
+    \ <extra_id_67> <extra_id_31> <extra_id_15> <extra_id_38> <extra_id_31> <extra_id_33>\
+    \ <extra_id_19> <extra_id_5> <extra_id_6> <extra_id_47> <extra_id_85> <extra_id_21>\
+    \ <extra_id_71> <extra_id_67>\n```\n\nAs we can see the sentinel tokens are not\
+    \ kept intact, instead they are brokendown into several tokens as if they were\
+    \ regular words even when the tokenizer recognises them as special tokens.\nIs\
+    \ this behavior to be expected?\nI've read MT5 paper several times already and\
+    \ they seem to make use of the sentinel tokens in pretraining, so it seem to me\
+    \ that they sould be available as special tokens in the vocabulary  which doesn't\
+    \ seems to be the case, any help with this would be greatly appreciated."
+  created_at: 2023-11-23 00:58:08+00:00
+  edited: true
+  hidden: false
+  id: 655ea3a0737830f9945a05e8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1618450692745-5e3aec01f55e2b62848a5217.jpeg?w=200&h=200&f=face
+      fullname: Lysandre
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: lysandre
+      type: user
+    createdAt: '2023-11-28T09:38:04.000Z'
+    data:
+      edited: false
+      editors:
+      - lysandre
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5633304119110107
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1618450692745-5e3aec01f55e2b62848a5217.jpeg?w=200&h=200&f=face
+          fullname: Lysandre
+          isHf: true
+          isPro: false
+          name: lysandre
+          type: user
+        html: "<p>cc <span data-props=\"{&quot;user&quot;:&quot;ArthurZ&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ArthurZ\">@<span class=\"\
+          underline\">ArthurZ</span></a></span>\n\n\t</span></span> </p>\n"
+        raw: 'cc @ArthurZ '
+        updatedAt: '2023-11-28T09:38:04.039Z'
+      numEdits: 0
+      reactions: []
+    id: 6565b4fc4a33bf3d4400c51f
+    type: comment
+  author: lysandre
+  content: 'cc @ArthurZ '
+  created_at: 2023-11-28 09:38:04+00:00
+  edited: false
+  hidden: false
+  id: 6565b4fc4a33bf3d4400c51f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1674683851722-62441cb7456803e95009a08f.jpeg?w=200&h=200&f=face
+      fullname: Arthur Zucker
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ArthurZ
+      type: user
+    createdAt: '2023-11-28T09:49:36.000Z'
+    data:
+      edited: false
+      editors:
+      - ArthurZ
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7341733574867249
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1674683851722-62441cb7456803e95009a08f.jpeg?w=200&h=200&f=face
+          fullname: Arthur Zucker
+          isHf: true
+          isPro: false
+          name: ArthurZ
+          type: user
+        html: "<p>Hello! If you print the tokenizer 's added tokens decoder you will\
+          \ see that the tokens are set to have \"single_word = True\"<br>Good catch\
+          \ it's because of this line:</p>\n<pre><code class=\"language-python\">\
+          \        <span class=\"hljs-comment\"># for legacy purpose, we keep this.\
+          \ Will be removed and tests updated. (when `added_tokens_decoder` is not\
+          \ passed as kwargs)</span>\n        self._added_tokens_decoder = {}\n  \
+          \      <span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\"\
+          >in</span> <span class=\"hljs-built_in\">range</span>(<span class=\"hljs-built_in\"\
+          >len</span>(extra_tokens)):\n            self._added_tokens_decoder[<span\
+          \ class=\"hljs-built_in\">len</span>(self.sp_model) - <span class=\"hljs-number\"\
+          >1</span> + extra_ids - i] = AddedToken(\n                <span class=\"\
+          hljs-string\">f\"&lt;extra_id_<span class=\"hljs-subst\">{i}</span>&gt;\"\
+          </span>, single_word=<span class=\"hljs-literal\">False</span>, lstrip=<span\
+          \ class=\"hljs-literal\">True</span>, rstrip=<span class=\"hljs-literal\"\
+          >True</span>, special=<span class=\"hljs-literal\">True</span>\n       \
+          \     )\n</code></pre>\n<p>quick fix use the fast tokenizer. I'll update\
+          \ this today.</p>\n"
+        raw: "Hello! If you print the tokenizer 's added tokens decoder you will see\
+          \ that the tokens are set to have \"single_word = True\"\nGood catch it's\
+          \ because of this line:\n```python\n        # for legacy purpose, we keep\
+          \ this. Will be removed and tests updated. (when `added_tokens_decoder`\
+          \ is not passed as kwargs)\n        self._added_tokens_decoder = {}\n  \
+          \      for i in range(len(extra_tokens)):\n            self._added_tokens_decoder[len(self.sp_model)\
+          \ - 1 + extra_ids - i] = AddedToken(\n                f\"<extra_id_{i}>\"\
+          , single_word=False, lstrip=True, rstrip=True, special=True\n          \
+          \  )\n```\nquick fix use the fast tokenizer. I'll update this today."
+        updatedAt: '2023-11-28T09:49:36.079Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - Dhurmir
+    id: 6565b7b0fd712e8aa8730e7b
+    type: comment
+  author: ArthurZ
+  content: "Hello! If you print the tokenizer 's added tokens decoder you will see\
+    \ that the tokens are set to have \"single_word = True\"\nGood catch it's because\
+    \ of this line:\n```python\n        # for legacy purpose, we keep this. Will be\
+    \ removed and tests updated. (when `added_tokens_decoder` is not passed as kwargs)\n\
+    \        self._added_tokens_decoder = {}\n        for i in range(len(extra_tokens)):\n\
+    \            self._added_tokens_decoder[len(self.sp_model) - 1 + extra_ids - i]\
+    \ = AddedToken(\n                f\"<extra_id_{i}>\", single_word=False, lstrip=True,\
+    \ rstrip=True, special=True\n            )\n```\nquick fix use the fast tokenizer.\
+    \ I'll update this today."
+  created_at: 2023-11-28 09:49:36+00:00
+  edited: false
+  hidden: false
+  id: 6565b7b0fd712e8aa8730e7b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1674683851722-62441cb7456803e95009a08f.jpeg?w=200&h=200&f=face
+      fullname: Arthur Zucker
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ArthurZ
+      type: user
+    createdAt: '2023-11-28T09:53:24.000Z'
+    data:
+      edited: false
+      editors:
+      - ArthurZ
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7726265788078308
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1674683851722-62441cb7456803e95009a08f.jpeg?w=200&h=200&f=face
+          fullname: Arthur Zucker
+          isHf: true
+          isPro: false
+          name: ArthurZ
+          type: user
+        html: '<p>See this PR: <a rel="nofollow" href="https://github.com/huggingface/transformers/pull/27738">https://github.com/huggingface/transformers/pull/27738</a>
+          </p>
+
+          '
+        raw: 'See this PR: https://github.com/huggingface/transformers/pull/27738 '
+        updatedAt: '2023-11-28T09:53:24.172Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - Dhurmir
+    id: 6565b894e67d21ed94b6512f
+    type: comment
+  author: ArthurZ
+  content: 'See this PR: https://github.com/huggingface/transformers/pull/27738 '
+  created_at: 2023-11-28 09:53:24+00:00
+  edited: false
+  hidden: false
+  id: 6565b894e67d21ed94b6512f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/07fc264fc952cd93f23aae074d831562.svg
+      fullname: Domingo Benoit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dhurmir
+      type: user
+    createdAt: '2023-11-28T16:08:26.000Z'
+    data:
+      edited: true
+      editors:
+      - Dhurmir
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8338319063186646
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/07fc264fc952cd93f23aae074d831562.svg
+          fullname: Domingo Benoit
+          isHf: false
+          isPro: false
+          name: Dhurmir
+          type: user
+        html: "<blockquote>\n<p>Hello! If you print the tokenizer 's added tokens\
+          \ decoder you will see that the tokens are set to have \"single_word = True\"\
+          <br>Good catch it's because of this line:</p>\n<pre><code class=\"language-python\"\
+          >        <span class=\"hljs-comment\"># for legacy purpose, we keep this.\
+          \ Will be removed and tests updated. (when `added_tokens_decoder` is not\
+          \ passed as kwargs)</span>\n        self._added_tokens_decoder = {}\n  \
+          \      <span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\"\
+          >in</span> <span class=\"hljs-built_in\">range</span>(<span class=\"hljs-built_in\"\
+          >len</span>(extra_tokens)):\n            self._added_tokens_decoder[<span\
+          \ class=\"hljs-built_in\">len</span>(self.sp_model) - <span class=\"hljs-number\"\
+          >1</span> + extra_ids - i] = AddedToken(\n                <span class=\"\
+          hljs-string\">f\"&lt;extra_id_<span class=\"hljs-subst\">{i}</span>&gt;\"\
+          </span>, single_word=<span class=\"hljs-literal\">False</span>, lstrip=<span\
+          \ class=\"hljs-literal\">True</span>, rstrip=<span class=\"hljs-literal\"\
+          >True</span>, special=<span class=\"hljs-literal\">True</span>\n       \
+          \     )\n</code></pre>\n<p>quick fix use the fast tokenizer. I'll update\
+          \ this today.</p>\n</blockquote>\n<p>Hey, thank you so much for your reply\
+          \ and your help!<br>Just wanted to add that I checked using:</p>\n<p><code>MT5TokenizerFast,\
+          \ T5TokenizerFast</code></p>\n<p>And got the same issue, maybe there's something\
+          \ else wrong? Or might want to check those out too.</p>\n<p>Many thanks\
+          \ for your work!</p>\n"
+        raw: '> Hello! If you print the tokenizer ''s added tokens decoder you will
+          see that the tokens are set to have "single_word = True"
+
+          > Good catch it''s because of this line:
+
+          > ```python
+
+          >         # for legacy purpose, we keep this. Will be removed and tests
+          updated. (when `added_tokens_decoder` is not passed as kwargs)
+
+          >         self._added_tokens_decoder = {}
+
+          >         for i in range(len(extra_tokens)):
+
+          >             self._added_tokens_decoder[len(self.sp_model) - 1 + extra_ids
+          - i] = AddedToken(
+
+          >                 f"<extra_id_{i}>", single_word=False, lstrip=True, rstrip=True,
+          special=True
+
+          >             )
+
+          > ```
+
+          > quick fix use the fast tokenizer. I''ll update this today.
+
+
+          Hey, thank you so much for your reply and your help!
+
+          Just wanted to add that I checked using:
+
+
+          ```MT5TokenizerFast, T5TokenizerFast```
+
+
+          And got the same issue, maybe there''s something else wrong? Or might want
+          to check those out too.
+
+
+          Many thanks for your work!'
+        updatedAt: '2023-11-28T16:09:03.890Z'
+      numEdits: 1
+      reactions: []
+    id: 6566107a77d8a948ac5fdd3a
+    type: comment
+  author: Dhurmir
+  content: '> Hello! If you print the tokenizer ''s added tokens decoder you will
+    see that the tokens are set to have "single_word = True"
+
+    > Good catch it''s because of this line:
+
+    > ```python
+
+    >         # for legacy purpose, we keep this. Will be removed and tests updated.
+    (when `added_tokens_decoder` is not passed as kwargs)
+
+    >         self._added_tokens_decoder = {}
+
+    >         for i in range(len(extra_tokens)):
+
+    >             self._added_tokens_decoder[len(self.sp_model) - 1 + extra_ids -
+    i] = AddedToken(
+
+    >                 f"<extra_id_{i}>", single_word=False, lstrip=True, rstrip=True,
+    special=True
+
+    >             )
+
+    > ```
+
+    > quick fix use the fast tokenizer. I''ll update this today.
+
+
+    Hey, thank you so much for your reply and your help!
+
+    Just wanted to add that I checked using:
+
+
+    ```MT5TokenizerFast, T5TokenizerFast```
+
+
+    And got the same issue, maybe there''s something else wrong? Or might want to
+    check those out too.
+
+
+    Many thanks for your work!'
+  created_at: 2023-11-28 16:08:26+00:00
+  edited: true
+  hidden: false
+  id: 6566107a77d8a948ac5fdd3a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: google/mt5-small
+repo_type: model
+status: open
+target_branch: null
+title: Is MT5 tokenizer and Generation model working properly

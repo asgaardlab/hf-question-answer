@@ -1,0 +1,232 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Andi2022HH
+conflicting_files: null
+created_at: 2023-06-22 20:37:25+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/cc4b74174fbae2f9eeeeb9f5588da263.svg
+      fullname: G
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Andi2022HH
+      type: user
+    createdAt: '2023-06-22T21:37:25.000Z'
+    data:
+      edited: false
+      editors:
+      - Andi2022HH
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5354982614517212
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/cc4b74174fbae2f9eeeeb9f5588da263.svg
+          fullname: G
+          isHf: false
+          isPro: false
+          name: Andi2022HH
+          type: user
+        html: '<p>Hi all, </p>
+
+          <p>as an exercise I am trying to use Dolly_v2_3b on 4 GPU with 16RAM. It
+          works to distribute Dolly across my 4 GPUs. However, when I am trying to
+          send a prompt to the model </p>
+
+          <p>text = "Hello my friends! How are you doing today?"<br>tokenized_text
+          = tokenizer(text, return_tensors="pt")<br>tokenized_text = tokenized_text.to(0)<br>translation
+          = model.generate(**tokenized_text)<br>translated_text = tokenizer.batch_decode(x,
+          skip_special_tokens=True)[0]<br>print(translated_text)</p>
+
+          <p>then I am getting the information that </p>
+
+          <p>RuntimeError: Expected all tensors to be on the same device, but found
+          at least two devices, cuda:3 and cuda:0! </p>
+
+          <p>Here is the distribution across the GPU which works well:</p>
+
+          <p>| Processes:                                                                  |<br>|  GPU   GI   CI        PID   Type   Process
+          name                  GPU Memory |<br>|        ID   ID                                                   Usage      |<br>|=============================================================================|<br>|    0   N/A  N/A     11261      C   python                           3121MiB
+          |<br>|    1   N/A  N/A     11261      C   python                           3837MiB
+          |<br>|    2   N/A  N/A     11261      C   python                           3837MiB
+          |<br>|    3   N/A  N/A     11261      C   python                           3121MiB
+          |</p>
+
+          <p>Here is my complete code:</p>
+
+          <p>from accelerate import dispatch_model, infer_auto_device_map<br>from
+          accelerate.utils import get_balanced_memory</p>
+
+          <p>tokenizer = AutoTokenizer.from_pretrained("databricks/dolly-v2-3b")<br>model
+          = AutoModelForCausalLM.from_pretrained("databricks/dolly-v2-3b",device_map=''auto'')
+          </p>
+
+          <p>peft_config = PromptTuningConfig(<br>    task_type=TaskType.CAUSAL_LM,<br>    prompt_tuning_init=PromptTuningInit.TEXT,<br>    num_virtual_tokens=50,<br>    prompt_tuning_init_text="Answer
+          the question as truthfully as possible",<br>    tokenizer_name_or_path="databricks/dolly-v2-3b"<br>)</p>
+
+          <p>model = get_peft_model(model, peft_config)</p>
+
+          <p>max_memory = get_balanced_memory(<br>    model,<br>    max_memory=None,<br>    no_split_module_classes=["GPTNeoXLayer",
+          "GPTNeoXMLP"],<br>    dtype=''float16'',<br>    low_zero=False,<br>)</p>
+
+          <p>device_map = infer_auto_device_map(<br>    model,<br>    max_memory=max_memory,<br>    no_split_module_classes=["GPTNeoXLayer",
+          "GPTNeoXMLP"],<br>    dtype=''float16''<br>)</p>
+
+          <p>model = dispatch_model(model, device_map=device_map)</p>
+
+          <p>text = "Hello my friends! How are you doing today?"<br>tokenized_text
+          = tokenizer(text, return_tensors="pt")<br>tokenized_text = tokenized_text.to(0)<br>translation
+          = model.generate(**tokenized_text)<br>translated_text = tokenizer.batch_decode(x,
+          skip_special_tokens=True)[0]<br>print(translated_text)</p>
+
+          <p>any idea how to solve this?</p>
+
+          '
+        raw: "Hi all, \r\n\r\nas an exercise I am trying to use Dolly_v2_3b on 4 GPU\
+          \ with 16RAM. It works to distribute Dolly across my 4 GPUs. However, when\
+          \ I am trying to send a prompt to the model \r\n\r\ntext = \"Hello my friends!\
+          \ How are you doing today?\"\r\ntokenized_text = tokenizer(text, return_tensors=\"\
+          pt\")\r\ntokenized_text = tokenized_text.to(0)\r\ntranslation = model.generate(**tokenized_text)\r\
+          \ntranslated_text = tokenizer.batch_decode(x, skip_special_tokens=True)[0]\r\
+          \nprint(translated_text)\r\n\r\nthen I am getting the information that \r\
+          \n\r\nRuntimeError: Expected all tensors to be on the same device, but found\
+          \ at least two devices, cuda:3 and cuda:0! \r\n\r\nHere is the distribution\
+          \ across the GPU which works well:\r\n\r\n| Processes:                 \
+          \                                                 |\r\n|  GPU   GI   CI\
+          \        PID   Type   Process name                  GPU Memory |\r\n|  \
+          \      ID   ID                                                   Usage \
+          \     |\r\n|=============================================================================|\r\
+          \n|    0   N/A  N/A     11261      C   python                          \
+          \ 3121MiB |\r\n|    1   N/A  N/A     11261      C   python             \
+          \              3837MiB |\r\n|    2   N/A  N/A     11261      C   python\
+          \                           3837MiB |\r\n|    3   N/A  N/A     11261   \
+          \   C   python                           3121MiB |\r\n\r\nHere is my complete\
+          \ code:\r\n\r\nfrom accelerate import dispatch_model, infer_auto_device_map\r\
+          \nfrom accelerate.utils import get_balanced_memory\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          databricks/dolly-v2-3b\")\r\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+          databricks/dolly-v2-3b\",device_map='auto') \r\n\r\npeft_config = PromptTuningConfig(\r\
+          \n    task_type=TaskType.CAUSAL_LM,\r\n    prompt_tuning_init=PromptTuningInit.TEXT,\r\
+          \n    num_virtual_tokens=50,\r\n    prompt_tuning_init_text=\"Answer the\
+          \ question as truthfully as possible\",\r\n    tokenizer_name_or_path=\"\
+          databricks/dolly-v2-3b\"\r\n)\r\n\r\nmodel = get_peft_model(model, peft_config)\r\
+          \n\r\nmax_memory = get_balanced_memory(\r\n    model,\r\n    max_memory=None,\r\
+          \n    no_split_module_classes=[\"GPTNeoXLayer\", \"GPTNeoXMLP\"],\r\n  \
+          \  dtype='float16',\r\n    low_zero=False,\r\n)\r\n\r\ndevice_map = infer_auto_device_map(\r\
+          \n    model,\r\n    max_memory=max_memory,\r\n    no_split_module_classes=[\"\
+          GPTNeoXLayer\", \"GPTNeoXMLP\"],\r\n    dtype='float16'\r\n)\r\n\r\nmodel\
+          \ = dispatch_model(model, device_map=device_map)\r\n\r\ntext = \"Hello my\
+          \ friends! How are you doing today?\"\r\ntokenized_text = tokenizer(text,\
+          \ return_tensors=\"pt\")\r\ntokenized_text = tokenized_text.to(0)\r\ntranslation\
+          \ = model.generate(**tokenized_text)\r\ntranslated_text = tokenizer.batch_decode(x,\
+          \ skip_special_tokens=True)[0]\r\nprint(translated_text)\r\n\r\nany idea\
+          \ how to solve this?"
+        updatedAt: '2023-06-22T21:37:25.772Z'
+      numEdits: 0
+      reactions: []
+    id: 6494bf154e9e5089b3c6044a
+    type: comment
+  author: Andi2022HH
+  content: "Hi all, \r\n\r\nas an exercise I am trying to use Dolly_v2_3b on 4 GPU\
+    \ with 16RAM. It works to distribute Dolly across my 4 GPUs. However, when I am\
+    \ trying to send a prompt to the model \r\n\r\ntext = \"Hello my friends! How\
+    \ are you doing today?\"\r\ntokenized_text = tokenizer(text, return_tensors=\"\
+    pt\")\r\ntokenized_text = tokenized_text.to(0)\r\ntranslation = model.generate(**tokenized_text)\r\
+    \ntranslated_text = tokenizer.batch_decode(x, skip_special_tokens=True)[0]\r\n\
+    print(translated_text)\r\n\r\nthen I am getting the information that \r\n\r\n\
+    RuntimeError: Expected all tensors to be on the same device, but found at least\
+    \ two devices, cuda:3 and cuda:0! \r\n\r\nHere is the distribution across the\
+    \ GPU which works well:\r\n\r\n| Processes:                                  \
+    \                                |\r\n|  GPU   GI   CI        PID   Type   Process\
+    \ name                  GPU Memory |\r\n|        ID   ID                     \
+    \                              Usage      |\r\n|=============================================================================|\r\
+    \n|    0   N/A  N/A     11261      C   python                           3121MiB\
+    \ |\r\n|    1   N/A  N/A     11261      C   python                           3837MiB\
+    \ |\r\n|    2   N/A  N/A     11261      C   python                           3837MiB\
+    \ |\r\n|    3   N/A  N/A     11261      C   python                           3121MiB\
+    \ |\r\n\r\nHere is my complete code:\r\n\r\nfrom accelerate import dispatch_model,\
+    \ infer_auto_device_map\r\nfrom accelerate.utils import get_balanced_memory\r\n\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(\"databricks/dolly-v2-3b\")\r\n\
+    model = AutoModelForCausalLM.from_pretrained(\"databricks/dolly-v2-3b\",device_map='auto')\
+    \ \r\n\r\npeft_config = PromptTuningConfig(\r\n    task_type=TaskType.CAUSAL_LM,\r\
+    \n    prompt_tuning_init=PromptTuningInit.TEXT,\r\n    num_virtual_tokens=50,\r\
+    \n    prompt_tuning_init_text=\"Answer the question as truthfully as possible\"\
+    ,\r\n    tokenizer_name_or_path=\"databricks/dolly-v2-3b\"\r\n)\r\n\r\nmodel =\
+    \ get_peft_model(model, peft_config)\r\n\r\nmax_memory = get_balanced_memory(\r\
+    \n    model,\r\n    max_memory=None,\r\n    no_split_module_classes=[\"GPTNeoXLayer\"\
+    , \"GPTNeoXMLP\"],\r\n    dtype='float16',\r\n    low_zero=False,\r\n)\r\n\r\n\
+    device_map = infer_auto_device_map(\r\n    model,\r\n    max_memory=max_memory,\r\
+    \n    no_split_module_classes=[\"GPTNeoXLayer\", \"GPTNeoXMLP\"],\r\n    dtype='float16'\r\
+    \n)\r\n\r\nmodel = dispatch_model(model, device_map=device_map)\r\n\r\ntext =\
+    \ \"Hello my friends! How are you doing today?\"\r\ntokenized_text = tokenizer(text,\
+    \ return_tensors=\"pt\")\r\ntokenized_text = tokenized_text.to(0)\r\ntranslation\
+    \ = model.generate(**tokenized_text)\r\ntranslated_text = tokenizer.batch_decode(x,\
+    \ skip_special_tokens=True)[0]\r\nprint(translated_text)\r\n\r\nany idea how to\
+    \ solve this?"
+  created_at: 2023-06-22 20:37:25+00:00
+  edited: false
+  hidden: false
+  id: 6494bf154e9e5089b3c6044a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-07-15T16:03:04.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.852421224117279
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>You should use a pipeline with device="cuda" around the model and
+          tokenizer; it will do the right thing here</p>
+
+          '
+        raw: You should use a pipeline with device="cuda" around the model and tokenizer;
+          it will do the right thing here
+        updatedAt: '2023-07-15T16:03:04.817Z'
+      numEdits: 0
+      reactions: []
+    id: 64b2c338f460afaefc25af4a
+    type: comment
+  author: srowen
+  content: You should use a pipeline with device="cuda" around the model and tokenizer;
+    it will do the right thing here
+  created_at: 2023-07-15 15:03:04+00:00
+  edited: false
+  hidden: false
+  id: 64b2c338f460afaefc25af4a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 31
+repo_id: databricks/dolly-v2-3b
+repo_type: model
+status: open
+target_branch: null
+title: Generate answers use Dolly_v2_3b on several GPUs

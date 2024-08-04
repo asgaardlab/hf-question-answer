@@ -1,0 +1,5 @@
+## https://huggingface.co/reeducator/vicuna-13b-free/discussions/12
+
+contains_question: yes
+question_part: I'm surprised no one has asked this, but there's no documentation anywhere for this model. My question is, why are there two bin files with random names, and when I attempt to load it into oobabooga, it attempts to load "pytorch_model-00001-of-00003.bin"? What's with the bin file names and why did the trainer of this model fail to put any instructions anywhere for using it and loading into a WebUI?
+So, I've generated a model merging script with Chat GPT to merge the model into one file, I've done that and renamed it pytorch-model. It still fails to load. I've renamed the largest model 00001 and made the smallest model the 00002 model of the 00003 model set, still doesn't load. I also wanted to say I'm very sorry if my question is really dumb because I'm missing something obvious.

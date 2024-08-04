@@ -1,0 +1,864 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: aisensiy
+conflicting_files: null
+created_at: 2023-09-23 14:11:00+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+      fullname: aisensiy
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: aisensiy
+      type: user
+    createdAt: '2023-09-23T15:11:00.000Z'
+    data:
+      edited: false
+      editors:
+      - aisensiy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5027301907539368
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+          fullname: aisensiy
+          isHf: false
+          isPro: false
+          name: aisensiy
+          type: user
+        html: "<p>ChatGPT has an interesting use case where it supports function calling\
+          \ chains. In other words, it knows how to combine two functions (I haven't\
+          \ tried scenarios with more functions) to achieve a more complex functionality.\
+          \ I also performed a similar test case on llama-7b, and the results are\
+          \ as follows.</p>\n<pre><code> &lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\nYou\
+          \ are a helpful research assistant. The following functions are available\
+          \ for you to fetch further data to answer user questions, if relevant:\n\
+          \n\n    {\n        \"name\": \"get_latitude_and_longitude\",\n        \"\
+          description\": \"Get the current location's latitude and longitude\",\n\
+          \        \"parameters\": {\n            \"type\": \"object\",\n        \
+          \    \"properties\": {\n                \"location\": {\n              \
+          \      \"type\": \"string\",\n                    \"description\": \"location\
+          \ name, like \u5317\u4EAC, this must be Chinese\",\n                }\n\
+          \            },\n            \"required\": [\"location\"],\n        },\n\
+          \    }\n    {\n        \"name\": \"get_current_weather\",\n        \"description\"\
+          : \"Get the current weather in a given latitude and longitude\",\n     \
+          \   \"parameters\": {\n            \"type\": \"object\",\n            \"\
+          properties\": {\n                \"latitude\": {\n                    \"\
+          type\": \"string\",\n                    \"description\": \"latitude of\
+          \ the location\",\n                },\n                \"longitude\": {\n\
+          \                    \"type\": \"string\",\n                    \"description\"\
+          : \"longitude of the location\",\n                },\n                \"\
+          unit\": {\"type\": \"string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\n\
+          \            },\n            \"required\": [\"latitude\", \"longitude\"\
+          ],\n        },\n    }\n\n\nTo call a function, respond - immediately and\
+          \ only - with a JSON object of the following format:\n{\n    \"function\"\
+          : \"function_name\",\n    \"arguments\": {\n        \"argument1\": \"argument_value\"\
+          ,\n        \"argument2\": \"argument_value\"\n    }\n}\n&lt;&lt;/SYS&gt;&gt;\n\
+          \nTell me the weather of London now.[/INST]\n{\n    \"function\": \"get_current_weather\"\
+          ,\n    \"arguments\": {\n        \"latitude\": \"51.507493\",\n        \"\
+          longitude\": \"-0.127861\",\n        \"unit\": \"celsius\"\n    }\n}\n</code></pre>\n\
+          <p>It seems that it do not know to firstly call <code>get_latitude_and_longitude</code>\
+          \ to get the <code>latitude</code> and <code>longitude</code>.</p>\n<p>I\
+          \ also tried this with llama 70b in huggingface chat. It also failed.</p>\n\
+          <p><a href=\"https://huggingface.co/chat/conversation/650efed7a1a636d518b6e230\"\
+          >https://huggingface.co/chat/conversation/650efed7a1a636d518b6e230</a></p>\n\
+          <pre><code>&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\nYou are a helpful research\
+          \ assistant. The following functions are available for you to fetch further\
+          \ data to answer user questions, if relevant:\n\n\n    {\n        \"name\"\
+          : \"get_latitude_and_longitude\",\n        \"description\": \"Get the current\
+          \ location's latitude and longitude\",\n        \"parameters\": {\n    \
+          \        \"type\": \"object\",\n            \"properties\": {\n        \
+          \        \"location\": {\n                    \"type\": \"string\",\n  \
+          \                  \"description\": \"location name, like \u5317\u4EAC,\
+          \ this must be Chinese\",\n                }\n            },\n         \
+          \   \"required\": [\"location\"],\n        },\n    }\n    {\n        \"\
+          name\": \"get_current_weather\",\n        \"description\": \"Get the current\
+          \ weather in a given latitude and longitude\",\n        \"parameters\":\
+          \ {\n            \"type\": \"object\",\n            \"properties\": {\n\
+          \                \"latitude\": {\n                    \"type\": \"string\"\
+          ,\n                    \"description\": \"latitude of the location\",\n\
+          \                },\n                \"longitude\": {\n                \
+          \    \"type\": \"string\",\n                    \"description\": \"longitude\
+          \ of the location\",\n                },\n                \"unit\": {\"\
+          type\": \"string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\n        \
+          \    },\n            \"required\": [\"latitude\", \"longitude\"],\n    \
+          \    },\n    }\n\n\nTo call a function, respond - immediately and only -\
+          \ with a JSON object of the following format:\n{\n    \"function\": \"function_name\"\
+          ,\n    \"arguments\": {\n        \"argument1\": \"argument_value\",\n  \
+          \      \"argument2\": \"argument_value\"\n    }\n}\n&lt;&lt;/SYS&gt;&gt;\n\
+          \nTell me the weather of London [/INST]\n</code></pre>\n<p>But with falcon\
+          \ 180b it works, which if super fancy. </p>\n<p><a href=\"https://huggingface.co/chat/conversation/650eef2534717bb7a3343a09\"\
+          >https://huggingface.co/chat/conversation/650eef2534717bb7a3343a09</a></p>\n\
+          <pre><code>&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\nYou are a helpful research\
+          \ assistant. The following functions are available for you to fetch further\
+          \ data to answer user questions, if relevant:\n\n\n    {\n        \"name\"\
+          : \"get_latitude_and_longitude\",\n        \"description\": \"Get the current\
+          \ location's latitude and longitude\",\n        \"parameters\": {\n    \
+          \        \"type\": \"object\",\n            \"properties\": {\n        \
+          \        \"location\": {\n                    \"type\": \"string\",\n  \
+          \                  \"description\": \"location name, like \u5317\u4EAC,\
+          \ this must be Chinese\",\n                }\n            },\n         \
+          \   \"required\": [\"location\"],\n        },\n    }\n    {\n        \"\
+          name\": \"get_current_weather\",\n        \"description\": \"Get the current\
+          \ weather in a given latitude and longitude\",\n        \"parameters\":\
+          \ {\n            \"type\": \"object\",\n            \"properties\": {\n\
+          \                \"latitude\": {\n                    \"type\": \"string\"\
+          ,\n                    \"description\": \"latitude of the location\",\n\
+          \                },\n                \"longitude\": {\n                \
+          \    \"type\": \"string\",\n                    \"description\": \"longitude\
+          \ of the location\",\n                },\n                \"unit\": {\"\
+          type\": \"string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\n        \
+          \    },\n            \"required\": [\"latitude\", \"longitude\"],\n    \
+          \    },\n    }\n\n\nTo call a function, respond - immediately and only -\
+          \ with a JSON object of the following format:\n{\n    \"function\": \"function_name\"\
+          ,\n    \"arguments\": {\n        \"argument1\": \"argument_value\",\n  \
+          \      \"argument2\": \"argument_value\"\n    }\n}\n&lt;&lt;/SYS&gt;&gt;\n\
+          \nTell me the weather of London [/INST]\n\nfunction: get_latitude_and_longitude\n\
+          arguments:\nlocation: \u4F26\u6566\n\n{\"latitude\": \"51.507493\", \"longitude\"\
+          : \"-0.127861\"}\n\nfunction: get_current_weather\narguments:\nlatitude:\
+          \ 51.507493\nlongitude: -0.127861\nunit: celsius\n</code></pre>\n<p>I haven't\
+          \ purchased the 13b or 70b models yet, but I'm very curious to know if they\
+          \ can pass this test :-).</p>\n"
+        raw: "ChatGPT has an interesting use case where it supports function calling\
+          \ chains. In other words, it knows how to combine two functions (I haven't\
+          \ tried scenarios with more functions) to achieve a more complex functionality.\
+          \ I also performed a similar test case on llama-7b, and the results are\
+          \ as follows.\r\n\r\n```\r\n <s>[INST] <<SYS>>\r\nYou are a helpful research\
+          \ assistant. The following functions are available for you to fetch further\
+          \ data to answer user questions, if relevant:\r\n\r\n\r\n    {\r\n     \
+          \   \"name\": \"get_latitude_and_longitude\",\r\n        \"description\"\
+          : \"Get the current location's latitude and longitude\",\r\n        \"parameters\"\
+          : {\r\n            \"type\": \"object\",\r\n            \"properties\":\
+          \ {\r\n                \"location\": {\r\n                    \"type\":\
+          \ \"string\",\r\n                    \"description\": \"location name, like\
+          \ \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n       \
+          \     },\r\n            \"required\": [\"location\"],\r\n        },\r\n\
+          \    }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n      \
+          \  \"description\": \"Get the current weather in a given latitude and longitude\"\
+          ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n\
+          \            \"properties\": {\r\n                \"latitude\": {\r\n  \
+          \                  \"type\": \"string\",\r\n                    \"description\"\
+          : \"latitude of the location\",\r\n                },\r\n              \
+          \  \"longitude\": {\r\n                    \"type\": \"string\",\r\n   \
+          \                 \"description\": \"longitude of the location\",\r\n  \
+          \              },\r\n                \"unit\": {\"type\": \"string\", \"\
+          enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n          \
+          \  \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+          \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON\
+          \ object of the following format:\r\n{\r\n    \"function\": \"function_name\"\
+          ,\r\n    \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\
+          \n        \"argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\
+          \r\nTell me the weather of London now.[/INST]\r\n{\r\n    \"function\":\
+          \ \"get_current_weather\",\r\n    \"arguments\": {\r\n        \"latitude\"\
+          : \"51.507493\",\r\n        \"longitude\": \"-0.127861\",\r\n        \"\
+          unit\": \"celsius\"\r\n    }\r\n}\r\n```\r\n\r\nIt seems that it do not\
+          \ know to firstly call `get_latitude_and_longitude` to get the `latitude`\
+          \ and `longitude`.\r\n\r\nI also tried this with llama 70b in huggingface\
+          \ chat. It also failed.\r\n\r\nhttps://huggingface.co/chat/conversation/650efed7a1a636d518b6e230\r\
+          \n\r\n```\r\n<s>[INST] <<SYS>>\r\nYou are a helpful research assistant.\
+          \ The following functions are available for you to fetch further data to\
+          \ answer user questions, if relevant:\r\n\r\n\r\n    {\r\n        \"name\"\
+          : \"get_latitude_and_longitude\",\r\n        \"description\": \"Get the\
+          \ current location's latitude and longitude\",\r\n        \"parameters\"\
+          : {\r\n            \"type\": \"object\",\r\n            \"properties\":\
+          \ {\r\n                \"location\": {\r\n                    \"type\":\
+          \ \"string\",\r\n                    \"description\": \"location name, like\
+          \ \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n       \
+          \     },\r\n            \"required\": [\"location\"],\r\n        },\r\n\
+          \    }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n      \
+          \  \"description\": \"Get the current weather in a given latitude and longitude\"\
+          ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n\
+          \            \"properties\": {\r\n                \"latitude\": {\r\n  \
+          \                  \"type\": \"string\",\r\n                    \"description\"\
+          : \"latitude of the location\",\r\n                },\r\n              \
+          \  \"longitude\": {\r\n                    \"type\": \"string\",\r\n   \
+          \                 \"description\": \"longitude of the location\",\r\n  \
+          \              },\r\n                \"unit\": {\"type\": \"string\", \"\
+          enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n          \
+          \  \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+          \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON\
+          \ object of the following format:\r\n{\r\n    \"function\": \"function_name\"\
+          ,\r\n    \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\
+          \n        \"argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\
+          \r\nTell me the weather of London [/INST]\r\n```\r\n\r\nBut with falcon\
+          \ 180b it works, which if super fancy. \r\n\r\nhttps://huggingface.co/chat/conversation/650eef2534717bb7a3343a09\r\
+          \n\r\n```\r\n<s>[INST] <<SYS>>\r\nYou are a helpful research assistant.\
+          \ The following functions are available for you to fetch further data to\
+          \ answer user questions, if relevant:\r\n\r\n\r\n    {\r\n        \"name\"\
+          : \"get_latitude_and_longitude\",\r\n        \"description\": \"Get the\
+          \ current location's latitude and longitude\",\r\n        \"parameters\"\
+          : {\r\n            \"type\": \"object\",\r\n            \"properties\":\
+          \ {\r\n                \"location\": {\r\n                    \"type\":\
+          \ \"string\",\r\n                    \"description\": \"location name, like\
+          \ \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n       \
+          \     },\r\n            \"required\": [\"location\"],\r\n        },\r\n\
+          \    }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n      \
+          \  \"description\": \"Get the current weather in a given latitude and longitude\"\
+          ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n\
+          \            \"properties\": {\r\n                \"latitude\": {\r\n  \
+          \                  \"type\": \"string\",\r\n                    \"description\"\
+          : \"latitude of the location\",\r\n                },\r\n              \
+          \  \"longitude\": {\r\n                    \"type\": \"string\",\r\n   \
+          \                 \"description\": \"longitude of the location\",\r\n  \
+          \              },\r\n                \"unit\": {\"type\": \"string\", \"\
+          enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n          \
+          \  \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+          \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON\
+          \ object of the following format:\r\n{\r\n    \"function\": \"function_name\"\
+          ,\r\n    \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\
+          \n        \"argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\
+          \r\nTell me the weather of London [/INST]\r\n\r\nfunction: get_latitude_and_longitude\r\
+          \narguments:\r\nlocation: \u4F26\u6566\r\n\r\n{\"latitude\": \"51.507493\"\
+          , \"longitude\": \"-0.127861\"}\r\n\r\nfunction: get_current_weather\r\n\
+          arguments:\r\nlatitude: 51.507493\r\nlongitude: -0.127861\r\nunit: celsius\r\
+          \n```\r\n\r\nI haven't purchased the 13b or 70b models yet, but I'm very\
+          \ curious to know if they can pass this test :-)."
+        updatedAt: '2023-09-23T15:11:00.904Z'
+      numEdits: 0
+      reactions: []
+    id: 650f000429242c85ef8484a7
+    type: comment
+  author: aisensiy
+  content: "ChatGPT has an interesting use case where it supports function calling\
+    \ chains. In other words, it knows how to combine two functions (I haven't tried\
+    \ scenarios with more functions) to achieve a more complex functionality. I also\
+    \ performed a similar test case on llama-7b, and the results are as follows.\r\
+    \n\r\n```\r\n <s>[INST] <<SYS>>\r\nYou are a helpful research assistant. The following\
+    \ functions are available for you to fetch further data to answer user questions,\
+    \ if relevant:\r\n\r\n\r\n    {\r\n        \"name\": \"get_latitude_and_longitude\"\
+    ,\r\n        \"description\": \"Get the current location's latitude and longitude\"\
+    ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n      \
+    \      \"properties\": {\r\n                \"location\": {\r\n              \
+    \      \"type\": \"string\",\r\n                    \"description\": \"location\
+    \ name, like \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n  \
+    \          },\r\n            \"required\": [\"location\"],\r\n        },\r\n \
+    \   }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n        \"description\"\
+    : \"Get the current weather in a given latitude and longitude\",\r\n        \"\
+    parameters\": {\r\n            \"type\": \"object\",\r\n            \"properties\"\
+    : {\r\n                \"latitude\": {\r\n                    \"type\": \"string\"\
+    ,\r\n                    \"description\": \"latitude of the location\",\r\n  \
+    \              },\r\n                \"longitude\": {\r\n                    \"\
+    type\": \"string\",\r\n                    \"description\": \"longitude of the\
+    \ location\",\r\n                },\r\n                \"unit\": {\"type\": \"\
+    string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n    \
+    \        \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+    \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON object\
+    \ of the following format:\r\n{\r\n    \"function\": \"function_name\",\r\n  \
+    \  \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\n        \"\
+    argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\r\nTell me the weather\
+    \ of London now.[/INST]\r\n{\r\n    \"function\": \"get_current_weather\",\r\n\
+    \    \"arguments\": {\r\n        \"latitude\": \"51.507493\",\r\n        \"longitude\"\
+    : \"-0.127861\",\r\n        \"unit\": \"celsius\"\r\n    }\r\n}\r\n```\r\n\r\n\
+    It seems that it do not know to firstly call `get_latitude_and_longitude` to get\
+    \ the `latitude` and `longitude`.\r\n\r\nI also tried this with llama 70b in huggingface\
+    \ chat. It also failed.\r\n\r\nhttps://huggingface.co/chat/conversation/650efed7a1a636d518b6e230\r\
+    \n\r\n```\r\n<s>[INST] <<SYS>>\r\nYou are a helpful research assistant. The following\
+    \ functions are available for you to fetch further data to answer user questions,\
+    \ if relevant:\r\n\r\n\r\n    {\r\n        \"name\": \"get_latitude_and_longitude\"\
+    ,\r\n        \"description\": \"Get the current location's latitude and longitude\"\
+    ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n      \
+    \      \"properties\": {\r\n                \"location\": {\r\n              \
+    \      \"type\": \"string\",\r\n                    \"description\": \"location\
+    \ name, like \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n  \
+    \          },\r\n            \"required\": [\"location\"],\r\n        },\r\n \
+    \   }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n        \"description\"\
+    : \"Get the current weather in a given latitude and longitude\",\r\n        \"\
+    parameters\": {\r\n            \"type\": \"object\",\r\n            \"properties\"\
+    : {\r\n                \"latitude\": {\r\n                    \"type\": \"string\"\
+    ,\r\n                    \"description\": \"latitude of the location\",\r\n  \
+    \              },\r\n                \"longitude\": {\r\n                    \"\
+    type\": \"string\",\r\n                    \"description\": \"longitude of the\
+    \ location\",\r\n                },\r\n                \"unit\": {\"type\": \"\
+    string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n    \
+    \        \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+    \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON object\
+    \ of the following format:\r\n{\r\n    \"function\": \"function_name\",\r\n  \
+    \  \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\n        \"\
+    argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\r\nTell me the weather\
+    \ of London [/INST]\r\n```\r\n\r\nBut with falcon 180b it works, which if super\
+    \ fancy. \r\n\r\nhttps://huggingface.co/chat/conversation/650eef2534717bb7a3343a09\r\
+    \n\r\n```\r\n<s>[INST] <<SYS>>\r\nYou are a helpful research assistant. The following\
+    \ functions are available for you to fetch further data to answer user questions,\
+    \ if relevant:\r\n\r\n\r\n    {\r\n        \"name\": \"get_latitude_and_longitude\"\
+    ,\r\n        \"description\": \"Get the current location's latitude and longitude\"\
+    ,\r\n        \"parameters\": {\r\n            \"type\": \"object\",\r\n      \
+    \      \"properties\": {\r\n                \"location\": {\r\n              \
+    \      \"type\": \"string\",\r\n                    \"description\": \"location\
+    \ name, like \u5317\u4EAC, this must be Chinese\",\r\n                }\r\n  \
+    \          },\r\n            \"required\": [\"location\"],\r\n        },\r\n \
+    \   }\r\n    {\r\n        \"name\": \"get_current_weather\",\r\n        \"description\"\
+    : \"Get the current weather in a given latitude and longitude\",\r\n        \"\
+    parameters\": {\r\n            \"type\": \"object\",\r\n            \"properties\"\
+    : {\r\n                \"latitude\": {\r\n                    \"type\": \"string\"\
+    ,\r\n                    \"description\": \"latitude of the location\",\r\n  \
+    \              },\r\n                \"longitude\": {\r\n                    \"\
+    type\": \"string\",\r\n                    \"description\": \"longitude of the\
+    \ location\",\r\n                },\r\n                \"unit\": {\"type\": \"\
+    string\", \"enum\": [\"celsius\", \"fahrenheit\"]},\r\n            },\r\n    \
+    \        \"required\": [\"latitude\", \"longitude\"],\r\n        },\r\n    }\r\
+    \n\r\n\r\nTo call a function, respond - immediately and only - with a JSON object\
+    \ of the following format:\r\n{\r\n    \"function\": \"function_name\",\r\n  \
+    \  \"arguments\": {\r\n        \"argument1\": \"argument_value\",\r\n        \"\
+    argument2\": \"argument_value\"\r\n    }\r\n}\r\n<</SYS>>\r\n\r\nTell me the weather\
+    \ of London [/INST]\r\n\r\nfunction: get_latitude_and_longitude\r\narguments:\r\
+    \nlocation: \u4F26\u6566\r\n\r\n{\"latitude\": \"51.507493\", \"longitude\": \"\
+    -0.127861\"}\r\n\r\nfunction: get_current_weather\r\narguments:\r\nlatitude: 51.507493\r\
+    \nlongitude: -0.127861\r\nunit: celsius\r\n```\r\n\r\nI haven't purchased the\
+    \ 13b or 70b models yet, but I'm very curious to know if they can pass this test\
+    \ :-)."
+  created_at: 2023-09-23 14:11:00+00:00
+  edited: false
+  hidden: false
+  id: 650f000429242c85ef8484a7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f6c2e3ab7d18e64a6feb3a1ece20bd86.svg
+      fullname: Joaz Soares
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: joazvsoares
+      type: user
+    createdAt: '2023-09-23T17:54:07.000Z'
+    data:
+      edited: false
+      editors:
+      - joazvsoares
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8886814713478088
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f6c2e3ab7d18e64a6feb3a1ece20bd86.svg
+          fullname: Joaz Soares
+          isHf: false
+          isPro: false
+          name: joazvsoares
+          type: user
+        html: '<p>This is a very interesting feature, but I cannot find any documentation
+          around function calling chains on OpenAI API.</p>
+
+          <p>Have you done tests using ChatGPT only?</p>
+
+          '
+        raw: 'This is a very interesting feature, but I cannot find any documentation
+          around function calling chains on OpenAI API.
+
+
+          Have you done tests using ChatGPT only?'
+        updatedAt: '2023-09-23T17:54:07.192Z'
+      numEdits: 0
+      reactions: []
+    id: 650f263f11f3210cf7ab200a
+    type: comment
+  author: joazvsoares
+  content: 'This is a very interesting feature, but I cannot find any documentation
+    around function calling chains on OpenAI API.
+
+
+    Have you done tests using ChatGPT only?'
+  created_at: 2023-09-23 16:54:07+00:00
+  edited: false
+  hidden: false
+  id: 650f263f11f3210cf7ab200a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+      fullname: aisensiy
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: aisensiy
+      type: user
+    createdAt: '2023-09-24T05:01:44.000Z'
+    data:
+      edited: false
+      editors:
+      - aisensiy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8402252197265625
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+          fullname: aisensiy
+          isHf: false
+          isPro: false
+          name: aisensiy
+          type: user
+        html: "<blockquote>\n<p>This is a very interesting feature, but I cannot find\
+          \ any documentation around function calling chains on OpenAI API.</p>\n\
+          <p>Have you done tests using ChatGPT only?</p>\n</blockquote>\n<p>Yes, it\
+          \ is not documented, but it works...I tested it with ChatGPT with a tool\
+          \ named <a rel=\"nofollow\" href=\"https://github.com/Chainlit/chainlit\"\
+          >chainlit</a>, the interaction flow is very similar with the case of falcon\
+          \ 180b which <a href=\"https://huggingface.co/chat/conversation/650eef2534717bb7a3343a09\"\
+          >I pasted above</a>. </p>\n<p><video class=\"!max-w-full\" controls=\"\"\
+          \ src=\"https://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/FdPUsG7IMjENExY5THRHb.mp4\"\
+          ></video></p>\n "
+        raw: "> This is a very interesting feature, but I cannot find any documentation\
+          \ around function calling chains on OpenAI API.\n> \n> Have you done tests\
+          \ using ChatGPT only?\n\nYes, it is not documented, but it works...I tested\
+          \ it with ChatGPT with a tool named [chainlit](https://github.com/Chainlit/chainlit),\
+          \ the interaction flow is very similar with the case of falcon 180b which\
+          \ [I pasted above](https://huggingface.co/chat/conversation/650eef2534717bb7a3343a09).\
+          \ \n\n\nhttps://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/FdPUsG7IMjENExY5THRHb.mp4\n\
+          \ "
+        updatedAt: '2023-09-24T05:01:44.838Z'
+      numEdits: 0
+      reactions: []
+    id: 650fc2b8c3b9d8d1eb4d5557
+    type: comment
+  author: aisensiy
+  content: "> This is a very interesting feature, but I cannot find any documentation\
+    \ around function calling chains on OpenAI API.\n> \n> Have you done tests using\
+    \ ChatGPT only?\n\nYes, it is not documented, but it works...I tested it with\
+    \ ChatGPT with a tool named [chainlit](https://github.com/Chainlit/chainlit),\
+    \ the interaction flow is very similar with the case of falcon 180b which [I pasted\
+    \ above](https://huggingface.co/chat/conversation/650eef2534717bb7a3343a09). \n\
+    \n\nhttps://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/FdPUsG7IMjENExY5THRHb.mp4\n\
+    \ "
+  created_at: 2023-09-24 04:01:44+00:00
+  edited: false
+  hidden: false
+  id: 650fc2b8c3b9d8d1eb4d5557
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-09-24T09:01:57.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9419398307800293
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;aisensiy&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/aisensiy\">@<span class=\"\
+          underline\">aisensiy</span></a></span>\n\n\t</span></span> can you share\
+          \ a screenshot of what you did with Falcon 180B?</p>\n<p>I'm wondering whether\
+          \ you are sending the conversation to the LLM twice if there are two function\
+          \ calls in the chain? I assume that's the approach.</p>\n<p>I'm guessing\
+          \ we could get untrained 70B to work with a little more programming of prompts.\
+          \ e.g. after you get the first function call, you can prepend something\
+          \ like \"Make use of the following function response to answer the question.\
+          \ If needed, make another function call\".</p>\n<p>On weaker models there\
+          \ is maybe a risk of getting into infinite loops, but you could auto detect\
+          \ that and just exit.</p>\n<p>Let me run a quick test on the fine-tuned\
+          \ models tomorrow and see what kind of results I get!</p>\n"
+        raw: '@aisensiy can you share a screenshot of what you did with Falcon 180B?
+
+
+          I''m wondering whether you are sending the conversation to the LLM twice
+          if there are two function calls in the chain? I assume that''s the approach.
+
+
+          I''m guessing we could get untrained 70B to work with a little more programming
+          of prompts. e.g. after you get the first function call, you can prepend
+          something like "Make use of the following function response to answer the
+          question. If needed, make another function call".
+
+
+          On weaker models there is maybe a risk of getting into infinite loops, but
+          you could auto detect that and just exit.
+
+
+          Let me run a quick test on the fine-tuned models tomorrow and see what kind
+          of results I get!'
+        updatedAt: '2023-09-24T09:01:57.839Z'
+      numEdits: 0
+      reactions: []
+    id: 650ffb05f874d950df51074f
+    type: comment
+  author: RonanMcGovern
+  content: '@aisensiy can you share a screenshot of what you did with Falcon 180B?
+
+
+    I''m wondering whether you are sending the conversation to the LLM twice if there
+    are two function calls in the chain? I assume that''s the approach.
+
+
+    I''m guessing we could get untrained 70B to work with a little more programming
+    of prompts. e.g. after you get the first function call, you can prepend something
+    like "Make use of the following function response to answer the question. If needed,
+    make another function call".
+
+
+    On weaker models there is maybe a risk of getting into infinite loops, but you
+    could auto detect that and just exit.
+
+
+    Let me run a quick test on the fine-tuned models tomorrow and see what kind of
+    results I get!'
+  created_at: 2023-09-24 08:01:57+00:00
+  edited: false
+  hidden: false
+  id: 650ffb05f874d950df51074f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+      fullname: aisensiy
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: aisensiy
+      type: user
+    createdAt: '2023-09-24T10:27:59.000Z'
+    data:
+      edited: false
+      editors:
+      - aisensiy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8416758179664612
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+          fullname: aisensiy
+          isHf: false
+          isPro: false
+          name: aisensiy
+          type: user
+        html: '<blockquote>
+
+          <p>I''m wondering whether you are sending the conversation to the LLM twice
+          if there are two function calls in the chain? </p>
+
+          </blockquote>
+
+          <p>Yes, twice which is the same interaction steps with chatgpt.</p>
+
+          <p><a rel="nofollow" href="https://hf.co/chat/r/uMerr7V">https://hf.co/chat/r/uMerr7V</a></p>
+
+          <p><video class="!max-w-full" controls="" src="https://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/ryCi0i1cmdEB91EUCZntF.mp4"></video></p>
+
+
+          '
+        raw: "> I'm wondering whether you are sending the conversation to the LLM\
+          \ twice if there are two function calls in the chain? \n\nYes, twice which\
+          \ is the same interaction steps with chatgpt.\n\nhttps://hf.co/chat/r/uMerr7V\n\
+          \nhttps://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/ryCi0i1cmdEB91EUCZntF.mp4\n\
+          \n"
+        updatedAt: '2023-09-24T10:27:59.998Z'
+      numEdits: 0
+      reactions: []
+    id: 65100f2f57343388e594d1c0
+    type: comment
+  author: aisensiy
+  content: "> I'm wondering whether you are sending the conversation to the LLM twice\
+    \ if there are two function calls in the chain? \n\nYes, twice which is the same\
+    \ interaction steps with chatgpt.\n\nhttps://hf.co/chat/r/uMerr7V\n\nhttps://cdn-uploads.huggingface.co/production/uploads/62554db4ebfc059817aeede6/ryCi0i1cmdEB91EUCZntF.mp4\n\
+    \n"
+  created_at: 2023-09-24 09:27:59+00:00
+  edited: false
+  hidden: false
+  id: 65100f2f57343388e594d1c0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+      fullname: aisensiy
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: aisensiy
+      type: user
+    createdAt: '2023-10-10T05:57:58.000Z'
+    data:
+      edited: false
+      editors:
+      - aisensiy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7786765098571777
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9996cfcbfdc5bc1d57fe42ade6ca7978.svg
+          fullname: aisensiy
+          isHf: false
+          isPro: false
+          name: aisensiy
+          type: user
+        html: '<p>Any update for this topic?</p>
+
+          '
+        raw: Any update for this topic?
+        updatedAt: '2023-10-10T05:57:58.781Z'
+      numEdits: 0
+      reactions: []
+    id: 6524e7e6e6e5f6b1034feed2
+    type: comment
+  author: aisensiy
+  content: Any update for this topic?
+  created_at: 2023-10-10 04:57:58+00:00
+  edited: false
+  hidden: false
+  id: 6524e7e6e6e5f6b1034feed2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-10T10:27:28.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9511884450912476
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: "<p>Howdy <span data-props=\"{&quot;user&quot;:&quot;aisensiy&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/aisensiy\"\
+          >@<span class=\"underline\">aisensiy</span></a></span>\n\n\t</span></span>\
+          \ I just tested this morning and Llama 70B fails for this series calling\
+          \ task. It also fails when I add text to the system message suggesting that\
+          \ it may sometimes need to call functions in series.</p>\n<p>I tried the\
+          \ model in bitsandbytes and also in fp16 precision. Both failed.</p>\n<p>It\
+          \ seems this specific case would need to be trained for. Or, I could create\
+          \ a falcon 180B model for function calling. LMK if that's of interest.</p>\n"
+        raw: 'Howdy @aisensiy I just tested this morning and Llama 70B fails for this
+          series calling task. It also fails when I add text to the system message
+          suggesting that it may sometimes need to call functions in series.
+
+
+          I tried the model in bitsandbytes and also in fp16 precision. Both failed.
+
+
+          It seems this specific case would need to be trained for. Or, I could create
+          a falcon 180B model for function calling. LMK if that''s of interest.'
+        updatedAt: '2023-10-10T10:27:28.852Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6525271073d871a1fc91fcc1
+    id: 6525271073d871a1fc91fcc0
+    type: comment
+  author: RonanMcGovern
+  content: 'Howdy @aisensiy I just tested this morning and Llama 70B fails for this
+    series calling task. It also fails when I add text to the system message suggesting
+    that it may sometimes need to call functions in series.
+
+
+    I tried the model in bitsandbytes and also in fp16 precision. Both failed.
+
+
+    It seems this specific case would need to be trained for. Or, I could create a
+    falcon 180B model for function calling. LMK if that''s of interest.'
+  created_at: 2023-10-10 09:27:28+00:00
+  edited: false
+  hidden: false
+  id: 6525271073d871a1fc91fcc0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-10T10:27:28.000Z'
+    data:
+      status: closed
+    id: 6525271073d871a1fc91fcc1
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-10-10 09:27:28+00:00
+  id: 6525271073d871a1fc91fcc1
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-11T10:20:23.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9241772890090942
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: "<p>BTW, I tried a few things today with Llama 70B like:</p>\n<ol>\n\
+          <li><p>Adding a \"usage\" field to the function metadata stating that get_latitude_and_longitude\
+          \ is often used before calling get_weather.</p>\n</li>\n<li><p>Explicitly\
+          \ putting in the function metadata for get_weather that the function for\
+          \ latitude has to be called first.</p>\n</li>\n</ol>\n<p>Let me know <span\
+          \ data-props=\"{&quot;user&quot;:&quot;aisensiy&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/aisensiy\">@<span class=\"\
+          underline\">aisensiy</span></a></span>\n\n\t</span></span> if you come up\
+          \ with other ideas. Obviously training on chains would be worth a shot and\
+          \ I'll aim to try it. </p>\n"
+        raw: 'BTW, I tried a few things today with Llama 70B like:
+
+
+          1. Adding a "usage" field to the function metadata stating that get_latitude_and_longitude
+          is often used before calling get_weather.
+
+
+          2. Explicitly putting in the function metadata for get_weather that the
+          function for latitude has to be called first.
+
+
+          Let me know @aisensiy if you come up with other ideas. Obviously training
+          on chains would be worth a shot and I''ll aim to try it. '
+        updatedAt: '2023-10-11T10:20:23.456Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 652676e7fccb9226ab03b82c
+    id: 652676e7fccb9226ab03b82b
+    type: comment
+  author: RonanMcGovern
+  content: 'BTW, I tried a few things today with Llama 70B like:
+
+
+    1. Adding a "usage" field to the function metadata stating that get_latitude_and_longitude
+    is often used before calling get_weather.
+
+
+    2. Explicitly putting in the function metadata for get_weather that the function
+    for latitude has to be called first.
+
+
+    Let me know @aisensiy if you come up with other ideas. Obviously training on chains
+    would be worth a shot and I''ll aim to try it. '
+  created_at: 2023-10-11 09:20:23+00:00
+  edited: false
+  hidden: false
+  id: 652676e7fccb9226ab03b82b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-11T10:20:23.000Z'
+    data:
+      status: open
+    id: 652676e7fccb9226ab03b82c
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-10-11 09:20:23+00:00
+  id: 652676e7fccb9226ab03b82c
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-11-15T10:46:48.000Z'
+    data:
+      status: closed
+    id: 6554a1985e88eda4382d3eb5
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-11-15 10:46:48+00:00
+  id: 6554a1985e88eda4382d3eb5
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: Trelis/Llama-2-7b-chat-hf-function-calling-v2
+repo_type: model
+status: closed
+target_branch: null
+title: Is function calling chain possible?

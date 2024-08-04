@@ -1,0 +1,567 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mfab
+conflicting_files: null
+created_at: 2023-05-24 02:49:16+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9fb35d286042b026a9d7e6f7e12aa89.svg
+      fullname: melissa fabros
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mfab
+      type: user
+    createdAt: '2023-05-24T03:49:16.000Z'
+    data:
+      edited: true
+      editors:
+      - mfab
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9fb35d286042b026a9d7e6f7e12aa89.svg
+          fullname: melissa fabros
+          isHf: false
+          isPro: false
+          name: mfab
+          type: user
+        html: "<p>I was wondering if there was temperature config or penalty setting\
+          \ to lower the probability of repetition while running from HuggingFace's\
+          \ api? I was trying to generate a dialogue between people and the output\
+          \ looks like:</p>\n<pre><code>Person1: I don't know what to say.\nPerson2:\
+          \ I don't know what to say either.\nPerson1: I don't know what to say.\n\
+          Person2: I don't know what to say either.\nPerson1: I don't know what to\
+          \ say.\nPerson2: I don't know what to say either.\nPerson1: I don't know\
+          \ what to say.\nPerson2: I don't know what to say either.\nPerson1: I don't\
+          \ know what to say.\nPerson2: I don't know what to say either.\nPerson1:\
+          \ I don't know what to say.\nPerson2: I don't know what to say either.\n\
+          Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+          Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+          </code></pre>\n<p>Here's my current code. I see the options to change temperature\
+          \ and penalty if you were running this from cli and downloaded the entire\
+          \ repo.  Using the Huggingface api, would I be changing the penalty in the\
+          \ <code>config</code> section? </p>\n<pre><code class=\"language-python\"\
+          >torch.cuda.set_per_process_memory_fraction(<span class=\"hljs-number\"\
+          >0.25</span>)\ntorch.cuda.empty_cache()\n\nmodel_name = <span class=\"hljs-string\"\
+          >\"mosaicml/mpt-7b-instruct</span>\n<span class=\"hljs-string\"></span>\n\
+          <span class=\"hljs-string\">tokenizer = AutoTokenizer.from_pretrained(\"\
+          </span>EleutherAI/gpt-neox-20<span class=\"hljs-string\">b\")</span>\n<span\
+          \ class=\"hljs-string\">config = transformers.AutoConfig.from_pretrained(</span>\n\
+          <span class=\"hljs-string\">model_name,</span>\n<span class=\"hljs-string\"\
+          >  trust_remote_code=True</span>\n<span class=\"hljs-string\">)</span>\n\
+          <span class=\"hljs-string\">config.attn_config['attn_impl'] = 'torch'</span>\n\
+          <span class=\"hljs-string\"></span>\n<span class=\"hljs-string\"></span>\n\
+          <span class=\"hljs-string\">model = transformers.AutoModelForCausalLM.from_pretrained(</span>\n\
+          <span class=\"hljs-string\">  'mosaicml/mpt-7b-instruct',</span>\n<span\
+          \ class=\"hljs-string\">  config=config,</span>\n<span class=\"hljs-string\"\
+          >  trust_remote_code=True,</span>\n<span class=\"hljs-string\">  torch_dtype=torch.bfloat16,</span>\n\
+          <span class=\"hljs-string\">)</span>\n<span class=\"hljs-string\">model.to(device='cuda:3')</span>\n\
+          <span class=\"hljs-string\"></span>\n<span class=\"hljs-string\"></span>\n\
+          <span class=\"hljs-string\">INSTRUCTION_KEY = \"</span><span class=\"hljs-comment\"\
+          >### Instruction:\"</span>\nRESPONSE_KEY = <span class=\"hljs-string\">\"\
+          ### Response:\"</span>\nINTRO_BLURB = <span class=\"hljs-string\">\"Below\
+          \ is an instruction that describes a task. Write a response that appropriately\
+          \ completes the request.\"</span>\nPROMPT_FOR_GENERATION_FORMAT = <span\
+          \ class=\"hljs-string\">\"\"\"{intro}</span>\n<span class=\"hljs-string\"\
+          >{instruction_key}</span>\n<span class=\"hljs-string\">{instruction}</span>\n\
+          <span class=\"hljs-string\">{response_key}</span>\n<span class=\"hljs-string\"\
+          >\"\"\"</span>.<span class=\"hljs-built_in\">format</span>(\n    intro=INTRO_BLURB,\n\
+          \    instruction_key=INSTRUCTION_KEY,\n    instruction=<span class=\"hljs-string\"\
+          >\"{instruction}\"</span>,\n    response_key=RESPONSE_KEY,\n)\n example\
+          \ = <span class=\"hljs-string\">\"Write dialogue for two people are a party\
+          \ and meet for the first time. They're both shy and hesitant about starting\
+          \ a conversation. Write 5 lines of dialogue between these two people:\"\
+          </span>\n\nfmt_ex = PROMPT_FOR_GENERATION_FORMAT.<span class=\"hljs-built_in\"\
+          >format</span>(instruction=example)\n\n\nmodel_inputs = tokenizer(text=fmt_ex,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>).to(<span class=\"\
+          hljs-string\">\"cuda:3\"</span>)\n\noutput_ids = model.generate(\n    **model_inputs,\n\
+          \    max_new_tokens=<span class=\"hljs-number\">1024</span>,\n)\noutput_text\
+          \ = tokenizer.batch_decode(output_ids, skip_special_tokens=<span class=\"\
+          hljs-literal\">True</span>)[<span class=\"hljs-number\">0</span>]\n<span\
+          \ class=\"hljs-built_in\">print</span>(output_text)\n</code></pre>\n"
+        raw: "I was wondering if there was temperature config or penalty setting to\
+          \ lower the probability of repetition while running from HuggingFace's api?\
+          \ I was trying to generate a dialogue between people and the output looks\
+          \ like:\n\n```\nPerson1: I don't know what to say.\nPerson2: I don't know\
+          \ what to say either.\nPerson1: I don't know what to say.\nPerson2: I don't\
+          \ know what to say either.\nPerson1: I don't know what to say.\nPerson2:\
+          \ I don't know what to say either.\nPerson1: I don't know what to say.\n\
+          Person2: I don't know what to say either.\nPerson1: I don't know what to\
+          \ say.\nPerson2: I don't know what to say either.\nPerson1: I don't know\
+          \ what to say.\nPerson2: I don't know what to say either.\nPerson1: I don't\
+          \ know what to say.\nPerson2: I don't know what to say either.\nPerson1:\
+          \ I don't know what to say.\nPerson2: I don't know what to say either.\n\
+          ```\n\nHere's my current code. I see the options to change temperature and\
+          \ penalty if you were running this from cli and downloaded the entire repo.\
+          \  Using the Huggingface api, would I be changing the penalty in the `config`\
+          \ section? \n\n```python\ntorch.cuda.set_per_process_memory_fraction(0.25)\n\
+          torch.cuda.empty_cache()\n\nmodel_name = \"mosaicml/mpt-7b-instruct\n\n\
+          tokenizer = AutoTokenizer.from_pretrained(\"EleutherAI/gpt-neox-20b\")\n\
+          config = transformers.AutoConfig.from_pretrained(\nmodel_name,\n  trust_remote_code=True\n\
+          )\nconfig.attn_config['attn_impl'] = 'torch'\n\n\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\n\
+          \  'mosaicml/mpt-7b-instruct',\n  config=config,\n  trust_remote_code=True,\n\
+          \  torch_dtype=torch.bfloat16,\n)\nmodel.to(device='cuda:3')\n\n\nINSTRUCTION_KEY\
+          \ = \"### Instruction:\"\nRESPONSE_KEY = \"### Response:\"\nINTRO_BLURB\
+          \ = \"Below is an instruction that describes a task. Write a response that\
+          \ appropriately completes the request.\"\nPROMPT_FOR_GENERATION_FORMAT =\
+          \ \"\"\"{intro}\n{instruction_key}\n{instruction}\n{response_key}\n\"\"\"\
+          .format(\n    intro=INTRO_BLURB,\n    instruction_key=INSTRUCTION_KEY,\n\
+          \    instruction=\"{instruction}\",\n    response_key=RESPONSE_KEY,\n)\n\
+          \ example = \"Write dialogue for two people are a party and meet for the\
+          \ first time. They're both shy and hesitant about starting a conversation.\
+          \ Write 5 lines of dialogue between these two people:\"\n\nfmt_ex = PROMPT_FOR_GENERATION_FORMAT.format(instruction=example)\n\
+          \n\nmodel_inputs = tokenizer(text=fmt_ex, return_tensors=\"pt\").to(\"cuda:3\"\
+          )\n\noutput_ids = model.generate(\n    **model_inputs,\n    max_new_tokens=1024,\n\
+          )\noutput_text = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]\n\
+          print(output_text)\n```"
+        updatedAt: '2023-05-24T05:15:13.146Z'
+      numEdits: 1
+      reactions: []
+    id: 646d893c534e52f8c307721b
+    type: comment
+  author: mfab
+  content: "I was wondering if there was temperature config or penalty setting to\
+    \ lower the probability of repetition while running from HuggingFace's api? I\
+    \ was trying to generate a dialogue between people and the output looks like:\n\
+    \n```\nPerson1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    Person1: I don't know what to say.\nPerson2: I don't know what to say either.\n\
+    ```\n\nHere's my current code. I see the options to change temperature and penalty\
+    \ if you were running this from cli and downloaded the entire repo.  Using the\
+    \ Huggingface api, would I be changing the penalty in the `config` section? \n\
+    \n```python\ntorch.cuda.set_per_process_memory_fraction(0.25)\ntorch.cuda.empty_cache()\n\
+    \nmodel_name = \"mosaicml/mpt-7b-instruct\n\ntokenizer = AutoTokenizer.from_pretrained(\"\
+    EleutherAI/gpt-neox-20b\")\nconfig = transformers.AutoConfig.from_pretrained(\n\
+    model_name,\n  trust_remote_code=True\n)\nconfig.attn_config['attn_impl'] = 'torch'\n\
+    \n\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\n  'mosaicml/mpt-7b-instruct',\n\
+    \  config=config,\n  trust_remote_code=True,\n  torch_dtype=torch.bfloat16,\n\
+    )\nmodel.to(device='cuda:3')\n\n\nINSTRUCTION_KEY = \"### Instruction:\"\nRESPONSE_KEY\
+    \ = \"### Response:\"\nINTRO_BLURB = \"Below is an instruction that describes\
+    \ a task. Write a response that appropriately completes the request.\"\nPROMPT_FOR_GENERATION_FORMAT\
+    \ = \"\"\"{intro}\n{instruction_key}\n{instruction}\n{response_key}\n\"\"\".format(\n\
+    \    intro=INTRO_BLURB,\n    instruction_key=INSTRUCTION_KEY,\n    instruction=\"\
+    {instruction}\",\n    response_key=RESPONSE_KEY,\n)\n example = \"Write dialogue\
+    \ for two people are a party and meet for the first time. They're both shy and\
+    \ hesitant about starting a conversation. Write 5 lines of dialogue between these\
+    \ two people:\"\n\nfmt_ex = PROMPT_FOR_GENERATION_FORMAT.format(instruction=example)\n\
+    \n\nmodel_inputs = tokenizer(text=fmt_ex, return_tensors=\"pt\").to(\"cuda:3\"\
+    )\n\noutput_ids = model.generate(\n    **model_inputs,\n    max_new_tokens=1024,\n\
+    )\noutput_text = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]\n\
+    print(output_text)\n```"
+  created_at: 2023-05-24 02:49:16+00:00
+  edited: true
+  hidden: false
+  id: 646d893c534e52f8c307721b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/b9fb35d286042b026a9d7e6f7e12aa89.svg
+      fullname: melissa fabros
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mfab
+      type: user
+    createdAt: '2023-05-24T03:51:19.000Z'
+    data:
+      from: configuration / penalty to lower repetition
+      to: configuration / penalty to lower repetition?
+    id: 646d89b72abe5323fe2a4ba6
+    type: title-change
+  author: mfab
+  created_at: 2023-05-24 02:51:19+00:00
+  id: 646d89b72abe5323fe2a4ba6
+  new_title: configuration / penalty to lower repetition?
+  old_title: configuration / penalty to lower repetition
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+      fullname: Karan Dua
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdua
+      type: user
+    createdAt: '2023-05-24T08:40:47.000Z'
+    data:
+      edited: true
+      editors:
+      - kdua
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+          fullname: Karan Dua
+          isHf: false
+          isPro: false
+          name: kdua
+          type: user
+        html: '<p>Update your code to the following</p>
+
+          <p>output_ids = model.generate(<br>    **model_inputs,<br>    max_new_tokens=1024,<br>    repetition_penalty=1.1<br>)</p>
+
+          '
+        raw: "Update your code to the following\n\noutput_ids = model.generate(\n\
+          \    **model_inputs,\n    max_new_tokens=1024,\n    repetition_penalty=1.1\n\
+          )"
+        updatedAt: '2023-05-24T08:41:31.583Z'
+      numEdits: 2
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - mfab
+    id: 646dcd8f9105e2cc56971083
+    type: comment
+  author: kdua
+  content: "Update your code to the following\n\noutput_ids = model.generate(\n  \
+    \  **model_inputs,\n    max_new_tokens=1024,\n    repetition_penalty=1.1\n)"
+  created_at: 2023-05-24 07:40:47+00:00
+  edited: true
+  hidden: false
+  id: 646dcd8f9105e2cc56971083
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-05-24T15:17:48.000Z'
+    data:
+      edited: false
+      editors:
+      - datacow
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: '<p>HF has a list of generation arguments you can play with: <a href="https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig">https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig</a><br>I
+          don''t <em>think</em> all of them are compatible with MPT, but temperature
+          and repetition penalty are 2 relevant ones to look at. Here''s how to use
+          them:</p>
+
+          <pre><code>generation_config = GenerationConfig.from_pretrained("mosaicml/mpt-7b-instruct")
+
+          generation_config.temperature = 0.7
+
+          generation_config.repetition_penalty = 1.1
+
+
+          model.generate(**inputs, generation_config)
+
+          </code></pre>
+
+          '
+        raw: 'HF has a list of generation arguments you can play with: https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
+
+          I don''t *think* all of them are compatible with MPT, but temperature and
+          repetition penalty are 2 relevant ones to look at. Here''s how to use them:
+
+          ```
+
+          generation_config = GenerationConfig.from_pretrained("mosaicml/mpt-7b-instruct")
+
+          generation_config.temperature = 0.7
+
+          generation_config.repetition_penalty = 1.1
+
+
+          model.generate(**inputs, generation_config)
+
+          ```'
+        updatedAt: '2023-05-24T15:17:48.455Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - mfab
+        - sam-mosaic
+    id: 646e2a9ce34b2ec2d2e1c57e
+    type: comment
+  author: datacow
+  content: 'HF has a list of generation arguments you can play with: https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
+
+    I don''t *think* all of them are compatible with MPT, but temperature and repetition
+    penalty are 2 relevant ones to look at. Here''s how to use them:
+
+    ```
+
+    generation_config = GenerationConfig.from_pretrained("mosaicml/mpt-7b-instruct")
+
+    generation_config.temperature = 0.7
+
+    generation_config.repetition_penalty = 1.1
+
+
+    model.generate(**inputs, generation_config)
+
+    ```'
+  created_at: 2023-05-24 14:17:48+00:00
+  edited: false
+  hidden: false
+  id: 646e2a9ce34b2ec2d2e1c57e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9fb35d286042b026a9d7e6f7e12aa89.svg
+      fullname: melissa fabros
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mfab
+      type: user
+    createdAt: '2023-05-24T19:59:32.000Z'
+    data:
+      edited: false
+      editors:
+      - mfab
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9fb35d286042b026a9d7e6f7e12aa89.svg
+          fullname: melissa fabros
+          isHf: false
+          isPro: false
+          name: mfab
+          type: user
+        html: "<p>Thanks <span data-props=\"{&quot;user&quot;:&quot;kdua&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/kdua\"\
+          >@<span class=\"underline\">kdua</span></a></span>\n\n\t</span></span> and\
+          \ <span data-props=\"{&quot;user&quot;:&quot;datacow&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/datacow\">@<span class=\"\
+          underline\">datacow</span></a></span>\n\n\t</span></span> ! </p>\n<p>Does\
+          \ it look like to you that 'transformers.AutoConfig.from_pretrained()' is\
+          \ being replaced by  'GenerationConfig.from_pretrained()' to pass in generation\
+          \ strategy configs ?</p>\n<p><code>repetition_penalty (float, optional,\
+          \ defaults to 1.0) \u2014 The parameter for repetition penalty. 1.0 means\
+          \ no penalty. See this paper for more details.</code> I can't quite tell\
+          \ from the paper whether higher percentage mean more penalty if 1.0 is no\
+          \ penalty.</p>\n"
+        raw: "Thanks @kdua and @datacow ! \n\nDoes it look like to you that 'transformers.AutoConfig.from_pretrained()'\
+          \ is being replaced by  'GenerationConfig.from_pretrained()' to pass in\
+          \ generation strategy configs ?\n\n`repetition_penalty (float, optional,\
+          \ defaults to 1.0) \u2014 The parameter for repetition penalty. 1.0 means\
+          \ no penalty. See this paper for more details.` I can't quite tell from\
+          \ the paper whether higher percentage mean more penalty if 1.0 is no penalty."
+        updatedAt: '2023-05-24T19:59:32.969Z'
+      numEdits: 0
+      reactions: []
+    id: 646e6ca47a376d3010c4bd88
+    type: comment
+  author: mfab
+  content: "Thanks @kdua and @datacow ! \n\nDoes it look like to you that 'transformers.AutoConfig.from_pretrained()'\
+    \ is being replaced by  'GenerationConfig.from_pretrained()' to pass in generation\
+    \ strategy configs ?\n\n`repetition_penalty (float, optional, defaults to 1.0)\
+    \ \u2014 The parameter for repetition penalty. 1.0 means no penalty. See this\
+    \ paper for more details.` I can't quite tell from the paper whether higher percentage\
+    \ mean more penalty if 1.0 is no penalty."
+  created_at: 2023-05-24 18:59:32+00:00
+  edited: false
+  hidden: false
+  id: 646e6ca47a376d3010c4bd88
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+      fullname: Daniel C
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: datacow
+      type: user
+    createdAt: '2023-05-25T02:42:17.000Z'
+    data:
+      edited: true
+      editors:
+      - datacow
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e2b091eeddeed2bc1203e247334ccc0e.svg
+          fullname: Daniel C
+          isHf: false
+          isPro: false
+          name: datacow
+          type: user
+        html: "<blockquote>\n<p>Does it look like to you that 'transformers.AutoConfig.from_pretrained()'\
+          \ is being replaced by  'GenerationConfig.from_pretrained()' to pass in\
+          \ generation strategy configs ?</p>\n</blockquote>\n<p><span data-props=\"\
+          {&quot;user&quot;:&quot;mfab&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/mfab\">@<span class=\"underline\">mfab</span></a></span>\n\
+          \n\t</span></span> So AutoConfig will determine the configuration settings\
+          \ for the model when you load it. AutoConfig will contain things like model\
+          \ data type, attention implementation, etc. You can edit the default model\
+          \ config and pass it as an argument to transformers.AutoModelForCausalLM.from_pretrained()\
+          \ to load the model with your preferred settings. GenerationConfig only\
+          \ governs the settings at inference time when you call <code>model.generate()</code>,\
+          \ so it doesn't interfere with AutoConfig.</p>\n<blockquote>\n<p><code>repetition_penalty\
+          \ (float, optional, defaults to 1.0) \u2014 The parameter for repetition\
+          \ penalty. 1.0 means no penalty. See this paper for more details.</code>\
+          \ I can't quite tell from the paper whether higher percentage mean more\
+          \ penalty if 1.0 is no penalty.</p>\n</blockquote>\n<p>Here's an extract\
+          \ from a different link (<a href=\"https://huggingface.co/transformers/v2.11.0/main_classes/model.html#transformers.PreTrainedModel.generate\"\
+          >https://huggingface.co/transformers/v2.11.0/main_classes/model.html#transformers.PreTrainedModel.generate</a>)\
+          \ with a bit clearer explanation: \"The parameter for repetition penalty.\
+          \ Between 1.0 and infinity. 1.0 means no penalty. Default to 1.0.\" i.e.\
+          \ Anything bigger than 1 adds a penalty for repetition.</p>\n"
+        raw: "> Does it look like to you that 'transformers.AutoConfig.from_pretrained()'\
+          \ is being replaced by  'GenerationConfig.from_pretrained()' to pass in\
+          \ generation strategy configs ?\n\n@mfab So AutoConfig will determine the\
+          \ configuration settings for the model when you load it. AutoConfig will\
+          \ contain things like model data type, attention implementation, etc. You\
+          \ can edit the default model config and pass it as an argument to transformers.AutoModelForCausalLM.from_pretrained()\
+          \ to load the model with your preferred settings. GenerationConfig only\
+          \ governs the settings at inference time when you call `model.generate()`,\
+          \ so it doesn't interfere with AutoConfig.\n\n> `repetition_penalty (float,\
+          \ optional, defaults to 1.0) \u2014 The parameter for repetition penalty.\
+          \ 1.0 means no penalty. See this paper for more details.` I can't quite\
+          \ tell from the paper whether higher percentage mean more penalty if 1.0\
+          \ is no penalty.\n\nHere's an extract from a different link (https://huggingface.co/transformers/v2.11.0/main_classes/model.html#transformers.PreTrainedModel.generate)\
+          \ with a bit clearer explanation: \"The parameter for repetition penalty.\
+          \ Between 1.0 and infinity. 1.0 means no penalty. Default to 1.0.\" i.e.\
+          \ Anything bigger than 1 adds a penalty for repetition."
+        updatedAt: '2023-05-25T02:42:35.543Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - mfab
+    id: 646ecb091a427e263046ce5d
+    type: comment
+  author: datacow
+  content: "> Does it look like to you that 'transformers.AutoConfig.from_pretrained()'\
+    \ is being replaced by  'GenerationConfig.from_pretrained()' to pass in generation\
+    \ strategy configs ?\n\n@mfab So AutoConfig will determine the configuration settings\
+    \ for the model when you load it. AutoConfig will contain things like model data\
+    \ type, attention implementation, etc. You can edit the default model config and\
+    \ pass it as an argument to transformers.AutoModelForCausalLM.from_pretrained()\
+    \ to load the model with your preferred settings. GenerationConfig only governs\
+    \ the settings at inference time when you call `model.generate()`, so it doesn't\
+    \ interfere with AutoConfig.\n\n> `repetition_penalty (float, optional, defaults\
+    \ to 1.0) \u2014 The parameter for repetition penalty. 1.0 means no penalty. See\
+    \ this paper for more details.` I can't quite tell from the paper whether higher\
+    \ percentage mean more penalty if 1.0 is no penalty.\n\nHere's an extract from\
+    \ a different link (https://huggingface.co/transformers/v2.11.0/main_classes/model.html#transformers.PreTrainedModel.generate)\
+    \ with a bit clearer explanation: \"The parameter for repetition penalty. Between\
+    \ 1.0 and infinity. 1.0 means no penalty. Default to 1.0.\" i.e. Anything bigger\
+    \ than 1 adds a penalty for repetition."
+  created_at: 2023-05-25 01:42:17+00:00
+  edited: true
+  hidden: false
+  id: 646ecb091a427e263046ce5d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+      fullname: Abhi Venigalla
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: abhi-mosaic
+      type: user
+    createdAt: '2023-06-03T01:03:45.000Z'
+    data:
+      edited: false
+      editors:
+      - abhi-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9936800599098206
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+          fullname: Abhi Venigalla
+          isHf: false
+          isPro: false
+          name: abhi-mosaic
+          type: user
+        html: '<p>Closing as stale</p>
+
+          '
+        raw: Closing as stale
+        updatedAt: '2023-06-03T01:03:45.524Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 647a9171c7367455fda3b452
+    id: 647a9171c7367455fda3b44f
+    type: comment
+  author: abhi-mosaic
+  content: Closing as stale
+  created_at: 2023-06-03 00:03:45+00:00
+  edited: false
+  hidden: false
+  id: 647a9171c7367455fda3b44f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+      fullname: Abhi Venigalla
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: abhi-mosaic
+      type: user
+    createdAt: '2023-06-03T01:03:45.000Z'
+    data:
+      status: closed
+    id: 647a9171c7367455fda3b452
+    type: status-change
+  author: abhi-mosaic
+  created_at: 2023-06-03 00:03:45+00:00
+  id: 647a9171c7367455fda3b452
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 32
+repo_id: mosaicml/mpt-7b-instruct
+repo_type: model
+status: closed
+target_branch: null
+title: configuration / penalty to lower repetition?

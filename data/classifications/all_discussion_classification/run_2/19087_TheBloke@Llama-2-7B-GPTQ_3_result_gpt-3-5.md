@@ -1,0 +1,9 @@
+## https://huggingface.co/TheBloke/Llama-2-7B-GPTQ/discussions/3
+
+contains_question: yes
+
+question_part: Even though output is generated eventually, it is really slow and the result is undesired:
+
+nobody can tell me about AI
+I'm not sure what you mean by "tell me about AI".
+I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "tell me about AI". I'm not sure what you mean by "

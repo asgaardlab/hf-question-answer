@@ -1,0 +1,215 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: bertdirt
+conflicting_files: null
+created_at: 2024-01-16 08:17:14+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3450dba3099cb35c74e6726fc80afd65.svg
+      fullname: Rajat
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bertdirt
+      type: user
+    createdAt: '2024-01-16T08:17:14.000Z'
+    data:
+      edited: false
+      editors:
+      - bertdirt
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5545229911804199
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3450dba3099cb35c74e6726fc80afd65.svg
+          fullname: Rajat
+          isHf: false
+          isPro: false
+          name: bertdirt
+          type: user
+        html: "<p>I have 2 A10 GPUs (total memory 48GB) and I loaded quantised model\
+          \ (size was almost 9GB) and tried finetuning but got \"out of memory\" error\
+          \ . I loaded the model in the following way :</p>\n<pre><code>quant_config\
+          \ = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_use_double_quant=True,\n\
+          \    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16\
+          \ #Changed from bflot16\n)\n\nconfig = LoraConfig(\n        r=16,\n    \
+          \    lora_alpha=32,\n        lora_dropout=0.05,\n        bias=\"none\",\n\
+          \        task_type=\"CAUSAL_LM\",\n        target_modules=[\"q_proj\", \"\
+          k_proj\", \"v_proj\", \"o_proj\", \"gate_proj\", \"up_proj\", \"down_proj\"\
+          ]\n    )\n\nmodel_name = \"./SOLAR-10.7B-Instruct-v1.0\"\n\nmodel = AutoModelForCausalLM.from_pretrained(model_name,\
+          \ device_map=\"auto\", quantization_config=quant_config, trust_remote_code=True)\n\
+          \n# model.gradient_checkpointing_enable() ## Added checkpointing\n\nmodel\
+          \ = prepare_model_for_kbit_training(model,use_gradient_checkpointing=False)\n\
+          tokenizer = AutoTokenizer.from_pretrained(model_name)\n\nmodel = get_peft_model(model,\
+          \ config)\n</code></pre>\n<p>To overcome this, I tried adding <code>gradient_checkpointing=True</code>\
+          \ in <code>TrainingAguments</code>:</p>\n<pre><code>def train_model(dsl_train,dsl_test,model,tokenizer,output_dir):\n\
+          \    os.environ[\"WANDB_DISABLED\"] = \"true\"\n    model.config.use_cache\
+          \ = False\n    trainer = transformers.Trainer(\n        model=model,\n \
+          \       train_dataset=dsl_train,\n        eval_dataset=dsl_test,\n     \
+          \   args=transformers.TrainingArguments(\n            per_device_train_batch_size=1,\n\
+          \            per_device_eval_batch_size=1,\n            gradient_accumulation_steps=4,\n\
+          \            gradient_checkpointing=True,\n            evaluation_strategy='epoch',\n\
+          \            save_strategy='epoch',\n            load_best_model_at_end=True,\n\
+          \            log_level='info',\n            overwrite_output_dir=True,\n\
+          \            report_to=None,\n            warmup_steps=1,\n            num_train_epochs=3,\n\
+          \            learning_rate=2e-4,\n            fp16=True,\n            logging_steps=1,\n\
+          \            save_steps=1,\n            output_dir=output_dir,\n#      \
+          \       optim='paged_lion_8bit', #\"paged_adamw_8bit\"\n        ),\n   \
+          \     data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\n    )\n    result = trainer.train()\n    return result,model,tokenizer\n\
+          </code></pre>\n<p>I got the following error:</p>\n<pre><code>ERROR - Exception\n\
+          Traceback (most recent call last):\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/IPython/core/interactiveshell.py\"\
+          , line 3553, in run_code\n    exec(code_obj, self.user_global_ns, self.user_ns)\n\
+          \  File \"/tmp/ipykernel_11584/2258950767.py\", line 1, in &lt;cell line:\
+          \ 1&gt;\n    result,model,tokenizer = train_model(dsl_train,dsl_test,model,tokenizer,output_dir)\n\
+          \  File \"/tmp/ipykernel_11584/1227025339.py\", line 30, in train_model\n\
+          \    result = trainer.train()\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 1555, in train\n    return inner_training_loop(\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 1860, in _inner_training_loop\n    tr_loss_step = self.training_step(model,\
+          \ inputs)\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 2734, in training_step\n    self.accelerator.backward(loss)\n  File\
+          \ \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/accelerate/accelerator.py\"\
+          , line 1851, in backward\n    self.scaler.scale(loss).backward(**kwargs)\n\
+          \  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/_tensor.py\"\
+          , line 487, in backward\n    torch.autograd.backward(\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/autograd/__init__.py\"\
+          , line 200, in backward\n    Variable._execution_engine.run_backward(  #\
+          \ Calls into the C++ engine to run the backward pass\nRuntimeError: element\
+          \ 0 of tensors does not require grad and does not have a grad_fn\nRuntimeError:\
+          \ element 0 of tensors does not require grad and does not have a grad_fn\n\
+          </code></pre>\n<p>I am not aware of what causing this. I tried the changes\
+          \ provide in <a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/issues/25006\"\
+          >https://github.com/huggingface/transformers/issues/25006</a><br>but this\
+          \ does not work as SOLAR requires updates versions of transformers, torch\
+          \ and accelerate. Please help me in finding the cause to debug this issue.</p>\n"
+        raw: "I have 2 A10 GPUs (total memory 48GB) and I loaded quantised model (size\
+          \ was almost 9GB) and tried finetuning but got \"out of memory\" error .\
+          \ I loaded the model in the following way :\r\n\r\n```\r\nquant_config =\
+          \ BitsAndBytesConfig(\r\n    load_in_4bit=True,\r\n    bnb_4bit_use_double_quant=True,\r\
+          \n    bnb_4bit_quant_type=\"nf4\",\r\n    bnb_4bit_compute_dtype=torch.bfloat16\
+          \ #Changed from bflot16\r\n)\r\n\r\nconfig = LoraConfig(\r\n        r=16,\r\
+          \n        lora_alpha=32,\r\n        lora_dropout=0.05,\r\n        bias=\"\
+          none\",\r\n        task_type=\"CAUSAL_LM\",\r\n        target_modules=[\"\
+          q_proj\", \"k_proj\", \"v_proj\", \"o_proj\", \"gate_proj\", \"up_proj\"\
+          , \"down_proj\"]\r\n    )\r\n\r\nmodel_name = \"./SOLAR-10.7B-Instruct-v1.0\"\
+          \r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"\
+          auto\", quantization_config=quant_config, trust_remote_code=True)\r\n\r\n\
+          # model.gradient_checkpointing_enable() ## Added checkpointing\r\n\r\nmodel\
+          \ = prepare_model_for_kbit_training(model,use_gradient_checkpointing=False)\r\
+          \ntokenizer = AutoTokenizer.from_pretrained(model_name)\r\n\r\nmodel = get_peft_model(model,\
+          \ config)\r\n```\r\n\r\nTo overcome this, I tried adding ```gradient_checkpointing=True```\
+          \ in ```TrainingAguments```:\r\n\r\n```\r\ndef train_model(dsl_train,dsl_test,model,tokenizer,output_dir):\r\
+          \n    os.environ[\"WANDB_DISABLED\"] = \"true\"\r\n    model.config.use_cache\
+          \ = False\r\n    trainer = transformers.Trainer(\r\n        model=model,\r\
+          \n        train_dataset=dsl_train,\r\n        eval_dataset=dsl_test,\r\n\
+          \        args=transformers.TrainingArguments(\r\n            per_device_train_batch_size=1,\r\
+          \n            per_device_eval_batch_size=1,\r\n            gradient_accumulation_steps=4,\r\
+          \n            gradient_checkpointing=True,\r\n            evaluation_strategy='epoch',\r\
+          \n            save_strategy='epoch',\r\n            load_best_model_at_end=True,\r\
+          \n            log_level='info',\r\n            overwrite_output_dir=True,\r\
+          \n            report_to=None,\r\n            warmup_steps=1,\r\n       \
+          \     num_train_epochs=3,\r\n            learning_rate=2e-4,\r\n       \
+          \     fp16=True,\r\n            logging_steps=1,\r\n            save_steps=1,\r\
+          \n            output_dir=output_dir,\r\n#             optim='paged_lion_8bit',\
+          \ #\"paged_adamw_8bit\"\r\n        ),\r\n        data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\r\n    )\r\n    result = trainer.train()\r\n    return result,model,tokenizer\r\
+          \n```\r\nI got the following error:\r\n\r\n```\r\nERROR - Exception\r\n\
+          Traceback (most recent call last):\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/IPython/core/interactiveshell.py\"\
+          , line 3553, in run_code\r\n    exec(code_obj, self.user_global_ns, self.user_ns)\r\
+          \n  File \"/tmp/ipykernel_11584/2258950767.py\", line 1, in <cell line:\
+          \ 1>\r\n    result,model,tokenizer = train_model(dsl_train,dsl_test,model,tokenizer,output_dir)\r\
+          \n  File \"/tmp/ipykernel_11584/1227025339.py\", line 30, in train_model\r\
+          \n    result = trainer.train()\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 1555, in train\r\n    return inner_training_loop(\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 1860, in _inner_training_loop\r\n    tr_loss_step = self.training_step(model,\
+          \ inputs)\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+          , line 2734, in training_step\r\n    self.accelerator.backward(loss)\r\n\
+          \  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/accelerate/accelerator.py\"\
+          , line 1851, in backward\r\n    self.scaler.scale(loss).backward(**kwargs)\r\
+          \n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/_tensor.py\"\
+          , line 487, in backward\r\n    torch.autograd.backward(\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/autograd/__init__.py\"\
+          , line 200, in backward\r\n    Variable._execution_engine.run_backward(\
+          \  # Calls into the C++ engine to run the backward pass\r\nRuntimeError:\
+          \ element 0 of tensors does not require grad and does not have a grad_fn\r\
+          \nRuntimeError: element 0 of tensors does not require grad and does not\
+          \ have a grad_fn\r\n```\r\n\r\nI am not aware of what causing this. I tried\
+          \ the changes provide in https://github.com/huggingface/transformers/issues/25006\r\
+          \nbut this does not work as SOLAR requires updates versions of transformers,\
+          \ torch and accelerate. Please help me in finding the cause to debug this\
+          \ issue."
+        updatedAt: '2024-01-16T08:17:14.395Z'
+      numEdits: 0
+      reactions: []
+    id: 65a63b8a95a29115922524c3
+    type: comment
+  author: bertdirt
+  content: "I have 2 A10 GPUs (total memory 48GB) and I loaded quantised model (size\
+    \ was almost 9GB) and tried finetuning but got \"out of memory\" error . I loaded\
+    \ the model in the following way :\r\n\r\n```\r\nquant_config = BitsAndBytesConfig(\r\
+    \n    load_in_4bit=True,\r\n    bnb_4bit_use_double_quant=True,\r\n    bnb_4bit_quant_type=\"\
+    nf4\",\r\n    bnb_4bit_compute_dtype=torch.bfloat16 #Changed from bflot16\r\n\
+    )\r\n\r\nconfig = LoraConfig(\r\n        r=16,\r\n        lora_alpha=32,\r\n \
+    \       lora_dropout=0.05,\r\n        bias=\"none\",\r\n        task_type=\"CAUSAL_LM\"\
+    ,\r\n        target_modules=[\"q_proj\", \"k_proj\", \"v_proj\", \"o_proj\", \"\
+    gate_proj\", \"up_proj\", \"down_proj\"]\r\n    )\r\n\r\nmodel_name = \"./SOLAR-10.7B-Instruct-v1.0\"\
+    \r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(model_name, device_map=\"\
+    auto\", quantization_config=quant_config, trust_remote_code=True)\r\n\r\n# model.gradient_checkpointing_enable()\
+    \ ## Added checkpointing\r\n\r\nmodel = prepare_model_for_kbit_training(model,use_gradient_checkpointing=False)\r\
+    \ntokenizer = AutoTokenizer.from_pretrained(model_name)\r\n\r\nmodel = get_peft_model(model,\
+    \ config)\r\n```\r\n\r\nTo overcome this, I tried adding ```gradient_checkpointing=True```\
+    \ in ```TrainingAguments```:\r\n\r\n```\r\ndef train_model(dsl_train,dsl_test,model,tokenizer,output_dir):\r\
+    \n    os.environ[\"WANDB_DISABLED\"] = \"true\"\r\n    model.config.use_cache\
+    \ = False\r\n    trainer = transformers.Trainer(\r\n        model=model,\r\n \
+    \       train_dataset=dsl_train,\r\n        eval_dataset=dsl_test,\r\n       \
+    \ args=transformers.TrainingArguments(\r\n            per_device_train_batch_size=1,\r\
+    \n            per_device_eval_batch_size=1,\r\n            gradient_accumulation_steps=4,\r\
+    \n            gradient_checkpointing=True,\r\n            evaluation_strategy='epoch',\r\
+    \n            save_strategy='epoch',\r\n            load_best_model_at_end=True,\r\
+    \n            log_level='info',\r\n            overwrite_output_dir=True,\r\n\
+    \            report_to=None,\r\n            warmup_steps=1,\r\n            num_train_epochs=3,\r\
+    \n            learning_rate=2e-4,\r\n            fp16=True,\r\n            logging_steps=1,\r\
+    \n            save_steps=1,\r\n            output_dir=output_dir,\r\n#       \
+    \      optim='paged_lion_8bit', #\"paged_adamw_8bit\"\r\n        ),\r\n      \
+    \  data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False),\r\
+    \n    )\r\n    result = trainer.train()\r\n    return result,model,tokenizer\r\
+    \n```\r\nI got the following error:\r\n\r\n```\r\nERROR - Exception\r\nTraceback\
+    \ (most recent call last):\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/IPython/core/interactiveshell.py\"\
+    , line 3553, in run_code\r\n    exec(code_obj, self.user_global_ns, self.user_ns)\r\
+    \n  File \"/tmp/ipykernel_11584/2258950767.py\", line 1, in <cell line: 1>\r\n\
+    \    result,model,tokenizer = train_model(dsl_train,dsl_test,model,tokenizer,output_dir)\r\
+    \n  File \"/tmp/ipykernel_11584/1227025339.py\", line 30, in train_model\r\n \
+    \   result = trainer.train()\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+    , line 1555, in train\r\n    return inner_training_loop(\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+    , line 1860, in _inner_training_loop\r\n    tr_loss_step = self.training_step(model,\
+    \ inputs)\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/transformers/trainer.py\"\
+    , line 2734, in training_step\r\n    self.accelerator.backward(loss)\r\n  File\
+    \ \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/accelerate/accelerator.py\"\
+    , line 1851, in backward\r\n    self.scaler.scale(loss).backward(**kwargs)\r\n\
+    \  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/_tensor.py\"\
+    , line 487, in backward\r\n    torch.autograd.backward(\r\n  File \"/home/datascience/conda/pytorch20_p39_gpu_v2/lib/python3.9/site-packages/torch/autograd/__init__.py\"\
+    , line 200, in backward\r\n    Variable._execution_engine.run_backward(  # Calls\
+    \ into the C++ engine to run the backward pass\r\nRuntimeError: element 0 of tensors\
+    \ does not require grad and does not have a grad_fn\r\nRuntimeError: element 0\
+    \ of tensors does not require grad and does not have a grad_fn\r\n```\r\n\r\n\
+    I am not aware of what causing this. I tried the changes provide in https://github.com/huggingface/transformers/issues/25006\r\
+    \nbut this does not work as SOLAR requires updates versions of transformers, torch\
+    \ and accelerate. Please help me in finding the cause to debug this issue."
+  created_at: 2024-01-16 08:17:14+00:00
+  edited: false
+  hidden: false
+  id: 65a63b8a95a29115922524c3
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 24
+repo_id: upstage/SOLAR-10.7B-Instruct-v1.0
+repo_type: model
+status: open
+target_branch: null
+title: Finetuning upstage/SOLAR-10.7B-Instruct-v1.0

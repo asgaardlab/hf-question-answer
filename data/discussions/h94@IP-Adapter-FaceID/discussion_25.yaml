@@ -1,0 +1,289 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AAVRG
+conflicting_files: null
+created_at: 2024-01-14 01:56:28+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ae8ccf29f52e3dd361e061149966ce8.svg
+      fullname: Amelio Vazquez-Reina
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AAVRG
+      type: user
+    createdAt: '2024-01-14T01:56:28.000Z'
+    data:
+      edited: true
+      editors:
+      - AAVRG
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.47141823172569275
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ae8ccf29f52e3dd361e061149966ce8.svg
+          fullname: Amelio Vazquez-Reina
+          isHf: false
+          isPro: false
+          name: AAVRG
+          type: user
+        html: "<p>I'm running the code exactly as is in the instructions. E.g.</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ cv2\n<span class=\"hljs-keyword\">from</span> insightface.app <span class=\"\
+          hljs-keyword\">import</span> FaceAnalysis\n<span class=\"hljs-keyword\"\
+          >from</span> insightface.utils <span class=\"hljs-keyword\">import</span>\
+          \ face_align\n<span class=\"hljs-keyword\">import</span> torch\n\napp =\
+          \ FaceAnalysis(name=<span class=\"hljs-string\">\"buffalo_l\"</span>, providers=[<span\
+          \ class=\"hljs-string\">'CUDAExecutionProvider'</span>, <span class=\"hljs-string\"\
+          >'CPUExecutionProvider'</span>])\napp.prepare(ctx_id=<span class=\"hljs-number\"\
+          >0</span>, det_size=(<span class=\"hljs-number\">640</span>, <span class=\"\
+          hljs-number\">640</span>))\n\nimage = cv2.imread(<span class=\"hljs-string\"\
+          >\"person.jpg\"</span>)\nfaces = app.get(image)\n\nfaceid_embeds = torch.from_numpy(faces[<span\
+          \ class=\"hljs-number\">0</span>].normed_embedding).unsqueeze(<span class=\"\
+          hljs-number\">0</span>)\nface_image = face_align.norm_crop(image, landmark=faces[<span\
+          \ class=\"hljs-number\">0</span>].kps, image_size=<span class=\"hljs-number\"\
+          >224</span>) <span class=\"hljs-comment\"># you can also segment the face</span>\n\
+          </code></pre>\n<p>and then</p>\n<pre><code class=\"language-python\"><span\
+          \ class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >from</span> diffusers <span class=\"hljs-keyword\">import</span> StableDiffusionPipeline,\
+          \ DDIMScheduler, AutoencoderKL\n<span class=\"hljs-keyword\">from</span>\
+          \ PIL <span class=\"hljs-keyword\">import</span> Image\n\n<span class=\"\
+          hljs-keyword\">from</span> ip_adapter.ip_adapter_faceid <span class=\"hljs-keyword\"\
+          >import</span> IPAdapterFaceIDPlus\n\nv2 = <span class=\"hljs-literal\"\
+          >False</span>\nbase_model_path = <span class=\"hljs-string\">\"SG161222/Realistic_Vision_V4.0_noVAE\"\
+          </span>\nvae_model_path = <span class=\"hljs-string\">\"stabilityai/sd-vae-ft-mse\"\
+          </span>\nimage_encoder_path = <span class=\"hljs-string\">\"laion/CLIP-ViT-H-14-laion2B-s32B-b79K\"\
+          </span>\nip_ckpt = <span class=\"hljs-string\">\"ip-adapter-faceid-plus_sd15.bin\"\
+          </span> <span class=\"hljs-keyword\">if</span> <span class=\"hljs-keyword\"\
+          >not</span> v2 <span class=\"hljs-keyword\">else</span> <span class=\"hljs-string\"\
+          >\"ip-adapter-faceid-plusv2_sd15.bin\"</span>\ndevice = <span class=\"hljs-string\"\
+          >\"cuda\"</span>\n\nnoise_scheduler = DDIMScheduler(\n    num_train_timesteps=<span\
+          \ class=\"hljs-number\">1000</span>,\n    beta_start=<span class=\"hljs-number\"\
+          >0.00085</span>,\n    beta_end=<span class=\"hljs-number\">0.012</span>,\n\
+          \    beta_schedule=<span class=\"hljs-string\">\"scaled_linear\"</span>,\n\
+          \    clip_sample=<span class=\"hljs-literal\">False</span>,\n    set_alpha_to_one=<span\
+          \ class=\"hljs-literal\">False</span>,\n    steps_offset=<span class=\"\
+          hljs-number\">1</span>,\n)\nvae = AutoencoderKL.from_pretrained(vae_model_path).to(dtype=torch.float16)\n\
+          pipe = StableDiffusionPipeline.from_pretrained(\n    base_model_path,\n\
+          \    torch_dtype=torch.float16,\n    scheduler=noise_scheduler,\n    vae=vae,\n\
+          \    feature_extractor=<span class=\"hljs-literal\">None</span>,\n    safety_checker=<span\
+          \ class=\"hljs-literal\">None</span>\n)\n\n<span class=\"hljs-comment\"\
+          ># load ip-adapter</span>\nip_model = IPAdapterFaceIDPlus(pipe, image_encoder_path,\
+          \ ip_ckpt, device)\n\n<span class=\"hljs-comment\"># generate image</span>\n\
+          prompt = <span class=\"hljs-string\">\"photo of a woman in red dress in\
+          \ a garden\"</span>\nnegative_prompt = <span class=\"hljs-string\">\"monochrome,\
+          \ lowres, bad anatomy, worst quality, low quality, blurry\"</span>\n\nimages\
+          \ = ip_model.generate(\n     prompt=prompt, negative_prompt=negative_prompt,\
+          \ face_image=face_image, faceid_embeds=faceid_embeds, shortcut=v2, s_scale=<span\
+          \ class=\"hljs-number\">1.0</span>,\n     num_samples=<span class=\"hljs-number\"\
+          >4</span>, width=<span class=\"hljs-number\">512</span>, height=<span class=\"\
+          hljs-number\">768</span>, num_inference_steps=<span class=\"hljs-number\"\
+          >30</span>, seed=<span class=\"hljs-number\">2023</span>\n)\n</code></pre>\n\
+          <p>but I always get:</p>\n<pre><code class=\"language-python\">---------------------------------------------------------------------------\n\
+          UnpicklingError                           Traceback (most recent call last)\n\
+          &lt;ipython-<span class=\"hljs-built_in\">input</span>-<span class=\"hljs-number\"\
+          >5</span>-c566c3539642&gt; <span class=\"hljs-keyword\">in</span> &lt;cell\
+          \ line: <span class=\"hljs-number\">34</span>&gt;()\n     <span class=\"\
+          hljs-number\">32</span> \n     <span class=\"hljs-number\">33</span> <span\
+          \ class=\"hljs-comment\"># load ip-adapter</span>\n---&gt; <span class=\"\
+          hljs-number\">34</span> ip_model = IPAdapterFaceIDPlus(pipe, image_encoder_path,\
+          \ ip_ckpt, device)\n     <span class=\"hljs-number\">35</span> \n     <span\
+          \ class=\"hljs-number\">36</span> <span class=\"hljs-comment\"># generate\
+          \ image</span>\n\n<span class=\"hljs-number\">3</span> frames\n/usr/local/lib/python3<span\
+          \ class=\"hljs-number\">.10</span>/dist-packages/torch/serialization.py\
+          \ <span class=\"hljs-keyword\">in</span> _legacy_load(f, map_location, pickle_module,\
+          \ **pickle_load_args)\n   <span class=\"hljs-number\">1244</span>      \
+          \       <span class=\"hljs-string\">\"functionality.\"</span>)\n   <span\
+          \ class=\"hljs-number\">1245</span> \n-&gt; <span class=\"hljs-number\"\
+          >1246</span>     magic_number = pickle_module.load(f, **pickle_load_args)\n\
+          \   <span class=\"hljs-number\">1247</span>     <span class=\"hljs-keyword\"\
+          >if</span> magic_number != MAGIC_NUMBER:\n   <span class=\"hljs-number\"\
+          >1248</span>         <span class=\"hljs-keyword\">raise</span> RuntimeError(<span\
+          \ class=\"hljs-string\">\"Invalid magic number; corrupt file?\"</span>)\n\
+          \nUnpicklingError: invalid load key, <span class=\"hljs-string\">'v'</span>.\n\
+          </code></pre>\n<p>and I always install it all this way (in a colab pro with\
+          \ A100s etc)</p>\n<pre><code class=\"language-python\">!pip install --upgrade\
+          \ opencv-python diffusers transforms insightface onnxruntime einops accelerate\n\
+          </code></pre>\n<p>The pip installations don't error out. All the versions\
+          \ are compatible, etc. </p>\n<p>I don't understand what's going on. I tried\
+          \ with the regular <code>IPAdapterFaceID</code> etc.</p>\n<p>Any suggestions\
+          \ on what else to check?</p>\n"
+        raw: "I'm running the code exactly as is in the instructions. E.g.\n\n```\
+          \ python\nimport cv2\nfrom insightface.app import FaceAnalysis\nfrom insightface.utils\
+          \ import face_align\nimport torch\n\napp = FaceAnalysis(name=\"buffalo_l\"\
+          , providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])\napp.prepare(ctx_id=0,\
+          \ det_size=(640, 640))\n\nimage = cv2.imread(\"person.jpg\")\nfaces = app.get(image)\n\
+          \nfaceid_embeds = torch.from_numpy(faces[0].normed_embedding).unsqueeze(0)\n\
+          face_image = face_align.norm_crop(image, landmark=faces[0].kps, image_size=224)\
+          \ # you can also segment the face\n````\nand then\n\n``` python\nimport\
+          \ torch\nfrom diffusers import StableDiffusionPipeline, DDIMScheduler, AutoencoderKL\n\
+          from PIL import Image\n\nfrom ip_adapter.ip_adapter_faceid import IPAdapterFaceIDPlus\n\
+          \nv2 = False\nbase_model_path = \"SG161222/Realistic_Vision_V4.0_noVAE\"\
+          \nvae_model_path = \"stabilityai/sd-vae-ft-mse\"\nimage_encoder_path = \"\
+          laion/CLIP-ViT-H-14-laion2B-s32B-b79K\"\nip_ckpt = \"ip-adapter-faceid-plus_sd15.bin\"\
+          \ if not v2 else \"ip-adapter-faceid-plusv2_sd15.bin\"\ndevice = \"cuda\"\
+          \n\nnoise_scheduler = DDIMScheduler(\n    num_train_timesteps=1000,\n  \
+          \  beta_start=0.00085,\n    beta_end=0.012,\n    beta_schedule=\"scaled_linear\"\
+          ,\n    clip_sample=False,\n    set_alpha_to_one=False,\n    steps_offset=1,\n\
+          )\nvae = AutoencoderKL.from_pretrained(vae_model_path).to(dtype=torch.float16)\n\
+          pipe = StableDiffusionPipeline.from_pretrained(\n    base_model_path,\n\
+          \    torch_dtype=torch.float16,\n    scheduler=noise_scheduler,\n    vae=vae,\n\
+          \    feature_extractor=None,\n    safety_checker=None\n)\n\n# load ip-adapter\n\
+          ip_model = IPAdapterFaceIDPlus(pipe, image_encoder_path, ip_ckpt, device)\n\
+          \n# generate image\nprompt = \"photo of a woman in red dress in a garden\"\
+          \nnegative_prompt = \"monochrome, lowres, bad anatomy, worst quality, low\
+          \ quality, blurry\"\n\nimages = ip_model.generate(\n     prompt=prompt,\
+          \ negative_prompt=negative_prompt, face_image=face_image, faceid_embeds=faceid_embeds,\
+          \ shortcut=v2, s_scale=1.0,\n     num_samples=4, width=512, height=768,\
+          \ num_inference_steps=30, seed=2023\n)\n```\n\nbut I always get:\n```python\n\
+          ---------------------------------------------------------------------------\n\
+          UnpicklingError                           Traceback (most recent call last)\n\
+          <ipython-input-5-c566c3539642> in <cell line: 34>()\n     32 \n     33 #\
+          \ load ip-adapter\n---> 34 ip_model = IPAdapterFaceIDPlus(pipe, image_encoder_path,\
+          \ ip_ckpt, device)\n     35 \n     36 # generate image\n\n3 frames\n/usr/local/lib/python3.10/dist-packages/torch/serialization.py\
+          \ in _legacy_load(f, map_location, pickle_module, **pickle_load_args)\n\
+          \   1244             \"functionality.\")\n   1245 \n-> 1246     magic_number\
+          \ = pickle_module.load(f, **pickle_load_args)\n   1247     if magic_number\
+          \ != MAGIC_NUMBER:\n   1248         raise RuntimeError(\"Invalid magic number;\
+          \ corrupt file?\")\n\nUnpicklingError: invalid load key, 'v'.\n```\n\nand\
+          \ I always install it all this way (in a colab pro with A100s etc)\n```\
+          \ python\n!pip install --upgrade opencv-python diffusers transforms insightface\
+          \ onnxruntime einops accelerate\n```\n\nThe pip installations don't error\
+          \ out. All the versions are compatible, etc. \n\nI don't understand what's\
+          \ going on. I tried with the regular `IPAdapterFaceID` etc.\n\nAny suggestions\
+          \ on what else to check?"
+        updatedAt: '2024-01-14T02:00:46.215Z'
+      numEdits: 3
+      reactions: []
+    id: 65a33f4cea98738768230a6e
+    type: comment
+  author: AAVRG
+  content: "I'm running the code exactly as is in the instructions. E.g.\n\n``` python\n\
+    import cv2\nfrom insightface.app import FaceAnalysis\nfrom insightface.utils import\
+    \ face_align\nimport torch\n\napp = FaceAnalysis(name=\"buffalo_l\", providers=['CUDAExecutionProvider',\
+    \ 'CPUExecutionProvider'])\napp.prepare(ctx_id=0, det_size=(640, 640))\n\nimage\
+    \ = cv2.imread(\"person.jpg\")\nfaces = app.get(image)\n\nfaceid_embeds = torch.from_numpy(faces[0].normed_embedding).unsqueeze(0)\n\
+    face_image = face_align.norm_crop(image, landmark=faces[0].kps, image_size=224)\
+    \ # you can also segment the face\n````\nand then\n\n``` python\nimport torch\n\
+    from diffusers import StableDiffusionPipeline, DDIMScheduler, AutoencoderKL\n\
+    from PIL import Image\n\nfrom ip_adapter.ip_adapter_faceid import IPAdapterFaceIDPlus\n\
+    \nv2 = False\nbase_model_path = \"SG161222/Realistic_Vision_V4.0_noVAE\"\nvae_model_path\
+    \ = \"stabilityai/sd-vae-ft-mse\"\nimage_encoder_path = \"laion/CLIP-ViT-H-14-laion2B-s32B-b79K\"\
+    \nip_ckpt = \"ip-adapter-faceid-plus_sd15.bin\" if not v2 else \"ip-adapter-faceid-plusv2_sd15.bin\"\
+    \ndevice = \"cuda\"\n\nnoise_scheduler = DDIMScheduler(\n    num_train_timesteps=1000,\n\
+    \    beta_start=0.00085,\n    beta_end=0.012,\n    beta_schedule=\"scaled_linear\"\
+    ,\n    clip_sample=False,\n    set_alpha_to_one=False,\n    steps_offset=1,\n\
+    )\nvae = AutoencoderKL.from_pretrained(vae_model_path).to(dtype=torch.float16)\n\
+    pipe = StableDiffusionPipeline.from_pretrained(\n    base_model_path,\n    torch_dtype=torch.float16,\n\
+    \    scheduler=noise_scheduler,\n    vae=vae,\n    feature_extractor=None,\n \
+    \   safety_checker=None\n)\n\n# load ip-adapter\nip_model = IPAdapterFaceIDPlus(pipe,\
+    \ image_encoder_path, ip_ckpt, device)\n\n# generate image\nprompt = \"photo of\
+    \ a woman in red dress in a garden\"\nnegative_prompt = \"monochrome, lowres,\
+    \ bad anatomy, worst quality, low quality, blurry\"\n\nimages = ip_model.generate(\n\
+    \     prompt=prompt, negative_prompt=negative_prompt, face_image=face_image, faceid_embeds=faceid_embeds,\
+    \ shortcut=v2, s_scale=1.0,\n     num_samples=4, width=512, height=768, num_inference_steps=30,\
+    \ seed=2023\n)\n```\n\nbut I always get:\n```python\n---------------------------------------------------------------------------\n\
+    UnpicklingError                           Traceback (most recent call last)\n\
+    <ipython-input-5-c566c3539642> in <cell line: 34>()\n     32 \n     33 # load\
+    \ ip-adapter\n---> 34 ip_model = IPAdapterFaceIDPlus(pipe, image_encoder_path,\
+    \ ip_ckpt, device)\n     35 \n     36 # generate image\n\n3 frames\n/usr/local/lib/python3.10/dist-packages/torch/serialization.py\
+    \ in _legacy_load(f, map_location, pickle_module, **pickle_load_args)\n   1244\
+    \             \"functionality.\")\n   1245 \n-> 1246     magic_number = pickle_module.load(f,\
+    \ **pickle_load_args)\n   1247     if magic_number != MAGIC_NUMBER:\n   1248 \
+    \        raise RuntimeError(\"Invalid magic number; corrupt file?\")\n\nUnpicklingError:\
+    \ invalid load key, 'v'.\n```\n\nand I always install it all this way (in a colab\
+    \ pro with A100s etc)\n``` python\n!pip install --upgrade opencv-python diffusers\
+    \ transforms insightface onnxruntime einops accelerate\n```\n\nThe pip installations\
+    \ don't error out. All the versions are compatible, etc. \n\nI don't understand\
+    \ what's going on. I tried with the regular `IPAdapterFaceID` etc.\n\nAny suggestions\
+    \ on what else to check?"
+  created_at: 2024-01-14 01:56:28+00:00
+  edited: true
+  hidden: false
+  id: 65a33f4cea98738768230a6e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ae8ccf29f52e3dd361e061149966ce8.svg
+      fullname: Amelio Vazquez-Reina
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AAVRG
+      type: user
+    createdAt: '2024-01-15T00:07:27.000Z'
+    data:
+      edited: false
+      editors:
+      - AAVRG
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8597226738929749
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ae8ccf29f52e3dd361e061149966ce8.svg
+          fullname: Amelio Vazquez-Reina
+          isHf: false
+          isPro: false
+          name: AAVRG
+          type: user
+        html: '<p>Found the solution. Sorry I didn''t download the ckpt files correctly
+          (didn''t install git lfs well).</p>
+
+          '
+        raw: Found the solution. Sorry I didn't download the ckpt files correctly
+          (didn't install git lfs well).
+        updatedAt: '2024-01-15T00:07:27.362Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65a4773f1051c2b0db48519c
+    id: 65a4773f1051c2b0db485199
+    type: comment
+  author: AAVRG
+  content: Found the solution. Sorry I didn't download the ckpt files correctly (didn't
+    install git lfs well).
+  created_at: 2024-01-15 00:07:27+00:00
+  edited: false
+  hidden: false
+  id: 65a4773f1051c2b0db485199
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/2ae8ccf29f52e3dd361e061149966ce8.svg
+      fullname: Amelio Vazquez-Reina
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AAVRG
+      type: user
+    createdAt: '2024-01-15T00:07:27.000Z'
+    data:
+      status: closed
+    id: 65a4773f1051c2b0db48519c
+    type: status-change
+  author: AAVRG
+  created_at: 2024-01-15 00:07:27+00:00
+  id: 65a4773f1051c2b0db48519c
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 25
+repo_id: h94/IP-Adapter-FaceID
+repo_type: model
+status: closed
+target_branch: null
+title: Keep getting unpickling error

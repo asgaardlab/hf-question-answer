@@ -1,0 +1,275 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: liutian-sunshine
+conflicting_files: null
+created_at: 2023-12-05 07:58:45+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1b6b5dc53145c7a37e980695687a5655.svg
+      fullname: lizhang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: liutian-sunshine
+      type: user
+    createdAt: '2023-12-05T07:58:45.000Z'
+    data:
+      edited: true
+      editors:
+      - liutian-sunshine
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5249314904212952
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1b6b5dc53145c7a37e980695687a5655.svg
+          fullname: lizhang
+          isHf: false
+          isPro: false
+          name: liutian-sunshine
+          type: user
+        html: "<p>It's reasonable to get both end of sentence timestamps and word-level\
+          \ timestamps at the same time.<br>I tried to call pipe() twice, using return_timestamps=\"\
+          word\" and return_timestamps=True in this inelegant solution.<br>But it\
+          \ throws exception,<br>AttributeError: 'ModelOutput' object has no attribute\
+          \ 'numpy'</p>\n<pre><code>import torch\nfrom transformers import AutoModelForSpeechSeq2Seq,\
+          \ AutoProcessor, pipeline\nfrom datasets import load_dataset\n\n\ndevice\
+          \ = \"cuda:0\" if torch.cuda.is_available() else \"cpu\"\ntorch_dtype =\
+          \ torch.float16 if torch.cuda.is_available() else torch.float32\n\nmodel_id\
+          \ = \"openai/whisper-large-v3\"\n\nmodel = AutoModelForSpeechSeq2Seq.from_pretrained(\n\
+          \    model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True\n\
+          ).to(device)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\n\
+          pipe = pipeline(\n    \"automatic-speech-recognition\",\n    model=model,\n\
+          \    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+          \    max_new_tokens=128,\n    chunk_length_s=30,\n    batch_size=1,\n  \
+          \  return_timestamps=True,\n    torch_dtype=torch_dtype,\n    device=device,\n\
+          )\n\nsrc_path = '2539595_hq.mp3'\nwords  = pipe(src_path,return_timestamps=\"\
+          word\")\nsentences = pipe(src_path)\n</code></pre>\n<pre><code>Whisper did\
+          \ not predict an ending timestamp, which can happen if audio is cut off\
+          \ in the middle of a word. Also make sure WhisperTimeStampLogitsProcessor\
+          \ was used during generation.\n---------------------------------------------------------------------------\n\
+          AttributeError                            Traceback (most recent call last)\n\
+          Cell In[2], line 3\n      1 src_path = '2539595_hq.mp3'\n      2 pipe(src_path,return_timestamps=\"\
+          word\")\n----&gt; 3 pipe(src_path)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:357,\
+          \ in AutomaticSpeechRecognitionPipeline.__call__(self, inputs, **kwargs)\n\
+          \    294 def __call__(\n    295     self,\n    296     inputs: Union[np.ndarray,\
+          \ bytes, str],\n    297     **kwargs,\n    298 ):\n    299     \"\"\"\n\
+          \    300     Transcribe the audio sequence(s) given as inputs to text. See\
+          \ the [`AutomaticSpeechRecognitionPipeline`]\n    301     documentation\
+          \ for more information.\n   (...)\n    355                 `\"\".join(chunk[\"\
+          text\"] for chunk in output[\"chunks\"])`.\n    356     \"\"\"\n--&gt; 357\
+          \     return super().__call__(inputs, **kwargs)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/base.py:1132,\
+          \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\n\
+          \   1130     return self.iterate(inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\n   1131 elif self.framework == \"pt\" and isinstance(self,\
+          \ ChunkPipeline):\n-&gt; 1132     return next(\n   1133         iter(\n\
+          \   1134             self.get_iterator(\n   1135                 [inputs],\
+          \ num_workers, batch_size, preprocess_params, forward_params, postprocess_params\n\
+          \   1136             )\n   1137         )\n   1138     )\n   1139 else:\n\
+          \   1140     return self.run_single(inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/pt_utils.py:125,\
+          \ in PipelineIterator.__next__(self)\n    123 # We're out of items within\
+          \ a batch\n    124 item = next(self.iterator)\n--&gt; 125 processed = self.infer(item,\
+          \ **self.params)\n    126 # We now have a batch of \"inferred things\".\n\
+          \    127 if self.loader_batch_size is not None:\n    128     # Try to infer\
+          \ the size of the batch\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:613,\
+          \ in AutomaticSpeechRecognitionPipeline.postprocess(self, model_outputs,\
+          \ decoder_kwargs, return_timestamps, return_language)\n    611 stride =\
+          \ None\n    612 for outputs in model_outputs:\n--&gt; 613     items = outputs[key].numpy()\n\
+          \    614     stride = outputs.get(\"stride\", None)\n    615     if stride\
+          \ is not None and self.type in {\"ctc\", \"ctc_with_lm\"}:\n\nAttributeError:\
+          \ 'ModelOutput' object has no attribute 'numpy'\n</code></pre>\n"
+        raw: "It's reasonable to get both end of sentence timestamps and word-level\
+          \ timestamps at the same time.\nI tried to call pipe() twice, using return_timestamps=\"\
+          word\" and return_timestamps=True in this inelegant solution.\nBut it throws\
+          \ exception,\nAttributeError: 'ModelOutput' object has no attribute 'numpy'\n\
+          \n```\nimport torch\nfrom transformers import AutoModelForSpeechSeq2Seq,\
+          \ AutoProcessor, pipeline\nfrom datasets import load_dataset\n\n\ndevice\
+          \ = \"cuda:0\" if torch.cuda.is_available() else \"cpu\"\ntorch_dtype =\
+          \ torch.float16 if torch.cuda.is_available() else torch.float32\n\nmodel_id\
+          \ = \"openai/whisper-large-v3\"\n\nmodel = AutoModelForSpeechSeq2Seq.from_pretrained(\n\
+          \    model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True\n\
+          ).to(device)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\n\
+          pipe = pipeline(\n    \"automatic-speech-recognition\",\n    model=model,\n\
+          \    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+          \    max_new_tokens=128,\n    chunk_length_s=30,\n    batch_size=1,\n  \
+          \  return_timestamps=True,\n    torch_dtype=torch_dtype,\n    device=device,\n\
+          )\n\nsrc_path = '2539595_hq.mp3'\nwords  = pipe(src_path,return_timestamps=\"\
+          word\")\nsentences = pipe(src_path)\n```\n\n```\nWhisper did not predict\
+          \ an ending timestamp, which can happen if audio is cut off in the middle\
+          \ of a word. Also make sure WhisperTimeStampLogitsProcessor was used during\
+          \ generation.\n---------------------------------------------------------------------------\n\
+          AttributeError                            Traceback (most recent call last)\n\
+          Cell In[2], line 3\n      1 src_path = '2539595_hq.mp3'\n      2 pipe(src_path,return_timestamps=\"\
+          word\")\n----> 3 pipe(src_path)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:357,\
+          \ in AutomaticSpeechRecognitionPipeline.__call__(self, inputs, **kwargs)\n\
+          \    294 def __call__(\n    295     self,\n    296     inputs: Union[np.ndarray,\
+          \ bytes, str],\n    297     **kwargs,\n    298 ):\n    299     \"\"\"\n\
+          \    300     Transcribe the audio sequence(s) given as inputs to text. See\
+          \ the [`AutomaticSpeechRecognitionPipeline`]\n    301     documentation\
+          \ for more information.\n   (...)\n    355                 `\"\".join(chunk[\"\
+          text\"] for chunk in output[\"chunks\"])`.\n    356     \"\"\"\n--> 357\
+          \     return super().__call__(inputs, **kwargs)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/base.py:1132,\
+          \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\n\
+          \   1130     return self.iterate(inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\n   1131 elif self.framework == \"pt\" and isinstance(self,\
+          \ ChunkPipeline):\n-> 1132     return next(\n   1133         iter(\n   1134\
+          \             self.get_iterator(\n   1135                 [inputs], num_workers,\
+          \ batch_size, preprocess_params, forward_params, postprocess_params\n  \
+          \ 1136             )\n   1137         )\n   1138     )\n   1139 else:\n\
+          \   1140     return self.run_single(inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/pt_utils.py:125,\
+          \ in PipelineIterator.__next__(self)\n    123 # We're out of items within\
+          \ a batch\n    124 item = next(self.iterator)\n--> 125 processed = self.infer(item,\
+          \ **self.params)\n    126 # We now have a batch of \"inferred things\".\n\
+          \    127 if self.loader_batch_size is not None:\n    128     # Try to infer\
+          \ the size of the batch\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:613,\
+          \ in AutomaticSpeechRecognitionPipeline.postprocess(self, model_outputs,\
+          \ decoder_kwargs, return_timestamps, return_language)\n    611 stride =\
+          \ None\n    612 for outputs in model_outputs:\n--> 613     items = outputs[key].numpy()\n\
+          \    614     stride = outputs.get(\"stride\", None)\n    615     if stride\
+          \ is not None and self.type in {\"ctc\", \"ctc_with_lm\"}:\n\nAttributeError:\
+          \ 'ModelOutput' object has no attribute 'numpy'\n```"
+        updatedAt: '2023-12-08T04:23:47.262Z'
+      numEdits: 2
+      reactions: []
+    id: 656ed8357e0e70a5679dd240
+    type: comment
+  author: liutian-sunshine
+  content: "It's reasonable to get both end of sentence timestamps and word-level\
+    \ timestamps at the same time.\nI tried to call pipe() twice, using return_timestamps=\"\
+    word\" and return_timestamps=True in this inelegant solution.\nBut it throws exception,\n\
+    AttributeError: 'ModelOutput' object has no attribute 'numpy'\n\n```\nimport torch\n\
+    from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline\n\
+    from datasets import load_dataset\n\n\ndevice = \"cuda:0\" if torch.cuda.is_available()\
+    \ else \"cpu\"\ntorch_dtype = torch.float16 if torch.cuda.is_available() else\
+    \ torch.float32\n\nmodel_id = \"openai/whisper-large-v3\"\n\nmodel = AutoModelForSpeechSeq2Seq.from_pretrained(\n\
+    \    model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True\n\
+    ).to(device)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\npipe =\
+    \ pipeline(\n    \"automatic-speech-recognition\",\n    model=model,\n    tokenizer=processor.tokenizer,\n\
+    \    feature_extractor=processor.feature_extractor,\n    max_new_tokens=128,\n\
+    \    chunk_length_s=30,\n    batch_size=1,\n    return_timestamps=True,\n    torch_dtype=torch_dtype,\n\
+    \    device=device,\n)\n\nsrc_path = '2539595_hq.mp3'\nwords  = pipe(src_path,return_timestamps=\"\
+    word\")\nsentences = pipe(src_path)\n```\n\n```\nWhisper did not predict an ending\
+    \ timestamp, which can happen if audio is cut off in the middle of a word. Also\
+    \ make sure WhisperTimeStampLogitsProcessor was used during generation.\n---------------------------------------------------------------------------\n\
+    AttributeError                            Traceback (most recent call last)\n\
+    Cell In[2], line 3\n      1 src_path = '2539595_hq.mp3'\n      2 pipe(src_path,return_timestamps=\"\
+    word\")\n----> 3 pipe(src_path)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:357,\
+    \ in AutomaticSpeechRecognitionPipeline.__call__(self, inputs, **kwargs)\n   \
+    \ 294 def __call__(\n    295     self,\n    296     inputs: Union[np.ndarray,\
+    \ bytes, str],\n    297     **kwargs,\n    298 ):\n    299     \"\"\"\n    300\
+    \     Transcribe the audio sequence(s) given as inputs to text. See the [`AutomaticSpeechRecognitionPipeline`]\n\
+    \    301     documentation for more information.\n   (...)\n    355          \
+    \       `\"\".join(chunk[\"text\"] for chunk in output[\"chunks\"])`.\n    356\
+    \     \"\"\"\n--> 357     return super().__call__(inputs, **kwargs)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/base.py:1132,\
+    \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\n\
+    \   1130     return self.iterate(inputs, preprocess_params, forward_params, postprocess_params)\n\
+    \   1131 elif self.framework == \"pt\" and isinstance(self, ChunkPipeline):\n\
+    -> 1132     return next(\n   1133         iter(\n   1134             self.get_iterator(\n\
+    \   1135                 [inputs], num_workers, batch_size, preprocess_params,\
+    \ forward_params, postprocess_params\n   1136             )\n   1137         )\n\
+    \   1138     )\n   1139 else:\n   1140     return self.run_single(inputs, preprocess_params,\
+    \ forward_params, postprocess_params)\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/pt_utils.py:125,\
+    \ in PipelineIterator.__next__(self)\n    123 # We're out of items within a batch\n\
+    \    124 item = next(self.iterator)\n--> 125 processed = self.infer(item, **self.params)\n\
+    \    126 # We now have a batch of \"inferred things\".\n    127 if self.loader_batch_size\
+    \ is not None:\n    128     # Try to infer the size of the batch\n\nFile ~/data/opt/virtualenv-python3.10/lib/python3.10/site-packages/transformers/pipelines/automatic_speech_recognition.py:613,\
+    \ in AutomaticSpeechRecognitionPipeline.postprocess(self, model_outputs, decoder_kwargs,\
+    \ return_timestamps, return_language)\n    611 stride = None\n    612 for outputs\
+    \ in model_outputs:\n--> 613     items = outputs[key].numpy()\n    614     stride\
+    \ = outputs.get(\"stride\", None)\n    615     if stride is not None and self.type\
+    \ in {\"ctc\", \"ctc_with_lm\"}:\n\nAttributeError: 'ModelOutput' object has no\
+    \ attribute 'numpy'\n```"
+  created_at: 2023-12-05 07:58:45+00:00
+  edited: true
+  hidden: false
+  id: 656ed8357e0e70a5679dd240
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/1b6b5dc53145c7a37e980695687a5655.svg
+      fullname: lizhang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: liutian-sunshine
+      type: user
+    createdAt: '2023-12-08T04:13:55.000Z'
+    data:
+      from: how to get the end of sentence timestamps as well as word-level timestamps
+        at the same time?
+      to: 'Crashed: when getting end of sentence timestamps and word-level timestamps
+        at the same time'
+    id: 657298032f6f6e71697d4180
+    type: title-change
+  author: liutian-sunshine
+  created_at: 2023-12-08 04:13:55+00:00
+  id: 657298032f6f6e71697d4180
+  new_title: 'Crashed: when getting end of sentence timestamps and word-level timestamps
+    at the same time'
+  old_title: how to get the end of sentence timestamps as well as word-level timestamps
+    at the same time?
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9fa90bec4116f0b16b21d29ac0fe66b1.svg
+      fullname: Nikita Korgaonkar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: korga002
+      type: user
+    createdAt: '2024-01-10T09:14:38.000Z'
+    data:
+      edited: false
+      editors:
+      - korga002
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9867503643035889
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9fa90bec4116f0b16b21d29ac0fe66b1.svg
+          fullname: Nikita Korgaonkar
+          isHf: false
+          isPro: false
+          name: korga002
+          type: user
+        html: '<p>Were you able to solve this issue?</p>
+
+          '
+        raw: Were you able to solve this issue?
+        updatedAt: '2024-01-10T09:14:38.037Z'
+      numEdits: 0
+      reactions: []
+    id: 659e5ffe60736ff2a6f37475
+    type: comment
+  author: korga002
+  content: Were you able to solve this issue?
+  created_at: 2024-01-10 09:14:38+00:00
+  edited: false
+  hidden: false
+  id: 659e5ffe60736ff2a6f37475
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 49
+repo_id: openai/whisper-large-v3
+repo_type: model
+status: open
+target_branch: null
+title: 'Crashed: when getting end of sentence timestamps and word-level timestamps
+  at the same time'

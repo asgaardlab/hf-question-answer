@@ -1,0 +1,209 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: zayuki
+conflicting_files: null
+created_at: 2024-01-11 08:13:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4138451f5b29b8dc65f70b894c5c65b4.svg
+      fullname: LEE XIN YANG
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zayuki
+      type: user
+    createdAt: '2024-01-11T08:13:07.000Z'
+    data:
+      edited: false
+      editors:
+      - zayuki
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5968904495239258
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4138451f5b29b8dc65f70b894c5c65b4.svg
+          fullname: LEE XIN YANG
+          isHf: false
+          isPro: false
+          name: zayuki
+          type: user
+        html: '<p>Hi I got this RunTimeError as shown below while building a chatbot
+          using "TheBloke/Falcon-7B-Instruct-GPTQ"</p>
+
+          <h2 id="the-error-message">The error message:</h2>
+
+          <p>RuntimeError                              Traceback (most recent call
+          last)<br> in &lt;cell line: 6&gt;()<br>     10         break<br>     11     print(f"{yellow}"
+          + query)<br>---&gt; 12     llm_response = qa_chain({''question'': query,
+          ''chat_history'':chat_history})<br>     13     print(process_llm_response(llm_response[''answer'']))<br>     14     chat_history.append((query,
+          llm_response[''answer'']))</p>
+
+          <p>45 frames<br>~/.cache/huggingface/modules/transformers_modules/TheBloke/Falcon-7B-Instruct-GPTQ/d6ce55f4e840bbbd596d1a65f64888f0a3c3326b/modelling_RW.py
+          in forward(self, hidden_states, alibi, attention_mask, layer_past, head_mask,
+          use_cache, output_attentions)<br>    277             value_layer_ = value_layer.reshape(batch_size,
+          self.num_kv, -1, self.head_dim)<br>    278<br>--&gt; 279             attn_output
+          = F.scaled_dot_product_attention(<br>    280                 query_layer_,
+          key_layer_, value_layer_, None, 0.0, is_causal=True<br>    281             )</p>
+
+          <p>RuntimeError: Expected query, key, and value to have the same dtype,
+          but got query.dtype: float key.dtype: float and value.dtype: c10::Half instead.</p>
+
+          <p>That piece of code:</p>
+
+          <p>model_name_or_path = "TheBloke/Falcon-7B-Instruct-GPTQ"</p>
+
+          <p>tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)</p>
+
+          <p>model = AutoModelForCausalLM.from_pretrained(model_name_or_path,<br>                                             device_map="auto",<br>                                             trust_remote_code=True,<br>                                             revision="main")</p>
+
+          <p>logging.set_verbosity(logging.CRITICAL)</p>
+
+          <p>pipe = pipeline(<br>    "text-generation",<br>    model=model,<br>    tokenizer=tokenizer,<br>    max_new_tokens=512,<br>    do_sample
+          = True, #True means more creative and varied outputs, False means more predictable
+          and coherent outputs.<br>    top_p=0.95, #low value = more predictable and
+          low randomness outcome, high value = more randomness and creativity in the
+          generated text.<br>    repetition_penalty=1.15, #to control the likelihood
+          of the model repeating the same text when generating sequences. (1 means
+          no penalty)<br>    return_full_text=True,<br>    temperature=0.6<br>)</p>
+
+          <p>llm = HuggingFacePipeline(pipeline=pipe)<br>memory = ConversationBufferMemory(memory_key="chat_history",
+          k=3, #k stands for how many previous messages to be kept in the memory<br>                                  return_messages=True,<br>                                  input_key=''question'',<br>                                  output_key=''answer''<br>                                  )</p>
+
+          <p>qa_chain = ConversationalRetrievalChain.from_llm(<br>    llm,<br>    db.as_retriever(search_kwargs={''k'':
+          3}),<br>    return_source_documents=True,<br>    memory = memory,<br>    combine_docs_chain_kwargs={"prompt":
+          prompt}, #Add prompt into the qa_chain<br>    rephrase_question = True,
+          #Set True to improve question clarity and thus improving answer quality.<br>    output_key
+          = ''answer''<br>)</p>
+
+          <p>yellow = "\033[0;33m"<br>green = "\033[0;32m"<br>red = "\033[0;31m"</p>
+
+          <p>chat_history = []<br>while True:<br>    query = input(''Prompt: '')<br>    if
+          query == "exit" or query == "quit" or query == "q":<br>        print(f"{red}Exiting")<br>        break<br>    print(f"{yellow}"
+          + query)<br>    llm_response = qa_chain({''question'': query, ''chat_history'':chat_history})<br>    print(process_llm_response(llm_response[''answer'']))<br>    chat_history.append((query,
+          llm_response[''answer'']))</p>
+
+          <p>It would be appreciate if someone can enlighten me on this issue.</p>
+
+          '
+        raw: "Hi I got this RunTimeError as shown below while building a chatbot using\
+          \ \"TheBloke/Falcon-7B-Instruct-GPTQ\"\r\n\r\nThe error message:\r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\n<ipython-input-12-54a032ae2cac> in <cell line: 6>()\r\n     10\
+          \         break\r\n     11     print(f\"{yellow}\" + query)\r\n---> 12 \
+          \    llm_response = qa_chain({'question': query, 'chat_history':chat_history})\r\
+          \n     13     print(process_llm_response(llm_response['answer']))\r\n  \
+          \   14     chat_history.append((query, llm_response['answer']))\r\n\r\n\
+          45 frames\r\n~/.cache/huggingface/modules/transformers_modules/TheBloke/Falcon-7B-Instruct-GPTQ/d6ce55f4e840bbbd596d1a65f64888f0a3c3326b/modelling_RW.py\
+          \ in forward(self, hidden_states, alibi, attention_mask, layer_past, head_mask,\
+          \ use_cache, output_attentions)\r\n    277             value_layer_ = value_layer.reshape(batch_size,\
+          \ self.num_kv, -1, self.head_dim)\r\n    278 \r\n--> 279             attn_output\
+          \ = F.scaled_dot_product_attention(\r\n    280                 query_layer_,\
+          \ key_layer_, value_layer_, None, 0.0, is_causal=True\r\n    281       \
+          \      )\r\n\r\nRuntimeError: Expected query, key, and value to have the\
+          \ same dtype, but got query.dtype: float key.dtype: float and value.dtype:\
+          \ c10::Half instead.\r\n\r\n\r\nThat piece of code:\r\n\r\nmodel_name_or_path\
+          \ = \"TheBloke/Falcon-7B-Instruct-GPTQ\"\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+          \ use_fast=True)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(model_name_or_path,\r\
+          \n                                             device_map=\"auto\",\r\n\
+          \                                             trust_remote_code=True,\r\n\
+          \                                             revision=\"main\")\r\n\r\n\
+          logging.set_verbosity(logging.CRITICAL)\r\n\r\npipe = pipeline(\r\n    \"\
+          text-generation\",\r\n    model=model,\r\n    tokenizer=tokenizer,\r\n \
+          \   max_new_tokens=512,\r\n    do_sample = True, #True means more creative\
+          \ and varied outputs, False means more predictable and coherent outputs.\r\
+          \n    top_p=0.95, #low value = more predictable and low randomness outcome,\
+          \ high value = more randomness and creativity in the generated text.\r\n\
+          \    repetition_penalty=1.15, #to control the likelihood of the model repeating\
+          \ the same text when generating sequences. (1 means no penalty)\r\n    return_full_text=True,\r\
+          \n    temperature=0.6\r\n)\r\n\r\nllm = HuggingFacePipeline(pipeline=pipe)\r\
+          \nmemory = ConversationBufferMemory(memory_key=\"chat_history\", k=3, #k\
+          \ stands for how many previous messages to be kept in the memory\r\n   \
+          \                               return_messages=True,\r\n              \
+          \                    input_key='question',\r\n                         \
+          \         output_key='answer'\r\n                                  )\r\n\
+          \r\nqa_chain = ConversationalRetrievalChain.from_llm(\r\n    llm,\r\n  \
+          \  db.as_retriever(search_kwargs={'k': 3}),\r\n    return_source_documents=True,\r\
+          \n    memory = memory,\r\n    combine_docs_chain_kwargs={\"prompt\": prompt},\
+          \ #Add prompt into the qa_chain\r\n    rephrase_question = True, #Set True\
+          \ to improve question clarity and thus improving answer quality.\r\n   \
+          \ output_key = 'answer'\r\n)\r\n\r\nyellow = \"\\033[0;33m\"\r\ngreen =\
+          \ \"\\033[0;32m\"\r\nred = \"\\033[0;31m\"\r\n\r\nchat_history = []\r\n\
+          while True:\r\n    query = input('Prompt: ')\r\n    if query == \"exit\"\
+          \ or query == \"quit\" or query == \"q\":\r\n        print(f\"{red}Exiting\"\
+          )\r\n        break\r\n    print(f\"{yellow}\" + query)\r\n    llm_response\
+          \ = qa_chain({'question': query, 'chat_history':chat_history})\r\n    print(process_llm_response(llm_response['answer']))\r\
+          \n    chat_history.append((query, llm_response['answer']))\r\n\r\n\r\n\r\
+          \nIt would be appreciate if someone can enlighten me on this issue.\r\n"
+        updatedAt: '2024-01-11T08:13:07.453Z'
+      numEdits: 0
+      reactions: []
+    id: 659fa31344a230e92ccfb367
+    type: comment
+  author: zayuki
+  content: "Hi I got this RunTimeError as shown below while building a chatbot using\
+    \ \"TheBloke/Falcon-7B-Instruct-GPTQ\"\r\n\r\nThe error message:\r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \n<ipython-input-12-54a032ae2cac> in <cell line: 6>()\r\n     10         break\r\
+    \n     11     print(f\"{yellow}\" + query)\r\n---> 12     llm_response = qa_chain({'question':\
+    \ query, 'chat_history':chat_history})\r\n     13     print(process_llm_response(llm_response['answer']))\r\
+    \n     14     chat_history.append((query, llm_response['answer']))\r\n\r\n45 frames\r\
+    \n~/.cache/huggingface/modules/transformers_modules/TheBloke/Falcon-7B-Instruct-GPTQ/d6ce55f4e840bbbd596d1a65f64888f0a3c3326b/modelling_RW.py\
+    \ in forward(self, hidden_states, alibi, attention_mask, layer_past, head_mask,\
+    \ use_cache, output_attentions)\r\n    277             value_layer_ = value_layer.reshape(batch_size,\
+    \ self.num_kv, -1, self.head_dim)\r\n    278 \r\n--> 279             attn_output\
+    \ = F.scaled_dot_product_attention(\r\n    280                 query_layer_, key_layer_,\
+    \ value_layer_, None, 0.0, is_causal=True\r\n    281             )\r\n\r\nRuntimeError:\
+    \ Expected query, key, and value to have the same dtype, but got query.dtype:\
+    \ float key.dtype: float and value.dtype: c10::Half instead.\r\n\r\n\r\nThat piece\
+    \ of code:\r\n\r\nmodel_name_or_path = \"TheBloke/Falcon-7B-Instruct-GPTQ\"\r\n\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)\r\
+    \n\r\nmodel = AutoModelForCausalLM.from_pretrained(model_name_or_path,\r\n   \
+    \                                          device_map=\"auto\",\r\n          \
+    \                                   trust_remote_code=True,\r\n              \
+    \                               revision=\"main\")\r\n\r\nlogging.set_verbosity(logging.CRITICAL)\r\
+    \n\r\npipe = pipeline(\r\n    \"text-generation\",\r\n    model=model,\r\n   \
+    \ tokenizer=tokenizer,\r\n    max_new_tokens=512,\r\n    do_sample = True, #True\
+    \ means more creative and varied outputs, False means more predictable and coherent\
+    \ outputs.\r\n    top_p=0.95, #low value = more predictable and low randomness\
+    \ outcome, high value = more randomness and creativity in the generated text.\r\
+    \n    repetition_penalty=1.15, #to control the likelihood of the model repeating\
+    \ the same text when generating sequences. (1 means no penalty)\r\n    return_full_text=True,\r\
+    \n    temperature=0.6\r\n)\r\n\r\nllm = HuggingFacePipeline(pipeline=pipe)\r\n\
+    memory = ConversationBufferMemory(memory_key=\"chat_history\", k=3, #k stands\
+    \ for how many previous messages to be kept in the memory\r\n                \
+    \                  return_messages=True,\r\n                                 \
+    \ input_key='question',\r\n                                  output_key='answer'\r\
+    \n                                  )\r\n\r\nqa_chain = ConversationalRetrievalChain.from_llm(\r\
+    \n    llm,\r\n    db.as_retriever(search_kwargs={'k': 3}),\r\n    return_source_documents=True,\r\
+    \n    memory = memory,\r\n    combine_docs_chain_kwargs={\"prompt\": prompt},\
+    \ #Add prompt into the qa_chain\r\n    rephrase_question = True, #Set True to\
+    \ improve question clarity and thus improving answer quality.\r\n    output_key\
+    \ = 'answer'\r\n)\r\n\r\nyellow = \"\\033[0;33m\"\r\ngreen = \"\\033[0;32m\"\r\
+    \nred = \"\\033[0;31m\"\r\n\r\nchat_history = []\r\nwhile True:\r\n    query =\
+    \ input('Prompt: ')\r\n    if query == \"exit\" or query == \"quit\" or query\
+    \ == \"q\":\r\n        print(f\"{red}Exiting\")\r\n        break\r\n    print(f\"\
+    {yellow}\" + query)\r\n    llm_response = qa_chain({'question': query, 'chat_history':chat_history})\r\
+    \n    print(process_llm_response(llm_response['answer']))\r\n    chat_history.append((query,\
+    \ llm_response['answer']))\r\n\r\n\r\n\r\nIt would be appreciate if someone can\
+    \ enlighten me on this issue.\r\n"
+  created_at: 2024-01-11 08:13:07+00:00
+  edited: false
+  hidden: false
+  id: 659fa31344a230e92ccfb367
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 19
+repo_id: TheBloke/Falcon-7B-Instruct-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: 'RuntimeError: Expected query, key, and value to have the same dtype, but got
+  query.dtype: float key.dtype: float and value.dtype: c10::Half instead.'

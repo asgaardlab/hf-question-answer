@@ -1,0 +1,241 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: noamharel
+conflicting_files: null
+created_at: 2023-07-25 08:19:48+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/13102854c962c45029d7ec3c477ad398.svg
+      fullname: Noam Harel
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: noamharel
+      type: user
+    createdAt: '2023-07-25T09:19:48.000Z'
+    data:
+      edited: false
+      editors:
+      - noamharel
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.940086305141449
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/13102854c962c45029d7ec3c477ad398.svg
+          fullname: Noam Harel
+          isHf: false
+          isPro: false
+          name: noamharel
+          type: user
+        html: '<p>Hello,<br>First of all thank you for the great work! Very interesting
+          and useful.<br>I am looking into using the trained model for a downstream
+          task of classifying bulk RNA seq samples.<br>I see that the tokenizing and
+          the model limits the input size to a vector of 2048 genes, and I wonder
+          whether this could be increased and the embeddings would still be used successfully?
+          I am asking because bulk RNA seq data is much more dense than the single
+          cell RNAseq, and a larger vector size could be more useful here.<br>Thank
+          you in advance, Noam</p>
+
+          '
+        raw: "Hello,\r\nFirst of all thank you for the great work! Very interesting\
+          \ and useful.\r\nI am looking into using the trained model for a downstream\
+          \ task of classifying bulk RNA seq samples. \r\nI see that the tokenizing\
+          \ and the model limits the input size to a vector of 2048 genes, and I wonder\
+          \ whether this could be increased and the embeddings would still be used\
+          \ successfully? I am asking because bulk RNA seq data is much more dense\
+          \ than the single cell RNAseq, and a larger vector size could be more useful\
+          \ here.\r\nThank you in advance, Noam"
+        updatedAt: '2023-07-25T09:19:48.030Z'
+      numEdits: 0
+      reactions: []
+    id: 64bf93b4565b827f7ef3e523
+    type: comment
+  author: noamharel
+  content: "Hello,\r\nFirst of all thank you for the great work! Very interesting\
+    \ and useful.\r\nI am looking into using the trained model for a downstream task\
+    \ of classifying bulk RNA seq samples. \r\nI see that the tokenizing and the model\
+    \ limits the input size to a vector of 2048 genes, and I wonder whether this could\
+    \ be increased and the embeddings would still be used successfully? I am asking\
+    \ because bulk RNA seq data is much more dense than the single cell RNAseq, and\
+    \ a larger vector size could be more useful here.\r\nThank you in advance, Noam"
+  created_at: 2023-07-25 08:19:48+00:00
+  edited: false
+  hidden: false
+  id: 64bf93b4565b827f7ef3e523
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-25T22:55:06.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9139974117279053
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your question and interest in Geneformer! Yes, Geneformer
+          employs fully dense attention across the input space of 2048. The fully
+          dense attention ensures each gene attends to each other gene in the input
+          space rather than sparse attention approaches that usually combine local
+          attention with sparse global attention, which would be problematic for the
+          application to transcriptomes given genes closer together with a rank value
+          encoding are not necessarily more informative than those more distant (and
+          in fact are likely to be less informative than the top and lowest ranked
+          genes). 2048 is a fairly large input size for fully dense attention, which
+          is quadratic in time dependency, so we selected this size based on the fact
+          that it fully encompassed 93% of the cells in the 30M single cell training
+          corpus Genecorpus-30M so well-balanced the lack of information loss and
+          the required compute. However, as you note, bulk RNAseq has many more genes
+          detected per sample. We have not tried using Geneformer with bulk RNAseq
+          data, and certainly we would recommend fine-tuning for this representation
+          since it is out of distribution from what the model has seen during pretraining.
+          You could consider ways of selecting 2048 genes in an unbiased way from
+          the initial bulk RNAseq to present to the model, for example by intersecting
+          with genes detected in that cell type in usual single cell RNAseq data (depending
+          on whether you have single cell data that is close enough to your cells
+          of interest). </p>
+
+          <p>Alternatively, you could consider pretraining a model on a large corpus
+          of bulk RNAseq data (e.g. the Recount2 dataset) with an extended input size.
+          Our modeling approach is integrated with Huggingface so it would be relatively
+          straightforward to do that. For example, you could use the transcriptome
+          tokenizer we provide in this repository but change the "truncate" function
+          to have the upper limit of your input size. You may also want to generate
+          new normalization factors for the bulk data using the code we provided for
+          obtaining nonzero median digests. Then, you could choose any of the transformers
+          models (<a href="https://huggingface.co/docs/transformers/index">https://huggingface.co/docs/transformers/index</a>)
+          that allow larger input size and follow our example for pretraining by substituting
+          that model instead of BERT. This review may provide helpful information
+          to choosing the right model for your goal: <a rel="nofollow" href="https://arxiv.org/abs/2009.06732">https://arxiv.org/abs/2009.06732</a></p>
+
+          '
+        raw: "Thank you for your question and interest in Geneformer! Yes, Geneformer\
+          \ employs fully dense attention across the input space of 2048. The fully\
+          \ dense attention ensures each gene attends to each other gene in the input\
+          \ space rather than sparse attention approaches that usually combine local\
+          \ attention with sparse global attention, which would be problematic for\
+          \ the application to transcriptomes given genes closer together with a rank\
+          \ value encoding are not necessarily more informative than those more distant\
+          \ (and in fact are likely to be less informative than the top and lowest\
+          \ ranked genes). 2048 is a fairly large input size for fully dense attention,\
+          \ which is quadratic in time dependency, so we selected this size based\
+          \ on the fact that it fully encompassed 93% of the cells in the 30M single\
+          \ cell training corpus Genecorpus-30M so well-balanced the lack of information\
+          \ loss and the required compute. However, as you note, bulk RNAseq has many\
+          \ more genes detected per sample. We have not tried using Geneformer with\
+          \ bulk RNAseq data, and certainly we would recommend fine-tuning for this\
+          \ representation since it is out of distribution from what the model has\
+          \ seen during pretraining. You could consider ways of selecting 2048 genes\
+          \ in an unbiased way from the initial bulk RNAseq to present to the model,\
+          \ for example by intersecting with genes detected in that cell type in usual\
+          \ single cell RNAseq data (depending on whether you have single cell data\
+          \ that is close enough to your cells of interest). \n\nAlternatively, you\
+          \ could consider pretraining a model on a large corpus of bulk RNAseq data\
+          \ (e.g. the Recount2 dataset) with an extended input size. Our modeling\
+          \ approach is integrated with Huggingface so it would be relatively straightforward\
+          \ to do that. For example, you could use the transcriptome tokenizer we\
+          \ provide in this repository but change the \"truncate\" function to have\
+          \ the upper limit of your input size. You may also want to generate new\
+          \ normalization factors for the bulk data using the code we provided for\
+          \ obtaining nonzero median digests. Then, you could choose any of the transformers\
+          \ models (https://huggingface.co/docs/transformers/index) that allow larger\
+          \ input size and follow our example for pretraining by substituting that\
+          \ model instead of BERT. This review may provide helpful information to\
+          \ choosing the right model for your goal: https://arxiv.org/abs/2009.06732"
+        updatedAt: '2023-07-25T22:55:06.842Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64c052ca7d18e3328fc8e2f7
+    id: 64c052ca7d18e3328fc8e2f6
+    type: comment
+  author: ctheodoris
+  content: "Thank you for your question and interest in Geneformer! Yes, Geneformer\
+    \ employs fully dense attention across the input space of 2048. The fully dense\
+    \ attention ensures each gene attends to each other gene in the input space rather\
+    \ than sparse attention approaches that usually combine local attention with sparse\
+    \ global attention, which would be problematic for the application to transcriptomes\
+    \ given genes closer together with a rank value encoding are not necessarily more\
+    \ informative than those more distant (and in fact are likely to be less informative\
+    \ than the top and lowest ranked genes). 2048 is a fairly large input size for\
+    \ fully dense attention, which is quadratic in time dependency, so we selected\
+    \ this size based on the fact that it fully encompassed 93% of the cells in the\
+    \ 30M single cell training corpus Genecorpus-30M so well-balanced the lack of\
+    \ information loss and the required compute. However, as you note, bulk RNAseq\
+    \ has many more genes detected per sample. We have not tried using Geneformer\
+    \ with bulk RNAseq data, and certainly we would recommend fine-tuning for this\
+    \ representation since it is out of distribution from what the model has seen\
+    \ during pretraining. You could consider ways of selecting 2048 genes in an unbiased\
+    \ way from the initial bulk RNAseq to present to the model, for example by intersecting\
+    \ with genes detected in that cell type in usual single cell RNAseq data (depending\
+    \ on whether you have single cell data that is close enough to your cells of interest).\
+    \ \n\nAlternatively, you could consider pretraining a model on a large corpus\
+    \ of bulk RNAseq data (e.g. the Recount2 dataset) with an extended input size.\
+    \ Our modeling approach is integrated with Huggingface so it would be relatively\
+    \ straightforward to do that. For example, you could use the transcriptome tokenizer\
+    \ we provide in this repository but change the \"truncate\" function to have the\
+    \ upper limit of your input size. You may also want to generate new normalization\
+    \ factors for the bulk data using the code we provided for obtaining nonzero median\
+    \ digests. Then, you could choose any of the transformers models (https://huggingface.co/docs/transformers/index)\
+    \ that allow larger input size and follow our example for pretraining by substituting\
+    \ that model instead of BERT. This review may provide helpful information to choosing\
+    \ the right model for your goal: https://arxiv.org/abs/2009.06732"
+  created_at: 2023-07-25 21:55:06+00:00
+  edited: false
+  hidden: false
+  id: 64c052ca7d18e3328fc8e2f6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-25T22:55:06.000Z'
+    data:
+      status: closed
+    id: 64c052ca7d18e3328fc8e2f7
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-07-25 21:55:06+00:00
+  id: 64c052ca7d18e3328fc8e2f7
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 134
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Downstream application of bulk RNA seq and increasing input size

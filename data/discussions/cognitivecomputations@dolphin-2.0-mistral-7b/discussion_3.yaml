@@ -1,0 +1,2855 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kalomaze
+conflicting_files: null
+created_at: 2023-10-04 02:21:31+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+      fullname: Kalo Maze
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kalomaze
+      type: user
+    createdAt: '2023-10-04T03:21:31.000Z'
+    data:
+      edited: true
+      editors:
+      - kalomaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8726063966751099
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+          fullname: Kalo Maze
+          isHf: false
+          isPro: false
+          name: kalomaze
+          type: user
+        html: '<p>If I''m reading what I read correctly, ChatML was designed in a
+          way that expected &lt;|im_start|&gt; to be a custom BOS token, and &lt;|im_end|&gt;
+          to be a custom EOS token. However, the special tokens are not configured
+          any differently for this model.<br>This diverges from OpenOrca, another
+          model using ChatML format, which is apparently using special tokens to represent
+          those two strings:<br><a href="https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/blob/main/added_tokens.json">https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/blob/main/added_tokens.json</a></p>
+
+          <p>However, they are added as extra tokens, instead of replacing the existing
+          BOS and EOS tokens, despite the fact that they seem to be representing those
+          concepts (???)<br>Confusingly, in the GGUF quantized version of this model
+          from TheBloke, these added tokens don''t appear to be reading properly:</p>
+
+          <p><code>llm_load_print_meta: token 32000 ''&lt;dummy32000&gt;'' type =
+          4</code></p>
+
+          <p><code>llm_load_print_meta: token 32001 ''&lt;dummy32001&gt;'' type =
+          4</code></p>
+
+          <p>Overall, the ChatML prompt format seems highly redundant and I''m opposed
+          to it being used in the future.<br>Here''s my full reasoning for this:</p>
+
+          <ul>
+
+          <li>The benefit of ChatML (for OpenAI) is that if you need to prevent prompt
+          injection that ''breaks alignment'', the extra tokens won''t be recognized
+          by the model. A model that''s designed to be openly available has no use
+          for this security measure.</li>
+
+          <li>There already are established prompt formats for Llama like Alpaca''s
+          <code>### Instruction</code> and <code>### Response:</code> style.</li>
+
+          <li>When implemented as intended (but apparently not implemented correctly
+          yet?), the stop token is different compared to all past Llama models and
+          seems to break the standard, confusing the established inference clients
+          for Llama (it''s not tokenizing properly in KoboldCpp, for example, and
+          gets treated as a string)</li>
+
+          <li>This also breaks model merges that do not use the same format (if it
+          was implemented as intended, that is, but here it''s using raw strings)</li>
+
+          <li>Some interfaces for LLMs that allow for custom prompt formats were not
+          designed to expect end tokens to be appended for both the ''User'' and the
+          ''Assistant'', and there is no evidence I could find that proves this format
+          improves model performance if implemented as intended (or if implemented
+          like how this repository handles it)</li>
+
+          <li>There is a newline token that separates the user/assistant from the
+          start token, but no newline to separate the end token. This design choice
+          is very arbitrary and rigid</li>
+
+          <li>Aesthetically, it''s much harder to read. Here''s an example of two
+          identical prompts between ChatML and Alpaca:</li>
+
+          </ul>
+
+          <p>ChatML</p>
+
+          <pre><code class="language-text">&lt;|im_start|&gt;system
+
+          You are an expert dolphin trainer.&lt;|im_end|&gt;
+
+          &lt;|im_start|&gt;user
+
+          What is the best way to train a dolphin to obey me?  Please answer step
+          by step.&lt;|im_end|&gt;
+
+          </code></pre>
+
+          <p>Alpaca</p>
+
+          <pre><code class="language-text">You are an expert dolphin trainer.
+
+
+          ### Instruction:
+
+          What is the best way to train a dolphin to obey me?  Please answer step
+          by step.
+
+
+          ### Response:
+
+          </code></pre>
+
+          <p>If there''s a good reason for keeping this format, I''d love to know,
+          because this feels like way more trouble than it''s worth. I am hearing
+          similar complaints from others.</p>
+
+          '
+        raw: 'If I''m reading what I read correctly, ChatML was designed in a way
+          that expected <|im_start|> to be a custom BOS token, and <|im_end|> to be
+          a custom EOS token. However, the special tokens are not configured any differently
+          for this model.
+
+          This diverges from OpenOrca, another model using ChatML format, which is
+          apparently using special tokens to represent those two strings:
+
+          https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/blob/main/added_tokens.json
+
+
+          However, they are added as extra tokens, instead of replacing the existing
+          BOS and EOS tokens, despite the fact that they seem to be representing those
+          concepts (???)
+
+          Confusingly, in the GGUF quantized version of this model from TheBloke,
+          these added tokens don''t appear to be reading properly:
+
+
+          ``llm_load_print_meta: token 32000 ''<dummy32000>'' type = 4``
+
+
+          ``llm_load_print_meta: token 32001 ''<dummy32001>'' type = 4``
+
+
+          Overall, the ChatML prompt format seems highly redundant and I''m opposed
+          to it being used in the future.
+
+          Here''s my full reasoning for this:
+
+
+          - The benefit of ChatML (for OpenAI) is that if you need to prevent prompt
+          injection that ''breaks alignment'', the extra tokens won''t be recognized
+          by the model. A model that''s designed to be openly available has no use
+          for this security measure.
+
+          - There already are established prompt formats for Llama like Alpaca''s
+          ``### Instruction`` and ``### Response:`` style.
+
+          - When implemented as intended (but apparently not implemented correctly
+          yet?), the stop token is different compared to all past Llama models and
+          seems to break the standard, confusing the established inference clients
+          for Llama (it''s not tokenizing properly in KoboldCpp, for example, and
+          gets treated as a string)
+
+          - This also breaks model merges that do not use the same format (if it was
+          implemented as intended, that is, but here it''s using raw strings)
+
+          - Some interfaces for LLMs that allow for custom prompt formats were not
+          designed to expect end tokens to be appended for both the ''User'' and the
+          ''Assistant'', and there is no evidence I could find that proves this format
+          improves model performance if implemented as intended (or if implemented
+          like how this repository handles it)
+
+          - There is a newline token that separates the user/assistant from the start
+          token, but no newline to separate the end token. This design choice is very
+          arbitrary and rigid
+
+          - Aesthetically, it''s much harder to read. Here''s an example of two identical
+          prompts between ChatML and Alpaca:
+
+
+          ChatML
+
+          ```text
+
+          <|im_start|>system
+
+          You are an expert dolphin trainer.<|im_end|>
+
+          <|im_start|>user
+
+          What is the best way to train a dolphin to obey me?  Please answer step
+          by step.<|im_end|>
+
+          ```
+
+
+          Alpaca
+
+          ```text
+
+          You are an expert dolphin trainer.
+
+
+          ### Instruction:
+
+          What is the best way to train a dolphin to obey me?  Please answer step
+          by step.
+
+
+          ### Response:
+
+          ```
+
+
+          If there''s a good reason for keeping this format, I''d love to know, because
+          this feels like way more trouble than it''s worth. I am hearing similar
+          complaints from others.'
+        updatedAt: '2023-10-04T05:20:49.758Z'
+      numEdits: 9
+      reactions:
+      - count: 6
+        reaction: "\U0001F44D"
+        users:
+        - sdada0000
+        - Dampfinchen
+        - Crataco
+        - acrastt
+        - concedo
+        - harmtech
+    id: 651cda3b7aa3f27c84c1f129
+    type: comment
+  author: kalomaze
+  content: 'If I''m reading what I read correctly, ChatML was designed in a way that
+    expected <|im_start|> to be a custom BOS token, and <|im_end|> to be a custom
+    EOS token. However, the special tokens are not configured any differently for
+    this model.
+
+    This diverges from OpenOrca, another model using ChatML format, which is apparently
+    using special tokens to represent those two strings:
+
+    https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/blob/main/added_tokens.json
+
+
+    However, they are added as extra tokens, instead of replacing the existing BOS
+    and EOS tokens, despite the fact that they seem to be representing those concepts
+    (???)
+
+    Confusingly, in the GGUF quantized version of this model from TheBloke, these
+    added tokens don''t appear to be reading properly:
+
+
+    ``llm_load_print_meta: token 32000 ''<dummy32000>'' type = 4``
+
+
+    ``llm_load_print_meta: token 32001 ''<dummy32001>'' type = 4``
+
+
+    Overall, the ChatML prompt format seems highly redundant and I''m opposed to it
+    being used in the future.
+
+    Here''s my full reasoning for this:
+
+
+    - The benefit of ChatML (for OpenAI) is that if you need to prevent prompt injection
+    that ''breaks alignment'', the extra tokens won''t be recognized by the model.
+    A model that''s designed to be openly available has no use for this security measure.
+
+    - There already are established prompt formats for Llama like Alpaca''s ``###
+    Instruction`` and ``### Response:`` style.
+
+    - When implemented as intended (but apparently not implemented correctly yet?),
+    the stop token is different compared to all past Llama models and seems to break
+    the standard, confusing the established inference clients for Llama (it''s not
+    tokenizing properly in KoboldCpp, for example, and gets treated as a string)
+
+    - This also breaks model merges that do not use the same format (if it was implemented
+    as intended, that is, but here it''s using raw strings)
+
+    - Some interfaces for LLMs that allow for custom prompt formats were not designed
+    to expect end tokens to be appended for both the ''User'' and the ''Assistant'',
+    and there is no evidence I could find that proves this format improves model performance
+    if implemented as intended (or if implemented like how this repository handles
+    it)
+
+    - There is a newline token that separates the user/assistant from the start token,
+    but no newline to separate the end token. This design choice is very arbitrary
+    and rigid
+
+    - Aesthetically, it''s much harder to read. Here''s an example of two identical
+    prompts between ChatML and Alpaca:
+
+
+    ChatML
+
+    ```text
+
+    <|im_start|>system
+
+    You are an expert dolphin trainer.<|im_end|>
+
+    <|im_start|>user
+
+    What is the best way to train a dolphin to obey me?  Please answer step by step.<|im_end|>
+
+    ```
+
+
+    Alpaca
+
+    ```text
+
+    You are an expert dolphin trainer.
+
+
+    ### Instruction:
+
+    What is the best way to train a dolphin to obey me?  Please answer step by step.
+
+
+    ### Response:
+
+    ```
+
+
+    If there''s a good reason for keeping this format, I''d love to know, because
+    this feels like way more trouble than it''s worth. I am hearing similar complaints
+    from others.'
+  created_at: 2023-10-04 02:21:31+00:00
+  edited: true
+  hidden: false
+  id: 651cda3b7aa3f27c84c1f129
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+      fullname: Kalo Maze
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kalomaze
+      type: user
+    createdAt: '2023-10-04T03:36:20.000Z'
+    data:
+      from: ChatML prompt format confusion
+      to: ChatML prompt format confusion - please reconsider
+    id: 651cddb4dc229d2e818491ea
+    type: title-change
+  author: kalomaze
+  created_at: 2023-10-04 02:36:20+00:00
+  id: 651cddb4dc229d2e818491ea
+  new_title: ChatML prompt format confusion - please reconsider
+  old_title: ChatML prompt format confusion
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-04T04:42:22.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9727323651313782
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I tested it.</p>
+
+          <p>It works.</p>
+
+          <p>If it breaks, please let me know.</p>
+
+          '
+        raw: 'I tested it.
+
+
+          It works.
+
+
+          If it breaks, please let me know.'
+        updatedAt: '2023-10-04T04:42:22.594Z'
+      numEdits: 0
+      reactions: []
+    id: 651ced2e28950a077036d8d1
+    type: comment
+  author: ehartford
+  content: 'I tested it.
+
+
+    It works.
+
+
+    If it breaks, please let me know.'
+  created_at: 2023-10-04 03:42:22+00:00
+  edited: false
+  hidden: false
+  id: 651ced2e28950a077036d8d1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+      fullname: Kalo Maze
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kalomaze
+      type: user
+    createdAt: '2023-10-04T04:51:57.000Z'
+    data:
+      edited: true
+      editors:
+      - kalomaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.979209303855896
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+          fullname: Kalo Maze
+          isHf: false
+          isPro: false
+          name: kalomaze
+          type: user
+        html: '<p>It technically ''works'', but the implementation wasn''t done in
+          the way the format was intended to be used. It was designed with custom
+          additional tokens in mind, but those are nowhere to be seen on the repository.
+          You''re saying  you want to use this format going forward in the future,
+          but there is no clarification on whether or not this design detail missing
+          was an oversight or if it was intentional and that''s what I''m looking
+          for because I can''t tell otherwise</p>
+
+          '
+        raw: It technically 'works', but the implementation wasn't done in the way
+          the format was intended to be used. It was designed with custom additional
+          tokens in mind, but those are nowhere to be seen on the repository. You're
+          saying  you want to use this format going forward in the future, but there
+          is no clarification on whether or not this design detail missing was an
+          oversight or if it was intentional and that's what I'm looking for because
+          I can't tell otherwise
+        updatedAt: '2023-10-04T05:03:10.135Z'
+      numEdits: 6
+      reactions: []
+    id: 651cef6dabcea9fbd60378cd
+    type: comment
+  author: kalomaze
+  content: It technically 'works', but the implementation wasn't done in the way the
+    format was intended to be used. It was designed with custom additional tokens
+    in mind, but those are nowhere to be seen on the repository. You're saying  you
+    want to use this format going forward in the future, but there is no clarification
+    on whether or not this design detail missing was an oversight or if it was intentional
+    and that's what I'm looking for because I can't tell otherwise
+  created_at: 2023-10-04 03:51:57+00:00
+  edited: true
+  hidden: false
+  id: 651cef6dabcea9fbd60378cd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-04T05:02:01.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9942861199378967
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I''m not highly concerned about this.</p>
+
+          '
+        raw: I'm not highly concerned about this.
+        updatedAt: '2023-10-04T05:02:01.867Z'
+      numEdits: 0
+      reactions: []
+    id: 651cf1c90aab43acf98b1716
+    type: comment
+  author: ehartford
+  content: I'm not highly concerned about this.
+  created_at: 2023-10-04 04:02:01+00:00
+  edited: false
+  hidden: false
+  id: 651cf1c90aab43acf98b1716
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-04T05:07:06.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8760974407196045
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>Tell ya what.  If you wanna make a pull request I''ll check it out
+          and test it.</p>
+
+          '
+        raw: Tell ya what.  If you wanna make a pull request I'll check it out and
+          test it.
+        updatedAt: '2023-10-04T05:07:06.060Z'
+      numEdits: 0
+      reactions: []
+    id: 651cf2fa948c69ed3c7b4e9f
+    type: comment
+  author: ehartford
+  content: Tell ya what.  If you wanna make a pull request I'll check it out and test
+    it.
+  created_at: 2023-10-04 04:07:06+00:00
+  edited: false
+  hidden: false
+  id: 651cf2fa948c69ed3c7b4e9f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+      fullname: Kalo Maze
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kalomaze
+      type: user
+    createdAt: '2023-10-04T05:14:21.000Z'
+    data:
+      edited: false
+      editors:
+      - kalomaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8833691477775574
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+          fullname: Kalo Maze
+          isHf: false
+          isPro: false
+          name: kalomaze
+          type: user
+        html: '<p>I completely understand not wanting to retrain a model just to change
+          the prompt format, my concern is mainly on if future models will use the
+          format.<br>That''s why I suggested a more popular prompt format like Alpaca
+          for future trains. If you want, I''d gladly make a pull request for the
+          Dolphin dataset that reformats it to Alpaca / a Python script that will
+          reformat ChatML datasets to Alpaca</p>
+
+          '
+        raw: 'I completely understand not wanting to retrain a model just to change
+          the prompt format, my concern is mainly on if future models will use the
+          format.
+
+          That''s why I suggested a more popular prompt format like Alpaca for future
+          trains. If you want, I''d gladly make a pull request for the Dolphin dataset
+          that reformats it to Alpaca / a Python script that will reformat ChatML
+          datasets to Alpaca'
+        updatedAt: '2023-10-04T05:14:21.528Z'
+      numEdits: 0
+      reactions: []
+    id: 651cf4adbb3a53edca3efc2f
+    type: comment
+  author: kalomaze
+  content: 'I completely understand not wanting to retrain a model just to change
+    the prompt format, my concern is mainly on if future models will use the format.
+
+    That''s why I suggested a more popular prompt format like Alpaca for future trains.
+    If you want, I''d gladly make a pull request for the Dolphin dataset that reformats
+    it to Alpaca / a Python script that will reformat ChatML datasets to Alpaca'
+  created_at: 2023-10-04 04:14:21+00:00
+  edited: false
+  hidden: false
+  id: 651cf4adbb3a53edca3efc2f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4a451288e780acc42a7d5709ec7d3370.svg
+      fullname: "D\xE4mpfchen"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dampfinchen
+      type: user
+    createdAt: '2023-10-04T06:01:47.000Z'
+    data:
+      edited: true
+      editors:
+      - Dampfinchen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9668425917625427
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4a451288e780acc42a7d5709ec7d3370.svg
+          fullname: "D\xE4mpfchen"
+          isHf: false
+          isPro: false
+          name: Dampfinchen
+          type: user
+        html: '<p>I''m not a fan of this format either, for the exact reasons you''ve
+          mentioned. With the first day of Mistral Orca release, there have been a
+          ton of issues from people trying to stop it from spamming &lt;|im_end|&gt;.
+          Only after this commit <a href="https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/commit/17572416df27482d71dda9ea6bdea1733d8cee5d">https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/commit/17572416df27482d71dda9ea6bdea1733d8cee5d</a>
+          that was largely fixed.</p>
+
+          <p>However, I''m not sure if the GGUF models are without problems, I did
+          hear from some instances where there have been issues, even after this commit.
+          So if this special EOS token is really not recognized, then that''s a huge
+          problem as GGUF is arguably the most popular format for inference right
+          now. </p>
+
+          <p>This needs to be investigated. I don''t think using Alpaca instead though
+          is a good idea, as it''s worse for multiturn conversation. In my opinion,
+          it would be nice if open source can use llama 2 chat''s format as a standard.
+          It''s well established and also great for multiturn chat. </p>
+
+          '
+        raw: "I'm not a fan of this format either, for the exact reasons you've mentioned.\
+          \ With the first day of Mistral Orca release, there have been a ton of issues\
+          \ from people trying to stop it from spamming <|im_end|>. Only after this\
+          \ commit https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/commit/17572416df27482d71dda9ea6bdea1733d8cee5d\
+          \ that was largely fixed.\n\nHowever, I'm not sure if the GGUF models are\
+          \ without problems, I did hear from some instances where there have been\
+          \ issues, even after this commit. So if this special EOS token is really\
+          \ not recognized, then that's a huge problem as GGUF is arguably the most\
+          \ popular format for inference right now. \n\nThis needs to be investigated.\
+          \ I don't think using Alpaca instead though is a good idea, as it's worse\
+          \ for multiturn conversation. In my opinion, it would be nice if open source\
+          \ can use llama 2 chat's format as a standard. It's well established and\
+          \ also great for multiturn chat. "
+        updatedAt: '2023-10-04T06:07:01.978Z'
+      numEdits: 2
+      reactions:
+      - count: 4
+        reaction: "\U0001F44D"
+        users:
+        - roffmonster
+        - Crataco
+        - mirek190
+        - acrastt
+    id: 651cffcb9a47f703e6b7106a
+    type: comment
+  author: Dampfinchen
+  content: "I'm not a fan of this format either, for the exact reasons you've mentioned.\
+    \ With the first day of Mistral Orca release, there have been a ton of issues\
+    \ from people trying to stop it from spamming <|im_end|>. Only after this commit\
+    \ https://huggingface.co/Open-Orca/Mistral-7B-OpenOrca/commit/17572416df27482d71dda9ea6bdea1733d8cee5d\
+    \ that was largely fixed.\n\nHowever, I'm not sure if the GGUF models are without\
+    \ problems, I did hear from some instances where there have been issues, even\
+    \ after this commit. So if this special EOS token is really not recognized, then\
+    \ that's a huge problem as GGUF is arguably the most popular format for inference\
+    \ right now. \n\nThis needs to be investigated. I don't think using Alpaca instead\
+    \ though is a good idea, as it's worse for multiturn conversation. In my opinion,\
+    \ it would be nice if open source can use llama 2 chat's format as a standard.\
+    \ It's well established and also great for multiturn chat. "
+  created_at: 2023-10-04 05:01:47+00:00
+  edited: true
+  hidden: false
+  id: 651cffcb9a47f703e6b7106a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63037b895c70c21d0ea80b0e/myu35DuQn9io_HhxNLYR4.png?w=200&h=200&f=face
+      fullname: Pooodle Shmith
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: Tom9000
+      type: user
+    createdAt: '2023-10-04T07:20:01.000Z'
+    data:
+      edited: false
+      editors:
+      - Tom9000
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.989987850189209
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63037b895c70c21d0ea80b0e/myu35DuQn9io_HhxNLYR4.png?w=200&h=200&f=face
+          fullname: Pooodle Shmith
+          isHf: false
+          isPro: true
+          name: Tom9000
+          type: user
+        html: '<p>Alpaca format never been good, it was only "good enough" to start
+          with, but it should be phased out now.</p>
+
+          '
+        raw: Alpaca format never been good, it was only "good enough" to start with,
+          but it should be phased out now.
+        updatedAt: '2023-10-04T07:20:01.451Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - flexai
+    id: 651d1221b6a2fad5fca6be29
+    type: comment
+  author: Tom9000
+  content: Alpaca format never been good, it was only "good enough" to start with,
+    but it should be phased out now.
+  created_at: 2023-10-04 06:20:01+00:00
+  edited: false
+  hidden: false
+  id: 651d1221b6a2fad5fca6be29
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+      fullname: Kalo Maze
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kalomaze
+      type: user
+    createdAt: '2023-10-04T13:03:50.000Z'
+    data:
+      edited: false
+      editors:
+      - kalomaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9703437685966492
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c8095aa583fd8f5ff0775f3ba2348470.svg
+          fullname: Kalo Maze
+          isHf: false
+          isPro: false
+          name: kalomaze
+          type: user
+        html: '<p>I''m willing to accept an alternative that doesn''t involve breaking
+          compatibility in the way that chatML does</p>
+
+          '
+        raw: I'm willing to accept an alternative that doesn't involve breaking compatibility
+          in the way that chatML does
+        updatedAt: '2023-10-04T13:03:50.051Z'
+      numEdits: 0
+      reactions: []
+    id: 651d62b62f8bd553ab037d1e
+    type: comment
+  author: kalomaze
+  content: I'm willing to accept an alternative that doesn't involve breaking compatibility
+    in the way that chatML does
+  created_at: 2023-10-04 12:03:50+00:00
+  edited: false
+  hidden: false
+  id: 651d62b62f8bd553ab037d1e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-04T16:11:29.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9516832232475281
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I am retraining dolphin with the proper tokens for ChatML.  Will
+          release as dolphin-2.1-mistral-7b.</p>
+
+          <p>I have made up my mind quite firmly to use ChatML.  It would take math
+          to convince me otherwise.  </p>
+
+          '
+        raw: 'I am retraining dolphin with the proper tokens for ChatML.  Will release
+          as dolphin-2.1-mistral-7b.
+
+
+          I have made up my mind quite firmly to use ChatML.  It would take math to
+          convince me otherwise.  '
+        updatedAt: '2023-10-04T16:11:29.799Z'
+      numEdits: 0
+      reactions:
+      - count: 5
+        reaction: "\U0001F44D"
+        users:
+        - Tom9000
+        - ani03anwar
+        - AlexTagger
+        - poisson-fish
+        - flexai
+      - count: 2
+        reaction: "\U0001F614"
+        users:
+        - concedo
+        - IkariDev
+    id: 651d8eb14ab1ff8146e8f54e
+    type: comment
+  author: ehartford
+  content: 'I am retraining dolphin with the proper tokens for ChatML.  Will release
+    as dolphin-2.1-mistral-7b.
+
+
+    I have made up my mind quite firmly to use ChatML.  It would take math to convince
+    me otherwise.  '
+  created_at: 2023-10-04 15:11:29+00:00
+  edited: false
+  hidden: false
+  id: 651d8eb14ab1ff8146e8f54e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+      fullname: IkariDev
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: IkariDev
+      type: user
+    createdAt: '2023-10-07T16:53:39.000Z'
+    data:
+      edited: true
+      editors:
+      - IkariDev
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9558733701705933
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+          fullname: IkariDev
+          isHf: false
+          isPro: false
+          name: IkariDev
+          type: user
+        html: '<blockquote>
+
+          <p>I''m willing to accept an alternative that doesn''t involve breaking
+          compatibility in the way that chatML does</p>
+
+          </blockquote>
+
+          <p>(i will refer to ChatML format as new format)I am too, but not with chatml,
+          like all current models are trained on alpaca, this new format is completely
+          incomprehensible for current models to grasp. Think of this: All future
+          models will use that format.. If someone wants to merge a "old" model with
+          a new one quality will greatly be degraded as its 2 COMPLETELY different
+          formats + the "old" model does not know what the hell to do with the new
+          one.</p>
+
+          <p>Its just annoying, also the format is hard to read + not flexible, has
+          no instruct or similar sections.<br>Also, those assistant/user formats in
+          general are guiding the AI to act like one despite maybe one not wanting
+          to.. which is bad to say the least..</p>
+
+          <p>tldr; I am completely okay with changing formats, but not chatml please.<br>(correct
+          me if im wrong, always happy to learn)</p>
+
+          '
+        raw: '> I''m willing to accept an alternative that doesn''t involve breaking
+          compatibility in the way that chatML does
+
+
+          (i will refer to ChatML format as new format)I am too, but not with chatml,
+          like all current models are trained on alpaca, this new format is completely
+          incomprehensible for current models to grasp. Think of this: All future
+          models will use that format.. If someone wants to merge a "old" model with
+          a new one quality will greatly be degraded as its 2 COMPLETELY different
+          formats + the "old" model does not know what the hell to do with the new
+          one.
+
+
+          Its just annoying, also the format is hard to read + not flexible, has no
+          instruct or similar sections.
+
+          Also, those assistant/user formats in general are guiding the AI to act
+          like one despite maybe one not wanting to.. which is bad to say the least..
+
+
+          tldr; I am completely okay with changing formats, but not chatml please.
+
+          (correct me if im wrong, always happy to learn)'
+        updatedAt: '2023-10-07T16:53:54.409Z'
+      numEdits: 1
+      reactions: []
+    id: 65218d130f935fa8fd361b5e
+    type: comment
+  author: IkariDev
+  content: '> I''m willing to accept an alternative that doesn''t involve breaking
+    compatibility in the way that chatML does
+
+
+    (i will refer to ChatML format as new format)I am too, but not with chatml, like
+    all current models are trained on alpaca, this new format is completely incomprehensible
+    for current models to grasp. Think of this: All future models will use that format..
+    If someone wants to merge a "old" model with a new one quality will greatly be
+    degraded as its 2 COMPLETELY different formats + the "old" model does not know
+    what the hell to do with the new one.
+
+
+    Its just annoying, also the format is hard to read + not flexible, has no instruct
+    or similar sections.
+
+    Also, those assistant/user formats in general are guiding the AI to act like one
+    despite maybe one not wanting to.. which is bad to say the least..
+
+
+    tldr; I am completely okay with changing formats, but not chatml please.
+
+    (correct me if im wrong, always happy to learn)'
+  created_at: 2023-10-07 15:53:39+00:00
+  edited: true
+  hidden: false
+  id: 65218d130f935fa8fd361b5e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-07T18:47:27.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9733243584632874
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>These are not technical arguments.<br>Sorry that you are frustrated,
+          but this change is really for the best.</p>
+
+          '
+        raw: "These are not technical arguments.  \nSorry that you are frustrated,\
+          \ but this change is really for the best."
+        updatedAt: '2023-10-07T18:47:27.812Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\U0001F917"
+        users:
+        - AlexTagger
+        - drak-hf
+        - poisson-fish
+        - nbeerbower
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - DeadBranches
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - flexai
+      relatedEventId: 6521a7bfdf23774e3bf4d46c
+    id: 6521a7bfdf23774e3bf4d46b
+    type: comment
+  author: ehartford
+  content: "These are not technical arguments.  \nSorry that you are frustrated, but\
+    \ this change is really for the best."
+  created_at: 2023-10-07 17:47:27+00:00
+  edited: false
+  hidden: false
+  id: 6521a7bfdf23774e3bf4d46b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-07T18:47:27.000Z'
+    data:
+      status: closed
+    id: 6521a7bfdf23774e3bf4d46c
+    type: status-change
+  author: ehartford
+  created_at: 2023-10-07 17:47:27+00:00
+  id: 6521a7bfdf23774e3bf4d46c
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4d38fcaa72d9f9cb04ba8e7f72211e34.svg
+      fullname: Bohan Du
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: acrastt
+      type: user
+    createdAt: '2023-10-12T00:29:36.000Z'
+    data:
+      edited: false
+      editors:
+      - acrastt
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9304165840148926
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4d38fcaa72d9f9cb04ba8e7f72211e34.svg
+          fullname: Bohan Du
+          isHf: false
+          isPro: false
+          name: acrastt
+          type: user
+        html: "<blockquote>\n<p>These are not technical arguments.<br>Sorry that you\
+          \ are frustrated, but this change is really for the best.</p>\n</blockquote>\n\
+          <p>Perhaps you can consider Llama-2-Chat prompt template?<br>From <span\
+          \ data-props=\"{&quot;user&quot;:&quot;jondurbin&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/jondurbin\">@<span class=\"\
+          underline\">jondurbin</span></a></span>\n\n\t</span></span> in a Discord\
+          \ channel:</p>\n<pre><code>I really don't think vicuna prompt format is\
+          \ optimal.\n\nUSER: is tokenized in multiple ways, and somewhat inherently\
+          \ assigns an extra identity to the model if you use a persona as system\
+          \ prompt.\n\nAlpaca is ok for instructions, but the chance of markdown style\
+          \ header \"### Instruction\" or response happening in the wild is pretty\
+          \ large, so it's probably much easier to have strange results from prompt\
+          \ inputs.\n\nchatml is better at deterministic delimiters than vicuna, but\
+          \ IMO llama-2 chat is better for very clearly separating system from instruction\
+          \ and instruction from response, and there's no identity/role terminology\
+          \ introduced to contend with persona in system prompt.\n\n&lt;|im_start|&gt;system\n\
+          you are Jon\n&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\nhello\n&lt;|im_end|&gt;\n\
+          &lt;|im_start|&gt;assistant\n\nvs.\n\n[INST] &lt;&lt;SYS&gt;&gt;\nYou are\
+          \ Jon.\n&lt;&lt;/SYS&gt;&gt;\nhello [/INST]\n\nMuch clearer, cleaner, and\
+          \ less ambiguous IMO. \n</code></pre>\n<p>Assuming this is why you chose\
+          \ ChatML, you might also consider Llama-2-Chat as an more readable alternative.\
+          \ I think the guys at Meta AI is great, they at least have a reason for\
+          \ so.</p>\n"
+        raw: "> These are not technical arguments.  \n> Sorry that you are frustrated,\
+          \ but this change is really for the best.\n\nPerhaps you can consider Llama-2-Chat\
+          \ prompt template? \nFrom @jondurbin in a Discord channel:\n```\nI really\
+          \ don't think vicuna prompt format is optimal.\n\nUSER: is tokenized in\
+          \ multiple ways, and somewhat inherently assigns an extra identity to the\
+          \ model if you use a persona as system prompt.\n\nAlpaca is ok for instructions,\
+          \ but the chance of markdown style header \"### Instruction\" or response\
+          \ happening in the wild is pretty large, so it's probably much easier to\
+          \ have strange results from prompt inputs.\n\nchatml is better at deterministic\
+          \ delimiters than vicuna, but IMO llama-2 chat is better for very clearly\
+          \ separating system from instruction and instruction from response, and\
+          \ there's no identity/role terminology introduced to contend with persona\
+          \ in system prompt.\n\n<|im_start|>system\nyou are Jon\n<|im_end|>\n<|im_start|>user\n\
+          hello\n<|im_end|>\n<|im_start|>assistant\n\nvs.\n\n[INST] <<SYS>>\nYou are\
+          \ Jon.\n<</SYS>>\nhello [/INST]\n\nMuch clearer, cleaner, and less ambiguous\
+          \ IMO. \n```\n\nAssuming this is why you chose ChatML, you might also consider\
+          \ Llama-2-Chat as an more readable alternative. I think the guys at Meta\
+          \ AI is great, they at least have a reason for so."
+        updatedAt: '2023-10-12T00:29:36.427Z'
+      numEdits: 0
+      reactions: []
+    id: 65273df0c99126d30f8cde5a
+    type: comment
+  author: acrastt
+  content: "> These are not technical arguments.  \n> Sorry that you are frustrated,\
+    \ but this change is really for the best.\n\nPerhaps you can consider Llama-2-Chat\
+    \ prompt template? \nFrom @jondurbin in a Discord channel:\n```\nI really don't\
+    \ think vicuna prompt format is optimal.\n\nUSER: is tokenized in multiple ways,\
+    \ and somewhat inherently assigns an extra identity to the model if you use a\
+    \ persona as system prompt.\n\nAlpaca is ok for instructions, but the chance of\
+    \ markdown style header \"### Instruction\" or response happening in the wild\
+    \ is pretty large, so it's probably much easier to have strange results from prompt\
+    \ inputs.\n\nchatml is better at deterministic delimiters than vicuna, but IMO\
+    \ llama-2 chat is better for very clearly separating system from instruction and\
+    \ instruction from response, and there's no identity/role terminology introduced\
+    \ to contend with persona in system prompt.\n\n<|im_start|>system\nyou are Jon\n\
+    <|im_end|>\n<|im_start|>user\nhello\n<|im_end|>\n<|im_start|>assistant\n\nvs.\n\
+    \n[INST] <<SYS>>\nYou are Jon.\n<</SYS>>\nhello [/INST]\n\nMuch clearer, cleaner,\
+    \ and less ambiguous IMO. \n```\n\nAssuming this is why you chose ChatML, you\
+    \ might also consider Llama-2-Chat as an more readable alternative. I think the\
+    \ guys at Meta AI is great, they at least have a reason for so."
+  created_at: 2023-10-11 23:29:36+00:00
+  edited: false
+  hidden: false
+  id: 65273df0c99126d30f8cde5a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T00:53:19.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8860821723937988
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I chose ChatML for two reasons.</p>
+
+          <ol>
+
+          <li>it works</li>
+
+          <li>it has momentum</li>
+
+          </ol>
+
+          <p>I released dolphin-2.1-mistral-7b that fixed the ChatML token issues.  And
+          its on top of the leaderboard for 7b.</p>
+
+          <p><a href="https://huggingface.co/ehartford/dolphin-2.1-mistral-7b">https://huggingface.co/ehartford/dolphin-2.1-mistral-7b</a></p>
+
+          '
+        raw: 'I chose ChatML for two reasons.
+
+          1) it works
+
+          2) it has momentum
+
+
+          I released dolphin-2.1-mistral-7b that fixed the ChatML token issues.  And
+          its on top of the leaderboard for 7b.
+
+
+          https://huggingface.co/ehartford/dolphin-2.1-mistral-7b'
+        updatedAt: '2023-10-12T00:53:19.787Z'
+      numEdits: 0
+      reactions: []
+    id: 6527437f1eb78901533eaa13
+    type: comment
+  author: ehartford
+  content: 'I chose ChatML for two reasons.
+
+    1) it works
+
+    2) it has momentum
+
+
+    I released dolphin-2.1-mistral-7b that fixed the ChatML token issues.  And its
+    on top of the leaderboard for 7b.
+
+
+    https://huggingface.co/ehartford/dolphin-2.1-mistral-7b'
+  created_at: 2023-10-11 23:53:19+00:00
+  edited: false
+  hidden: false
+  id: 6527437f1eb78901533eaa13
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+      fullname: Jon Durbin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: jondurbin
+      type: user
+    createdAt: '2023-10-12T09:30:46.000Z'
+    data:
+      edited: false
+      editors:
+      - jondurbin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9658301472663879
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+          fullname: Jon Durbin
+          isHf: false
+          isPro: true
+          name: jondurbin
+          type: user
+        html: '<p>I have no evidence that llama-2 chat is superior to ChatML, it''s
+          just a hunch and my personal preference.</p>
+
+          <p>Contributing factors to my thought:</p>
+
+          <ol>
+
+          <li>The Meta folks are pretty smart, so I suspect they spent some time investigating
+          prompt formats to settle on that one.</li>
+
+          <li>OpenAI folks too are obviously very smart, however there''s evidence
+          ChatML itself has changed: <a rel="nofollow" href="https://news.ycombinator.com/item?id=34990391">https://news.ycombinator.com/item?id=34990391</a>
+          and I wouldn''t want to use a deprecated standard.</li>
+
+          </ol>
+
+          <p>Again though, I have no evidence any format is better or worse, and with
+          the tooling support around prompt formats I don''t think we need a single
+          unified standard TBH.</p>
+
+          '
+        raw: 'I have no evidence that llama-2 chat is superior to ChatML, it''s just
+          a hunch and my personal preference.
+
+
+          Contributing factors to my thought:
+
+          1. The Meta folks are pretty smart, so I suspect they spent some time investigating
+          prompt formats to settle on that one.
+
+          2. OpenAI folks too are obviously very smart, however there''s evidence
+          ChatML itself has changed: https://news.ycombinator.com/item?id=34990391
+          and I wouldn''t want to use a deprecated standard.
+
+
+          Again though, I have no evidence any format is better or worse, and with
+          the tooling support around prompt formats I don''t think we need a single
+          unified standard TBH.'
+        updatedAt: '2023-10-12T09:30:46.614Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - ehartford
+    id: 6527bcc6d4670b08753336b2
+    type: comment
+  author: jondurbin
+  content: 'I have no evidence that llama-2 chat is superior to ChatML, it''s just
+    a hunch and my personal preference.
+
+
+    Contributing factors to my thought:
+
+    1. The Meta folks are pretty smart, so I suspect they spent some time investigating
+    prompt formats to settle on that one.
+
+    2. OpenAI folks too are obviously very smart, however there''s evidence ChatML
+    itself has changed: https://news.ycombinator.com/item?id=34990391 and I wouldn''t
+    want to use a deprecated standard.
+
+
+    Again though, I have no evidence any format is better or worse, and with the tooling
+    support around prompt formats I don''t think we need a single unified standard
+    TBH.'
+  created_at: 2023-10-12 08:30:46+00:00
+  edited: false
+  hidden: false
+  id: 6527bcc6d4670b08753336b2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+      fullname: IkariDev
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: IkariDev
+      type: user
+    createdAt: '2023-10-12T11:03:48.000Z'
+    data:
+      edited: false
+      editors:
+      - IkariDev
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9667546153068542
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+          fullname: IkariDev
+          isHf: false
+          isPro: false
+          name: IkariDev
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ehartford&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ehartford\">@<span class=\"\
+          underline\">ehartford</span></a></span>\n\n\t</span></span> you are always\
+          \ talking about the math, and how good it works. But ive never seen any\
+          \ proof of that math behind it or how good it works.</p>\n"
+        raw: '@ehartford you are always talking about the math, and how good it works.
+          But ive never seen any proof of that math behind it or how good it works.'
+        updatedAt: '2023-10-12T11:03:48.525Z'
+      numEdits: 0
+      reactions: []
+    id: 6527d294bc018e94026056b2
+    type: comment
+  author: IkariDev
+  content: '@ehartford you are always talking about the math, and how good it works.
+    But ive never seen any proof of that math behind it or how good it works.'
+  created_at: 2023-10-12 10:03:48+00:00
+  edited: false
+  hidden: false
+  id: 6527d294bc018e94026056b2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T12:11:56.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9718483686447144
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I already proved that it works.</p>
+
+          <p>I have examples of the models output in the model card.</p>
+
+          '
+        raw: 'I already proved that it works.
+
+
+          I have examples of the models output in the model card.'
+        updatedAt: '2023-10-12T12:11:56.930Z'
+      numEdits: 0
+      reactions: []
+    id: 6527e28ce41334bdec6edd66
+    type: comment
+  author: ehartford
+  content: 'I already proved that it works.
+
+
+    I have examples of the models output in the model card.'
+  created_at: 2023-10-12 11:11:56+00:00
+  edited: false
+  hidden: false
+  id: 6527e28ce41334bdec6edd66
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T12:13:31.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9601736664772034
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: "<blockquote>\n<p>I have no evidence that llama-2 chat is superior to\
+          \ ChatML, it's just a hunch and my personal preference.</p>\n<p>Contributing\
+          \ factors to my thought:</p>\n<ol>\n<li>The Meta folks are pretty smart,\
+          \ so I suspect they spent some time investigating prompt formats to settle\
+          \ on that one.</li>\n<li>OpenAI folks too are obviously very smart, however\
+          \ there's evidence ChatML itself has changed: <a rel=\"nofollow\" href=\"\
+          https://news.ycombinator.com/item?id=34990391\">https://news.ycombinator.com/item?id=34990391</a>\
+          \ and I wouldn't want to use a deprecated standard.</li>\n</ol>\n<p>Again\
+          \ though, I have no evidence any format is better or worse, and with the\
+          \ tooling support around prompt formats I don't think we need a single unified\
+          \ standard TBH.</p>\n</blockquote>\n<p>Thanks for your perspective Jon \U0001F60A\
+          </p>\n"
+        raw: "> I have no evidence that llama-2 chat is superior to ChatML, it's just\
+          \ a hunch and my personal preference.\n> \n> Contributing factors to my\
+          \ thought:\n> 1. The Meta folks are pretty smart, so I suspect they spent\
+          \ some time investigating prompt formats to settle on that one.\n> 2. OpenAI\
+          \ folks too are obviously very smart, however there's evidence ChatML itself\
+          \ has changed: https://news.ycombinator.com/item?id=34990391 and I wouldn't\
+          \ want to use a deprecated standard.\n> \n> Again though, I have no evidence\
+          \ any format is better or worse, and with the tooling support around prompt\
+          \ formats I don't think we need a single unified standard TBH.\n\nThanks\
+          \ for your perspective Jon \U0001F60A"
+        updatedAt: '2023-10-12T12:13:31.390Z'
+      numEdits: 0
+      reactions: []
+    id: 6527e2eb918a5ee745b70725
+    type: comment
+  author: ehartford
+  content: "> I have no evidence that llama-2 chat is superior to ChatML, it's just\
+    \ a hunch and my personal preference.\n> \n> Contributing factors to my thought:\n\
+    > 1. The Meta folks are pretty smart, so I suspect they spent some time investigating\
+    \ prompt formats to settle on that one.\n> 2. OpenAI folks too are obviously very\
+    \ smart, however there's evidence ChatML itself has changed: https://news.ycombinator.com/item?id=34990391\
+    \ and I wouldn't want to use a deprecated standard.\n> \n> Again though, I have\
+    \ no evidence any format is better or worse, and with the tooling support around\
+    \ prompt formats I don't think we need a single unified standard TBH.\n\nThanks\
+    \ for your perspective Jon \U0001F60A"
+  created_at: 2023-10-12 11:13:31+00:00
+  edited: false
+  hidden: false
+  id: 6527e2eb918a5ee745b70725
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+      fullname: IkariDev
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: IkariDev
+      type: user
+    createdAt: '2023-10-12T13:08:32.000Z'
+    data:
+      edited: false
+      editors:
+      - IkariDev
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9853688478469849
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+          fullname: IkariDev
+          isHf: false
+          isPro: false
+          name: IkariDev
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ehartford&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ehartford\">@<span class=\"\
+          underline\">ehartford</span></a></span>\n\n\t</span></span> you were saying\
+          \ you trust the math behind it, i do trust math, but i havent seen ANY math\
+          \ about this yet</p>\n"
+        raw: '@ehartford you were saying you trust the math behind it, i do trust
+          math, but i havent seen ANY math about this yet'
+        updatedAt: '2023-10-12T13:08:32.431Z'
+      numEdits: 0
+      reactions: []
+    id: 6527efd02dbb58b8e2882247
+    type: comment
+  author: IkariDev
+  content: '@ehartford you were saying you trust the math behind it, i do trust math,
+    but i havent seen ANY math about this yet'
+  created_at: 2023-10-12 12:08:32+00:00
+  edited: false
+  hidden: false
+  id: 6527efd02dbb58b8e2882247
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T13:22:36.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9972522854804993
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I didn''t say that there was any math.</p>
+
+          <p>I said the only way to change my mind is math.</p>
+
+          '
+        raw: 'I didn''t say that there was any math.
+
+
+          I said the only way to change my mind is math.'
+        updatedAt: '2023-10-12T13:22:36.010Z'
+      numEdits: 0
+      reactions: []
+    id: 6527f31c6860a2c294b947dd
+    type: comment
+  author: ehartford
+  content: 'I didn''t say that there was any math.
+
+
+    I said the only way to change my mind is math.'
+  created_at: 2023-10-12 12:22:36+00:00
+  edited: false
+  hidden: false
+  id: 6527f31c6860a2c294b947dd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T13:23:01.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9318220615386963
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>You should spend your time another way.</p>
+
+          <p>I''m not going to change the prompt format.</p>
+
+          '
+        raw: 'You should spend your time another way.
+
+
+          I''m not going to change the prompt format.'
+        updatedAt: '2023-10-12T13:23:01.461Z'
+      numEdits: 0
+      reactions: []
+    id: 6527f33595f8b172d1eacd85
+    type: comment
+  author: ehartford
+  content: 'You should spend your time another way.
+
+
+    I''m not going to change the prompt format.'
+  created_at: 2023-10-12 12:23:01+00:00
+  edited: false
+  hidden: false
+  id: 6527f33595f8b172d1eacd85
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+      fullname: IkariDev
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: IkariDev
+      type: user
+    createdAt: '2023-10-12T17:35:45.000Z'
+    data:
+      edited: false
+      editors:
+      - IkariDev
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9963042736053467
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1667690511692-630dfb008df86f1e5becadc3.png?w=200&h=200&f=face
+          fullname: IkariDev
+          isHf: false
+          isPro: false
+          name: IkariDev
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ehartford&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ehartford\">@<span class=\"\
+          underline\">ehartford</span></a></span>\n\n\t</span></span> i already know\
+          \ that, its obvious that you wont change it. I just wanna know what makes\
+          \ you think that its so good</p>\n"
+        raw: '@ehartford i already know that, its obvious that you wont change it.
+          I just wanna know what makes you think that its so good'
+        updatedAt: '2023-10-12T17:35:45.159Z'
+      numEdits: 0
+      reactions: []
+    id: 65282e712061f55be8da21ed
+    type: comment
+  author: IkariDev
+  content: '@ehartford i already know that, its obvious that you wont change it. I
+    just wanna know what makes you think that its so good'
+  created_at: 2023-10-12 16:35:45+00:00
+  edited: false
+  hidden: false
+  id: 65282e712061f55be8da21ed
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-12T17:49:32.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9737685322761536
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I''ve explained why I am using it.</p>
+
+          <ol>
+
+          <li>it works</li>
+
+          <li>it has momentum</li>
+
+          </ol>
+
+          '
+        raw: 'I''ve explained why I am using it.
+
+
+          1) it works
+
+          2) it has momentum'
+        updatedAt: '2023-10-12T17:49:32.427Z'
+      numEdits: 0
+      reactions: []
+    id: 652831ac2dc77a70e2ee6aa5
+    type: comment
+  author: ehartford
+  content: 'I''ve explained why I am using it.
+
+
+    1) it works
+
+    2) it has momentum'
+  created_at: 2023-10-12 16:49:32+00:00
+  edited: false
+  hidden: false
+  id: 652831ac2dc77a70e2ee6aa5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+      fullname: '[]'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Kenshiro-28
+      type: user
+    createdAt: '2023-10-18T14:17:51.000Z'
+    data:
+      edited: false
+      editors:
+      - Kenshiro-28
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9141095876693726
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+          fullname: '[]'
+          isHf: false
+          isPro: false
+          name: Kenshiro-28
+          type: user
+        html: '<p>I vote to switch to Llama 2 format. AFAIK there is no proof in favor
+          of one or the other, so I will focus in the wasted tokens. ChatML uses more
+          tokens to do the same work, and these tokens are wasted as they don''t carry
+          any useful information.</p>
+
+          <p>I will put a short example without system prompt, just compare ChatML:</p>
+
+          <p>&lt;|im_start|&gt;user<br>How are you?&lt;|im_end|&gt;<br>&lt;|im_start|&gt;assistant<br>I
+          am doing well!&lt;|im_end|&gt;</p>
+
+          <p>With Llama 2:</p>
+
+          <p>[INST] How are you? [/INST] [INST] I am doing well! [/INST]</p>
+
+          <p>If I''m correct ChatML uses 57 characters only for the prompt while Llama
+          2 only 31. </p>
+
+          <p>So if there is no proof that demonstrates that ChatML format is the best,
+          I think we should switch to Llama 2 format to spend less tokens.</p>
+
+          '
+        raw: "I vote to switch to Llama 2 format. AFAIK there is no proof in favor\
+          \ of one or the other, so I will focus in the wasted tokens. ChatML uses\
+          \ more tokens to do the same work, and these tokens are wasted as they don't\
+          \ carry any useful information.\n\nI will put a short example without system\
+          \ prompt, just compare ChatML:\n\n<|im_start|>user\nHow are you?<|im_end|>\n\
+          <|im_start|>assistant\nI am doing well!<|im_end|>\n\nWith Llama 2:\n\n[INST]\
+          \ How are you? [/INST] [INST] I am doing well! [/INST]\n\nIf I'm correct\
+          \ ChatML uses 57 characters only for the prompt while Llama 2 only 31. \n\
+          \nSo if there is no proof that demonstrates that ChatML format is the best,\
+          \ I think we should switch to Llama 2 format to spend less tokens."
+        updatedAt: '2023-10-18T14:17:51.664Z'
+      numEdits: 0
+      reactions: []
+    id: 652fe90f7aab9cfb6191b8fb
+    type: comment
+  author: Kenshiro-28
+  content: "I vote to switch to Llama 2 format. AFAIK there is no proof in favor of\
+    \ one or the other, so I will focus in the wasted tokens. ChatML uses more tokens\
+    \ to do the same work, and these tokens are wasted as they don't carry any useful\
+    \ information.\n\nI will put a short example without system prompt, just compare\
+    \ ChatML:\n\n<|im_start|>user\nHow are you?<|im_end|>\n<|im_start|>assistant\n\
+    I am doing well!<|im_end|>\n\nWith Llama 2:\n\n[INST] How are you? [/INST] [INST]\
+    \ I am doing well! [/INST]\n\nIf I'm correct ChatML uses 57 characters only for\
+    \ the prompt while Llama 2 only 31. \n\nSo if there is no proof that demonstrates\
+    \ that ChatML format is the best, I think we should switch to Llama 2 format to\
+    \ spend less tokens."
+  created_at: 2023-10-18 13:17:51+00:00
+  edited: false
+  hidden: false
+  id: 652fe90f7aab9cfb6191b8fb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-18T14:32:05.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9866489768028259
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>Cool.  It''s open source!  You are welcome to train one your way.  I''ll
+          be training this one my way.</p>
+
+          <p>By the way, OpenHermes just released is also ChatML.</p>
+
+          <p>I''m going to stay on the winning train.</p>
+
+          '
+        raw: 'Cool.  It''s open source!  You are welcome to train one your way.  I''ll
+          be training this one my way.
+
+
+          By the way, OpenHermes just released is also ChatML.
+
+
+          I''m going to stay on the winning train.'
+        updatedAt: '2023-10-18T14:32:05.117Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F91D"
+        users:
+        - DeadBranches
+        - flexai
+    id: 652fec65ca4bf1ad38981f88
+    type: comment
+  author: ehartford
+  content: 'Cool.  It''s open source!  You are welcome to train one your way.  I''ll
+    be training this one my way.
+
+
+    By the way, OpenHermes just released is also ChatML.
+
+
+    I''m going to stay on the winning train.'
+  created_at: 2023-10-18 13:32:05+00:00
+  edited: false
+  hidden: false
+  id: 652fec65ca4bf1ad38981f88
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+      fullname: '[]'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Kenshiro-28
+      type: user
+    createdAt: '2023-10-18T15:08:42.000Z'
+    data:
+      edited: false
+      editors:
+      - Kenshiro-28
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9354005455970764
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+          fullname: '[]'
+          isHf: false
+          isPro: false
+          name: Kenshiro-28
+          type: user
+        html: '<p>Ok, anyway thank you for your work :)</p>
+
+          '
+        raw: Ok, anyway thank you for your work :)
+        updatedAt: '2023-10-18T15:08:42.326Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - ehartford
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - DeadBranches
+    id: 652ff4fa2aa577e72b46e364
+    type: comment
+  author: Kenshiro-28
+  content: Ok, anyway thank you for your work :)
+  created_at: 2023-10-18 14:08:42+00:00
+  edited: false
+  hidden: false
+  id: 652ff4fa2aa577e72b46e364
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+      fullname: Jon Durbin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: jondurbin
+      type: user
+    createdAt: '2023-10-18T15:24:05.000Z'
+    data:
+      edited: false
+      editors:
+      - jondurbin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8333941698074341
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+          fullname: Jon Durbin
+          isHf: false
+          isPro: true
+          name: jondurbin
+          type: user
+        html: '<blockquote>
+
+          <p>I''m going to stay on the winning train.</p>
+
+          </blockquote>
+
+          <p><em>restating that chatml is fine and I''m not going to try to convince
+          you to change, but...</em></p>
+
+          <p>I think the numbers may disagree with you on that point:</p>
+
+          <ul>
+
+          <li>mistral-7b-instruct-v0.1 downloads last month: 154,352</li>
+
+          <li>llama-2-7b-chat downloads last month: 1,152,332</li>
+
+          <li>llama-2-13b-chat downloads last month: 285,791</li>
+
+          <li>llama-2-70b-chat downloads last month: 205,955</li>
+
+          <li>codellama-7b-instruct downloads last month: 45,882</li>
+
+          <li>codellama-13b-instruct downloads last month: 20,491</li>
+
+          <li>codellama-34b-instruct downloads last month: 211,818</li>
+
+          </ul>
+
+          <p>ChatML certainly has some momentum, and popular models (yours, teknium''s,
+          zephyr, etc.) but I think llama-2 chat format is "winning", in terms of
+          downloads anyways.</p>
+
+          '
+        raw: '> I''m going to stay on the winning train.
+
+
+          *restating that chatml is fine and I''m not going to try to convince you
+          to change, but...*
+
+
+          I think the numbers may disagree with you on that point:
+
+          - mistral-7b-instruct-v0.1 downloads last month: 154,352
+
+          - llama-2-7b-chat downloads last month: 1,152,332
+
+          - llama-2-13b-chat downloads last month: 285,791
+
+          - llama-2-70b-chat downloads last month: 205,955
+
+          - codellama-7b-instruct downloads last month: 45,882
+
+          - codellama-13b-instruct downloads last month: 20,491
+
+          - codellama-34b-instruct downloads last month: 211,818
+
+
+          ChatML certainly has some momentum, and popular models (yours, teknium''s,
+          zephyr, etc.) but I think llama-2 chat format is "winning", in terms of
+          downloads anyways.'
+        updatedAt: '2023-10-18T15:24:05.735Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - Kenshiro-28
+        - acrastt
+        - harmtech
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - ehartford
+      - count: 1
+        reaction: "\U0001F614"
+        users:
+        - flexai
+    id: 652ff8956a155b73a479462d
+    type: comment
+  author: jondurbin
+  content: '> I''m going to stay on the winning train.
+
+
+    *restating that chatml is fine and I''m not going to try to convince you to change,
+    but...*
+
+
+    I think the numbers may disagree with you on that point:
+
+    - mistral-7b-instruct-v0.1 downloads last month: 154,352
+
+    - llama-2-7b-chat downloads last month: 1,152,332
+
+    - llama-2-13b-chat downloads last month: 285,791
+
+    - llama-2-70b-chat downloads last month: 205,955
+
+    - codellama-7b-instruct downloads last month: 45,882
+
+    - codellama-13b-instruct downloads last month: 20,491
+
+    - codellama-34b-instruct downloads last month: 211,818
+
+
+    ChatML certainly has some momentum, and popular models (yours, teknium''s, zephyr,
+    etc.) but I think llama-2 chat format is "winning", in terms of downloads anyways.'
+  created_at: 2023-10-18 14:24:05+00:00
+  edited: false
+  hidden: false
+  id: 652ff8956a155b73a479462d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-18T15:53:56.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9475709199905396
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: "<p>I get it \U0001F601</p>\n"
+        raw: "I get it \U0001F601"
+        updatedAt: '2023-10-18T15:53:56.679Z'
+      numEdits: 0
+      reactions: []
+    id: 652fff946ebdd298e64ae249
+    type: comment
+  author: ehartford
+  content: "I get it \U0001F601"
+  created_at: 2023-10-18 14:53:56+00:00
+  edited: false
+  hidden: false
+  id: 652fff946ebdd298e64ae249
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-18T15:54:54.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9982601404190063
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I still think ChatML is winning and is going to win.  Downloads
+          isn''t my metric.</p>
+
+          '
+        raw: I still think ChatML is winning and is going to win.  Downloads isn't
+          my metric.
+        updatedAt: '2023-10-18T15:54:54.375Z'
+      numEdits: 0
+      reactions: []
+    id: 652fffce7217d27613e4810e
+    type: comment
+  author: ehartford
+  content: I still think ChatML is winning and is going to win.  Downloads isn't my
+    metric.
+  created_at: 2023-10-18 14:54:54+00:00
+  edited: false
+  hidden: false
+  id: 652fffce7217d27613e4810e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-18T15:56:00.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9872540831565857
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>Downloads within some window of time anyway.</p>
+
+          <p>Adoption and trending is my metric</p>
+
+          <p>Anyway I don''t need numbers to tell me.  This is deeper than that.</p>
+
+          '
+        raw: 'Downloads within some window of time anyway.
+
+
+          Adoption and trending is my metric
+
+
+          Anyway I don''t need numbers to tell me.  This is deeper than that.'
+        updatedAt: '2023-10-18T15:56:00.296Z'
+      numEdits: 0
+      reactions: []
+    id: 653000109bde2c1b0f1147e0
+    type: comment
+  author: ehartford
+  content: 'Downloads within some window of time anyway.
+
+
+    Adoption and trending is my metric
+
+
+    Anyway I don''t need numbers to tell me.  This is deeper than that.'
+  created_at: 2023-10-18 14:56:00+00:00
+  edited: false
+  hidden: false
+  id: 653000109bde2c1b0f1147e0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+      fullname: Jon Durbin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: jondurbin
+      type: user
+    createdAt: '2023-10-18T16:04:09.000Z'
+    data:
+      edited: false
+      editors:
+      - jondurbin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9776908755302429
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+          fullname: Jon Durbin
+          isHf: false
+          isPro: true
+          name: jondurbin
+          type: user
+        html: '<p>I couldn''t pass up the opportunity to do just smidge of trolling.</p>
+
+          '
+        raw: I couldn't pass up the opportunity to do just smidge of trolling.
+        updatedAt: '2023-10-18T16:04:09.633Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - ehartford
+    id: 653001f9d107f378e1eaa918
+    type: comment
+  author: jondurbin
+  content: I couldn't pass up the opportunity to do just smidge of trolling.
+  created_at: 2023-10-18 15:04:09+00:00
+  edited: false
+  hidden: false
+  id: 653001f9d107f378e1eaa918
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+      fullname: '[]'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Kenshiro-28
+      type: user
+    createdAt: '2023-10-18T16:23:39.000Z'
+    data:
+      edited: true
+      editors:
+      - Kenshiro-28
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9223081469535828
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+          fullname: '[]'
+          isHf: false
+          isPro: false
+          name: Kenshiro-28
+          type: user
+        html: '<p>Sorry I did a mistake with the Llama 2 example, it''s only:</p>
+
+          <p>[INST] How are you? [/INST] I am doing well!</p>
+
+          <p>So Llama 2 format only uses 16 characters (including 3 blank spaces)
+          vs 57 characters of ChatML format. The difference is very high. A 5 turn
+          conversation with the same text would waste 285 chars with ChatML format,
+          but only 84 chars with Llama 2 format (extra blank space at the end of each
+          answer)</p>
+
+          '
+        raw: 'Sorry I did a mistake with the Llama 2 example, it''s only:
+
+
+          [INST] How are you? [/INST] I am doing well!
+
+
+          So Llama 2 format only uses 16 characters (including 3 blank spaces) vs
+          57 characters of ChatML format. The difference is very high. A 5 turn conversation
+          with the same text would waste 285 chars with ChatML format, but only 84
+          chars with Llama 2 format (extra blank space at the end of each answer)'
+        updatedAt: '2023-10-18T16:28:37.566Z'
+      numEdits: 2
+      reactions: []
+    id: 6530068b2e4296f2c54aefcf
+    type: comment
+  author: Kenshiro-28
+  content: 'Sorry I did a mistake with the Llama 2 example, it''s only:
+
+
+    [INST] How are you? [/INST] I am doing well!
+
+
+    So Llama 2 format only uses 16 characters (including 3 blank spaces) vs 57 characters
+    of ChatML format. The difference is very high. A 5 turn conversation with the
+    same text would waste 285 chars with ChatML format, but only 84 chars with Llama
+    2 format (extra blank space at the end of each answer)'
+  created_at: 2023-10-18 15:23:39+00:00
+  edited: true
+  hidden: false
+  id: 6530068b2e4296f2c54aefcf
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-18T17:21:52.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9721329808235168
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>Thanks for the feedback.  I will keep it in mind.</p>
+
+          '
+        raw: Thanks for the feedback.  I will keep it in mind.
+        updatedAt: '2023-10-18T17:21:52.807Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Kenshiro-28
+    id: 65301430a6a6f2be6f14c8ea
+    type: comment
+  author: ehartford
+  content: Thanks for the feedback.  I will keep it in mind.
+  created_at: 2023-10-18 16:21:52+00:00
+  edited: false
+  hidden: false
+  id: 65301430a6a6f2be6f14c8ea
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+      fullname: '[]'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Kenshiro-28
+      type: user
+    createdAt: '2023-10-19T13:56:52.000Z'
+    data:
+      edited: true
+      editors:
+      - Kenshiro-28
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6956720352172852
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+          fullname: '[]'
+          isHf: false
+          isPro: false
+          name: Kenshiro-28
+          type: user
+        html: '<p>Just a short update, Amazon released MistralLite, check their prompt
+          format:</p>
+
+          <p>&lt;|prompter|&gt;{prompt}&lt;|assistant|&gt;</p>
+
+          <p><a href="https://huggingface.co/amazon/MistralLite">https://huggingface.co/amazon/MistralLite</a></p>
+
+          '
+        raw: 'Just a short update, Amazon released MistralLite, check their prompt
+          format:
+
+
+          <|prompter|>{prompt}<|assistant|>
+
+
+          https://huggingface.co/amazon/MistralLite
+
+
+
+          '
+        updatedAt: '2023-10-19T14:49:06.844Z'
+      numEdits: 8
+      reactions: []
+    id: 653135a4d780e9ba7422e0cf
+    type: comment
+  author: Kenshiro-28
+  content: 'Just a short update, Amazon released MistralLite, check their prompt format:
+
+
+    <|prompter|>{prompt}<|assistant|>
+
+
+    https://huggingface.co/amazon/MistralLite
+
+
+
+    '
+  created_at: 2023-10-19 12:56:52+00:00
+  edited: true
+  hidden: false
+  id: 653135a4d780e9ba7422e0cf
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6303ca537373aacccd85d8a7/JZqLjXZVGWXJdWUNI99db.jpeg?w=200&h=200&f=face
+      fullname: Wolfram Ravenwolf
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wolfram
+      type: user
+    createdAt: '2023-11-04T15:57:55.000Z'
+    data:
+      edited: false
+      editors:
+      - wolfram
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9498990774154663
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6303ca537373aacccd85d8a7/JZqLjXZVGWXJdWUNI99db.jpeg?w=200&h=200&f=face
+          fullname: Wolfram Ravenwolf
+          isHf: false
+          isPro: false
+          name: wolfram
+          type: user
+        html: '<p>Excuse me for responding to this older, closed issue - but I''d
+          like to add some information to this discussion for the record, as a supporter
+          of the ChatML format (and "hater" of the Llama 2 Chat format):</p>
+
+          <p>There were issues here with the implementation of the ChatML format,
+          like the tokenizer issues that affected the special tokens, and it''s good
+          that those were discovered, reported, and fixed. Still, other formats have
+          issues, too, and some are hard or impossible to fix.</p>
+
+          <p>Like the Alpaca format''s <code>###</code> which gets tokenized in different
+          ways and collides with other meanings like markdown headers. A unique special
+          token that''s never part of input text is needed (and can be filtered when
+          taking input from external sources, as security is definitely an issue for
+          open source models, too, when you let others use yours).</p>
+
+          <p>That''s not just a security measure - a proper system prompt that''s
+          understood and respected by the model is very useful. For instance, to distinguish
+          between the user (in-character) asking the model to do something versus
+          the user (as the AI admin) commanding it to do something. And if you do
+          want to host your model and prevent other users from controlling it like
+          an admin, filtering out a rogue system prompt is easier if it''s properly
+          delimited with unique, special tokens.</p>
+
+          <p>Llama 2 Chat''s format is terrible, IMHO, as it puts the system message
+          inside the first user message. And there are no tags to indicate the response,
+          it''s always after/between user messages, and incompatible with chatbots
+          where the AI goes first (greeting messages are very common). All in all,
+          it''s too complicated and unintuitive - even the person recommending it
+          messed it up in their post.</p>
+
+          <p>Same with Amazon''s, where''d you put the system message? At least it
+          should, in theory, support putting the "assistant" tag and message before
+          "prompter" to have the AI go first with an introductory message, so it''s
+          better than Llama 2 Chat. Still, less flexible than ChatML, which could
+          easily be expanded for additional roles, while you''d need to add more special
+          tokens for those with Amazon''s format.</p>
+
+          <p>Who knows, maybe there will be a better format down the line, but right
+          here and now, ChatML looks to be the most flexible - and apparently that''s
+          why it''s gaining traction and apparently becoming the standard.</p>
+
+          '
+        raw: 'Excuse me for responding to this older, closed issue - but I''d like
+          to add some information to this discussion for the record, as a supporter
+          of the ChatML format (and "hater" of the Llama 2 Chat format):
+
+
+          There were issues here with the implementation of the ChatML format, like
+          the tokenizer issues that affected the special tokens, and it''s good that
+          those were discovered, reported, and fixed. Still, other formats have issues,
+          too, and some are hard or impossible to fix.
+
+
+          Like the Alpaca format''s `###` which gets tokenized in different ways and
+          collides with other meanings like markdown headers. A unique special token
+          that''s never part of input text is needed (and can be filtered when taking
+          input from external sources, as security is definitely an issue for open
+          source models, too, when you let others use yours).
+
+
+          That''s not just a security measure - a proper system prompt that''s understood
+          and respected by the model is very useful. For instance, to distinguish
+          between the user (in-character) asking the model to do something versus
+          the user (as the AI admin) commanding it to do something. And if you do
+          want to host your model and prevent other users from controlling it like
+          an admin, filtering out a rogue system prompt is easier if it''s properly
+          delimited with unique, special tokens.
+
+
+          Llama 2 Chat''s format is terrible, IMHO, as it puts the system message
+          inside the first user message. And there are no tags to indicate the response,
+          it''s always after/between user messages, and incompatible with chatbots
+          where the AI goes first (greeting messages are very common). All in all,
+          it''s too complicated and unintuitive - even the person recommending it
+          messed it up in their post.
+
+
+          Same with Amazon''s, where''d you put the system message? At least it should,
+          in theory, support putting the "assistant" tag and message before "prompter"
+          to have the AI go first with an introductory message, so it''s better than
+          Llama 2 Chat. Still, less flexible than ChatML, which could easily be expanded
+          for additional roles, while you''d need to add more special tokens for those
+          with Amazon''s format.
+
+
+          Who knows, maybe there will be a better format down the line, but right
+          here and now, ChatML looks to be the most flexible - and apparently that''s
+          why it''s gaining traction and apparently becoming the standard.'
+        updatedAt: '2023-11-04T15:57:55.298Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - flexai
+    id: 65466a039c4bf757d6d34d14
+    type: comment
+  author: wolfram
+  content: 'Excuse me for responding to this older, closed issue - but I''d like to
+    add some information to this discussion for the record, as a supporter of the
+    ChatML format (and "hater" of the Llama 2 Chat format):
+
+
+    There were issues here with the implementation of the ChatML format, like the
+    tokenizer issues that affected the special tokens, and it''s good that those were
+    discovered, reported, and fixed. Still, other formats have issues, too, and some
+    are hard or impossible to fix.
+
+
+    Like the Alpaca format''s `###` which gets tokenized in different ways and collides
+    with other meanings like markdown headers. A unique special token that''s never
+    part of input text is needed (and can be filtered when taking input from external
+    sources, as security is definitely an issue for open source models, too, when
+    you let others use yours).
+
+
+    That''s not just a security measure - a proper system prompt that''s understood
+    and respected by the model is very useful. For instance, to distinguish between
+    the user (in-character) asking the model to do something versus the user (as the
+    AI admin) commanding it to do something. And if you do want to host your model
+    and prevent other users from controlling it like an admin, filtering out a rogue
+    system prompt is easier if it''s properly delimited with unique, special tokens.
+
+
+    Llama 2 Chat''s format is terrible, IMHO, as it puts the system message inside
+    the first user message. And there are no tags to indicate the response, it''s
+    always after/between user messages, and incompatible with chatbots where the AI
+    goes first (greeting messages are very common). All in all, it''s too complicated
+    and unintuitive - even the person recommending it messed it up in their post.
+
+
+    Same with Amazon''s, where''d you put the system message? At least it should,
+    in theory, support putting the "assistant" tag and message before "prompter" to
+    have the AI go first with an introductory message, so it''s better than Llama
+    2 Chat. Still, less flexible than ChatML, which could easily be expanded for additional
+    roles, while you''d need to add more special tokens for those with Amazon''s format.
+
+
+    Who knows, maybe there will be a better format down the line, but right here and
+    now, ChatML looks to be the most flexible - and apparently that''s why it''s gaining
+    traction and apparently becoming the standard.'
+  created_at: 2023-11-04 14:57:55+00:00
+  edited: false
+  hidden: false
+  id: 65466a039c4bf757d6d34d14
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+      fullname: '[]'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Kenshiro-28
+      type: user
+    createdAt: '2023-11-04T16:15:32.000Z'
+    data:
+      edited: false
+      editors:
+      - Kenshiro-28
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.98618084192276
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/380602407fc05f52b4c4057dffc91977.svg
+          fullname: '[]'
+          isHf: false
+          isPro: false
+          name: Kenshiro-28
+          type: user
+        html: '<p>Yeah, it looks ChatML is the best one. I read this very fast but
+          it looks it''s better than the others to prevent prompt injections.</p>
+
+          '
+        raw: 'Yeah, it looks ChatML is the best one. I read this very fast but it
+          looks it''s better than the others to prevent prompt injections.
+
+          '
+        updatedAt: '2023-11-04T16:15:32.199Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - wolfram
+    id: 65466e247f43165b3dd830b9
+    type: comment
+  author: Kenshiro-28
+  content: 'Yeah, it looks ChatML is the best one. I read this very fast but it looks
+    it''s better than the others to prevent prompt injections.
+
+    '
+  created_at: 2023-11-04 15:15:32+00:00
+  edited: false
+  hidden: false
+  id: 65466e247f43165b3dd830b9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4a451288e780acc42a7d5709ec7d3370.svg
+      fullname: "D\xE4mpfchen"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dampfinchen
+      type: user
+    createdAt: '2023-11-07T21:07:19.000Z'
+    data:
+      edited: false
+      editors:
+      - Dampfinchen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.987267792224884
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4a451288e780acc42a7d5709ec7d3370.svg
+          fullname: "D\xE4mpfchen"
+          isHf: false
+          isPro: false
+          name: Dampfinchen
+          type: user
+        html: '<p>Yeah, after having to deal personally with this format, I must agree
+          with Wolfram here. It''s really not as great as I''ve thought and there
+          are tons of mistakes one can make. Plus, the format is also not really suited
+          for RP, precisely because of the reasons Wolfram mentioned. </p>
+
+          <p>ChatML will probably be the better alternative. </p>
+
+          '
+        raw: "Yeah, after having to deal personally with this format, I must agree\
+          \ with Wolfram here. It's really not as great as I've thought and there\
+          \ are tons of mistakes one can make. Plus, the format is also not really\
+          \ suited for RP, precisely because of the reasons Wolfram mentioned. \n\n\
+          ChatML will probably be the better alternative. "
+        updatedAt: '2023-11-07T21:07:19.794Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - Kenshiro-28
+        - wolfram
+        - flexai
+    id: 654aa7077f679f0f6992dbde
+    type: comment
+  author: Dampfinchen
+  content: "Yeah, after having to deal personally with this format, I must agree with\
+    \ Wolfram here. It's really not as great as I've thought and there are tons of\
+    \ mistakes one can make. Plus, the format is also not really suited for RP, precisely\
+    \ because of the reasons Wolfram mentioned. \n\nChatML will probably be the better\
+    \ alternative. "
+  created_at: 2023-11-07 21:07:19+00:00
+  edited: false
+  hidden: false
+  id: 654aa7077f679f0f6992dbde
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: cognitivecomputations/dolphin-2.0-mistral-7b
+repo_type: model
+status: closed
+target_branch: null
+title: ChatML prompt format confusion - please reconsider

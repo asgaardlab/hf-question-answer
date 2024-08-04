@@ -1,0 +1,266 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Shallowlabs
+conflicting_files: null
+created_at: 2023-07-04 07:53:32+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ed0fcb1e81219a05b695ab99ffffa214.svg
+      fullname: Ankit Patra
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Shallowlabs
+      type: user
+    createdAt: '2023-07-04T08:53:32.000Z'
+    data:
+      edited: false
+      editors:
+      - Shallowlabs
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46476227045059204
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ed0fcb1e81219a05b695ab99ffffa214.svg
+          fullname: Ankit Patra
+          isHf: false
+          isPro: false
+          name: Shallowlabs
+          type: user
+        html: '<p>Hi Team, I was trying instruct model for summarization tasks but
+          in multiple cases I observed that at the end of summarized passage its appending
+          some code or arbitrary words like below:</p>
+
+          <p>period.package com.github.tix320.skimp.api.level.entity;\n\nimport com.github.tix320.skimp.api.level.SkimpLevel;\nimport
+          com.github.tix320.skimp.api.util.Tuple;\nimport com.github.tix320.skimp.api.world.World;\nimport
+          com.github.tix320.skimp.api.world.</p>
+
+          <p>#ifndef LIB_UTIL_H\n#define LIB_UTIL_H\n\n#include \n#include \n#include
+          \n#include \n#include \n#include \n#include \n#include \n#include \n#include
+          \n\n#include &lt;Eigen/Core&gt;\n\n#define UNUSED(x) ((void)(x))</p>
+
+          <p>Just FYI using below code:</p>
+
+          <p>import torch<br>import transformers<br>from transformers import pipeline<br>import
+          pandas as pd</p>
+
+          <p>name = ''mosaicml/mpt-30b-instruct''</p>
+
+          <p>config = transformers.AutoConfig.from_pretrained(name, trust_remote_code=True)<br>config.attn_config[''attn_impl'']
+          = ''triton''<br>config.init_device = ''cuda:0'' </p>
+
+          <p>tokenizer = transformers.AutoTokenizer.from_pretrained("mosaicml/mpt-30b")<br>model
+          = transformers.AutoModelForCausalLM.from_pretrained(<br>  name,<br>  config=config,<br>  torch_dtype=torch.bfloat16,
+          # Load model weights in bfloat16<br>  trust_remote_code=True<br>)</p>
+
+          <p>def format_prompt(instruction):<br>    template = "Below is an instruction
+          that describes a task. Write a response that appropriately completes the
+          request.\n\n###Instruction\n{instruction}\n\n### Response\n"<br>    return
+          template.format(instruction=instruction)</p>
+
+          <p>def summarize(text):<br>    text = ''Please summarize the following article.
+          Only highlighting the important points. \n\n'' + text<br>    fmt_ex = format_prompt(instruction=text)<br>    with
+          torch.autocast(''cuda'', dtype=torch.bfloat16):<br>        inputs = tokenizer(fmt_ex,
+          return_tensors="pt").to(''cuda:0'')<br>        outputs = model.generate(**inputs,
+          max_new_tokens=256, do_sample=True, top_p=0.95, top_k=50, temperature=0.7)<br>        summary
+          = tokenizer.batch_decode(outputs, skip_special_tokens=True)<br>        summary
+          = summary[0].split("### Response")[1]<br>        return summary</p>
+
+          <p>I tried to play around with the generate parameters but not much help</p>
+
+          '
+        raw: "Hi Team, I was trying instruct model for summarization tasks but in\
+          \ multiple cases I observed that at the end of summarized passage its appending\
+          \ some code or arbitrary words like below:\r\n\r\nperiod.package com.github.tix320.skimp.api.level.entity;\\\
+          n\\nimport com.github.tix320.skimp.api.level.SkimpLevel;\\nimport com.github.tix320.skimp.api.util.Tuple;\\\
+          nimport com.github.tix320.skimp.api.world.World;\\nimport com.github.tix320.skimp.api.world.\r\
+          \n\r\n#ifndef LIB_UTIL_H\\n#define LIB_UTIL_H\\n\\n#include <string>\\n#include\
+          \ <vector>\\n#include <sstream>\\n#include <iostream>\\n#include <fstream>\\\
+          n#include <iomanip>\\n#include <cstdlib>\\n#include <ctime>\\n#include <cmath>\\\
+          n#include <algorithm>\\n\\n#include <Eigen/Core>\\n\\n#define UNUSED(x)\
+          \ ((void)(x))\r\n\r\nJust FYI using below code:\r\n\r\nimport torch\r\n\
+          import transformers\r\nfrom transformers import pipeline\r\nimport pandas\
+          \ as pd\r\n\r\nname = 'mosaicml/mpt-30b-instruct'\r\n\r\nconfig = transformers.AutoConfig.from_pretrained(name,\
+          \ trust_remote_code=True)\r\nconfig.attn_config['attn_impl'] = 'triton'\r\
+          \nconfig.init_device = 'cuda:0' \r\n\r\ntokenizer = transformers.AutoTokenizer.from_pretrained(\"\
+          mosaicml/mpt-30b\")\r\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\r\
+          \n  name,\r\n  config=config,\r\n  torch_dtype=torch.bfloat16, # Load model\
+          \ weights in bfloat16\r\n  trust_remote_code=True\r\n)\r\n\r\ndef format_prompt(instruction):\r\
+          \n    template = \"Below is an instruction that describes a task. Write\
+          \ a response that appropriately completes the request.\\n\\n###Instruction\\\
+          n{instruction}\\n\\n### Response\\n\"\r\n    return template.format(instruction=instruction)\r\
+          \n\r\ndef summarize(text):\r\n    text = 'Please summarize the following\
+          \ article. Only highlighting the important points. \\n\\n' + text\r\n  \
+          \  fmt_ex = format_prompt(instruction=text)\r\n    with torch.autocast('cuda',\
+          \ dtype=torch.bfloat16):\r\n        inputs = tokenizer(fmt_ex, return_tensors=\"\
+          pt\").to('cuda:0')\r\n        outputs = model.generate(**inputs, max_new_tokens=256,\
+          \ do_sample=True, top_p=0.95, top_k=50, temperature=0.7)\r\n        summary\
+          \ = tokenizer.batch_decode(outputs, skip_special_tokens=True)\r\n      \
+          \  summary = summary[0].split(\"### Response\")[1]\r\n        return summary\r\
+          \n\r\nI tried to play around with the generate parameters but not much help"
+        updatedAt: '2023-07-04T08:53:32.338Z'
+      numEdits: 0
+      reactions: []
+    id: 64a3de0cc9b4db7cc7853fc7
+    type: comment
+  author: Shallowlabs
+  content: "Hi Team, I was trying instruct model for summarization tasks but in multiple\
+    \ cases I observed that at the end of summarized passage its appending some code\
+    \ or arbitrary words like below:\r\n\r\nperiod.package com.github.tix320.skimp.api.level.entity;\\\
+    n\\nimport com.github.tix320.skimp.api.level.SkimpLevel;\\nimport com.github.tix320.skimp.api.util.Tuple;\\\
+    nimport com.github.tix320.skimp.api.world.World;\\nimport com.github.tix320.skimp.api.world.\r\
+    \n\r\n#ifndef LIB_UTIL_H\\n#define LIB_UTIL_H\\n\\n#include <string>\\n#include\
+    \ <vector>\\n#include <sstream>\\n#include <iostream>\\n#include <fstream>\\n#include\
+    \ <iomanip>\\n#include <cstdlib>\\n#include <ctime>\\n#include <cmath>\\n#include\
+    \ <algorithm>\\n\\n#include <Eigen/Core>\\n\\n#define UNUSED(x) ((void)(x))\r\n\
+    \r\nJust FYI using below code:\r\n\r\nimport torch\r\nimport transformers\r\n\
+    from transformers import pipeline\r\nimport pandas as pd\r\n\r\nname = 'mosaicml/mpt-30b-instruct'\r\
+    \n\r\nconfig = transformers.AutoConfig.from_pretrained(name, trust_remote_code=True)\r\
+    \nconfig.attn_config['attn_impl'] = 'triton'\r\nconfig.init_device = 'cuda:0'\
+    \ \r\n\r\ntokenizer = transformers.AutoTokenizer.from_pretrained(\"mosaicml/mpt-30b\"\
+    )\r\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\r\n  name,\r\n\
+    \  config=config,\r\n  torch_dtype=torch.bfloat16, # Load model weights in bfloat16\r\
+    \n  trust_remote_code=True\r\n)\r\n\r\ndef format_prompt(instruction):\r\n   \
+    \ template = \"Below is an instruction that describes a task. Write a response\
+    \ that appropriately completes the request.\\n\\n###Instruction\\n{instruction}\\\
+    n\\n### Response\\n\"\r\n    return template.format(instruction=instruction)\r\
+    \n\r\ndef summarize(text):\r\n    text = 'Please summarize the following article.\
+    \ Only highlighting the important points. \\n\\n' + text\r\n    fmt_ex = format_prompt(instruction=text)\r\
+    \n    with torch.autocast('cuda', dtype=torch.bfloat16):\r\n        inputs = tokenizer(fmt_ex,\
+    \ return_tensors=\"pt\").to('cuda:0')\r\n        outputs = model.generate(**inputs,\
+    \ max_new_tokens=256, do_sample=True, top_p=0.95, top_k=50, temperature=0.7)\r\
+    \n        summary = tokenizer.batch_decode(outputs, skip_special_tokens=True)\r\
+    \n        summary = summary[0].split(\"### Response\")[1]\r\n        return summary\r\
+    \n\r\nI tried to play around with the generate parameters but not much help"
+  created_at: 2023-07-04 07:53:32+00:00
+  edited: false
+  hidden: false
+  id: 64a3de0cc9b4db7cc7853fc7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64399cb9d45e8db3e28877c4/qtmSVmgH86jDkPBYVZ7B-.jpeg?w=200&h=200&f=face
+      fullname: Thorold Tronrud
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ttronrud
+      type: user
+    createdAt: '2023-07-12T14:32:19.000Z'
+    data:
+      edited: false
+      editors:
+      - ttronrud
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7422515749931335
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64399cb9d45e8db3e28877c4/qtmSVmgH86jDkPBYVZ7B-.jpeg?w=200&h=200&f=face
+          fullname: Thorold Tronrud
+          isHf: false
+          isPro: false
+          name: ttronrud
+          type: user
+        html: '<p>The EOS token seems to get ignored by default in the generate method
+          for this model. Change your generation setup to:<br>model.generate(**inputs,
+          max_new_tokens=256, do_sample=True, top_p=0.95, top_k=50, temperature=0.7,
+          eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.pad_token_id)<br>and
+          it should work as expected.</p>
+
+          '
+        raw: 'The EOS token seems to get ignored by default in the generate method
+          for this model. Change your generation setup to:
+
+          model.generate(**inputs, max_new_tokens=256, do_sample=True, top_p=0.95,
+          top_k=50, temperature=0.7, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.pad_token_id)
+
+          and it should work as expected.'
+        updatedAt: '2023-07-12T14:32:19.343Z'
+      numEdits: 0
+      reactions: []
+    id: 64aeb973eea66aafdf9c4922
+    type: comment
+  author: ttronrud
+  content: 'The EOS token seems to get ignored by default in the generate method for
+    this model. Change your generation setup to:
+
+    model.generate(**inputs, max_new_tokens=256, do_sample=True, top_p=0.95, top_k=50,
+    temperature=0.7, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.pad_token_id)
+
+    and it should work as expected.'
+  created_at: 2023-07-12 13:32:19+00:00
+  edited: false
+  hidden: false
+  id: 64aeb973eea66aafdf9c4922
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/928265c5e785840704dc78a3cc78e32e.svg
+      fullname: Jason White
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jwhite0720
+      type: user
+    createdAt: '2023-09-01T21:03:51.000Z'
+    data:
+      edited: true
+      editors:
+      - jwhite0720
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9151677489280701
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/928265c5e785840704dc78a3cc78e32e.svg
+          fullname: Jason White
+          isHf: false
+          isPro: false
+          name: jwhite0720
+          type: user
+        html: '<p>I''m experiencing similar weird responses, but I''m running the
+          model through an Inference Endpoint; is it possible to specify the EOS token
+          when calling the model through an Inference Endpoint?</p>
+
+          '
+        raw: I'm experiencing similar weird responses, but I'm running the model through
+          an Inference Endpoint; is it possible to specify the EOS token when calling
+          the model through an Inference Endpoint?
+        updatedAt: '2023-09-01T21:04:05.320Z'
+      numEdits: 1
+      reactions: []
+    id: 64f251b726a78599fadd72e5
+    type: comment
+  author: jwhite0720
+  content: I'm experiencing similar weird responses, but I'm running the model through
+    an Inference Endpoint; is it possible to specify the EOS token when calling the
+    model through an Inference Endpoint?
+  created_at: 2023-09-01 20:03:51+00:00
+  edited: true
+  hidden: false
+  id: 64f251b726a78599fadd72e5
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: mosaicml/mpt-30b-instruct
+repo_type: model
+status: open
+target_branch: null
+title: Weird Responses

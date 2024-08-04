@@ -1,0 +1,238 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: KaiYu
+conflicting_files: null
+created_at: 2022-10-02 22:06:59+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1645536481555-noauth.jpeg?w=200&h=200&f=face
+      fullname: Zhang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: KaiYu
+      type: user
+    createdAt: '2022-10-02T23:06:59.000Z'
+    data:
+      edited: false
+      editors:
+      - KaiYu
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1645536481555-noauth.jpeg?w=200&h=200&f=face
+          fullname: Zhang
+          isHf: false
+          isPro: false
+          name: KaiYu
+          type: user
+        html: "<p>Code is as follows:</p>\n<pre><code class=\"language-python\"><span\
+          \ class=\"hljs-string\">'''</span>\n<span class=\"hljs-string\">===================================</span>\n\
+          <span class=\"hljs-string\">'''</span>\n<span class=\"hljs-keyword\">class</span>\
+          \ <span class=\"hljs-title class_\">CFG</span>:\n    image_size = [<span\
+          \ class=\"hljs-number\">300</span>, <span class=\"hljs-number\">300</span>]\n\
+          \n\n<span class=\"hljs-string\">'''</span>\n<span class=\"hljs-string\"\
+          >===================================</span>\n<span class=\"hljs-string\"\
+          >'''</span>\n<span class=\"hljs-keyword\">import</span> torch\n<span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ ViTFeatureExtractor, ViTForImageClassification\n<span class=\"hljs-keyword\"\
+          >import</span> torch.nn <span class=\"hljs-keyword\">as</span> nn\n\nCFG.device\
+          \ = torch.device(<span class=\"hljs-string\">\"cuda:0\"</span> <span class=\"\
+          hljs-keyword\">if</span> torch.cuda.is_available() <span class=\"hljs-keyword\"\
+          >else</span> <span class=\"hljs-string\">\"CPU\"</span>)\n\n<span class=\"\
+          hljs-string\">'''\u6A21\u578B'''</span>\nfeatureExtractor = ViTFeatureExtractor.from_pretrained(<span\
+          \ class=\"hljs-string\">'./'</span>)\nclassifier = ViTForImageClassification.from_pretrained(<span\
+          \ class=\"hljs-string\">'./'</span>)\nclassifier.classifier = nn.Sequential(nn.Dropout(<span\
+          \ class=\"hljs-number\">0.5</span>), nn.Linear(<span class=\"hljs-number\"\
+          >768</span>, <span class=\"hljs-number\">4</span>))\n<span class=\"hljs-comment\"\
+          ># print(classifier.classifier)</span>\n\n<span class=\"hljs-keyword\">class</span>\
+          \ <span class=\"hljs-title class_\">myModel</span>(nn.Module):\n    <span\
+          \ class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >__init__</span>(<span class=\"hljs-params\">self</span>):\n        <span\
+          \ class=\"hljs-built_in\">super</span>().__init__()\n        self.featureExtractor\
+          \ = featureExtractor\n        self.classifier = classifier\n    <span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">forward</span>(<span\
+          \ class=\"hljs-params\">self, inputs</span>):\n        <span class=\"hljs-keyword\"\
+          >return</span> self.classifier(**self.featureExtractor(inputs, return_tensors=<span\
+          \ class=\"hljs-string\">\"pt\"</span>))\n\n<span class=\"hljs-keyword\"\
+          >if</span> torch.cuda.device_count() == <span class=\"hljs-number\">1</span>:\n\
+          \    CFG.model = myModel()\n<span class=\"hljs-keyword\">else</span>:\n\
+          \    CFG.model = nn.DataParallel(myModel())\nCFG.model = CFG.model.to(CFG.device)\n\
+          \n\n<span class=\"hljs-string\">'''</span>\n<span class=\"hljs-string\"\
+          >===================================</span>\n<span class=\"hljs-string\"\
+          >'''</span>\n<span class=\"hljs-keyword\">import</span> cv2\n\ndata = cv2.imread(<span\
+          \ class=\"hljs-string\">'../data/split_images/3c993bd2_0/background/005976.jpg'</span>)\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-built_in\"\
+          >type</span>(data))\n\n<span class=\"hljs-keyword\">import</span> albumentations\
+          \ <span class=\"hljs-keyword\">as</span> A\n<span class=\"hljs-keyword\"\
+          >from</span> albumentations.pytorch <span class=\"hljs-keyword\">import</span>\
+          \ ToTensorV2\n\nCFG.train_transform = A.Compose([\n    A.Resize(CFG.image_size[<span\
+          \ class=\"hljs-number\">0</span>], CFG.image_size[<span class=\"hljs-number\"\
+          >1</span>]),\n    A.RandomContrast(p=<span class=\"hljs-number\">0.5</span>),\n\
+          \    A.RandomBrightness(p=<span class=\"hljs-number\">0.5</span>),\n   \
+          \ A.Normalize(mean=(<span class=\"hljs-number\">0.485</span>, <span class=\"\
+          hljs-number\">0.456</span>, <span class=\"hljs-number\">0.406</span>), std=(<span\
+          \ class=\"hljs-number\">0.229</span>, <span class=\"hljs-number\">0.224</span>,\
+          \ <span class=\"hljs-number\">0.225</span>)),\n    ToTensorV2()\n])\n\n\
+          CFG.val_transform = A.Compose([\n    A.Resize(CFG.image_size[<span class=\"\
+          hljs-number\">0</span>], CFG.image_size[<span class=\"hljs-number\">1</span>]),\n\
+          \    A.Normalize(mean=(<span class=\"hljs-number\">0.485</span>, <span class=\"\
+          hljs-number\">0.456</span>, <span class=\"hljs-number\">0.406</span>), std=(<span\
+          \ class=\"hljs-number\">0.229</span>, <span class=\"hljs-number\">0.224</span>,\
+          \ <span class=\"hljs-number\">0.225</span>)),\n    ToTensorV2()\n])\n\n\
+          data = CFG.train_transform(image=data)[<span class=\"hljs-string\">'image'</span>]\n\
+          <span class=\"hljs-comment\"># print(data)</span>\n\n<span class=\"hljs-built_in\"\
+          >print</span>(CFG.model(data.to(CFG.device)))\n</code></pre>\n"
+        raw: "Code is as follows:\r\n\r\n```python\r\n'''\r\n===================================\r\
+          \n'''\r\nclass CFG:\r\n    image_size = [300, 300]\r\n\r\n\r\n'''\r\n===================================\r\
+          \n'''\r\nimport torch\r\nfrom transformers import ViTFeatureExtractor, ViTForImageClassification\r\
+          \nimport torch.nn as nn\r\n\r\nCFG.device = torch.device(\"cuda:0\" if torch.cuda.is_available()\
+          \ else \"CPU\")\r\n\r\n'''\u6A21\u578B'''\r\nfeatureExtractor = ViTFeatureExtractor.from_pretrained('./')\r\
+          \nclassifier = ViTForImageClassification.from_pretrained('./')\r\nclassifier.classifier\
+          \ = nn.Sequential(nn.Dropout(0.5), nn.Linear(768, 4))\r\n# print(classifier.classifier)\r\
+          \n\r\nclass myModel(nn.Module):\r\n    def __init__(self):\r\n        super().__init__()\r\
+          \n        self.featureExtractor = featureExtractor\r\n        self.classifier\
+          \ = classifier\r\n    def forward(self, inputs):\r\n        return self.classifier(**self.featureExtractor(inputs,\
+          \ return_tensors=\"pt\"))\r\n\r\nif torch.cuda.device_count() == 1:\r\n\
+          \    CFG.model = myModel()\r\nelse:\r\n    CFG.model = nn.DataParallel(myModel())\r\
+          \nCFG.model = CFG.model.to(CFG.device)\r\n\r\n\r\n'''\r\n===================================\r\
+          \n'''\r\nimport cv2\r\n\r\ndata = cv2.imread('../data/split_images/3c993bd2_0/background/005976.jpg')\r\
+          \nprint(type(data))\r\n\r\nimport albumentations as A\r\nfrom albumentations.pytorch\
+          \ import ToTensorV2\r\n\r\nCFG.train_transform = A.Compose([\r\n    A.Resize(CFG.image_size[0],\
+          \ CFG.image_size[1]),\r\n    A.RandomContrast(p=0.5),\r\n    A.RandomBrightness(p=0.5),\r\
+          \n    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),\r\
+          \n    ToTensorV2()\r\n])\r\n\r\nCFG.val_transform = A.Compose([\r\n    A.Resize(CFG.image_size[0],\
+          \ CFG.image_size[1]),\r\n    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229,\
+          \ 0.224, 0.225)),\r\n    ToTensorV2()\r\n])\r\n\r\ndata = CFG.train_transform(image=data)['image']\r\
+          \n# print(data)\r\n\r\nprint(CFG.model(data.to(CFG.device)))\r\n```"
+        updatedAt: '2022-10-02T23:06:59.537Z'
+      numEdits: 0
+      reactions: []
+    id: 633a1993474cfeb1a86465b5
+    type: comment
+  author: KaiYu
+  content: "Code is as follows:\r\n\r\n```python\r\n'''\r\n===================================\r\
+    \n'''\r\nclass CFG:\r\n    image_size = [300, 300]\r\n\r\n\r\n'''\r\n===================================\r\
+    \n'''\r\nimport torch\r\nfrom transformers import ViTFeatureExtractor, ViTForImageClassification\r\
+    \nimport torch.nn as nn\r\n\r\nCFG.device = torch.device(\"cuda:0\" if torch.cuda.is_available()\
+    \ else \"CPU\")\r\n\r\n'''\u6A21\u578B'''\r\nfeatureExtractor = ViTFeatureExtractor.from_pretrained('./')\r\
+    \nclassifier = ViTForImageClassification.from_pretrained('./')\r\nclassifier.classifier\
+    \ = nn.Sequential(nn.Dropout(0.5), nn.Linear(768, 4))\r\n# print(classifier.classifier)\r\
+    \n\r\nclass myModel(nn.Module):\r\n    def __init__(self):\r\n        super().__init__()\r\
+    \n        self.featureExtractor = featureExtractor\r\n        self.classifier\
+    \ = classifier\r\n    def forward(self, inputs):\r\n        return self.classifier(**self.featureExtractor(inputs,\
+    \ return_tensors=\"pt\"))\r\n\r\nif torch.cuda.device_count() == 1:\r\n    CFG.model\
+    \ = myModel()\r\nelse:\r\n    CFG.model = nn.DataParallel(myModel())\r\nCFG.model\
+    \ = CFG.model.to(CFG.device)\r\n\r\n\r\n'''\r\n===================================\r\
+    \n'''\r\nimport cv2\r\n\r\ndata = cv2.imread('../data/split_images/3c993bd2_0/background/005976.jpg')\r\
+    \nprint(type(data))\r\n\r\nimport albumentations as A\r\nfrom albumentations.pytorch\
+    \ import ToTensorV2\r\n\r\nCFG.train_transform = A.Compose([\r\n    A.Resize(CFG.image_size[0],\
+    \ CFG.image_size[1]),\r\n    A.RandomContrast(p=0.5),\r\n    A.RandomBrightness(p=0.5),\r\
+    \n    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),\r\n\
+    \    ToTensorV2()\r\n])\r\n\r\nCFG.val_transform = A.Compose([\r\n    A.Resize(CFG.image_size[0],\
+    \ CFG.image_size[1]),\r\n    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229,\
+    \ 0.224, 0.225)),\r\n    ToTensorV2()\r\n])\r\n\r\ndata = CFG.train_transform(image=data)['image']\r\
+    \n# print(data)\r\n\r\nprint(CFG.model(data.to(CFG.device)))\r\n```"
+  created_at: 2022-10-02 22:06:59+00:00
+  edited: false
+  hidden: false
+  id: 633a1993474cfeb1a86465b5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1645536481555-noauth.jpeg?w=200&h=200&f=face
+      fullname: Zhang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: KaiYu
+      type: user
+    createdAt: '2022-10-02T23:09:26.000Z'
+    data:
+      edited: false
+      editors:
+      - KaiYu
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1645536481555-noauth.jpeg?w=200&h=200&f=face
+          fullname: Zhang
+          isHf: false
+          isPro: false
+          name: KaiYu
+          type: user
+        html: '<p>my fault:<br>it shoul be used like this:</p>
+
+          <pre><code class="language-python">self.classifier(**self.featureExtractor(inputs,
+          return_tensors=<span class="hljs-string">"pt"</span>).to(CFG.device))
+
+          </code></pre>
+
+          '
+        raw: 'my fault:
+
+          it shoul be used like this:
+
+          ```python
+
+          self.classifier(**self.featureExtractor(inputs, return_tensors="pt").to(CFG.device))
+
+          ```'
+        updatedAt: '2022-10-02T23:09:26.844Z'
+      numEdits: 0
+      reactions: []
+    id: 633a1a2637faf14d3a9b723b
+    type: comment
+  author: KaiYu
+  content: 'my fault:
+
+    it shoul be used like this:
+
+    ```python
+
+    self.classifier(**self.featureExtractor(inputs, return_tensors="pt").to(CFG.device))
+
+    ```'
+  created_at: 2022-10-02 22:09:26+00:00
+  edited: false
+  hidden: false
+  id: 633a1a2637faf14d3a9b723b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1645536481555-noauth.jpeg?w=200&h=200&f=face
+      fullname: Zhang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: KaiYu
+      type: user
+    createdAt: '2022-10-02T23:09:32.000Z'
+    data:
+      status: closed
+    id: 633a1a2c474cfeb1a8646b0c
+    type: status-change
+  author: KaiYu
+  created_at: 2022-10-02 22:09:32+00:00
+  id: 633a1a2c474cfeb1a8646b0c
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: google/vit-base-patch16-224
+repo_type: model
+status: closed
+target_branch: null
+title: 'When use as .cuda, there is an error: can''t convert cuda:0 device type tensor
+  to numpy. Use Tensor.cpu() to copy the tensor to host memory first.'

@@ -1,0 +1,419 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: chinmay55
+conflicting_files: null
+created_at: 2023-04-13 08:58:12+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/618c972ce3291b1ccdb5ee1c8b05c200.svg
+      fullname: Chinmay Prabhakar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chinmay55
+      type: user
+    createdAt: '2023-04-13T09:58:12.000Z'
+    data:
+      edited: false
+      editors:
+      - chinmay55
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/618c972ce3291b1ccdb5ee1c8b05c200.svg
+          fullname: Chinmay Prabhakar
+          isHf: false
+          isPro: false
+          name: chinmay55
+          type: user
+        html: "<p>Hi all,</p>\n<p>Thank you so much for releasing the code and integrating\
+          \ it with OpenCLIP. I was playing around with the released code and tried\
+          \ to reproduce the results on the LC 25k dataset. From the paper, I understood\
+          \ that no fine-tuning is required, and we can directly use the dataset in\
+          \ ZSL way with the appropriate prompts. However, I am not able to reproduce\
+          \ the results. (Acc for Lungs is ~41% and ~33 % for colon).</p>\n<p>I am\
+          \ not sure what exactly is going wrong here. It would be great to get some\
+          \ input from your end. Thanks.</p>\n<pre><code>import torch\nfrom tqdm import\
+          \ tqdm\nimport torch.nn.functional as F\nimport open_clip\n\nfrom test_prediction.zsl.dataset\
+          \ import ZeroShotImageDataset\n\nlabel_encoding = {\n    0: 'Colon Adenocarcinoma',\n\
+          \    1: 'Colon Benign Tissue',\n    2: 'Lung Adenocarcinoma',\n    3: 'Lung\
+          \ Benign Tissue',\n    4: 'Lung Squamous Cell Carcinoma',\n}\n\ndevice =\
+          \ torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')\n\
+          \n\ndef get_templates(disease_label):\n    \"\"\"\n    :param disease_label:\
+          \ integer value \\in [0,5]\n    :return: list of templates\n    \"\"\"\n\
+          \    disease = label_encoding[disease_label]\n    if disease_label in [0,\
+          \ 1]:\n        first_sentence = f'a photo of {disease}'\n    else:\n   \
+          \     first_sentence = f\"this is an image of {disease}\"\n    second_sentence\
+          \ = f\"{disease} presented in image\"\n    return [first_sentence, second_sentence]\n\
+          \n\ncontext_length = 256\n\n\n# Handling multiple templates together\ndef\
+          \ zero_shot_class_embedding_generator(model, tokenizer, classnames):\n \
+          \   \"\"\"\n    Returns the embeddings for each possible template [1 x temp]\n\
+          \    :param classnames: The class labels for which template generation\n\
+          \    :param model: CLIP model to use\n    :param tokenizer: CLIP tokenizer\
+          \ used for creating the templates\n    :return:\n    \"\"\"\n    with torch.no_grad():\n\
+          \        zeroshot_class_weights = []\n        for classname in tqdm(range(0,\
+          \ 5)):\n            templates = get_templates(classname)  # format with\
+          \ class\n            texts = tokenizer(templates).to(device)  # tokenize\n\
+          \            class_embeddings = model.encode_text(texts)\n            class_embedding\
+          \ = F.normalize(class_embeddings, dim=-1).mean(dim=0)\n            class_embedding\
+          \ /= class_embedding.norm()\n            zeroshot_class_weights.append(class_embedding)\n\
+          \        zeroshot_class_weights = torch.stack(zeroshot_class_weights, dim=1).to(device)\n\
+          \    return zeroshot_class_weights\n\n\ndef load_model_weights():\n    model,\
+          \ preprocess_train, preprocess_val = open_clip.create_model_and_transforms(\n\
+          \        'hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\n\
+          \    tokenizer = open_clip.get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\n\
+          \    model.to(device)\n    return model, tokenizer, preprocess_val\n\n\n\
+          def accuracy(output, target, topk=(1,)):\n   # Same as obtained from the\
+          \ open_clip `src.training.zero_shot.py`\n   \n    pred = output.topk(max(topk),\
+          \ 1, True, True)[1].t()\n    correct = pred.eq(target.view(1, -1).expand_as(pred))\n\
+          \    return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy())\
+          \ for k in topk]\n\n\ndef execute(model, test_data, class_weights):\n# Same\
+          \ as obtained from the open_clip `src.training.zero_shot.py`\n    model.to(device)\n\
+          \    model.eval()\n    loader = torch.utils.data.DataLoader(test_data, batch_size=128)\n\
+          \    top1 = n = 0\n    for images, labels in tqdm(loader, total=len(loader)):\n\
+          \        with torch.no_grad():\n            images, labels = images.to(device),\
+          \ labels.to(device)\n            # Encode the image features\n         \
+          \   image_features = model.encode_image(images)\n            image_features\
+          \ = F.normalize(image_features, dim=-1)\n            logits = 100. * image_features\
+          \ @ class_weights\n            acc1 = accuracy(logits, labels)\n       \
+          \     top1 += acc1.pop()\n            n += images.size(0)\n    print(f\"\
+          Accuracy is {top1 / n}\")\n\n\nif __name__ == '__main__':\n    model, tokenizer,\
+          \ transform_val = load_model_weights()\n    print(\"Results for Colon:\"\
+          )\n    test_data = ZeroShotImageDataset(csv_name='zsl_dataset_colon.csv',\
+          \ imgtransform=transform_val)\n    class_weights = zero_shot_class_embedding_generator(model=model,\
+          \ tokenizer=tokenizer, classnames=[0, 1])\n    execute(model, test_data,\
+          \ class_weights)\n    # Now the same for lung\n    print(\"Results for Lung:\"\
+          )\n    class_weights = zero_shot_class_embedding_generator(model=model,\
+          \ tokenizer=tokenizer, classnames=[2, 3, 4])\n    test_data = ZeroShotImageDataset(csv_name='zsl_dataset_lung.csv',\
+          \ imgtransform=transform_val)\n    execute(model, test_data, class_weights)\n\
+          </code></pre>\n"
+        raw: "Hi all,\r\n\r\nThank you so much for releasing the code and integrating\
+          \ it with OpenCLIP. I was playing around with the released code and tried\
+          \ to reproduce the results on the LC 25k dataset. From the paper, I understood\
+          \ that no fine-tuning is required, and we can directly use the dataset in\
+          \ ZSL way with the appropriate prompts. However, I am not able to reproduce\
+          \ the results. (Acc for Lungs is ~41% and ~33 % for colon).\r\n\r\nI am\
+          \ not sure what exactly is going wrong here. It would be great to get some\
+          \ input from your end. Thanks.\r\n\r\n```\r\nimport torch\r\nfrom tqdm import\
+          \ tqdm\r\nimport torch.nn.functional as F\r\nimport open_clip\r\n\r\nfrom\
+          \ test_prediction.zsl.dataset import ZeroShotImageDataset\r\n\r\nlabel_encoding\
+          \ = {\r\n    0: 'Colon Adenocarcinoma',\r\n    1: 'Colon Benign Tissue',\r\
+          \n    2: 'Lung Adenocarcinoma',\r\n    3: 'Lung Benign Tissue',\r\n    4:\
+          \ 'Lung Squamous Cell Carcinoma',\r\n}\r\n\r\ndevice = torch.device('cuda')\
+          \ if torch.cuda.is_available() else torch.device('cpu')\r\n\r\n\r\ndef get_templates(disease_label):\r\
+          \n    \"\"\"\r\n    :param disease_label: integer value \\in [0,5]\r\n \
+          \   :return: list of templates\r\n    \"\"\"\r\n    disease = label_encoding[disease_label]\r\
+          \n    if disease_label in [0, 1]:\r\n        first_sentence = f'a photo\
+          \ of {disease}'\r\n    else:\r\n        first_sentence = f\"this is an image\
+          \ of {disease}\"\r\n    second_sentence = f\"{disease} presented in image\"\
+          \r\n    return [first_sentence, second_sentence]\r\n\r\n\r\ncontext_length\
+          \ = 256\r\n\r\n\r\n# Handling multiple templates together\r\ndef zero_shot_class_embedding_generator(model,\
+          \ tokenizer, classnames):\r\n    \"\"\"\r\n    Returns the embeddings for\
+          \ each possible template [1 x temp]\r\n    :param classnames: The class\
+          \ labels for which template generation\r\n    :param model: CLIP model to\
+          \ use\r\n    :param tokenizer: CLIP tokenizer used for creating the templates\r\
+          \n    :return:\r\n    \"\"\"\r\n    with torch.no_grad():\r\n        zeroshot_class_weights\
+          \ = []\r\n        for classname in tqdm(range(0, 5)):\r\n            templates\
+          \ = get_templates(classname)  # format with class\r\n            texts =\
+          \ tokenizer(templates).to(device)  # tokenize\r\n            class_embeddings\
+          \ = model.encode_text(texts)\r\n            class_embedding = F.normalize(class_embeddings,\
+          \ dim=-1).mean(dim=0)\r\n            class_embedding /= class_embedding.norm()\r\
+          \n            zeroshot_class_weights.append(class_embedding)\r\n       \
+          \ zeroshot_class_weights = torch.stack(zeroshot_class_weights, dim=1).to(device)\r\
+          \n    return zeroshot_class_weights\r\n\r\n\r\ndef load_model_weights():\r\
+          \n    model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms(\r\
+          \n        'hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\r\
+          \n    tokenizer = open_clip.get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\r\
+          \n    model.to(device)\r\n    return model, tokenizer, preprocess_val\r\n\
+          \r\n\r\ndef accuracy(output, target, topk=(1,)):\r\n   # Same as obtained\
+          \ from the open_clip `src.training.zero_shot.py`\r\n   \r\n    pred = output.topk(max(topk),\
+          \ 1, True, True)[1].t()\r\n    correct = pred.eq(target.view(1, -1).expand_as(pred))\r\
+          \n    return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy())\
+          \ for k in topk]\r\n\r\n\r\ndef execute(model, test_data, class_weights):\r\
+          \n# Same as obtained from the open_clip `src.training.zero_shot.py`\r\n\
+          \    model.to(device)\r\n    model.eval()\r\n    loader = torch.utils.data.DataLoader(test_data,\
+          \ batch_size=128)\r\n    top1 = n = 0\r\n    for images, labels in tqdm(loader,\
+          \ total=len(loader)):\r\n        with torch.no_grad():\r\n            images,\
+          \ labels = images.to(device), labels.to(device)\r\n            # Encode\
+          \ the image features\r\n            image_features = model.encode_image(images)\r\
+          \n            image_features = F.normalize(image_features, dim=-1)\r\n \
+          \           logits = 100. * image_features @ class_weights\r\n         \
+          \   acc1 = accuracy(logits, labels)\r\n            top1 += acc1.pop()\r\n\
+          \            n += images.size(0)\r\n    print(f\"Accuracy is {top1 / n}\"\
+          )\r\n\r\n\r\nif __name__ == '__main__':\r\n    model, tokenizer, transform_val\
+          \ = load_model_weights()\r\n    print(\"Results for Colon:\")\r\n    test_data\
+          \ = ZeroShotImageDataset(csv_name='zsl_dataset_colon.csv', imgtransform=transform_val)\r\
+          \n    class_weights = zero_shot_class_embedding_generator(model=model, tokenizer=tokenizer,\
+          \ classnames=[0, 1])\r\n    execute(model, test_data, class_weights)\r\n\
+          \    # Now the same for lung\r\n    print(\"Results for Lung:\")\r\n   \
+          \ class_weights = zero_shot_class_embedding_generator(model=model, tokenizer=tokenizer,\
+          \ classnames=[2, 3, 4])\r\n    test_data = ZeroShotImageDataset(csv_name='zsl_dataset_lung.csv',\
+          \ imgtransform=transform_val)\r\n    execute(model, test_data, class_weights)\r\
+          \n\r\n```"
+        updatedAt: '2023-04-13T09:58:12.288Z'
+      numEdits: 0
+      reactions: []
+    id: 6437d234961bb61e4639edb3
+    type: comment
+  author: chinmay55
+  content: "Hi all,\r\n\r\nThank you so much for releasing the code and integrating\
+    \ it with OpenCLIP. I was playing around with the released code and tried to reproduce\
+    \ the results on the LC 25k dataset. From the paper, I understood that no fine-tuning\
+    \ is required, and we can directly use the dataset in ZSL way with the appropriate\
+    \ prompts. However, I am not able to reproduce the results. (Acc for Lungs is\
+    \ ~41% and ~33 % for colon).\r\n\r\nI am not sure what exactly is going wrong\
+    \ here. It would be great to get some input from your end. Thanks.\r\n\r\n```\r\
+    \nimport torch\r\nfrom tqdm import tqdm\r\nimport torch.nn.functional as F\r\n\
+    import open_clip\r\n\r\nfrom test_prediction.zsl.dataset import ZeroShotImageDataset\r\
+    \n\r\nlabel_encoding = {\r\n    0: 'Colon Adenocarcinoma',\r\n    1: 'Colon Benign\
+    \ Tissue',\r\n    2: 'Lung Adenocarcinoma',\r\n    3: 'Lung Benign Tissue',\r\n\
+    \    4: 'Lung Squamous Cell Carcinoma',\r\n}\r\n\r\ndevice = torch.device('cuda')\
+    \ if torch.cuda.is_available() else torch.device('cpu')\r\n\r\n\r\ndef get_templates(disease_label):\r\
+    \n    \"\"\"\r\n    :param disease_label: integer value \\in [0,5]\r\n    :return:\
+    \ list of templates\r\n    \"\"\"\r\n    disease = label_encoding[disease_label]\r\
+    \n    if disease_label in [0, 1]:\r\n        first_sentence = f'a photo of {disease}'\r\
+    \n    else:\r\n        first_sentence = f\"this is an image of {disease}\"\r\n\
+    \    second_sentence = f\"{disease} presented in image\"\r\n    return [first_sentence,\
+    \ second_sentence]\r\n\r\n\r\ncontext_length = 256\r\n\r\n\r\n# Handling multiple\
+    \ templates together\r\ndef zero_shot_class_embedding_generator(model, tokenizer,\
+    \ classnames):\r\n    \"\"\"\r\n    Returns the embeddings for each possible template\
+    \ [1 x temp]\r\n    :param classnames: The class labels for which template generation\r\
+    \n    :param model: CLIP model to use\r\n    :param tokenizer: CLIP tokenizer\
+    \ used for creating the templates\r\n    :return:\r\n    \"\"\"\r\n    with torch.no_grad():\r\
+    \n        zeroshot_class_weights = []\r\n        for classname in tqdm(range(0,\
+    \ 5)):\r\n            templates = get_templates(classname)  # format with class\r\
+    \n            texts = tokenizer(templates).to(device)  # tokenize\r\n        \
+    \    class_embeddings = model.encode_text(texts)\r\n            class_embedding\
+    \ = F.normalize(class_embeddings, dim=-1).mean(dim=0)\r\n            class_embedding\
+    \ /= class_embedding.norm()\r\n            zeroshot_class_weights.append(class_embedding)\r\
+    \n        zeroshot_class_weights = torch.stack(zeroshot_class_weights, dim=1).to(device)\r\
+    \n    return zeroshot_class_weights\r\n\r\n\r\ndef load_model_weights():\r\n \
+    \   model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms(\r\
+    \n        'hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\r\
+    \n    tokenizer = open_clip.get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')\r\
+    \n    model.to(device)\r\n    return model, tokenizer, preprocess_val\r\n\r\n\r\
+    \ndef accuracy(output, target, topk=(1,)):\r\n   # Same as obtained from the open_clip\
+    \ `src.training.zero_shot.py`\r\n   \r\n    pred = output.topk(max(topk), 1, True,\
+    \ True)[1].t()\r\n    correct = pred.eq(target.view(1, -1).expand_as(pred))\r\n\
+    \    return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy())\
+    \ for k in topk]\r\n\r\n\r\ndef execute(model, test_data, class_weights):\r\n\
+    # Same as obtained from the open_clip `src.training.zero_shot.py`\r\n    model.to(device)\r\
+    \n    model.eval()\r\n    loader = torch.utils.data.DataLoader(test_data, batch_size=128)\r\
+    \n    top1 = n = 0\r\n    for images, labels in tqdm(loader, total=len(loader)):\r\
+    \n        with torch.no_grad():\r\n            images, labels = images.to(device),\
+    \ labels.to(device)\r\n            # Encode the image features\r\n           \
+    \ image_features = model.encode_image(images)\r\n            image_features =\
+    \ F.normalize(image_features, dim=-1)\r\n            logits = 100. * image_features\
+    \ @ class_weights\r\n            acc1 = accuracy(logits, labels)\r\n         \
+    \   top1 += acc1.pop()\r\n            n += images.size(0)\r\n    print(f\"Accuracy\
+    \ is {top1 / n}\")\r\n\r\n\r\nif __name__ == '__main__':\r\n    model, tokenizer,\
+    \ transform_val = load_model_weights()\r\n    print(\"Results for Colon:\")\r\n\
+    \    test_data = ZeroShotImageDataset(csv_name='zsl_dataset_colon.csv', imgtransform=transform_val)\r\
+    \n    class_weights = zero_shot_class_embedding_generator(model=model, tokenizer=tokenizer,\
+    \ classnames=[0, 1])\r\n    execute(model, test_data, class_weights)\r\n    #\
+    \ Now the same for lung\r\n    print(\"Results for Lung:\")\r\n    class_weights\
+    \ = zero_shot_class_embedding_generator(model=model, tokenizer=tokenizer, classnames=[2,\
+    \ 3, 4])\r\n    test_data = ZeroShotImageDataset(csv_name='zsl_dataset_lung.csv',\
+    \ imgtransform=transform_val)\r\n    execute(model, test_data, class_weights)\r\
+    \n\r\n```"
+  created_at: 2023-04-13 08:58:12+00:00
+  edited: false
+  hidden: false
+  id: 6437d234961bb61e4639edb3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/57a6dfd5b71f7d1fad5257989fdf9840.svg
+      fullname: Yanbo Xu
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: YanboXu
+      type: user
+    createdAt: '2023-04-14T15:38:40.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/57a6dfd5b71f7d1fad5257989fdf9840.svg
+          fullname: Yanbo Xu
+          isHf: false
+          isPro: false
+          name: YanboXu
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-04-14T16:44:38.704Z'
+      numEdits: 1
+      reactions: []
+    id: 64397380c5f84418d04ef3d9
+    type: comment
+  author: YanboXu
+  content: This comment has been hidden
+  created_at: 2023-04-14 14:38:40+00:00
+  edited: true
+  hidden: true
+  id: 64397380c5f84418d04ef3d9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/57a6dfd5b71f7d1fad5257989fdf9840.svg
+      fullname: Yanbo Xu
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: YanboXu
+      type: user
+    createdAt: '2023-04-14T21:26:13.000Z'
+    data:
+      edited: false
+      editors:
+      - YanboXu
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/57a6dfd5b71f7d1fad5257989fdf9840.svg
+          fullname: Yanbo Xu
+          isHf: false
+          isPro: false
+          name: YanboXu
+          type: user
+        html: "<p>The task is to classify Colon and Lung separately, so you may want\
+          \ to only iterate over the classes passed by <strong>classnames</strong>\
+          \ in the <strong>zero_shot_class_embedding_generator</strong> function instead\
+          \ of iterating over all the 5 classes:</p>\n<pre><code># Handling multiple\
+          \ templates together\ndef zero_shot_class_embedding_generator(model, tokenizer,\
+          \ classnames):\n    \"\"\"\n    ...\n        for classname in classnames:\
+          \ # NOT in tqdm(range(0, 5))\n            templates = get_templates(classname)\
+          \  # format with class\n    ...\n</code></pre>\n<p>Besides, please also\
+          \ try the following prompts:</p>\n<pre><code>label_encoding = {\n    0:\
+          \ 'Colon Adenocarcinoma',\n    1: 'Normal Colonic Tissue',\n    2: 'Lung\
+          \ Adenocarcinoma',\n    3: 'Normal Lung Tissue',\n    4: 'Lung Squamous\
+          \ Cell Carcinoma',\n}\n</code></pre>\n<p>Hope this helps! We are currently\
+          \ working to release a notebook for running zero-shot evaluation on the\
+          \ datasets.</p>\n"
+        raw: "The task is to classify Colon and Lung separately, so you may want to\
+          \ only iterate over the classes passed by **classnames** in the **zero_shot_class_embedding_generator**\
+          \ function instead of iterating over all the 5 classes:\n\n```\n# Handling\
+          \ multiple templates together\ndef zero_shot_class_embedding_generator(model,\
+          \ tokenizer, classnames):\n    \"\"\"\n    ...\n        for classname in\
+          \ classnames: # NOT in tqdm(range(0, 5))\n            templates = get_templates(classname)\
+          \  # format with class\n    ...\n```\n\nBesides, please also try the following\
+          \ prompts:\n\n```\nlabel_encoding = {\n    0: 'Colon Adenocarcinoma',\n\
+          \    1: 'Normal Colonic Tissue',\n    2: 'Lung Adenocarcinoma',\n    3:\
+          \ 'Normal Lung Tissue',\n    4: 'Lung Squamous Cell Carcinoma',\n}\n```\n\
+          \nHope this helps! We are currently working to release a notebook for running\
+          \ zero-shot evaluation on the datasets."
+        updatedAt: '2023-04-14T21:26:13.436Z'
+      numEdits: 0
+      reactions: []
+    id: 6439c4f5a6b2f278af74340b
+    type: comment
+  author: YanboXu
+  content: "The task is to classify Colon and Lung separately, so you may want to\
+    \ only iterate over the classes passed by **classnames** in the **zero_shot_class_embedding_generator**\
+    \ function instead of iterating over all the 5 classes:\n\n```\n# Handling multiple\
+    \ templates together\ndef zero_shot_class_embedding_generator(model, tokenizer,\
+    \ classnames):\n    \"\"\"\n    ...\n        for classname in classnames: # NOT\
+    \ in tqdm(range(0, 5))\n            templates = get_templates(classname)  # format\
+    \ with class\n    ...\n```\n\nBesides, please also try the following prompts:\n\
+    \n```\nlabel_encoding = {\n    0: 'Colon Adenocarcinoma',\n    1: 'Normal Colonic\
+    \ Tissue',\n    2: 'Lung Adenocarcinoma',\n    3: 'Normal Lung Tissue',\n    4:\
+    \ 'Lung Squamous Cell Carcinoma',\n}\n```\n\nHope this helps! We are currently\
+    \ working to release a notebook for running zero-shot evaluation on the datasets."
+  created_at: 2023-04-14 20:26:13+00:00
+  edited: false
+  hidden: false
+  id: 6439c4f5a6b2f278af74340b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/618c972ce3291b1ccdb5ee1c8b05c200.svg
+      fullname: Chinmay Prabhakar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chinmay55
+      type: user
+    createdAt: '2023-04-17T09:33:12.000Z'
+    data:
+      edited: false
+      editors:
+      - chinmay55
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/618c972ce3291b1ccdb5ee1c8b05c200.svg
+          fullname: Chinmay Prabhakar
+          isHf: false
+          isPro: false
+          name: chinmay55
+          type: user
+        html: '<p>Thank you for the response. I updated the code base, and I am able
+          to get results that are close to the reported numbers. Looking forward to
+          the release of sample notebooks.</p>
+
+          '
+        raw: Thank you for the response. I updated the code base, and I am able to
+          get results that are close to the reported numbers. Looking forward to the
+          release of sample notebooks.
+        updatedAt: '2023-04-17T09:33:12.088Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 643d1258fdb3d500061e04cd
+    id: 643d1258fdb3d500061e04cc
+    type: comment
+  author: chinmay55
+  content: Thank you for the response. I updated the code base, and I am able to get
+    results that are close to the reported numbers. Looking forward to the release
+    of sample notebooks.
+  created_at: 2023-04-17 08:33:12+00:00
+  edited: false
+  hidden: false
+  id: 643d1258fdb3d500061e04cc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/618c972ce3291b1ccdb5ee1c8b05c200.svg
+      fullname: Chinmay Prabhakar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chinmay55
+      type: user
+    createdAt: '2023-04-17T09:33:12.000Z'
+    data:
+      status: closed
+    id: 643d1258fdb3d500061e04cd
+    type: status-change
+  author: chinmay55
+  created_at: 2023-04-17 08:33:12+00:00
+  id: 643d1258fdb3d500061e04cd
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224
+repo_type: model
+status: closed
+target_branch: null
+title: Struggling to reporduce results on the LC 25000 dataset

@@ -1,0 +1,550 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: shmalex
+conflicting_files: null
+created_at: 2023-04-28 03:12:57+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+      fullname: Alexei Matusevski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shmalex
+      type: user
+    createdAt: '2023-04-28T04:12:57.000Z'
+    data:
+      edited: false
+      editors:
+      - shmalex
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+          fullname: Alexei Matusevski
+          isHf: false
+          isPro: false
+          name: shmalex
+          type: user
+        html: "<p>Hi everyone,<br>Using Ubuntu 18.04<br>I followed the instructions.\
+          \  </p>\n<p>my md5sums:</p>\n<pre><code>b85026155b964b6f3a883c9a8b62dfe3\
+          \  ./added_tokens.json\ncc9dbf56b68b68a585cc7367696e06a7  ./config.json\n\
+          2917a1cafb895cf57e746cfd7696bfe5  ./generation_config.json\nff6e4cf43ddf02fb5d3960f850af1220\
+          \  ./pytorch_model-00001-of-00007.bin\nae48c4c68e4e171d502dd0896aa19a84\
+          \  ./pytorch_model-00002-of-00007.bin\n659fcb7598dcd22e7d008189ecb2bb42\
+          \  ./pytorch_model-00003-of-00007.bin\nf7aefb4c63be2ac512fd905b45295235\
+          \  ./pytorch_model-00004-of-00007.bin\n740c324ae65b1ec25976643cda79e479\
+          \  ./pytorch_model-00005-of-00007.bin\n369df2f0e38bda0d9629a12a77c10dfc\
+          \  ./pytorch_model-00006-of-00007.bin\n970e99665d66ba3fad6fdf9b4910acc5\
+          \  ./pytorch_model-00007-of-00007.bin\n76d47e4f51a8df1d703c6f594981fcab\
+          \  ./pytorch_model.bin.index.json\n785905630a0fe583122a8446a5abe287  ./special_tokens_map.json\n\
+          eeec4125e9c7560836b4873b6f8e3025  ./tokenizer.model\nfd9452959d711be29ccf04a97598e8d1\
+          \  ./tokenizer_config.json\n</code></pre>\n<p>The problem that i had is\
+          \ that the Tokenizer did not like the <code>added_tokens.json</code> file.\
+          \ After xor_decoding that file is not valid JSON, just some binaries. All\
+          \ other files has correct md5sum  What should i do about it?<br>What i did\
+          \ - i replaced it with file from the LLaMa file.</p>\n<p>I use following\
+          \ code from the <code>modeling_llama.py</code> file:</p>\n<pre><code>from\
+          \ transformers import AutoTokenizer, LlamaForCausalLM\nPATH_TO_CONVERTED_WEIGHTS=\
+          \  '~/data/oasst-sft-6-llama-30b/'\nPATH_TO_CONVERTED_TOKENIZER='~/data/oasst-sft-6-llama-30b/'\n\
+          model = LlamaForCausalLM.from_pretrained(PATH_TO_CONVERTED_WEIGHTS)\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(PATH_TO_CONVERTED_TOKENIZER)\nprompt =\
+          \ \"Hey how are you?\"\ninputs = tokenizer(prompt, return_tensors=\"pt\"\
+          )\n# print inputs with special tokens\ntokenizer.batch_decode(inputs['input_ids'],\
+          \ skip_special_tokens=False, clean_up_tokenization_spaces=False) \n</code></pre>\n\
+          <p><em>['&lt;s&gt; Hey how are you?']</em></p>\n<pre><code>generate_ids\
+          \ = model.generate(inputs=inputs.input_ids, max_length=30)\n# print inputs\
+          \ with special tokens\ntokenizer.batch_decode(generate_ids, skip_special_tokens=False,\
+          \ clean_up_tokenization_spaces=False)\n</code></pre>\n<p><em>['&lt;s&gt;\
+          \ Hey how are you?&lt;/s&gt;']</em></p>\n<p>As you can see model just adds\
+          \ the <strong>termination &lt;/s&gt; symbol</strong> and that's it.</p>\n\
+          <p>How can i overcome that problem? How to make it talk?</p>\n<p>Also would\
+          \ like to note that model does not use GPU at all. </p>\n<p>My environment:<br>accelerate==0.18.0<br>anyio==3.6.2<br>argon2-cffi==21.3.0<br>argon2-cffi-bindings==21.2.0<br>arrow==1.2.3<br>asttokens==2.2.1<br>attrs==23.1.0<br>backcall==0.2.0<br>beautifulsoup4==4.12.2<br>bleach==6.0.0<br>certifi==2022.12.7<br>cffi==1.15.1<br>charset-normalizer==3.1.0<br>comm==0.1.3<br>debugpy==1.6.7<br>decorator==5.1.1<br>defusedxml==0.7.1<br>executing==1.2.0<br>fairscale==0.4.13<br>fastjsonschema==2.16.3<br>filelock==3.12.0<br>fire==0.5.0<br>fqdn==1.5.1<br>fsspec==2023.4.0<br>huggingface-hub==0.14.1<br>idna==3.4<br>ipykernel==6.22.0<br>ipython==8.12.0<br>ipython-genutils==0.2.0<br>ipywidgets==8.0.6<br>isoduration==20.11.0<br>jedi==0.18.2<br>Jinja2==3.1.2<br>jsonpointer==2.3<br>jsonschema==4.17.3<br>jupyter==1.0.0<br>jupyter-console==6.6.3<br>jupyter-events==0.6.3<br>jupyter_client==8.2.0<br>jupyter_core==5.3.0<br>jupyter_server==2.5.0<br>jupyter_server_terminals==0.4.4<br>jupyterlab-pygments==0.2.2<br>jupyterlab-widgets==3.0.7<br>MarkupSafe==2.1.2<br>matplotlib-inline==0.1.6<br>mistune==2.0.5<br>nbclassic==0.5.6<br>nbclient==0.7.4<br>nbconvert==7.3.1<br>nbformat==5.8.0<br>nest-asyncio==1.5.6<br>notebook==6.5.4<br>notebook_shim==0.2.3<br>numpy==1.24.3<br>nvidia-cublas-cu11==11.10.3.66<br>nvidia-cuda-nvrtc-cu11==11.7.99<br>nvidia-cuda-runtime-cu11==11.7.99<br>nvidia-cudnn-cu11==8.5.0.96<br>packaging==23.1<br>pandocfilters==1.5.0<br>parso==0.8.3<br>pexpect==4.8.0<br>pickleshare==0.7.5<br>platformdirs==3.5.0<br>prometheus-client==0.16.0<br>prompt-toolkit==3.0.38<br>protobuf==3.20.1<br>psutil==5.9.5<br>ptyprocess==0.7.0<br>pure-eval==0.2.2<br>pycparser==2.21<br>Pygments==2.15.1<br>pyrsistent==0.19.3<br>python-dateutil==2.8.2<br>python-json-logger==2.0.7<br>PyYAML==6.0<br>pyzmq==25.0.2<br>qtconsole==5.4.2<br>QtPy==2.3.1<br>regex==2023.3.23<br>requests==2.28.2<br>rfc3339-validator==0.1.4<br>rfc3986-validator==0.1.1<br>Send2Trash==1.8.2<br>sentencepiece==0.1.98<br>six==1.16.0<br>sniffio==1.3.0<br>soupsieve==2.4.1<br>stack-data==0.6.2<br>termcolor==2.3.0<br>terminado==0.17.1<br>tinycss2==1.2.1<br>tokenizers==0.13.3<br>torch==1.13.1<br>tornado==6.3.1<br>tqdm==4.65.0<br>traitlets==5.9.0<br>transformers\
+          \ @ file:///mnt/data1t/projects/hf/transformers<br>typing_extensions==4.5.0<br>uri-template==1.2.0<br>urllib3==1.26.15<br>wcwidth==0.2.6<br>webcolors==1.13<br>webencodings==0.5.1<br>websocket-client==1.5.1<br>widgetsnbextension==4.0.7</p>\n"
+        raw: "Hi everyone,\r\nUsing Ubuntu 18.04\r\nI followed the instructions. \
+          \ \r\n\r\nmy md5sums:\r\n```\r\nb85026155b964b6f3a883c9a8b62dfe3  ./added_tokens.json\r\
+          \ncc9dbf56b68b68a585cc7367696e06a7  ./config.json\r\n2917a1cafb895cf57e746cfd7696bfe5\
+          \  ./generation_config.json\r\nff6e4cf43ddf02fb5d3960f850af1220  ./pytorch_model-00001-of-00007.bin\r\
+          \nae48c4c68e4e171d502dd0896aa19a84  ./pytorch_model-00002-of-00007.bin\r\
+          \n659fcb7598dcd22e7d008189ecb2bb42  ./pytorch_model-00003-of-00007.bin\r\
+          \nf7aefb4c63be2ac512fd905b45295235  ./pytorch_model-00004-of-00007.bin\r\
+          \n740c324ae65b1ec25976643cda79e479  ./pytorch_model-00005-of-00007.bin\r\
+          \n369df2f0e38bda0d9629a12a77c10dfc  ./pytorch_model-00006-of-00007.bin\r\
+          \n970e99665d66ba3fad6fdf9b4910acc5  ./pytorch_model-00007-of-00007.bin\r\
+          \n76d47e4f51a8df1d703c6f594981fcab  ./pytorch_model.bin.index.json\r\n785905630a0fe583122a8446a5abe287\
+          \  ./special_tokens_map.json\r\neeec4125e9c7560836b4873b6f8e3025  ./tokenizer.model\r\
+          \nfd9452959d711be29ccf04a97598e8d1  ./tokenizer_config.json\r\n```\r\n\r\
+          \nThe problem that i had is that the Tokenizer did not like the `added_tokens.json`\
+          \ file. After xor_decoding that file is not valid JSON, just some binaries.\
+          \ All other files has correct md5sum  What should i do about it?\r\nWhat\
+          \ i did - i replaced it with file from the LLaMa file.\r\n\r\nI use following\
+          \ code from the `modeling_llama.py` file:\r\n```\r\nfrom transformers import\
+          \ AutoTokenizer, LlamaForCausalLM\r\nPATH_TO_CONVERTED_WEIGHTS=  '~/data/oasst-sft-6-llama-30b/'\r\
+          \nPATH_TO_CONVERTED_TOKENIZER='~/data/oasst-sft-6-llama-30b/'\r\nmodel =\
+          \ LlamaForCausalLM.from_pretrained(PATH_TO_CONVERTED_WEIGHTS)\r\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(PATH_TO_CONVERTED_TOKENIZER)\r\nprompt\
+          \ = \"Hey how are you?\"\r\ninputs = tokenizer(prompt, return_tensors=\"\
+          pt\")\r\n# print inputs with special tokens\r\ntokenizer.batch_decode(inputs['input_ids'],\
+          \ skip_special_tokens=False, clean_up_tokenization_spaces=False) \r\n```\r\
+          \n*['\\<s\\> Hey how are you?']*\r\n\r\n```\r\ngenerate_ids = model.generate(inputs=inputs.input_ids,\
+          \ max_length=30)\r\n# print inputs with special tokens\r\ntokenizer.batch_decode(generate_ids,\
+          \ skip_special_tokens=False, clean_up_tokenization_spaces=False)\r\n```\r\
+          \n*['\\<s\\> Hey how are you?\\</s\\>']*\r\n\r\nAs you can see model just\
+          \ adds the **termination \\</s\\> symbol** and that's it.\r\n\r\nHow can\
+          \ i overcome that problem? How to make it talk?\r\n\r\nAlso would like to\
+          \ note that model does not use GPU at all. \r\n\r\nMy environment:\r\naccelerate==0.18.0\r\
+          \nanyio==3.6.2\r\nargon2-cffi==21.3.0\r\nargon2-cffi-bindings==21.2.0\r\n\
+          arrow==1.2.3\r\nasttokens==2.2.1\r\nattrs==23.1.0\r\nbackcall==0.2.0\r\n\
+          beautifulsoup4==4.12.2\r\nbleach==6.0.0\r\ncertifi==2022.12.7\r\ncffi==1.15.1\r\
+          \ncharset-normalizer==3.1.0\r\ncomm==0.1.3\r\ndebugpy==1.6.7\r\ndecorator==5.1.1\r\
+          \ndefusedxml==0.7.1\r\nexecuting==1.2.0\r\nfairscale==0.4.13\r\nfastjsonschema==2.16.3\r\
+          \nfilelock==3.12.0\r\nfire==0.5.0\r\nfqdn==1.5.1\r\nfsspec==2023.4.0\r\n\
+          huggingface-hub==0.14.1\r\nidna==3.4\r\nipykernel==6.22.0\r\nipython==8.12.0\r\
+          \nipython-genutils==0.2.0\r\nipywidgets==8.0.6\r\nisoduration==20.11.0\r\
+          \njedi==0.18.2\r\nJinja2==3.1.2\r\njsonpointer==2.3\r\njsonschema==4.17.3\r\
+          \njupyter==1.0.0\r\njupyter-console==6.6.3\r\njupyter-events==0.6.3\r\n\
+          jupyter_client==8.2.0\r\njupyter_core==5.3.0\r\njupyter_server==2.5.0\r\n\
+          jupyter_server_terminals==0.4.4\r\njupyterlab-pygments==0.2.2\r\njupyterlab-widgets==3.0.7\r\
+          \nMarkupSafe==2.1.2\r\nmatplotlib-inline==0.1.6\r\nmistune==2.0.5\r\nnbclassic==0.5.6\r\
+          \nnbclient==0.7.4\r\nnbconvert==7.3.1\r\nnbformat==5.8.0\r\nnest-asyncio==1.5.6\r\
+          \nnotebook==6.5.4\r\nnotebook_shim==0.2.3\r\nnumpy==1.24.3\r\nnvidia-cublas-cu11==11.10.3.66\r\
+          \nnvidia-cuda-nvrtc-cu11==11.7.99\r\nnvidia-cuda-runtime-cu11==11.7.99\r\
+          \nnvidia-cudnn-cu11==8.5.0.96\r\npackaging==23.1\r\npandocfilters==1.5.0\r\
+          \nparso==0.8.3\r\npexpect==4.8.0\r\npickleshare==0.7.5\r\nplatformdirs==3.5.0\r\
+          \nprometheus-client==0.16.0\r\nprompt-toolkit==3.0.38\r\nprotobuf==3.20.1\r\
+          \npsutil==5.9.5\r\nptyprocess==0.7.0\r\npure-eval==0.2.2\r\npycparser==2.21\r\
+          \nPygments==2.15.1\r\npyrsistent==0.19.3\r\npython-dateutil==2.8.2\r\npython-json-logger==2.0.7\r\
+          \nPyYAML==6.0\r\npyzmq==25.0.2\r\nqtconsole==5.4.2\r\nQtPy==2.3.1\r\nregex==2023.3.23\r\
+          \nrequests==2.28.2\r\nrfc3339-validator==0.1.4\r\nrfc3986-validator==0.1.1\r\
+          \nSend2Trash==1.8.2\r\nsentencepiece==0.1.98\r\nsix==1.16.0\r\nsniffio==1.3.0\r\
+          \nsoupsieve==2.4.1\r\nstack-data==0.6.2\r\ntermcolor==2.3.0\r\nterminado==0.17.1\r\
+          \ntinycss2==1.2.1\r\ntokenizers==0.13.3\r\ntorch==1.13.1\r\ntornado==6.3.1\r\
+          \ntqdm==4.65.0\r\ntraitlets==5.9.0\r\ntransformers @ file:///mnt/data1t/projects/hf/transformers\r\
+          \ntyping_extensions==4.5.0\r\nuri-template==1.2.0\r\nurllib3==1.26.15\r\n\
+          wcwidth==0.2.6\r\nwebcolors==1.13\r\nwebencodings==0.5.1\r\nwebsocket-client==1.5.1\r\
+          \nwidgetsnbextension==4.0.7"
+        updatedAt: '2023-04-28T04:12:57.034Z'
+      numEdits: 0
+      reactions: []
+    id: 644b47c991252984f647b168
+    type: comment
+  author: shmalex
+  content: "Hi everyone,\r\nUsing Ubuntu 18.04\r\nI followed the instructions.  \r\
+    \n\r\nmy md5sums:\r\n```\r\nb85026155b964b6f3a883c9a8b62dfe3  ./added_tokens.json\r\
+    \ncc9dbf56b68b68a585cc7367696e06a7  ./config.json\r\n2917a1cafb895cf57e746cfd7696bfe5\
+    \  ./generation_config.json\r\nff6e4cf43ddf02fb5d3960f850af1220  ./pytorch_model-00001-of-00007.bin\r\
+    \nae48c4c68e4e171d502dd0896aa19a84  ./pytorch_model-00002-of-00007.bin\r\n659fcb7598dcd22e7d008189ecb2bb42\
+    \  ./pytorch_model-00003-of-00007.bin\r\nf7aefb4c63be2ac512fd905b45295235  ./pytorch_model-00004-of-00007.bin\r\
+    \n740c324ae65b1ec25976643cda79e479  ./pytorch_model-00005-of-00007.bin\r\n369df2f0e38bda0d9629a12a77c10dfc\
+    \  ./pytorch_model-00006-of-00007.bin\r\n970e99665d66ba3fad6fdf9b4910acc5  ./pytorch_model-00007-of-00007.bin\r\
+    \n76d47e4f51a8df1d703c6f594981fcab  ./pytorch_model.bin.index.json\r\n785905630a0fe583122a8446a5abe287\
+    \  ./special_tokens_map.json\r\neeec4125e9c7560836b4873b6f8e3025  ./tokenizer.model\r\
+    \nfd9452959d711be29ccf04a97598e8d1  ./tokenizer_config.json\r\n```\r\n\r\nThe\
+    \ problem that i had is that the Tokenizer did not like the `added_tokens.json`\
+    \ file. After xor_decoding that file is not valid JSON, just some binaries. All\
+    \ other files has correct md5sum  What should i do about it?\r\nWhat i did - i\
+    \ replaced it with file from the LLaMa file.\r\n\r\nI use following code from\
+    \ the `modeling_llama.py` file:\r\n```\r\nfrom transformers import AutoTokenizer,\
+    \ LlamaForCausalLM\r\nPATH_TO_CONVERTED_WEIGHTS=  '~/data/oasst-sft-6-llama-30b/'\r\
+    \nPATH_TO_CONVERTED_TOKENIZER='~/data/oasst-sft-6-llama-30b/'\r\nmodel = LlamaForCausalLM.from_pretrained(PATH_TO_CONVERTED_WEIGHTS)\r\
+    \ntokenizer = AutoTokenizer.from_pretrained(PATH_TO_CONVERTED_TOKENIZER)\r\nprompt\
+    \ = \"Hey how are you?\"\r\ninputs = tokenizer(prompt, return_tensors=\"pt\")\r\
+    \n# print inputs with special tokens\r\ntokenizer.batch_decode(inputs['input_ids'],\
+    \ skip_special_tokens=False, clean_up_tokenization_spaces=False) \r\n```\r\n*['\\\
+    <s\\> Hey how are you?']*\r\n\r\n```\r\ngenerate_ids = model.generate(inputs=inputs.input_ids,\
+    \ max_length=30)\r\n# print inputs with special tokens\r\ntokenizer.batch_decode(generate_ids,\
+    \ skip_special_tokens=False, clean_up_tokenization_spaces=False)\r\n```\r\n*['\\\
+    <s\\> Hey how are you?\\</s\\>']*\r\n\r\nAs you can see model just adds the **termination\
+    \ \\</s\\> symbol** and that's it.\r\n\r\nHow can i overcome that problem? How\
+    \ to make it talk?\r\n\r\nAlso would like to note that model does not use GPU\
+    \ at all. \r\n\r\nMy environment:\r\naccelerate==0.18.0\r\nanyio==3.6.2\r\nargon2-cffi==21.3.0\r\
+    \nargon2-cffi-bindings==21.2.0\r\narrow==1.2.3\r\nasttokens==2.2.1\r\nattrs==23.1.0\r\
+    \nbackcall==0.2.0\r\nbeautifulsoup4==4.12.2\r\nbleach==6.0.0\r\ncertifi==2022.12.7\r\
+    \ncffi==1.15.1\r\ncharset-normalizer==3.1.0\r\ncomm==0.1.3\r\ndebugpy==1.6.7\r\
+    \ndecorator==5.1.1\r\ndefusedxml==0.7.1\r\nexecuting==1.2.0\r\nfairscale==0.4.13\r\
+    \nfastjsonschema==2.16.3\r\nfilelock==3.12.0\r\nfire==0.5.0\r\nfqdn==1.5.1\r\n\
+    fsspec==2023.4.0\r\nhuggingface-hub==0.14.1\r\nidna==3.4\r\nipykernel==6.22.0\r\
+    \nipython==8.12.0\r\nipython-genutils==0.2.0\r\nipywidgets==8.0.6\r\nisoduration==20.11.0\r\
+    \njedi==0.18.2\r\nJinja2==3.1.2\r\njsonpointer==2.3\r\njsonschema==4.17.3\r\n\
+    jupyter==1.0.0\r\njupyter-console==6.6.3\r\njupyter-events==0.6.3\r\njupyter_client==8.2.0\r\
+    \njupyter_core==5.3.0\r\njupyter_server==2.5.0\r\njupyter_server_terminals==0.4.4\r\
+    \njupyterlab-pygments==0.2.2\r\njupyterlab-widgets==3.0.7\r\nMarkupSafe==2.1.2\r\
+    \nmatplotlib-inline==0.1.6\r\nmistune==2.0.5\r\nnbclassic==0.5.6\r\nnbclient==0.7.4\r\
+    \nnbconvert==7.3.1\r\nnbformat==5.8.0\r\nnest-asyncio==1.5.6\r\nnotebook==6.5.4\r\
+    \nnotebook_shim==0.2.3\r\nnumpy==1.24.3\r\nnvidia-cublas-cu11==11.10.3.66\r\n\
+    nvidia-cuda-nvrtc-cu11==11.7.99\r\nnvidia-cuda-runtime-cu11==11.7.99\r\nnvidia-cudnn-cu11==8.5.0.96\r\
+    \npackaging==23.1\r\npandocfilters==1.5.0\r\nparso==0.8.3\r\npexpect==4.8.0\r\n\
+    pickleshare==0.7.5\r\nplatformdirs==3.5.0\r\nprometheus-client==0.16.0\r\nprompt-toolkit==3.0.38\r\
+    \nprotobuf==3.20.1\r\npsutil==5.9.5\r\nptyprocess==0.7.0\r\npure-eval==0.2.2\r\
+    \npycparser==2.21\r\nPygments==2.15.1\r\npyrsistent==0.19.3\r\npython-dateutil==2.8.2\r\
+    \npython-json-logger==2.0.7\r\nPyYAML==6.0\r\npyzmq==25.0.2\r\nqtconsole==5.4.2\r\
+    \nQtPy==2.3.1\r\nregex==2023.3.23\r\nrequests==2.28.2\r\nrfc3339-validator==0.1.4\r\
+    \nrfc3986-validator==0.1.1\r\nSend2Trash==1.8.2\r\nsentencepiece==0.1.98\r\nsix==1.16.0\r\
+    \nsniffio==1.3.0\r\nsoupsieve==2.4.1\r\nstack-data==0.6.2\r\ntermcolor==2.3.0\r\
+    \nterminado==0.17.1\r\ntinycss2==1.2.1\r\ntokenizers==0.13.3\r\ntorch==1.13.1\r\
+    \ntornado==6.3.1\r\ntqdm==4.65.0\r\ntraitlets==5.9.0\r\ntransformers @ file:///mnt/data1t/projects/hf/transformers\r\
+    \ntyping_extensions==4.5.0\r\nuri-template==1.2.0\r\nurllib3==1.26.15\r\nwcwidth==0.2.6\r\
+    \nwebcolors==1.13\r\nwebencodings==0.5.1\r\nwebsocket-client==1.5.1\r\nwidgetsnbextension==4.0.7"
+  created_at: 2023-04-28 03:12:57+00:00
+  edited: false
+  hidden: false
+  id: 644b47c991252984f647b168
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+      fullname: Alexei Matusevski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shmalex
+      type: user
+    createdAt: '2023-04-28T04:13:45.000Z'
+    data:
+      from: Model returns empty promnt.
+      to: Model returns empty prompt.
+    id: 644b47f9d4483bfaa078e3fa
+    type: title-change
+  author: shmalex
+  created_at: 2023-04-28 03:13:45+00:00
+  id: 644b47f9d4483bfaa078e3fa
+  new_title: Model returns empty prompt.
+  old_title: Model returns empty promnt.
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63b888106cf60e8c3d00dc86/lNCiIc424q60PC2D33vxN.jpeg?w=200&h=200&f=face
+      fullname: "Andreas K\xF6pf"
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: andreaskoepf
+      type: user
+    createdAt: '2023-04-28T06:48:44.000Z'
+    data:
+      edited: false
+      editors:
+      - andreaskoepf
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63b888106cf60e8c3d00dc86/lNCiIc424q60PC2D33vxN.jpeg?w=200&h=200&f=face
+          fullname: "Andreas K\xF6pf"
+          isHf: false
+          isPro: false
+          name: andreaskoepf
+          type: user
+        html: '<p>see the dialog/prompt format description in <a href="https://huggingface.co/OpenAssistant/oasst-sft-1-pythia-12b">https://huggingface.co/OpenAssistant/oasst-sft-1-pythia-12b</a>
+          .. only difference here instead of &lt;|endoftext|&gt; for llama  is used
+          (the tokenizer''s native eos token).</p>
+
+          '
+        raw: see the dialog/prompt format description in https://huggingface.co/OpenAssistant/oasst-sft-1-pythia-12b
+          .. only difference here instead of <|endoftext|> for llama </s> is used
+          (the tokenizer's native eos token).
+        updatedAt: '2023-04-28T06:48:44.691Z'
+      numEdits: 0
+      reactions: []
+    id: 644b6c4cdb3a59aba0818c5f
+    type: comment
+  author: andreaskoepf
+  content: see the dialog/prompt format description in https://huggingface.co/OpenAssistant/oasst-sft-1-pythia-12b
+    .. only difference here instead of <|endoftext|> for llama </s> is used (the tokenizer's
+    native eos token).
+  created_at: 2023-04-28 05:48:44+00:00
+  edited: false
+  hidden: false
+  id: 644b6c4cdb3a59aba0818c5f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+      fullname: Alexei Matusevski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shmalex
+      type: user
+    createdAt: '2023-04-28T08:26:34.000Z'
+    data:
+      edited: false
+      editors:
+      - shmalex
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+          fullname: Alexei Matusevski
+          isHf: false
+          isPro: false
+          name: shmalex
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;andreaskoepf&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/andreaskoepf\"\
+          >@<span class=\"underline\">andreaskoepf</span></a></span>\n\n\t</span></span>\
+          \ thank you for giving me the right direction!</p>\n<p>I solved my issue\
+          \ by using right <strong>special tokens</strong> and not allowing to tokenizer\
+          \ to add special tokens.</p>\n<pre><code>prompt = \"&lt;|prompter|&gt;What\
+          \ is a meme, and what's the history behind this word?&lt;|assistant|&gt;\"\
+          \ninputs = tokenizer(prompt,\n                   return_tensors=\"pt\",\
+          \ \n                   add_special_tokens=False # &lt;&lt; THIS ONE\n  \
+          \                 )\ninputs\n</code></pre>\n"
+        raw: "@andreaskoepf thank you for giving me the right direction!\n\nI solved\
+          \ my issue by using right **special tokens** and not allowing to tokenizer\
+          \ to add special tokens.\n\n```\nprompt = \"<|prompter|>What is a meme,\
+          \ and what's the history behind this word?<|assistant|>\"\ninputs = tokenizer(prompt,\n\
+          \                   return_tensors=\"pt\", \n                   add_special_tokens=False\
+          \ # << THIS ONE\n                   )\ninputs\n```"
+        updatedAt: '2023-04-28T08:26:34.240Z'
+      numEdits: 0
+      reactions: []
+    id: 644b833adb3a59aba0841ad5
+    type: comment
+  author: shmalex
+  content: "@andreaskoepf thank you for giving me the right direction!\n\nI solved\
+    \ my issue by using right **special tokens** and not allowing to tokenizer to\
+    \ add special tokens.\n\n```\nprompt = \"<|prompter|>What is a meme, and what's\
+    \ the history behind this word?<|assistant|>\"\ninputs = tokenizer(prompt,\n \
+    \                  return_tensors=\"pt\", \n                   add_special_tokens=False\
+    \ # << THIS ONE\n                   )\ninputs\n```"
+  created_at: 2023-04-28 07:26:34+00:00
+  edited: false
+  hidden: false
+  id: 644b833adb3a59aba0841ad5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5807f01c3a8dd3d43e6aeffabd05c44a.svg
+      fullname: Eden Schaffer-Neitz
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: edensn
+      type: user
+    createdAt: '2023-04-28T16:43:08.000Z'
+    data:
+      edited: true
+      editors:
+      - edensn
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5807f01c3a8dd3d43e6aeffabd05c44a.svg
+          fullname: Eden Schaffer-Neitz
+          isHf: false
+          isPro: false
+          name: edensn
+          type: user
+        html: "<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;andreaskoepf&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/andreaskoepf\"\
+          >@<span class=\"underline\">andreaskoepf</span></a></span>\n\n\t</span></span>\
+          \ thank you for giving me the right direction!</p>\n<p>I solved my issue\
+          \ by using right <strong>special tokens</strong> and not allowing to tokenizer\
+          \ to add special tokens.</p>\n<pre><code>prompt = \"&lt;|prompter|&gt;What\
+          \ is a meme, and what's the history behind this word?&lt;|assistant|&gt;\"\
+          \ninputs = tokenizer(prompt,\n                   return_tensors=\"pt\",\
+          \ \n                   add_special_tokens=False # &lt;&lt; THIS ONE\n  \
+          \                 )\ninputs\n</code></pre>\n</blockquote>\n<p>Mine still\
+          \ responds with just \"&lt;/s&gt;\" even with <code>add_special_tokens=False</code>\
+          \ has anyone else had the issue still?</p>\n"
+        raw: "> @andreaskoepf thank you for giving me the right direction!\n> \n>\
+          \ I solved my issue by using right **special tokens** and not allowing to\
+          \ tokenizer to add special tokens.\n> \n> ```\n> prompt = \"<|prompter|>What\
+          \ is a meme, and what's the history behind this word?<|assistant|>\"\n>\
+          \ inputs = tokenizer(prompt,\n>                    return_tensors=\"pt\"\
+          , \n>                    add_special_tokens=False # << THIS ONE\n>     \
+          \               )\n> inputs\n> ```\n\nMine still responds with just \"\\\
+          <\\/s\\>\" even with `add_special_tokens=False` has anyone else had the\
+          \ issue still?"
+        updatedAt: '2023-04-28T16:43:52.311Z'
+      numEdits: 1
+      reactions: []
+    id: 644bf79ced08a4fdf4daed03
+    type: comment
+  author: edensn
+  content: "> @andreaskoepf thank you for giving me the right direction!\n> \n> I\
+    \ solved my issue by using right **special tokens** and not allowing to tokenizer\
+    \ to add special tokens.\n> \n> ```\n> prompt = \"<|prompter|>What is a meme,\
+    \ and what's the history behind this word?<|assistant|>\"\n> inputs = tokenizer(prompt,\n\
+    >                    return_tensors=\"pt\", \n>                    add_special_tokens=False\
+    \ # << THIS ONE\n>                    )\n> inputs\n> ```\n\nMine still responds\
+    \ with just \"\\<\\/s\\>\" even with `add_special_tokens=False` has anyone else\
+    \ had the issue still?"
+  created_at: 2023-04-28 15:43:08+00:00
+  edited: true
+  hidden: false
+  id: 644bf79ced08a4fdf4daed03
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+      fullname: Alexei Matusevski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shmalex
+      type: user
+    createdAt: '2023-04-30T02:41:27.000Z'
+    data:
+      edited: false
+      editors:
+      - shmalex
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1638719652686-noauth.jpeg?w=200&h=200&f=face
+          fullname: Alexei Matusevski
+          isHf: false
+          isPro: false
+          name: shmalex
+          type: user
+        html: "<blockquote>\n<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;andreaskoepf&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/andreaskoepf\"\
+          >@<span class=\"underline\">andreaskoepf</span></a></span>\n\n\t</span></span>\
+          \ thank you for giving me the right direction!</p>\n<p>I solved my issue\
+          \ by using right <strong>special tokens</strong> and not allowing to tokenizer\
+          \ to add special tokens.</p>\n<pre><code>prompt = \"&lt;|prompter|&gt;What\
+          \ is a meme, and what's the history behind this word?&lt;|assistant|&gt;\"\
+          \ninputs = tokenizer(prompt,\n                   return_tensors=\"pt\",\
+          \ \n                   add_special_tokens=False # &lt;&lt; THIS ONE\n  \
+          \                 )\ninputs\n</code></pre>\n</blockquote>\n<p>Mine still\
+          \ responds with just \"&lt;/s&gt;\" even with <code>add_special_tokens=False</code>\
+          \ has anyone else had the issue still?</p>\n</blockquote>\n<p>What do you\
+          \ in the additional_tokens.json file?</p>\n"
+        raw: "> > @andreaskoepf thank you for giving me the right direction!\n> >\
+          \ \n> > I solved my issue by using right **special tokens** and not allowing\
+          \ to tokenizer to add special tokens.\n> > \n> > ```\n> > prompt = \"<|prompter|>What\
+          \ is a meme, and what's the history behind this word?<|assistant|>\"\n>\
+          \ > inputs = tokenizer(prompt,\n> >                    return_tensors=\"\
+          pt\", \n> >                    add_special_tokens=False # << THIS ONE\n\
+          > >                    )\n> > inputs\n> > ```\n> \n> Mine still responds\
+          \ with just \"\\<\\/s\\>\" even with `add_special_tokens=False` has anyone\
+          \ else had the issue still?\n\nWhat do you in the additional_tokens.json\
+          \ file?"
+        updatedAt: '2023-04-30T02:41:27.639Z'
+      numEdits: 0
+      reactions: []
+    id: 644dd55797a3b0904a5e64d3
+    type: comment
+  author: shmalex
+  content: "> > @andreaskoepf thank you for giving me the right direction!\n> > \n\
+    > > I solved my issue by using right **special tokens** and not allowing to tokenizer\
+    \ to add special tokens.\n> > \n> > ```\n> > prompt = \"<|prompter|>What is a\
+    \ meme, and what's the history behind this word?<|assistant|>\"\n> > inputs =\
+    \ tokenizer(prompt,\n> >                    return_tensors=\"pt\", \n> >     \
+    \               add_special_tokens=False # << THIS ONE\n> >                  \
+    \  )\n> > inputs\n> > ```\n> \n> Mine still responds with just \"\\<\\/s\\>\"\
+    \ even with `add_special_tokens=False` has anyone else had the issue still?\n\n\
+    What do you in the additional_tokens.json file?"
+  created_at: 2023-04-30 01:41:27+00:00
+  edited: false
+  hidden: false
+  id: 644dd55797a3b0904a5e64d3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63b888106cf60e8c3d00dc86/lNCiIc424q60PC2D33vxN.jpeg?w=200&h=200&f=face
+      fullname: "Andreas K\xF6pf"
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: andreaskoepf
+      type: user
+    createdAt: '2023-05-14T13:04:03.000Z'
+    data:
+      edited: false
+      editors:
+      - andreaskoepf
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63b888106cf60e8c3d00dc86/lNCiIc424q60PC2D33vxN.jpeg?w=200&h=200&f=face
+          fullname: "Andreas K\xF6pf"
+          isHf: false
+          isPro: false
+          name: andreaskoepf
+          type: user
+        html: '<blockquote>
+
+          <blockquote>
+
+          <blockquote>
+
+          <p>prompt = "&lt;|prompter|&gt;What is a meme, and what''s the history behind
+          this word?&lt;|assistant|&gt;"</p>
+
+          </blockquote>
+
+          </blockquote>
+
+          </blockquote>
+
+          <p>The correct dialogue promting-format would be <code>prompt = "&lt;|prompter|&gt;What
+          is a meme, and what''s the history behind this word?&lt;/s&gt;&lt;|assistant|&gt;"</code>.<br>For
+          a second round of QA it would look like: <code>&lt;|prompter|&gt;Q1&lt;/s&gt;&lt;|assistant|&gt;A1&lt;/s&gt;&lt;|prompter|&gt;Q2&lt;/s&gt;&lt;|assistant|&gt;</code></p>
+
+          '
+        raw: '> > > prompt = "<|prompter|>What is a meme, and what''s the history
+          behind this word?<|assistant|>"
+
+
+          The correct dialogue promting-format would be `prompt = "<|prompter|>What
+          is a meme, and what''s the history behind this word?</s><|assistant|>"`.
+
+          For a second round of QA it would look like: `<|prompter|>Q1</s><|assistant|>A1</s><|prompter|>Q2</s><|assistant|>`'
+        updatedAt: '2023-05-14T13:04:03.605Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - nacs
+    id: 6460dc437735f76a4a4f3387
+    type: comment
+  author: andreaskoepf
+  content: '> > > prompt = "<|prompter|>What is a meme, and what''s the history behind
+    this word?<|assistant|>"
+
+
+    The correct dialogue promting-format would be `prompt = "<|prompter|>What is a
+    meme, and what''s the history behind this word?</s><|assistant|>"`.
+
+    For a second round of QA it would look like: `<|prompter|>Q1</s><|assistant|>A1</s><|prompter|>Q2</s><|assistant|>`'
+  created_at: 2023-05-14 12:04:03+00:00
+  edited: false
+  hidden: false
+  id: 6460dc437735f76a4a4f3387
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 24
+repo_id: OpenAssistant/oasst-sft-6-llama-30b-xor
+repo_type: model
+status: open
+target_branch: null
+title: Model returns empty prompt.

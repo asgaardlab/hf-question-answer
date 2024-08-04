@@ -1,0 +1,279 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: egeres
+conflicting_files: null
+created_at: 2023-12-22 22:34:13+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665343055812-noauth.jpeg?w=200&h=200&f=face
+      fullname: egeres
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: egeres
+      type: user
+    createdAt: '2023-12-22T22:34:13.000Z'
+    data:
+      edited: false
+      editors:
+      - egeres
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8240407705307007
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665343055812-noauth.jpeg?w=200&h=200&f=face
+          fullname: egeres
+          isHf: false
+          isPro: false
+          name: egeres
+          type: user
+        html: "<p>First of all, thank you so much for releasing this model so that\
+          \ we developers can learn and experiment with function calling. I'm eager\
+          \ to dive into your evaluation tests, blogposts and the technology this\
+          \ team is developing \U0001F64C\U0001F3FB\u2728</p>\n<p>I found that <a\
+          \ rel=\"nofollow\" href=\"https://colab.research.google.com/drive/19JYixRPPlanmW5q49WYi_tU8rhHeCEKW#scrollTo=0V3AuFLPSCCV&amp;line=2&amp;uniqifier=1\"\
+          >https://colab.research.google.com/drive/19JYixRPPlanmW5q49WYi_tU8rhHeCEKW#scrollTo=0V3AuFLPSCCV&amp;line=2&amp;uniqifier=1</a>\
+          \ is a good place to start because it doesn't require any deep langchain\
+          \ knowledge and just shows you a basic structure to make simple calls. (But\
+          \ the provided example in <a href=\"https://huggingface.co/Nexusflow/NexusRaven-V2-13B/blob/main/langdemo.py\"\
+          >https://huggingface.co/Nexusflow/NexusRaven-V2-13B/blob/main/langdemo.py</a>\
+          \ is also super clear)</p>\n<p>Anyways, in the colab I linked, the <code>query_raven</code>\
+          \ method could be replaced by the following code block:</p>\n<pre><code\
+          \ class=\"language-python\">output = requests.post(\n    <span class=\"\
+          hljs-string\">\"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+          </span>,\n    headers={<span class=\"hljs-string\">\"Content-Type\"</span>:\
+          \ <span class=\"hljs-string\">\"application/json\"</span>},\n    json={\n\
+          \        <span class=\"hljs-string\">\"inputs\"</span>: prompt,\n      \
+          \  <span class=\"hljs-string\">\"parameters\"</span>: {\n            <span\
+          \ class=\"hljs-string\">\"temperature\"</span>: <span class=\"hljs-number\"\
+          >0.001</span>,\n            <span class=\"hljs-string\">\"max_new_tokens\"\
+          </span>: <span class=\"hljs-number\">2000</span>,\n            <span class=\"\
+          hljs-string\">\"stop\"</span>: [<span class=\"hljs-string\">\"&lt;bot_end&gt;\"\
+          </span>],\n            <span class=\"hljs-string\">\"do_sample\"</span>:\
+          \ <span class=\"hljs-literal\">False</span>,\n        },\n    },\n).json()\n\
+          call = output[<span class=\"hljs-number\">0</span>][<span class=\"hljs-string\"\
+          >\"generated_text\"</span>].replace(<span class=\"hljs-string\">\"Call:\"\
+          </span>, <span class=\"hljs-string\">\"\"</span>).strip()\n</code></pre>\n\
+          <p>This works out of the box, and allows for local model execution with\
+          \ <a rel=\"nofollow\" href=\"https://github.com/huggingface/text-generation-inference\"\
+          >huggingface's TGI</a>. I however prefer to use <a rel=\"nofollow\" href=\"\
+          https://github.com/ggerganov/llama.cpp\">llama.cpp</a> as a backend because\
+          \ it's more portable and configurable. In order to do this, you need to\
+          \  run a llama.cpp server, more info on that <a rel=\"nofollow\" href=\"\
+          https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md\"\
+          >here</a> and replace your request by the following:</p>\n<pre><code class=\"\
+          language-python\">output = requests.post(\n    <span class=\"hljs-string\"\
+          >\"http://localhost:8080/completion\"</span>,\n    headers={<span class=\"\
+          hljs-string\">\"Content-Type\"</span>: <span class=\"hljs-string\">\"application/json\"\
+          </span>},\n    json={\n        <span class=\"hljs-string\">\"prompt\"</span>:\
+          \ prompt,\n        <span class=\"hljs-string\">\"temperature\"</span>: <span\
+          \ class=\"hljs-number\">0.001</span>,\n        <span class=\"hljs-string\"\
+          >\"n_predict\"</span>: <span class=\"hljs-number\">2000</span>,\n      \
+          \  <span class=\"hljs-string\">\"stop\"</span>: [<span class=\"hljs-string\"\
+          >\"&lt;bot_end&gt;\"</span>, <span class=\"hljs-string\">\"Thought:\"</span>],\n\
+          \        <span class=\"hljs-string\">\"top_k\"</span>: <span class=\"hljs-number\"\
+          >1</span>,\n        <span class=\"hljs-string\">\"top_p\"</span>: <span\
+          \ class=\"hljs-number\">1.0</span>,\n    },\n).json()\ncall = output[<span\
+          \ class=\"hljs-string\">\"content\"</span>].replace(<span class=\"hljs-string\"\
+          >\"Call:\"</span>, <span class=\"hljs-string\">\"\"</span>).strip()\n</code></pre>\n\
+          <p>(In case you wanted to use this with langchain, an option would be to\
+          \ sub-class <code>from langchain.llms.base import LLM</code> to add this\
+          \ POST request. Alternatively, you can use a backend like <a rel=\"nofollow\"\
+          \ href=\"https://github.com/oobabooga/text-generation-webui\">web-text-ui</a>\
+          \ with the openAI plugin to make use of that llm interface, but that runs\
+          \ llama.cpp)</p>\n<p>There is however, one small modification, the <code>\"\
+          Thought:\"</code> stop word needs to be added, because in my experience\
+          \ running the llama.cpp server locally, even in a deterministic manner,\
+          \ creates different outputs than the huggingface endpoint does. I've been\
+          \ trying out many different parameters to achieve parity with HF's server,\
+          \ but it seems it doesn't matter, just be sure to add the second stop word\
+          \ in case you come across this issue!</p>\n<p>As of today this setup is\
+          \ working, if anybody has any feedback on what could be causing the token\
+          \ generation issue it would be most appreciated!!</p>\n"
+        raw: "First of all, thank you so much for releasing this model so that we\
+          \ developers can learn and experiment with function calling. I'm eager to\
+          \ dive into your evaluation tests, blogposts and the technology this team\
+          \ is developing \U0001F64C\U0001F3FB\u2728\r\n\r\nI found that https://colab.research.google.com/drive/19JYixRPPlanmW5q49WYi_tU8rhHeCEKW#scrollTo=0V3AuFLPSCCV&line=2&uniqifier=1\
+          \ is a good place to start because it doesn't require any deep langchain\
+          \ knowledge and just shows you a basic structure to make simple calls. (But\
+          \ the provided example in https://huggingface.co/Nexusflow/NexusRaven-V2-13B/blob/main/langdemo.py\
+          \ is also super clear)\r\n\r\nAnyways, in the colab I linked, the `query_raven`\
+          \ method could be replaced by the following code block:\r\n\r\n```python\r\
+          \noutput = requests.post(\r\n    \"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+          ,\r\n    headers={\"Content-Type\": \"application/json\"},\r\n    json={\r\
+          \n        \"inputs\": prompt,\r\n        \"parameters\": {\r\n         \
+          \   \"temperature\": 0.001,\r\n            \"max_new_tokens\": 2000,\r\n\
+          \            \"stop\": [\"<bot_end>\"],\r\n            \"do_sample\": False,\r\
+          \n        },\r\n    },\r\n).json()\r\ncall = output[0][\"generated_text\"\
+          ].replace(\"Call:\", \"\").strip()\r\n```\r\n\r\nThis works out of the box,\
+          \ and allows for local model execution with [huggingface's TGI](https://github.com/huggingface/text-generation-inference).\
+          \ I however prefer to use [llama.cpp](https://github.com/ggerganov/llama.cpp)\
+          \ as a backend because it's more portable and configurable. In order to\
+          \ do this, you need to  run a llama.cpp server, more info on that [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)\
+          \ and replace your request by the following:\r\n\r\n```python\r\noutput\
+          \ = requests.post(\r\n    \"http://localhost:8080/completion\",\r\n    headers={\"\
+          Content-Type\": \"application/json\"},\r\n    json={\r\n        \"prompt\"\
+          : prompt,\r\n        \"temperature\": 0.001,\r\n        \"n_predict\": 2000,\r\
+          \n        \"stop\": [\"<bot_end>\", \"Thought:\"],\r\n        \"top_k\"\
+          : 1,\r\n        \"top_p\": 1.0,\r\n    },\r\n).json()\r\ncall = output[\"\
+          content\"].replace(\"Call:\", \"\").strip()\r\n```\r\n\r\n(In case you wanted\
+          \ to use this with langchain, an option would be to sub-class `from langchain.llms.base\
+          \ import LLM` to add this POST request. Alternatively, you can use a backend\
+          \ like [web-text-ui](https://github.com/oobabooga/text-generation-webui)\
+          \ with the openAI plugin to make use of that llm interface, but that runs\
+          \ llama.cpp)\r\n\r\nThere is however, one small modification, the `\"Thought:\"\
+          ` stop word needs to be added, because in my experience running the llama.cpp\
+          \ server locally, even in a deterministic manner, creates different outputs\
+          \ than the huggingface endpoint does. I've been trying out many different\
+          \ parameters to achieve parity with HF's server, but it seems it doesn't\
+          \ matter, just be sure to add the second stop word in case you come across\
+          \ this issue!\r\n\r\nAs of today this setup is working, if anybody has any\
+          \ feedback on what could be causing the token generation issue it would\
+          \ be most appreciated!!"
+        updatedAt: '2023-12-22T22:34:13.449Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - flymonk
+    id: 65860ee5067630f69f03647e
+    type: comment
+  author: egeres
+  content: "First of all, thank you so much for releasing this model so that we developers\
+    \ can learn and experiment with function calling. I'm eager to dive into your\
+    \ evaluation tests, blogposts and the technology this team is developing \U0001F64C\
+    \U0001F3FB\u2728\r\n\r\nI found that https://colab.research.google.com/drive/19JYixRPPlanmW5q49WYi_tU8rhHeCEKW#scrollTo=0V3AuFLPSCCV&line=2&uniqifier=1\
+    \ is a good place to start because it doesn't require any deep langchain knowledge\
+    \ and just shows you a basic structure to make simple calls. (But the provided\
+    \ example in https://huggingface.co/Nexusflow/NexusRaven-V2-13B/blob/main/langdemo.py\
+    \ is also super clear)\r\n\r\nAnyways, in the colab I linked, the `query_raven`\
+    \ method could be replaced by the following code block:\r\n\r\n```python\r\noutput\
+    \ = requests.post(\r\n    \"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+    ,\r\n    headers={\"Content-Type\": \"application/json\"},\r\n    json={\r\n \
+    \       \"inputs\": prompt,\r\n        \"parameters\": {\r\n            \"temperature\"\
+    : 0.001,\r\n            \"max_new_tokens\": 2000,\r\n            \"stop\": [\"\
+    <bot_end>\"],\r\n            \"do_sample\": False,\r\n        },\r\n    },\r\n\
+    ).json()\r\ncall = output[0][\"generated_text\"].replace(\"Call:\", \"\").strip()\r\
+    \n```\r\n\r\nThis works out of the box, and allows for local model execution with\
+    \ [huggingface's TGI](https://github.com/huggingface/text-generation-inference).\
+    \ I however prefer to use [llama.cpp](https://github.com/ggerganov/llama.cpp)\
+    \ as a backend because it's more portable and configurable. In order to do this,\
+    \ you need to  run a llama.cpp server, more info on that [here](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md)\
+    \ and replace your request by the following:\r\n\r\n```python\r\noutput = requests.post(\r\
+    \n    \"http://localhost:8080/completion\",\r\n    headers={\"Content-Type\":\
+    \ \"application/json\"},\r\n    json={\r\n        \"prompt\": prompt,\r\n    \
+    \    \"temperature\": 0.001,\r\n        \"n_predict\": 2000,\r\n        \"stop\"\
+    : [\"<bot_end>\", \"Thought:\"],\r\n        \"top_k\": 1,\r\n        \"top_p\"\
+    : 1.0,\r\n    },\r\n).json()\r\ncall = output[\"content\"].replace(\"Call:\",\
+    \ \"\").strip()\r\n```\r\n\r\n(In case you wanted to use this with langchain,\
+    \ an option would be to sub-class `from langchain.llms.base import LLM` to add\
+    \ this POST request. Alternatively, you can use a backend like [web-text-ui](https://github.com/oobabooga/text-generation-webui)\
+    \ with the openAI plugin to make use of that llm interface, but that runs llama.cpp)\r\
+    \n\r\nThere is however, one small modification, the `\"Thought:\"` stop word needs\
+    \ to be added, because in my experience running the llama.cpp server locally,\
+    \ even in a deterministic manner, creates different outputs than the huggingface\
+    \ endpoint does. I've been trying out many different parameters to achieve parity\
+    \ with HF's server, but it seems it doesn't matter, just be sure to add the second\
+    \ stop word in case you come across this issue!\r\n\r\nAs of today this setup\
+    \ is working, if anybody has any feedback on what could be causing the token generation\
+    \ issue it would be most appreciated!!"
+  created_at: 2023-12-22 22:34:13+00:00
+  edited: false
+  hidden: false
+  id: 65860ee5067630f69f03647e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665343055812-noauth.jpeg?w=200&h=200&f=face
+      fullname: egeres
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: egeres
+      type: user
+    createdAt: '2023-12-22T22:35:50.000Z'
+    data:
+      from: Provided example almost works
+      to: Non-urgent-micro-issue when running the model locally
+    id: 65860f46367c76b8eec63650
+    type: title-change
+  author: egeres
+  created_at: 2023-12-22 22:35:50+00:00
+  id: 65860f46367c76b8eec63650
+  new_title: Non-urgent-micro-issue when running the model locally
+  old_title: Provided example almost works
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665343055812-noauth.jpeg?w=200&h=200&f=face
+      fullname: egeres
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: egeres
+      type: user
+    createdAt: '2023-12-22T22:37:50.000Z'
+    data:
+      edited: false
+      editors:
+      - egeres
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9727090001106262
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665343055812-noauth.jpeg?w=200&h=200&f=face
+          fullname: egeres
+          isHf: false
+          isPro: false
+          name: egeres
+          type: user
+        html: "<p>Also, I have tried this with different quantizations (the largest\
+          \ one being f16 which should have barely any loss) and the same happens,\
+          \ the token <code>\"&lt;bot_end&gt;\"</code> is never generated</p>\n<p>(most\
+          \ of this discussion is really meant to share how this is working for me\
+          \ at the moment, like, in case others find it helpful! \U0001F91E\U0001F3FB\
+          )</p>\n"
+        raw: "Also, I have tried this with different quantizations (the largest one\
+          \ being f16 which should have barely any loss) and the same happens, the\
+          \ token `\"<bot_end>\"` is never generated\n\n(most of this discussion is\
+          \ really meant to share how this is working for me at the moment, like,\
+          \ in case others find it helpful! \U0001F91E\U0001F3FB)"
+        updatedAt: '2023-12-22T22:37:50.710Z'
+      numEdits: 0
+      reactions: []
+    id: 65860fbe126b8d7eae7670b7
+    type: comment
+  author: egeres
+  content: "Also, I have tried this with different quantizations (the largest one\
+    \ being f16 which should have barely any loss) and the same happens, the token\
+    \ `\"<bot_end>\"` is never generated\n\n(most of this discussion is really meant\
+    \ to share how this is working for me at the moment, like, in case others find\
+    \ it helpful! \U0001F91E\U0001F3FB)"
+  created_at: 2023-12-22 22:37:50+00:00
+  edited: false
+  hidden: false
+  id: 65860fbe126b8d7eae7670b7
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 10
+repo_id: Nexusflow/NexusRaven-V2-13B
+repo_type: model
+status: open
+target_branch: null
+title: Non-urgent-micro-issue when running the model locally

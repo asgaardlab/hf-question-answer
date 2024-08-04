@@ -1,0 +1,324 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: pg20sanger
+conflicting_files: null
+created_at: 2023-10-05 12:35:57+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a5ea8c0e056a7c3e48b293aca75b1808.svg
+      fullname: Prashant Gupta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pg20sanger
+      type: user
+    createdAt: '2023-10-05T13:35:57.000Z'
+    data:
+      edited: true
+      editors:
+      - pg20sanger
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5659746527671814
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a5ea8c0e056a7c3e48b293aca75b1808.svg
+          fullname: Prashant Gupta
+          isHf: false
+          isPro: false
+          name: pg20sanger
+          type: user
+        html: '<p>I am trying to extract hidden layer output from all the layers in
+          the model. As per the documentation, the <strong><code>output_all_encoded_layers</code>:
+          boolean which controls the content of the <code>encoded_layers</code> output
+          as described below. Default: <code>True</code>.</strong>. However Line 586
+          (<a href="https://huggingface.co/zhihan1996/DNABERT-2-117M/blob/main/bert_layers.py#L586">https://huggingface.co/zhihan1996/DNABERT-2-117M/blob/main/bert_layers.py#L586</a>)
+          has this set to <code>False</code>, which I was expecting to be the case
+          in contrast to what documentation says because only last layer was returned
+          in the output. However, when I set it to <code>True</code> the inference
+          fails. The traceback is as follows:</p>
+
+          <hr>
+
+          <p>RuntimeError                              Traceback (most recent call
+          last)<br>Cell In[60], line 1<br>----&gt; 1 output = model(**b, output_all_encoded_layers=True)</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,
+          in Module._wrapped_call_impl(self, *args, **kwargs)<br>   1516     return
+          self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]<br>   1517
+          else:<br>-&gt; 1518     return self._call_impl(*args, **kwargs)</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,
+          in Module._call_impl(self, *args, **kwargs)<br>   1522 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1523 # this function,
+          and just call forward.<br>   1524 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1525         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1526         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1527     return
+          forward_call(*args, **kwargs)<br>   1529 try:<br>   1530     result = None</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:616,
+          in BertModel.forward(self, input_ids, token_type_ids, attention_mask, position_ids,
+          output_all_encoded_layers, masked_tokens_mask, **kwargs)<br>    614 if masked_tokens_mask
+          is None:<br>    615     sequence_output = encoder_outputs[-1]<br>--&gt;
+          616     pooled_output = self.pooler(<br>    617         sequence_output)
+          if self.pooler is not None else None<br>    618 else:<br>    619     # TD
+          [2022-03-01]: the indexing here is very tricky.<br>    620     attention_mask_bool
+          = attention_mask.bool()</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,
+          in Module._wrapped_call_impl(self, *args, **kwargs)<br>   1516     return
+          self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]<br>   1517
+          else:<br>-&gt; 1518     return self._call_impl(*args, **kwargs)</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,
+          in Module._call_impl(self, *args, **kwargs)<br>   1522 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1523 # this function,
+          and just call forward.<br>   1524 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1525         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1526         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1527     return
+          forward_call(*args, **kwargs)<br>   1529 try:<br>   1530     result = None</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:501,
+          in BertPooler.forward(self, hidden_states, pool)<br>    495 def forward(self,<br>    496             hidden_states:
+          torch.Tensor,<br>    497             pool: Optional[bool] = True) -&gt;
+          torch.Tensor:<br>    498     # We "pool" the model by simply taking the
+          hidden state corresponding<br>    499     # to the first token.<br>    500     first_token_tensor
+          = hidden_states[:, 0] if pool else hidden_states<br>--&gt; 501     pooled_output
+          = self.dense(first_token_tensor)<br>    502     pooled_output = self.activation(pooled_output)<br>    503     return
+          pooled_output</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,
+          in Module._wrapped_call_impl(self, *args, **kwargs)<br>   1516     return
+          self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]<br>   1517
+          else:<br>-&gt; 1518     return self._call_impl(*args, **kwargs)</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,
+          in Module._call_impl(self, *args, **kwargs)<br>   1522 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1523 # this function,
+          and just call forward.<br>   1524 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1525         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1526         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1527     return
+          forward_call(*args, **kwargs)<br>   1529 try:<br>   1530     result = None</p>
+
+          <p>File /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/linear.py:114,
+          in Linear.forward(self, input)<br>    113 def forward(self, input: Tensor)
+          -&gt; Tensor:<br>--&gt; 114     return F.linear(input, self.weight, self.bias)</p>
+
+          <p>RuntimeError: mat1 and mat2 shapes cannot be multiplied (1x5 and 768x768)</p>
+
+          <p>Steps to reproduce the error:<br><code>import torch</code><br><code>from
+          transformers import AutoTokenizer, AutoModel</code><br><code>tokenizer =
+          AutoTokenizer.from_pretrained("zhihan1996/DNABERT-2-117M", trust_remote_code=True)</code><br><code>model
+          = AutoModel.from_pretrained("zhihan1996/DNABERT-2-117M", trust_remote_code=True)</code><br><code>b
+          = tokenizer(''ATCG'', return_tensors=''pt'', return_attention_mask=True)</code><br><code>output
+          = model(**b, output_all_encoded_layers=True)</code></p>
+
+          <p>P.S. I am not using triton since it was failing in another step.</p>
+
+          '
+        raw: "I am trying to extract hidden layer output from all the layers in the\
+          \ model. As per the documentation, the **`output_all_encoded_layers`: boolean\
+          \ which controls the content of the `encoded_layers` output as described\
+          \ below. Default: `True`.**. However Line 586 (https://huggingface.co/zhihan1996/DNABERT-2-117M/blob/main/bert_layers.py#L586)\
+          \ has this set to `False`, which I was expecting to be the case in contrast\
+          \ to what documentation says because only last layer was returned in the\
+          \ output. However, when I set it to `True` the inference fails. The traceback\
+          \ is as follows:\n\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[60], line 1\n----> 1 output = model(**b, output_all_encoded_layers=True)\n\
+          \nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:616,\
+          \ in BertModel.forward(self, input_ids, token_type_ids, attention_mask,\
+          \ position_ids, output_all_encoded_layers, masked_tokens_mask, **kwargs)\n\
+          \    614 if masked_tokens_mask is None:\n    615     sequence_output = encoder_outputs[-1]\n\
+          --> 616     pooled_output = self.pooler(\n    617         sequence_output)\
+          \ if self.pooler is not None else None\n    618 else:\n    619     # TD\
+          \ [2022-03-01]: the indexing here is very tricky.\n    620     attention_mask_bool\
+          \ = attention_mask.bool()\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:501,\
+          \ in BertPooler.forward(self, hidden_states, pool)\n    495 def forward(self,\n\
+          \    496             hidden_states: torch.Tensor,\n    497             pool:\
+          \ Optional[bool] = True) -> torch.Tensor:\n    498     # We \"pool\" the\
+          \ model by simply taking the hidden state corresponding\n    499     # to\
+          \ the first token.\n    500     first_token_tensor = hidden_states[:, 0]\
+          \ if pool else hidden_states\n--> 501     pooled_output = self.dense(first_token_tensor)\n\
+          \    502     pooled_output = self.activation(pooled_output)\n    503   \
+          \  return pooled_output\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/linear.py:114,\
+          \ in Linear.forward(self, input)\n    113 def forward(self, input: Tensor)\
+          \ -> Tensor:\n--> 114     return F.linear(input, self.weight, self.bias)\n\
+          \nRuntimeError: mat1 and mat2 shapes cannot be multiplied (1x5 and 768x768)\n\
+          \n\nSteps to reproduce the error:\n`import torch`\n`from transformers import\
+          \ AutoTokenizer, AutoModel`\n`tokenizer = AutoTokenizer.from_pretrained(\"\
+          zhihan1996/DNABERT-2-117M\", trust_remote_code=True)`\n`model = AutoModel.from_pretrained(\"\
+          zhihan1996/DNABERT-2-117M\", trust_remote_code=True)`\n`b = tokenizer('ATCG',\
+          \ return_tensors='pt', return_attention_mask=True)`\n`output = model(**b,\
+          \ output_all_encoded_layers=True)`\n\nP.S. I am not using triton since it\
+          \ was failing in another step.\n\n"
+        updatedAt: '2023-10-05T13:40:00.199Z'
+      numEdits: 3
+      reactions: []
+    id: 651ebbbd0bb29b2f4eb9ff10
+    type: comment
+  author: pg20sanger
+  content: "I am trying to extract hidden layer output from all the layers in the\
+    \ model. As per the documentation, the **`output_all_encoded_layers`: boolean\
+    \ which controls the content of the `encoded_layers` output as described below.\
+    \ Default: `True`.**. However Line 586 (https://huggingface.co/zhihan1996/DNABERT-2-117M/blob/main/bert_layers.py#L586)\
+    \ has this set to `False`, which I was expecting to be the case in contrast to\
+    \ what documentation says because only last layer was returned in the output.\
+    \ However, when I set it to `True` the inference fails. The traceback is as follows:\n\
+    \n---------------------------------------------------------------------------\n\
+    RuntimeError                              Traceback (most recent call last)\n\
+    Cell In[60], line 1\n----> 1 output = model(**b, output_all_encoded_layers=True)\n\
+    \nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:616,\
+    \ in BertModel.forward(self, input_ids, token_type_ids, attention_mask, position_ids,\
+    \ output_all_encoded_layers, masked_tokens_mask, **kwargs)\n    614 if masked_tokens_mask\
+    \ is None:\n    615     sequence_output = encoder_outputs[-1]\n--> 616     pooled_output\
+    \ = self.pooler(\n    617         sequence_output) if self.pooler is not None\
+    \ else None\n    618 else:\n    619     # TD [2022-03-01]: the indexing here is\
+    \ very tricky.\n    620     attention_mask_bool = attention_mask.bool()\n\nFile\
+    \ /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile /lustre/scratch124/casm/team113/users/pg20/data/supporting/huggingface_models/modules/transformers_modules/zhihan1996/DNABERT-2-117M/81ac6a98387cf94bc283553260f3fa6b88cef2fa/bert_layers.py:501,\
+    \ in BertPooler.forward(self, hidden_states, pool)\n    495 def forward(self,\n\
+    \    496             hidden_states: torch.Tensor,\n    497             pool: Optional[bool]\
+    \ = True) -> torch.Tensor:\n    498     # We \"pool\" the model by simply taking\
+    \ the hidden state corresponding\n    499     # to the first token.\n    500 \
+    \    first_token_tensor = hidden_states[:, 0] if pool else hidden_states\n-->\
+    \ 501     pooled_output = self.dense(first_token_tensor)\n    502     pooled_output\
+    \ = self.activation(pooled_output)\n    503     return pooled_output\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile /lustre/scratch124/casm/team113/users/pg20/venvs/huggingface/lib/python3.10/site-packages/torch/nn/modules/linear.py:114,\
+    \ in Linear.forward(self, input)\n    113 def forward(self, input: Tensor) ->\
+    \ Tensor:\n--> 114     return F.linear(input, self.weight, self.bias)\n\nRuntimeError:\
+    \ mat1 and mat2 shapes cannot be multiplied (1x5 and 768x768)\n\n\nSteps to reproduce\
+    \ the error:\n`import torch`\n`from transformers import AutoTokenizer, AutoModel`\n\
+    `tokenizer = AutoTokenizer.from_pretrained(\"zhihan1996/DNABERT-2-117M\", trust_remote_code=True)`\n\
+    `model = AutoModel.from_pretrained(\"zhihan1996/DNABERT-2-117M\", trust_remote_code=True)`\n\
+    `b = tokenizer('ATCG', return_tensors='pt', return_attention_mask=True)`\n`output\
+    \ = model(**b, output_all_encoded_layers=True)`\n\nP.S. I am not using triton\
+    \ since it was failing in another step.\n\n"
+  created_at: 2023-10-05 12:35:57+00:00
+  edited: true
+  hidden: false
+  id: 651ebbbd0bb29b2f4eb9ff10
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a34fff20c0ba137545b7d9cf4e702853.svg
+      fullname: Wang Boyu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RandyWang504
+      type: user
+    createdAt: '2023-12-04T10:30:07.000Z'
+    data:
+      edited: false
+      editors:
+      - RandyWang504
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9959134459495544
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a34fff20c0ba137545b7d9cf4e702853.svg
+          fullname: Wang Boyu
+          isHf: false
+          isPro: false
+          name: RandyWang504
+          type: user
+        html: '<p>I have the same problem as you do. Do you have any solution to this?</p>
+
+          '
+        raw: I have the same problem as you do. Do you have any solution to this?
+        updatedAt: '2023-12-04T10:30:07.359Z'
+      numEdits: 0
+      reactions: []
+    id: 656daa2fc56388a9853046fa
+    type: comment
+  author: RandyWang504
+  content: I have the same problem as you do. Do you have any solution to this?
+  created_at: 2023-12-04 10:30:07+00:00
+  edited: false
+  hidden: false
+  id: 656daa2fc56388a9853046fa
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: zhihan1996/DNABERT-2-117M
+repo_type: model
+status: open
+target_branch: null
+title: Inference fails with output_all_encoded_layers=True.

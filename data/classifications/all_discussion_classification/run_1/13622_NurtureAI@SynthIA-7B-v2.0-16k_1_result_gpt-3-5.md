@@ -1,0 +1,5 @@
+## https://huggingface.co/NurtureAI/SynthIA-7B-v2.0-16k/discussions/1
+
+contains_question: yes
+
+question_part: After the tokenization of the input prompt intended to be going to the model in GPU("tokens = tokenizer.encode(instruction)"), the tokens are recast as longTensors (64-bit signed integers tensors recast at "tokens = torch.LongTensor(tokens).unsqueeze(0)"). I've not seen a lot of others doing this with what I've seen so far in my AI journey. I was curious as to what the reasoning why. I can speculate several reasons why. I figure it wouldn't hurt if I ask directly. I'll also be looking online. As well as checking with migtissera who posted the non 16k version of the model. (I've noticed the recast was done in that model's card as well.) If you can, could you point me at any material I can look at that further supports why it's smart to recast a tensor before sending off to the GPU, that would be appreciated. If you can't or do not want to, that is understandable.

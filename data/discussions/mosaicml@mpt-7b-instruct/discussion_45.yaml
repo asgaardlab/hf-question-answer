@@ -1,0 +1,202 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cotran2
+conflicting_files: null
+created_at: 2023-06-15 06:37:36+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1f323e5342e007c7f962ca12ce516102.svg
+      fullname: Co Tran
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cotran2
+      type: user
+    createdAt: '2023-06-15T07:37:36.000Z'
+    data:
+      edited: false
+      editors:
+      - cotran2
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.38521885871887207
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1f323e5342e007c7f962ca12ce516102.svg
+          fullname: Co Tran
+          isHf: false
+          isPro: false
+          name: cotran2
+          type: user
+        html: "<p>Error I receive:</p>\n<pre><code>File ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-instruct/85c1f1c201273bbfee661d4a2f8307c95f8956c9/attention.py:58,\
+          \ in scaled_multihead_dot_product_attention(query, key, value, n_heads,\
+          \ past_key_value, softmax_scale, attn_bias, key_padding_mask, is_causal,\
+          \ dropout_p, training, needs_weights, multiquery)\n     56 if dropout_p:\n\
+          \     57     attn_weight = torch.nn.functional.dropout(attn_weight, p=dropout_p,\
+          \ training=training, inplace=True)\n---&gt; 58 out = attn_weight.matmul(v)\n\
+          \     59 out = rearrange(out, 'b h s d -&gt; b s (h d)')\n     60 if needs_weights:\n\
+          \nRuntimeError: expected scalar type BFloat16 but found Float\n</code></pre>\n\
+          <p>Code for initialization:</p>\n<pre><code>import torch\nimport transformers\n\
+          from transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\n\
+          \nname = 'mosaicml/mpt-7b-instruct'\n\nconfig = transformers.AutoConfig.from_pretrained(name,\
+          \ trust_remote_code=True)\nconfig.attn_config['attn_impl'] = 'torch'\nconfig.init_device\
+          \ = 'cuda:0' # For fast initialization directly on GPU!\n\n\n\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\n\
+          \  name,\n  config=config,\n  #load_in_8bit=True,\n  torch_dtype=torch.bfloat16,\
+          \ # Load model weights in bfloat16\n  trust_remote_code=True,\n  device_map=\"\
+          auto\"\n)\n\ninput_ids = tokenizer(fmt_ex, return_tensors=\"pt\").input_ids\n\
+          input_ids = input_ids.to(model.device)\n\ngenerate_params = {\n    \"max_new_tokens\"\
+          : 1024, \n    \"temperature\": 0.1, \n    \"top_p\": 1.0, \n    \"top_k\"\
+          : 0, \n    \"use_cache\": True, \n    \"do_sample\": True, \n    \"eos_token_id\"\
+          : 0, \n    \"pad_token_id\": 0\n}\ngenerated_ids = model.generate(input_ids,\
+          \ **generate_params)\noutput = tokenizer.decode(generated_ids.cpu().tolist()[0],\
+          \ skip_special_tokens=True)\n\nfor line in output.split('\\n'):\n    print(line)\n\
+          </code></pre>\n"
+        raw: "Error I receive:\r\n```\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-instruct/85c1f1c201273bbfee661d4a2f8307c95f8956c9/attention.py:58,\
+          \ in scaled_multihead_dot_product_attention(query, key, value, n_heads,\
+          \ past_key_value, softmax_scale, attn_bias, key_padding_mask, is_causal,\
+          \ dropout_p, training, needs_weights, multiquery)\r\n     56 if dropout_p:\r\
+          \n     57     attn_weight = torch.nn.functional.dropout(attn_weight, p=dropout_p,\
+          \ training=training, inplace=True)\r\n---> 58 out = attn_weight.matmul(v)\r\
+          \n     59 out = rearrange(out, 'b h s d -> b s (h d)')\r\n     60 if needs_weights:\r\
+          \n\r\nRuntimeError: expected scalar type BFloat16 but found Float\r\n```\r\
+          \nCode for initialization:\r\n```\r\nimport torch\r\nimport transformers\r\
+          \nfrom transformers import AutoTokenizer\r\ntokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\r\
+          \n\r\nname = 'mosaicml/mpt-7b-instruct'\r\n\r\nconfig = transformers.AutoConfig.from_pretrained(name,\
+          \ trust_remote_code=True)\r\nconfig.attn_config['attn_impl'] = 'torch'\r\
+          \nconfig.init_device = 'cuda:0' # For fast initialization directly on GPU!\r\
+          \n\r\n\r\n\r\nmodel = transformers.AutoModelForCausalLM.from_pretrained(\r\
+          \n  name,\r\n  config=config,\r\n  #load_in_8bit=True,\r\n  torch_dtype=torch.bfloat16,\
+          \ # Load model weights in bfloat16\r\n  trust_remote_code=True,\r\n  device_map=\"\
+          auto\"\r\n)\r\n\r\ninput_ids = tokenizer(fmt_ex, return_tensors=\"pt\").input_ids\r\
+          \ninput_ids = input_ids.to(model.device)\r\n\r\ngenerate_params = {\r\n\
+          \    \"max_new_tokens\": 1024, \r\n    \"temperature\": 0.1, \r\n    \"\
+          top_p\": 1.0, \r\n    \"top_k\": 0, \r\n    \"use_cache\": True, \r\n  \
+          \  \"do_sample\": True, \r\n    \"eos_token_id\": 0, \r\n    \"pad_token_id\"\
+          : 0\r\n}\r\ngenerated_ids = model.generate(input_ids, **generate_params)\r\
+          \noutput = tokenizer.decode(generated_ids.cpu().tolist()[0], skip_special_tokens=True)\r\
+          \n\r\nfor line in output.split('\\n'):\r\n    print(line)\r\n```\r\n"
+        updatedAt: '2023-06-15T07:37:36.051Z'
+      numEdits: 0
+      reactions: []
+    id: 648abfc0c864cc4e6743901e
+    type: comment
+  author: cotran2
+  content: "Error I receive:\r\n```\r\nFile ~/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-instruct/85c1f1c201273bbfee661d4a2f8307c95f8956c9/attention.py:58,\
+    \ in scaled_multihead_dot_product_attention(query, key, value, n_heads, past_key_value,\
+    \ softmax_scale, attn_bias, key_padding_mask, is_causal, dropout_p, training,\
+    \ needs_weights, multiquery)\r\n     56 if dropout_p:\r\n     57     attn_weight\
+    \ = torch.nn.functional.dropout(attn_weight, p=dropout_p, training=training, inplace=True)\r\
+    \n---> 58 out = attn_weight.matmul(v)\r\n     59 out = rearrange(out, 'b h s d\
+    \ -> b s (h d)')\r\n     60 if needs_weights:\r\n\r\nRuntimeError: expected scalar\
+    \ type BFloat16 but found Float\r\n```\r\nCode for initialization:\r\n```\r\n\
+    import torch\r\nimport transformers\r\nfrom transformers import AutoTokenizer\r\
+    \ntokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\r\n\r\n\
+    name = 'mosaicml/mpt-7b-instruct'\r\n\r\nconfig = transformers.AutoConfig.from_pretrained(name,\
+    \ trust_remote_code=True)\r\nconfig.attn_config['attn_impl'] = 'torch'\r\nconfig.init_device\
+    \ = 'cuda:0' # For fast initialization directly on GPU!\r\n\r\n\r\n\r\nmodel =\
+    \ transformers.AutoModelForCausalLM.from_pretrained(\r\n  name,\r\n  config=config,\r\
+    \n  #load_in_8bit=True,\r\n  torch_dtype=torch.bfloat16, # Load model weights\
+    \ in bfloat16\r\n  trust_remote_code=True,\r\n  device_map=\"auto\"\r\n)\r\n\r\
+    \ninput_ids = tokenizer(fmt_ex, return_tensors=\"pt\").input_ids\r\ninput_ids\
+    \ = input_ids.to(model.device)\r\n\r\ngenerate_params = {\r\n    \"max_new_tokens\"\
+    : 1024, \r\n    \"temperature\": 0.1, \r\n    \"top_p\": 1.0, \r\n    \"top_k\"\
+    : 0, \r\n    \"use_cache\": True, \r\n    \"do_sample\": True, \r\n    \"eos_token_id\"\
+    : 0, \r\n    \"pad_token_id\": 0\r\n}\r\ngenerated_ids = model.generate(input_ids,\
+    \ **generate_params)\r\noutput = tokenizer.decode(generated_ids.cpu().tolist()[0],\
+    \ skip_special_tokens=True)\r\n\r\nfor line in output.split('\\n'):\r\n    print(line)\r\
+    \n```\r\n"
+  created_at: 2023-06-15 06:37:36+00:00
+  edited: false
+  hidden: false
+  id: 648abfc0c864cc4e6743901e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-15T08:33:59.000Z'
+    data:
+      edited: false
+      editors:
+      - sam-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8314205408096313
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+          fullname: Sam Havens
+          isHf: false
+          isPro: false
+          name: sam-mosaic
+          type: user
+        html: '<p>You''re running the model in lower precision (fp16 or bf16), but
+          alibi bias needs to be in fp32 or else the model perf degrades. To get those
+          to work together correctly, you should use autocast. Here is an example
+          of how we had to update our tests to get this right: <a rel="nofollow" href="https://github.com/mosaicml/llm-foundry/pull/329/files#diff-3b8a58a4d021803b3171b886bb9162fd659e671131f3f61036f9210cb5d0bc7cR809">https://github.com/mosaicml/llm-foundry/pull/329/files#diff-3b8a58a4d021803b3171b886bb9162fd659e671131f3f61036f9210cb5d0bc7cR809</a></p>
+
+          '
+        raw: 'You''re running the model in lower precision (fp16 or bf16), but alibi
+          bias needs to be in fp32 or else the model perf degrades. To get those to
+          work together correctly, you should use autocast. Here is an example of
+          how we had to update our tests to get this right: https://github.com/mosaicml/llm-foundry/pull/329/files#diff-3b8a58a4d021803b3171b886bb9162fd659e671131f3f61036f9210cb5d0bc7cR809'
+        updatedAt: '2023-06-15T08:33:59.291Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 648accf78961a9fb58ec817e
+    id: 648accf78961a9fb58ec8178
+    type: comment
+  author: sam-mosaic
+  content: 'You''re running the model in lower precision (fp16 or bf16), but alibi
+    bias needs to be in fp32 or else the model perf degrades. To get those to work
+    together correctly, you should use autocast. Here is an example of how we had
+    to update our tests to get this right: https://github.com/mosaicml/llm-foundry/pull/329/files#diff-3b8a58a4d021803b3171b886bb9162fd659e671131f3f61036f9210cb5d0bc7cR809'
+  created_at: 2023-06-15 07:33:59+00:00
+  edited: false
+  hidden: false
+  id: 648accf78961a9fb58ec8178
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-15T08:33:59.000Z'
+    data:
+      status: closed
+    id: 648accf78961a9fb58ec817e
+    type: status-change
+  author: sam-mosaic
+  created_at: 2023-06-15 07:33:59+00:00
+  id: 648accf78961a9fb58ec817e
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 45
+repo_id: mosaicml/mpt-7b-instruct
+repo_type: model
+status: closed
+target_branch: null
+title: Dtype error in generation text

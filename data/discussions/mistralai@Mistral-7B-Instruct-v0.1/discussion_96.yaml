@@ -1,0 +1,159 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Pradeep1995
+conflicting_files: null
+created_at: 2023-12-29 09:42:01+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+      fullname: Pradeep T
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Pradeep1995
+      type: user
+    createdAt: '2023-12-29T09:42:01.000Z'
+    data:
+      edited: false
+      editors:
+      - Pradeep1995
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5331130623817444
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+          fullname: Pradeep T
+          isHf: false
+          isPro: false
+          name: Pradeep1995
+          type: user
+        html: "<p>Here is the SFTtrainer method i used for finetuning mistral</p>\n\
+          <pre><code>trainer = SFTTrainer(\n    model=peft_model,\n    train_dataset=data,\n\
+          \    peft_config=peft_config,\n    dataset_text_field=\" column name\",\n\
+          \    max_seq_length=3000,\n    tokenizer=tokenizer,\n    args=training_arguments,\n\
+          \    packing=packing,\n)\ntrainer.train()\n</code></pre>\n<p>I found different\
+          \ mechanisms for the finetuned model inference after PEFT based LORA finetuning</p>\n\
+          <p>Method - 1</p>\n<p>save adapter after completing training and then merge\
+          \ with base model then use for inference</p>\n<pre><code>trainer.model.save_pretrained(\"\
+          new_adapter_path\")\nfrom peft import PeftModel\nfinetuned_model = PeftModel.from_pretrained(base_model,\n\
+          \                                  new_adapter_path,\n                 \
+          \                 torch_dtype=torch.float16,\n                         \
+          \         is_trainable=False,\n                                  device_map=\"\
+          auto\"\n                                  )\nfinetuned_model = finetuned_model.merge_and_unload()\n\
+          </code></pre>\n<p>Method - 2</p>\n<p>save checkpoints during training and\
+          \ then use the checkpoint with the least loss</p>\n<pre><code>from peft\
+          \ import PeftModel\nfinetuned_model = PeftModel.from_pretrained(base_model,\n\
+          \                                  \"least loss checkpoint path\",\n   \
+          \                               torch_dtype=torch.float16,\n           \
+          \                       is_trainable=False,\n                          \
+          \        device_map=\"auto\"\n                                  )\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\n</code></pre>\n<p>Method - 3</p>\n\
+          <p>same method with AutoPeftModelForCausalLM class </p>\n<pre><code>model\
+          \ = AutoPeftModelForCausalLM.from_pretrained(\n    \"output directory checkpoint\
+          \ path\",\n    low_cpu_mem_usage=True,\n    return_dict=True,\n    torch_dtype=torch.float16,\n\
+          \    device_map=\"cuda\")\nfinetuned_model = finetuned_model.merge_and_unload()\n\
+          </code></pre>\n<p>Method-4</p>\n<p>AutoPeftModelForCausalLM class specifies\
+          \ the output folder without specifying a specific checkpoint</p>\n<pre><code>instruction_tuned_model\
+          \ = AutoPeftModelForCausalLM.from_pretrained(\n    training_args.output_dir,\n\
+          \    torch_dtype=torch.bfloat16,\n    device_map = 'auto',\n    trust_remote_code=True,\n\
+          )\nfinetuned_model = finetuned_model.merge_and_unload()\n</code></pre>\n\
+          <p>Method-5<br>All the above methods without merging</p>\n<pre><code>#finetuned_model\
+          \ = finetuned_model.merge_and_unload()\n</code></pre>\n<p>Which is the actual\
+          \ method I should follow for inference?<br>and when to use which method\
+          \ over another?</p>\n"
+        raw: "Here is the SFTtrainer method i used for finetuning mistral\r\n```\r\
+          \ntrainer = SFTTrainer(\r\n    model=peft_model,\r\n    train_dataset=data,\r\
+          \n    peft_config=peft_config,\r\n    dataset_text_field=\" column name\"\
+          ,\r\n    max_seq_length=3000,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+          \n    packing=packing,\r\n)\r\ntrainer.train()\r\n```\r\nI found different\
+          \ mechanisms for the finetuned model inference after PEFT based LORA finetuning\r\
+          \n\r\nMethod - 1\r\n\r\nsave adapter after completing training and then\
+          \ merge with base model then use for inference\r\n```\r\ntrainer.model.save_pretrained(\"\
+          new_adapter_path\")\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+          \n                                  new_adapter_path,\r\n              \
+          \                    torch_dtype=torch.float16,\r\n                    \
+          \              is_trainable=False,\r\n                                 \
+          \ device_map=\"auto\"\r\n                                  )\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n``` \r\n\r\nMethod - 2\r\n\r\n\
+          save checkpoints during training and then use the checkpoint with the least\
+          \ loss\r\n```\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+          \n                                  \"least loss checkpoint path\",\r\n\
+          \                                  torch_dtype=torch.float16,\r\n      \
+          \                            is_trainable=False,\r\n                   \
+          \               device_map=\"auto\"\r\n                                \
+          \  )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\n``` \r\n\
+          Method - 3\r\n\r\nsame method with AutoPeftModelForCausalLM class \r\n```\r\
+          \nmodel = AutoPeftModelForCausalLM.from_pretrained(\r\n    \"output directory\
+          \ checkpoint path\",\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\
+          \n    torch_dtype=torch.float16,\r\n    device_map=\"cuda\")\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-4\r\n\r\nAutoPeftModelForCausalLM\
+          \ class specifies the output folder without specifying a specific checkpoint\r\
+          \n```\r\ninstruction_tuned_model = AutoPeftModelForCausalLM.from_pretrained(\r\
+          \n    training_args.output_dir,\r\n    torch_dtype=torch.bfloat16,\r\n \
+          \   device_map = 'auto',\r\n    trust_remote_code=True,\r\n)\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-5\r\nAll the above\
+          \ methods without merging\r\n```\r\n#finetuned_model = finetuned_model.merge_and_unload()\r\
+          \n```\r\n\r\nWhich is the actual method I should follow for inference?\r\
+          \nand when to use which method over another?"
+        updatedAt: '2023-12-29T09:42:01.769Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - adriata
+    id: 658e946911f68f12eaf915f1
+    type: comment
+  author: Pradeep1995
+  content: "Here is the SFTtrainer method i used for finetuning mistral\r\n```\r\n\
+    trainer = SFTTrainer(\r\n    model=peft_model,\r\n    train_dataset=data,\r\n\
+    \    peft_config=peft_config,\r\n    dataset_text_field=\" column name\",\r\n\
+    \    max_seq_length=3000,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+    \n    packing=packing,\r\n)\r\ntrainer.train()\r\n```\r\nI found different mechanisms\
+    \ for the finetuned model inference after PEFT based LORA finetuning\r\n\r\nMethod\
+    \ - 1\r\n\r\nsave adapter after completing training and then merge with base model\
+    \ then use for inference\r\n```\r\ntrainer.model.save_pretrained(\"new_adapter_path\"\
+    )\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+    \n                                  new_adapter_path,\r\n                    \
+    \              torch_dtype=torch.float16,\r\n                                \
+    \  is_trainable=False,\r\n                                  device_map=\"auto\"\
+    \r\n                                  )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\
+    \n``` \r\n\r\nMethod - 2\r\n\r\nsave checkpoints during training and then use\
+    \ the checkpoint with the least loss\r\n```\r\nfrom peft import PeftModel\r\n\
+    finetuned_model = PeftModel.from_pretrained(base_model,\r\n                  \
+    \                \"least loss checkpoint path\",\r\n                         \
+    \         torch_dtype=torch.float16,\r\n                                  is_trainable=False,\r\
+    \n                                  device_map=\"auto\"\r\n                  \
+    \                )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\n\
+    ``` \r\nMethod - 3\r\n\r\nsame method with AutoPeftModelForCausalLM class \r\n\
+    ```\r\nmodel = AutoPeftModelForCausalLM.from_pretrained(\r\n    \"output directory\
+    \ checkpoint path\",\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\
+    \n    torch_dtype=torch.float16,\r\n    device_map=\"cuda\")\r\nfinetuned_model\
+    \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-4\r\n\r\nAutoPeftModelForCausalLM\
+    \ class specifies the output folder without specifying a specific checkpoint\r\
+    \n```\r\ninstruction_tuned_model = AutoPeftModelForCausalLM.from_pretrained(\r\
+    \n    training_args.output_dir,\r\n    torch_dtype=torch.bfloat16,\r\n    device_map\
+    \ = 'auto',\r\n    trust_remote_code=True,\r\n)\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\
+    \n```\r\nMethod-5\r\nAll the above methods without merging\r\n```\r\n#finetuned_model\
+    \ = finetuned_model.merge_and_unload()\r\n```\r\n\r\nWhich is the actual method\
+    \ I should follow for inference?\r\nand when to use which method over another?"
+  created_at: 2023-12-29 09:42:01+00:00
+  edited: false
+  hidden: false
+  id: 658e946911f68f12eaf915f1
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 96
+repo_id: mistralai/Mistral-7B-Instruct-v0.1
+repo_type: model
+status: open
+target_branch: null
+title: What is the best way for the inference process in LORA in PEFT approach

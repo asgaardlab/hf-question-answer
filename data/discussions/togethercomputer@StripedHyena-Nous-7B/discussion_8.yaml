@@ -1,0 +1,556 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: abhinavkulkarni
+conflicting_files: null
+created_at: 2023-12-14 15:33:47+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+      fullname: Abhinav Kulkarni
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: abhinavkulkarni
+      type: user
+    createdAt: '2023-12-14T15:33:47.000Z'
+    data:
+      edited: false
+      editors:
+      - abhinavkulkarni
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.43984925746917725
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+          fullname: Abhinav Kulkarni
+          isHf: false
+          isPro: false
+          name: abhinavkulkarni
+          type: user
+        html: "<p>Hi,</p>\n<p>I am trying to apply AWQ quantization to this new architecture\
+          \ one layer at a time and running into a problem.</p>\n<p>The way it works\
+          \ is as follows:</p>\n<ol>\n<li>Pass sample input through the model and\
+          \ catch the input to the first layer</li>\n<li>Pass the input through each\
+          \ layer successively while determining optimal quantization parameters</li>\n\
+          <li>Output of one layer is input to the next one</li>\n</ol>\n<p>I have\
+          \ omitted the quantization logic, but the main scaffold is as follows. </p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> transformers <span class=\"\
+          hljs-keyword\">import</span> AutoModelForCausalLM, AutoConfig, AutoTokenizer,\
+          \ TextStreamer\n<span class=\"hljs-keyword\">from</span> accelerate <span\
+          \ class=\"hljs-keyword\">import</span> init_empty_weights, infer_auto_device_map\n\
+          <span class=\"hljs-keyword\">from</span> datasets <span class=\"hljs-keyword\"\
+          >import</span> load_dataset\n<span class=\"hljs-keyword\">import</span>\
+          \ torch.nn <span class=\"hljs-keyword\">as</span> nn\n<span class=\"hljs-keyword\"\
+          >import</span> gc\n\nmodel_id = <span class=\"hljs-string\">\"togethercomputer/StripedHyena-Nous-7B\"\
+          </span>\n<span class=\"hljs-comment\"># model_id = \"meta-llama/Llama-2-7b-hf\"\
+          </span>\n\n<span class=\"hljs-comment\"># Config</span>\nconfig = AutoConfig.from_pretrained(model_id,\
+          \ trust_remote_code=<span class=\"hljs-literal\">True</span>)\n\n<span class=\"\
+          hljs-comment\"># Load model on CPU</span>\nkwargs = {<span class=\"hljs-string\"\
+          >\"torch_dtype\"</span>: torch.float16, <span class=\"hljs-string\">\"low_cpu_mem_usage\"\
+          </span>: <span class=\"hljs-literal\">True</span>}\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_id, config=config, trust_remote_code=<span class=\"hljs-literal\"\
+          >True</span>, **kwargs\n)\n\nmodel.<span class=\"hljs-built_in\">eval</span>()\n\
+          \n<span class=\"hljs-comment\"># Tokenizer</span>\n<span class=\"hljs-keyword\"\
+          >try</span>:\n    tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name,\
+          \ trust_remote_code=<span class=\"hljs-literal\">True</span>)\n<span class=\"\
+          hljs-keyword\">except</span>:\n    tokenizer = AutoTokenizer.from_pretrained(model_id,\
+          \ use_fast=<span class=\"hljs-literal\">True</span>, trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>)\n\ntokenizer.pad_token = tokenizer.eos_token\n\
+          \n<span class=\"hljs-comment\"># Load sample dataset</span>\ndataset = load_dataset(<span\
+          \ class=\"hljs-string\">\"mit-han-lab/pile-val-backup\"</span>, split=<span\
+          \ class=\"hljs-string\">\"validation\"</span>)\n\ntexts = [dataset[i][<span\
+          \ class=\"hljs-string\">'text'</span>] <span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-number\">10</span>)]\nsamples = [tokenizer.encode(text,\
+          \ max_length=<span class=\"hljs-number\">512</span>, truncation=<span class=\"\
+          hljs-literal\">True</span>, padding=<span class=\"hljs-string\">'max_length'</span>)\
+          \ <span class=\"hljs-keyword\">for</span> text <span class=\"hljs-keyword\"\
+          >in</span> texts]\nsamples = torch.LongTensor(samples) <span class=\"hljs-comment\"\
+          ># Shape = (10, 512)</span>\n\n<span class=\"hljs-comment\"># Catch the\
+          \ input to the first layer</span>\ninps = []\nlayer_kwargs = {}\n\n\n<span\
+          \ class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\"\
+          >Catcher</span>(nn.Module):\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">__init__</span>(<span class=\"hljs-params\"\
+          >self, module</span>):\n        <span class=\"hljs-built_in\">super</span>().__init__()\n\
+          \        self.module = module\n\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">forward</span>(<span class=\"hljs-params\"\
+          >self, inp, **kwargs</span>):\n        inps.append(inp)\n        layer_kwargs.update(kwargs)\n\
+          \        <span class=\"hljs-keyword\">raise</span> ValueError  <span class=\"\
+          hljs-comment\"># early exit to break later inference</span>\n\n<span class=\"\
+          hljs-comment\"># patch layer 0 to catch input and kwargs</span>\nlayers\
+          \ = model.backbone.blocks <span class=\"hljs-comment\"># For StripedHyena</span>\n\
+          <span class=\"hljs-comment\"># layers = model.model.layers # For Llama-2</span>\n\
+          layers[<span class=\"hljs-number\">0</span>] = Catcher(layers[<span class=\"\
+          hljs-number\">0</span>])\n<span class=\"hljs-keyword\">try</span>:\n   \
+          \ model(samples.to(<span class=\"hljs-built_in\">next</span>(model.parameters()).device))\n\
+          <span class=\"hljs-keyword\">except</span> ValueError:  <span class=\"hljs-comment\"\
+          ># work with early exit</span>\n    <span class=\"hljs-keyword\">pass</span>\n\
+          \nlayers[<span class=\"hljs-number\">0</span>] = layers[<span class=\"hljs-number\"\
+          >0</span>].module  <span class=\"hljs-comment\"># restore</span>\ninps =\
+          \ inps[<span class=\"hljs-number\">0</span>]\n\nlayers[<span class=\"hljs-number\"\
+          >0</span>] = layers[<span class=\"hljs-number\">0</span>].cpu()\n\n<span\
+          \ class=\"hljs-comment\"># Now pass the input successively through each\
+          \ layer, collecting the output</span>\n<span class=\"hljs-comment\"># which\
+          \ becomes input for the next layer</span>\n<span class=\"hljs-keyword\"\
+          >for</span> i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-built_in\">len</span>(layers)):\n    <span\
+          \ class=\"hljs-built_in\">print</span>(i)\n    layer = layers[i]\n    layer\
+          \ = layer.cuda()\n    inps = inps.to(<span class=\"hljs-built_in\">next</span>(layer.parameters()).device)\
+          \  <span class=\"hljs-comment\"># in case multi-gpu</span>\n    layer_kwargs\
+          \ = {k:(v.to(inps.device) <span class=\"hljs-keyword\">if</span> <span class=\"\
+          hljs-built_in\">isinstance</span>(v, torch.Tensor) <span class=\"hljs-keyword\"\
+          >else</span> v) <span class=\"hljs-keyword\">for</span> k,v <span class=\"\
+          hljs-keyword\">in</span> layer_kwargs.items()}\n    <span class=\"hljs-comment\"\
+          ># get output as next layer's input</span>\n    inps = layer(inps, **layer_kwargs)[<span\
+          \ class=\"hljs-number\">0</span>]\n    <span class=\"hljs-comment\"># Clear\
+          \ GPU memory</span>\n    torch.cuda.empty_cache()\n    layer = layer.cpu()\n\
+          \    gc.collect()\n    torch.cuda.empty_cache()\n</code></pre>\n<p>I get\
+          \ the following error when the input is passed through <code>AttentionBlock</code>\
+          \ layer:</p>\n<pre><code class=\"language-python\">---------------------------------------------------------------------------\n\
+          AttributeError                            Traceback (most recent call last)\n\
+          Cell In[<span class=\"hljs-number\">1</span>], line <span class=\"hljs-number\"\
+          >75</span>\n     <span class=\"hljs-number\">73</span> layer_kwargs = {k:(v.to(inps.device)\
+          \ <span class=\"hljs-keyword\">if</span> <span class=\"hljs-built_in\">isinstance</span>(v,\
+          \ torch.Tensor) <span class=\"hljs-keyword\">else</span> v) <span class=\"\
+          hljs-keyword\">for</span> k,v <span class=\"hljs-keyword\">in</span> layer_kwargs.items()}\n\
+          \     <span class=\"hljs-number\">74</span> <span class=\"hljs-comment\"\
+          ># get output as next layer's input</span>\n---&gt; <span class=\"hljs-number\"\
+          >75</span> inps = layer(inps, **layer_kwargs)[<span class=\"hljs-number\"\
+          >0</span>]\n     <span class=\"hljs-number\">76</span> <span class=\"hljs-comment\"\
+          ># Clear GPU memory</span>\n     <span class=\"hljs-number\">77</span> torch.cuda.empty_cache()\n\
+          \nFile ~/miniconda3/envs/llm-awq/lib/python3<span class=\"hljs-number\"\
+          >.10</span>/site-packages/torch/nn/modules/module.py:<span class=\"hljs-number\"\
+          >1518</span>, <span class=\"hljs-keyword\">in</span> Module._wrapped_call_impl(self,\
+          \ *args, **kwargs)\n   <span class=\"hljs-number\">1516</span>     <span\
+          \ class=\"hljs-keyword\">return</span> self._compiled_call_impl(*args, **kwargs)\
+          \  <span class=\"hljs-comment\"># type: ignore[misc]</span>\n   <span class=\"\
+          hljs-number\">1517</span> <span class=\"hljs-keyword\">else</span>:\n-&gt;\
+          \ <span class=\"hljs-number\">1518</span>     <span class=\"hljs-keyword\"\
+          >return</span> self._call_impl(*args, **kwargs)\n\nFile ~/miniconda3/envs/llm-awq/lib/python3<span\
+          \ class=\"hljs-number\">.10</span>/site-packages/torch/nn/modules/module.py:<span\
+          \ class=\"hljs-number\">1527</span>, <span class=\"hljs-keyword\">in</span>\
+          \ Module._call_impl(self, *args, **kwargs)\n   <span class=\"hljs-number\"\
+          >1522</span> <span class=\"hljs-comment\"># If we don't have any hooks,\
+          \ we want to skip the rest of the logic in</span>\n   <span class=\"hljs-number\"\
+          >1523</span> <span class=\"hljs-comment\"># this function, and just call\
+          \ forward.</span>\n   <span class=\"hljs-number\">1524</span> <span class=\"\
+          hljs-keyword\">if</span> <span class=\"hljs-keyword\">not</span> (self._backward_hooks\
+          \ <span class=\"hljs-keyword\">or</span> self._backward_pre_hooks <span\
+          \ class=\"hljs-keyword\">or</span> self._forward_hooks <span class=\"hljs-keyword\"\
+          >or</span> self._forward_pre_hooks\n   <span class=\"hljs-number\">1525</span>\
+          \         <span class=\"hljs-keyword\">or</span> _global_backward_pre_hooks\
+          \ <span class=\"hljs-keyword\">or</span> _global_backward_hooks\n   <span\
+          \ class=\"hljs-number\">1526</span>         <span class=\"hljs-keyword\"\
+          >or</span> _global_forward_hooks <span class=\"hljs-keyword\">or</span>\
+          \ _global_forward_pre_hooks):\n-&gt; <span class=\"hljs-number\">1527</span>\
+          \     <span class=\"hljs-keyword\">return</span> forward_call(*args, **kwargs)\n\
+          \   <span class=\"hljs-number\">1529</span> <span class=\"hljs-keyword\"\
+          >try</span>:\n   <span class=\"hljs-number\">1530</span>     result = <span\
+          \ class=\"hljs-literal\">None</span>\n\nFile ~/.cache/huggingface/modules/transformers_modules/togethercomputer/StripedHyena-Nous-7B/42777970d603597dadb768705896533eb9556a07/model.py:<span\
+          \ class=\"hljs-number\">71</span>, <span class=\"hljs-keyword\">in</span>\
+          \ AttentionBlock.forward(self, u, inference_params, padding_mask, *args,\
+          \ **kwargs)\n     <span class=\"hljs-number\">64</span>     u = u * padding_mask[...,\
+          \ <span class=\"hljs-literal\">None</span>]\n     <span class=\"hljs-number\"\
+          >66</span> <span class=\"hljs-comment\"># for attr in ['lengths_per_sample',\
+          \ 'max_seqlen', 'key_value_memory_dict']:</span>\n     <span class=\"hljs-number\"\
+          >67</span> <span class=\"hljs-comment\">#     if not hasattr(inference_params,\
+          \ attr):</span>\n     <span class=\"hljs-number\">68</span> <span class=\"\
+          hljs-comment\">#         setattr(inference_params, attr, None)</span>\n\
+          \     <span class=\"hljs-number\">69</span> <span class=\"hljs-comment\"\
+          ># inference_params.key_value_memory_dict = inference_params.key_value_memory_dict\
+          \ or {}</span>\n     <span class=\"hljs-number\">70</span> u = (\n---&gt;\
+          \ <span class=\"hljs-number\">71</span>     self.inner_mha_cls(\n     <span\
+          \ class=\"hljs-number\">72</span>         self.pre_norm(u),\n     <span\
+          \ class=\"hljs-number\">73</span>         inference_params=inference_params,\n\
+          \     <span class=\"hljs-number\">74</span>     )\n     <span class=\"hljs-number\"\
+          >75</span>     + u\n     <span class=\"hljs-number\">76</span> )\n     <span\
+          \ class=\"hljs-number\">77</span> <span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-built_in\">type</span>(padding_mask) == torch.Tensor:\
+          \  <span class=\"hljs-comment\"># guard against bias</span>\n     <span\
+          \ class=\"hljs-number\">78</span>     u = u * padding_mask[..., <span class=\"\
+          hljs-literal\">None</span>]\n\nFile ~/miniconda3/envs/llm-awq/lib/python3<span\
+          \ class=\"hljs-number\">.10</span>/site-packages/torch/nn/modules/module.py:<span\
+          \ class=\"hljs-number\">1518</span>, <span class=\"hljs-keyword\">in</span>\
+          \ Module._wrapped_call_impl(self, *args, **kwargs)\n   <span class=\"hljs-number\"\
+          >1516</span>     <span class=\"hljs-keyword\">return</span> self._compiled_call_impl(*args,\
+          \ **kwargs)  <span class=\"hljs-comment\"># type: ignore[misc]</span>\n\
+          \   <span class=\"hljs-number\">1517</span> <span class=\"hljs-keyword\"\
+          >else</span>:\n-&gt; <span class=\"hljs-number\">1518</span>     <span class=\"\
+          hljs-keyword\">return</span> self._call_impl(*args, **kwargs)\n\nFile ~/miniconda3/envs/llm-awq/lib/python3<span\
+          \ class=\"hljs-number\">.10</span>/site-packages/torch/nn/modules/module.py:<span\
+          \ class=\"hljs-number\">1527</span>, <span class=\"hljs-keyword\">in</span>\
+          \ Module._call_impl(self, *args, **kwargs)\n   <span class=\"hljs-number\"\
+          >1522</span> <span class=\"hljs-comment\"># If we don't have any hooks,\
+          \ we want to skip the rest of the logic in</span>\n   <span class=\"hljs-number\"\
+          >1523</span> <span class=\"hljs-comment\"># this function, and just call\
+          \ forward.</span>\n   <span class=\"hljs-number\">1524</span> <span class=\"\
+          hljs-keyword\">if</span> <span class=\"hljs-keyword\">not</span> (self._backward_hooks\
+          \ <span class=\"hljs-keyword\">or</span> self._backward_pre_hooks <span\
+          \ class=\"hljs-keyword\">or</span> self._forward_hooks <span class=\"hljs-keyword\"\
+          >or</span> self._forward_pre_hooks\n   <span class=\"hljs-number\">1525</span>\
+          \         <span class=\"hljs-keyword\">or</span> _global_backward_pre_hooks\
+          \ <span class=\"hljs-keyword\">or</span> _global_backward_hooks\n   <span\
+          \ class=\"hljs-number\">1526</span>         <span class=\"hljs-keyword\"\
+          >or</span> _global_forward_hooks <span class=\"hljs-keyword\">or</span>\
+          \ _global_forward_pre_hooks):\n-&gt; <span class=\"hljs-number\">1527</span>\
+          \     <span class=\"hljs-keyword\">return</span> forward_call(*args, **kwargs)\n\
+          \   <span class=\"hljs-number\">1529</span> <span class=\"hljs-keyword\"\
+          >try</span>:\n   <span class=\"hljs-number\">1530</span>     result = <span\
+          \ class=\"hljs-literal\">None</span>\n\nFile ~/miniconda3/envs/llm-awq/lib/python3<span\
+          \ class=\"hljs-number\">.10</span>/site-packages/flash_attn/modules/mha.py:<span\
+          \ class=\"hljs-number\">563</span>, <span class=\"hljs-keyword\">in</span>\
+          \ MHA.forward(self, x, x_kv, key_padding_mask, cu_seqlens, max_seqlen, mixer_subset,\
+          \ inference_params, **kwargs)\n    <span class=\"hljs-number\">551</span>\
+          \     <span class=\"hljs-keyword\">assert</span> <span class=\"hljs-keyword\"\
+          >not</span> self.dwconv\n    <span class=\"hljs-number\">553</span> kwargs\
+          \ = (\n    <span class=\"hljs-number\">554</span>     {<span class=\"hljs-string\"\
+          >\"cu_seqlens\"</span>: cu_seqlens, <span class=\"hljs-string\">\"max_seqlen\"\
+          </span>: max_seqlen, **kwargs}\n    <span class=\"hljs-number\">555</span>\
+          \     <span class=\"hljs-keyword\">if</span> self.use_flash_attn\n    <span\
+          \ class=\"hljs-number\">556</span>     <span class=\"hljs-keyword\">else</span>\
+          \ {<span class=\"hljs-string\">\"key_padding_mask\"</span>: key_padding_mask,\
+          \ **kwargs}\n    <span class=\"hljs-number\">557</span> )\n    <span class=\"\
+          hljs-number\">558</span> seqlen_offset = (\n    <span class=\"hljs-number\"\
+          >559</span>     <span class=\"hljs-number\">0</span>\n    <span class=\"\
+          hljs-number\">560</span>     <span class=\"hljs-keyword\">if</span> inference_params\
+          \ <span class=\"hljs-keyword\">is</span> <span class=\"hljs-literal\">None</span>\n\
+          \    <span class=\"hljs-number\">561</span>     <span class=\"hljs-keyword\"\
+          >else</span> (\n    <span class=\"hljs-number\">562</span>         inference_params.lengths_per_sample\n\
+          --&gt; <span class=\"hljs-number\">563</span>         <span class=\"hljs-keyword\"\
+          >if</span> inference_params.lengths_per_sample <span class=\"hljs-keyword\"\
+          >is</span> <span class=\"hljs-keyword\">not</span> <span class=\"hljs-literal\"\
+          >None</span>\n    <span class=\"hljs-number\">564</span>         <span class=\"\
+          hljs-keyword\">else</span> inference_params.seqlen_offset\n    <span class=\"\
+          hljs-number\">565</span>     )\n    <span class=\"hljs-number\">566</span>\
+          \ )\n    <span class=\"hljs-number\">567</span> rotary_max_seqlen = inference_params.max_seqlen\
+          \ <span class=\"hljs-keyword\">if</span> inference_params <span class=\"\
+          hljs-keyword\">is</span> <span class=\"hljs-keyword\">not</span> <span class=\"\
+          hljs-literal\">None</span> <span class=\"hljs-keyword\">else</span> <span\
+          \ class=\"hljs-literal\">None</span>\n    <span class=\"hljs-number\">568</span>\
+          \ batch, seqlen = x.shape[:<span class=\"hljs-number\">2</span>]\n\nAttributeError:\
+          \ <span class=\"hljs-string\">'RecurrentInferenceParams'</span> <span class=\"\
+          hljs-built_in\">object</span> has no attribute <span class=\"hljs-string\"\
+          >'lengths_per_sample'</span>\n</code></pre>\n<p>Please note the same code\
+          \ works for <code>meta-llama/Llama-2-7b-hf</code>.</p>\n<p>All the quantization\
+          \ methods - GPTQ, AWQ, etc. - work layer by layer. Can you please help?</p>\n\
+          <p>Thanks!</p>\n"
+        raw: "Hi,\r\n\r\nI am trying to apply AWQ quantization to this new architecture\
+          \ one layer at a time and running into a problem.\r\n\r\nThe way it works\
+          \ is as follows:\r\n\r\n1. Pass sample input through the model and catch\
+          \ the input to the first layer\r\n2. Pass the input through each layer successively\
+          \ while determining optimal quantization parameters\r\n3. Output of one\
+          \ layer is input to the next one\r\n\r\nI have omitted the quantization\
+          \ logic, but the main scaffold is as follows. \r\n\r\n```python\r\nimport\
+          \ torch\r\nfrom transformers import AutoModelForCausalLM, AutoConfig, AutoTokenizer,\
+          \ TextStreamer\r\nfrom accelerate import init_empty_weights, infer_auto_device_map\r\
+          \nfrom datasets import load_dataset\r\nimport torch.nn as nn\r\nimport gc\r\
+          \n\r\nmodel_id = \"togethercomputer/StripedHyena-Nous-7B\"\r\n# model_id\
+          \ = \"meta-llama/Llama-2-7b-hf\"\r\n\r\n# Config\r\nconfig = AutoConfig.from_pretrained(model_id,\
+          \ trust_remote_code=True)\r\n\r\n# Load model on CPU\r\nkwargs = {\"torch_dtype\"\
+          : torch.float16, \"low_cpu_mem_usage\": True}\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    model_id, config=config, trust_remote_code=True, **kwargs\r\n)\r\n\
+          \r\nmodel.eval()\r\n\r\n# Tokenizer\r\ntry:\r\n    tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name,\
+          \ trust_remote_code=True)\r\nexcept:\r\n    tokenizer = AutoTokenizer.from_pretrained(model_id,\
+          \ use_fast=True, trust_remote_code=True)\r\n\r\ntokenizer.pad_token = tokenizer.eos_token\r\
+          \n\r\n# Load sample dataset\r\ndataset = load_dataset(\"mit-han-lab/pile-val-backup\"\
+          , split=\"validation\")\r\n\r\ntexts = [dataset[i]['text'] for i in range(10)]\r\
+          \nsamples = [tokenizer.encode(text, max_length=512, truncation=True, padding='max_length')\
+          \ for text in texts]\r\nsamples = torch.LongTensor(samples) # Shape = (10,\
+          \ 512)\r\n\r\n# Catch the input to the first layer\r\ninps = []\r\nlayer_kwargs\
+          \ = {}\r\n\r\n\r\nclass Catcher(nn.Module):\r\n    def __init__(self, module):\r\
+          \n        super().__init__()\r\n        self.module = module\r\n\r\n   \
+          \ def forward(self, inp, **kwargs):\r\n        inps.append(inp)\r\n    \
+          \    layer_kwargs.update(kwargs)\r\n        raise ValueError  # early exit\
+          \ to break later inference\r\n\r\n# patch layer 0 to catch input and kwargs\r\
+          \nlayers = model.backbone.blocks # For StripedHyena\r\n# layers = model.model.layers\
+          \ # For Llama-2\r\nlayers[0] = Catcher(layers[0])\r\ntry:\r\n    model(samples.to(next(model.parameters()).device))\r\
+          \nexcept ValueError:  # work with early exit\r\n    pass\r\n\r\nlayers[0]\
+          \ = layers[0].module  # restore\r\ninps = inps[0]\r\n\r\nlayers[0] = layers[0].cpu()\r\
+          \n\r\n# Now pass the input successively through each layer, collecting the\
+          \ output\r\n# which becomes input for the next layer\r\nfor i in range(len(layers)):\r\
+          \n    print(i)\r\n    layer = layers[i]\r\n    layer = layer.cuda()\r\n\
+          \    inps = inps.to(next(layer.parameters()).device)  # in case multi-gpu\r\
+          \n    layer_kwargs = {k:(v.to(inps.device) if isinstance(v, torch.Tensor)\
+          \ else v) for k,v in layer_kwargs.items()}\r\n    # get output as next layer's\
+          \ input\r\n    inps = layer(inps, **layer_kwargs)[0]\r\n    # Clear GPU\
+          \ memory\r\n    torch.cuda.empty_cache()\r\n    layer = layer.cpu()\r\n\
+          \    gc.collect()\r\n    torch.cuda.empty_cache()\r\n```\r\n\r\nI get the\
+          \ following error when the input is passed through `AttentionBlock` layer:\r\
+          \n\r\n```python\r\n---------------------------------------------------------------------------\r\
+          \nAttributeError                            Traceback (most recent call\
+          \ last)\r\nCell In[1], line 75\r\n     73 layer_kwargs = {k:(v.to(inps.device)\
+          \ if isinstance(v, torch.Tensor) else v) for k,v in layer_kwargs.items()}\r\
+          \n     74 # get output as next layer's input\r\n---> 75 inps = layer(inps,\
+          \ **layer_kwargs)[0]\r\n     76 # Clear GPU memory\r\n     77 torch.cuda.empty_cache()\r\
+          \n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/togethercomputer/StripedHyena-Nous-7B/42777970d603597dadb768705896533eb9556a07/model.py:71,\
+          \ in AttentionBlock.forward(self, u, inference_params, padding_mask, *args,\
+          \ **kwargs)\r\n     64     u = u * padding_mask[..., None]\r\n     66 #\
+          \ for attr in ['lengths_per_sample', 'max_seqlen', 'key_value_memory_dict']:\r\
+          \n     67 #     if not hasattr(inference_params, attr):\r\n     68 #   \
+          \      setattr(inference_params, attr, None)\r\n     69 # inference_params.key_value_memory_dict\
+          \ = inference_params.key_value_memory_dict or {}\r\n     70 u = (\r\n--->\
+          \ 71     self.inner_mha_cls(\r\n     72         self.pre_norm(u),\r\n  \
+          \   73         inference_params=inference_params,\r\n     74     )\r\n \
+          \    75     + u\r\n     76 )\r\n     77 if type(padding_mask) == torch.Tensor:\
+          \  # guard against bias\r\n     78     u = u * padding_mask[..., None]\r\
+          \n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/flash_attn/modules/mha.py:563,\
+          \ in MHA.forward(self, x, x_kv, key_padding_mask, cu_seqlens, max_seqlen,\
+          \ mixer_subset, inference_params, **kwargs)\r\n    551     assert not self.dwconv\r\
+          \n    553 kwargs = (\r\n    554     {\"cu_seqlens\": cu_seqlens, \"max_seqlen\"\
+          : max_seqlen, **kwargs}\r\n    555     if self.use_flash_attn\r\n    556\
+          \     else {\"key_padding_mask\": key_padding_mask, **kwargs}\r\n    557\
+          \ )\r\n    558 seqlen_offset = (\r\n    559     0\r\n    560     if inference_params\
+          \ is None\r\n    561     else (\r\n    562         inference_params.lengths_per_sample\r\
+          \n--> 563         if inference_params.lengths_per_sample is not None\r\n\
+          \    564         else inference_params.seqlen_offset\r\n    565     )\r\n\
+          \    566 )\r\n    567 rotary_max_seqlen = inference_params.max_seqlen if\
+          \ inference_params is not None else None\r\n    568 batch, seqlen = x.shape[:2]\r\
+          \n\r\nAttributeError: 'RecurrentInferenceParams' object has no attribute\
+          \ 'lengths_per_sample'\r\n```\r\n\r\nPlease note the same code works for\
+          \ `meta-llama/Llama-2-7b-hf`.\r\n\r\nAll the quantization methods - GPTQ,\
+          \ AWQ, etc. - work layer by layer. Can you please help?\r\n\r\nThanks!"
+        updatedAt: '2023-12-14T15:33:47.243Z'
+      numEdits: 0
+      reactions: []
+    id: 657b205b10609bba27211610
+    type: comment
+  author: abhinavkulkarni
+  content: "Hi,\r\n\r\nI am trying to apply AWQ quantization to this new architecture\
+    \ one layer at a time and running into a problem.\r\n\r\nThe way it works is as\
+    \ follows:\r\n\r\n1. Pass sample input through the model and catch the input to\
+    \ the first layer\r\n2. Pass the input through each layer successively while determining\
+    \ optimal quantization parameters\r\n3. Output of one layer is input to the next\
+    \ one\r\n\r\nI have omitted the quantization logic, but the main scaffold is as\
+    \ follows. \r\n\r\n```python\r\nimport torch\r\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoConfig, AutoTokenizer, TextStreamer\r\nfrom accelerate import init_empty_weights,\
+    \ infer_auto_device_map\r\nfrom datasets import load_dataset\r\nimport torch.nn\
+    \ as nn\r\nimport gc\r\n\r\nmodel_id = \"togethercomputer/StripedHyena-Nous-7B\"\
+    \r\n# model_id = \"meta-llama/Llama-2-7b-hf\"\r\n\r\n# Config\r\nconfig = AutoConfig.from_pretrained(model_id,\
+    \ trust_remote_code=True)\r\n\r\n# Load model on CPU\r\nkwargs = {\"torch_dtype\"\
+    : torch.float16, \"low_cpu_mem_usage\": True}\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+    \n    model_id, config=config, trust_remote_code=True, **kwargs\r\n)\r\n\r\nmodel.eval()\r\
+    \n\r\n# Tokenizer\r\ntry:\r\n    tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name,\
+    \ trust_remote_code=True)\r\nexcept:\r\n    tokenizer = AutoTokenizer.from_pretrained(model_id,\
+    \ use_fast=True, trust_remote_code=True)\r\n\r\ntokenizer.pad_token = tokenizer.eos_token\r\
+    \n\r\n# Load sample dataset\r\ndataset = load_dataset(\"mit-han-lab/pile-val-backup\"\
+    , split=\"validation\")\r\n\r\ntexts = [dataset[i]['text'] for i in range(10)]\r\
+    \nsamples = [tokenizer.encode(text, max_length=512, truncation=True, padding='max_length')\
+    \ for text in texts]\r\nsamples = torch.LongTensor(samples) # Shape = (10, 512)\r\
+    \n\r\n# Catch the input to the first layer\r\ninps = []\r\nlayer_kwargs = {}\r\
+    \n\r\n\r\nclass Catcher(nn.Module):\r\n    def __init__(self, module):\r\n   \
+    \     super().__init__()\r\n        self.module = module\r\n\r\n    def forward(self,\
+    \ inp, **kwargs):\r\n        inps.append(inp)\r\n        layer_kwargs.update(kwargs)\r\
+    \n        raise ValueError  # early exit to break later inference\r\n\r\n# patch\
+    \ layer 0 to catch input and kwargs\r\nlayers = model.backbone.blocks # For StripedHyena\r\
+    \n# layers = model.model.layers # For Llama-2\r\nlayers[0] = Catcher(layers[0])\r\
+    \ntry:\r\n    model(samples.to(next(model.parameters()).device))\r\nexcept ValueError:\
+    \  # work with early exit\r\n    pass\r\n\r\nlayers[0] = layers[0].module  # restore\r\
+    \ninps = inps[0]\r\n\r\nlayers[0] = layers[0].cpu()\r\n\r\n# Now pass the input\
+    \ successively through each layer, collecting the output\r\n# which becomes input\
+    \ for the next layer\r\nfor i in range(len(layers)):\r\n    print(i)\r\n    layer\
+    \ = layers[i]\r\n    layer = layer.cuda()\r\n    inps = inps.to(next(layer.parameters()).device)\
+    \  # in case multi-gpu\r\n    layer_kwargs = {k:(v.to(inps.device) if isinstance(v,\
+    \ torch.Tensor) else v) for k,v in layer_kwargs.items()}\r\n    # get output as\
+    \ next layer's input\r\n    inps = layer(inps, **layer_kwargs)[0]\r\n    # Clear\
+    \ GPU memory\r\n    torch.cuda.empty_cache()\r\n    layer = layer.cpu()\r\n  \
+    \  gc.collect()\r\n    torch.cuda.empty_cache()\r\n```\r\n\r\nI get the following\
+    \ error when the input is passed through `AttentionBlock` layer:\r\n\r\n```python\r\
+    \n---------------------------------------------------------------------------\r\
+    \nAttributeError                            Traceback (most recent call last)\r\
+    \nCell In[1], line 75\r\n     73 layer_kwargs = {k:(v.to(inps.device) if isinstance(v,\
+    \ torch.Tensor) else v) for k,v in layer_kwargs.items()}\r\n     74 # get output\
+    \ as next layer's input\r\n---> 75 inps = layer(inps, **layer_kwargs)[0]\r\n \
+    \    76 # Clear GPU memory\r\n     77 torch.cuda.empty_cache()\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/togethercomputer/StripedHyena-Nous-7B/42777970d603597dadb768705896533eb9556a07/model.py:71,\
+    \ in AttentionBlock.forward(self, u, inference_params, padding_mask, *args, **kwargs)\r\
+    \n     64     u = u * padding_mask[..., None]\r\n     66 # for attr in ['lengths_per_sample',\
+    \ 'max_seqlen', 'key_value_memory_dict']:\r\n     67 #     if not hasattr(inference_params,\
+    \ attr):\r\n     68 #         setattr(inference_params, attr, None)\r\n     69\
+    \ # inference_params.key_value_memory_dict = inference_params.key_value_memory_dict\
+    \ or {}\r\n     70 u = (\r\n---> 71     self.inner_mha_cls(\r\n     72       \
+    \  self.pre_norm(u),\r\n     73         inference_params=inference_params,\r\n\
+    \     74     )\r\n     75     + u\r\n     76 )\r\n     77 if type(padding_mask)\
+    \ == torch.Tensor:  # guard against bias\r\n     78     u = u * padding_mask[...,\
+    \ None]\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/miniconda3/envs/llm-awq/lib/python3.10/site-packages/flash_attn/modules/mha.py:563,\
+    \ in MHA.forward(self, x, x_kv, key_padding_mask, cu_seqlens, max_seqlen, mixer_subset,\
+    \ inference_params, **kwargs)\r\n    551     assert not self.dwconv\r\n    553\
+    \ kwargs = (\r\n    554     {\"cu_seqlens\": cu_seqlens, \"max_seqlen\": max_seqlen,\
+    \ **kwargs}\r\n    555     if self.use_flash_attn\r\n    556     else {\"key_padding_mask\"\
+    : key_padding_mask, **kwargs}\r\n    557 )\r\n    558 seqlen_offset = (\r\n  \
+    \  559     0\r\n    560     if inference_params is None\r\n    561     else (\r\
+    \n    562         inference_params.lengths_per_sample\r\n--> 563         if inference_params.lengths_per_sample\
+    \ is not None\r\n    564         else inference_params.seqlen_offset\r\n    565\
+    \     )\r\n    566 )\r\n    567 rotary_max_seqlen = inference_params.max_seqlen\
+    \ if inference_params is not None else None\r\n    568 batch, seqlen = x.shape[:2]\r\
+    \n\r\nAttributeError: 'RecurrentInferenceParams' object has no attribute 'lengths_per_sample'\r\
+    \n```\r\n\r\nPlease note the same code works for `meta-llama/Llama-2-7b-hf`.\r\
+    \n\r\nAll the quantization methods - GPTQ, AWQ, etc. - work layer by layer. Can\
+    \ you please help?\r\n\r\nThanks!"
+  created_at: 2023-12-14 15:33:47+00:00
+  edited: false
+  hidden: false
+  id: 657b205b10609bba27211610
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+      fullname: Abhinav Kulkarni
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: abhinavkulkarni
+      type: user
+    createdAt: '2023-12-15T02:56:57.000Z'
+    data:
+      edited: false
+      editors:
+      - abhinavkulkarni
+      hidden: false
+      identifiedLanguage:
+        language: cy
+        probability: 0.33782637119293213
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1643883553153-noauth.jpeg?w=200&h=200&f=face
+          fullname: Abhinav Kulkarni
+          isHf: false
+          isPro: false
+          name: abhinavkulkarni
+          type: user
+        html: "<p>CC <span data-props=\"{&quot;user&quot;:&quot;Zymrael&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Zymrael\">@<span class=\"\
+          underline\">Zymrael</span></a></span>\n\n\t</span></span> </p>\n"
+        raw: 'CC @Zymrael '
+        updatedAt: '2023-12-15T02:56:57.817Z'
+      numEdits: 0
+      reactions: []
+    id: 657bc0791fa4e4e152bd6a81
+    type: comment
+  author: abhinavkulkarni
+  content: 'CC @Zymrael '
+  created_at: 2023-12-15 02:56:57+00:00
+  edited: false
+  hidden: false
+  id: 657bc0791fa4e4e152bd6a81
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62a1306bbe7fa896d2c8de44/ndUBVtc5A3nsfUE47vood.png?w=200&h=200&f=face
+      fullname: Michael Poli
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Zymrael
+      type: user
+    createdAt: '2023-12-16T01:03:08.000Z'
+    data:
+      edited: false
+      editors:
+      - Zymrael
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.660868227481842
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62a1306bbe7fa896d2c8de44/ndUBVtc5A3nsfUE47vood.png?w=200&h=200&f=face
+          fullname: Michael Poli
+          isHf: false
+          isPro: false
+          name: Zymrael
+          type: user
+        html: "<p><code>RecurrentInferenceParams</code> handles cache management for\
+          \ Hyena layers only. Since these layers have a constant cache (no kv-cache),\
+          \ <code>RecurrentInferenceParams</code> does not have a <code>.lengths_per_sample</code>\
+          \ attribute. </p>\n<p>Can you try setting cache use to False before loading\
+          \ the model:</p>\n<pre><code>config.use_cache = False\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_id, config=config, trust_remote_code=True, **kwargs\n)\n</code></pre>\n"
+        raw: "`RecurrentInferenceParams` handles cache management for Hyena layers\
+          \ only. Since these layers have a constant cache (no kv-cache), `RecurrentInferenceParams`\
+          \ does not have a `.lengths_per_sample` attribute. \n\nCan you try setting\
+          \ cache use to False before loading the model:\n```\nconfig.use_cache =\
+          \ False\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id, config=config,\
+          \ trust_remote_code=True, **kwargs\n)\n```"
+        updatedAt: '2023-12-16T01:03:08.135Z'
+      numEdits: 0
+      reactions: []
+    id: 657cf74ca575d54a1e352b25
+    type: comment
+  author: Zymrael
+  content: "`RecurrentInferenceParams` handles cache management for Hyena layers only.\
+    \ Since these layers have a constant cache (no kv-cache), `RecurrentInferenceParams`\
+    \ does not have a `.lengths_per_sample` attribute. \n\nCan you try setting cache\
+    \ use to False before loading the model:\n```\nconfig.use_cache = False\nmodel\
+    \ = AutoModelForCausalLM.from_pretrained(\n    model_id, config=config, trust_remote_code=True,\
+    \ **kwargs\n)\n```"
+  created_at: 2023-12-16 01:03:08+00:00
+  edited: false
+  hidden: false
+  id: 657cf74ca575d54a1e352b25
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: togethercomputer/StripedHyena-Nous-7B
+repo_type: model
+status: open
+target_branch: null
+title: Unable to quantize layers one at a time

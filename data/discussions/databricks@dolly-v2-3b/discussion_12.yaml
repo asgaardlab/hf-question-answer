@@ -1,0 +1,600 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: opyate
+conflicting_files: null
+created_at: 2023-04-27 15:43:34+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+      fullname: Juan Uys
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: opyate
+      type: user
+    createdAt: '2023-04-27T16:43:34.000Z'
+    data:
+      edited: false
+      editors:
+      - opyate
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+          fullname: Juan Uys
+          isHf: false
+          isPro: false
+          name: opyate
+          type: user
+        html: "<p>Hello,</p>\n<p>I want to give Dolly an example of a text block and\
+          \ a subsequent JSON payload, then ask it to generate a similar JSON payload\
+          \ from a new text block. I was wondering what the best way was to fit this\
+          \ into your <a rel=\"nofollow\" href=\"https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L39-L59\"\
+          >prompt template</a>.</p>\n<p>Here's the sample text and JSON, and then\
+          \ the text we want formatted:</p>\n<pre><code>Name: Juan Uys\nAddress: 21\
+          \ Jump Street, Hollywood, California\nOccupation: programmer\n\n{\n  \"\
+          name\": \"Juan Uys\",\n  \"address\": \"21 Jump Street, Hollywood, California\"\
+          ,\n  \"occupation\": \"programmer\"\n}\n\nName: Sherlock Holmes\nAddress:\
+          \ 221B Baker St., London\nOccupation: detective\n</code></pre>\n<p>Here's\
+          \ what I've tried:</p>\n<pre><code>import torch\nfrom transformers import\
+          \ pipeline\n\ngenerate_text = pipeline(\n    model=model_id,\n    torch_dtype=torch.bfloat16,\n\
+          \    trust_remote_code=True,\n    device_map=\"auto\",\n    max_new_tokens=2048,\
+          \  # defaults to 256\n    model_kwargs={\"temperature\": 0.001}  # 0.0 doesn't\
+          \ work\n)\n\nprompt = \"\"\"\nBelow is an instruction that describes a task.\
+          \ Write a response that appropriately completes the request.\n\n### Instruction:\n\
+          Format the following text as JSON:\n\nName: Sherlock Holmes\nAddress: 221B\
+          \ Baker St., London\nOccupation: detective\n\nInput:\nName: Juan Uys\nAddress:\
+          \ 21 Jump Street, Hollywood, California\nOccupation: programmer\n\n{\n \
+          \ \"name\": \"Juan Uys\",\n  \"address\": \"21 Jump Street, Hollywood, California\"\
+          ,\n  \"occupation\": \"programmer\"\n}\n\"\"\"\n\nres = generate_text(prompt)\n\
+          print(res[0][\"generated_text\"])\n</code></pre>\n<p>Result:</p>\n<pre><code>{\n\
+          \  \"name\": \"Sherlock Holmes\",\n  \"address\": \"221B Baker St., London\"\
+          ,\n  \"occupation\": \"detective\"\n}\n</code></pre>\n<p>This is great,\
+          \ but it falls apart a bit when you remove the address.</p>\n<p>Example\
+          \ 1 - unknown person</p>\n<pre><code>Name: Sarah Smith\nOccupation: detective\n\
+          \n# this address is made up\n{\n  \"name\": \"Sarah Smith\",\n  \"address\"\
+          : \"123 Any Street, Anywhere, USA\",\n  \"occupation\": \"detective\"\n\
+          }\n</code></pre>\n<p>Example 2</p>\n<pre><code>Name: Sherlock Holmes\nOccupation:\
+          \ detective\n\n# either omitted:\n{\n  \"name\": \"Sherlock Holmes\",\n\
+          \  \"occupation\": \"detective\"\n}\n\n# or, on a subsequent run, borrowed\
+          \ from the training corpus:\n{\n  \"name\": \"Sherlock Holmes\",\n  \"address\"\
+          : \"221b Baker Street, London, England\",\n  \"occupation\": \"detective\"\
+          \n}\n</code></pre>\n<p>Example 3 - homeless Sherlock</p>\n<pre><code>Name:\
+          \ Sherlock Homeless\nOccupation: detective\n\n# Sherlock's new surname is\
+          \ conflated with not having an address:\n{\n  \"name\": \"Sherlock Homeless\"\
+          ,\n  \"address\": \"None\",\n  \"occupation\": \"detective\"\n}\n\n# or,\
+          \ on a subsequent run, borrowed from the Input:\n{\n  \"name\": \"Sherlock\
+          \ Homeless\",\n  \"address\": \"California\",\n  \"occupation\": \"detective\"\
+          \n}\n\n# on another subsequent run, somewhat borrowed from training corpus,\
+          \ somewhat \"homeless\":\n  \"name\": \"Sherlock Homeless\",\n  \"address\"\
+          : \"any street in London\",\n  \"occupation\": \"detective\"\n}\n</code></pre>\n\
+          <p>I'm experimenting with making the prompt more explicit, so it doesn't\
+          \ borrow values, or make stuff up.</p>\n<pre><code>Below is an instruction\
+          \ that describes a task. Write a response that appropriately completes the\
+          \ request.\n\n### Instruction:\nHeed the following rules:\n- If no value\
+          \ can be found return null.\n- Only return values that are explicitly mentioned\
+          \ in the text and match one of the provided options in the schema.\n- If\
+          \ an enum is not referenced in the text, do not include it in the output.\n\
+          - If no matching option is found, return null for that field.\n- For each\
+          \ field return value and provenance.\n- Please only return fields explicitly\
+          \ listed in the schema.\n\nFormat the following text as JSON, while sticking\
+          \ to the aforementioned rules:\n\nName: Sherlock Homeless\nOccupation: detective\n\
+          \nInput:\nName: Juan Uys\nAddress: 21 Jump Street, Hollywood, California\n\
+          Occupation: programmer\n\n{\n  \"name\": \"Juan Uys\",\n  \"address\": \"\
+          21 Jump Street, Hollywood, California\",\n  \"occupation\": \"programmer\"\
+          \n}\n</code></pre>\n<p>Unfortunately, it now loses the occupation, but why?:</p>\n\
+          <pre><code>{\n  \"name\": \"Sherlock Homeless\",\n  \"address\": null,\n\
+          \  \"occupation\": null\n}\n</code></pre>\n<p>So, my question is basically\
+          \ around this last example with the added rules.<br>How do you suggest I\
+          \ incorporate rules into the prompt? Does it perhaps need to be part of\
+          \ a single instruction sentence?</p>\n"
+        raw: "Hello,\r\n\r\nI want to give Dolly an example of a text block and a\
+          \ subsequent JSON payload, then ask it to generate a similar JSON payload\
+          \ from a new text block. I was wondering what the best way was to fit this\
+          \ into your [prompt template](https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L39-L59).\r\
+          \n\r\nHere's the sample text and JSON, and then the text we want formatted:\r\
+          \n\r\n```\r\nName: Juan Uys\r\nAddress: 21 Jump Street, Hollywood, California\r\
+          \nOccupation: programmer\r\n\r\n{\r\n  \"name\": \"Juan Uys\",\r\n  \"address\"\
+          : \"21 Jump Street, Hollywood, California\",\r\n  \"occupation\": \"programmer\"\
+          \r\n}\r\n\r\nName: Sherlock Holmes\r\nAddress: 221B Baker St., London\r\n\
+          Occupation: detective\r\n```\r\n\r\nHere's what I've tried:\r\n\r\n```\r\
+          \nimport torch\r\nfrom transformers import pipeline\r\n\r\ngenerate_text\
+          \ = pipeline(\r\n    model=model_id,\r\n    torch_dtype=torch.bfloat16,\r\
+          \n    trust_remote_code=True,\r\n    device_map=\"auto\",\r\n    max_new_tokens=2048,\
+          \  # defaults to 256\r\n    model_kwargs={\"temperature\": 0.001}  # 0.0\
+          \ doesn't work\r\n)\r\n\r\nprompt = \"\"\"\r\nBelow is an instruction that\
+          \ describes a task. Write a response that appropriately completes the request.\r\
+          \n\r\n### Instruction:\r\nFormat the following text as JSON:\r\n\r\nName:\
+          \ Sherlock Holmes\r\nAddress: 221B Baker St., London\r\nOccupation: detective\r\
+          \n\r\nInput:\r\nName: Juan Uys\r\nAddress: 21 Jump Street, Hollywood, California\r\
+          \nOccupation: programmer\r\n\r\n{\r\n  \"name\": \"Juan Uys\",\r\n  \"address\"\
+          : \"21 Jump Street, Hollywood, California\",\r\n  \"occupation\": \"programmer\"\
+          \r\n}\r\n\"\"\"\r\n\r\nres = generate_text(prompt)\r\nprint(res[0][\"generated_text\"\
+          ])\r\n```\r\n\r\nResult:\r\n\r\n```\r\n{\r\n  \"name\": \"Sherlock Holmes\"\
+          ,\r\n  \"address\": \"221B Baker St., London\",\r\n  \"occupation\": \"\
+          detective\"\r\n}\r\n```\r\n\r\nThis is great, but it falls apart a bit when\
+          \ you remove the address.\r\n\r\nExample 1 - unknown person\r\n\r\n```\r\
+          \nName: Sarah Smith\r\nOccupation: detective\r\n\r\n# this address is made\
+          \ up\r\n{\r\n  \"name\": \"Sarah Smith\",\r\n  \"address\": \"123 Any Street,\
+          \ Anywhere, USA\",\r\n  \"occupation\": \"detective\"\r\n}\r\n```\r\n\r\n\
+          Example 2\r\n\r\n```\r\nName: Sherlock Holmes\r\nOccupation: detective\r\
+          \n\r\n# either omitted:\r\n{\r\n  \"name\": \"Sherlock Holmes\",\r\n  \"\
+          occupation\": \"detective\"\r\n}\r\n\r\n# or, on a subsequent run, borrowed\
+          \ from the training corpus:\r\n{\r\n  \"name\": \"Sherlock Holmes\",\r\n\
+          \  \"address\": \"221b Baker Street, London, England\",\r\n  \"occupation\"\
+          : \"detective\"\r\n}\r\n```\r\n\r\nExample 3 - homeless Sherlock\r\n\r\n\
+          ```\r\nName: Sherlock Homeless\r\nOccupation: detective\r\n\r\n# Sherlock's\
+          \ new surname is conflated with not having an address:\r\n{\r\n  \"name\"\
+          : \"Sherlock Homeless\",\r\n  \"address\": \"None\",\r\n  \"occupation\"\
+          : \"detective\"\r\n}\r\n\r\n# or, on a subsequent run, borrowed from the\
+          \ Input:\r\n{\r\n  \"name\": \"Sherlock Homeless\",\r\n  \"address\": \"\
+          California\",\r\n  \"occupation\": \"detective\"\r\n}\r\n\r\n# on another\
+          \ subsequent run, somewhat borrowed from training corpus, somewhat \"homeless\"\
+          :\r\n  \"name\": \"Sherlock Homeless\",\r\n  \"address\": \"any street in\
+          \ London\",\r\n  \"occupation\": \"detective\"\r\n}\r\n```\r\n\r\n\r\nI'm\
+          \ experimenting with making the prompt more explicit, so it doesn't borrow\
+          \ values, or make stuff up.\r\n\r\n```\r\nBelow is an instruction that describes\
+          \ a task. Write a response that appropriately completes the request.\r\n\
+          \r\n### Instruction:\r\nHeed the following rules:\r\n- If no value can be\
+          \ found return null.\r\n- Only return values that are explicitly mentioned\
+          \ in the text and match one of the provided options in the schema.\r\n-\
+          \ If an enum is not referenced in the text, do not include it in the output.\r\
+          \n- If no matching option is found, return null for that field.\r\n- For\
+          \ each field return value and provenance.\r\n- Please only return fields\
+          \ explicitly listed in the schema.\r\n\r\nFormat the following text as JSON,\
+          \ while sticking to the aforementioned rules:\r\n\r\nName: Sherlock Homeless\r\
+          \nOccupation: detective\r\n\r\nInput:\r\nName: Juan Uys\r\nAddress: 21 Jump\
+          \ Street, Hollywood, California\r\nOccupation: programmer\r\n\r\n{\r\n \
+          \ \"name\": \"Juan Uys\",\r\n  \"address\": \"21 Jump Street, Hollywood,\
+          \ California\",\r\n  \"occupation\": \"programmer\"\r\n}\r\n```\r\n\r\n\
+          Unfortunately, it now loses the occupation, but why?:\r\n\r\n```\r\n{\r\n\
+          \  \"name\": \"Sherlock Homeless\",\r\n  \"address\": null,\r\n  \"occupation\"\
+          : null\r\n}\r\n```\r\n\r\nSo, my question is basically around this last\
+          \ example with the added rules.\r\nHow do you suggest I incorporate rules\
+          \ into the prompt? Does it perhaps need to be part of a single instruction\
+          \ sentence?"
+        updatedAt: '2023-04-27T16:43:34.496Z'
+      numEdits: 0
+      reactions: []
+    id: 644aa6361acffad9353d5c75
+    type: comment
+  author: opyate
+  content: "Hello,\r\n\r\nI want to give Dolly an example of a text block and a subsequent\
+    \ JSON payload, then ask it to generate a similar JSON payload from a new text\
+    \ block. I was wondering what the best way was to fit this into your [prompt template](https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L39-L59).\r\
+    \n\r\nHere's the sample text and JSON, and then the text we want formatted:\r\n\
+    \r\n```\r\nName: Juan Uys\r\nAddress: 21 Jump Street, Hollywood, California\r\n\
+    Occupation: programmer\r\n\r\n{\r\n  \"name\": \"Juan Uys\",\r\n  \"address\"\
+    : \"21 Jump Street, Hollywood, California\",\r\n  \"occupation\": \"programmer\"\
+    \r\n}\r\n\r\nName: Sherlock Holmes\r\nAddress: 221B Baker St., London\r\nOccupation:\
+    \ detective\r\n```\r\n\r\nHere's what I've tried:\r\n\r\n```\r\nimport torch\r\
+    \nfrom transformers import pipeline\r\n\r\ngenerate_text = pipeline(\r\n    model=model_id,\r\
+    \n    torch_dtype=torch.bfloat16,\r\n    trust_remote_code=True,\r\n    device_map=\"\
+    auto\",\r\n    max_new_tokens=2048,  # defaults to 256\r\n    model_kwargs={\"\
+    temperature\": 0.001}  # 0.0 doesn't work\r\n)\r\n\r\nprompt = \"\"\"\r\nBelow\
+    \ is an instruction that describes a task. Write a response that appropriately\
+    \ completes the request.\r\n\r\n### Instruction:\r\nFormat the following text\
+    \ as JSON:\r\n\r\nName: Sherlock Holmes\r\nAddress: 221B Baker St., London\r\n\
+    Occupation: detective\r\n\r\nInput:\r\nName: Juan Uys\r\nAddress: 21 Jump Street,\
+    \ Hollywood, California\r\nOccupation: programmer\r\n\r\n{\r\n  \"name\": \"Juan\
+    \ Uys\",\r\n  \"address\": \"21 Jump Street, Hollywood, California\",\r\n  \"\
+    occupation\": \"programmer\"\r\n}\r\n\"\"\"\r\n\r\nres = generate_text(prompt)\r\
+    \nprint(res[0][\"generated_text\"])\r\n```\r\n\r\nResult:\r\n\r\n```\r\n{\r\n\
+    \  \"name\": \"Sherlock Holmes\",\r\n  \"address\": \"221B Baker St., London\"\
+    ,\r\n  \"occupation\": \"detective\"\r\n}\r\n```\r\n\r\nThis is great, but it\
+    \ falls apart a bit when you remove the address.\r\n\r\nExample 1 - unknown person\r\
+    \n\r\n```\r\nName: Sarah Smith\r\nOccupation: detective\r\n\r\n# this address\
+    \ is made up\r\n{\r\n  \"name\": \"Sarah Smith\",\r\n  \"address\": \"123 Any\
+    \ Street, Anywhere, USA\",\r\n  \"occupation\": \"detective\"\r\n}\r\n```\r\n\r\
+    \nExample 2\r\n\r\n```\r\nName: Sherlock Holmes\r\nOccupation: detective\r\n\r\
+    \n# either omitted:\r\n{\r\n  \"name\": \"Sherlock Holmes\",\r\n  \"occupation\"\
+    : \"detective\"\r\n}\r\n\r\n# or, on a subsequent run, borrowed from the training\
+    \ corpus:\r\n{\r\n  \"name\": \"Sherlock Holmes\",\r\n  \"address\": \"221b Baker\
+    \ Street, London, England\",\r\n  \"occupation\": \"detective\"\r\n}\r\n```\r\n\
+    \r\nExample 3 - homeless Sherlock\r\n\r\n```\r\nName: Sherlock Homeless\r\nOccupation:\
+    \ detective\r\n\r\n# Sherlock's new surname is conflated with not having an address:\r\
+    \n{\r\n  \"name\": \"Sherlock Homeless\",\r\n  \"address\": \"None\",\r\n  \"\
+    occupation\": \"detective\"\r\n}\r\n\r\n# or, on a subsequent run, borrowed from\
+    \ the Input:\r\n{\r\n  \"name\": \"Sherlock Homeless\",\r\n  \"address\": \"California\"\
+    ,\r\n  \"occupation\": \"detective\"\r\n}\r\n\r\n# on another subsequent run,\
+    \ somewhat borrowed from training corpus, somewhat \"homeless\":\r\n  \"name\"\
+    : \"Sherlock Homeless\",\r\n  \"address\": \"any street in London\",\r\n  \"occupation\"\
+    : \"detective\"\r\n}\r\n```\r\n\r\n\r\nI'm experimenting with making the prompt\
+    \ more explicit, so it doesn't borrow values, or make stuff up.\r\n\r\n```\r\n\
+    Below is an instruction that describes a task. Write a response that appropriately\
+    \ completes the request.\r\n\r\n### Instruction:\r\nHeed the following rules:\r\
+    \n- If no value can be found return null.\r\n- Only return values that are explicitly\
+    \ mentioned in the text and match one of the provided options in the schema.\r\
+    \n- If an enum is not referenced in the text, do not include it in the output.\r\
+    \n- If no matching option is found, return null for that field.\r\n- For each\
+    \ field return value and provenance.\r\n- Please only return fields explicitly\
+    \ listed in the schema.\r\n\r\nFormat the following text as JSON, while sticking\
+    \ to the aforementioned rules:\r\n\r\nName: Sherlock Homeless\r\nOccupation: detective\r\
+    \n\r\nInput:\r\nName: Juan Uys\r\nAddress: 21 Jump Street, Hollywood, California\r\
+    \nOccupation: programmer\r\n\r\n{\r\n  \"name\": \"Juan Uys\",\r\n  \"address\"\
+    : \"21 Jump Street, Hollywood, California\",\r\n  \"occupation\": \"programmer\"\
+    \r\n}\r\n```\r\n\r\nUnfortunately, it now loses the occupation, but why?:\r\n\r\
+    \n```\r\n{\r\n  \"name\": \"Sherlock Homeless\",\r\n  \"address\": null,\r\n \
+    \ \"occupation\": null\r\n}\r\n```\r\n\r\nSo, my question is basically around\
+    \ this last example with the added rules.\r\nHow do you suggest I incorporate\
+    \ rules into the prompt? Does it perhaps need to be part of a single instruction\
+    \ sentence?"
+  created_at: 2023-04-27 15:43:34+00:00
+  edited: false
+  hidden: false
+  id: 644aa6361acffad9353d5c75
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T16:48:06.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Hard to say, this is just the problem with language models in general.
+          They can hallucinate or not follow instructions exactly, especially if they
+          were not previously trained for this kind of specific task.<br>Try the larger
+          12B model. You can also consider fine-tuning, though that''s more work.</p>
+
+          <p>I would shorten your prompt. You can forego the "Below is an instruction"
+          part.<br>Showing an example input/output in the prompt is useful too.</p>
+
+          '
+        raw: "Hard to say, this is just the problem with language models in general.\
+          \ They can hallucinate or not follow instructions exactly, especially if\
+          \ they were not previously trained for this kind of specific task. \nTry\
+          \ the larger 12B model. You can also consider fine-tuning, though that's\
+          \ more work.\n\nI would shorten your prompt. You can forego the \"Below\
+          \ is an instruction\" part.\nShowing an example input/output in the prompt\
+          \ is useful too."
+        updatedAt: '2023-04-27T16:48:06.637Z'
+      numEdits: 0
+      reactions: []
+    id: 644aa746af97dfd24c0e1515
+    type: comment
+  author: srowen
+  content: "Hard to say, this is just the problem with language models in general.\
+    \ They can hallucinate or not follow instructions exactly, especially if they\
+    \ were not previously trained for this kind of specific task. \nTry the larger\
+    \ 12B model. You can also consider fine-tuning, though that's more work.\n\nI\
+    \ would shorten your prompt. You can forego the \"Below is an instruction\" part.\n\
+    Showing an example input/output in the prompt is useful too."
+  created_at: 2023-04-27 15:48:06+00:00
+  edited: false
+  hidden: false
+  id: 644aa746af97dfd24c0e1515
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+      fullname: Juan Uys
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: opyate
+      type: user
+    createdAt: '2023-04-27T16:56:33.000Z'
+    data:
+      edited: true
+      editors:
+      - opyate
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+          fullname: Juan Uys
+          isHf: false
+          isPro: false
+          name: opyate
+          type: user
+        html: "<blockquote>\n<p>Showing an example input/output in the prompt is useful\
+          \ too.</p>\n</blockquote>\n<p>I think I'm doing this already above, unless\
+          \ you disagree? :)</p>\n<blockquote>\n<p>You can also consider fine-tuning</p>\n\
+          </blockquote>\n<p>I'm doing this next \U0001F44D</p>\n"
+        raw: "> Showing an example input/output in the prompt is useful too.\n\nI\
+          \ think I'm doing this already above, unless you disagree? :)\n\n> You can\
+          \ also consider fine-tuning\n\nI'm doing this next \U0001F44D"
+        updatedAt: '2023-04-27T16:56:43.101Z'
+      numEdits: 1
+      reactions: []
+    id: 644aa941f9f1b0cd3d8c4d4c
+    type: comment
+  author: opyate
+  content: "> Showing an example input/output in the prompt is useful too.\n\nI think\
+    \ I'm doing this already above, unless you disagree? :)\n\n> You can also consider\
+    \ fine-tuning\n\nI'm doing this next \U0001F44D"
+  created_at: 2023-04-27 15:56:33+00:00
+  edited: true
+  hidden: false
+  id: 644aa941f9f1b0cd3d8c4d4c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T16:58:36.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>I''m not clear in your examples what is the input and output, but
+          yeah, telling it that an input and output example follows and that you want
+          the same result is what you want to try.</p>
+
+          '
+        raw: I'm not clear in your examples what is the input and output, but yeah,
+          telling it that an input and output example follows and that you want the
+          same result is what you want to try.
+        updatedAt: '2023-04-27T16:58:36.611Z'
+      numEdits: 0
+      reactions: []
+    id: 644aa9bcd4483bfaa06cb219
+    type: comment
+  author: srowen
+  content: I'm not clear in your examples what is the input and output, but yeah,
+    telling it that an input and output example follows and that you want the same
+    result is what you want to try.
+  created_at: 2023-04-27 15:58:36+00:00
+  edited: false
+  hidden: false
+  id: 644aa9bcd4483bfaa06cb219
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+      fullname: Juan Uys
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: opyate
+      type: user
+    createdAt: '2023-04-28T08:20:07.000Z'
+    data:
+      edited: true
+      editors:
+      - opyate
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+          fullname: Juan Uys
+          isHf: false
+          isPro: false
+          name: opyate
+          type: user
+        html: "<blockquote>\n<p>telling it [...] that you want the same result</p>\n\
+          </blockquote>\n<p>Perhaps this is my mistake: I give it context without\
+          \ telling it that I want something similar to the context. Instead, it sometimes\
+          \ copies values from the context.</p>\n<p>If we take the last example again\
+          \ (which matches your template, and no <code>###</code> in front of <code>Input:</code>\
+          \ as per <a rel=\"nofollow\" href=\"https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L12\"\
+          >this source</a>), and this time foregoing the \"Below is an instruction...\"\
+          \ part:</p>\n<pre><code>### Instruction:\nHeed the following rules:\n- If\
+          \ no value can be found return null.\n- Only return values that are explicitly\
+          \ mentioned in the text and match one of the provided options in the schema.\n\
+          - If an enum is not referenced in the text, do not include it in the output.\n\
+          - If no matching option is found, return null for that field.\n- For each\
+          \ field return value and provenance.\n- Please only return fields explicitly\
+          \ listed in the schema.\n\nFormat the following text as JSON, while sticking\
+          \ to the aforementioned rules:\n\nName: Sherlock Homeless\nOccupation: detective\n\
+          \nInput:\nName: Juan Uys\nAddress: 21 Jump Street, Hollywood, California\n\
+          Occupation: programmer\n\n{\n  \"name\": \"Juan Uys\",\n  \"address\": \"\
+          21 Jump Street, Hollywood, California\",\n  \"occupation\": \"programmer\"\
+          \n}\n</code></pre>\n<p>How/where would I be explicit about \"telling it\
+          \ that I want the same result\" as in the <code>Input:</code> block?</p>\n\
+          <p>I'll try various combinations on my side, and share results.<br>(I'm\
+          \ also working on fine-tuning in parallel.)</p>\n"
+        raw: "> telling it [...] that you want the same result\n\nPerhaps this is\
+          \ my mistake: I give it context without telling it that I want something\
+          \ similar to the context. Instead, it sometimes copies values from the context.\n\
+          \nIf we take the last example again (which matches your template, and no\
+          \ `###` in front of `Input:` as per [this source](https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L12)),\
+          \ and this time foregoing the \"Below is an instruction...\" part:\n\n```\n\
+          ### Instruction:\nHeed the following rules:\n- If no value can be found\
+          \ return null.\n- Only return values that are explicitly mentioned in the\
+          \ text and match one of the provided options in the schema.\n- If an enum\
+          \ is not referenced in the text, do not include it in the output.\n- If\
+          \ no matching option is found, return null for that field.\n- For each field\
+          \ return value and provenance.\n- Please only return fields explicitly listed\
+          \ in the schema.\n\nFormat the following text as JSON, while sticking to\
+          \ the aforementioned rules:\n\nName: Sherlock Homeless\nOccupation: detective\n\
+          \nInput:\nName: Juan Uys\nAddress: 21 Jump Street, Hollywood, California\n\
+          Occupation: programmer\n\n{\n  \"name\": \"Juan Uys\",\n  \"address\": \"\
+          21 Jump Street, Hollywood, California\",\n  \"occupation\": \"programmer\"\
+          \n}\n```\n\nHow/where would I be explicit about \"telling it that I want\
+          \ the same result\" as in the `Input:` block?\n\nI'll try various combinations\
+          \ on my side, and share results.\n(I'm also working on fine-tuning in parallel.)"
+        updatedAt: '2023-04-28T08:21:57.765Z'
+      numEdits: 2
+      reactions: []
+    id: 644b81b7840601ec7f18b513
+    type: comment
+  author: opyate
+  content: "> telling it [...] that you want the same result\n\nPerhaps this is my\
+    \ mistake: I give it context without telling it that I want something similar\
+    \ to the context. Instead, it sometimes copies values from the context.\n\nIf\
+    \ we take the last example again (which matches your template, and no `###` in\
+    \ front of `Input:` as per [this source](https://github.com/databrickslabs/dolly/blob/master/training/consts.py#L12)),\
+    \ and this time foregoing the \"Below is an instruction...\" part:\n\n```\n###\
+    \ Instruction:\nHeed the following rules:\n- If no value can be found return null.\n\
+    - Only return values that are explicitly mentioned in the text and match one of\
+    \ the provided options in the schema.\n- If an enum is not referenced in the text,\
+    \ do not include it in the output.\n- If no matching option is found, return null\
+    \ for that field.\n- For each field return value and provenance.\n- Please only\
+    \ return fields explicitly listed in the schema.\n\nFormat the following text\
+    \ as JSON, while sticking to the aforementioned rules:\n\nName: Sherlock Homeless\n\
+    Occupation: detective\n\nInput:\nName: Juan Uys\nAddress: 21 Jump Street, Hollywood,\
+    \ California\nOccupation: programmer\n\n{\n  \"name\": \"Juan Uys\",\n  \"address\"\
+    : \"21 Jump Street, Hollywood, California\",\n  \"occupation\": \"programmer\"\
+    \n}\n```\n\nHow/where would I be explicit about \"telling it that I want the same\
+    \ result\" as in the `Input:` block?\n\nI'll try various combinations on my side,\
+    \ and share results.\n(I'm also working on fine-tuning in parallel.)"
+  created_at: 2023-04-28 07:20:07+00:00
+  edited: true
+  hidden: false
+  id: 644b81b7840601ec7f18b513
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+      fullname: Juan Uys
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: opyate
+      type: user
+    createdAt: '2023-04-28T08:45:47.000Z'
+    data:
+      edited: false
+      editors:
+      - opyate
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+          fullname: Juan Uys
+          isHf: false
+          isPro: false
+          name: opyate
+          type: user
+        html: '<p>I added this rule:</p>
+
+          <pre><code>- Consider the Input block just an example, and don''t copy values
+          from it.
+
+          </code></pre>
+
+          <p>But it copied the Input JSON outright in the response.</p>
+
+          <p>Anyhoo, thanks for the help on this :) I guess prompt-crafting is out
+          of scope here, as it''s mostly trial-and-error. I''ll focus on fine-tuning
+          now.</p>
+
+          '
+        raw: 'I added this rule:
+
+          ```
+
+          - Consider the Input block just an example, and don''t copy values from
+          it.
+
+          ```
+
+
+          But it copied the Input JSON outright in the response.
+
+
+          Anyhoo, thanks for the help on this :) I guess prompt-crafting is out of
+          scope here, as it''s mostly trial-and-error. I''ll focus on fine-tuning
+          now.
+
+
+          '
+        updatedAt: '2023-04-28T08:45:47.541Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 644b87bb6586065501e1199e
+    id: 644b87bb6586065501e1199d
+    type: comment
+  author: opyate
+  content: 'I added this rule:
+
+    ```
+
+    - Consider the Input block just an example, and don''t copy values from it.
+
+    ```
+
+
+    But it copied the Input JSON outright in the response.
+
+
+    Anyhoo, thanks for the help on this :) I guess prompt-crafting is out of scope
+    here, as it''s mostly trial-and-error. I''ll focus on fine-tuning now.
+
+
+    '
+  created_at: 2023-04-28 07:45:47+00:00
+  edited: false
+  hidden: false
+  id: 644b87bb6586065501e1199d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630f1f7502ce39336c3faf40/GNFO3mU9Sn3OTAxVHWrsh.jpeg?w=200&h=200&f=face
+      fullname: Juan Uys
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: opyate
+      type: user
+    createdAt: '2023-04-28T08:45:47.000Z'
+    data:
+      status: closed
+    id: 644b87bb6586065501e1199e
+    type: status-change
+  author: opyate
+  created_at: 2023-04-28 07:45:47+00:00
+  id: 644b87bb6586065501e1199e
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 12
+repo_id: databricks/dolly-v2-3b
+repo_type: model
+status: closed
+target_branch: null
+title: one-shot prompt design for accurately converting text to JSON

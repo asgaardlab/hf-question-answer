@@ -1,0 +1,308 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cyt79
+conflicting_files: null
+created_at: 2023-04-27 15:10:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-27T16:10:44.000Z'
+    data:
+      edited: true
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hi there,</p>\n<p>I'm also trying to finetune flan-ul2 (google/flan-ul2)\
+          \ using LoRA and I have few questions if you don't mind: </p>\n<p>I'm trying\
+          \ to do this on a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory\
+          \ each).  I follow this blog post (<a rel=\"nofollow\" href=\"https://www.philschmid.de/fine-tune-flan-t5-peft\"\
+          >https://www.philschmid.de/fine-tune-flan-t5-peft</a>) which is written\
+          \ for finetuning t5-xxl with lora.  When I use more than one GPU, I'm getting\
+          \ this error: </p>\n<p><code>RuntimeError: module must have its parameters\
+          \ and buffers on device cuda:0 (device_ids[0]) but found one of them on\
+          \ device: cuda:2</code></p>\n<p>Therefore, I try to finetune flan-ul2 using\
+          \ only one of the 8 GPUs but it doesn't help me either because this time\
+          \ I got:<br><code>RuntimeError: No executable batch size found, reached\
+          \ zero.</code> </p>\n<p>which doesn't make sense at all because I didn't\
+          \ change anything related to the data processing. </p>\n<p>So, my questions\
+          \ are:</p>\n<ol>\n<li>Were you using both of the A100 GPUs for fine-tuning?</li>\n\
+          <li>Did you encounter any of these errors when you're fine-tuning? If so,\
+          \ could you please share with me how did you fix them?</li>\n</ol>\n<p>In\
+          \ case you're wondering what I've tried to do to fine-tune flan-ul2 using\
+          \ LoRA, I didn't change too many things on the blog post. All I did was\
+          \ to change the model name actually: </p>\n<pre><code>from transformers\
+          \ import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom transformers import\
+          \ DataCollatorForSeq2Seq\n\n#model_id=\"google/flan-t5-xxl\"\nmodel_id=\"\
+          google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\n</code></pre>\n<p>Then I run the trainer as\
+          \ shown below: </p>\n<pre><code>from transformers import Seq2SeqTrainer,\
+          \ Seq2SeqTrainingArguments\n\n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    output_dir=output_dir,\n    auto_find_batch_size=True,\n    learning_rate=1e-3,\
+          \ # higher learning rate\n    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\"\
+          ,\n    logging_strategy=\"steps\",\n    logging_steps=500,\n    save_strategy=\"\
+          no\",\n    report_to=\"tensorboard\",\n)\n\n# Create Trainer instance\n\
+          trainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n \
+          \   data_collator=data_collator,\n    train_dataset=tokenized_dataset[\"\
+          train\"],\n)\n</code></pre>\n"
+        raw: "Hi there,\n\nI'm also trying to finetune flan-ul2 (google/flan-ul2)\
+          \ using LoRA and I have few questions if you don't mind: \n\nI'm trying\
+          \ to do this on a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory\
+          \ each).  I follow this blog post (https://www.philschmid.de/fine-tune-flan-t5-peft)\
+          \ which is written for finetuning t5-xxl with lora.  When I use more than\
+          \ one GPU, I'm getting this error: \n\n```RuntimeError: module must have\
+          \ its parameters and buffers on device cuda:0 (device_ids[0]) but found\
+          \ one of them on device: cuda:2```\n\nTherefore, I try to finetune flan-ul2\
+          \ using only one of the 8 GPUs but it doesn't help me either because this\
+          \ time I got: \n``` RuntimeError: No executable batch size found, reached\
+          \ zero. ``` \n\nwhich doesn't make sense at all because I didn't change\
+          \ anything related to the data processing. \n\nSo, my questions are:\n1)\
+          \ Were you using both of the A100 GPUs for fine-tuning?\n2)  Did you encounter\
+          \ any of these errors when you're fine-tuning? If so, could you please share\
+          \ with me how did you fix them? \n\nIn case you're wondering what I've tried\
+          \ to do to fine-tune flan-ul2 using LoRA, I didn't change too many things\
+          \ on the blog post. All I did was to change the model name actually: \n\
+          ```\nfrom transformers import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom\
+          \ transformers import DataCollatorForSeq2Seq\n\n#model_id=\"google/flan-t5-xxl\"\
+          \nmodel_id=\"google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\n```\nThen I run the trainer as shown below:\
+          \ \n\n```\nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\
+          \n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n  \
+          \  output_dir=output_dir,\n\tauto_find_batch_size=True,\n    learning_rate=1e-3,\
+          \ # higher learning rate\n    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\"\
+          ,\n    logging_strategy=\"steps\",\n    logging_steps=500,\n    save_strategy=\"\
+          no\",\n    report_to=\"tensorboard\",\n)\n\n# Create Trainer instance\n\
+          trainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n \
+          \   data_collator=data_collator,\n    train_dataset=tokenized_dataset[\"\
+          train\"],\n)\n```"
+        updatedAt: '2023-04-27T16:13:21.551Z'
+      numEdits: 1
+      reactions: []
+    id: 644a9e84537abb44edfffd86
+    type: comment
+  author: cyt79
+  content: "Hi there,\n\nI'm also trying to finetune flan-ul2 (google/flan-ul2) using\
+    \ LoRA and I have few questions if you don't mind: \n\nI'm trying to do this on\
+    \ a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory each).  I follow this\
+    \ blog post (https://www.philschmid.de/fine-tune-flan-t5-peft) which is written\
+    \ for finetuning t5-xxl with lora.  When I use more than one GPU, I'm getting\
+    \ this error: \n\n```RuntimeError: module must have its parameters and buffers\
+    \ on device cuda:0 (device_ids[0]) but found one of them on device: cuda:2```\n\
+    \nTherefore, I try to finetune flan-ul2 using only one of the 8 GPUs but it doesn't\
+    \ help me either because this time I got: \n``` RuntimeError: No executable batch\
+    \ size found, reached zero. ``` \n\nwhich doesn't make sense at all because I\
+    \ didn't change anything related to the data processing. \n\nSo, my questions\
+    \ are:\n1) Were you using both of the A100 GPUs for fine-tuning?\n2)  Did you\
+    \ encounter any of these errors when you're fine-tuning? If so, could you please\
+    \ share with me how did you fix them? \n\nIn case you're wondering what I've tried\
+    \ to do to fine-tune flan-ul2 using LoRA, I didn't change too many things on the\
+    \ blog post. All I did was to change the model name actually: \n```\nfrom transformers\
+    \ import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom transformers import DataCollatorForSeq2Seq\n\
+    \n#model_id=\"google/flan-t5-xxl\"\nmodel_id=\"google/flan-ul2\"\ntokenizer =\
+    \ AutoTokenizer.from_pretrained(model_id)\n\n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\
+    \nmodel_id = \"google/flan-ul2\"\nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id,\
+    \ device_map=\"auto\", load_in_8bit=True)\n```\nThen I run the trainer as shown\
+    \ below: \n\n```\nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\
+    \n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n    output_dir=output_dir,\n\
+    \tauto_find_batch_size=True,\n    learning_rate=1e-3, # higher learning rate\n\
+    \    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\",\n    logging_strategy=\"\
+    steps\",\n    logging_steps=500,\n    save_strategy=\"no\",\n    report_to=\"\
+    tensorboard\",\n)\n\n# Create Trainer instance\ntrainer = Seq2SeqTrainer(\n  \
+    \  model=model,\n    args=training_args,\n    data_collator=data_collator,\n \
+    \   train_dataset=tokenized_dataset[\"train\"],\n)\n```"
+  created_at: 2023-04-27 15:10:44+00:00
+  edited: true
+  hidden: false
+  id: 644a9e84537abb44edfffd86
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4baabf738e29514cdfb3c478960ab47c.svg
+      fullname: Kevin Rohling
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kevin510
+      type: user
+    createdAt: '2023-04-29T00:20:48.000Z'
+    data:
+      edited: false
+      editors:
+      - kevin510
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4baabf738e29514cdfb3c478960ab47c.svg
+          fullname: Kevin Rohling
+          isHf: false
+          isPro: false
+          name: kevin510
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;cyt79&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cyt79\">@<span class=\"\
+          underline\">cyt79</span></a></span>\n\n\t</span></span> sorry to hear you're\
+          \ running into issues fine tuning the flan-ul2 model. I suspect the reason\
+          \ you're able to finetune the flan-t5-xxl model and are having issues with\
+          \ flan-ul2 is b/c the former has 11B parameters while the latter has 20B\
+          \ so almost 2x in size of the model.  Additionally, the code you've shared\
+          \ doesn't look like it's going to be able to utilize multiple GPUs. </p>\n\
+          <p>In my example I used a single A100 with 80GB of RAM and utilization sat\
+          \ around ~50GB with batch_size = 1, so I didn't need multi-GPU support.\
+          \ However, updating the code to use multiple GPUs should be rather straightforward\
+          \ using Accelerate. I have a blog post in the works to demo exactly this\
+          \ :) In the meantime I hope this helps.<br><a href=\"https://huggingface.co/docs/transformers/accelerate\"\
+          >https://huggingface.co/docs/transformers/accelerate</a></p>\n"
+        raw: "Hey @cyt79 sorry to hear you're running into issues fine tuning the\
+          \ flan-ul2 model. I suspect the reason you're able to finetune the flan-t5-xxl\
+          \ model and are having issues with flan-ul2 is b/c the former has 11B parameters\
+          \ while the latter has 20B so almost 2x in size of the model.  Additionally,\
+          \ the code you've shared doesn't look like it's going to be able to utilize\
+          \ multiple GPUs. \n\nIn my example I used a single A100 with 80GB of RAM\
+          \ and utilization sat around ~50GB with batch_size = 1, so I didn't need\
+          \ multi-GPU support. However, updating the code to use multiple GPUs should\
+          \ be rather straightforward using Accelerate. I have a blog post in the\
+          \ works to demo exactly this :) In the meantime I hope this helps.\nhttps://huggingface.co/docs/transformers/accelerate"
+        updatedAt: '2023-04-29T00:20:48.223Z'
+      numEdits: 0
+      reactions: []
+    id: 644c62e00ce4f8fb51774486
+    type: comment
+  author: kevin510
+  content: "Hey @cyt79 sorry to hear you're running into issues fine tuning the flan-ul2\
+    \ model. I suspect the reason you're able to finetune the flan-t5-xxl model and\
+    \ are having issues with flan-ul2 is b/c the former has 11B parameters while the\
+    \ latter has 20B so almost 2x in size of the model.  Additionally, the code you've\
+    \ shared doesn't look like it's going to be able to utilize multiple GPUs. \n\n\
+    In my example I used a single A100 with 80GB of RAM and utilization sat around\
+    \ ~50GB with batch_size = 1, so I didn't need multi-GPU support. However, updating\
+    \ the code to use multiple GPUs should be rather straightforward using Accelerate.\
+    \ I have a blog post in the works to demo exactly this :) In the meantime I hope\
+    \ this helps.\nhttps://huggingface.co/docs/transformers/accelerate"
+  created_at: 2023-04-28 23:20:48+00:00
+  edited: false
+  hidden: false
+  id: 644c62e00ce4f8fb51774486
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-30T07:51:16.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-07-27T14:59:09.306Z'
+      numEdits: 0
+      reactions: []
+    id: 644e1df4b2cf1e15764f34f8
+    type: comment
+  author: cyt79
+  content: This comment has been hidden
+  created_at: 2023-04-30 06:51:16+00:00
+  edited: true
+  hidden: true
+  id: 644e1df4b2cf1e15764f34f8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-07-27T14:59:42.000Z'
+    data:
+      edited: false
+      editors:
+      - cyt79
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9252309203147888
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;kevin510&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/kevin510\"\
+          >@<span class=\"underline\">kevin510</span></a></span>\n\n\t</span></span>\
+          \ , I'm wondering if you had a chance to publish your blog post on finetuning\
+          \ flan-ul2 with LoRA on multi-gpus? </p>\n"
+        raw: 'Hey @kevin510 , I''m wondering if you had a chance to publish your blog
+          post on finetuning flan-ul2 with LoRA on multi-gpus? '
+        updatedAt: '2023-07-27T14:59:42.191Z'
+      numEdits: 0
+      reactions: []
+    id: 64c2865e8e10666f81d3b25a
+    type: comment
+  author: cyt79
+  content: 'Hey @kevin510 , I''m wondering if you had a chance to publish your blog
+    post on finetuning flan-ul2 with LoRA on multi-gpus? '
+  created_at: 2023-07-27 13:59:42+00:00
+  edited: false
+  hidden: false
+  id: 64c2865e8e10666f81d3b25a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: coniferlabs/flan-ul2-alpaca-lora
+repo_type: model
+status: open
+target_branch: null
+title: Query regarding flan-ul2-lora

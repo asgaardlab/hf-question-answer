@@ -1,0 +1,134 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ogis-uno
+conflicting_files: null
+created_at: 2023-07-05 23:20:45+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/010c015d96542bac897a959f5701ee74.svg
+      fullname: Kazuya Uno
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ogis-uno
+      type: user
+    createdAt: '2023-07-06T00:20:45.000Z'
+    data:
+      edited: false
+      editors:
+      - ogis-uno
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6948841214179993
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/010c015d96542bac897a959f5701ee74.svg
+          fullname: Kazuya Uno
+          isHf: false
+          isPro: false
+          name: ogis-uno
+          type: user
+        html: "<p>Hi, I have a issue in tokenization with \"nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\"\
+          .<br>batch_encode_plus() doesn't return when put in relatively long texts.<br>I'm\
+          \ wondering whether is here correct place to discuss this issue.<br>and\
+          \ if so, please let me know where should I go next.</p>\n<h4 id=\"how-to-replicate-the-issue-in-google-colab\"\
+          >how to replicate the issue in Google Colab.</h4>\n<p>Install transformers,\
+          \ sentencepiece, rhoknp</p>\n<pre><code>!pip install \"transformers==4.30.*\"\
+          \n!pip install \"sentencepiece==0.1.*\"\n!pip install \"rhoknp==1.3.2\"\n\
+          </code></pre>\n<p>And jumanpp.</p>\n<pre><code>!wget https://github.com/ku-nlp/jumanpp/releases/download/v2.0.0-rc3/jumanpp-2.0.0-rc3.tar.xz\n\
+          !tar xf jumanpp-2.0.0-rc3.tar.xz\n!cd jumanpp-2.0.0-rc3 &amp;&amp; mkdir\
+          \ bld  &amp;&amp; cd bld &amp;&amp; cmake .. -DCMAKE_BUILD_TYPE=Release\
+          \  &amp;&amp; make install -j2\n</code></pre>\n<p>jumannapp was installed\
+          \ to /usr/local/bin.</p>\n<pre><code>!which jumanpp\n# /usr/local/bin/jumanpp\n\
+          </code></pre>\n<p>Download Livedoor News Corpus.</p>\n<pre><code>!wget \"\
+          https://www.rondhuit.com/download/ldcc-20140209.tar.gz\"\n!tar zxf ldcc-20140209.tar.gz\n\
+          </code></pre>\n<p>Preprocessing and sort by length.</p>\n<pre><code>import\
+          \ glob\narticles = []\nfor filename in glob.glob(\"./text/*/*.txt\"):\n\
+          \  with open(filename, \"r\") as f:\n    article = f.read()\n    articles.append(\"\
+          \".join(article.split(\"\\n\")[2:]))\n\narticles = sorted(articles, key=len)\n\
+          </code></pre>\n<p>Load tokenizer.</p>\n<pre><code>from transformers import\
+          \ AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\"\
+          )\n</code></pre>\n<p>Encode top-100 long text samples and returned in 373ms.</p>\n\
+          <pre><code>%%time\nfeatures = tokenizer.batch_encode_plus(articles[-100:],\
+          \ padding=\"max_length\", truncation=True, max_length=512)\n# CPU times:\
+          \ user 340 ms, sys: 2.97 ms, total: 343 ms\n# Wall time: 373 ms\n</code></pre>\n\
+          <p>One more try with same data. Waiting over 10 minutes, but never return.</p>\n\
+          <pre><code>%%time\nfeatures = tokenizer.batch_encode_plus(articles[-100:],\
+          \ padding=\"max_length\", truncation=True, max_length=512)\n</code></pre>\n"
+        raw: "Hi, I have a issue in tokenization with \"nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\"\
+          .\r\nbatch_encode_plus() doesn't return when put in relatively long texts.\r\
+          \nI'm wondering whether is here correct place to discuss this issue.\r\n\
+          and if so, please let me know where should I go next.\r\n\r\n#### how to\
+          \ replicate the issue in Google Colab.\r\n\r\nInstall transformers, sentencepiece,\
+          \ rhoknp\r\n```\r\n!pip install \"transformers==4.30.*\"\r\n!pip install\
+          \ \"sentencepiece==0.1.*\"\r\n!pip install \"rhoknp==1.3.2\"\r\n```\r\n\
+          And jumanpp.\r\n```\r\n!wget https://github.com/ku-nlp/jumanpp/releases/download/v2.0.0-rc3/jumanpp-2.0.0-rc3.tar.xz\r\
+          \n!tar xf jumanpp-2.0.0-rc3.tar.xz\r\n!cd jumanpp-2.0.0-rc3 && mkdir bld\
+          \  && cd bld && cmake .. -DCMAKE_BUILD_TYPE=Release  && make install -j2\r\
+          \n```\r\njumannapp was installed to /usr/local/bin.\r\n```\r\n!which jumanpp\r\
+          \n# /usr/local/bin/jumanpp\r\n```\r\nDownload Livedoor News Corpus.\r\n\
+          ```\r\n!wget \"https://www.rondhuit.com/download/ldcc-20140209.tar.gz\"\r\
+          \n!tar zxf ldcc-20140209.tar.gz\r\n```\r\n\r\nPreprocessing and sort by\
+          \ length.\r\n```\r\nimport glob\r\narticles = []\r\nfor filename in glob.glob(\"\
+          ./text/*/*.txt\"):\r\n  with open(filename, \"r\") as f:\r\n    article\
+          \ = f.read()\r\n    articles.append(\"\".join(article.split(\"\\n\")[2:]))\r\
+          \n\r\narticles = sorted(articles, key=len)\r\n```\r\nLoad tokenizer.\r\n\
+          ```\r\nfrom transformers import AutoTokenizer\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\")\r\n```\r\n\
+          \r\nEncode top-100 long text samples and returned in 373ms.\r\n```\r\n%%time\r\
+          \nfeatures = tokenizer.batch_encode_plus(articles[-100:], padding=\"max_length\"\
+          , truncation=True, max_length=512)\r\n# CPU times: user 340 ms, sys: 2.97\
+          \ ms, total: 343 ms\r\n# Wall time: 373 ms\r\n```\r\nOne more try with same\
+          \ data. Waiting over 10 minutes, but never return.\r\n```\r\n%%time\r\n\
+          features = tokenizer.batch_encode_plus(articles[-100:], padding=\"max_length\"\
+          , truncation=True, max_length=512)\r\n```"
+        updatedAt: '2023-07-06T00:20:45.127Z'
+      numEdits: 0
+      reactions: []
+    id: 64a608dd9f3b568c2030803a
+    type: comment
+  author: ogis-uno
+  content: "Hi, I have a issue in tokenization with \"nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\"\
+    .\r\nbatch_encode_plus() doesn't return when put in relatively long texts.\r\n\
+    I'm wondering whether is here correct place to discuss this issue.\r\nand if so,\
+    \ please let me know where should I go next.\r\n\r\n#### how to replicate the\
+    \ issue in Google Colab.\r\n\r\nInstall transformers, sentencepiece, rhoknp\r\n\
+    ```\r\n!pip install \"transformers==4.30.*\"\r\n!pip install \"sentencepiece==0.1.*\"\
+    \r\n!pip install \"rhoknp==1.3.2\"\r\n```\r\nAnd jumanpp.\r\n```\r\n!wget https://github.com/ku-nlp/jumanpp/releases/download/v2.0.0-rc3/jumanpp-2.0.0-rc3.tar.xz\r\
+    \n!tar xf jumanpp-2.0.0-rc3.tar.xz\r\n!cd jumanpp-2.0.0-rc3 && mkdir bld  && cd\
+    \ bld && cmake .. -DCMAKE_BUILD_TYPE=Release  && make install -j2\r\n```\r\njumannapp\
+    \ was installed to /usr/local/bin.\r\n```\r\n!which jumanpp\r\n# /usr/local/bin/jumanpp\r\
+    \n```\r\nDownload Livedoor News Corpus.\r\n```\r\n!wget \"https://www.rondhuit.com/download/ldcc-20140209.tar.gz\"\
+    \r\n!tar zxf ldcc-20140209.tar.gz\r\n```\r\n\r\nPreprocessing and sort by length.\r\
+    \n```\r\nimport glob\r\narticles = []\r\nfor filename in glob.glob(\"./text/*/*.txt\"\
+    ):\r\n  with open(filename, \"r\") as f:\r\n    article = f.read()\r\n    articles.append(\"\
+    \".join(article.split(\"\\n\")[2:]))\r\n\r\narticles = sorted(articles, key=len)\r\
+    \n```\r\nLoad tokenizer.\r\n```\r\nfrom transformers import AutoTokenizer\r\n\
+    tokenizer = AutoTokenizer.from_pretrained(\"nlp-waseda/roberta-large-japanese-seq512-with-auto-jumanpp\"\
+    )\r\n```\r\n\r\nEncode top-100 long text samples and returned in 373ms.\r\n```\r\
+    \n%%time\r\nfeatures = tokenizer.batch_encode_plus(articles[-100:], padding=\"\
+    max_length\", truncation=True, max_length=512)\r\n# CPU times: user 340 ms, sys:\
+    \ 2.97 ms, total: 343 ms\r\n# Wall time: 373 ms\r\n```\r\nOne more try with same\
+    \ data. Waiting over 10 minutes, but never return.\r\n```\r\n%%time\r\nfeatures\
+    \ = tokenizer.batch_encode_plus(articles[-100:], padding=\"max_length\", truncation=True,\
+    \ max_length=512)\r\n```"
+  created_at: 2023-07-05 23:20:45+00:00
+  edited: false
+  hidden: false
+  id: 64a608dd9f3b568c2030803a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: nlp-waseda/roberta-large-japanese-with-auto-jumanpp
+repo_type: model
+status: open
+target_branch: null
+title: roberta-large-japanese-with-auto-jumanpp's tokenizer.batch_encode_plus()    is
+  hung in tokenization.

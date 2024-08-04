@@ -1,0 +1,409 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Sorenmc
+conflicting_files: null
+created_at: 2023-07-08 08:30:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a48a3fb2d8f8232eb7226039390541ae.svg
+      fullname: 'Soeren Moeller Christensen '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sorenmc
+      type: user
+    createdAt: '2023-07-08T09:30:07.000Z'
+    data:
+      edited: true
+      editors:
+      - Sorenmc
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7467377185821533
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a48a3fb2d8f8232eb7226039390541ae.svg
+          fullname: 'Soeren Moeller Christensen '
+          isHf: false
+          isPro: false
+          name: Sorenmc
+          type: user
+        html: "<p>I wanted to use the SentenceTransformers instead of their sample\
+          \ code, as it works well with my current setup, but had to figure out whether\
+          \ there would be a difference in results.<br>It turns out that even though\
+          \ both use mean pooling and transformers as backend, the results are slightly\
+          \ different.</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer,\
+          \ AutoModel\n<span class=\"hljs-keyword\">import</span> torch\n<span class=\"\
+          hljs-keyword\">from</span> sentence_transformers <span class=\"hljs-keyword\"\
+          >import</span> SentenceTransformer\n<span class=\"hljs-keyword\">import</span>\
+          \ numpy <span class=\"hljs-keyword\">as</span> np\n\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">load_finetuned_model</span>():\n\
+          \    sentence_encoder = AutoModel.from_pretrained(<span class=\"hljs-string\"\
+          >\"biu-nlp/abstract-sim-sentence\"</span>)\n    query_encoder = AutoModel.from_pretrained(<span\
+          \ class=\"hljs-string\">\"biu-nlp/abstract-sim-query\"</span>)\n    tokenizer\
+          \ = AutoTokenizer.from_pretrained(<span class=\"hljs-string\">\"biu-nlp/abstract-sim-sentence\"\
+          </span>)\n\n    <span class=\"hljs-keyword\">return</span> tokenizer, query_encoder,\
+          \ sentence_encoder\n\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">encode_batch</span>(<span class=\"hljs-params\">model,\
+          \ tokenizer, sentences: <span class=\"hljs-type\">List</span>[<span class=\"\
+          hljs-built_in\">str</span>], device: <span class=\"hljs-built_in\">str</span></span>):\n\
+          \    input_ids = tokenizer(\n        sentences,\n        padding=<span class=\"\
+          hljs-literal\">True</span>,\n        max_length=<span class=\"hljs-number\"\
+          >512</span>,\n        truncation=<span class=\"hljs-literal\">True</span>,\n\
+          \        return_tensors=<span class=\"hljs-string\">\"pt\"</span>,\n   \
+          \     add_special_tokens=<span class=\"hljs-literal\">True</span>,\n   \
+          \ ).to(device)\n    features = model(**input_ids)[<span class=\"hljs-number\"\
+          >0</span>]\n    features = torch.<span class=\"hljs-built_in\">sum</span>(\n\
+          \        features[:, <span class=\"hljs-number\">1</span>:, :] * input_ids[<span\
+          \ class=\"hljs-string\">\"attention_mask\"</span>][:, <span class=\"hljs-number\"\
+          >1</span>:].unsqueeze(-<span class=\"hljs-number\">1</span>), dim=<span\
+          \ class=\"hljs-number\">1</span>\n    ) / torch.clamp(\n        torch.<span\
+          \ class=\"hljs-built_in\">sum</span>(input_ids[<span class=\"hljs-string\"\
+          >\"attention_mask\"</span>][:, <span class=\"hljs-number\">1</span>:], dim=<span\
+          \ class=\"hljs-number\">1</span>, keepdims=<span class=\"hljs-literal\"\
+          >True</span>), <span class=\"hljs-built_in\">min</span>=<span class=\"hljs-number\"\
+          >1e-9</span>\n    )\n    <span class=\"hljs-keyword\">return</span> features\n\
+          \ntokenizer, query_encoder, sentence_encoder = load_finetuned_model()\n\
+          relevant_sentences = [\n    <span class=\"hljs-string\">\"Fingersoft's parent\
+          \ company is the Finger Group.\"</span>,\n    <span class=\"hljs-string\"\
+          >\"WHIRC \u2013 a subsidiary company of Wright-Hennepin\"</span>,\n    <span\
+          \ class=\"hljs-string\">\"CK Life Sciences International (Holdings) Inc.\
+          \ (), or CK Life Sciences, is a subsidiary of CK Hutchison Holdings\"</span>,\n\
+          \    <span class=\"hljs-string\">\"EM Microelectronic-Marin (subsidiary\
+          \ of The Swatch Group).\"</span>,\n    <span class=\"hljs-string\">\"The\
+          \ company is currently a division of the corporate group Jam Industries.\"\
+          </span>,\n    <span class=\"hljs-string\">\"Volt Technical Resources is\
+          \ a business unit of Volt Workforce Solutions, a subsidiary of Volt Information\
+          \ Sciences (currently trading over-the-counter as VISI.).\"</span>,\n]\n\
+          \nirrelevant_sentences = [\n    <span class=\"hljs-string\">\"The second\
+          \ company is deemed to be a subsidiary of the parent company.\"</span>,\n\
+          \    <span class=\"hljs-string\">\"The company has gone through more than\
+          \ one incarnation.\"</span>,\n    <span class=\"hljs-string\">\"The company\
+          \ is owned by its employees.\"</span>,\n    <span class=\"hljs-string\"\
+          >\"Larger companies compete for market share by acquiring smaller companies\
+          \ that may own a particular market sector.\"</span>,\n    <span class=\"\
+          hljs-string\">\"A parent company is a company that owns 51% or more voting\
+          \ stock in another firm (or subsidiary).\"</span>,\n    <span class=\"hljs-string\"\
+          >\"It is a holding company that provides services through its subsidiaries\
+          \ in the following areas: oil and gas, industrial and infrastructure, government\
+          \ and power.\"</span>,\n    <span class=\"hljs-string\">\"RXVT Technologies\
+          \ is no longer a subsidiary of the parent company.\"</span>,\n]\n\nall_sentences\
+          \ = relevant_sentences + irrelevant_sentences\n\nembeddings = (\n    encode_batch(sentence_encoder,\
+          \ tokenizer, all_sentences, <span class=\"hljs-string\">\"cpu\"</span>)\n\
+          \    .detach()\n    .cpu()\n    .numpy()\n)\n\nsentence_transformer = SentenceTransformer(<span\
+          \ class=\"hljs-string\">\"biu-nlp/abstract-sim-sentence\"</span>)\nsentence_transformer_embeddings\
+          \ = sentence_transformer.encode(all_sentences, normalize_embeddings=<span\
+          \ class=\"hljs-literal\">False</span>)\n\n<span class=\"hljs-built_in\"\
+          >print</span>(np.linalg.norm(embeddings, axis=<span class=\"hljs-number\"\
+          >1</span>))\n<span class=\"hljs-built_in\">print</span>(np.linalg.norm(a,\
+          \ axis=<span class=\"hljs-number\">1</span>))\n<span class=\"hljs-built_in\"\
+          >print</span>(np.linalg.norm(embeddings - a, axis=<span class=\"hljs-number\"\
+          >1</span>))\n<span class=\"hljs-built_in\">print</span>(np.diag(cosine_similarity(embeddings,\
+          \ a)))\n</code></pre>\n<p>length of embeddings authors method  [3.191418\
+          \  3.2790325 3.283971  3.1165273 3.1817975 3.1611388 3.0702376<br> 2.8644533\
+          \ 3.1743984 3.2016773 3.086787  3.2246523 3.2988307]</p>\n<p>length of embeddings\
+          \ sentence transformers  [3.1486273 3.2397876 3.2651744 3.088796  3.1495209\
+          \ 3.1484847 3.0348575<br> 2.8282485 3.1296148 3.1790628 3.0645113 3.2098253\
+          \ 3.2714853]</p>\n<p>difference in length  [0.09617972 0.082573   0.04128565\
+          \ 0.0691056  0.08182564 0.03538151<br> 0.07103401 0.09275693 0.11129349\
+          \ 0.05690338 0.04796569 0.03957536<br> 0.07060497]</p>\n<p>cosine similarity\
+          \ between the same inputs  [0.99963075 0.99975157 0.99993694 0.999792  \
+          \ 0.99971795 0.9999451<br> 0.99979633 0.99954975 0.9994776  0.99986607 0.99990445\
+          \ 0.9999351<br> 0.99980366]</p>\n<p>As can be seen from the above diagnostics\
+          \ the results produced are slightly different. Hard to say whether it will\
+          \ affect performance.</p>\n"
+        raw: "I wanted to use the SentenceTransformers instead of their sample code,\
+          \ as it works well with my current setup, but had to figure out whether\
+          \ there would be a difference in results.\nIt turns out that even though\
+          \ both use mean pooling and transformers as backend, the results are slightly\
+          \ different.\n\n```python\nfrom transformers import AutoTokenizer, AutoModel\n\
+          import torch\nfrom sentence_transformers import SentenceTransformer\nimport\
+          \ numpy as np\n\ndef load_finetuned_model():\n    sentence_encoder = AutoModel.from_pretrained(\"\
+          biu-nlp/abstract-sim-sentence\")\n    query_encoder = AutoModel.from_pretrained(\"\
+          biu-nlp/abstract-sim-query\")\n    tokenizer = AutoTokenizer.from_pretrained(\"\
+          biu-nlp/abstract-sim-sentence\")\n\n    return tokenizer, query_encoder,\
+          \ sentence_encoder\n\n\ndef encode_batch(model, tokenizer, sentences: List[str],\
+          \ device: str):\n    input_ids = tokenizer(\n        sentences,\n      \
+          \  padding=True,\n        max_length=512,\n        truncation=True,\n  \
+          \      return_tensors=\"pt\",\n        add_special_tokens=True,\n    ).to(device)\n\
+          \    features = model(**input_ids)[0]\n    features = torch.sum(\n     \
+          \   features[:, 1:, :] * input_ids[\"attention_mask\"][:, 1:].unsqueeze(-1),\
+          \ dim=1\n    ) / torch.clamp(\n        torch.sum(input_ids[\"attention_mask\"\
+          ][:, 1:], dim=1, keepdims=True), min=1e-9\n    )\n    return features\n\n\
+          tokenizer, query_encoder, sentence_encoder = load_finetuned_model()\nrelevant_sentences\
+          \ = [\n    \"Fingersoft's parent company is the Finger Group.\",\n    \"\
+          WHIRC \u2013 a subsidiary company of Wright-Hennepin\",\n    \"CK Life Sciences\
+          \ International (Holdings) Inc. (), or CK Life Sciences, is a subsidiary\
+          \ of CK Hutchison Holdings\",\n    \"EM Microelectronic-Marin (subsidiary\
+          \ of The Swatch Group).\",\n    \"The company is currently a division of\
+          \ the corporate group Jam Industries.\",\n    \"Volt Technical Resources\
+          \ is a business unit of Volt Workforce Solutions, a subsidiary of Volt Information\
+          \ Sciences (currently trading over-the-counter as VISI.).\",\n]\n\nirrelevant_sentences\
+          \ = [\n    \"The second company is deemed to be a subsidiary of the parent\
+          \ company.\",\n    \"The company has gone through more than one incarnation.\"\
+          ,\n    \"The company is owned by its employees.\",\n    \"Larger companies\
+          \ compete for market share by acquiring smaller companies that may own a\
+          \ particular market sector.\",\n    \"A parent company is a company that\
+          \ owns 51% or more voting stock in another firm (or subsidiary).\",\n  \
+          \  \"It is a holding company that provides services through its subsidiaries\
+          \ in the following areas: oil and gas, industrial and infrastructure, government\
+          \ and power.\",\n    \"RXVT Technologies is no longer a subsidiary of the\
+          \ parent company.\",\n]\n\nall_sentences = relevant_sentences + irrelevant_sentences\n\
+          \nembeddings = (\n    encode_batch(sentence_encoder, tokenizer, all_sentences,\
+          \ \"cpu\")\n    .detach()\n    .cpu()\n    .numpy()\n)\n\nsentence_transformer\
+          \ = SentenceTransformer(\"biu-nlp/abstract-sim-sentence\")\nsentence_transformer_embeddings\
+          \ = sentence_transformer.encode(all_sentences, normalize_embeddings=False)\n\
+          \nprint(np.linalg.norm(embeddings, axis=1))\nprint(np.linalg.norm(a, axis=1))\n\
+          print(np.linalg.norm(embeddings - a, axis=1))\nprint(np.diag(cosine_similarity(embeddings,\
+          \ a)))\n```\n\nlength of embeddings authors method  [3.191418  3.2790325\
+          \ 3.283971  3.1165273 3.1817975 3.1611388 3.0702376\n 2.8644533 3.1743984\
+          \ 3.2016773 3.086787  3.2246523 3.2988307]\n\nlength of embeddings sentence\
+          \ transformers  [3.1486273 3.2397876 3.2651744 3.088796  3.1495209 3.1484847\
+          \ 3.0348575\n 2.8282485 3.1296148 3.1790628 3.0645113 3.2098253 3.2714853]\n\
+          \ndifference in length  [0.09617972 0.082573   0.04128565 0.0691056  0.08182564\
+          \ 0.03538151\n 0.07103401 0.09275693 0.11129349 0.05690338 0.04796569 0.03957536\n\
+          \ 0.07060497]\n\ncosine similarity between the same inputs  [0.99963075\
+          \ 0.99975157 0.99993694 0.999792   0.99971795 0.9999451\n 0.99979633 0.99954975\
+          \ 0.9994776  0.99986607 0.99990445 0.9999351\n 0.99980366]\n\nAs can be\
+          \ seen from the above diagnostics the results produced are slightly different.\
+          \ Hard to say whether it will affect performance."
+        updatedAt: '2023-07-08T09:31:34.997Z'
+      numEdits: 1
+      reactions: []
+    id: 64a92c9f5a69e2ca8895de80
+    type: comment
+  author: Sorenmc
+  content: "I wanted to use the SentenceTransformers instead of their sample code,\
+    \ as it works well with my current setup, but had to figure out whether there\
+    \ would be a difference in results.\nIt turns out that even though both use mean\
+    \ pooling and transformers as backend, the results are slightly different.\n\n\
+    ```python\nfrom transformers import AutoTokenizer, AutoModel\nimport torch\nfrom\
+    \ sentence_transformers import SentenceTransformer\nimport numpy as np\n\ndef\
+    \ load_finetuned_model():\n    sentence_encoder = AutoModel.from_pretrained(\"\
+    biu-nlp/abstract-sim-sentence\")\n    query_encoder = AutoModel.from_pretrained(\"\
+    biu-nlp/abstract-sim-query\")\n    tokenizer = AutoTokenizer.from_pretrained(\"\
+    biu-nlp/abstract-sim-sentence\")\n\n    return tokenizer, query_encoder, sentence_encoder\n\
+    \n\ndef encode_batch(model, tokenizer, sentences: List[str], device: str):\n \
+    \   input_ids = tokenizer(\n        sentences,\n        padding=True,\n      \
+    \  max_length=512,\n        truncation=True,\n        return_tensors=\"pt\",\n\
+    \        add_special_tokens=True,\n    ).to(device)\n    features = model(**input_ids)[0]\n\
+    \    features = torch.sum(\n        features[:, 1:, :] * input_ids[\"attention_mask\"\
+    ][:, 1:].unsqueeze(-1), dim=1\n    ) / torch.clamp(\n        torch.sum(input_ids[\"\
+    attention_mask\"][:, 1:], dim=1, keepdims=True), min=1e-9\n    )\n    return features\n\
+    \ntokenizer, query_encoder, sentence_encoder = load_finetuned_model()\nrelevant_sentences\
+    \ = [\n    \"Fingersoft's parent company is the Finger Group.\",\n    \"WHIRC\
+    \ \u2013 a subsidiary company of Wright-Hennepin\",\n    \"CK Life Sciences International\
+    \ (Holdings) Inc. (), or CK Life Sciences, is a subsidiary of CK Hutchison Holdings\"\
+    ,\n    \"EM Microelectronic-Marin (subsidiary of The Swatch Group).\",\n    \"\
+    The company is currently a division of the corporate group Jam Industries.\",\n\
+    \    \"Volt Technical Resources is a business unit of Volt Workforce Solutions,\
+    \ a subsidiary of Volt Information Sciences (currently trading over-the-counter\
+    \ as VISI.).\",\n]\n\nirrelevant_sentences = [\n    \"The second company is deemed\
+    \ to be a subsidiary of the parent company.\",\n    \"The company has gone through\
+    \ more than one incarnation.\",\n    \"The company is owned by its employees.\"\
+    ,\n    \"Larger companies compete for market share by acquiring smaller companies\
+    \ that may own a particular market sector.\",\n    \"A parent company is a company\
+    \ that owns 51% or more voting stock in another firm (or subsidiary).\",\n   \
+    \ \"It is a holding company that provides services through its subsidiaries in\
+    \ the following areas: oil and gas, industrial and infrastructure, government\
+    \ and power.\",\n    \"RXVT Technologies is no longer a subsidiary of the parent\
+    \ company.\",\n]\n\nall_sentences = relevant_sentences + irrelevant_sentences\n\
+    \nembeddings = (\n    encode_batch(sentence_encoder, tokenizer, all_sentences,\
+    \ \"cpu\")\n    .detach()\n    .cpu()\n    .numpy()\n)\n\nsentence_transformer\
+    \ = SentenceTransformer(\"biu-nlp/abstract-sim-sentence\")\nsentence_transformer_embeddings\
+    \ = sentence_transformer.encode(all_sentences, normalize_embeddings=False)\n\n\
+    print(np.linalg.norm(embeddings, axis=1))\nprint(np.linalg.norm(a, axis=1))\n\
+    print(np.linalg.norm(embeddings - a, axis=1))\nprint(np.diag(cosine_similarity(embeddings,\
+    \ a)))\n```\n\nlength of embeddings authors method  [3.191418  3.2790325 3.283971\
+    \  3.1165273 3.1817975 3.1611388 3.0702376\n 2.8644533 3.1743984 3.2016773 3.086787\
+    \  3.2246523 3.2988307]\n\nlength of embeddings sentence transformers  [3.1486273\
+    \ 3.2397876 3.2651744 3.088796  3.1495209 3.1484847 3.0348575\n 2.8282485 3.1296148\
+    \ 3.1790628 3.0645113 3.2098253 3.2714853]\n\ndifference in length  [0.09617972\
+    \ 0.082573   0.04128565 0.0691056  0.08182564 0.03538151\n 0.07103401 0.09275693\
+    \ 0.11129349 0.05690338 0.04796569 0.03957536\n 0.07060497]\n\ncosine similarity\
+    \ between the same inputs  [0.99963075 0.99975157 0.99993694 0.999792   0.99971795\
+    \ 0.9999451\n 0.99979633 0.99954975 0.9994776  0.99986607 0.99990445 0.9999351\n\
+    \ 0.99980366]\n\nAs can be seen from the above diagnostics the results produced\
+    \ are slightly different. Hard to say whether it will affect performance."
+  created_at: 2023-07-08 08:30:07+00:00
+  edited: true
+  hidden: false
+  id: 64a92c9f5a69e2ca8895de80
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c59034ad2c9c2daf4b4a8d3c56449f5e.svg
+      fullname: Shauli Ravfogel
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ravfogs
+      type: user
+    createdAt: '2023-07-08T12:59:20.000Z'
+    data:
+      edited: false
+      editors:
+      - ravfogs
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8496736288070679
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c59034ad2c9c2daf4b4a8d3c56449f5e.svg
+          fullname: Shauli Ravfogel
+          isHf: false
+          isPro: false
+          name: ravfogs
+          type: user
+        html: '<p>Hi,</p>
+
+          <p>This probably stems from special tokens / the fact we do not mean-pool
+          over the CLS token. We hope to support SentenceTransformers in the future.</p>
+
+          '
+        raw: 'Hi,
+
+
+          This probably stems from special tokens / the fact we do not mean-pool over
+          the CLS token. We hope to support SentenceTransformers in the future.'
+        updatedAt: '2023-07-08T12:59:20.548Z'
+      numEdits: 0
+      reactions: []
+    id: 64a95da8a347b957199015fe
+    type: comment
+  author: ravfogs
+  content: 'Hi,
+
+
+    This probably stems from special tokens / the fact we do not mean-pool over the
+    CLS token. We hope to support SentenceTransformers in the future.'
+  created_at: 2023-07-08 11:59:20+00:00
+  edited: false
+  hidden: false
+  id: 64a95da8a347b957199015fe
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a48a3fb2d8f8232eb7226039390541ae.svg
+      fullname: 'Soeren Moeller Christensen '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sorenmc
+      type: user
+    createdAt: '2023-07-09T09:13:20.000Z'
+    data:
+      edited: false
+      editors:
+      - Sorenmc
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7247297167778015
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a48a3fb2d8f8232eb7226039390541ae.svg
+          fullname: 'Soeren Moeller Christensen '
+          isHf: false
+          isPro: false
+          name: Sorenmc
+          type: user
+        html: "<p>Thank you for the quick response. I have confirmed that indeed including\
+          \ the CLS token will provide almost identical results to SentenceTransformers.\
+          \ Below a modified version of the authors encoding method to include CLS\
+          \ token in the mean pooling.</p>\n<pre><code class=\"language-python\"><span\
+          \ class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >encode_batch_include_cls</span>(<span class=\"hljs-params\">model, tokenizer,\
+          \ sentences: <span class=\"hljs-type\">List</span>[<span class=\"hljs-built_in\"\
+          >str</span>], device: <span class=\"hljs-built_in\">str</span></span>):\n\
+          \    input_ids = tokenizer(\n        sentences,\n        padding=<span class=\"\
+          hljs-literal\">True</span>,\n        max_length=<span class=\"hljs-number\"\
+          >512</span>,\n        truncation=<span class=\"hljs-literal\">True</span>,\n\
+          \        return_tensors=<span class=\"hljs-string\">\"pt\"</span>,\n   \
+          \     add_special_tokens=<span class=\"hljs-literal\">True</span>,\n   \
+          \ ).to(device)\n    features = model(**input_ids)[<span class=\"hljs-number\"\
+          >0</span>]\n    features = torch.<span class=\"hljs-built_in\">sum</span>(\n\
+          \        features * input_ids[<span class=\"hljs-string\">\"attention_mask\"\
+          </span>].unsqueeze(-<span class=\"hljs-number\">1</span>), dim=<span class=\"\
+          hljs-number\">1</span>\n    ) / torch.clamp(\n        torch.<span class=\"\
+          hljs-built_in\">sum</span>(input_ids[<span class=\"hljs-string\">\"attention_mask\"\
+          </span>], dim=<span class=\"hljs-number\">1</span>, keepdims=<span class=\"\
+          hljs-literal\">True</span>), <span class=\"hljs-built_in\">min</span>=<span\
+          \ class=\"hljs-number\">1e-9</span>\n    )\n    <span class=\"hljs-keyword\"\
+          >return</span> features\n</code></pre>\n<p>With the following results:</p>\n\
+          <pre><code>difference in length with cls  [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.\
+          \ 0. 0. 0.]\ncosine similarity between the same inputs with cls  [0.99999964\
+          \ 0.9999998  0.9999999  1.0000002  0.99999994 0.9999999 1.   1.0000001 \
+          \ 0.9999999  1.0000001  0.9999999  1.0000001  1. ]\n</code></pre>\n<p>Hard\
+          \ to say what effects inclusion or exclusion of CLS token will have on performance.</p>\n"
+        raw: "Thank you for the quick response. I have confirmed that indeed including\
+          \ the CLS token will provide almost identical results to SentenceTransformers.\
+          \ Below a modified version of the authors encoding method to include CLS\
+          \ token in the mean pooling.\n\n```python\ndef encode_batch_include_cls(model,\
+          \ tokenizer, sentences: List[str], device: str):\n    input_ids = tokenizer(\n\
+          \        sentences,\n        padding=True,\n        max_length=512,\n  \
+          \      truncation=True,\n        return_tensors=\"pt\",\n        add_special_tokens=True,\n\
+          \    ).to(device)\n    features = model(**input_ids)[0]\n    features =\
+          \ torch.sum(\n        features * input_ids[\"attention_mask\"].unsqueeze(-1),\
+          \ dim=1\n    ) / torch.clamp(\n        torch.sum(input_ids[\"attention_mask\"\
+          ], dim=1, keepdims=True), min=1e-9\n    )\n    return features\n```\n\n\
+          With the following results:\n\n```\ndifference in length with cls  [0. 0.\
+          \ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]\ncosine similarity between the same\
+          \ inputs with cls  [0.99999964 0.9999998  0.9999999  1.0000002  0.99999994\
+          \ 0.9999999 1.   1.0000001  0.9999999  1.0000001  0.9999999  1.0000001 \
+          \ 1. ]\n```\n\nHard to say what effects inclusion or exclusion of CLS token\
+          \ will have on performance."
+        updatedAt: '2023-07-09T09:13:20.995Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - ravfogs
+        - kgourgou
+    id: 64aa7a30baf671fbebd54c6b
+    type: comment
+  author: Sorenmc
+  content: "Thank you for the quick response. I have confirmed that indeed including\
+    \ the CLS token will provide almost identical results to SentenceTransformers.\
+    \ Below a modified version of the authors encoding method to include CLS token\
+    \ in the mean pooling.\n\n```python\ndef encode_batch_include_cls(model, tokenizer,\
+    \ sentences: List[str], device: str):\n    input_ids = tokenizer(\n        sentences,\n\
+    \        padding=True,\n        max_length=512,\n        truncation=True,\n  \
+    \      return_tensors=\"pt\",\n        add_special_tokens=True,\n    ).to(device)\n\
+    \    features = model(**input_ids)[0]\n    features = torch.sum(\n        features\
+    \ * input_ids[\"attention_mask\"].unsqueeze(-1), dim=1\n    ) / torch.clamp(\n\
+    \        torch.sum(input_ids[\"attention_mask\"], dim=1, keepdims=True), min=1e-9\n\
+    \    )\n    return features\n```\n\nWith the following results:\n\n```\ndifference\
+    \ in length with cls  [0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]\ncosine similarity\
+    \ between the same inputs with cls  [0.99999964 0.9999998  0.9999999  1.0000002\
+    \  0.99999994 0.9999999 1.   1.0000001  0.9999999  1.0000001  0.9999999  1.0000001\
+    \  1. ]\n```\n\nHard to say what effects inclusion or exclusion of CLS token will\
+    \ have on performance."
+  created_at: 2023-07-09 08:13:20+00:00
+  edited: false
+  hidden: false
+  id: 64aa7a30baf671fbebd54c6b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: biu-nlp/abstract-sim-sentence
+repo_type: model
+status: open
+target_branch: null
+title: Can i use SentenceTransformers instead of the presented code?

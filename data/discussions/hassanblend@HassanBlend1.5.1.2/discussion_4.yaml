@@ -1,0 +1,524 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: JonnoFTW
+conflicting_files: null
+created_at: 2023-01-16 04:13:25+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+      fullname: Jonathan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JonnoFTW
+      type: user
+    createdAt: '2023-01-16T04:13:25.000Z'
+    data:
+      edited: true
+      editors:
+      - JonnoFTW
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+          fullname: Jonathan
+          isHf: false
+          isPro: false
+          name: JonnoFTW
+          type: user
+        html: "<p>Using the following script adapted from <code>app.py</code>, I get\
+          \ an error about <code>/vae/diffusion_pytorch_model.bin</code> not being\
+          \ loadable:</p>\n<pre><code>CRITICAL:root:Unable to load weights from checkpoint\
+          \ file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+          \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+          \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please\
+          \ set from_tf=True.\nTraceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 99, in load_state_dict\n    return torch.load(checkpoint_file, map_location=\"\
+          cpu\")\n  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+          , line 705, in load\n    with _open_zipfile_reader(opened_file) as opened_zipfile:\n\
+          \  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+          , line 242, in __init__\n    super(_open_zipfile_reader, self).__init__(torch._C.PyTorchFileReader(name_or_buffer))\n\
+          RuntimeError: PytorchStreamReader failed reading zip archive: failed finding\
+          \ central directory\n\nDuring handling of the above exception, another exception\
+          \ occurred:\n\nTraceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 105, in load_state_dict\n    if f.read().startswith(\"version\"):\n\
+          \  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/codecs.py\", line\
+          \ 322, in decode\n    (result, consumed) = self._buffer_decode(data, self.errors,\
+          \ final)\nUnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position\
+          \ 128: invalid start byte\n\nDuring handling of the above exception, another\
+          \ exception occurred:\n\nTraceback (most recent call last):\n  File \"sd/app.py\"\
+          , line 178, in generate_image\n    self.pipe = get_pipe(model_name)\n  File\
+          \ \"sd/app.py\", line 312, in get_pipe\n    pipe = DiffusionPipeline.from_pretrained(\n\
+          \  File \"/home/jonno/diffusers/src/diffusers/pipelines/pipeline_utils.py\"\
+          , line 735, in from_pretrained\n    loaded_sub_model = load_method(os.path.join(cached_folder,\
+          \ name), **loading_kwargs)\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 529, in from_pretrained\n    state_dict = load_state_dict(model_file)\n\
+          \  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 117, in load_state_dict\n    raise OSError(\nOSError: Unable to load\
+          \ weights from checkpoint file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+          \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+          \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please\
+          \ set from_tf=True.\n</code></pre>\n<p>I've tried deleting and redownloading\
+          \ the file to no avail.</p>\n<p>I have the latest master of diffusers:</p>\n\
+          <pre><code>$ pip freeze | grep -e 'diff\\|torch'\n-e git+https://github.com/huggingface/diffusers.git@9b37ed33b5fa09e594b38e4e6f7477beff3bd66a#egg=diffusers\n\
+          pytorch-lightning==1.7.5\ntorch==1.12.1+cu116\ntorchaudio==0.12.1+cu116\n\
+          torchdynamo==1.12.0\ntorchmetrics==0.9.3\ntorchvision==0.13.1+cu116\n</code></pre>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">from</span>\
+          \ diffusers <span class=\"hljs-keyword\">import</span> StableDiffusionPipeline,\
+          \ DPMSolverMultistepScheduler\n<span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> PIL <span class=\"hljs-keyword\"\
+          >import</span> Image\n\nmodel_id = <span class=\"hljs-string\">'hassanblend/hassanblend1.5'</span>\n\
+          prefix = <span class=\"hljs-string\">''</span>\n\nscheduler = DPMSolverMultistepScheduler(\n\
+          \    beta_start=<span class=\"hljs-number\">0.00085</span>,\n    beta_end=<span\
+          \ class=\"hljs-number\">0.012</span>,\n    beta_schedule=<span class=\"\
+          hljs-string\">\"scaled_linear\"</span>,\n    num_train_timesteps=<span class=\"\
+          hljs-number\">1000</span>,\n    trained_betas=<span class=\"hljs-literal\"\
+          >None</span>,\n    prediction_type=<span class=\"hljs-string\">'epsilon'</span>,\n\
+          \    thresholding=<span class=\"hljs-literal\">False</span>,\n    algorithm_type=<span\
+          \ class=\"hljs-string\">\"dpmsolver++\"</span>,\n    solver_type=<span class=\"\
+          hljs-string\">\"midpoint\"</span>,\n    lower_order_final=<span class=\"\
+          hljs-literal\">True</span>,\n)\n\npipe = StableDiffusionPipeline.from_pretrained(\n\
+          \    model_id,\n    torch_dtype=torch.float16 <span class=\"hljs-keyword\"\
+          >if</span> torch.cuda.is_available() <span class=\"hljs-keyword\">else</span>\
+          \ torch.float32,\n    scheduler=scheduler\n)\n\n\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">replace_nsfw_images</span>(<span\
+          \ class=\"hljs-params\">results</span>):\n    <span class=\"hljs-keyword\"\
+          >for</span> i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-built_in\">len</span>(results.images)):\n\
+          \        <span class=\"hljs-keyword\">if</span> results.nsfw_content_detected[i]:\n\
+          \            results.images[i] = Image.<span class=\"hljs-built_in\">open</span>(<span\
+          \ class=\"hljs-string\">\"nsfw.png\"</span>)\n    <span class=\"hljs-keyword\"\
+          >return</span> results.images[<span class=\"hljs-number\">0</span>]\n\n\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >txt_to_img</span>(<span class=\"hljs-params\">prompt, neg_prompt, guidance,\
+          \ steps, width, height, generator</span>):\n    result = pipe(\n       \
+          \ prompt,\n        negative_prompt=neg_prompt,\n        num_inference_steps=<span\
+          \ class=\"hljs-built_in\">int</span>(steps),\n        guidance_scale=guidance,\n\
+          \        width=width,\n        height=height,\n        generator=generator)\n\
+          \n    <span class=\"hljs-keyword\">return</span> replace_nsfw_images(result)\n\
+          \n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >error_str</span>(<span class=\"hljs-params\">error, title=<span class=\"\
+          hljs-string\">\"Error\"</span></span>):\n    <span class=\"hljs-keyword\"\
+          >return</span> <span class=\"hljs-string\">f\"\"\"#### <span class=\"hljs-subst\"\
+          >{title}</span></span>\n<span class=\"hljs-string\">            <span class=\"\
+          hljs-subst\">{error}</span>\"\"\"</span> <span class=\"hljs-keyword\">if</span>\
+          \ error <span class=\"hljs-keyword\">else</span> <span class=\"hljs-string\"\
+          >\"\"</span>\n\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">inference</span>(<span class=\"hljs-params\">prompt,\
+          \ guidance, steps, width=<span class=\"hljs-number\">512</span>, height=<span\
+          \ class=\"hljs-number\">512</span>, seed=<span class=\"hljs-number\">0</span>,\
+          \ img=<span class=\"hljs-literal\">None</span>, strength=<span class=\"\
+          hljs-number\">0.5</span>, neg_prompt=<span class=\"hljs-string\">\"\"</span>,\
+          \ auto_prefix=<span class=\"hljs-literal\">True</span></span>):\n    generator\
+          \ = torch.Generator(<span class=\"hljs-string\">'cuda'</span>).manual_seed(seed)\
+          \ <span class=\"hljs-keyword\">if</span> seed != <span class=\"hljs-number\"\
+          >0</span> <span class=\"hljs-keyword\">else</span> <span class=\"hljs-literal\"\
+          >None</span>\n    prompt = <span class=\"hljs-string\">f\"<span class=\"\
+          hljs-subst\">{prefix}</span> <span class=\"hljs-subst\">{prompt}</span>\"\
+          </span> <span class=\"hljs-keyword\">if</span> auto_prefix <span class=\"\
+          hljs-keyword\">else</span> prompt\n\n    <span class=\"hljs-keyword\">try</span>:\n\
+          \n        <span class=\"hljs-keyword\">return</span> txt_to_img(prompt,\
+          \ neg_prompt, guidance, steps, width, height, generator), <span class=\"\
+          hljs-literal\">None</span>\n    <span class=\"hljs-keyword\">except</span>\
+          \ Exception <span class=\"hljs-keyword\">as</span> e:\n        <span class=\"\
+          hljs-keyword\">return</span> <span class=\"hljs-literal\">None</span>, error_str(e)\n\
+          </code></pre>\n"
+        raw: "Using the following script adapted from `app.py`, I get an error about\
+          \ `/vae/diffusion_pytorch_model.bin` not being loadable:\n\n```\nCRITICAL:root:Unable\
+          \ to load weights from checkpoint file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+          \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+          \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please\
+          \ set from_tf=True.\nTraceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 99, in load_state_dict\n    return torch.load(checkpoint_file, map_location=\"\
+          cpu\")\n  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+          , line 705, in load\n    with _open_zipfile_reader(opened_file) as opened_zipfile:\n\
+          \  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+          , line 242, in __init__\n    super(_open_zipfile_reader, self).__init__(torch._C.PyTorchFileReader(name_or_buffer))\n\
+          RuntimeError: PytorchStreamReader failed reading zip archive: failed finding\
+          \ central directory\n\nDuring handling of the above exception, another exception\
+          \ occurred:\n\nTraceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 105, in load_state_dict\n    if f.read().startswith(\"version\"):\n\
+          \  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/codecs.py\", line\
+          \ 322, in decode\n    (result, consumed) = self._buffer_decode(data, self.errors,\
+          \ final)\nUnicodeDecodeError: 'utf-8' codec can't decode byte 0x80 in position\
+          \ 128: invalid start byte\n\nDuring handling of the above exception, another\
+          \ exception occurred:\n\nTraceback (most recent call last):\n  File \"sd/app.py\"\
+          , line 178, in generate_image\n    self.pipe = get_pipe(model_name)\n  File\
+          \ \"sd/app.py\", line 312, in get_pipe\n    pipe = DiffusionPipeline.from_pretrained(\n\
+          \  File \"/home/jonno/diffusers/src/diffusers/pipelines/pipeline_utils.py\"\
+          , line 735, in from_pretrained\n    loaded_sub_model = load_method(os.path.join(cached_folder,\
+          \ name), **loading_kwargs)\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 529, in from_pretrained\n    state_dict = load_state_dict(model_file)\n\
+          \  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+          , line 117, in load_state_dict\n    raise OSError(\nOSError: Unable to load\
+          \ weights from checkpoint file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+          \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+          \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please\
+          \ set from_tf=True.\n```\n\nI've tried deleting and redownloading the file\
+          \ to no avail.\n\nI have the latest master of diffusers:\n```\n$ pip freeze\
+          \ | grep -e 'diff\\|torch'\n-e git+https://github.com/huggingface/diffusers.git@9b37ed33b5fa09e594b38e4e6f7477beff3bd66a#egg=diffusers\n\
+          pytorch-lightning==1.7.5\ntorch==1.12.1+cu116\ntorchaudio==0.12.1+cu116\n\
+          torchdynamo==1.12.0\ntorchmetrics==0.9.3\ntorchvision==0.13.1+cu116\n```\n\
+          \n```python\nfrom diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler\n\
+          import torch\nfrom PIL import Image\n\nmodel_id = 'hassanblend/hassanblend1.5'\n\
+          prefix = ''\n\nscheduler = DPMSolverMultistepScheduler(\n    beta_start=0.00085,\n\
+          \    beta_end=0.012,\n    beta_schedule=\"scaled_linear\",\n    num_train_timesteps=1000,\n\
+          \    trained_betas=None,\n    prediction_type='epsilon',\n    thresholding=False,\n\
+          \    algorithm_type=\"dpmsolver++\",\n    solver_type=\"midpoint\",\n  \
+          \  lower_order_final=True,\n)\n\npipe = StableDiffusionPipeline.from_pretrained(\n\
+          \    model_id,\n    torch_dtype=torch.float16 if torch.cuda.is_available()\
+          \ else torch.float32,\n    scheduler=scheduler\n)\n\n\ndef replace_nsfw_images(results):\n\
+          \    for i in range(len(results.images)):\n        if results.nsfw_content_detected[i]:\n\
+          \            results.images[i] = Image.open(\"nsfw.png\")\n    return results.images[0]\n\
+          \n\ndef txt_to_img(prompt, neg_prompt, guidance, steps, width, height, generator):\n\
+          \    result = pipe(\n        prompt,\n        negative_prompt=neg_prompt,\n\
+          \        num_inference_steps=int(steps),\n        guidance_scale=guidance,\n\
+          \        width=width,\n        height=height,\n        generator=generator)\n\
+          \n    return replace_nsfw_images(result)\n\n\ndef error_str(error, title=\"\
+          Error\"):\n    return f\"\"\"#### {title}\n            {error}\"\"\" if\
+          \ error else \"\"\n\n\ndef inference(prompt, guidance, steps, width=512,\
+          \ height=512, seed=0, img=None, strength=0.5, neg_prompt=\"\", auto_prefix=True):\n\
+          \    generator = torch.Generator('cuda').manual_seed(seed) if seed != 0\
+          \ else None\n    prompt = f\"{prefix} {prompt}\" if auto_prefix else prompt\n\
+          \n    try:\n\n        return txt_to_img(prompt, neg_prompt, guidance, steps,\
+          \ width, height, generator), None\n    except Exception as e:\n        return\
+          \ None, error_str(e)\n```"
+        updatedAt: '2023-01-16T04:15:59.998Z'
+      numEdits: 1
+      reactions: []
+    id: 63c4cee5a361002ba0c28fd1
+    type: comment
+  author: JonnoFTW
+  content: "Using the following script adapted from `app.py`, I get an error about\
+    \ `/vae/diffusion_pytorch_model.bin` not being loadable:\n\n```\nCRITICAL:root:Unable\
+    \ to load weights from checkpoint file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+    \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+    \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please set from_tf=True.\n\
+    Traceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+    , line 99, in load_state_dict\n    return torch.load(checkpoint_file, map_location=\"\
+    cpu\")\n  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+    , line 705, in load\n    with _open_zipfile_reader(opened_file) as opened_zipfile:\n\
+    \  File \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/site-packages/torch/serialization.py\"\
+    , line 242, in __init__\n    super(_open_zipfile_reader, self).__init__(torch._C.PyTorchFileReader(name_or_buffer))\n\
+    RuntimeError: PytorchStreamReader failed reading zip archive: failed finding central\
+    \ directory\n\nDuring handling of the above exception, another exception occurred:\n\
+    \nTraceback (most recent call last):\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+    , line 105, in load_state_dict\n    if f.read().startswith(\"version\"):\n  File\
+    \ \"/home/jonno/anaconda3/envs/dyn/lib/python3.8/codecs.py\", line 322, in decode\n\
+    \    (result, consumed) = self._buffer_decode(data, self.errors, final)\nUnicodeDecodeError:\
+    \ 'utf-8' codec can't decode byte 0x80 in position 128: invalid start byte\n\n\
+    During handling of the above exception, another exception occurred:\n\nTraceback\
+    \ (most recent call last):\n  File \"sd/app.py\", line 178, in generate_image\n\
+    \    self.pipe = get_pipe(model_name)\n  File \"sd/app.py\", line 312, in get_pipe\n\
+    \    pipe = DiffusionPipeline.from_pretrained(\n  File \"/home/jonno/diffusers/src/diffusers/pipelines/pipeline_utils.py\"\
+    , line 735, in from_pretrained\n    loaded_sub_model = load_method(os.path.join(cached_folder,\
+    \ name), **loading_kwargs)\n  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\"\
+    , line 529, in from_pretrained\n    state_dict = load_state_dict(model_file)\n\
+    \  File \"/home/jonno/diffusers/src/diffusers/models/modeling_utils.py\", line\
+    \ 117, in load_state_dict\n    raise OSError(\nOSError: Unable to load weights\
+    \ from checkpoint file for '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'\
+    \ at '/home/jonno/.cache/huggingface/diffusers/models--hassanblend--hassanblend1.5/snapshots/c525df00b66126696b61fe7c453b588ba5b1b902/vae/diffusion_pytorch_model.bin'.\
+    \ If you tried to load a PyTorch model from a TF 2.0 checkpoint, please set from_tf=True.\n\
+    ```\n\nI've tried deleting and redownloading the file to no avail.\n\nI have the\
+    \ latest master of diffusers:\n```\n$ pip freeze | grep -e 'diff\\|torch'\n-e\
+    \ git+https://github.com/huggingface/diffusers.git@9b37ed33b5fa09e594b38e4e6f7477beff3bd66a#egg=diffusers\n\
+    pytorch-lightning==1.7.5\ntorch==1.12.1+cu116\ntorchaudio==0.12.1+cu116\ntorchdynamo==1.12.0\n\
+    torchmetrics==0.9.3\ntorchvision==0.13.1+cu116\n```\n\n```python\nfrom diffusers\
+    \ import StableDiffusionPipeline, DPMSolverMultistepScheduler\nimport torch\n\
+    from PIL import Image\n\nmodel_id = 'hassanblend/hassanblend1.5'\nprefix = ''\n\
+    \nscheduler = DPMSolverMultistepScheduler(\n    beta_start=0.00085,\n    beta_end=0.012,\n\
+    \    beta_schedule=\"scaled_linear\",\n    num_train_timesteps=1000,\n    trained_betas=None,\n\
+    \    prediction_type='epsilon',\n    thresholding=False,\n    algorithm_type=\"\
+    dpmsolver++\",\n    solver_type=\"midpoint\",\n    lower_order_final=True,\n)\n\
+    \npipe = StableDiffusionPipeline.from_pretrained(\n    model_id,\n    torch_dtype=torch.float16\
+    \ if torch.cuda.is_available() else torch.float32,\n    scheduler=scheduler\n\
+    )\n\n\ndef replace_nsfw_images(results):\n    for i in range(len(results.images)):\n\
+    \        if results.nsfw_content_detected[i]:\n            results.images[i] =\
+    \ Image.open(\"nsfw.png\")\n    return results.images[0]\n\n\ndef txt_to_img(prompt,\
+    \ neg_prompt, guidance, steps, width, height, generator):\n    result = pipe(\n\
+    \        prompt,\n        negative_prompt=neg_prompt,\n        num_inference_steps=int(steps),\n\
+    \        guidance_scale=guidance,\n        width=width,\n        height=height,\n\
+    \        generator=generator)\n\n    return replace_nsfw_images(result)\n\n\n\
+    def error_str(error, title=\"Error\"):\n    return f\"\"\"#### {title}\n     \
+    \       {error}\"\"\" if error else \"\"\n\n\ndef inference(prompt, guidance,\
+    \ steps, width=512, height=512, seed=0, img=None, strength=0.5, neg_prompt=\"\"\
+    , auto_prefix=True):\n    generator = torch.Generator('cuda').manual_seed(seed)\
+    \ if seed != 0 else None\n    prompt = f\"{prefix} {prompt}\" if auto_prefix else\
+    \ prompt\n\n    try:\n\n        return txt_to_img(prompt, neg_prompt, guidance,\
+    \ steps, width, height, generator), None\n    except Exception as e:\n       \
+    \ return None, error_str(e)\n```"
+  created_at: 2023-01-16 04:13:25+00:00
+  edited: true
+  hidden: false
+  id: 63c4cee5a361002ba0c28fd1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+      fullname: Jonathan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JonnoFTW
+      type: user
+    createdAt: '2023-01-16T04:13:58.000Z'
+    data:
+      status: closed
+    id: 63c4cf068648527299354761
+    type: status-change
+  author: JonnoFTW
+  created_at: 2023-01-16 04:13:58+00:00
+  id: 63c4cf068648527299354761
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+      fullname: Jonathan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JonnoFTW
+      type: user
+    createdAt: '2023-01-16T04:14:02.000Z'
+    data:
+      status: open
+    id: 63c4cf0aa8a2d3a59eee9bec
+    type: status-change
+  author: JonnoFTW
+  created_at: 2023-01-16 04:14:02+00:00
+  id: 63c4cf0aa8a2d3a59eee9bec
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4542a4244eb0b552488b3b4bd7f8e7d1.svg
+      fullname: Greg Hunkins
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ghunkins
+      type: user
+    createdAt: '2023-01-17T05:34:07.000Z'
+    data:
+      edited: false
+      editors:
+      - ghunkins
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4542a4244eb0b552488b3b4bd7f8e7d1.svg
+          fullname: Greg Hunkins
+          isHf: false
+          isPro: false
+          name: ghunkins
+          type: user
+        html: "<p>Add in the VAE.</p>\n<pre><code class=\"language-python\"><span\
+          \ class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >import</span> diffusers\n\nvae = diffusers.AutoencoderKL.from_pretrained(<span\
+          \ class=\"hljs-string\">\"stabilityai/sd-vae-ft-mse\"</span>, torch_dtype=torch.float16)\n\
+          pipe = diffusers.StableDiffusionPipeline.from_pretrained(\n    <span class=\"\
+          hljs-string\">\"hassanblend/HassanBlend1.5.1.2\"</span>,\n    torch_dtype=torch.float16,\n\
+          \    vae=vae,\n)\npipe = pipe.to(<span class=\"hljs-string\">\"cuda\"</span>)\n\
+          </code></pre>\n"
+        raw: "Add in the VAE.\n\n```python\nimport torch\nimport diffusers\n\nvae\
+          \ = diffusers.AutoencoderKL.from_pretrained(\"stabilityai/sd-vae-ft-mse\"\
+          , torch_dtype=torch.float16)\npipe = diffusers.StableDiffusionPipeline.from_pretrained(\n\
+          \    \"hassanblend/HassanBlend1.5.1.2\",\n    torch_dtype=torch.float16,\n\
+          \    vae=vae,\n)\npipe = pipe.to(\"cuda\")\n```"
+        updatedAt: '2023-01-17T05:34:07.126Z'
+      numEdits: 0
+      reactions: []
+    id: 63c6334fa70ad8d689802fa7
+    type: comment
+  author: ghunkins
+  content: "Add in the VAE.\n\n```python\nimport torch\nimport diffusers\n\nvae =\
+    \ diffusers.AutoencoderKL.from_pretrained(\"stabilityai/sd-vae-ft-mse\", torch_dtype=torch.float16)\n\
+    pipe = diffusers.StableDiffusionPipeline.from_pretrained(\n    \"hassanblend/HassanBlend1.5.1.2\"\
+    ,\n    torch_dtype=torch.float16,\n    vae=vae,\n)\npipe = pipe.to(\"cuda\")\n\
+    ```"
+  created_at: 2023-01-17 05:34:07+00:00
+  edited: false
+  hidden: false
+  id: 63c6334fa70ad8d689802fa7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1d5c7b292e9be9e31ba2e45dfdd7e7b7.svg
+      fullname: Hassan
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: hassanblend
+      type: user
+    createdAt: '2023-01-17T15:50:02.000Z'
+    data:
+      edited: false
+      editors:
+      - hassanblend
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1d5c7b292e9be9e31ba2e45dfdd7e7b7.svg
+          fullname: Hassan
+          isHf: false
+          isPro: false
+          name: hassanblend
+          type: user
+        html: '<p>added the above code</p>
+
+          '
+        raw: added the above code
+        updatedAt: '2023-01-17T15:50:02.516Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 63c6c3aa523e3884e32e8109
+    id: 63c6c3aa523e3884e32e8108
+    type: comment
+  author: hassanblend
+  content: added the above code
+  created_at: 2023-01-17 15:50:02+00:00
+  edited: false
+  hidden: false
+  id: 63c6c3aa523e3884e32e8108
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/1d5c7b292e9be9e31ba2e45dfdd7e7b7.svg
+      fullname: Hassan
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: hassanblend
+      type: user
+    createdAt: '2023-01-17T15:50:02.000Z'
+    data:
+      status: closed
+    id: 63c6c3aa523e3884e32e8109
+    type: status-change
+  author: hassanblend
+  created_at: 2023-01-17 15:50:02+00:00
+  id: 63c6c3aa523e3884e32e8109
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+      fullname: Jonathan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JonnoFTW
+      type: user
+    createdAt: '2023-01-17T23:39:58.000Z'
+    data:
+      edited: true
+      editors:
+      - JonnoFTW
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d36fc1670dde552d3c0f745ba8221648.svg
+          fullname: Jonathan
+          isHf: false
+          isPro: false
+          name: JonnoFTW
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;hassanblend&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/hassanblend\"\
+          >@<span class=\"underline\">hassanblend</span></a></span>\n\n\t</span></span>\
+          \ you forgot to update the image to image pipeline in app.py:</p>\n<pre><code\
+          \ class=\"language-python\">pipe_i2i = StableDiffusionImg2ImgPipeline.from_pretrained(\n\
+          \  model_id,\n  torch_dtype=torch.float16 <span class=\"hljs-keyword\">if</span>\
+          \ torch.cuda.is_available() <span class=\"hljs-keyword\">else</span> torch.float32,\n\
+          \  scheduler=scheduler,\n  vae=vae\n)\n</code></pre>\n"
+        raw: "@hassanblend you forgot to update the image to image pipeline in app.py:\n\
+          \n```python\npipe_i2i = StableDiffusionImg2ImgPipeline.from_pretrained(\n\
+          \  model_id,\n  torch_dtype=torch.float16 if torch.cuda.is_available() else\
+          \ torch.float32,\n  scheduler=scheduler,\n  vae=vae\n)\n```"
+        updatedAt: '2023-01-17T23:40:10.203Z'
+      numEdits: 1
+      reactions: []
+    id: 63c731ce2f651b67629339f5
+    type: comment
+  author: JonnoFTW
+  content: "@hassanblend you forgot to update the image to image pipeline in app.py:\n\
+    \n```python\npipe_i2i = StableDiffusionImg2ImgPipeline.from_pretrained(\n  model_id,\n\
+    \  torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,\n\
+    \  scheduler=scheduler,\n  vae=vae\n)\n```"
+  created_at: 2023-01-17 23:39:58+00:00
+  edited: true
+  hidden: false
+  id: 63c731ce2f651b67629339f5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1d5c7b292e9be9e31ba2e45dfdd7e7b7.svg
+      fullname: Hassan
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: hassanblend
+      type: user
+    createdAt: '2023-01-18T11:41:36.000Z'
+    data:
+      edited: false
+      editors:
+      - hassanblend
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1d5c7b292e9be9e31ba2e45dfdd7e7b7.svg
+          fullname: Hassan
+          isHf: false
+          isPro: false
+          name: hassanblend
+          type: user
+        html: '<p>Thank you, added</p>
+
+          '
+        raw: Thank you, added
+        updatedAt: '2023-01-18T11:41:36.054Z'
+      numEdits: 0
+      reactions: []
+    id: 63c7daf0a003a6a7ea853d84
+    type: comment
+  author: hassanblend
+  content: Thank you, added
+  created_at: 2023-01-18 11:41:36+00:00
+  edited: false
+  hidden: false
+  id: 63c7daf0a003a6a7ea853d84
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: hassanblend/HassanBlend1.5.1.2
+repo_type: model
+status: closed
+target_branch: null
+title: Unable to load with huggingface diffusers

@@ -1,0 +1,398 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: tomaarsen
+conflicting_files: []
+created_at: 2024-01-11 19:35:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png?w=200&h=200&f=face
+      fullname: Tom Aarsen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tomaarsen
+      type: user
+    createdAt: '2024-01-11T19:35:50.000Z'
+    data:
+      edited: true
+      editors:
+      - tomaarsen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.11044929921627045
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png?w=200&h=200&f=face
+          fullname: Tom Aarsen
+          isHf: true
+          isPro: false
+          name: tomaarsen
+          type: user
+        html: "<p>Hello!</p>\n<h2 id=\"pull-request-overview\">Pull Request overview</h2>\n\
+          <ul>\n<li>Allow loading via <code>AutoModelForSequenceClassification</code></li>\n\
+          </ul>\n<h2 id=\"intro\">Intro</h2>\n<p>This model is looking awesome! Looking\
+          \ forward to learning more about LoCo as well. I'd be more than happy to\
+          \ help out to make sure that these models load well for your users.<br>I\
+          \ also sent a message in Slack, but I'm not sure if you all are in there,\
+          \ so I'll repeat it here too:</p>\n<p>As a quick introduction, I'm Tom &amp;\
+          \ I am in charge of Sentence Transformers nowadays. I encountered a few\
+          \ slight issues in your model configurations, and I took some time to address\
+          \ them on <a href=\"https://huggingface.co/togethercomputer/m2-bert-80M-8k-retrieval\"\
+          >togethercomputer/m2-bert-80M-8k-retrieval</a>:</p>\n<ol>\n<li>Allow loading\
+          \ via AutoModelForSequenceClassification (<a href=\"/togethercomputer/m2-bert-80M-8k-retrieval/discussions/1\"\
+          >#1</a>): There was a bug preventing your README snippet from working.</li>\n\
+          <li>Allow loading via AutoModel (<a href=\"/togethercomputer/m2-bert-80M-8k-retrieval/discussions/2\"\
+          >#2</a>): The configuration to load with AutoModel was missing.</li>\n<li>Allow\
+          \ loading via AutoTokenizer (<a href=\"/togethercomputer/m2-bert-80M-8k-retrieval/discussions/3\"\
+          >#3</a>): The configuration to defer the AutoTokenizer to <code>bert-base-cased</code>\
+          \ did not work - the auto_map can't be used like that sadly. This PR allows\
+          \ loading the tokenizer for this model directly, without having to override\
+          \ model_max_length.</li>\n</ol>\n<p>Feel free to check these out &amp; distribute\
+          \ the fixes across your models if you wish. Feel free to ask us if you need\
+          \ any assistance as well (we can also add you to a Slack channel for contact\
+          \ with us, if you're not in one already).</p>\n<p>Additionally, I would\
+          \ certainly recommend including the MTEB results for these models in the\
+          \ model README metadata - it could be great for additional visibility.<br>Lastly,\
+          \ I'm looking into 1st party support for Sentence Transformers, allowing\
+          \ your models to be loaded directly with ST as well! It might allow your\
+          \ models to reach an even larger audience.</p>\n<h2 id=\"details\">Details</h2>\n\
+          <p>I wanted to experiment with this model using:</p>\n<pre><code class=\"\
+          language-python\"><span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoTokenizer, AutoModelForSequenceClassification\n\
+          \nmax_seq_length = <span class=\"hljs-number\">8192</span>\ntesting_string\
+          \ = <span class=\"hljs-string\">\"Every morning, I make a cup of coffee\
+          \ to start my day.\"</span>\nmodel = AutoModelForSequenceClassification.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"togethercomputer/m2-bert-80M-8k-retrieval\"\
+          </span>,\n    trust_remote_code=<span class=\"hljs-literal\">True</span>\n\
+          )\n\ntokenizer = AutoTokenizer.from_pretrained(\n    <span class=\"hljs-string\"\
+          >\"bert-base-uncased\"</span>,\n    model_max_length=max_seq_length\n)\n\
+          input_ids = tokenizer(\n    [testing_string],\n    return_tensors=<span\
+          \ class=\"hljs-string\">\"pt\"</span>,\n    padding=<span class=\"hljs-string\"\
+          >\"max_length\"</span>,\n    return_token_type_ids=<span class=\"hljs-literal\"\
+          >False</span>,\n    truncation=<span class=\"hljs-literal\">True</span>,\n\
+          \    max_length=max_seq_length\n)\n\noutputs = model(**input_ids)\nembeddings\
+          \ = outputs[<span class=\"hljs-string\">'sentence_embedding'</span>]\n<span\
+          \ class=\"hljs-built_in\">print</span>(embeddings[<span class=\"hljs-number\"\
+          >0</span>,:<span class=\"hljs-number\">10</span>], embeddings[<span class=\"\
+          hljs-number\">0</span>].<span class=\"hljs-built_in\">sum</span>())\n</code></pre>\n\
+          <p>But I ran into this issue:</p>\n<pre><code>You are using a model of type\
+          \ m2_bert to instantiate a model of type bert. This is not supported for\
+          \ all configurations of models and can yield errors.\nTraceback (most recent\
+          \ call last):\n  File \"c:\\code\\m2-bert-80M-8k-retrieval\\demo.py\", line\
+          \ 5, in &lt;module&gt;\n    model = AutoModelForSequenceClassification.from_pretrained(\n\
+          \            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File\
+          \ \"C:\\Users\\tom\\.conda\\envs\\sentence-transformers\\Lib\\site-packages\\\
+          transformers\\models\\auto\\auto_factory.py\", line 511, in from_pretrained\n\
+          \    cls.register(config.__class__, model_class, exist_ok=True)\n  File\
+          \ \"C:\\Users\\tom\\.conda\\envs\\sentence-transformers\\Lib\\site-packages\\\
+          transformers\\models\\auto\\auto_factory.py\", line 537, in register\n \
+          \   raise ValueError(\nValueError: The model class you are passing has a\
+          \ `config_class` attribute that is not consistent with the config class\
+          \ you passed (model has &lt;class 'transformers.models.bert.configuration_bert.BertConfig'&gt;\
+          \ and you passed &lt;class 'transformers_modules.togethercomputer.m2-bert-80M-8k-retrieval.66ea5d6b12ab7e3d332bba708d76f83ce2909b2e.configuration_bert.BertConfig'&gt;.\
+          \ Fix one of those so they match!\n</code></pre>\n<p>In short, the classes\
+          \ that I'm trying to initialize (e.g. your <code>BertForTextEncoding</code>)\
+          \ are configured to work with <code>transformers</code> its <code>BertConfig</code>,\
+          \ rather than your own custom <code>BertConfig</code>. This PR resolves\
+          \ this problem, by overriding the <code>config_class</code> that is adopted\
+          \ from the <code>BertPreTrainedModel</code> superclass.</p>\n<h2 id=\"after-this-pr\"\
+          >After this PR</h2>\n<p>The above script now returns:</p>\n<pre><code>You\
+          \ are using a model of type m2_bert to instantiate a model of type bert.\
+          \ This is not supported for all configurations of models and can yield errors.\n\
+          -- Bidirectional: True\n-- Using Long Conv Residual: True\n-- Hyena w: 10\n\
+          -- Hyena w mod: 1\n-- Hyena filter order: 128\n-- Hyena filter dropout:\
+          \ 0.2\n-- Hyena filter wd: 0.1\n-- Hyena filter emb dim: 5\n-- Hyena filter\
+          \ lr: 0.001\n-- Hyena filter lr pos emb: 1e-05\ntensor([ 0.0399,  0.2460,\
+          \  0.4248,  0.1803, -0.0941, -0.1501,  0.0705,  0.0478,\n         0.0119,\
+          \ -0.0807], grad_fn=&lt;SliceBackward0&gt;) tensor(-1.7552, grad_fn=&lt;SumBackward0&gt;)\n\
+          </code></pre>\n<p>\U0001F389</p>\n<ul>\n<li>Tom Aarsen</li>\n</ul>\n"
+        raw: "Hello!\n\n## Pull Request overview\n* Allow loading via `AutoModelForSequenceClassification`\n\
+          \n## Intro\nThis model is looking awesome! Looking forward to learning more\
+          \ about LoCo as well. I'd be more than happy to help out to make sure that\
+          \ these models load well for your users.\nI also sent a message in Slack,\
+          \ but I'm not sure if you all are in there, so I'll repeat it here too:\n\
+          \nAs a quick introduction, I'm Tom & I am in charge of Sentence Transformers\
+          \ nowadays. I encountered a few slight issues in your model configurations,\
+          \ and I took some time to address them on [togethercomputer/m2-bert-80M-8k-retrieval](https://huggingface.co/togethercomputer/m2-bert-80M-8k-retrieval):\n\
+          1. Allow loading via AutoModelForSequenceClassification (#1): There was\
+          \ a bug preventing your README snippet from working.\n2. Allow loading via\
+          \ AutoModel (#2): The configuration to load with AutoModel was missing.\n\
+          3. Allow loading via AutoTokenizer (#3): The configuration to defer the\
+          \ AutoTokenizer to `bert-base-cased` did not work - the auto_map can't be\
+          \ used like that sadly. This PR allows loading the tokenizer for this model\
+          \ directly, without having to override model_max_length.\n\nFeel free to\
+          \ check these out & distribute the fixes across your models if you wish.\
+          \ Feel free to ask us if you need any assistance as well (we can also add\
+          \ you to a Slack channel for contact with us, if you're not in one already).\n\
+          \nAdditionally, I would certainly recommend including the MTEB results for\
+          \ these models in the model README metadata - it could be great for additional\
+          \ visibility.\nLastly, I'm looking into 1st party support for Sentence Transformers,\
+          \ allowing your models to be loaded directly with ST as well! It might allow\
+          \ your models to reach an even larger audience.\n\n## Details\nI wanted\
+          \ to experiment with this model using:\n```python\nfrom transformers import\
+          \ AutoTokenizer, AutoModelForSequenceClassification\n\nmax_seq_length =\
+          \ 8192\ntesting_string = \"Every morning, I make a cup of coffee to start\
+          \ my day.\"\nmodel = AutoModelForSequenceClassification.from_pretrained(\n\
+          \    \"togethercomputer/m2-bert-80M-8k-retrieval\",\n    trust_remote_code=True\n\
+          )\n\ntokenizer = AutoTokenizer.from_pretrained(\n    \"bert-base-uncased\"\
+          ,\n    model_max_length=max_seq_length\n)\ninput_ids = tokenizer(\n    [testing_string],\n\
+          \    return_tensors=\"pt\",\n    padding=\"max_length\",\n    return_token_type_ids=False,\n\
+          \    truncation=True,\n    max_length=max_seq_length\n)\n\noutputs = model(**input_ids)\n\
+          embeddings = outputs['sentence_embedding']\nprint(embeddings[0,:10], embeddings[0].sum())\n\
+          ```\nBut I ran into this issue:\n```\nYou are using a model of type m2_bert\
+          \ to instantiate a model of type bert. This is not supported for all configurations\
+          \ of models and can yield errors.\nTraceback (most recent call last):\n\
+          \  File \"c:\\code\\m2-bert-80M-8k-retrieval\\demo.py\", line 5, in <module>\n\
+          \    model = AutoModelForSequenceClassification.from_pretrained(\n     \
+          \       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\\
+          Users\\tom\\.conda\\envs\\sentence-transformers\\Lib\\site-packages\\transformers\\\
+          models\\auto\\auto_factory.py\", line 511, in from_pretrained\n    cls.register(config.__class__,\
+          \ model_class, exist_ok=True)\n  File \"C:\\Users\\tom\\.conda\\envs\\sentence-transformers\\\
+          Lib\\site-packages\\transformers\\models\\auto\\auto_factory.py\", line\
+          \ 537, in register\n    raise ValueError(\nValueError: The model class you\
+          \ are passing has a `config_class` attribute that is not consistent with\
+          \ the config class you passed (model has <class 'transformers.models.bert.configuration_bert.BertConfig'>\
+          \ and you passed <class 'transformers_modules.togethercomputer.m2-bert-80M-8k-retrieval.66ea5d6b12ab7e3d332bba708d76f83ce2909b2e.configuration_bert.BertConfig'>.\
+          \ Fix one of those so they match!\n```\n\nIn short, the classes that I'm\
+          \ trying to initialize (e.g. your `BertForTextEncoding`) are configured\
+          \ to work with `transformers` its `BertConfig`, rather than your own custom\
+          \ `BertConfig`. This PR resolves this problem, by overriding the `config_class`\
+          \ that is adopted from the `BertPreTrainedModel` superclass.\n\n## After\
+          \ this PR\nThe above script now returns:\n```\nYou are using a model of\
+          \ type m2_bert to instantiate a model of type bert. This is not supported\
+          \ for all configurations of models and can yield errors.\n-- Bidirectional:\
+          \ True\n-- Using Long Conv Residual: True\n-- Hyena w: 10\n-- Hyena w mod:\
+          \ 1\n-- Hyena filter order: 128\n-- Hyena filter dropout: 0.2\n-- Hyena\
+          \ filter wd: 0.1\n-- Hyena filter emb dim: 5\n-- Hyena filter lr: 0.001\n\
+          -- Hyena filter lr pos emb: 1e-05\ntensor([ 0.0399,  0.2460,  0.4248,  0.1803,\
+          \ -0.0941, -0.1501,  0.0705,  0.0478,\n         0.0119, -0.0807], grad_fn=<SliceBackward0>)\
+          \ tensor(-1.7552, grad_fn=<SumBackward0>)\n```\n\U0001F389\n\n- Tom Aarsen"
+        updatedAt: '2024-01-11T20:35:03.445Z'
+      numEdits: 2
+      reactions: []
+    id: 65a043166e2b627610efed49
+    type: comment
+  author: tomaarsen
+  content: "Hello!\n\n## Pull Request overview\n* Allow loading via `AutoModelForSequenceClassification`\n\
+    \n## Intro\nThis model is looking awesome! Looking forward to learning more about\
+    \ LoCo as well. I'd be more than happy to help out to make sure that these models\
+    \ load well for your users.\nI also sent a message in Slack, but I'm not sure\
+    \ if you all are in there, so I'll repeat it here too:\n\nAs a quick introduction,\
+    \ I'm Tom & I am in charge of Sentence Transformers nowadays. I encountered a\
+    \ few slight issues in your model configurations, and I took some time to address\
+    \ them on [togethercomputer/m2-bert-80M-8k-retrieval](https://huggingface.co/togethercomputer/m2-bert-80M-8k-retrieval):\n\
+    1. Allow loading via AutoModelForSequenceClassification (#1): There was a bug\
+    \ preventing your README snippet from working.\n2. Allow loading via AutoModel\
+    \ (#2): The configuration to load with AutoModel was missing.\n3. Allow loading\
+    \ via AutoTokenizer (#3): The configuration to defer the AutoTokenizer to `bert-base-cased`\
+    \ did not work - the auto_map can't be used like that sadly. This PR allows loading\
+    \ the tokenizer for this model directly, without having to override model_max_length.\n\
+    \nFeel free to check these out & distribute the fixes across your models if you\
+    \ wish. Feel free to ask us if you need any assistance as well (we can also add\
+    \ you to a Slack channel for contact with us, if you're not in one already).\n\
+    \nAdditionally, I would certainly recommend including the MTEB results for these\
+    \ models in the model README metadata - it could be great for additional visibility.\n\
+    Lastly, I'm looking into 1st party support for Sentence Transformers, allowing\
+    \ your models to be loaded directly with ST as well! It might allow your models\
+    \ to reach an even larger audience.\n\n## Details\nI wanted to experiment with\
+    \ this model using:\n```python\nfrom transformers import AutoTokenizer, AutoModelForSequenceClassification\n\
+    \nmax_seq_length = 8192\ntesting_string = \"Every morning, I make a cup of coffee\
+    \ to start my day.\"\nmodel = AutoModelForSequenceClassification.from_pretrained(\n\
+    \    \"togethercomputer/m2-bert-80M-8k-retrieval\",\n    trust_remote_code=True\n\
+    )\n\ntokenizer = AutoTokenizer.from_pretrained(\n    \"bert-base-uncased\",\n\
+    \    model_max_length=max_seq_length\n)\ninput_ids = tokenizer(\n    [testing_string],\n\
+    \    return_tensors=\"pt\",\n    padding=\"max_length\",\n    return_token_type_ids=False,\n\
+    \    truncation=True,\n    max_length=max_seq_length\n)\n\noutputs = model(**input_ids)\n\
+    embeddings = outputs['sentence_embedding']\nprint(embeddings[0,:10], embeddings[0].sum())\n\
+    ```\nBut I ran into this issue:\n```\nYou are using a model of type m2_bert to\
+    \ instantiate a model of type bert. This is not supported for all configurations\
+    \ of models and can yield errors.\nTraceback (most recent call last):\n  File\
+    \ \"c:\\code\\m2-bert-80M-8k-retrieval\\demo.py\", line 5, in <module>\n    model\
+    \ = AutoModelForSequenceClassification.from_pretrained(\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
+    \  File \"C:\\Users\\tom\\.conda\\envs\\sentence-transformers\\Lib\\site-packages\\\
+    transformers\\models\\auto\\auto_factory.py\", line 511, in from_pretrained\n\
+    \    cls.register(config.__class__, model_class, exist_ok=True)\n  File \"C:\\\
+    Users\\tom\\.conda\\envs\\sentence-transformers\\Lib\\site-packages\\transformers\\\
+    models\\auto\\auto_factory.py\", line 537, in register\n    raise ValueError(\n\
+    ValueError: The model class you are passing has a `config_class` attribute that\
+    \ is not consistent with the config class you passed (model has <class 'transformers.models.bert.configuration_bert.BertConfig'>\
+    \ and you passed <class 'transformers_modules.togethercomputer.m2-bert-80M-8k-retrieval.66ea5d6b12ab7e3d332bba708d76f83ce2909b2e.configuration_bert.BertConfig'>.\
+    \ Fix one of those so they match!\n```\n\nIn short, the classes that I'm trying\
+    \ to initialize (e.g. your `BertForTextEncoding`) are configured to work with\
+    \ `transformers` its `BertConfig`, rather than your own custom `BertConfig`. This\
+    \ PR resolves this problem, by overriding the `config_class` that is adopted from\
+    \ the `BertPreTrainedModel` superclass.\n\n## After this PR\nThe above script\
+    \ now returns:\n```\nYou are using a model of type m2_bert to instantiate a model\
+    \ of type bert. This is not supported for all configurations of models and can\
+    \ yield errors.\n-- Bidirectional: True\n-- Using Long Conv Residual: True\n--\
+    \ Hyena w: 10\n-- Hyena w mod: 1\n-- Hyena filter order: 128\n-- Hyena filter\
+    \ dropout: 0.2\n-- Hyena filter wd: 0.1\n-- Hyena filter emb dim: 5\n-- Hyena\
+    \ filter lr: 0.001\n-- Hyena filter lr pos emb: 1e-05\ntensor([ 0.0399,  0.2460,\
+    \  0.4248,  0.1803, -0.0941, -0.1501,  0.0705,  0.0478,\n         0.0119, -0.0807],\
+    \ grad_fn=<SliceBackward0>) tensor(-1.7552, grad_fn=<SumBackward0>)\n```\n\U0001F389\
+    \n\n- Tom Aarsen"
+  created_at: 2024-01-11 19:35:50+00:00
+  edited: true
+  hidden: false
+  id: 65a043166e2b627610efed49
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    createdAt: '2024-01-11T19:41:49.000Z'
+    data:
+      oid: 0d894e3effd5825106eb5eaedee17ca23077c4a9
+      parents:
+      - 66ea5d6b12ab7e3d332bba708d76f83ce2909b2e
+      subject: Allow loading via AutoModelForSequenceClassification
+    id: 65a0447d0000000000000000
+    type: commit
+  author: deleted
+  created_at: 2024-01-11 19:41:49+00:00
+  id: 65a0447d0000000000000000
+  oid: 0d894e3effd5825106eb5eaedee17ca23077c4a9
+  summary: Allow loading via AutoModelForSequenceClassification
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png?w=200&h=200&f=face
+      fullname: Tom Aarsen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tomaarsen
+      type: user
+    createdAt: '2024-01-11T19:48:01.000Z'
+    data:
+      status: open
+    id: 65a045f12b974e6cf1c2cb21
+    type: status-change
+  author: tomaarsen
+  created_at: 2024-01-11 19:48:01+00:00
+  id: 65a045f12b974e6cf1c2cb21
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png?w=200&h=200&f=face
+      fullname: Tom Aarsen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tomaarsen
+      type: user
+    createdAt: '2024-01-11T20:06:18.000Z'
+    data:
+      status: closed
+    id: 65a04a3a606766bc388d6b58
+    type: status-change
+  author: tomaarsen
+  created_at: 2024-01-11 20:06:18+00:00
+  id: 65a04a3a606766bc388d6b58
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6317233cc92fd6fee317e030/cJHSvvimr1kqgQfHOjO5n.png?w=200&h=200&f=face
+      fullname: Tom Aarsen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tomaarsen
+      type: user
+    createdAt: '2024-01-11T20:06:24.000Z'
+    data:
+      status: open
+    id: 65a04a405dce70a302f50d15
+    type: status-change
+  author: tomaarsen
+  created_at: 2024-01-11 20:06:24+00:00
+  id: 65a04a405dce70a302f50d15
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/32157bf89dbe9c7385b4816ea15ec240.svg
+      fullname: Dan Fu
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: danfu09
+      type: user
+    createdAt: '2024-01-12T21:33:33.000Z'
+    data:
+      edited: false
+      editors:
+      - danfu09
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.37232768535614014
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/32157bf89dbe9c7385b4816ea15ec240.svg
+          fullname: Dan Fu
+          isHf: false
+          isPro: false
+          name: danfu09
+          type: user
+        html: '<p>Thank you!!</p>
+
+          '
+        raw: Thank you!!
+        updatedAt: '2024-01-12T21:33:33.086Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65a1b02d5772dbcae3451bef
+    id: 65a1b02d5772dbcae3451beb
+    type: comment
+  author: danfu09
+  content: Thank you!!
+  created_at: 2024-01-12 21:33:33+00:00
+  edited: false
+  hidden: false
+  id: 65a1b02d5772dbcae3451beb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/32157bf89dbe9c7385b4816ea15ec240.svg
+      fullname: Dan Fu
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: danfu09
+      type: user
+    createdAt: '2024-01-12T21:33:33.000Z'
+    data:
+      status: merged
+    id: 65a1b02d5772dbcae3451bef
+    type: status-change
+  author: danfu09
+  created_at: 2024-01-12 21:33:33+00:00
+  id: 65a1b02d5772dbcae3451bef
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: cb4b136e383302a346357891dabed8f65f07e944
+num: 1
+repo_id: togethercomputer/m2-bert-80M-8k-retrieval
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: Allow loading via AutoModelForSequenceClassification

@@ -1,0 +1,365 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mayonaisu
+conflicting_files: null
+created_at: 2024-01-01 06:35:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c29b9eb7a278442167441b8521ee344f.svg
+      fullname: MAINAK MONDAL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mayonaisu
+      type: user
+    createdAt: '2024-01-01T06:35:50.000Z'
+    data:
+      edited: true
+      editors:
+      - mayonaisu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6291602253913879
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c29b9eb7a278442167441b8521ee344f.svg
+          fullname: MAINAK MONDAL
+          isHf: false
+          isPro: false
+          name: mayonaisu
+          type: user
+        html: "<pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ PIL\n<span class=\"hljs-keyword\">import</span> requests\n<span class=\"\
+          hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\">from</span>\
+          \ io <span class=\"hljs-keyword\">import</span> BytesIO\n\n<span class=\"\
+          hljs-keyword\">from</span> diffusers <span class=\"hljs-keyword\">import</span>\
+          \ StableDiffusionInpaintPipeline\n\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">download_image</span>(<span class=\"\
+          hljs-params\">url</span>):\n    response = requests.get(url)\n    <span\
+          \ class=\"hljs-keyword\">return</span> PIL.Image.<span class=\"hljs-built_in\"\
+          >open</span>(BytesIO(response.content)).convert(<span class=\"hljs-string\"\
+          >\"RGB\"</span>)\n\n\nimg_url = <span class=\"hljs-string\">\"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo.png\"\
+          </span>\nmask_url = <span class=\"hljs-string\">\"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo_mask.png\"\
+          </span>\n\ninit_image = download_image(img_url).resize((<span class=\"hljs-number\"\
+          >512</span>, <span class=\"hljs-number\">512</span>))\nmask_image = download_image(mask_url).resize((<span\
+          \ class=\"hljs-number\">512</span>, <span class=\"hljs-number\">512</span>))\n\
+          \npipe = StableDiffusionInpaintPipeline.from_pretrained(\n    <span class=\"\
+          hljs-string\">\"runwayml/stable-diffusion-inpainting\"</span>, torch_dtype=torch.float16\n\
+          )\npipe.to(<span class=\"hljs-string\">'cuda'</span>)\nprompt = <span class=\"\
+          hljs-string\">\"Face of a yellow cat, high resolution, sitting on a park\
+          \ bench\"</span>\nimage = pipe(prompt=prompt, image=init_image, mask_image=mask_image,\
+          \ padding_mask_crop=<span class=\"hljs-number\">4</span>).images[<span class=\"\
+          hljs-number\">0</span>]\n</code></pre>\n<p>When passing the <a href=\"https://huggingface.co/docs/diffusers/api/pipelines/stable_diffusion/inpaint#diffusers.StableDiffusionInpaintPipeline.__call__.padding_mask_crop\"\
+          >padding_mask_crop</a> and setting it to an <em>int</em> value, I am getting\
+          \ the following error</p>\n<blockquote>\n<p>ValueError: The UNet should\
+          \ have 4 input channels for inpainting mask crop, but has 9 input channels.</p>\n\
+          </blockquote>\n<p>The docs for <a href=\"https://huggingface.co/runwayml/stable-diffusion-inpainting\"\
+          >stable-diffusion-inpainting</a> mentions that</p>\n<blockquote>\n<blockquote>\n\
+          </blockquote>\n<p>For inpainting, the UNet has 5 additional input channels\
+          \ (4 for the encoded masked-image and 1 for the mask itself) whose weights\
+          \ were zero-initialized after restoring the non-inpainting checkpoint. </p>\n\
+          <blockquote>\n</blockquote>\n</blockquote>\n<h3 id=\"so-can-this-parameter-be-even-used-in-this-pipeline-if-so-how-to-fix-this-\"\
+          >So, can this parameter be even used in this pipeline? If so, how to fix\
+          \ this ?</h3>\n<h3 id=\"and-what-are-some-appropriate-values-for-this-parameter\"\
+          >And what are some appropriate values for this parameter?</h3>\n"
+        raw: "```python\nimport PIL\nimport requests\nimport torch\nfrom io import\
+          \ BytesIO\n\nfrom diffusers import StableDiffusionInpaintPipeline\n\n\n\
+          def download_image(url):\n    response = requests.get(url)\n    return PIL.Image.open(BytesIO(response.content)).convert(\"\
+          RGB\")\n\n\nimg_url = \"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo.png\"\
+          \nmask_url = \"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo_mask.png\"\
+          \n\ninit_image = download_image(img_url).resize((512, 512))\nmask_image\
+          \ = download_image(mask_url).resize((512, 512))\n\npipe = StableDiffusionInpaintPipeline.from_pretrained(\n\
+          \    \"runwayml/stable-diffusion-inpainting\", torch_dtype=torch.float16\n\
+          )\npipe.to('cuda')\nprompt = \"Face of a yellow cat, high resolution, sitting\
+          \ on a park bench\"\nimage = pipe(prompt=prompt, image=init_image, mask_image=mask_image,\
+          \ padding_mask_crop=4).images[0]\n```\n\nWhen passing the [padding_mask_crop](https://huggingface.co/docs/diffusers/api/pipelines/stable_diffusion/inpaint#diffusers.StableDiffusionInpaintPipeline.__call__.padding_mask_crop)\
+          \ and setting it to an *int* value, I am getting the following error\n\n\
+          > ValueError: The UNet should have 4 input channels for inpainting mask\
+          \ crop, but has 9 input channels.\n\n\nThe docs for [stable-diffusion-inpainting](https://huggingface.co/runwayml/stable-diffusion-inpainting)\
+          \ mentions that\n>>\nFor inpainting, the UNet has 5 additional input channels\
+          \ (4 for the encoded masked-image and 1 for the mask itself) whose weights\
+          \ were zero-initialized after restoring the non-inpainting checkpoint. \n\
+          >>\n### So, can this parameter be even used in this pipeline? If so, how\
+          \ to fix this ?\n### And what are some appropriate values for this parameter?"
+        updatedAt: '2024-01-03T04:10:38.732Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - jharven
+    id: 65925d4652dc1046ca444af0
+    type: comment
+  author: mayonaisu
+  content: "```python\nimport PIL\nimport requests\nimport torch\nfrom io import BytesIO\n\
+    \nfrom diffusers import StableDiffusionInpaintPipeline\n\n\ndef download_image(url):\n\
+    \    response = requests.get(url)\n    return PIL.Image.open(BytesIO(response.content)).convert(\"\
+    RGB\")\n\n\nimg_url = \"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo.png\"\
+    \nmask_url = \"https://raw.githubusercontent.com/CompVis/latent-diffusion/main/data/inpainting_examples/overture-creations-5sI6fQgYIuo_mask.png\"\
+    \n\ninit_image = download_image(img_url).resize((512, 512))\nmask_image = download_image(mask_url).resize((512,\
+    \ 512))\n\npipe = StableDiffusionInpaintPipeline.from_pretrained(\n    \"runwayml/stable-diffusion-inpainting\"\
+    , torch_dtype=torch.float16\n)\npipe.to('cuda')\nprompt = \"Face of a yellow cat,\
+    \ high resolution, sitting on a park bench\"\nimage = pipe(prompt=prompt, image=init_image,\
+    \ mask_image=mask_image, padding_mask_crop=4).images[0]\n```\n\nWhen passing the\
+    \ [padding_mask_crop](https://huggingface.co/docs/diffusers/api/pipelines/stable_diffusion/inpaint#diffusers.StableDiffusionInpaintPipeline.__call__.padding_mask_crop)\
+    \ and setting it to an *int* value, I am getting the following error\n\n> ValueError:\
+    \ The UNet should have 4 input channels for inpainting mask crop, but has 9 input\
+    \ channels.\n\n\nThe docs for [stable-diffusion-inpainting](https://huggingface.co/runwayml/stable-diffusion-inpainting)\
+    \ mentions that\n>>\nFor inpainting, the UNet has 5 additional input channels\
+    \ (4 for the encoded masked-image and 1 for the mask itself) whose weights were\
+    \ zero-initialized after restoring the non-inpainting checkpoint. \n>>\n### So,\
+    \ can this parameter be even used in this pipeline? If so, how to fix this ?\n\
+    ### And what are some appropriate values for this parameter?"
+  created_at: 2024-01-01 06:35:50+00:00
+  edited: true
+  hidden: false
+  id: 65925d4652dc1046ca444af0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/53045b4cd6918a383f22cea7c7120261.svg
+      fullname: Blyss Sarania
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Blyss
+      type: user
+    createdAt: '2024-01-12T22:15:04.000Z'
+    data:
+      edited: true
+      editors:
+      - Blyss
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9133595824241638
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/53045b4cd6918a383f22cea7c7120261.svg
+          fullname: Blyss Sarania
+          isHf: false
+          isPro: false
+          name: Blyss
+          type: user
+        html: '<p>It wants you to use a non-inpainting checkpoint (e.g "runwayml/stable-diffusion-v1-5"
+          which has 4 UNet channels, vs 9 for an inpainting specific checkpoint).
+          Appropriate values might be 32, 64, 96, 128 in pixels. It''s meant to do
+          the same thing as "Inpaint only masked" in AUTOMATIC1111 SDWUI. So basically
+          it crops your input image and mask based on the minimum size rectangle that
+          can contain your mask plus the padding_mask_crop, upscales that to the original
+          image size, does the inpainting(which in this case is more like img2img,
+          I think, hence wanting a normal checkpoint? I''m unsure on that though)
+          at full res, and then at the end scales the result back down and merges
+          it into the original image. This allows you to touch up faces/hands/details
+          at higher resolution which leads to better results. See this PR for more
+          info(as well for the associated mask_blur feature): <a rel="nofollow" href="https://github.com/huggingface/diffusers/pull/6072">https://github.com/huggingface/diffusers/pull/6072</a>
+          - Hope this helps!</p>
+
+          '
+        raw: 'It wants you to use a non-inpainting checkpoint (e.g "runwayml/stable-diffusion-v1-5"
+          which has 4 UNet channels, vs 9 for an inpainting specific checkpoint).
+          Appropriate values might be 32, 64, 96, 128 in pixels. It''s meant to do
+          the same thing as "Inpaint only masked" in AUTOMATIC1111 SDWUI. So basically
+          it crops your input image and mask based on the minimum size rectangle that
+          can contain your mask plus the padding_mask_crop, upscales that to the original
+          image size, does the inpainting(which in this case is more like img2img,
+          I think, hence wanting a normal checkpoint? I''m unsure on that though)
+          at full res, and then at the end scales the result back down and merges
+          it into the original image. This allows you to touch up faces/hands/details
+          at higher resolution which leads to better results. See this PR for more
+          info(as well for the associated mask_blur feature): https://github.com/huggingface/diffusers/pull/6072
+          - Hope this helps!'
+        updatedAt: '2024-01-12T22:29:18.606Z'
+      numEdits: 6
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - mayonaisu
+    id: 65a1b9e87ec6af0f95e283ab
+    type: comment
+  author: Blyss
+  content: 'It wants you to use a non-inpainting checkpoint (e.g "runwayml/stable-diffusion-v1-5"
+    which has 4 UNet channels, vs 9 for an inpainting specific checkpoint). Appropriate
+    values might be 32, 64, 96, 128 in pixels. It''s meant to do the same thing as
+    "Inpaint only masked" in AUTOMATIC1111 SDWUI. So basically it crops your input
+    image and mask based on the minimum size rectangle that can contain your mask
+    plus the padding_mask_crop, upscales that to the original image size, does the
+    inpainting(which in this case is more like img2img, I think, hence wanting a normal
+    checkpoint? I''m unsure on that though) at full res, and then at the end scales
+    the result back down and merges it into the original image. This allows you to
+    touch up faces/hands/details at higher resolution which leads to better results.
+    See this PR for more info(as well for the associated mask_blur feature): https://github.com/huggingface/diffusers/pull/6072
+    - Hope this helps!'
+  created_at: 2024-01-12 22:15:04+00:00
+  edited: true
+  hidden: false
+  id: 65a1b9e87ec6af0f95e283ab
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c29b9eb7a278442167441b8521ee344f.svg
+      fullname: MAINAK MONDAL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mayonaisu
+      type: user
+    createdAt: '2024-01-13T16:23:03.000Z'
+    data:
+      edited: false
+      editors:
+      - mayonaisu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7967066764831543
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c29b9eb7a278442167441b8521ee344f.svg
+          fullname: MAINAK MONDAL
+          isHf: false
+          isPro: false
+          name: mayonaisu
+          type: user
+        html: '<p>without padding_mask_crop (left: inpainted, right:original)<br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/nsOBmd5IscX0eeCzlzqyR.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/nsOBmd5IscX0eeCzlzqyR.png"></a><br>with
+          padding_mask_crop=128 (left: inpainted, right:original)<br><a rel="nofollow"
+          href="https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/_gyqz8Co2UfkVWiMW3Cvr.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/_gyqz8Co2UfkVWiMW3Cvr.png"></a><br>There
+          is improvement in face and the overall image quality is retained, but there
+          is a faded tinge of the mask appearing on the inpainted face. Not sure why.
+          Also is it a better idea to resize the original image to (512, 512) and
+          mask, since this <a rel="nofollow" href="https://civitai.com/models/66/anything-v3">model</a>
+          generates that resolution by default</p>
+
+          '
+        raw: 'without padding_mask_crop (left: inpainted, right:original)
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/nsOBmd5IscX0eeCzlzqyR.png)
+
+          with padding_mask_crop=128 (left: inpainted, right:original)
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/_gyqz8Co2UfkVWiMW3Cvr.png)
+
+          There is improvement in face and the overall image quality is retained,
+          but there is a faded tinge of the mask appearing on the inpainted face.
+          Not sure why. Also is it a better idea to resize the original image to (512,
+          512) and mask, since this [model](https://civitai.com/models/66/anything-v3)
+          generates that resolution by default'
+        updatedAt: '2024-01-13T16:23:03.961Z'
+      numEdits: 0
+      reactions: []
+    id: 65a2b8e790e65dc39aaeada6
+    type: comment
+  author: mayonaisu
+  content: 'without padding_mask_crop (left: inpainted, right:original)
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/nsOBmd5IscX0eeCzlzqyR.png)
+
+    with padding_mask_crop=128 (left: inpainted, right:original)
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/658fd22f35c41262d6654ccd/_gyqz8Co2UfkVWiMW3Cvr.png)
+
+    There is improvement in face and the overall image quality is retained, but there
+    is a faded tinge of the mask appearing on the inpainted face. Not sure why. Also
+    is it a better idea to resize the original image to (512, 512) and mask, since
+    this [model](https://civitai.com/models/66/anything-v3) generates that resolution
+    by default'
+  created_at: 2024-01-13 16:23:03+00:00
+  edited: false
+  hidden: false
+  id: 65a2b8e790e65dc39aaeada6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/53045b4cd6918a383f22cea7c7120261.svg
+      fullname: Blyss Sarania
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Blyss
+      type: user
+    createdAt: '2024-01-13T18:59:03.000Z'
+    data:
+      edited: false
+      editors:
+      - Blyss
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9510899782180786
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/53045b4cd6918a383f22cea7c7120261.svg
+          fullname: Blyss Sarania
+          isHf: false
+          isPro: false
+          name: Blyss
+          type: user
+        html: '<p>The tinge of mask is because this method of inpainting fully preserves
+          the unmasked area whereas normal inpainting will slightly alter those areas
+          around the mask to blend better. The "mask_blur" can help overcome this,
+          try setting it to 25.</p>
+
+          <p>As far as resizing, most models can handle some amount of deviation from
+          their trained resolution before they have issues. Unless you''re seeing
+          issues like duplication, torso stacking or else hitting hardware limitations,
+          you shouldn''t need to worry about it.</p>
+
+          '
+        raw: 'The tinge of mask is because this method of inpainting fully preserves
+          the unmasked area whereas normal inpainting will slightly alter those areas
+          around the mask to blend better. The "mask_blur" can help overcome this,
+          try setting it to 25.
+
+
+          As far as resizing, most models can handle some amount of deviation from
+          their trained resolution before they have issues. Unless you''re seeing
+          issues like duplication, torso stacking or else hitting hardware limitations,
+          you shouldn''t need to worry about it.'
+        updatedAt: '2024-01-13T18:59:03.637Z'
+      numEdits: 0
+      reactions: []
+    id: 65a2dd77db5c00652e7d8453
+    type: comment
+  author: Blyss
+  content: 'The tinge of mask is because this method of inpainting fully preserves
+    the unmasked area whereas normal inpainting will slightly alter those areas around
+    the mask to blend better. The "mask_blur" can help overcome this, try setting
+    it to 25.
+
+
+    As far as resizing, most models can handle some amount of deviation from their
+    trained resolution before they have issues. Unless you''re seeing issues like
+    duplication, torso stacking or else hitting hardware limitations, you shouldn''t
+    need to worry about it.'
+  created_at: 2024-01-13 18:59:03+00:00
+  edited: false
+  hidden: false
+  id: 65a2dd77db5c00652e7d8453
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 43
+repo_id: runwayml/stable-diffusion-inpainting
+repo_type: model
+status: open
+target_branch: null
+title: Error when passing the "padding_mask_crop" parameter in StableDiffusionInpaintPipeline

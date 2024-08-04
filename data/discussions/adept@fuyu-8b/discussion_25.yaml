@@ -1,0 +1,296 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Colderthanice
+conflicting_files: null
+created_at: 2023-10-23 11:25:04+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d479aad0ffa2cee9619972d5ecb0f4a1.svg
+      fullname: Green
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Colderthanice
+      type: user
+    createdAt: '2023-10-23T12:25:04.000Z'
+    data:
+      edited: false
+      editors:
+      - Colderthanice
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6892176270484924
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d479aad0ffa2cee9619972d5ecb0f4a1.svg
+          fullname: Green
+          isHf: false
+          isPro: false
+          name: Colderthanice
+          type: user
+        html: "<p>As the repository didn't include an installation guide or executable\
+          \ script, I have developed a demo.py that can work in a cuda environment.\
+          \ Just place it in the git clone folder and run it.</p>\n<p>Note:</p>\n\
+          <ol>\n<li><p>It needs transformers==4.35.0.dev0, which is not yet available\
+          \ with pip install as of today. To install 4.35:<br> git clone <a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/transformers.git\">https://github.com/huggingface/transformers.git</a><br>\
+          \ cd transformers<br> pip install .</p>\n</li>\n<li><p>It will download\
+          \ the fuyu-8b weights even when you already have them in the folder. The\
+          \ downloaded weights are stored at:<br>~/.cache/huggingface/hub/models--adept--fuyu-8b</p>\n\
+          </li>\n<li><p>Solved OOM with float16 or bfloat16 option.</p>\n</li>\n<li><p>Solved\
+          \ attention_mask warning.</p>\n</li>\n<li><p>Choices of image files, choices\
+          \ from a question list, and multi-round questions.</p>\n</li>\n</ol>\n<p>================================================<br>#Script\
+          \ prepared by novice Green Guo @Beijing with the help of GPT-4.</p>\n<p>import\
+          \ os<br>from transformers import FuyuProcessor, FuyuForCausalLM<br>from\
+          \ PIL import Image<br>import torch</p>\n<p>def list_files_in_directory(path,\
+          \ extensions=[\".png\", \".jpeg\", \".jpg\", \".JPG\", \".PNG\", \".JPEG\"\
+          ]):<br>    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path,\
+          \ f)) and any(f.endswith(ext) for ext in extensions)]<br>    return files</p>\n\
+          <p>def main():<br>    # load model and processor<br>    model_id = \"adept/fuyu-8b\"\
+          <br>    processor = FuyuProcessor.from_pretrained(model_id)<br>    model\
+          \ = FuyuForCausalLM.from_pretrained(model_id, device_map=\"cuda:0\", torch_dtype=torch.float16)\
+          \ # To solve OOM, float16 enables operation with only 24GB of VRAM. Alternatively\
+          \ float16 can be replaced with bfloat16 with differences in loading time\
+          \ and inference time.</p>\n<pre><code># Load last image path or ask user\n\
+          try:\n    with open(\"last_path.txt\", \"r\") as f:\n        last_path =\
+          \ f.read().strip()\n    user_input = input(f\"Do you want to use the last\
+          \ path '{last_path}'? (yes/no, default yes): \")\n    if not user_input\
+          \ or user_input.lower() != 'no':\n        last_path = last_path\n    else:\n\
+          \        raise ValueError(\"User chose to input a new path.\")\nexcept:\n\
+          \    last_path = input(\"Please provide the image directory path: \")\n\
+          \    with open(\"last_path.txt\", \"w\") as f:\n        f.write(last_path)\n\
+          \nwhile True:\n    # List the first 10 images in the directory\n    images\
+          \ = list_files_in_directory(last_path)[:10]\n    for idx, image in enumerate(images,\
+          \ start=1):\n        print(f\"{idx}. {image}\")\n\n    # Allow the user\
+          \ to select an image\n    image_choice = input(f\"Choose an image (1-{len(images)})\
+          \ or enter its name: \")\n    try:\n        idx = int(image_choice)\n  \
+          \      image_path = os.path.join(last_path, images[idx-1])\n    except ValueError:\n\
+          \        image_path = os.path.join(last_path, image_choice)\n\n    try:\n\
+          \        image = Image.open(image_path)\n    except:\n        print(\"Cannot\
+          \ open the image. Please check the path and try again.\")\n        continue\n\
+          \n    questions = [\n        \"Generate a coco-style caption.\",\n     \
+          \   \"What color is the object?\",\n        \"Describe the scene.\",\n \
+          \       \"Describe the facial expression of the character.\",\n        \"\
+          Tell me about the story from the image.\",\n        \"Enter your own question\"\
+          \n    ]\n\n    # Asking the user to select a question from list, or select\
+          \ to input one\n    for idx, q in enumerate(questions, start=1):\n     \
+          \   print(f\"{idx}. {q}\")\n\n    q_choice = int(input(\"Choose a question\
+          \ or enter your own: \"))\n    if q_choice &lt;= 5:\n        text_prompt\
+          \ = questions[q_choice-1] + '\\n'\n    else:\n        text_prompt = input(\"\
+          Please enter your question: \") + '\\n'\n\n    while True: # To enable the\
+          \ user to ask further question about an image\n        inputs = processor(text=text_prompt,\
+          \ images=image, return_tensors=\"pt\")\n        for k, v in inputs.items():\n\
+          \            inputs[k] = v.to(\"cuda:0\")\n        # To eliminate attention_mask\
+          \ warning\n        inputs[\"attention_mask\"] = torch.ones(inputs[\"input_ids\"\
+          ].shape, device=\"cuda:0\")\n\n        generation_output = model.generate(**inputs,\
+          \ max_new_tokens=50, pad_token_id=model.config.eos_token_id)\n        generation_text\
+          \ = processor.batch_decode(generation_output[:, -50:], skip_special_tokens=True)\n\
+          \        print(\"Answer:\", generation_text[0])\n\n        text_prompt =\
+          \ input(\"Ask another question about the same image or type '/exit' to exit:\
+          \ \") + '\\n'\n        if text_prompt.strip() == '/exit':\n            break\n\
+          </code></pre>\n<p>if <strong>name</strong> == \"<strong>main</strong>\"\
+          :<br>    main()</p>\n"
+        raw: "As the repository didn't include an installation guide or executable\
+          \ script, I have developed a demo.py that can work in a cuda environment.\
+          \ Just place it in the git clone folder and run it.\r\n\r\nNote:\r\n1. It\
+          \ needs transformers==4.35.0.dev0, which is not yet available with pip install\
+          \ as of today. To install 4.35:\r\n    git clone https://github.com/huggingface/transformers.git\r\
+          \n    cd transformers\r\n    pip install .\r\n\r\n2. It will download the\
+          \ fuyu-8b weights even when you already have them in the folder. The downloaded\
+          \ weights are stored at:\r\n~/.cache/huggingface/hub/models--adept--fuyu-8b\r\
+          \n\r\n3. Solved OOM with float16 or bfloat16 option.\r\n\r\n4. Solved attention_mask\
+          \ warning.\r\n\r\n5. Choices of image files, choices from a question list,\
+          \ and multi-round questions.\r\n\r\n================================================\r\
+          \n#Script prepared by novice Green Guo @Beijing with the help of GPT-4.\r\
+          \n\r\nimport os\r\nfrom transformers import FuyuProcessor, FuyuForCausalLM\r\
+          \nfrom PIL import Image\r\nimport torch\r\n\r\ndef list_files_in_directory(path,\
+          \ extensions=[\".png\", \".jpeg\", \".jpg\", \".JPG\", \".PNG\", \".JPEG\"\
+          ]):\r\n    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path,\
+          \ f)) and any(f.endswith(ext) for ext in extensions)]\r\n    return files\r\
+          \n\r\ndef main():\r\n    # load model and processor\r\n    model_id = \"\
+          adept/fuyu-8b\"\r\n    processor = FuyuProcessor.from_pretrained(model_id)\r\
+          \n    model = FuyuForCausalLM.from_pretrained(model_id, device_map=\"cuda:0\"\
+          , torch_dtype=torch.float16) # To solve OOM, float16 enables operation with\
+          \ only 24GB of VRAM. Alternatively float16 can be replaced with bfloat16\
+          \ with differences in loading time and inference time.\r\n\r\n    # Load\
+          \ last image path or ask user\r\n    try:\r\n        with open(\"last_path.txt\"\
+          , \"r\") as f:\r\n            last_path = f.read().strip()\r\n        user_input\
+          \ = input(f\"Do you want to use the last path '{last_path}'? (yes/no, default\
+          \ yes): \")\r\n        if not user_input or user_input.lower() != 'no':\r\
+          \n            last_path = last_path\r\n        else:\r\n            raise\
+          \ ValueError(\"User chose to input a new path.\")\r\n    except:\r\n   \
+          \     last_path = input(\"Please provide the image directory path: \")\r\
+          \n        with open(\"last_path.txt\", \"w\") as f:\r\n            f.write(last_path)\r\
+          \n\r\n    while True:\r\n        # List the first 10 images in the directory\r\
+          \n        images = list_files_in_directory(last_path)[:10]\r\n        for\
+          \ idx, image in enumerate(images, start=1):\r\n            print(f\"{idx}.\
+          \ {image}\")\r\n\r\n        # Allow the user to select an image\r\n    \
+          \    image_choice = input(f\"Choose an image (1-{len(images)}) or enter\
+          \ its name: \")\r\n        try:\r\n            idx = int(image_choice)\r\
+          \n            image_path = os.path.join(last_path, images[idx-1])\r\n  \
+          \      except ValueError:\r\n            image_path = os.path.join(last_path,\
+          \ image_choice)\r\n\r\n        try:\r\n            image = Image.open(image_path)\r\
+          \n        except:\r\n            print(\"Cannot open the image. Please check\
+          \ the path and try again.\")\r\n            continue\r\n\r\n        questions\
+          \ = [\r\n            \"Generate a coco-style caption.\",\r\n           \
+          \ \"What color is the object?\",\r\n            \"Describe the scene.\"\
+          ,\r\n            \"Describe the facial expression of the character.\",\r\
+          \n            \"Tell me about the story from the image.\",\r\n         \
+          \   \"Enter your own question\"\r\n        ]\r\n\r\n        # Asking the\
+          \ user to select a question from list, or select to input one\r\n      \
+          \  for idx, q in enumerate(questions, start=1):\r\n            print(f\"\
+          {idx}. {q}\")\r\n\r\n        q_choice = int(input(\"Choose a question or\
+          \ enter your own: \"))\r\n        if q_choice <= 5:\r\n            text_prompt\
+          \ = questions[q_choice-1] + '\\n'\r\n        else:\r\n            text_prompt\
+          \ = input(\"Please enter your question: \") + '\\n'\r\n\r\n        while\
+          \ True: # To enable the user to ask further question about an image\r\n\
+          \            inputs = processor(text=text_prompt, images=image, return_tensors=\"\
+          pt\")\r\n            for k, v in inputs.items():\r\n                inputs[k]\
+          \ = v.to(\"cuda:0\")\r\n            # To eliminate attention_mask warning\r\
+          \n            inputs[\"attention_mask\"] = torch.ones(inputs[\"input_ids\"\
+          ].shape, device=\"cuda:0\")\r\n\r\n            generation_output = model.generate(**inputs,\
+          \ max_new_tokens=50, pad_token_id=model.config.eos_token_id)\r\n       \
+          \     generation_text = processor.batch_decode(generation_output[:, -50:],\
+          \ skip_special_tokens=True)\r\n            print(\"Answer:\", generation_text[0])\r\
+          \n\r\n            text_prompt = input(\"Ask another question about the same\
+          \ image or type '/exit' to exit: \") + '\\n'\r\n            if text_prompt.strip()\
+          \ == '/exit':\r\n                break\r\n\r\nif __name__ == \"__main__\"\
+          :\r\n    main()\r\n\r\n"
+        updatedAt: '2023-10-23T12:25:04.828Z'
+      numEdits: 0
+      reactions: []
+    id: 65366620a78e70d19cdccb8d
+    type: comment
+  author: Colderthanice
+  content: "As the repository didn't include an installation guide or executable script,\
+    \ I have developed a demo.py that can work in a cuda environment. Just place it\
+    \ in the git clone folder and run it.\r\n\r\nNote:\r\n1. It needs transformers==4.35.0.dev0,\
+    \ which is not yet available with pip install as of today. To install 4.35:\r\n\
+    \    git clone https://github.com/huggingface/transformers.git\r\n    cd transformers\r\
+    \n    pip install .\r\n\r\n2. It will download the fuyu-8b weights even when you\
+    \ already have them in the folder. The downloaded weights are stored at:\r\n~/.cache/huggingface/hub/models--adept--fuyu-8b\r\
+    \n\r\n3. Solved OOM with float16 or bfloat16 option.\r\n\r\n4. Solved attention_mask\
+    \ warning.\r\n\r\n5. Choices of image files, choices from a question list, and\
+    \ multi-round questions.\r\n\r\n================================================\r\
+    \n#Script prepared by novice Green Guo @Beijing with the help of GPT-4.\r\n\r\n\
+    import os\r\nfrom transformers import FuyuProcessor, FuyuForCausalLM\r\nfrom PIL\
+    \ import Image\r\nimport torch\r\n\r\ndef list_files_in_directory(path, extensions=[\"\
+    .png\", \".jpeg\", \".jpg\", \".JPG\", \".PNG\", \".JPEG\"]):\r\n    files = [f\
+    \ for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and any(f.endswith(ext)\
+    \ for ext in extensions)]\r\n    return files\r\n\r\ndef main():\r\n    # load\
+    \ model and processor\r\n    model_id = \"adept/fuyu-8b\"\r\n    processor = FuyuProcessor.from_pretrained(model_id)\r\
+    \n    model = FuyuForCausalLM.from_pretrained(model_id, device_map=\"cuda:0\"\
+    , torch_dtype=torch.float16) # To solve OOM, float16 enables operation with only\
+    \ 24GB of VRAM. Alternatively float16 can be replaced with bfloat16 with differences\
+    \ in loading time and inference time.\r\n\r\n    # Load last image path or ask\
+    \ user\r\n    try:\r\n        with open(\"last_path.txt\", \"r\") as f:\r\n  \
+    \          last_path = f.read().strip()\r\n        user_input = input(f\"Do you\
+    \ want to use the last path '{last_path}'? (yes/no, default yes): \")\r\n    \
+    \    if not user_input or user_input.lower() != 'no':\r\n            last_path\
+    \ = last_path\r\n        else:\r\n            raise ValueError(\"User chose to\
+    \ input a new path.\")\r\n    except:\r\n        last_path = input(\"Please provide\
+    \ the image directory path: \")\r\n        with open(\"last_path.txt\", \"w\"\
+    ) as f:\r\n            f.write(last_path)\r\n\r\n    while True:\r\n        #\
+    \ List the first 10 images in the directory\r\n        images = list_files_in_directory(last_path)[:10]\r\
+    \n        for idx, image in enumerate(images, start=1):\r\n            print(f\"\
+    {idx}. {image}\")\r\n\r\n        # Allow the user to select an image\r\n     \
+    \   image_choice = input(f\"Choose an image (1-{len(images)}) or enter its name:\
+    \ \")\r\n        try:\r\n            idx = int(image_choice)\r\n            image_path\
+    \ = os.path.join(last_path, images[idx-1])\r\n        except ValueError:\r\n \
+    \           image_path = os.path.join(last_path, image_choice)\r\n\r\n       \
+    \ try:\r\n            image = Image.open(image_path)\r\n        except:\r\n  \
+    \          print(\"Cannot open the image. Please check the path and try again.\"\
+    )\r\n            continue\r\n\r\n        questions = [\r\n            \"Generate\
+    \ a coco-style caption.\",\r\n            \"What color is the object?\",\r\n \
+    \           \"Describe the scene.\",\r\n            \"Describe the facial expression\
+    \ of the character.\",\r\n            \"Tell me about the story from the image.\"\
+    ,\r\n            \"Enter your own question\"\r\n        ]\r\n\r\n        # Asking\
+    \ the user to select a question from list, or select to input one\r\n        for\
+    \ idx, q in enumerate(questions, start=1):\r\n            print(f\"{idx}. {q}\"\
+    )\r\n\r\n        q_choice = int(input(\"Choose a question or enter your own: \"\
+    ))\r\n        if q_choice <= 5:\r\n            text_prompt = questions[q_choice-1]\
+    \ + '\\n'\r\n        else:\r\n            text_prompt = input(\"Please enter your\
+    \ question: \") + '\\n'\r\n\r\n        while True: # To enable the user to ask\
+    \ further question about an image\r\n            inputs = processor(text=text_prompt,\
+    \ images=image, return_tensors=\"pt\")\r\n            for k, v in inputs.items():\r\
+    \n                inputs[k] = v.to(\"cuda:0\")\r\n            # To eliminate attention_mask\
+    \ warning\r\n            inputs[\"attention_mask\"] = torch.ones(inputs[\"input_ids\"\
+    ].shape, device=\"cuda:0\")\r\n\r\n            generation_output = model.generate(**inputs,\
+    \ max_new_tokens=50, pad_token_id=model.config.eos_token_id)\r\n            generation_text\
+    \ = processor.batch_decode(generation_output[:, -50:], skip_special_tokens=True)\r\
+    \n            print(\"Answer:\", generation_text[0])\r\n\r\n            text_prompt\
+    \ = input(\"Ask another question about the same image or type '/exit' to exit:\
+    \ \") + '\\n'\r\n            if text_prompt.strip() == '/exit':\r\n          \
+    \      break\r\n\r\nif __name__ == \"__main__\":\r\n    main()\r\n\r\n"
+  created_at: 2023-10-23 11:25:04+00:00
+  edited: false
+  hidden: false
+  id: 65366620a78e70d19cdccb8d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64789feb79f2d49511ed7db4/IzaIwiVgnkTZHrcLDQk0C.jpeg?w=200&h=200&f=face
+      fullname: Pablo Montalvo
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Molbap
+      type: user
+    createdAt: '2023-10-24T09:14:27.000Z'
+    data:
+      edited: false
+      editors:
+      - Molbap
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8783837556838989
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64789feb79f2d49511ed7db4/IzaIwiVgnkTZHrcLDQk0C.jpeg?w=200&h=200&f=face
+          fullname: Pablo Montalvo
+          isHf: true
+          isPro: false
+          name: Molbap
+          type: user
+        html: '<p>Hey, the <code>attention_mask</code> will be updated in the PR <a
+          rel="nofollow" href="https://github.com/huggingface/transformers/pull/27007">https://github.com/huggingface/transformers/pull/27007</a>
+          which will add batching, you''ll be able to cache a few QAs directly!</p>
+
+          '
+        raw: Hey, the `attention_mask` will be updated in the PR https://github.com/huggingface/transformers/pull/27007
+          which will add batching, you'll be able to cache a few QAs directly!
+        updatedAt: '2023-10-24T09:14:27.400Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - Colderthanice
+    id: 65378af38e0dcf47965724c4
+    type: comment
+  author: Molbap
+  content: Hey, the `attention_mask` will be updated in the PR https://github.com/huggingface/transformers/pull/27007
+    which will add batching, you'll be able to cache a few QAs directly!
+  created_at: 2023-10-24 08:14:27+00:00
+  edited: false
+  hidden: false
+  id: 65378af38e0dcf47965724c4
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 25
+repo_id: adept/fuyu-8b
+repo_type: model
+status: open
+target_branch: null
+title: A working demo.py for your reference

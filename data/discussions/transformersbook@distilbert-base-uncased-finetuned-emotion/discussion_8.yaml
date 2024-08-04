@@ -1,0 +1,382 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: seobak
+conflicting_files: null
+created_at: 2024-01-09 05:13:49+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/63283f4604046e053160986e6352a658.svg
+      fullname: EUNSEO LEE
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: seobak
+      type: user
+    createdAt: '2024-01-09T05:13:49.000Z'
+    data:
+      edited: false
+      editors:
+      - seobak
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.469574511051178
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/63283f4604046e053160986e6352a658.svg
+          fullname: EUNSEO LEE
+          isHf: false
+          isPro: false
+          name: seobak
+          type: user
+        html: '<p>from transformers import Trainer, TrainingArguments</p>
+
+          <p>batch_size = 64<br>logging_steps = len(emotions_encoded["train"]) //
+          batch_size<br>model_name = f"{model_ckpt}-finetuned-emotion"<br>training_args
+          = TrainingArguments(output_dir=model_name,<br>                                  num_train_epochs=2,<br>                                  learning_rate=2e-5,<br>                                  per_device_train_batch_size=batch_size,<br>                                  per_device_eval_batch_size=batch_size,<br>                                  weight_decay=0.01,<br>                                  evaluation_strategy="epoch",<br>                                  disable_tqdm=False,<br>                                  logging_steps=logging_steps,<br>                                  push_to_hub=True,<br>                                  save_strategy="epoch",<br>                                  load_best_model_at_end=True,<br>                                  log_level="error")</p>
+
+          <p>from transformers import Trainer</p>
+
+          <p>trainer = Trainer(model=model, args=training_args,<br>                  compute_metrics=compute_metrics,<br>                  train_dataset=emotions_encoded["train"],<br>                  eval_dataset=emotions_encoded["validation"],<br>                  tokenizer=tokenizer)<br>trainer.train()</p>
+
+          <hr>
+
+          <p>FailedPreconditionError                   Traceback (most recent call
+          last)<br>Cell In[76], line 8<br>      1 from transformers import Trainer<br>      3
+          trainer = Trainer(model=model, args=training_args,<br>      4                   compute_metrics=compute_metrics,<br>      5                   train_dataset=emotions_encoded["train"],<br>      6                   eval_dataset=emotions_encoded["validation"],<br>      7                   tokenizer=tokenizer)<br>----&gt;
+          8 trainer.train()</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\trainer.py:1534,
+          in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,
+          **kwargs)<br>   1531 try:<br>   1532     # Disable progress bars when uploading
+          models during checkpoints to avoid polluting stdout<br>   1533     hf_hub_utils.disable_progress_bars()<br>-&gt;
+          1534     return inner_training_loop(<br>   1535         args=args,<br>   1536         resume_from_checkpoint=resume_from_checkpoint,<br>   1537         trial=trial,<br>   1538         ignore_keys_for_eval=ignore_keys_for_eval,<br>   1539     )<br>   1540
+          finally:<br>   1541     hf_hub_utils.enable_progress_bars()</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\trainer.py:1778,
+          in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,
+          trial, ignore_keys_for_eval)<br>   1775 self._globalstep_last_logged = self.state.global_step<br>   1776
+          model.zero_grad()<br>-&gt; 1778 self.control = self.callback_handler.on_train_begin(args,
+          self.state, self.control)<br>   1780 # Skip the first epochs_trained epochs
+          to get the random state of the dataloader at the right point.<br>   1781
+          if not args.ignore_data_skip:</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\trainer_callback.py:370,
+          in CallbackHandler.on_train_begin(self, args, state, control)<br>    368
+          def on_train_begin(self, args: TrainingArguments, state: TrainerState, control:
+          TrainerControl):<br>    369     control.should_training_stop = False<br>--&gt;
+          370     return self.call_event("on_train_begin", args, state, control)</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\trainer_callback.py:414,
+          in CallbackHandler.call_event(self, event, args, state, control, **kwargs)<br>    412
+          def call_event(self, event, args, state, control, **kwargs):<br>    413     for
+          callback in self.callbacks:<br>--&gt; 414         result = getattr(callback,
+          event)(<br>    415             args,<br>    416             state,<br>    417             control,<br>    418             model=self.model,<br>    419             tokenizer=self.tokenizer,<br>    420             optimizer=self.optimizer,<br>    421             lr_scheduler=self.lr_scheduler,<br>    422             train_dataloader=self.train_dataloader,<br>    423             eval_dataloader=self.eval_dataloader,<br>    424             **kwargs,<br>    425         )<br>    426         #
+          A Callback can skip the return of <code>control</code> if it doesn''t change
+          it.<br>    427         if result is not None:</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\integrations\integration_utils.py:628,
+          in TensorBoardCallback.on_train_begin(self, args, state, control, **kwargs)<br>    625         log_dir
+          = os.path.join(args.logging_dir, trial_name)<br>    627 if self.tb_writer
+          is None:<br>--&gt; 628     self._init_summary_writer(args, log_dir)<br>    630
+          if self.tb_writer is not None:<br>    631     self.tb_writer.add_text("args",
+          args.to_json_string())</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\transformers\integrations\integration_utils.py:614,
+          in TensorBoardCallback._init_summary_writer(self, args, log_dir)<br>    612
+          log_dir = log_dir or args.logging_dir<br>    613 if self._SummaryWriter
+          is not None:<br>--&gt; 614     self.tb_writer = self._SummaryWriter(log_dir=log_dir)</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\writer.py:247,
+          in SummaryWriter.<strong>init</strong>(self, log_dir, comment, purge_step,
+          max_queue, flush_secs, filename_suffix)<br>    244 # Initialize the file
+          writers, but they can be cleared out on close<br>    245 # and recreated
+          later as needed.<br>    246 self.file_writer = self.all_writers = None<br>--&gt;
+          247 self._get_file_writer()<br>    249 # Create default bins for histograms,
+          see generate_testdata.py in tensorflow/tensorboard<br>    250 v = 1e-12</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\writer.py:277,
+          in SummaryWriter._get_file_writer(self)<br>    275 """Returns the default
+          FileWriter instance. Recreates it if closed."""<br>    276 if self.all_writers
+          is None or self.file_writer is None:<br>--&gt; 277     self.file_writer
+          = FileWriter(<br>    278         self.log_dir, self.max_queue, self.flush_secs,
+          self.filename_suffix<br>    279     )<br>    280     self.all_writers =
+          {self.file_writer.get_logdir(): self.file_writer}<br>    281     if self.purge_step
+          is not None:</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\tensorboard\writer.py:76,
+          in FileWriter.<strong>init</strong>(self, log_dir, max_queue, flush_secs,
+          filename_suffix)<br>     71 # Sometimes PosixPath is passed in and we need
+          to coerce it to<br>     72 # a string in all cases<br>     73 # TODO: See
+          if we can remove this in the future if we are<br>     74 # actually the
+          ones passing in a PosixPath<br>     75 log_dir = str(log_dir)<br>---&gt;
+          76 self.event_writer = EventFileWriter(<br>     77     log_dir, max_queue,
+          flush_secs, filename_suffix<br>     78 )</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorboard\summary\writer\event_file_writer.py:72,
+          in EventFileWriter.<strong>init</strong>(self, logdir, max_queue_size, flush_secs,
+          filename_suffix)<br>     57 """Creates a <code>EventFileWriter</code> and
+          an event file to write to.<br>     58<br>     59 On construction the summary
+          writer creates a new event file in <code>logdir</code>.<br>   (...)<br>     69     pending
+          events and summaries to disk.<br>     70 """<br>     71 self._logdir = logdir<br>---&gt;
+          72 tf.io.gfile.makedirs(logdir)<br>     73 self._file_name = (<br>     74     os.path.join(<br>     75         logdir,<br>   (...)<br>     84     +
+          filename_suffix<br>     85 )  # noqa E128<br>     86 self._general_file_writer
+          = tf.io.gfile.GFile(self._file_name, "wb")</p>
+
+          <p>File ~\AppData\Local\Programs\Python\Python310\lib\site-packages\tensorflow\python\lib\io\file_io.py:513,
+          in recursive_create_dir_v2(path)<br>    501 @tf_export("io.gfile.makedirs")<br>    502
+          def recursive_create_dir_v2(path):<br>    503   """Creates a directory and
+          all parent/intermediate directories.<br>    504<br>    505   It succeeds
+          if path already exists and is writable.<br>   (...)<br>    511     errors.OpError:
+          If the operation fails.<br>    512   """<br>--&gt; 513   _pywrap_file_io.RecursivelyCreateDir(compat.path_to_bytes(path))</p>
+
+          <p>FailedPreconditionError: distilbert-base-uncased-finetuned-emotion is
+          not a directory</p>
+
+          <p>An error occurred saying the directory does not exist. How do I solve
+          this? help me plz</p>
+
+          '
+        raw: "from transformers import Trainer, TrainingArguments\r\n\r\nbatch_size\
+          \ = 64\r\nlogging_steps = len(emotions_encoded[\"train\"]) // batch_size\r\
+          \nmodel_name = f\"{model_ckpt}-finetuned-emotion\"\r\ntraining_args = TrainingArguments(output_dir=model_name,\r\
+          \n                                  num_train_epochs=2,\r\n            \
+          \                      learning_rate=2e-5,\r\n                         \
+          \         per_device_train_batch_size=batch_size,\r\n                  \
+          \                per_device_eval_batch_size=batch_size,\r\n            \
+          \                      weight_decay=0.01,\r\n                          \
+          \        evaluation_strategy=\"epoch\",\r\n                            \
+          \      disable_tqdm=False,\r\n                                  logging_steps=logging_steps,\r\
+          \n                                  push_to_hub=True,\r\n              \
+          \                    save_strategy=\"epoch\",\r\n                      \
+          \            load_best_model_at_end=True,\r\n                          \
+          \        log_level=\"error\")\r\n\r\nfrom transformers import Trainer\r\n\
+          \r\ntrainer = Trainer(model=model, args=training_args,\r\n             \
+          \     compute_metrics=compute_metrics,\r\n                  train_dataset=emotions_encoded[\"\
+          train\"],\r\n                  eval_dataset=emotions_encoded[\"validation\"\
+          ],\r\n                  tokenizer=tokenizer)\r\ntrainer.train()\r\n\r\n\
+          ---------------------------------------------------------------------------\r\
+          \nFailedPreconditionError                   Traceback (most recent call\
+          \ last)\r\nCell In[76], line 8\r\n      1 from transformers import Trainer\r\
+          \n      3 trainer = Trainer(model=model, args=training_args,\r\n      4\
+          \                   compute_metrics=compute_metrics,\r\n      5        \
+          \           train_dataset=emotions_encoded[\"train\"],\r\n      6      \
+          \             eval_dataset=emotions_encoded[\"validation\"],\r\n      7\
+          \                   tokenizer=tokenizer)\r\n----> 8 trainer.train()\r\n\r\
+          \nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+          transformers\\trainer.py:1534, in Trainer.train(self, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval, **kwargs)\r\n   1531 try:\r\n   1532    \
+          \ # Disable progress bars when uploading models during checkpoints to avoid\
+          \ polluting stdout\r\n   1533     hf_hub_utils.disable_progress_bars()\r\
+          \n-> 1534     return inner_training_loop(\r\n   1535         args=args,\r\
+          \n   1536         resume_from_checkpoint=resume_from_checkpoint,\r\n   1537\
+          \         trial=trial,\r\n   1538         ignore_keys_for_eval=ignore_keys_for_eval,\r\
+          \n   1539     )\r\n   1540 finally:\r\n   1541     hf_hub_utils.enable_progress_bars()\r\
+          \n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+          transformers\\trainer.py:1778, in Trainer._inner_training_loop(self, batch_size,\
+          \ args, resume_from_checkpoint, trial, ignore_keys_for_eval)\r\n   1775\
+          \ self._globalstep_last_logged = self.state.global_step\r\n   1776 model.zero_grad()\r\
+          \n-> 1778 self.control = self.callback_handler.on_train_begin(args, self.state,\
+          \ self.control)\r\n   1780 # Skip the first epochs_trained epochs to get\
+          \ the random state of the dataloader at the right point.\r\n   1781 if not\
+          \ args.ignore_data_skip:\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\\
+          Python310\\lib\\site-packages\\transformers\\trainer_callback.py:370, in\
+          \ CallbackHandler.on_train_begin(self, args, state, control)\r\n    368\
+          \ def on_train_begin(self, args: TrainingArguments, state: TrainerState,\
+          \ control: TrainerControl):\r\n    369     control.should_training_stop\
+          \ = False\r\n--> 370     return self.call_event(\"on_train_begin\", args,\
+          \ state, control)\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\\
+          lib\\site-packages\\transformers\\trainer_callback.py:414, in CallbackHandler.call_event(self,\
+          \ event, args, state, control, **kwargs)\r\n    412 def call_event(self,\
+          \ event, args, state, control, **kwargs):\r\n    413     for callback in\
+          \ self.callbacks:\r\n--> 414         result = getattr(callback, event)(\r\
+          \n    415             args,\r\n    416             state,\r\n    417   \
+          \          control,\r\n    418             model=self.model,\r\n    419\
+          \             tokenizer=self.tokenizer,\r\n    420             optimizer=self.optimizer,\r\
+          \n    421             lr_scheduler=self.lr_scheduler,\r\n    422       \
+          \      train_dataloader=self.train_dataloader,\r\n    423             eval_dataloader=self.eval_dataloader,\r\
+          \n    424             **kwargs,\r\n    425         )\r\n    426        \
+          \ # A Callback can skip the return of `control` if it doesn't change it.\r\
+          \n    427         if result is not None:\r\n\r\nFile ~\\AppData\\Local\\\
+          Programs\\Python\\Python310\\lib\\site-packages\\transformers\\integrations\\\
+          integration_utils.py:628, in TensorBoardCallback.on_train_begin(self, args,\
+          \ state, control, **kwargs)\r\n    625         log_dir = os.path.join(args.logging_dir,\
+          \ trial_name)\r\n    627 if self.tb_writer is None:\r\n--> 628     self._init_summary_writer(args,\
+          \ log_dir)\r\n    630 if self.tb_writer is not None:\r\n    631     self.tb_writer.add_text(\"\
+          args\", args.to_json_string())\r\n\r\nFile ~\\AppData\\Local\\Programs\\\
+          Python\\Python310\\lib\\site-packages\\transformers\\integrations\\integration_utils.py:614,\
+          \ in TensorBoardCallback._init_summary_writer(self, args, log_dir)\r\n \
+          \   612 log_dir = log_dir or args.logging_dir\r\n    613 if self._SummaryWriter\
+          \ is not None:\r\n--> 614     self.tb_writer = self._SummaryWriter(log_dir=log_dir)\r\
+          \n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+          torch\\utils\\tensorboard\\writer.py:247, in SummaryWriter.__init__(self,\
+          \ log_dir, comment, purge_step, max_queue, flush_secs, filename_suffix)\r\
+          \n    244 # Initialize the file writers, but they can be cleared out on\
+          \ close\r\n    245 # and recreated later as needed.\r\n    246 self.file_writer\
+          \ = self.all_writers = None\r\n--> 247 self._get_file_writer()\r\n    249\
+          \ # Create default bins for histograms, see generate_testdata.py in tensorflow/tensorboard\r\
+          \n    250 v = 1e-12\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\\
+          lib\\site-packages\\torch\\utils\\tensorboard\\writer.py:277, in SummaryWriter._get_file_writer(self)\r\
+          \n    275 \"\"\"Returns the default FileWriter instance. Recreates it if\
+          \ closed.\"\"\"\r\n    276 if self.all_writers is None or self.file_writer\
+          \ is None:\r\n--> 277     self.file_writer = FileWriter(\r\n    278    \
+          \     self.log_dir, self.max_queue, self.flush_secs, self.filename_suffix\r\
+          \n    279     )\r\n    280     self.all_writers = {self.file_writer.get_logdir():\
+          \ self.file_writer}\r\n    281     if self.purge_step is not None:\r\n\r\
+          \nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+          torch\\utils\\tensorboard\\writer.py:76, in FileWriter.__init__(self, log_dir,\
+          \ max_queue, flush_secs, filename_suffix)\r\n     71 # Sometimes PosixPath\
+          \ is passed in and we need to coerce it to\r\n     72 # a string in all\
+          \ cases\r\n     73 # TODO: See if we can remove this in the future if we\
+          \ are\r\n     74 # actually the ones passing in a PosixPath\r\n     75 log_dir\
+          \ = str(log_dir)\r\n---> 76 self.event_writer = EventFileWriter(\r\n   \
+          \  77     log_dir, max_queue, flush_secs, filename_suffix\r\n     78 )\r\
+          \n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+          tensorboard\\summary\\writer\\event_file_writer.py:72, in EventFileWriter.__init__(self,\
+          \ logdir, max_queue_size, flush_secs, filename_suffix)\r\n     57 \"\"\"\
+          Creates a `EventFileWriter` and an event file to write to.\r\n     58 \r\
+          \n     59 On construction the summary writer creates a new event file in\
+          \ `logdir`.\r\n   (...)\r\n     69     pending events and summaries to disk.\r\
+          \n     70 \"\"\"\r\n     71 self._logdir = logdir\r\n---> 72 tf.io.gfile.makedirs(logdir)\r\
+          \n     73 self._file_name = (\r\n     74     os.path.join(\r\n     75  \
+          \       logdir,\r\n   (...)\r\n     84     + filename_suffix\r\n     85\
+          \ )  # noqa E128\r\n     86 self._general_file_writer = tf.io.gfile.GFile(self._file_name,\
+          \ \"wb\")\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\\
+          site-packages\\tensorflow\\python\\lib\\io\\file_io.py:513, in recursive_create_dir_v2(path)\r\
+          \n    501 @tf_export(\"io.gfile.makedirs\")\r\n    502 def recursive_create_dir_v2(path):\r\
+          \n    503   \"\"\"Creates a directory and all parent/intermediate directories.\r\
+          \n    504 \r\n    505   It succeeds if path already exists and is writable.\r\
+          \n   (...)\r\n    511     errors.OpError: If the operation fails.\r\n  \
+          \  512   \"\"\"\r\n--> 513   _pywrap_file_io.RecursivelyCreateDir(compat.path_to_bytes(path))\r\
+          \n\r\nFailedPreconditionError: distilbert-base-uncased-finetuned-emotion\
+          \ is not a directory\r\n\r\nAn error occurred saying the directory does\
+          \ not exist. How do I solve this? help me plz\r\n"
+        updatedAt: '2024-01-09T05:13:49.642Z'
+      numEdits: 0
+      reactions: []
+    id: 659cd60d0030e8faffbac4d7
+    type: comment
+  author: seobak
+  content: "from transformers import Trainer, TrainingArguments\r\n\r\nbatch_size\
+    \ = 64\r\nlogging_steps = len(emotions_encoded[\"train\"]) // batch_size\r\nmodel_name\
+    \ = f\"{model_ckpt}-finetuned-emotion\"\r\ntraining_args = TrainingArguments(output_dir=model_name,\r\
+    \n                                  num_train_epochs=2,\r\n                  \
+    \                learning_rate=2e-5,\r\n                                  per_device_train_batch_size=batch_size,\r\
+    \n                                  per_device_eval_batch_size=batch_size,\r\n\
+    \                                  weight_decay=0.01,\r\n                    \
+    \              evaluation_strategy=\"epoch\",\r\n                            \
+    \      disable_tqdm=False,\r\n                                  logging_steps=logging_steps,\r\
+    \n                                  push_to_hub=True,\r\n                    \
+    \              save_strategy=\"epoch\",\r\n                                  load_best_model_at_end=True,\r\
+    \n                                  log_level=\"error\")\r\n\r\nfrom transformers\
+    \ import Trainer\r\n\r\ntrainer = Trainer(model=model, args=training_args,\r\n\
+    \                  compute_metrics=compute_metrics,\r\n                  train_dataset=emotions_encoded[\"\
+    train\"],\r\n                  eval_dataset=emotions_encoded[\"validation\"],\r\
+    \n                  tokenizer=tokenizer)\r\ntrainer.train()\r\n\r\n---------------------------------------------------------------------------\r\
+    \nFailedPreconditionError                   Traceback (most recent call last)\r\
+    \nCell In[76], line 8\r\n      1 from transformers import Trainer\r\n      3 trainer\
+    \ = Trainer(model=model, args=training_args,\r\n      4                   compute_metrics=compute_metrics,\r\
+    \n      5                   train_dataset=emotions_encoded[\"train\"],\r\n   \
+    \   6                   eval_dataset=emotions_encoded[\"validation\"],\r\n   \
+    \   7                   tokenizer=tokenizer)\r\n----> 8 trainer.train()\r\n\r\n\
+    File ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\transformers\\\
+    trainer.py:1534, in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\r\n   1531 try:\r\n   1532     # Disable progress bars when uploading\
+    \ models during checkpoints to avoid polluting stdout\r\n   1533     hf_hub_utils.disable_progress_bars()\r\
+    \n-> 1534     return inner_training_loop(\r\n   1535         args=args,\r\n  \
+    \ 1536         resume_from_checkpoint=resume_from_checkpoint,\r\n   1537     \
+    \    trial=trial,\r\n   1538         ignore_keys_for_eval=ignore_keys_for_eval,\r\
+    \n   1539     )\r\n   1540 finally:\r\n   1541     hf_hub_utils.enable_progress_bars()\r\
+    \n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+    transformers\\trainer.py:1778, in Trainer._inner_training_loop(self, batch_size,\
+    \ args, resume_from_checkpoint, trial, ignore_keys_for_eval)\r\n   1775 self._globalstep_last_logged\
+    \ = self.state.global_step\r\n   1776 model.zero_grad()\r\n-> 1778 self.control\
+    \ = self.callback_handler.on_train_begin(args, self.state, self.control)\r\n \
+    \  1780 # Skip the first epochs_trained epochs to get the random state of the\
+    \ dataloader at the right point.\r\n   1781 if not args.ignore_data_skip:\r\n\r\
+    \nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\transformers\\\
+    trainer_callback.py:370, in CallbackHandler.on_train_begin(self, args, state,\
+    \ control)\r\n    368 def on_train_begin(self, args: TrainingArguments, state:\
+    \ TrainerState, control: TrainerControl):\r\n    369     control.should_training_stop\
+    \ = False\r\n--> 370     return self.call_event(\"on_train_begin\", args, state,\
+    \ control)\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+    transformers\\trainer_callback.py:414, in CallbackHandler.call_event(self, event,\
+    \ args, state, control, **kwargs)\r\n    412 def call_event(self, event, args,\
+    \ state, control, **kwargs):\r\n    413     for callback in self.callbacks:\r\n\
+    --> 414         result = getattr(callback, event)(\r\n    415             args,\r\
+    \n    416             state,\r\n    417             control,\r\n    418      \
+    \       model=self.model,\r\n    419             tokenizer=self.tokenizer,\r\n\
+    \    420             optimizer=self.optimizer,\r\n    421             lr_scheduler=self.lr_scheduler,\r\
+    \n    422             train_dataloader=self.train_dataloader,\r\n    423     \
+    \        eval_dataloader=self.eval_dataloader,\r\n    424             **kwargs,\r\
+    \n    425         )\r\n    426         # A Callback can skip the return of `control`\
+    \ if it doesn't change it.\r\n    427         if result is not None:\r\n\r\nFile\
+    \ ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\transformers\\\
+    integrations\\integration_utils.py:628, in TensorBoardCallback.on_train_begin(self,\
+    \ args, state, control, **kwargs)\r\n    625         log_dir = os.path.join(args.logging_dir,\
+    \ trial_name)\r\n    627 if self.tb_writer is None:\r\n--> 628     self._init_summary_writer(args,\
+    \ log_dir)\r\n    630 if self.tb_writer is not None:\r\n    631     self.tb_writer.add_text(\"\
+    args\", args.to_json_string())\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\\
+    Python310\\lib\\site-packages\\transformers\\integrations\\integration_utils.py:614,\
+    \ in TensorBoardCallback._init_summary_writer(self, args, log_dir)\r\n    612\
+    \ log_dir = log_dir or args.logging_dir\r\n    613 if self._SummaryWriter is not\
+    \ None:\r\n--> 614     self.tb_writer = self._SummaryWriter(log_dir=log_dir)\r\
+    \n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+    torch\\utils\\tensorboard\\writer.py:247, in SummaryWriter.__init__(self, log_dir,\
+    \ comment, purge_step, max_queue, flush_secs, filename_suffix)\r\n    244 # Initialize\
+    \ the file writers, but they can be cleared out on close\r\n    245 # and recreated\
+    \ later as needed.\r\n    246 self.file_writer = self.all_writers = None\r\n-->\
+    \ 247 self._get_file_writer()\r\n    249 # Create default bins for histograms,\
+    \ see generate_testdata.py in tensorflow/tensorboard\r\n    250 v = 1e-12\r\n\r\
+    \nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\torch\\\
+    utils\\tensorboard\\writer.py:277, in SummaryWriter._get_file_writer(self)\r\n\
+    \    275 \"\"\"Returns the default FileWriter instance. Recreates it if closed.\"\
+    \"\"\r\n    276 if self.all_writers is None or self.file_writer is None:\r\n-->\
+    \ 277     self.file_writer = FileWriter(\r\n    278         self.log_dir, self.max_queue,\
+    \ self.flush_secs, self.filename_suffix\r\n    279     )\r\n    280     self.all_writers\
+    \ = {self.file_writer.get_logdir(): self.file_writer}\r\n    281     if self.purge_step\
+    \ is not None:\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\\
+    site-packages\\torch\\utils\\tensorboard\\writer.py:76, in FileWriter.__init__(self,\
+    \ log_dir, max_queue, flush_secs, filename_suffix)\r\n     71 # Sometimes PosixPath\
+    \ is passed in and we need to coerce it to\r\n     72 # a string in all cases\r\
+    \n     73 # TODO: See if we can remove this in the future if we are\r\n     74\
+    \ # actually the ones passing in a PosixPath\r\n     75 log_dir = str(log_dir)\r\
+    \n---> 76 self.event_writer = EventFileWriter(\r\n     77     log_dir, max_queue,\
+    \ flush_secs, filename_suffix\r\n     78 )\r\n\r\nFile ~\\AppData\\Local\\Programs\\\
+    Python\\Python310\\lib\\site-packages\\tensorboard\\summary\\writer\\event_file_writer.py:72,\
+    \ in EventFileWriter.__init__(self, logdir, max_queue_size, flush_secs, filename_suffix)\r\
+    \n     57 \"\"\"Creates a `EventFileWriter` and an event file to write to.\r\n\
+    \     58 \r\n     59 On construction the summary writer creates a new event file\
+    \ in `logdir`.\r\n   (...)\r\n     69     pending events and summaries to disk.\r\
+    \n     70 \"\"\"\r\n     71 self._logdir = logdir\r\n---> 72 tf.io.gfile.makedirs(logdir)\r\
+    \n     73 self._file_name = (\r\n     74     os.path.join(\r\n     75        \
+    \ logdir,\r\n   (...)\r\n     84     + filename_suffix\r\n     85 )  # noqa E128\r\
+    \n     86 self._general_file_writer = tf.io.gfile.GFile(self._file_name, \"wb\"\
+    )\r\n\r\nFile ~\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\\
+    tensorflow\\python\\lib\\io\\file_io.py:513, in recursive_create_dir_v2(path)\r\
+    \n    501 @tf_export(\"io.gfile.makedirs\")\r\n    502 def recursive_create_dir_v2(path):\r\
+    \n    503   \"\"\"Creates a directory and all parent/intermediate directories.\r\
+    \n    504 \r\n    505   It succeeds if path already exists and is writable.\r\n\
+    \   (...)\r\n    511     errors.OpError: If the operation fails.\r\n    512  \
+    \ \"\"\"\r\n--> 513   _pywrap_file_io.RecursivelyCreateDir(compat.path_to_bytes(path))\r\
+    \n\r\nFailedPreconditionError: distilbert-base-uncased-finetuned-emotion is not\
+    \ a directory\r\n\r\nAn error occurred saying the directory does not exist. How\
+    \ do I solve this? help me plz\r\n"
+  created_at: 2024-01-09 05:13:49+00:00
+  edited: false
+  hidden: false
+  id: 659cd60d0030e8faffbac4d7
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: transformersbook/distilbert-base-uncased-finetuned-emotion
+repo_type: model
+status: open
+target_branch: null
+title: distilbert-base-uncased-finetuned-emotion is not a directory

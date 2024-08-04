@@ -1,0 +1,633 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: higashi1
+conflicting_files: null
+created_at: 2023-07-24 00:11:15+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/956dc0055eba3bd694e3e09decb36a7c.svg
+      fullname: naru
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: higashi1
+      type: user
+    createdAt: '2023-07-24T01:11:15.000Z'
+    data:
+      edited: true
+      editors:
+      - higashi1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.34733203053474426
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/956dc0055eba3bd694e3e09decb36a7c.svg
+          fullname: naru
+          isHf: false
+          isPro: false
+          name: higashi1
+          type: user
+        html: '<p>from datasets import load_dataset</p>
+
+          <p>books = load_dataset(''higashi1/mymulti30k'',  "en-de")<br>from transformers
+          import AutoTokenizer</p>
+
+          <p>#checkpoint = "./logs/"<br>checkpoint = "t5-base"<br>tokenizer = AutoTokenizer.from_pretrained(checkpoint,use_fast=False)</p>
+
+          <p>source_lang = "en"<br>target_lang = "de"<br>prefix = "translate English
+          to German: "</p>
+
+          <p>def preprocess_function(examples):<br>    inputs = [prefix + example
+          for example in examples["en"]]<br>    targets = [example for example in
+          examples["de"]]<br>    model_inputs = tokenizer(inputs, text_target=targets,
+          max_length=128, truncation=True)<br>    return model_inputs</p>
+
+          <p>tokenized_books = books.map(preprocess_function, batched=True)</p>
+
+          <p>from transformers import DataCollatorForSeq2Seq</p>
+
+          <p>data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=checkpoint)</p>
+
+          <p>import evaluate</p>
+
+          <p>metric = evaluate.load("sacrebleu")</p>
+
+          <p>import numpy as np</p>
+
+          <p>def postprocess_text(preds, labels):<br>    preds = [pred.strip() for
+          pred in preds]<br>    labels = [[label.strip()] for label in labels]</p>
+
+          <pre><code>return preds, labels
+
+          </code></pre>
+
+          <p>def compute_metrics(eval_preds):<br>    preds, labels = eval_preds<br>    if
+          isinstance(preds, tuple):<br>        preds = preds[0]<br>    decoded_preds
+          = tokenizer.batch_decode(preds, skip_special_tokens=True)</p>
+
+          <pre><code>labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+
+          decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+
+          decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+
+
+          result = metric.compute(predictions=decoded_preds, references=decoded_labels)
+
+          result = {"bleu": result["score"]}
+
+
+          prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for
+          pred in preds]
+
+          result["gen_len"] = np.mean(prediction_lens)
+
+          result = {k: round(v, 4) for k, v in result.items()}
+
+          return result
+
+          </code></pre>
+
+          <p>from transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments,
+          Seq2SeqTrainer</p>
+
+          <p>model = AutoModelForSeq2SeqLM.from_pretrained(checkpoint)</p>
+
+          <p>training_args = Seq2SeqTrainingArguments(<br>    output_dir="my__model",<br>    evaluation_strategy="epoch",<br>    learning_rate=2e-5,#2e-5<br>    per_device_train_batch_size=16,<br>    per_device_eval_batch_size=16,<br>    weight_decay=0.01,<br>    save_total_limit=3,<br>    num_train_epochs=1,<br>    predict_with_generate=True,<br>    fp16=True,<br>    push_to_hub=False,<br>    report_to="none",<br>    generation_max_length
+          =30<br>)<br>#generation_max_length =128<br>trainer = Seq2SeqTrainer(<br>    model=model,<br>    args=training_args,<br>    train_dataset=tokenized_books["train"],<br>    eval_dataset=tokenized_books["test"],<br>    tokenizer=tokenizer,<br>    data_collator=data_collator,<br>    compute_metrics=compute_metrics,<br>)<br>#trainer.train()<br>#trainer.save_model("./logs/")</p>
+
+          <p>pred_result = trainer.predict(tokenized_books["test"])</p>
+
+          <p>I noticed that the generated sentences, the longest length is 20.<br>pred_result[0].shape<br>(461,
+          20)</p>
+
+          <hr>
+
+          <p>IndexError                                Traceback (most recent call
+          last)<br>Cell In[17], line 1<br>----&gt; 1 pred_result = trainer.predict(tokenized_books["test"])</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\trainer_seq2seq.py:216,
+          in Seq2SeqTrainer.predict(self, test_dataset, ignore_keys, metric_key_prefix,
+          **gen_kwargs)<br>    211 gen_kwargs["num_beams"] = (<br>    212     gen_kwargs["num_beams"]
+          if gen_kwargs.get("num_beams") is not None else self.args.generation_num_beams<br>    213
+          )<br>    214 self._gen_kwargs = gen_kwargs<br>--&gt; 216 return super().predict(test_dataset,
+          ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix)</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\trainer.py:3129, in Trainer.predict(self,
+          test_dataset, ignore_keys, metric_key_prefix)<br>   3126 start_time = time.time()<br>   3128
+          eval_loop = self.prediction_loop if self.args.use_legacy_prediction_loop
+          else self.evaluation_loop<br>-&gt; 3129 output = eval_loop(<br>   3130     test_dataloader,
+          description="Prediction", ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix<br>   3131
+          )<br>   3132 total_batch_size = self.args.eval_batch_size * self.args.world_size<br>   3133
+          if f"{metric_key_prefix}_jit_compilation_time" in output.metrics:</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\trainer.py:3353, in Trainer.evaluation_loop(self,
+          dataloader, description, prediction_loss_only, ignore_keys, metric_key_prefix)<br>   3349         metrics
+          = self.compute_metrics(<br>   3350             EvalPrediction(predictions=all_preds,
+          label_ids=all_labels, inputs=all_inputs)<br>   3351         )<br>   3352     else:<br>-&gt;
+          3353         metrics = self.compute_metrics(EvalPrediction(predictions=all_preds,
+          label_ids=all_labels))<br>   3354 else:<br>   3355     metrics = {}</p>
+
+          <p>Cell In[15], line 23, in compute_metrics(eval_preds)<br>     21 if isinstance(preds,
+          tuple):<br>     22     preds = preds[0]<br>---&gt; 23 decoded_preds = tokenizer.batch_decode(preds,
+          skip_special_tokens=True)<br>     25 labels = np.where(labels != -100, labels,
+          tokenizer.pad_token_id)<br>     26 decoded_labels = tokenizer.batch_decode(labels,
+          skip_special_tokens=True)</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\tokenization_utils_base.py:3469,
+          in PreTrainedTokenizerBase.batch_decode(self, sequences, skip_special_tokens,
+          clean_up_tokenization_spaces, **kwargs)<br>   3445 def batch_decode(<br>   3446     self,<br>   3447     sequences:
+          Union[List[int], List[List[int]], "np.ndarray", "torch.Tensor", "tf.Tensor"],<br>   (...)<br>   3450     **kwargs,<br>   3451
+          ) -&gt; List[str]:<br>   3452     """<br>   3453     Convert a list of lists
+          of token ids into a list of strings by calling decode.<br>   3454<br>   (...)<br>   3467         <code>List[str]</code>:
+          The list of decoded sentences.<br>   3468     """<br>-&gt; 3469     return
+          [<br>   3470         self.decode(<br>   3471             seq,<br>   3472             skip_special_tokens=skip_special_tokens,<br>   3473             clean_up_tokenization_spaces=clean_up_tokenization_spaces,<br>   3474             **kwargs,<br>   3475         )<br>   3476         for
+          seq in sequences<br>   3477     ]</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\tokenization_utils_base.py:3470,
+          in (.0)<br>   3445 def batch_decode(<br>   3446     self,<br>   3447     sequences:
+          Union[List[int], List[List[int]], "np.ndarray", "torch.Tensor", "tf.Tensor"],<br>   (...)<br>   3450     **kwargs,<br>   3451
+          ) -&gt; List[str]:<br>   3452     """<br>   3453     Convert a list of lists
+          of token ids into a list of strings by calling decode.<br>   3454<br>   (...)<br>   3467         <code>List[str]</code>:
+          The list of decoded sentences.<br>   3468     """<br>   3469     return
+          [<br>-&gt; 3470         self.decode(<br>   3471             seq,<br>   3472             skip_special_tokens=skip_special_tokens,<br>   3473             clean_up_tokenization_spaces=clean_up_tokenization_spaces,<br>   3474             **kwargs,<br>   3475         )<br>   3476         for
+          seq in sequences<br>   3477     ]</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\tokenization_utils_base.py:3509,
+          in PreTrainedTokenizerBase.decode(self, token_ids, skip_special_tokens,
+          clean_up_tokenization_spaces, **kwargs)<br>   3506 # Convert inputs to python
+          lists<br>   3507 token_ids = to_py_obj(token_ids)<br>-&gt; 3509 return self._decode(<br>   3510     token_ids=token_ids,<br>   3511     skip_special_tokens=skip_special_tokens,<br>   3512     clean_up_tokenization_spaces=clean_up_tokenization_spaces,<br>   3513     **kwargs,<br>   3514
+          )</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\tokenization_utils.py:931,
+          in PreTrainedTokenizer._decode(self, token_ids, skip_special_tokens, clean_up_tokenization_spaces,
+          spaces_between_special_tokens, **kwargs)<br>    921 def _decode(<br>    922     self,<br>    923     token_ids:
+          List[int],<br>   (...)<br>    927     **kwargs,<br>    928 ) -&gt; str:<br>    929     self._decode_use_source_tokenizer
+          = kwargs.pop("use_source_tokenizer", False)<br>--&gt; 931     filtered_tokens
+          = self.convert_ids_to_tokens(token_ids, skip_special_tokens=skip_special_tokens)<br>    933     #
+          To avoid mixing byte-level and unicode for byte-level BPT<br>    934     #
+          we need to build string separately for added tokens and byte-level tokens<br>    935     #
+          cf. <a rel="nofollow" href="https://github.com/huggingface/transformers/issues/1133">https://github.com/huggingface/transformers/issues/1133</a><br>    936     sub_texts
+          = []</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\tokenization_utils.py:912,
+          in PreTrainedTokenizer.convert_ids_to_tokens(self, ids, skip_special_tokens)<br>    910         tokens.append(self.added_tokens_decoder[index])<br>    911     else:<br>--&gt;
+          912         tokens.append(self._convert_id_to_token(index))<br>    913 return
+          tokens</p>
+
+          <p>File D:\anaconda\lib\site-packages\transformers\models\t5\tokenization_t5.py:312,
+          in T5Tokenizer._convert_id_to_token(self, index)<br>    310 """Converts
+          an index (integer) in a token (str) using the vocab."""<br>    311 if index
+          &lt; self.sp_model.get_piece_size():<br>--&gt; 312     token = self.sp_model.IdToPiece(index)<br>    313
+          else:<br>    314     token = f"&lt;extra_id_{self.vocab_size - 1 - index}&gt;"</p>
+
+          <p>File D:\anaconda\lib\site-packages\sentencepiece_<em>init</em>_.py:1045,
+          in _batchnize.._batched_func(self, arg)<br>   1043   return [_func(self,
+          n) for n in arg]<br>   1044 else:<br>-&gt; 1045   return _func(self, arg)</p>
+
+          <p>File D:\anaconda\lib\site-packages\sentencepiece_<em>init</em>_.py:1038,
+          in _batchnize.._func(v, n)<br>   1036 def _func(v, n):<br>   1037   if type(n)
+          is int and (n &lt; 0 or n &gt;= v.piece_size()):<br>-&gt; 1038     raise
+          IndexError(''piece id is out of range.'')<br>   1039   return func(v, n)</p>
+
+          <p>IndexError: piece id is out of range.</p>
+
+          <p>I set generation_max_length to 20, but get the above error.</p>
+
+          '
+        raw: "from datasets import load_dataset\n\nbooks = load_dataset('higashi1/mymulti30k',\
+          \  \"en-de\")\nfrom transformers import AutoTokenizer\n\n#checkpoint = \"\
+          ./logs/\"\ncheckpoint = \"t5-base\"\ntokenizer = AutoTokenizer.from_pretrained(checkpoint,use_fast=False)\n\
+          \nsource_lang = \"en\"\ntarget_lang = \"de\"\nprefix = \"translate English\
+          \ to German: \"\n\n\ndef preprocess_function(examples):\n    inputs = [prefix\
+          \ + example for example in examples[\"en\"]]\n    targets = [example for\
+          \ example in examples[\"de\"]]\n    model_inputs = tokenizer(inputs, text_target=targets,\
+          \ max_length=128, truncation=True)\n    return model_inputs\n\ntokenized_books\
+          \ = books.map(preprocess_function, batched=True)\n\n\n\n\nfrom transformers\
+          \ import DataCollatorForSeq2Seq\n\ndata_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer,\
+          \ model=checkpoint)\n\nimport evaluate\n\nmetric = evaluate.load(\"sacrebleu\"\
+          )\n\nimport numpy as np\n\n\ndef postprocess_text(preds, labels):\n    preds\
+          \ = [pred.strip() for pred in preds]\n    labels = [[label.strip()] for\
+          \ label in labels]\n\n    return preds, labels\n\n\ndef compute_metrics(eval_preds):\n\
+          \    preds, labels = eval_preds\n    if isinstance(preds, tuple):\n    \
+          \    preds = preds[0]\n    decoded_preds = tokenizer.batch_decode(preds,\
+          \ skip_special_tokens=True)\n\n    labels = np.where(labels != -100, labels,\
+          \ tokenizer.pad_token_id)\n    decoded_labels = tokenizer.batch_decode(labels,\
+          \ skip_special_tokens=True)\n\n    decoded_preds, decoded_labels = postprocess_text(decoded_preds,\
+          \ decoded_labels)\n\n    result = metric.compute(predictions=decoded_preds,\
+          \ references=decoded_labels)\n    result = {\"bleu\": result[\"score\"]}\n\
+          \n    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id)\
+          \ for pred in preds]\n    result[\"gen_len\"] = np.mean(prediction_lens)\n\
+          \    result = {k: round(v, 4) for k, v in result.items()}\n    return result\n\
+          \nfrom transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments,\
+          \ Seq2SeqTrainer\n\nmodel = AutoModelForSeq2SeqLM.from_pretrained(checkpoint)\n\
+          \ntraining_args = Seq2SeqTrainingArguments(\n    output_dir=\"my__model\"\
+          ,\n    evaluation_strategy=\"epoch\",\n    learning_rate=2e-5,#2e-5\n  \
+          \  per_device_train_batch_size=16,\n    per_device_eval_batch_size=16,\n\
+          \    weight_decay=0.01,\n    save_total_limit=3,\n    num_train_epochs=1,\n\
+          \    predict_with_generate=True,\n    fp16=True,\n    push_to_hub=False,\n\
+          \    report_to=\"none\",\n    generation_max_length =30\n)\n#generation_max_length\
+          \ =128\ntrainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n\
+          \    train_dataset=tokenized_books[\"train\"],\n    eval_dataset=tokenized_books[\"\
+          test\"],\n    tokenizer=tokenizer,\n    data_collator=data_collator,\n \
+          \   compute_metrics=compute_metrics,\n)\n#trainer.train()\n#trainer.save_model(\"\
+          ./logs/\")\n\npred_result = trainer.predict(tokenized_books[\"test\"])\n\
+          \n\nI noticed that the generated sentences, the longest length is 20.\n\
+          pred_result[0].shape\n(461, 20)\n\n---------------------------------------------------------------------------\n\
+          IndexError                                Traceback (most recent call last)\n\
+          Cell In[17], line 1\n----> 1 pred_result = trainer.predict(tokenized_books[\"\
+          test\"])\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\trainer_seq2seq.py:216,\
+          \ in Seq2SeqTrainer.predict(self, test_dataset, ignore_keys, metric_key_prefix,\
+          \ **gen_kwargs)\n    211 gen_kwargs[\"num_beams\"] = (\n    212     gen_kwargs[\"\
+          num_beams\"] if gen_kwargs.get(\"num_beams\") is not None else self.args.generation_num_beams\n\
+          \    213 )\n    214 self._gen_kwargs = gen_kwargs\n--> 216 return super().predict(test_dataset,\
+          \ ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix)\n\nFile\
+          \ D:\\anaconda\\lib\\site-packages\\transformers\\trainer.py:3129, in Trainer.predict(self,\
+          \ test_dataset, ignore_keys, metric_key_prefix)\n   3126 start_time = time.time()\n\
+          \   3128 eval_loop = self.prediction_loop if self.args.use_legacy_prediction_loop\
+          \ else self.evaluation_loop\n-> 3129 output = eval_loop(\n   3130     test_dataloader,\
+          \ description=\"Prediction\", ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix\n\
+          \   3131 )\n   3132 total_batch_size = self.args.eval_batch_size * self.args.world_size\n\
+          \   3133 if f\"{metric_key_prefix}_jit_compilation_time\" in output.metrics:\n\
+          \nFile D:\\anaconda\\lib\\site-packages\\transformers\\trainer.py:3353,\
+          \ in Trainer.evaluation_loop(self, dataloader, description, prediction_loss_only,\
+          \ ignore_keys, metric_key_prefix)\n   3349         metrics = self.compute_metrics(\n\
+          \   3350             EvalPrediction(predictions=all_preds, label_ids=all_labels,\
+          \ inputs=all_inputs)\n   3351         )\n   3352     else:\n-> 3353    \
+          \     metrics = self.compute_metrics(EvalPrediction(predictions=all_preds,\
+          \ label_ids=all_labels))\n   3354 else:\n   3355     metrics = {}\n\nCell\
+          \ In[15], line 23, in compute_metrics(eval_preds)\n     21 if isinstance(preds,\
+          \ tuple):\n     22     preds = preds[0]\n---> 23 decoded_preds = tokenizer.batch_decode(preds,\
+          \ skip_special_tokens=True)\n     25 labels = np.where(labels != -100, labels,\
+          \ tokenizer.pad_token_id)\n     26 decoded_labels = tokenizer.batch_decode(labels,\
+          \ skip_special_tokens=True)\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+          tokenization_utils_base.py:3469, in PreTrainedTokenizerBase.batch_decode(self,\
+          \ sequences, skip_special_tokens, clean_up_tokenization_spaces, **kwargs)\n\
+          \   3445 def batch_decode(\n   3446     self,\n   3447     sequences: Union[List[int],\
+          \ List[List[int]], \"np.ndarray\", \"torch.Tensor\", \"tf.Tensor\"],\n \
+          \  (...)\n   3450     **kwargs,\n   3451 ) -> List[str]:\n   3452     \"\
+          \"\"\n   3453     Convert a list of lists of token ids into a list of strings\
+          \ by calling decode.\n   3454 \n   (...)\n   3467         `List[str]`: The\
+          \ list of decoded sentences.\n   3468     \"\"\"\n-> 3469     return [\n\
+          \   3470         self.decode(\n   3471             seq,\n   3472       \
+          \      skip_special_tokens=skip_special_tokens,\n   3473             clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n\
+          \   3474             **kwargs,\n   3475         )\n   3476         for seq\
+          \ in sequences\n   3477     ]\n\nFile D:\\anaconda\\lib\\site-packages\\\
+          transformers\\tokenization_utils_base.py:3470, in <listcomp>(.0)\n   3445\
+          \ def batch_decode(\n   3446     self,\n   3447     sequences: Union[List[int],\
+          \ List[List[int]], \"np.ndarray\", \"torch.Tensor\", \"tf.Tensor\"],\n \
+          \  (...)\n   3450     **kwargs,\n   3451 ) -> List[str]:\n   3452     \"\
+          \"\"\n   3453     Convert a list of lists of token ids into a list of strings\
+          \ by calling decode.\n   3454 \n   (...)\n   3467         `List[str]`: The\
+          \ list of decoded sentences.\n   3468     \"\"\"\n   3469     return [\n\
+          -> 3470         self.decode(\n   3471             seq,\n   3472        \
+          \     skip_special_tokens=skip_special_tokens,\n   3473             clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n\
+          \   3474             **kwargs,\n   3475         )\n   3476         for seq\
+          \ in sequences\n   3477     ]\n\nFile D:\\anaconda\\lib\\site-packages\\\
+          transformers\\tokenization_utils_base.py:3509, in PreTrainedTokenizerBase.decode(self,\
+          \ token_ids, skip_special_tokens, clean_up_tokenization_spaces, **kwargs)\n\
+          \   3506 # Convert inputs to python lists\n   3507 token_ids = to_py_obj(token_ids)\n\
+          -> 3509 return self._decode(\n   3510     token_ids=token_ids,\n   3511\
+          \     skip_special_tokens=skip_special_tokens,\n   3512     clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n\
+          \   3513     **kwargs,\n   3514 )\n\nFile D:\\anaconda\\lib\\site-packages\\\
+          transformers\\tokenization_utils.py:931, in PreTrainedTokenizer._decode(self,\
+          \ token_ids, skip_special_tokens, clean_up_tokenization_spaces, spaces_between_special_tokens,\
+          \ **kwargs)\n    921 def _decode(\n    922     self,\n    923     token_ids:\
+          \ List[int],\n   (...)\n    927     **kwargs,\n    928 ) -> str:\n    929\
+          \     self._decode_use_source_tokenizer = kwargs.pop(\"use_source_tokenizer\"\
+          , False)\n--> 931     filtered_tokens = self.convert_ids_to_tokens(token_ids,\
+          \ skip_special_tokens=skip_special_tokens)\n    933     # To avoid mixing\
+          \ byte-level and unicode for byte-level BPT\n    934     # we need to build\
+          \ string separately for added tokens and byte-level tokens\n    935    \
+          \ # cf. https://github.com/huggingface/transformers/issues/1133\n    936\
+          \     sub_texts = []\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+          tokenization_utils.py:912, in PreTrainedTokenizer.convert_ids_to_tokens(self,\
+          \ ids, skip_special_tokens)\n    910         tokens.append(self.added_tokens_decoder[index])\n\
+          \    911     else:\n--> 912         tokens.append(self._convert_id_to_token(index))\n\
+          \    913 return tokens\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+          models\\t5\\tokenization_t5.py:312, in T5Tokenizer._convert_id_to_token(self,\
+          \ index)\n    310 \"\"\"Converts an index (integer) in a token (str) using\
+          \ the vocab.\"\"\"\n    311 if index < self.sp_model.get_piece_size():\n\
+          --> 312     token = self.sp_model.IdToPiece(index)\n    313 else:\n    314\
+          \     token = f\"<extra_id_{self.vocab_size - 1 - index}>\"\n\nFile D:\\\
+          anaconda\\lib\\site-packages\\sentencepiece\\__init__.py:1045, in _batchnize.<locals>._batched_func(self,\
+          \ arg)\n   1043   return [_func(self, n) for n in arg]\n   1044 else:\n\
+          -> 1045   return _func(self, arg)\n\nFile D:\\anaconda\\lib\\site-packages\\\
+          sentencepiece\\__init__.py:1038, in _batchnize.<locals>._func(v, n)\n  \
+          \ 1036 def _func(v, n):\n   1037   if type(n) is int and (n < 0 or n >=\
+          \ v.piece_size()):\n-> 1038     raise IndexError('piece id is out of range.')\n\
+          \   1039   return func(v, n)\n\nIndexError: piece id is out of range.\n\n\
+          I set generation_max_length to 20, but get the above error.\n\n"
+        updatedAt: '2023-07-24T01:12:43.782Z'
+      numEdits: 1
+      reactions: []
+    id: 64bdcfb376a6e2efccb1493e
+    type: comment
+  author: higashi1
+  content: "from datasets import load_dataset\n\nbooks = load_dataset('higashi1/mymulti30k',\
+    \  \"en-de\")\nfrom transformers import AutoTokenizer\n\n#checkpoint = \"./logs/\"\
+    \ncheckpoint = \"t5-base\"\ntokenizer = AutoTokenizer.from_pretrained(checkpoint,use_fast=False)\n\
+    \nsource_lang = \"en\"\ntarget_lang = \"de\"\nprefix = \"translate English to\
+    \ German: \"\n\n\ndef preprocess_function(examples):\n    inputs = [prefix + example\
+    \ for example in examples[\"en\"]]\n    targets = [example for example in examples[\"\
+    de\"]]\n    model_inputs = tokenizer(inputs, text_target=targets, max_length=128,\
+    \ truncation=True)\n    return model_inputs\n\ntokenized_books = books.map(preprocess_function,\
+    \ batched=True)\n\n\n\n\nfrom transformers import DataCollatorForSeq2Seq\n\ndata_collator\
+    \ = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=checkpoint)\n\nimport evaluate\n\
+    \nmetric = evaluate.load(\"sacrebleu\")\n\nimport numpy as np\n\n\ndef postprocess_text(preds,\
+    \ labels):\n    preds = [pred.strip() for pred in preds]\n    labels = [[label.strip()]\
+    \ for label in labels]\n\n    return preds, labels\n\n\ndef compute_metrics(eval_preds):\n\
+    \    preds, labels = eval_preds\n    if isinstance(preds, tuple):\n        preds\
+    \ = preds[0]\n    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)\n\
+    \n    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)\n    decoded_labels\
+    \ = tokenizer.batch_decode(labels, skip_special_tokens=True)\n\n    decoded_preds,\
+    \ decoded_labels = postprocess_text(decoded_preds, decoded_labels)\n\n    result\
+    \ = metric.compute(predictions=decoded_preds, references=decoded_labels)\n   \
+    \ result = {\"bleu\": result[\"score\"]}\n\n    prediction_lens = [np.count_nonzero(pred\
+    \ != tokenizer.pad_token_id) for pred in preds]\n    result[\"gen_len\"] = np.mean(prediction_lens)\n\
+    \    result = {k: round(v, 4) for k, v in result.items()}\n    return result\n\
+    \nfrom transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer\n\
+    \nmodel = AutoModelForSeq2SeqLM.from_pretrained(checkpoint)\n\ntraining_args =\
+    \ Seq2SeqTrainingArguments(\n    output_dir=\"my__model\",\n    evaluation_strategy=\"\
+    epoch\",\n    learning_rate=2e-5,#2e-5\n    per_device_train_batch_size=16,\n\
+    \    per_device_eval_batch_size=16,\n    weight_decay=0.01,\n    save_total_limit=3,\n\
+    \    num_train_epochs=1,\n    predict_with_generate=True,\n    fp16=True,\n  \
+    \  push_to_hub=False,\n    report_to=\"none\",\n    generation_max_length =30\n\
+    )\n#generation_max_length =128\ntrainer = Seq2SeqTrainer(\n    model=model,\n\
+    \    args=training_args,\n    train_dataset=tokenized_books[\"train\"],\n    eval_dataset=tokenized_books[\"\
+    test\"],\n    tokenizer=tokenizer,\n    data_collator=data_collator,\n    compute_metrics=compute_metrics,\n\
+    )\n#trainer.train()\n#trainer.save_model(\"./logs/\")\n\npred_result = trainer.predict(tokenized_books[\"\
+    test\"])\n\n\nI noticed that the generated sentences, the longest length is 20.\n\
+    pred_result[0].shape\n(461, 20)\n\n---------------------------------------------------------------------------\n\
+    IndexError                                Traceback (most recent call last)\n\
+    Cell In[17], line 1\n----> 1 pred_result = trainer.predict(tokenized_books[\"\
+    test\"])\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\trainer_seq2seq.py:216,\
+    \ in Seq2SeqTrainer.predict(self, test_dataset, ignore_keys, metric_key_prefix,\
+    \ **gen_kwargs)\n    211 gen_kwargs[\"num_beams\"] = (\n    212     gen_kwargs[\"\
+    num_beams\"] if gen_kwargs.get(\"num_beams\") is not None else self.args.generation_num_beams\n\
+    \    213 )\n    214 self._gen_kwargs = gen_kwargs\n--> 216 return super().predict(test_dataset,\
+    \ ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix)\n\nFile D:\\anaconda\\\
+    lib\\site-packages\\transformers\\trainer.py:3129, in Trainer.predict(self, test_dataset,\
+    \ ignore_keys, metric_key_prefix)\n   3126 start_time = time.time()\n   3128 eval_loop\
+    \ = self.prediction_loop if self.args.use_legacy_prediction_loop else self.evaluation_loop\n\
+    -> 3129 output = eval_loop(\n   3130     test_dataloader, description=\"Prediction\"\
+    , ignore_keys=ignore_keys, metric_key_prefix=metric_key_prefix\n   3131 )\n  \
+    \ 3132 total_batch_size = self.args.eval_batch_size * self.args.world_size\n \
+    \  3133 if f\"{metric_key_prefix}_jit_compilation_time\" in output.metrics:\n\n\
+    File D:\\anaconda\\lib\\site-packages\\transformers\\trainer.py:3353, in Trainer.evaluation_loop(self,\
+    \ dataloader, description, prediction_loss_only, ignore_keys, metric_key_prefix)\n\
+    \   3349         metrics = self.compute_metrics(\n   3350             EvalPrediction(predictions=all_preds,\
+    \ label_ids=all_labels, inputs=all_inputs)\n   3351         )\n   3352     else:\n\
+    -> 3353         metrics = self.compute_metrics(EvalPrediction(predictions=all_preds,\
+    \ label_ids=all_labels))\n   3354 else:\n   3355     metrics = {}\n\nCell In[15],\
+    \ line 23, in compute_metrics(eval_preds)\n     21 if isinstance(preds, tuple):\n\
+    \     22     preds = preds[0]\n---> 23 decoded_preds = tokenizer.batch_decode(preds,\
+    \ skip_special_tokens=True)\n     25 labels = np.where(labels != -100, labels,\
+    \ tokenizer.pad_token_id)\n     26 decoded_labels = tokenizer.batch_decode(labels,\
+    \ skip_special_tokens=True)\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+    tokenization_utils_base.py:3469, in PreTrainedTokenizerBase.batch_decode(self,\
+    \ sequences, skip_special_tokens, clean_up_tokenization_spaces, **kwargs)\n  \
+    \ 3445 def batch_decode(\n   3446     self,\n   3447     sequences: Union[List[int],\
+    \ List[List[int]], \"np.ndarray\", \"torch.Tensor\", \"tf.Tensor\"],\n   (...)\n\
+    \   3450     **kwargs,\n   3451 ) -> List[str]:\n   3452     \"\"\"\n   3453 \
+    \    Convert a list of lists of token ids into a list of strings by calling decode.\n\
+    \   3454 \n   (...)\n   3467         `List[str]`: The list of decoded sentences.\n\
+    \   3468     \"\"\"\n-> 3469     return [\n   3470         self.decode(\n   3471\
+    \             seq,\n   3472             skip_special_tokens=skip_special_tokens,\n\
+    \   3473             clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n\
+    \   3474             **kwargs,\n   3475         )\n   3476         for seq in\
+    \ sequences\n   3477     ]\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+    tokenization_utils_base.py:3470, in <listcomp>(.0)\n   3445 def batch_decode(\n\
+    \   3446     self,\n   3447     sequences: Union[List[int], List[List[int]], \"\
+    np.ndarray\", \"torch.Tensor\", \"tf.Tensor\"],\n   (...)\n   3450     **kwargs,\n\
+    \   3451 ) -> List[str]:\n   3452     \"\"\"\n   3453     Convert a list of lists\
+    \ of token ids into a list of strings by calling decode.\n   3454 \n   (...)\n\
+    \   3467         `List[str]`: The list of decoded sentences.\n   3468     \"\"\
+    \"\n   3469     return [\n-> 3470         self.decode(\n   3471             seq,\n\
+    \   3472             skip_special_tokens=skip_special_tokens,\n   3473       \
+    \      clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n   3474   \
+    \          **kwargs,\n   3475         )\n   3476         for seq in sequences\n\
+    \   3477     ]\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\tokenization_utils_base.py:3509,\
+    \ in PreTrainedTokenizerBase.decode(self, token_ids, skip_special_tokens, clean_up_tokenization_spaces,\
+    \ **kwargs)\n   3506 # Convert inputs to python lists\n   3507 token_ids = to_py_obj(token_ids)\n\
+    -> 3509 return self._decode(\n   3510     token_ids=token_ids,\n   3511     skip_special_tokens=skip_special_tokens,\n\
+    \   3512     clean_up_tokenization_spaces=clean_up_tokenization_spaces,\n   3513\
+    \     **kwargs,\n   3514 )\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+    tokenization_utils.py:931, in PreTrainedTokenizer._decode(self, token_ids, skip_special_tokens,\
+    \ clean_up_tokenization_spaces, spaces_between_special_tokens, **kwargs)\n   \
+    \ 921 def _decode(\n    922     self,\n    923     token_ids: List[int],\n   (...)\n\
+    \    927     **kwargs,\n    928 ) -> str:\n    929     self._decode_use_source_tokenizer\
+    \ = kwargs.pop(\"use_source_tokenizer\", False)\n--> 931     filtered_tokens =\
+    \ self.convert_ids_to_tokens(token_ids, skip_special_tokens=skip_special_tokens)\n\
+    \    933     # To avoid mixing byte-level and unicode for byte-level BPT\n   \
+    \ 934     # we need to build string separately for added tokens and byte-level\
+    \ tokens\n    935     # cf. https://github.com/huggingface/transformers/issues/1133\n\
+    \    936     sub_texts = []\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+    tokenization_utils.py:912, in PreTrainedTokenizer.convert_ids_to_tokens(self,\
+    \ ids, skip_special_tokens)\n    910         tokens.append(self.added_tokens_decoder[index])\n\
+    \    911     else:\n--> 912         tokens.append(self._convert_id_to_token(index))\n\
+    \    913 return tokens\n\nFile D:\\anaconda\\lib\\site-packages\\transformers\\\
+    models\\t5\\tokenization_t5.py:312, in T5Tokenizer._convert_id_to_token(self,\
+    \ index)\n    310 \"\"\"Converts an index (integer) in a token (str) using the\
+    \ vocab.\"\"\"\n    311 if index < self.sp_model.get_piece_size():\n--> 312  \
+    \   token = self.sp_model.IdToPiece(index)\n    313 else:\n    314     token =\
+    \ f\"<extra_id_{self.vocab_size - 1 - index}>\"\n\nFile D:\\anaconda\\lib\\site-packages\\\
+    sentencepiece\\__init__.py:1045, in _batchnize.<locals>._batched_func(self, arg)\n\
+    \   1043   return [_func(self, n) for n in arg]\n   1044 else:\n-> 1045   return\
+    \ _func(self, arg)\n\nFile D:\\anaconda\\lib\\site-packages\\sentencepiece\\__init__.py:1038,\
+    \ in _batchnize.<locals>._func(v, n)\n   1036 def _func(v, n):\n   1037   if type(n)\
+    \ is int and (n < 0 or n >= v.piece_size()):\n-> 1038     raise IndexError('piece\
+    \ id is out of range.')\n   1039   return func(v, n)\n\nIndexError: piece id is\
+    \ out of range.\n\nI set generation_max_length to 20, but get the above error.\n\
+    \n"
+  created_at: 2023-07-24 00:11:15+00:00
+  edited: true
+  hidden: false
+  id: 64bdcfb376a6e2efccb1493e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/62fcf765ca03860f26b02b34d643a8d8.svg
+      fullname: liao
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zenghua
+      type: user
+    createdAt: '2023-07-27T13:53:06.000Z'
+    data:
+      edited: false
+      editors:
+      - zenghua
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8948690891265869
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/62fcf765ca03860f26b02b34d643a8d8.svg
+          fullname: liao
+          isHf: false
+          isPro: false
+          name: zenghua
+          type: user
+        html: '<p>Did you find a solution? I met the same problem.</p>
+
+          '
+        raw: Did you find a solution? I met the same problem.
+        updatedAt: '2023-07-27T13:53:06.886Z'
+      numEdits: 0
+      reactions: []
+    id: 64c276c292488df23e5d7f86
+    type: comment
+  author: zenghua
+  content: Did you find a solution? I met the same problem.
+  created_at: 2023-07-27 12:53:06+00:00
+  edited: false
+  hidden: false
+  id: 64c276c292488df23e5d7f86
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/956dc0055eba3bd694e3e09decb36a7c.svg
+      fullname: naru
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: higashi1
+      type: user
+    createdAt: '2023-08-02T00:35:50.000Z'
+    data:
+      edited: false
+      editors:
+      - higashi1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5264397263526917
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/956dc0055eba3bd694e3e09decb36a7c.svg
+          fullname: naru
+          isHf: false
+          isPro: false
+          name: higashi1
+          type: user
+        html: '<p>I find.</p>
+
+          <p>inputs = [prefix + example for example in tokenized_books["test"]["en"]]</p>
+
+          <p>from transformers import AutoTokenizer<br>#text = ["translate English
+          to German: Two horse racing jockeys, one in checkered blue and red and the
+          other in orange and brown, are racing against a blurry background.","translate
+          English to German: Two horse racing jockeys, on"]</p>
+
+          <p>tokenizer = AutoTokenizer.from_pretrained("./logs/")<br>#inputs = tokenizer(text,
+          return_tensors="pt").input_ids<br>inputs = tokenizer(inputs, padding=True,return_tensors="pt").input_ids<br>from
+          transformers import AutoModelForSeq2SeqLM</p>
+
+          <p>model = AutoModelForSeq2SeqLM.from_pretrained("./logs/")<br>outputs =
+          model.generate(inputs, max_new_tokens=100, do_sample=True, top_k=30, top_p=0.95)</p>
+
+          <p>Use model.generate.</p>
+
+          '
+        raw: 'I find.
+
+
+
+
+          inputs = [prefix + example for example in tokenized_books["test"]["en"]]
+
+
+          from transformers import AutoTokenizer
+
+          #text = ["translate English to German: Two horse racing jockeys, one in
+          checkered blue and red and the other in orange and brown, are racing against
+          a blurry background.","translate English to German: Two horse racing jockeys,
+          on"]
+
+
+          tokenizer = AutoTokenizer.from_pretrained("./logs/")
+
+          #inputs = tokenizer(text, return_tensors="pt").input_ids
+
+          inputs = tokenizer(inputs, padding=True,return_tensors="pt").input_ids
+
+          from transformers import AutoModelForSeq2SeqLM
+
+
+          model = AutoModelForSeq2SeqLM.from_pretrained("./logs/")
+
+          outputs = model.generate(inputs, max_new_tokens=100, do_sample=True, top_k=30,
+          top_p=0.95)
+
+
+
+          Use model.generate.'
+        updatedAt: '2023-08-02T00:35:50.250Z'
+      numEdits: 0
+      reactions: []
+    id: 64c9a4e636c11430f33b3245
+    type: comment
+  author: higashi1
+  content: 'I find.
+
+
+
+
+    inputs = [prefix + example for example in tokenized_books["test"]["en"]]
+
+
+    from transformers import AutoTokenizer
+
+    #text = ["translate English to German: Two horse racing jockeys, one in checkered
+    blue and red and the other in orange and brown, are racing against a blurry background.","translate
+    English to German: Two horse racing jockeys, on"]
+
+
+    tokenizer = AutoTokenizer.from_pretrained("./logs/")
+
+    #inputs = tokenizer(text, return_tensors="pt").input_ids
+
+    inputs = tokenizer(inputs, padding=True,return_tensors="pt").input_ids
+
+    from transformers import AutoModelForSeq2SeqLM
+
+
+    model = AutoModelForSeq2SeqLM.from_pretrained("./logs/")
+
+    outputs = model.generate(inputs, max_new_tokens=100, do_sample=True, top_k=30,
+    top_p=0.95)
+
+
+
+    Use model.generate.'
+  created_at: 2023-08-01 23:35:50+00:00
+  edited: false
+  hidden: false
+  id: 64c9a4e636c11430f33b3245
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 17
+repo_id: t5-base
+repo_type: model
+status: open
+target_branch: null
+title: Why T5 can only generate sentences of length 20. Can someone help me? I wish
+  I could generate longer sentences.

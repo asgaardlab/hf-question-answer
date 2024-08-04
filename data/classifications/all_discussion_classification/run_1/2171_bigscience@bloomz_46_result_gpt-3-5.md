@@ -1,0 +1,4 @@
+## https://huggingface.co/bigscience/bloomz/discussions/46
+
+contains_question: yes
+question_part: Hello, I have a technical question. It's about training for text generation in a causal manner. I noticed that the training objective is cross-entropy based on a simple shift of the input_ids. However, the attention mechanism is causal thanks to the mask, but the feed-forward part is non-causal, am I correct? Therefore, isn't the way the model is trained in the HuggingFace library incorrect? Shouldn't we apply cross-entropy only on the prediction of the last token or also put a causal-mask on the MLP part

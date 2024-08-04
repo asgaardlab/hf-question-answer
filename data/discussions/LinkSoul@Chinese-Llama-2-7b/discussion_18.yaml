@@ -1,0 +1,245 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: saivineetha
+conflicting_files: null
+created_at: 2024-01-18 07:58:43+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9df73264fe5d79bebd9389bc900f01af.svg
+      fullname: Baddepudi Venkata Naga Sri Sai Vineetha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saivineetha
+      type: user
+    createdAt: '2024-01-18T07:58:43.000Z'
+    data:
+      edited: false
+      editors:
+      - saivineetha
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.254717618227005
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9df73264fe5d79bebd9389bc900f01af.svg
+          fullname: Baddepudi Venkata Naga Sri Sai Vineetha
+          isHf: false
+          isPro: false
+          name: saivineetha
+          type: user
+        html: "<p>I was trying to pre-train the model on a text file but training\
+          \ loss is becoming zero after 15 epochs. Can you help me with this.</p>\n\
+          <pre><code>if script_args.load_in_kbits in [4, 8]:\n    load_in_4bit = script_args.load_in_kbits\
+          \ == 4\n    load_in_8bit = script_args.load_in_kbits == 8\n    if script_args.modules_to_save\
+          \ is not None:\n        load_in_8bit_skip_modules = script_args.modules_to_save.split(\"\
+          ,\")\n    else:\n        load_in_8bit_skip_modules = None\n    quantization_config\
+          \ = BitsAndBytesConfig(\n        load_in_4bit=script_args.load_in_kbits\
+          \ == 4,\n        load_in_8bit=script_args.load_in_kbits == 8,\n        llm_int8_threshold=6.0,\n\
+          \        load_in_8bit_skip_modules=load_in_8bit_skip_modules,\n        bnb_4bit_compute_dtype=compute_dtype,\n\
+          \        bnb_4bit_use_double_quant=script_args.double_quant,\n        bnb_4bit_quant_type=script_args.quant_type,\
+          \  # {'fp4', 'nf4'}\n    )\nelse:\n    load_in_4bit = False\n    load_in_8bit\
+          \ = False\n    quantization_config = None\nif quantization_config is not\
+          \ None:\n    logger.info(f\"quantization_config:{quantization_config.to_dict()}\"\
+          )\n\nif script_args.model_name_or_path:\n    torch_dtype = (\n        script_args.torch_dtype\n\
+          \        if script_args.torch_dtype in [\"auto\", None]\n        else getattr(torch,\
+          \ script_args.torch_dtype)\n    )\n    device_map = {\"\": int(os.environ.get(\"\
+          LOCAL_RANK\") or 0)}\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        script_args.model_name_or_path,\n        from_tf=bool(\".ckpt\"\
+          \ in script_args.model_name_or_path),\n        config=config,\n        #\
+          \ cache_dir=script_args.cache_dir,\n        # revision=model_args.model_revision,\n\
+          \        use_auth_token=True if script_args.use_auth_token else None,\n\
+          \        torch_dtype=torch_dtype,\n        low_cpu_mem_usage=True,\n   \
+          \     device_map=device_map,\n        load_in_4bit=load_in_4bit,\n     \
+          \   load_in_8bit=load_in_8bit,\n        quantization_config=quantization_config,\n\
+          \    )\n    \nelse:\n    model = AutoModelForCausalLM.from_config(config)\n\
+          \    n_params = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())\n\
+          \    logger.info(\n        f\"Training new model from scratch - Total size={n_params/2**20:.2f}M\
+          \ params\"\n    )\n\nif script_args.load_in_kbits in [4, 8]:\n    model\
+          \ = prepare_model_for_kbit_training(\n        model, use_gradient_checkpointing=script_args.gradient_checkpointing\n\
+          \    )\nmodel.config.use_cache = False\nmodel_vocab_size = model.get_output_embeddings().weight.size(0)\n\
+          tokenizer_vocab_size = len(tokenizer)\nlogger.info(f\"Model vocab size:\
+          \ {model_vocab_size}\")\nlogger.info(f\"Tokenizer vocab size: {tokenizer_vocab_size}\"\
+          )\nif model_vocab_size != tokenizer_vocab_size:\n    logger.info(f\"Resize\
+          \ model vocab size to {tokenizer_vocab_size}\")\n    model.resize_token_embeddings(len(tokenizer))\n\
+          \nif script_args.peft_path is not None:\n    logger.info(\"Peft from pre-trained\
+          \ model\")\n    model = PeftModel.from_pretrained(\n        model, script_args.peft_path,\
+          \ device_map=device_map\n    )\nelse:\n    logger.info(\"Init new peft model\"\
+          )\n    target_modules = script_args.trainable.split(\",\")\n    modules_to_save\
+          \ = script_args.modules_to_save\n    if modules_to_save is not None:\n \
+          \       modules_to_save = modules_to_save.split(\",\")\n    lora_rank =\
+          \ script_args.lora_rank\n    lora_dropout = script_args.lora_dropout\n \
+          \   lora_alpha = script_args.lora_alpha\n    logger.info(f\"target_modules:\
+          \ {target_modules}\")\n    logger.info(f\"lora_rank: {lora_rank}\")\n  \
+          \  peft_config = LoraConfig(\n        task_type=TaskType.CAUSAL_LM,\n  \
+          \      target_modules=target_modules,\n        inference_mode=False,\n \
+          \       r=lora_rank,\n        lora_alpha=lora_alpha,\n        lora_dropout=lora_dropout,\n\
+          \        modules_to_save=modules_to_save,\n    )\n    model = get_peft_model(model,\
+          \ peft_config)\nfor name, module in model.named_modules():\n    if isinstance(module,\
+          \ LoraLayer):\n      module = module.to(torch.float16)\n        # if script_args.bf16:\n\
+          \        #     module = module.to(torch.bfloat16)\n        # if script_args.fp16:\n\
+          \        #     module = module.to(torch.float16)\n    if \"norm\" in name:\n\
+          \        module = module.to(torch.float16)\n    if \"lm_head\" in name or\
+          \ \"embed_tokens\" in name:\n        if hasattr(module, \"weight\"):\n \
+          \         module = module.to(torch.float16)\n            # if script_args.bf16\
+          \ and module.weight.dtype == torch.float32:\n            #     module =\
+          \ module.to(torch.bfloat16)\n            # if script_args.fp16 and module.weight.dtype\
+          \ == torch.float32:\n            #     module = module.to(torch.float16)\n\
+          model.print_trainable_parameters()\nlogger.info(f\"model.modules_to_save:\
+          \ {model.modules_to_save}\")\nold_state_dict = model.state_dict\nmodel.state_dict\
+          \ = (\n    lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())\n\
+          ).__get__(model, type(model))\n</code></pre>\n<p><a rel=\"nofollow\" href=\"\
+          https://cdn-uploads.huggingface.co/production/uploads/640fe1d7b0ee289c8583a879/mxXj0x0zzncBYT-fup29m.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/640fe1d7b0ee289c8583a879/mxXj0x0zzncBYT-fup29m.png\"\
+          ></a></p>\n"
+        raw: "I was trying to pre-train the model on a text file but training loss\
+          \ is becoming zero after 15 epochs. Can you help me with this.\r\n\r\n```\r\
+          \nif script_args.load_in_kbits in [4, 8]:\r\n    load_in_4bit = script_args.load_in_kbits\
+          \ == 4\r\n    load_in_8bit = script_args.load_in_kbits == 8\r\n    if script_args.modules_to_save\
+          \ is not None:\r\n        load_in_8bit_skip_modules = script_args.modules_to_save.split(\"\
+          ,\")\r\n    else:\r\n        load_in_8bit_skip_modules = None\r\n    quantization_config\
+          \ = BitsAndBytesConfig(\r\n        load_in_4bit=script_args.load_in_kbits\
+          \ == 4,\r\n        load_in_8bit=script_args.load_in_kbits == 8,\r\n    \
+          \    llm_int8_threshold=6.0,\r\n        load_in_8bit_skip_modules=load_in_8bit_skip_modules,\r\
+          \n        bnb_4bit_compute_dtype=compute_dtype,\r\n        bnb_4bit_use_double_quant=script_args.double_quant,\r\
+          \n        bnb_4bit_quant_type=script_args.quant_type,  # {'fp4', 'nf4'}\r\
+          \n    )\r\nelse:\r\n    load_in_4bit = False\r\n    load_in_8bit = False\r\
+          \n    quantization_config = None\r\nif quantization_config is not None:\r\
+          \n    logger.info(f\"quantization_config:{quantization_config.to_dict()}\"\
+          )\r\n\r\nif script_args.model_name_or_path:\r\n    torch_dtype = (\r\n \
+          \       script_args.torch_dtype\r\n        if script_args.torch_dtype in\
+          \ [\"auto\", None]\r\n        else getattr(torch, script_args.torch_dtype)\r\
+          \n    )\r\n    device_map = {\"\": int(os.environ.get(\"LOCAL_RANK\") or\
+          \ 0)}\r\n    model = AutoModelForCausalLM.from_pretrained(\r\n        script_args.model_name_or_path,\r\
+          \n        from_tf=bool(\".ckpt\" in script_args.model_name_or_path),\r\n\
+          \        config=config,\r\n        # cache_dir=script_args.cache_dir,\r\n\
+          \        # revision=model_args.model_revision,\r\n        use_auth_token=True\
+          \ if script_args.use_auth_token else None,\r\n        torch_dtype=torch_dtype,\r\
+          \n        low_cpu_mem_usage=True,\r\n        device_map=device_map,\r\n\
+          \        load_in_4bit=load_in_4bit,\r\n        load_in_8bit=load_in_8bit,\r\
+          \n        quantization_config=quantization_config,\r\n    )\r\n    \r\n\
+          else:\r\n    model = AutoModelForCausalLM.from_config(config)\r\n    n_params\
+          \ = sum({p.data_ptr(): p.numel() for p in model.parameters()}.values())\r\
+          \n    logger.info(\r\n        f\"Training new model from scratch - Total\
+          \ size={n_params/2**20:.2f}M params\"\r\n    )\r\n\r\nif script_args.load_in_kbits\
+          \ in [4, 8]:\r\n    model = prepare_model_for_kbit_training(\r\n       \
+          \ model, use_gradient_checkpointing=script_args.gradient_checkpointing\r\
+          \n    )\r\nmodel.config.use_cache = False\r\nmodel_vocab_size = model.get_output_embeddings().weight.size(0)\r\
+          \ntokenizer_vocab_size = len(tokenizer)\r\nlogger.info(f\"Model vocab size:\
+          \ {model_vocab_size}\")\r\nlogger.info(f\"Tokenizer vocab size: {tokenizer_vocab_size}\"\
+          )\r\nif model_vocab_size != tokenizer_vocab_size:\r\n    logger.info(f\"\
+          Resize model vocab size to {tokenizer_vocab_size}\")\r\n    model.resize_token_embeddings(len(tokenizer))\r\
+          \n\r\nif script_args.peft_path is not None:\r\n    logger.info(\"Peft from\
+          \ pre-trained model\")\r\n    model = PeftModel.from_pretrained(\r\n   \
+          \     model, script_args.peft_path, device_map=device_map\r\n    )\r\nelse:\r\
+          \n    logger.info(\"Init new peft model\")\r\n    target_modules = script_args.trainable.split(\"\
+          ,\")\r\n    modules_to_save = script_args.modules_to_save\r\n    if modules_to_save\
+          \ is not None:\r\n        modules_to_save = modules_to_save.split(\",\"\
+          )\r\n    lora_rank = script_args.lora_rank\r\n    lora_dropout = script_args.lora_dropout\r\
+          \n    lora_alpha = script_args.lora_alpha\r\n    logger.info(f\"target_modules:\
+          \ {target_modules}\")\r\n    logger.info(f\"lora_rank: {lora_rank}\")\r\n\
+          \    peft_config = LoraConfig(\r\n        task_type=TaskType.CAUSAL_LM,\r\
+          \n        target_modules=target_modules,\r\n        inference_mode=False,\r\
+          \n        r=lora_rank,\r\n        lora_alpha=lora_alpha,\r\n        lora_dropout=lora_dropout,\r\
+          \n        modules_to_save=modules_to_save,\r\n    )\r\n    model = get_peft_model(model,\
+          \ peft_config)\r\nfor name, module in model.named_modules():\r\n    if isinstance(module,\
+          \ LoraLayer):\r\n      module = module.to(torch.float16)\r\n        # if\
+          \ script_args.bf16:\r\n        #     module = module.to(torch.bfloat16)\r\
+          \n        # if script_args.fp16:\r\n        #     module = module.to(torch.float16)\r\
+          \n    if \"norm\" in name:\r\n        module = module.to(torch.float16)\r\
+          \n    if \"lm_head\" in name or \"embed_tokens\" in name:\r\n        if\
+          \ hasattr(module, \"weight\"):\r\n          module = module.to(torch.float16)\r\
+          \n            # if script_args.bf16 and module.weight.dtype == torch.float32:\r\
+          \n            #     module = module.to(torch.bfloat16)\r\n            #\
+          \ if script_args.fp16 and module.weight.dtype == torch.float32:\r\n    \
+          \        #     module = module.to(torch.float16)\r\nmodel.print_trainable_parameters()\r\
+          \nlogger.info(f\"model.modules_to_save: {model.modules_to_save}\")\r\nold_state_dict\
+          \ = model.state_dict\r\nmodel.state_dict = (\r\n    lambda self, *_, **__:\
+          \ get_peft_model_state_dict(self, old_state_dict())\r\n).__get__(model,\
+          \ type(model))\r\n\r\n```\r\n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/640fe1d7b0ee289c8583a879/mxXj0x0zzncBYT-fup29m.png)\r\
+          \n"
+        updatedAt: '2024-01-18T07:58:43.114Z'
+      numEdits: 0
+      reactions: []
+    id: 65a8da335e3029d4d5bb385e
+    type: comment
+  author: saivineetha
+  content: "I was trying to pre-train the model on a text file but training loss is\
+    \ becoming zero after 15 epochs. Can you help me with this.\r\n\r\n```\r\nif script_args.load_in_kbits\
+    \ in [4, 8]:\r\n    load_in_4bit = script_args.load_in_kbits == 4\r\n    load_in_8bit\
+    \ = script_args.load_in_kbits == 8\r\n    if script_args.modules_to_save is not\
+    \ None:\r\n        load_in_8bit_skip_modules = script_args.modules_to_save.split(\"\
+    ,\")\r\n    else:\r\n        load_in_8bit_skip_modules = None\r\n    quantization_config\
+    \ = BitsAndBytesConfig(\r\n        load_in_4bit=script_args.load_in_kbits == 4,\r\
+    \n        load_in_8bit=script_args.load_in_kbits == 8,\r\n        llm_int8_threshold=6.0,\r\
+    \n        load_in_8bit_skip_modules=load_in_8bit_skip_modules,\r\n        bnb_4bit_compute_dtype=compute_dtype,\r\
+    \n        bnb_4bit_use_double_quant=script_args.double_quant,\r\n        bnb_4bit_quant_type=script_args.quant_type,\
+    \  # {'fp4', 'nf4'}\r\n    )\r\nelse:\r\n    load_in_4bit = False\r\n    load_in_8bit\
+    \ = False\r\n    quantization_config = None\r\nif quantization_config is not None:\r\
+    \n    logger.info(f\"quantization_config:{quantization_config.to_dict()}\")\r\n\
+    \r\nif script_args.model_name_or_path:\r\n    torch_dtype = (\r\n        script_args.torch_dtype\r\
+    \n        if script_args.torch_dtype in [\"auto\", None]\r\n        else getattr(torch,\
+    \ script_args.torch_dtype)\r\n    )\r\n    device_map = {\"\": int(os.environ.get(\"\
+    LOCAL_RANK\") or 0)}\r\n    model = AutoModelForCausalLM.from_pretrained(\r\n\
+    \        script_args.model_name_or_path,\r\n        from_tf=bool(\".ckpt\" in\
+    \ script_args.model_name_or_path),\r\n        config=config,\r\n        # cache_dir=script_args.cache_dir,\r\
+    \n        # revision=model_args.model_revision,\r\n        use_auth_token=True\
+    \ if script_args.use_auth_token else None,\r\n        torch_dtype=torch_dtype,\r\
+    \n        low_cpu_mem_usage=True,\r\n        device_map=device_map,\r\n      \
+    \  load_in_4bit=load_in_4bit,\r\n        load_in_8bit=load_in_8bit,\r\n      \
+    \  quantization_config=quantization_config,\r\n    )\r\n    \r\nelse:\r\n    model\
+    \ = AutoModelForCausalLM.from_config(config)\r\n    n_params = sum({p.data_ptr():\
+    \ p.numel() for p in model.parameters()}.values())\r\n    logger.info(\r\n   \
+    \     f\"Training new model from scratch - Total size={n_params/2**20:.2f}M params\"\
+    \r\n    )\r\n\r\nif script_args.load_in_kbits in [4, 8]:\r\n    model = prepare_model_for_kbit_training(\r\
+    \n        model, use_gradient_checkpointing=script_args.gradient_checkpointing\r\
+    \n    )\r\nmodel.config.use_cache = False\r\nmodel_vocab_size = model.get_output_embeddings().weight.size(0)\r\
+    \ntokenizer_vocab_size = len(tokenizer)\r\nlogger.info(f\"Model vocab size: {model_vocab_size}\"\
+    )\r\nlogger.info(f\"Tokenizer vocab size: {tokenizer_vocab_size}\")\r\nif model_vocab_size\
+    \ != tokenizer_vocab_size:\r\n    logger.info(f\"Resize model vocab size to {tokenizer_vocab_size}\"\
+    )\r\n    model.resize_token_embeddings(len(tokenizer))\r\n\r\nif script_args.peft_path\
+    \ is not None:\r\n    logger.info(\"Peft from pre-trained model\")\r\n    model\
+    \ = PeftModel.from_pretrained(\r\n        model, script_args.peft_path, device_map=device_map\r\
+    \n    )\r\nelse:\r\n    logger.info(\"Init new peft model\")\r\n    target_modules\
+    \ = script_args.trainable.split(\",\")\r\n    modules_to_save = script_args.modules_to_save\r\
+    \n    if modules_to_save is not None:\r\n        modules_to_save = modules_to_save.split(\"\
+    ,\")\r\n    lora_rank = script_args.lora_rank\r\n    lora_dropout = script_args.lora_dropout\r\
+    \n    lora_alpha = script_args.lora_alpha\r\n    logger.info(f\"target_modules:\
+    \ {target_modules}\")\r\n    logger.info(f\"lora_rank: {lora_rank}\")\r\n    peft_config\
+    \ = LoraConfig(\r\n        task_type=TaskType.CAUSAL_LM,\r\n        target_modules=target_modules,\r\
+    \n        inference_mode=False,\r\n        r=lora_rank,\r\n        lora_alpha=lora_alpha,\r\
+    \n        lora_dropout=lora_dropout,\r\n        modules_to_save=modules_to_save,\r\
+    \n    )\r\n    model = get_peft_model(model, peft_config)\r\nfor name, module\
+    \ in model.named_modules():\r\n    if isinstance(module, LoraLayer):\r\n     \
+    \ module = module.to(torch.float16)\r\n        # if script_args.bf16:\r\n    \
+    \    #     module = module.to(torch.bfloat16)\r\n        # if script_args.fp16:\r\
+    \n        #     module = module.to(torch.float16)\r\n    if \"norm\" in name:\r\
+    \n        module = module.to(torch.float16)\r\n    if \"lm_head\" in name or \"\
+    embed_tokens\" in name:\r\n        if hasattr(module, \"weight\"):\r\n       \
+    \   module = module.to(torch.float16)\r\n            # if script_args.bf16 and\
+    \ module.weight.dtype == torch.float32:\r\n            #     module = module.to(torch.bfloat16)\r\
+    \n            # if script_args.fp16 and module.weight.dtype == torch.float32:\r\
+    \n            #     module = module.to(torch.float16)\r\nmodel.print_trainable_parameters()\r\
+    \nlogger.info(f\"model.modules_to_save: {model.modules_to_save}\")\r\nold_state_dict\
+    \ = model.state_dict\r\nmodel.state_dict = (\r\n    lambda self, *_, **__: get_peft_model_state_dict(self,\
+    \ old_state_dict())\r\n).__get__(model, type(model))\r\n\r\n```\r\n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/640fe1d7b0ee289c8583a879/mxXj0x0zzncBYT-fup29m.png)\r\
+    \n"
+  created_at: 2024-01-18 07:58:43+00:00
+  edited: false
+  hidden: false
+  id: 65a8da335e3029d4d5bb385e
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 18
+repo_id: LinkSoul/Chinese-Llama-2-7b
+repo_type: model
+status: open
+target_branch: null
+title: Pretraining error

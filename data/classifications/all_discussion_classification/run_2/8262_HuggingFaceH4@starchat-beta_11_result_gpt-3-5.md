@@ -1,0 +1,3 @@
+## https://huggingface.co/HuggingFaceH4/starchat-beta/discussions/11
+
+contains_question: no

@@ -1,0 +1,257 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ryjovsky
+conflicting_files: null
+created_at: 2022-08-09 16:23:28+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f80ebcb6ca5ac917f84791dc5f598206.svg
+      fullname: 'Ryjkovsky '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ryjovsky
+      type: user
+    createdAt: '2022-08-09T17:23:28.000Z'
+    data:
+      edited: true
+      editors:
+      - ryjovsky
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f80ebcb6ca5ac917f84791dc5f598206.svg
+          fullname: 'Ryjkovsky '
+          isHf: false
+          isPro: false
+          name: ryjovsky
+          type: user
+        html: "<p>Hi I'm trying to train Labse for Question Answering using squad\
+          \ dataset. I'm using also huggingface tutorial on Question Answering and\
+          \ i got this error. Could you  tell me what I am doing wrong or what should\
+          \ I correct. I'm new and i'm stuck</p>\n<p>   from datasets import load_dataset<br>\
+          \   raw_datasets = load_dataset(\"squad\", split='train')</p>\n<p>   from\
+          \ transformers import BertTokenizerFast, BertModel<br>   from transformers\
+          \ import AutoTokenizer</p>\n<p>   model_checkpoint = \"setu4993/LaBSE\"\
+          <br>   tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)<br> \
+          \  model = BertModel.from_pretrained(model_checkpoint)</p>\n<p>   max_length\
+          \ = 384<br>   stride = 128</p>\n<p>   def preprocess_training_examples(examples):<br>\
+          \       questions = [q.strip() for q in examples[\"question\"]]<br>    \
+          \   inputs = tokenizer(<br>           questions,<br>           examples[\"\
+          context\"],<br>           max_length=max_length,<br>           truncation=\"\
+          only_second\",<br>           stride=stride,<br>           return_overflowing_tokens=True,<br>\
+          \           return_offsets_mapping=True,<br>           padding=\"max_length\"\
+          ,<br>       )</p>\n<pre><code>   offset_mapping = inputs.pop(\"offset_mapping\"\
+          )\n   sample_map = inputs.pop(\"overflow_to_sample_mapping\")\n   answers\
+          \ = examples[\"answers\"]\n   start_positions = []\n   end_positions = []\n\
+          \n   for i, offset in enumerate(offset_mapping):\n       sample_idx = sample_map[i]\n\
+          \       answer = answers[sample_idx]\n       start_char = answer[\"answer_start\"\
+          ][0]\n       end_char = answer[\"answer_start\"][0] + len(answer[\"text\"\
+          ][0])\n       sequence_ids = inputs.sequence_ids(i)\n\n      # Find the\
+          \ start and end of the context\n       idx = 0\n       while sequence_ids[idx]\
+          \ != 1:\n           idx += 1\n       context_start = idx\n       while sequence_ids[idx]\
+          \ == 1:\n           idx += 1\n       context_end = idx - 1\n\n    # If the\
+          \ answer is not fully inside the context, label is (0, 0)\n       if offset[context_start][0]\
+          \ &gt; start_char or offset[context_end][1] &lt; end_char:\n           start_positions.append(0)\n\
+          \           end_positions.append(0)\n       else:\n           # Otherwise\
+          \ it's the start and end token positions\n           idx = context_start\n\
+          \           while idx &lt;= context_end and offset[idx][0] &lt;= start_char:\n\
+          \               idx += 1\n           start_positions.append(idx - 1)\n\n\
+          \           idx = context_end\n           while idx &gt;= context_start\
+          \ and offset[idx][1] &gt;= end_char:\n               idx -= 1\n        \
+          \   end_positions.append(idx + 1)\n\n   inputs[\"start_positions\"] = start_positions\n\
+          \   inputs[\"end_positions\"] = end_positions\n   return inputs\n</code></pre>\n\
+          <p>   train_dataset = raw_datasets.map(<br>       preprocess_training_examples,<br>\
+          \       batched=True,<br>       remove_columns=raw_datasets.column_names,<br>\
+          \   )<br>   len(raw_datasets), len(train_dataset)</p>\n<p>   from transformers\
+          \ import TrainingArguments</p>\n<p>   args = TrainingArguments(<br>    \
+          \   \"bert-finetuned-squad\",<br>       save_strategy=\"epoch\",<br>   \
+          \    learning_rate=2e-5,<br>       num_train_epochs=3,<br>       weight_decay=0.01,<br>\
+          \   )</p>\n<p>   from transformers import DataCollatorForLanguageModeling<br>\
+          \   data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer)</p>\n\
+          <p>   from transformers import Trainer</p>\n<pre><code>trainer = Trainer(\n\
+          \    model=model,\n    args=args,\n    data_collator=data_collator,\n  \
+          \  train_dataset=train_dataset,\n    tokenizer=tokenizer,\n</code></pre>\n\
+          <p>   )<br>   trainer.train()</p>\n<p>TypeError                        \
+          \         Traceback (most recent call last)<br> in ()<br>     10     tokenizer=tokenizer,<br>\
+          \     11 )<br>---&gt; 12 trainer.train()</p>\n<p>4 frames<br>/usr/local/lib/python3.7/dist-packages/torch/nn/modules/module.py\
+          \ in _call_impl(self, *input, **kwargs)<br>   1128         if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks<br>\
+          \   1129                 or _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt;\
+          \ 1130             return forward_call(*input, **kwargs)<br>   1131    \
+          \     # Do not call functions when jit is used<br>   1132         full_backward_hooks,\
+          \ non_full_backward_hooks = [], []</p>\n<p>TypeError: forward() got an unexpected\
+          \ keyword argument 'labels'</p>\n"
+        raw: "Hi I'm trying to train Labse for Question Answering using squad dataset.\
+          \ I'm using also huggingface tutorial on Question Answering and i got this\
+          \ error. Could you  tell me what I am doing wrong or what should I correct.\
+          \ I'm new and i'm stuck\n\n\n\n\n\n   from datasets import load_dataset\n\
+          \   raw_datasets = load_dataset(\"squad\", split='train')\n\n\n   from transformers\
+          \ import BertTokenizerFast, BertModel\n   from transformers import AutoTokenizer\n\
+          \n\n   model_checkpoint = \"setu4993/LaBSE\"\n   tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)\
+          \ \n   model = BertModel.from_pretrained(model_checkpoint)\n\n\n\n   max_length\
+          \ = 384\n   stride = 128\n\n\n   def preprocess_training_examples(examples):\n\
+          \       questions = [q.strip() for q in examples[\"question\"]]\n      \
+          \ inputs = tokenizer(\n           questions,\n           examples[\"context\"\
+          ],\n           max_length=max_length,\n           truncation=\"only_second\"\
+          ,\n           stride=stride,\n           return_overflowing_tokens=True,\n\
+          \           return_offsets_mapping=True,\n           padding=\"max_length\"\
+          ,\n       )\n\n       offset_mapping = inputs.pop(\"offset_mapping\")\n\
+          \       sample_map = inputs.pop(\"overflow_to_sample_mapping\")\n      \
+          \ answers = examples[\"answers\"]\n       start_positions = []\n       end_positions\
+          \ = []\n\n       for i, offset in enumerate(offset_mapping):\n         \
+          \  sample_idx = sample_map[i]\n           answer = answers[sample_idx]\n\
+          \           start_char = answer[\"answer_start\"][0]\n           end_char\
+          \ = answer[\"answer_start\"][0] + len(answer[\"text\"][0])\n           sequence_ids\
+          \ = inputs.sequence_ids(i)\n\n          # Find the start and end of the\
+          \ context\n           idx = 0\n           while sequence_ids[idx] != 1:\n\
+          \               idx += 1\n           context_start = idx\n           while\
+          \ sequence_ids[idx] == 1:\n               idx += 1\n           context_end\
+          \ = idx - 1\n\n        # If the answer is not fully inside the context,\
+          \ label is (0, 0)\n           if offset[context_start][0] > start_char or\
+          \ offset[context_end][1] < end_char:\n               start_positions.append(0)\n\
+          \               end_positions.append(0)\n           else:\n            \
+          \   # Otherwise it's the start and end token positions\n               idx\
+          \ = context_start\n               while idx <= context_end and offset[idx][0]\
+          \ <= start_char:\n                   idx += 1\n               start_positions.append(idx\
+          \ - 1)\n\n               idx = context_end\n               while idx >=\
+          \ context_start and offset[idx][1] >= end_char:\n                   idx\
+          \ -= 1\n               end_positions.append(idx + 1)\n\n       inputs[\"\
+          start_positions\"] = start_positions\n       inputs[\"end_positions\"] =\
+          \ end_positions\n       return inputs\n\n\n   train_dataset = raw_datasets.map(\n\
+          \       preprocess_training_examples,\n       batched=True,\n       remove_columns=raw_datasets.column_names,\n\
+          \   )\n   len(raw_datasets), len(train_dataset)\n\n   from transformers\
+          \ import TrainingArguments\n\n   args = TrainingArguments(\n       \"bert-finetuned-squad\"\
+          ,\n       save_strategy=\"epoch\",\n       learning_rate=2e-5,\n       num_train_epochs=3,\n\
+          \       weight_decay=0.01,\n   )\n\n   from transformers import DataCollatorForLanguageModeling\n\
+          \   data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer)\n\
+          \n\n   from transformers import Trainer\n\n    trainer = Trainer(\n    \
+          \    model=model,\n        args=args,\n        data_collator=data_collator,\n\
+          \        train_dataset=train_dataset,\n        tokenizer=tokenizer,\n  \
+          \ )\n   trainer.train()\n\n\nTypeError                                 Traceback\
+          \ (most recent call last)\n<ipython-input-23-2920a50b14d4> in <module>()\n\
+          \     10     tokenizer=tokenizer,\n     11 )\n---> 12 trainer.train()\n\n\
+          4 frames\n/usr/local/lib/python3.7/dist-packages/torch/nn/modules/module.py\
+          \ in _call_impl(self, *input, **kwargs)\n   1128         if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\n\
+          \   1129                 or _global_forward_hooks or _global_forward_pre_hooks):\n\
+          -> 1130             return forward_call(*input, **kwargs)\n   1131     \
+          \    # Do not call functions when jit is used\n   1132         full_backward_hooks,\
+          \ non_full_backward_hooks = [], []\n\nTypeError: forward() got an unexpected\
+          \ keyword argument 'labels'"
+        updatedAt: '2022-08-09T17:26:21.877Z'
+      numEdits: 1
+      reactions: []
+    id: 62f2981079132a7591ad027c
+    type: comment
+  author: ryjovsky
+  content: "Hi I'm trying to train Labse for Question Answering using squad dataset.\
+    \ I'm using also huggingface tutorial on Question Answering and i got this error.\
+    \ Could you  tell me what I am doing wrong or what should I correct. I'm new and\
+    \ i'm stuck\n\n\n\n\n\n   from datasets import load_dataset\n   raw_datasets =\
+    \ load_dataset(\"squad\", split='train')\n\n\n   from transformers import BertTokenizerFast,\
+    \ BertModel\n   from transformers import AutoTokenizer\n\n\n   model_checkpoint\
+    \ = \"setu4993/LaBSE\"\n   tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)\
+    \ \n   model = BertModel.from_pretrained(model_checkpoint)\n\n\n\n   max_length\
+    \ = 384\n   stride = 128\n\n\n   def preprocess_training_examples(examples):\n\
+    \       questions = [q.strip() for q in examples[\"question\"]]\n       inputs\
+    \ = tokenizer(\n           questions,\n           examples[\"context\"],\n   \
+    \        max_length=max_length,\n           truncation=\"only_second\",\n    \
+    \       stride=stride,\n           return_overflowing_tokens=True,\n         \
+    \  return_offsets_mapping=True,\n           padding=\"max_length\",\n       )\n\
+    \n       offset_mapping = inputs.pop(\"offset_mapping\")\n       sample_map =\
+    \ inputs.pop(\"overflow_to_sample_mapping\")\n       answers = examples[\"answers\"\
+    ]\n       start_positions = []\n       end_positions = []\n\n       for i, offset\
+    \ in enumerate(offset_mapping):\n           sample_idx = sample_map[i]\n     \
+    \      answer = answers[sample_idx]\n           start_char = answer[\"answer_start\"\
+    ][0]\n           end_char = answer[\"answer_start\"][0] + len(answer[\"text\"\
+    ][0])\n           sequence_ids = inputs.sequence_ids(i)\n\n          # Find the\
+    \ start and end of the context\n           idx = 0\n           while sequence_ids[idx]\
+    \ != 1:\n               idx += 1\n           context_start = idx\n           while\
+    \ sequence_ids[idx] == 1:\n               idx += 1\n           context_end = idx\
+    \ - 1\n\n        # If the answer is not fully inside the context, label is (0,\
+    \ 0)\n           if offset[context_start][0] > start_char or offset[context_end][1]\
+    \ < end_char:\n               start_positions.append(0)\n               end_positions.append(0)\n\
+    \           else:\n               # Otherwise it's the start and end token positions\n\
+    \               idx = context_start\n               while idx <= context_end and\
+    \ offset[idx][0] <= start_char:\n                   idx += 1\n               start_positions.append(idx\
+    \ - 1)\n\n               idx = context_end\n               while idx >= context_start\
+    \ and offset[idx][1] >= end_char:\n                   idx -= 1\n             \
+    \  end_positions.append(idx + 1)\n\n       inputs[\"start_positions\"] = start_positions\n\
+    \       inputs[\"end_positions\"] = end_positions\n       return inputs\n\n\n\
+    \   train_dataset = raw_datasets.map(\n       preprocess_training_examples,\n\
+    \       batched=True,\n       remove_columns=raw_datasets.column_names,\n   )\n\
+    \   len(raw_datasets), len(train_dataset)\n\n   from transformers import TrainingArguments\n\
+    \n   args = TrainingArguments(\n       \"bert-finetuned-squad\",\n       save_strategy=\"\
+    epoch\",\n       learning_rate=2e-5,\n       num_train_epochs=3,\n       weight_decay=0.01,\n\
+    \   )\n\n   from transformers import DataCollatorForLanguageModeling\n   data_collator\
+    \ = DataCollatorForLanguageModeling(tokenizer=tokenizer)\n\n\n   from transformers\
+    \ import Trainer\n\n    trainer = Trainer(\n        model=model,\n        args=args,\n\
+    \        data_collator=data_collator,\n        train_dataset=train_dataset,\n\
+    \        tokenizer=tokenizer,\n   )\n   trainer.train()\n\n\nTypeError       \
+    \                          Traceback (most recent call last)\n<ipython-input-23-2920a50b14d4>\
+    \ in <module>()\n     10     tokenizer=tokenizer,\n     11 )\n---> 12 trainer.train()\n\
+    \n4 frames\n/usr/local/lib/python3.7/dist-packages/torch/nn/modules/module.py\
+    \ in _call_impl(self, *input, **kwargs)\n   1128         if not (self._backward_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\n\
+    \   1129                 or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1130             return forward_call(*input, **kwargs)\n   1131         # Do\
+    \ not call functions when jit is used\n   1132         full_backward_hooks, non_full_backward_hooks\
+    \ = [], []\n\nTypeError: forward() got an unexpected keyword argument 'labels'"
+  created_at: 2022-08-09 16:23:28+00:00
+  edited: true
+  hidden: false
+  id: 62f2981079132a7591ad027c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c4939f4dc832cd4eca46c83b6d735890.svg
+      fullname: Andres Langoyo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: srcocotero
+      type: user
+    createdAt: '2022-08-10T09:53:08.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/c4939f4dc832cd4eca46c83b6d735890.svg
+          fullname: Andres Langoyo
+          isHf: false
+          isPro: false
+          name: srcocotero
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2022-08-10T09:53:33.768Z'
+      numEdits: 0
+      reactions: []
+    id: 62f38004261bc5fb2e06146a
+    type: comment
+  author: srcocotero
+  content: This comment has been hidden
+  created_at: 2022-08-10 08:53:08+00:00
+  edited: true
+  hidden: true
+  id: 62f38004261bc5fb2e06146a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: sentence-transformers/LaBSE
+repo_type: model
+status: open
+target_branch: null
+title: LabSE training error

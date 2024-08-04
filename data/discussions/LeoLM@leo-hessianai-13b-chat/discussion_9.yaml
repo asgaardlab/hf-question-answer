@@ -1,0 +1,127 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: marlon89
+conflicting_files: null
+created_at: 2023-10-19 12:41:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e894d23cbe017650b67a28a1ad209941.svg
+      fullname: Marlon Lohrbach
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: marlon89
+      type: user
+    createdAt: '2023-10-19T13:41:08.000Z'
+    data:
+      edited: false
+      editors:
+      - marlon89
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6152694821357727
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e894d23cbe017650b67a28a1ad209941.svg
+          fullname: Marlon Lohrbach
+          isHf: false
+          isPro: false
+          name: marlon89
+          type: user
+        html: "<p>Hello together,</p>\n<p>I just deployed the LeoLM model as an sagemaker\
+          \ endpoint via the code snippets provided on the model page: </p>\n<pre><code>import\
+          \ json\nimport sagemaker\nimport boto3\nfrom sagemaker.huggingface import\
+          \ HuggingFaceModel, get_huggingface_llm_image_uri\n\ntry:\n    role = sagemaker.get_execution_role()\n\
+          except ValueError:\n    iam = boto3.client('iam')\n    role = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\n\
+          \n# Hub Model configuration. https://huggingface.co/models\nhub = {\n  \
+          \  'HF_MODEL_ID':'LeoLM/leo-mistral-hessianai-7b-chat',\n    'SM_NUM_GPUS':\
+          \ json.dumps(1)\n}\n\n\n\n# create Hugging Face Model Class\nhuggingface_model\
+          \ = HuggingFaceModel(\n    image_uri=get_huggingface_llm_image_uri(\"huggingface\"\
+          ,version=\"1.1.0\"),\n    env=hub,\n    role=role, \n)\n\n# deploy model\
+          \ to SageMaker Inference\npredictor = huggingface_model.deploy(\n    initial_instance_count=1,\n\
+          \    instance_type=\"ml.g5.2xlarge\",\n    container_startup_health_check_timeout=300,\n\
+          \  )\n  \n# send request\npredictor.predict({\n    \"inputs\": \"My name\
+          \ is Julien and I like to\",\n})\n</code></pre>\n<p>When I make a prediction\
+          \ the response is super underwhelming which is because of the fact (i think)\
+          \ that I didn't pass any parameters or system prompts to the request. With\
+          \ Llama2 I can easily do it like:</p>\n<pre><code>prompt = \"Tell me about\
+          \ Amazon SageMaker.\"\n\npayload = {\n    \"inputs\": prompt,\n    \"parameters\"\
+          : {\n        \"do_sample\": True,\n        \"top_p\": 0.9,\n        \"temperature\"\
+          : 0.8,\n        \"max_new_tokens\": 1024,\n        \"stop\": [\"&lt;|endoftext|&gt;\"\
+          , \"&lt;/s&gt;\"]\n    }\n}\nresponse = predictor.predict(payload)\n</code></pre>\n\
+          <p>I havent found any specifications or hints how I shall structure my request\
+          \ to achieve this. Has anyone any idea?</p>\n<p>Would be super helpful :slight_smile:</p>\n"
+        raw: "Hello together,\r\n\r\nI just deployed the LeoLM model as an sagemaker\
+          \ endpoint via the code snippets provided on the model page: \r\n```\r\n\
+          import json\r\nimport sagemaker\r\nimport boto3\r\nfrom sagemaker.huggingface\
+          \ import HuggingFaceModel, get_huggingface_llm_image_uri\r\n\r\ntry:\r\n\
+          \trole = sagemaker.get_execution_role()\r\nexcept ValueError:\r\n\tiam =\
+          \ boto3.client('iam')\r\n\trole = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+          \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub =\
+          \ {\r\n\t'HF_MODEL_ID':'LeoLM/leo-mistral-hessianai-7b-chat',\r\n\t'SM_NUM_GPUS':\
+          \ json.dumps(1)\r\n}\r\n\r\n\r\n\r\n# create Hugging Face Model Class\r\n\
+          huggingface_model = HuggingFaceModel(\r\n\timage_uri=get_huggingface_llm_image_uri(\"\
+          huggingface\",version=\"1.1.0\"),\r\n\tenv=hub,\r\n\trole=role, \r\n)\r\n\
+          \r\n# deploy model to SageMaker Inference\r\npredictor = huggingface_model.deploy(\r\
+          \n\tinitial_instance_count=1,\r\n\tinstance_type=\"ml.g5.2xlarge\",\r\n\t\
+          container_startup_health_check_timeout=300,\r\n  )\r\n  \r\n# send request\r\
+          \npredictor.predict({\r\n\t\"inputs\": \"My name is Julien and I like to\"\
+          ,\r\n})\r\n```\r\n\r\nWhen I make a prediction the response is super underwhelming\
+          \ which is because of the fact (i think) that I didn't pass any parameters\
+          \ or system prompts to the request. With Llama2 I can easily do it like:\r\
+          \n```\r\nprompt = \"Tell me about Amazon SageMaker.\"\r\n\r\npayload = {\r\
+          \n    \"inputs\": prompt,\r\n    \"parameters\": {\r\n        \"do_sample\"\
+          : True,\r\n        \"top_p\": 0.9,\r\n        \"temperature\": 0.8,\r\n\
+          \        \"max_new_tokens\": 1024,\r\n        \"stop\": [\"<|endoftext|>\"\
+          , \"</s>\"]\r\n    }\r\n}\r\nresponse = predictor.predict(payload)\r\n```\r\
+          \n\r\nI havent found any specifications or hints how I shall structure my\
+          \ request to achieve this. Has anyone any idea?\r\n\r\nWould be super helpful\
+          \ :slight_smile:"
+        updatedAt: '2023-10-19T13:41:08.588Z'
+      numEdits: 0
+      reactions: []
+    id: 653131f418cba8dff40ba844
+    type: comment
+  author: marlon89
+  content: "Hello together,\r\n\r\nI just deployed the LeoLM model as an sagemaker\
+    \ endpoint via the code snippets provided on the model page: \r\n```\r\nimport\
+    \ json\r\nimport sagemaker\r\nimport boto3\r\nfrom sagemaker.huggingface import\
+    \ HuggingFaceModel, get_huggingface_llm_image_uri\r\n\r\ntry:\r\n\trole = sagemaker.get_execution_role()\r\
+    \nexcept ValueError:\r\n\tiam = boto3.client('iam')\r\n\trole = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+    \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub = {\r\n\t\
+    'HF_MODEL_ID':'LeoLM/leo-mistral-hessianai-7b-chat',\r\n\t'SM_NUM_GPUS': json.dumps(1)\r\
+    \n}\r\n\r\n\r\n\r\n# create Hugging Face Model Class\r\nhuggingface_model = HuggingFaceModel(\r\
+    \n\timage_uri=get_huggingface_llm_image_uri(\"huggingface\",version=\"1.1.0\"\
+    ),\r\n\tenv=hub,\r\n\trole=role, \r\n)\r\n\r\n# deploy model to SageMaker Inference\r\
+    \npredictor = huggingface_model.deploy(\r\n\tinitial_instance_count=1,\r\n\tinstance_type=\"\
+    ml.g5.2xlarge\",\r\n\tcontainer_startup_health_check_timeout=300,\r\n  )\r\n \
+    \ \r\n# send request\r\npredictor.predict({\r\n\t\"inputs\": \"My name is Julien\
+    \ and I like to\",\r\n})\r\n```\r\n\r\nWhen I make a prediction the response is\
+    \ super underwhelming which is because of the fact (i think) that I didn't pass\
+    \ any parameters or system prompts to the request. With Llama2 I can easily do\
+    \ it like:\r\n```\r\nprompt = \"Tell me about Amazon SageMaker.\"\r\n\r\npayload\
+    \ = {\r\n    \"inputs\": prompt,\r\n    \"parameters\": {\r\n        \"do_sample\"\
+    : True,\r\n        \"top_p\": 0.9,\r\n        \"temperature\": 0.8,\r\n      \
+    \  \"max_new_tokens\": 1024,\r\n        \"stop\": [\"<|endoftext|>\", \"</s>\"\
+    ]\r\n    }\r\n}\r\nresponse = predictor.predict(payload)\r\n```\r\n\r\nI havent\
+    \ found any specifications or hints how I shall structure my request to achieve\
+    \ this. Has anyone any idea?\r\n\r\nWould be super helpful :slight_smile:"
+  created_at: 2023-10-19 12:41:08+00:00
+  edited: false
+  hidden: false
+  id: 653131f418cba8dff40ba844
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: LeoLM/leo-hessianai-13b-chat
+repo_type: model
+status: open
+target_branch: null
+title: Payload format for LeoLM/leo-mistral-hessianai-7b-chat Sagemaker Endpoint

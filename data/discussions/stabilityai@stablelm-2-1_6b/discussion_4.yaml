@@ -1,0 +1,961 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: g-ronimo
+conflicting_files: null
+created_at: 2024-01-23 13:00:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T13:00:07.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.415709525346756
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: "<p>Inference works fine with FA2 but when I try to train the model\
+          \ with the standard HF trainer, it fails with <code>AttributeError: 'FlashAttention2'\
+          \ object has no attribute 'attention_dropout'</code></p>\n<p>here's a minimal\
+          \ example to reproduce the error:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments\n\
+          <span class=\"hljs-keyword\">from</span> datasets <span class=\"hljs-keyword\"\
+          >import</span> load_dataset\n<span class=\"hljs-keyword\">import</span>\
+          \ torch\n\nmodelpath=<span class=\"hljs-string\">\"models/stablelm-2-1_6b\"\
+          </span>\n\n<span class=\"hljs-comment\"># model and tokenizer</span>\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\n    modelpath,    \n    device_map=<span\
+          \ class=\"hljs-string\">\"auto\"</span>,\n    torch_dtype=torch.bfloat16,\n\
+          \    attn_implementation=<span class=\"hljs-string\">\"flash_attention_2\"\
+          </span>,\n    trust_remote_code=<span class=\"hljs-literal\">True</span>,\n\
+          )\ntokenizer = AutoTokenizer.from_pretrained(\n    modelpath, \n    use_fast=<span\
+          \ class=\"hljs-literal\">False</span>,\n    trust_remote_code=<span class=\"\
+          hljs-literal\">True</span>,\n)    \n\n<span class=\"hljs-comment\"># dataset</span>\n\
+          dataset = load_dataset(<span class=\"hljs-string\">\"yelp_review_full\"\
+          </span>)[<span class=\"hljs-string\">\"test\"</span>]\n\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">tokenize_function</span>(<span\
+          \ class=\"hljs-params\">examples</span>):\n    <span class=\"hljs-keyword\"\
+          >return</span> tokenizer(examples[<span class=\"hljs-string\">\"text\"</span>],\
+          \ padding=<span class=\"hljs-string\">\"max_length\"</span>, truncation=<span\
+          \ class=\"hljs-literal\">True</span>, max_length=<span class=\"hljs-number\"\
+          >100</span>)\n\ntokenized_dataset = dataset.<span class=\"hljs-built_in\"\
+          >map</span>(\n    tokenize_function, \n    remove_columns=dataset.column_names,\n\
+          \    batched=<span class=\"hljs-literal\">True</span>)\n\n<span class=\"\
+          hljs-comment\"># train</span>\ntrainer = Trainer(\n    model=model,\n  \
+          \  args=TrainingArguments(output_dir=<span class=\"hljs-string\">\"test_trainer\"\
+          </span>),\n    train_dataset=tokenized_dataset,\n)\ntrainer.train()\n</code></pre>\n\
+          <p>traceback:</p>\n<pre><code>AttributeError                           \
+          \ Traceback (most recent call last)\nCell In[1], line 38\n     32 # train\n\
+          \     33 trainer = Trainer(\n     34     model=model,\n     35     args=TrainingArguments(output_dir=\"\
+          test_trainer\"),\n     36     train_dataset=tokenized_dataset,\n     37\
+          \ )\n---&gt; 38 trainer.train()\n\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1537         hf_hub_utils.enable_progress_bars()\n   1538\
+          \ else:\n-&gt; 1539     return inner_training_loop(\n   1540         args=args,\n\
+          \   1541         resume_from_checkpoint=resume_from_checkpoint,\n   1542\
+          \         trial=trial,\n   1543         ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1544     )\n\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1869,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1866     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\n   1868 with self.accelerator.accumulate(model):\n\
+          -&gt; 1869     tr_loss_step = self.training_step(model, inputs)\n   1871\
+          \ if (\n   1872     args.logging_nan_inf_filter\n   1873     and not is_torch_tpu_available()\n\
+          \   1874     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n\
+          \   1875 ):\n   1876     # if loss is nan or inf simply add the average\
+          \ of previous logged losses\n   1877     tr_loss += tr_loss / (1 + self.state.global_step\
+          \ - self._globalstep_last_logged)\n\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2768,\
+          \ in Trainer.training_step(self, model, inputs)\n   2765     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2767 with self.compute_loss_context_manager():\n-&gt; 2768     loss\
+          \ = self.compute_loss(model, inputs)\n   2770 if self.args.n_gpu &gt; 1:\n\
+          \   2771     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2791,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2789\
+          \ else:\n   2790     labels = None\n-&gt; 2791 outputs = model(**inputs)\n\
+          \   2792 # Save past state if it exists\n   2793 # TODO: this needs to be\
+          \ fixed and made cleaner later.\n   2794 if self.args.past_index &gt;= 0:\n\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:818,\
+          \ in StableLMEpochForCausalLM.forward(self, input_ids, attention_mask, position_ids,\
+          \ past_key_values, inputs_embeds, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n    813 return_dict = (\n    814 \
+          \    return_dict if return_dict is not None else self.config.use_return_dict\n\
+          \    815 )\n    817 # decoder outputs consists of (dec_features, layer_state,\
+          \ dec_hidden, dec_attn)\n--&gt; 818 outputs = self.model(\n    819     input_ids,\n\
+          \    820     attention_mask=attention_mask,\n    821     position_ids=position_ids,\n\
+          \    822     past_key_values=past_key_values,\n    823     inputs_embeds=inputs_embeds,\n\
+          \    824     use_cache=use_cache,\n    825     output_attentions=output_attentions,\n\
+          \    826     output_hidden_states=output_hidden_states,\n    827     return_dict=return_dict,\n\
+          \    828 )\n    830 hidden_states = outputs[0]\n    831 logits = self.lm_head(hidden_states).float()\n\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:722,\
+          \ in StableLMEpochModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states,\
+          \ return_dict)\n    715     layer_outputs = torch.utils.checkpoint.checkpoint(\n\
+          \    716         create_custom_forward(decoder_layer),\n    717        \
+          \ hidden_states,\n    718         attention_mask,\n    719         position_ids,\n\
+          \    720     )\n    721 else:\n--&gt; 722     layer_outputs = decoder_layer(\n\
+          \    723         hidden_states,\n    724         attention_mask=attention_mask,\n\
+          \    725         position_ids=position_ids,\n    726         past_key_value=past_key_value,\n\
+          \    727         output_attentions=output_attentions,\n    728         use_cache=use_cache,\n\
+          \    729     )\n    731 hidden_states = layer_outputs[0]\n    733 if use_cache:\n\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:513,\
+          \ in DecoderLayer.forward(self, hidden_states, attention_mask, position_ids,\
+          \ past_key_value, output_attentions, use_cache)\n    510 hidden_states =\
+          \ self.input_layernorm(hidden_states)\n    512 # Self Attention\n--&gt;\
+          \ 513 hidden_states, self_attn_weights, present_key_value = self.self_attn(\n\
+          \    514     hidden_states=hidden_states,\n    515     attention_mask=attention_mask,\n\
+          \    516     position_ids=position_ids,\n    517     past_key_value=past_key_value,\n\
+          \    518     output_attentions=output_attentions,\n    519     use_cache=use_cache,\n\
+          \    520 )\n    521 hidden_states = residual + hidden_states\n    523 #\
+          \ Fully Connected\n\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:374,\
+          \ in FlashAttention2.forward(self, hidden_states, attention_mask, position_ids,\
+          \ past_key_value, output_attentions, use_cache, **kwargs)\n    371 key_states\
+          \ = key_states.transpose(1, 2)\n    372 value_states = value_states.transpose(1,\
+          \ 2)\n--&gt; 374 dropout_rate = self.attention_dropout if self.training\
+          \ else 0.0\n    376 attn_output = self._flash_attention_forward(\n    377\
+          \     query_states, key_states, value_states, attention_mask, q_len, dropout=dropout_rate\n\
+          \    378 )\n    379 attn_output = attn_output.reshape(bsz, q_len, self.hidden_size).contiguous()\n\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1695,\
+          \ in Module.__getattr__(self, name)\n   1693     if name in modules:\n \
+          \  1694         return modules[name]\n-&gt; 1695 raise AttributeError(f\"\
+          '{type(self).__name__}' object has no attribute '{name}'\")\n\nAttributeError:\
+          \ 'FlashAttention2' object has no attribute 'attention_dropout'\n</code></pre>\n\
+          <pre><code>transformers==4.37.0\n</code></pre>\n"
+        raw: "Inference works fine with FA2 but when I try to train the model with\
+          \ the standard HF trainer, it fails with ```AttributeError: 'FlashAttention2'\
+          \ object has no attribute 'attention_dropout'```\r\n\r\n\r\nhere's a minimal\
+          \ example to reproduce the error:\r\n```python\r\nfrom transformers import\
+          \ AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments\r\nfrom\
+          \ datasets import load_dataset\r\nimport torch\r\n\r\nmodelpath=\"models/stablelm-2-1_6b\"\
+          \r\n\r\n# model and tokenizer\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    modelpath,    \r\n    device_map=\"auto\",\r\n    torch_dtype=torch.bfloat16,\r\
+          \n    attn_implementation=\"flash_attention_2\",\r\n    trust_remote_code=True,\r\
+          \n)\r\ntokenizer = AutoTokenizer.from_pretrained(\r\n    modelpath, \r\n\
+          \    use_fast=False,\r\n    trust_remote_code=True,\r\n)    \r\n\r\n# dataset\r\
+          \ndataset = load_dataset(\"yelp_review_full\")[\"test\"]\r\n\r\ndef tokenize_function(examples):\r\
+          \n    return tokenizer(examples[\"text\"], padding=\"max_length\", truncation=True,\
+          \ max_length=100)\r\n\r\ntokenized_dataset = dataset.map(\r\n    tokenize_function,\
+          \ \r\n    remove_columns=dataset.column_names,\r\n    batched=True)\r\n\r\
+          \n# train\r\ntrainer = Trainer(\r\n    model=model,\r\n    args=TrainingArguments(output_dir=\"\
+          test_trainer\"),\r\n    train_dataset=tokenized_dataset,\r\n)\r\ntrainer.train()\r\
+          \n```\r\n\r\ntraceback:\r\n```\r\nAttributeError                       \
+          \     Traceback (most recent call last)\r\nCell In[1], line 38\r\n     32\
+          \ # train\r\n     33 trainer = Trainer(\r\n     34     model=model,\r\n\
+          \     35     args=TrainingArguments(output_dir=\"test_trainer\"),\r\n  \
+          \   36     train_dataset=tokenized_dataset,\r\n     37 )\r\n---> 38 trainer.train()\r\
+          \n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\r\n   1537         hf_hub_utils.enable_progress_bars()\r\n \
+          \  1538 else:\r\n-> 1539     return inner_training_loop(\r\n   1540    \
+          \     args=args,\r\n   1541         resume_from_checkpoint=resume_from_checkpoint,\r\
+          \n   1542         trial=trial,\r\n   1543         ignore_keys_for_eval=ignore_keys_for_eval,\r\
+          \n   1544     )\r\n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1869,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\r\n   1866     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\r\n   1868 with self.accelerator.accumulate(model):\r\
+          \n-> 1869     tr_loss_step = self.training_step(model, inputs)\r\n   1871\
+          \ if (\r\n   1872     args.logging_nan_inf_filter\r\n   1873     and not\
+          \ is_torch_tpu_available()\r\n   1874     and (torch.isnan(tr_loss_step)\
+          \ or torch.isinf(tr_loss_step))\r\n   1875 ):\r\n   1876     # if loss is\
+          \ nan or inf simply add the average of previous logged losses\r\n   1877\
+          \     tr_loss += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\r\
+          \n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2768,\
+          \ in Trainer.training_step(self, model, inputs)\r\n   2765     return loss_mb.reduce_mean().detach().to(self.args.device)\r\
+          \n   2767 with self.compute_loss_context_manager():\r\n-> 2768     loss\
+          \ = self.compute_loss(model, inputs)\r\n   2770 if self.args.n_gpu > 1:\r\
+          \n   2771     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\r\n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2791,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\r\n   2789\
+          \ else:\r\n   2790     labels = None\r\n-> 2791 outputs = model(**inputs)\r\
+          \n   2792 # Save past state if it exists\r\n   2793 # TODO: this needs to\
+          \ be fixed and made cleaner later.\r\n   2794 if self.args.past_index >=\
+          \ 0:\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:818,\
+          \ in StableLMEpochForCausalLM.forward(self, input_ids, attention_mask, position_ids,\
+          \ past_key_values, inputs_embeds, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\r\n    813 return_dict = (\r\n    814\
+          \     return_dict if return_dict is not None else self.config.use_return_dict\r\
+          \n    815 )\r\n    817 # decoder outputs consists of (dec_features, layer_state,\
+          \ dec_hidden, dec_attn)\r\n--> 818 outputs = self.model(\r\n    819    \
+          \ input_ids,\r\n    820     attention_mask=attention_mask,\r\n    821  \
+          \   position_ids=position_ids,\r\n    822     past_key_values=past_key_values,\r\
+          \n    823     inputs_embeds=inputs_embeds,\r\n    824     use_cache=use_cache,\r\
+          \n    825     output_attentions=output_attentions,\r\n    826     output_hidden_states=output_hidden_states,\r\
+          \n    827     return_dict=return_dict,\r\n    828 )\r\n    830 hidden_states\
+          \ = outputs[0]\r\n    831 logits = self.lm_head(hidden_states).float()\r\
+          \n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:722,\
+          \ in StableLMEpochModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states,\
+          \ return_dict)\r\n    715     layer_outputs = torch.utils.checkpoint.checkpoint(\r\
+          \n    716         create_custom_forward(decoder_layer),\r\n    717     \
+          \    hidden_states,\r\n    718         attention_mask,\r\n    719      \
+          \   position_ids,\r\n    720     )\r\n    721 else:\r\n--> 722     layer_outputs\
+          \ = decoder_layer(\r\n    723         hidden_states,\r\n    724        \
+          \ attention_mask=attention_mask,\r\n    725         position_ids=position_ids,\r\
+          \n    726         past_key_value=past_key_value,\r\n    727         output_attentions=output_attentions,\r\
+          \n    728         use_cache=use_cache,\r\n    729     )\r\n    731 hidden_states\
+          \ = layer_outputs[0]\r\n    733 if use_cache:\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:513,\
+          \ in DecoderLayer.forward(self, hidden_states, attention_mask, position_ids,\
+          \ past_key_value, output_attentions, use_cache)\r\n    510 hidden_states\
+          \ = self.input_layernorm(hidden_states)\r\n    512 # Self Attention\r\n\
+          --> 513 hidden_states, self_attn_weights, present_key_value = self.self_attn(\r\
+          \n    514     hidden_states=hidden_states,\r\n    515     attention_mask=attention_mask,\r\
+          \n    516     position_ids=position_ids,\r\n    517     past_key_value=past_key_value,\r\
+          \n    518     output_attentions=output_attentions,\r\n    519     use_cache=use_cache,\r\
+          \n    520 )\r\n    521 hidden_states = residual + hidden_states\r\n    523\
+          \ # Fully Connected\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:374,\
+          \ in FlashAttention2.forward(self, hidden_states, attention_mask, position_ids,\
+          \ past_key_value, output_attentions, use_cache, **kwargs)\r\n    371 key_states\
+          \ = key_states.transpose(1, 2)\r\n    372 value_states = value_states.transpose(1,\
+          \ 2)\r\n--> 374 dropout_rate = self.attention_dropout if self.training else\
+          \ 0.0\r\n    376 attn_output = self._flash_attention_forward(\r\n    377\
+          \     query_states, key_states, value_states, attention_mask, q_len, dropout=dropout_rate\r\
+          \n    378 )\r\n    379 attn_output = attn_output.reshape(bsz, q_len, self.hidden_size).contiguous()\r\
+          \n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1695,\
+          \ in Module.__getattr__(self, name)\r\n   1693     if name in modules:\r\
+          \n   1694         return modules[name]\r\n-> 1695 raise AttributeError(f\"\
+          '{type(self).__name__}' object has no attribute '{name}'\")\r\n\r\nAttributeError:\
+          \ 'FlashAttention2' object has no attribute 'attention_dropout'\r\n```\r\
+          \n\r\n```\r\ntransformers==4.37.0\r\n```"
+        updatedAt: '2024-01-23T13:00:07.375Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - davidgortega
+    id: 65afb85766ad44e2d5f0b001
+    type: comment
+  author: g-ronimo
+  content: "Inference works fine with FA2 but when I try to train the model with the\
+    \ standard HF trainer, it fails with ```AttributeError: 'FlashAttention2' object\
+    \ has no attribute 'attention_dropout'```\r\n\r\n\r\nhere's a minimal example\
+    \ to reproduce the error:\r\n```python\r\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoTokenizer, Trainer, TrainingArguments\r\nfrom datasets import load_dataset\r\
+    \nimport torch\r\n\r\nmodelpath=\"models/stablelm-2-1_6b\"\r\n\r\n# model and\
+    \ tokenizer\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    modelpath,\
+    \    \r\n    device_map=\"auto\",\r\n    torch_dtype=torch.bfloat16,\r\n    attn_implementation=\"\
+    flash_attention_2\",\r\n    trust_remote_code=True,\r\n)\r\ntokenizer = AutoTokenizer.from_pretrained(\r\
+    \n    modelpath, \r\n    use_fast=False,\r\n    trust_remote_code=True,\r\n) \
+    \   \r\n\r\n# dataset\r\ndataset = load_dataset(\"yelp_review_full\")[\"test\"\
+    ]\r\n\r\ndef tokenize_function(examples):\r\n    return tokenizer(examples[\"\
+    text\"], padding=\"max_length\", truncation=True, max_length=100)\r\n\r\ntokenized_dataset\
+    \ = dataset.map(\r\n    tokenize_function, \r\n    remove_columns=dataset.column_names,\r\
+    \n    batched=True)\r\n\r\n# train\r\ntrainer = Trainer(\r\n    model=model,\r\
+    \n    args=TrainingArguments(output_dir=\"test_trainer\"),\r\n    train_dataset=tokenized_dataset,\r\
+    \n)\r\ntrainer.train()\r\n```\r\n\r\ntraceback:\r\n```\r\nAttributeError     \
+    \                       Traceback (most recent call last)\r\nCell In[1], line\
+    \ 38\r\n     32 # train\r\n     33 trainer = Trainer(\r\n     34     model=model,\r\
+    \n     35     args=TrainingArguments(output_dir=\"test_trainer\"),\r\n     36\
+    \     train_dataset=tokenized_dataset,\r\n     37 )\r\n---> 38 trainer.train()\r\
+    \n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+    \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\r\n   1537         hf_hub_utils.enable_progress_bars()\r\n   1538\
+    \ else:\r\n-> 1539     return inner_training_loop(\r\n   1540         args=args,\r\
+    \n   1541         resume_from_checkpoint=resume_from_checkpoint,\r\n   1542  \
+    \       trial=trial,\r\n   1543         ignore_keys_for_eval=ignore_keys_for_eval,\r\
+    \n   1544     )\r\n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:1869,\
+    \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+    \ trial, ignore_keys_for_eval)\r\n   1866     self.control = self.callback_handler.on_step_begin(args,\
+    \ self.state, self.control)\r\n   1868 with self.accelerator.accumulate(model):\r\
+    \n-> 1869     tr_loss_step = self.training_step(model, inputs)\r\n   1871 if (\r\
+    \n   1872     args.logging_nan_inf_filter\r\n   1873     and not is_torch_tpu_available()\r\
+    \n   1874     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\r\n\
+    \   1875 ):\r\n   1876     # if loss is nan or inf simply add the average of previous\
+    \ logged losses\r\n   1877     tr_loss += tr_loss / (1 + self.state.global_step\
+    \ - self._globalstep_last_logged)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2768,\
+    \ in Trainer.training_step(self, model, inputs)\r\n   2765     return loss_mb.reduce_mean().detach().to(self.args.device)\r\
+    \n   2767 with self.compute_loss_context_manager():\r\n-> 2768     loss = self.compute_loss(model,\
+    \ inputs)\r\n   2770 if self.args.n_gpu > 1:\r\n   2771     loss = loss.mean()\
+    \  # mean() to average on multi-gpu parallel training\r\n\r\nFile ~/.local/lib/python3.10/site-packages/transformers/trainer.py:2791,\
+    \ in Trainer.compute_loss(self, model, inputs, return_outputs)\r\n   2789 else:\r\
+    \n   2790     labels = None\r\n-> 2791 outputs = model(**inputs)\r\n   2792 #\
+    \ Save past state if it exists\r\n   2793 # TODO: this needs to be fixed and made\
+    \ cleaner later.\r\n   2794 if self.args.past_index >= 0:\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:818,\
+    \ in StableLMEpochForCausalLM.forward(self, input_ids, attention_mask, position_ids,\
+    \ past_key_values, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states,\
+    \ return_dict)\r\n    813 return_dict = (\r\n    814     return_dict if return_dict\
+    \ is not None else self.config.use_return_dict\r\n    815 )\r\n    817 # decoder\
+    \ outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)\r\n-->\
+    \ 818 outputs = self.model(\r\n    819     input_ids,\r\n    820     attention_mask=attention_mask,\r\
+    \n    821     position_ids=position_ids,\r\n    822     past_key_values=past_key_values,\r\
+    \n    823     inputs_embeds=inputs_embeds,\r\n    824     use_cache=use_cache,\r\
+    \n    825     output_attentions=output_attentions,\r\n    826     output_hidden_states=output_hidden_states,\r\
+    \n    827     return_dict=return_dict,\r\n    828 )\r\n    830 hidden_states =\
+    \ outputs[0]\r\n    831 logits = self.lm_head(hidden_states).float()\r\n\r\nFile\
+    \ ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518, in Module._wrapped_call_impl(self,\
+    \ *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args, **kwargs)\
+    \  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:722,\
+    \ in StableLMEpochModel.forward(self, input_ids, attention_mask, position_ids,\
+    \ past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states,\
+    \ return_dict)\r\n    715     layer_outputs = torch.utils.checkpoint.checkpoint(\r\
+    \n    716         create_custom_forward(decoder_layer),\r\n    717         hidden_states,\r\
+    \n    718         attention_mask,\r\n    719         position_ids,\r\n    720\
+    \     )\r\n    721 else:\r\n--> 722     layer_outputs = decoder_layer(\r\n   \
+    \ 723         hidden_states,\r\n    724         attention_mask=attention_mask,\r\
+    \n    725         position_ids=position_ids,\r\n    726         past_key_value=past_key_value,\r\
+    \n    727         output_attentions=output_attentions,\r\n    728         use_cache=use_cache,\r\
+    \n    729     )\r\n    731 hidden_states = layer_outputs[0]\r\n    733 if use_cache:\r\
+    \n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:513,\
+    \ in DecoderLayer.forward(self, hidden_states, attention_mask, position_ids, past_key_value,\
+    \ output_attentions, use_cache)\r\n    510 hidden_states = self.input_layernorm(hidden_states)\r\
+    \n    512 # Self Attention\r\n--> 513 hidden_states, self_attn_weights, present_key_value\
+    \ = self.self_attn(\r\n    514     hidden_states=hidden_states,\r\n    515   \
+    \  attention_mask=attention_mask,\r\n    516     position_ids=position_ids,\r\n\
+    \    517     past_key_value=past_key_value,\r\n    518     output_attentions=output_attentions,\r\
+    \n    519     use_cache=use_cache,\r\n    520 )\r\n    521 hidden_states = residual\
+    \ + hidden_states\r\n    523 # Fully Connected\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/stablelm-2-1_6b/modeling_stablelm_epoch.py:374,\
+    \ in FlashAttention2.forward(self, hidden_states, attention_mask, position_ids,\
+    \ past_key_value, output_attentions, use_cache, **kwargs)\r\n    371 key_states\
+    \ = key_states.transpose(1, 2)\r\n    372 value_states = value_states.transpose(1,\
+    \ 2)\r\n--> 374 dropout_rate = self.attention_dropout if self.training else 0.0\r\
+    \n    376 attn_output = self._flash_attention_forward(\r\n    377     query_states,\
+    \ key_states, value_states, attention_mask, q_len, dropout=dropout_rate\r\n  \
+    \  378 )\r\n    379 attn_output = attn_output.reshape(bsz, q_len, self.hidden_size).contiguous()\r\
+    \n\r\nFile ~/.local/lib/python3.10/site-packages/torch/nn/modules/module.py:1695,\
+    \ in Module.__getattr__(self, name)\r\n   1693     if name in modules:\r\n   1694\
+    \         return modules[name]\r\n-> 1695 raise AttributeError(f\"'{type(self).__name__}'\
+    \ object has no attribute '{name}'\")\r\n\r\nAttributeError: 'FlashAttention2'\
+    \ object has no attribute 'attention_dropout'\r\n```\r\n\r\n```\r\ntransformers==4.37.0\r\
+    \n```"
+  created_at: 2024-01-23 13:00:07+00:00
+  edited: false
+  hidden: false
+  id: 65afb85766ad44e2d5f0b001
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663069207512-noauth.png?w=200&h=200&f=face
+      fullname: David G Ortega
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidgortega
+      type: user
+    createdAt: '2024-01-23T13:47:33.000Z'
+    data:
+      edited: false
+      editors:
+      - davidgortega
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9718013405799866
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663069207512-noauth.png?w=200&h=200&f=face
+          fullname: David G Ortega
+          isHf: false
+          isPro: false
+          name: davidgortega
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;g-ronimo&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/g-ronimo\">@<span class=\"\
+          underline\">g-ronimo</span></a></span>\n\n\t</span></span> did you get the\
+          \ training config file or you have created one from the 3B?</p>\n"
+        raw: '@g-ronimo did you get the training config file or you have created one
+          from the 3B?'
+        updatedAt: '2024-01-23T13:47:33.099Z'
+      numEdits: 0
+      reactions: []
+    id: 65afc3751f418c7449639590
+    type: comment
+  author: davidgortega
+  content: '@g-ronimo did you get the training config file or you have created one
+    from the 3B?'
+  created_at: 2024-01-23 13:47:33+00:00
+  edited: false
+  hidden: false
+  id: 65afc3751f418c7449639590
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T13:50:51.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9452223181724548
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: '<p>which training config file?</p>
+
+          '
+        raw: which training config file?
+        updatedAt: '2024-01-23T13:50:51.992Z'
+      numEdits: 0
+      reactions: []
+    id: 65afc43bac291fd7fdf264c5
+    type: comment
+  author: g-ronimo
+  content: which training config file?
+  created_at: 2024-01-23 13:50:51+00:00
+  edited: false
+  hidden: false
+  id: 65afc43bac291fd7fdf264c5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663069207512-noauth.png?w=200&h=200&f=face
+      fullname: David G Ortega
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidgortega
+      type: user
+    createdAt: '2024-01-23T15:01:11.000Z'
+    data:
+      edited: false
+      editors:
+      - davidgortega
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7277219891548157
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663069207512-noauth.png?w=200&h=200&f=face
+          fullname: David G Ortega
+          isHf: false
+          isPro: false
+          name: davidgortega
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;g-ronimo&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/g-ronimo\">@<span class=\"\
+          underline\">g-ronimo</span></a></span>\n\n\t</span></span> <a href=\"https://huggingface.co/stabilityai/stablelm-2-1_6b#training-procedure\"\
+          >please read this</a> I have opened a <a href=\"https://huggingface.co/stabilityai/stablelm-2-1_6b/discussions/3\"\
+          >discussion</a> that you liked</p>\n"
+        raw: '@g-ronimo [please read this](https://huggingface.co/stabilityai/stablelm-2-1_6b#training-procedure)
+          I have opened a [discussion](https://huggingface.co/stabilityai/stablelm-2-1_6b/discussions/3)
+          that you liked'
+        updatedAt: '2024-01-23T15:01:11.941Z'
+      numEdits: 0
+      reactions: []
+    id: 65afd4b73b52344542586e25
+    type: comment
+  author: davidgortega
+  content: '@g-ronimo [please read this](https://huggingface.co/stabilityai/stablelm-2-1_6b#training-procedure)
+    I have opened a [discussion](https://huggingface.co/stabilityai/stablelm-2-1_6b/discussions/3)
+    that you liked'
+  created_at: 2024-01-23 15:01:11+00:00
+  edited: false
+  hidden: false
+  id: 65afd4b73b52344542586e25
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T16:16:45.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9262363314628601
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: '<p>I see! From what I understand, this missing .yml file contains the
+          hyperparameters used for pretraining. I don''t need that for fine-tuning
+          the (already pretrained) model</p>
+
+          '
+        raw: I see! From what I understand, this missing .yml file contains the hyperparameters
+          used for pretraining. I don't need that for fine-tuning the (already pretrained)
+          model
+        updatedAt: '2024-01-23T16:16:45.267Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - davidgortega
+    id: 65afe66df346fb4c5d69337d
+    type: comment
+  author: g-ronimo
+  content: I see! From what I understand, this missing .yml file contains the hyperparameters
+    used for pretraining. I don't need that for fine-tuning the (already pretrained)
+    model
+  created_at: 2024-01-23 16:16:45+00:00
+  edited: false
+  hidden: false
+  id: 65afe66df346fb4c5d69337d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6446be9a15a27291ef8bea10/9_gywXgzL9Jk3MYLdX9RG.jpeg?w=200&h=200&f=face
+      fullname: interstellarninja
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: interstellarninja
+      type: user
+    createdAt: '2024-01-23T17:10:55.000Z'
+    data:
+      edited: false
+      editors:
+      - interstellarninja
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8498746752738953
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6446be9a15a27291ef8bea10/9_gywXgzL9Jk3MYLdX9RG.jpeg?w=200&h=200&f=face
+          fullname: interstellarninja
+          isHf: false
+          isPro: false
+          name: interstellarninja
+          type: user
+        html: '<p>I don''t know if it''s related but i got the following error with
+          FlashAttention while finetuning the stablelm-2-zephyr-1_6b:</p>
+
+          <p><code>RuntimeError: FlashAttention only support fp16 and bf16 data type</code></p>
+
+          '
+        raw: 'I don''t know if it''s related but i got the following error with FlashAttention
+          while finetuning the stablelm-2-zephyr-1_6b:
+
+
+          ```RuntimeError: FlashAttention only support fp16 and bf16 data type```'
+        updatedAt: '2024-01-23T17:10:55.099Z'
+      numEdits: 0
+      reactions: []
+    id: 65aff31f25c173a4578e80db
+    type: comment
+  author: interstellarninja
+  content: 'I don''t know if it''s related but i got the following error with FlashAttention
+    while finetuning the stablelm-2-zephyr-1_6b:
+
+
+    ```RuntimeError: FlashAttention only support fp16 and bf16 data type```'
+  created_at: 2024-01-23 17:10:55+00:00
+  edited: false
+  hidden: false
+  id: 65aff31f25c173a4578e80db
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T18:11:10.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6977025270462036
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: "<blockquote>\n<p>I don't know if it's related but i got the following\
+          \ error with FlashAttention while finetuning the stablelm-2-zephyr-1_6b:</p>\n\
+          <p><code>RuntimeError: FlashAttention only support fp16 and bf16 data type</code></p>\n\
+          </blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;interstellarninja&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/interstellarninja\"\
+          >@<span class=\"underline\">interstellarninja</span></a></span>\n\n\t</span></span>\
+          \ FA2 apparently only works w/ bf16/fp16</p>\n<p><a href=\"https://huggingface.co/docs/transformers/perf_infer_gpu_one#flashattention-2\"\
+          >https://huggingface.co/docs/transformers/perf_infer_gpu_one#flashattention-2</a></p>\n\
+          <pre><code class=\"language-python\">model = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_id, \n    torch_dtype=torch.bfloat16, \n    attn_implementation=<span\
+          \ class=\"hljs-string\">\"flash_attention_2\"</span>,\n)\n</code></pre>\n"
+        raw: "> I don't know if it's related but i got the following error with FlashAttention\
+          \ while finetuning the stablelm-2-zephyr-1_6b:\n> \n> ```RuntimeError: FlashAttention\
+          \ only support fp16 and bf16 data type```\n\n@interstellarninja FA2 apparently\
+          \ only works w/ bf16/fp16\n\nhttps://huggingface.co/docs/transformers/perf_infer_gpu_one#flashattention-2\n\
+          \n```python\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id,\
+          \ \n    torch_dtype=torch.bfloat16, \n    attn_implementation=\"flash_attention_2\"\
+          ,\n)\n```\n"
+        updatedAt: '2024-01-23T18:11:10.629Z'
+      numEdits: 0
+      reactions: []
+    id: 65b0013e2e39165640d6fcd5
+    type: comment
+  author: g-ronimo
+  content: "> I don't know if it's related but i got the following error with FlashAttention\
+    \ while finetuning the stablelm-2-zephyr-1_6b:\n> \n> ```RuntimeError: FlashAttention\
+    \ only support fp16 and bf16 data type```\n\n@interstellarninja FA2 apparently\
+    \ only works w/ bf16/fp16\n\nhttps://huggingface.co/docs/transformers/perf_infer_gpu_one#flashattention-2\n\
+    \n```python\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id, \n \
+    \   torch_dtype=torch.bfloat16, \n    attn_implementation=\"flash_attention_2\"\
+    ,\n)\n```\n"
+  created_at: 2024-01-23 18:11:10+00:00
+  edited: false
+  hidden: false
+  id: 65b0013e2e39165640d6fcd5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665261042648-61b2bf4f5b1f7cad1799cfbb.png?w=200&h=200&f=face
+      fullname: Jonathan Tow
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: jon-tow
+      type: user
+    createdAt: '2024-01-23T19:13:47.000Z'
+    data:
+      edited: true
+      editors:
+      - jon-tow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6821982860565186
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665261042648-61b2bf4f5b1f7cad1799cfbb.png?w=200&h=200&f=face
+          fullname: Jonathan Tow
+          isHf: false
+          isPro: false
+          name: jon-tow
+          type: user
+        html: "<p>Hey y'all! Sorry, attention dropout was never supported in <code>modeling_stablelm_epoch</code>\
+          \ and this reference slipped through. I've just added support.</p>\n<p><span\
+          \ data-props=\"{&quot;user&quot;:&quot;g-ronimo&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/g-ronimo\">@<span class=\"\
+          underline\">g-ronimo</span></a></span>\n\n\t</span></span> Note re:</p>\n\
+          <blockquote>\n<p>here's a minimal example to reproduce the error: ..</p>\n\
+          </blockquote>\n<p>You'll need to pass <code>labels</code> as well to avoid\
+          \ <code>loss is None</code> errors:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >tokenize_function</span>(<span class=\"hljs-params\">examples</span>):\n\
+          \    inputs = tokenizer(examples[<span class=\"hljs-string\">\"text\"</span>],\
+          \ padding=<span class=\"hljs-string\">\"max_length\"</span>, truncation=<span\
+          \ class=\"hljs-literal\">True</span>, max_length=<span class=\"hljs-number\"\
+          >100</span>)\n    inputs[<span class=\"hljs-string\">'labels'</span>] =\
+          \ inputs[<span class=\"hljs-string\">'input_ids'</span>].copy()  <span class=\"\
+          hljs-comment\"># Shift is done internally</span>\n    <span class=\"hljs-keyword\"\
+          >return</span> inputs\n</code></pre>\n<p>Colab notebook <a rel=\"nofollow\"\
+          \ href=\"https://colab.research.google.com/drive/1vfxSuG5cYIz0gPx6Bl04_VgPyrcX-XZH?usp=sharing\"\
+          >here</a>.</p>\n"
+        raw: "Hey y'all! Sorry, attention dropout was never supported in `modeling_stablelm_epoch`\
+          \ and this reference slipped through. I've just added support.\n\n@g-ronimo\
+          \ Note re:\n> here's a minimal example to reproduce the error: ..\n\nYou'll\
+          \ need to pass `labels` as well to avoid `loss is None` errors:\n\n```python\n\
+          def tokenize_function(examples):\n    inputs = tokenizer(examples[\"text\"\
+          ], padding=\"max_length\", truncation=True, max_length=100)\n    inputs['labels']\
+          \ = inputs['input_ids'].copy()  # Shift is done internally\n    return inputs\n\
+          ```\nColab notebook [here](https://colab.research.google.com/drive/1vfxSuG5cYIz0gPx6Bl04_VgPyrcX-XZH?usp=sharing)."
+        updatedAt: '2024-01-23T19:14:35.227Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - davidgortega
+    id: 65b00febb707b0b0936f5270
+    type: comment
+  author: jon-tow
+  content: "Hey y'all! Sorry, attention dropout was never supported in `modeling_stablelm_epoch`\
+    \ and this reference slipped through. I've just added support.\n\n@g-ronimo Note\
+    \ re:\n> here's a minimal example to reproduce the error: ..\n\nYou'll need to\
+    \ pass `labels` as well to avoid `loss is None` errors:\n\n```python\ndef tokenize_function(examples):\n\
+    \    inputs = tokenizer(examples[\"text\"], padding=\"max_length\", truncation=True,\
+    \ max_length=100)\n    inputs['labels'] = inputs['input_ids'].copy()  # Shift\
+    \ is done internally\n    return inputs\n```\nColab notebook [here](https://colab.research.google.com/drive/1vfxSuG5cYIz0gPx6Bl04_VgPyrcX-XZH?usp=sharing)."
+  created_at: 2024-01-23 19:13:47+00:00
+  edited: true
+  hidden: false
+  id: 65b00febb707b0b0936f5270
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T20:20:39.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.931755781173706
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: "<p>works now! thank you.<br>sorry for the confusing minimal example\
+          \ with missing labels. i'm not actually training anything on yelp reviews\
+          \ \U0001F606 </p>\n"
+        raw: "works now! thank you. \nsorry for the confusing minimal example with\
+          \ missing labels. i'm not actually training anything on yelp reviews \U0001F606\
+          \ "
+        updatedAt: '2024-01-23T20:20:39.050Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - jon-tow
+      relatedEventId: 65b01f9770773c0ab8c1c284
+    id: 65b01f9770773c0ab8c1c27f
+    type: comment
+  author: g-ronimo
+  content: "works now! thank you. \nsorry for the confusing minimal example with missing\
+    \ labels. i'm not actually training anything on yelp reviews \U0001F606 "
+  created_at: 2024-01-23 20:20:39+00:00
+  edited: false
+  hidden: false
+  id: 65b01f9770773c0ab8c1c27f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2024-01-23T20:20:39.000Z'
+    data:
+      status: closed
+    id: 65b01f9770773c0ab8c1c284
+    type: status-change
+  author: g-ronimo
+  created_at: 2024-01-23 20:20:39+00:00
+  id: 65b01f9770773c0ab8c1c284
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: stabilityai/stablelm-2-1_6b
+repo_type: model
+status: closed
+target_branch: null
+title: 'Training with FA2 fails: AttributeError: ''FlashAttention2'' object has no
+  attribute ''attention_dropout'''

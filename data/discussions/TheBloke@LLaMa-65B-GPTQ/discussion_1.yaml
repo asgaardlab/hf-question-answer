@@ -1,0 +1,446 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AARon99
+conflicting_files: null
+created_at: 2023-07-15 23:36:45+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+      fullname: AaRon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AARon99
+      type: user
+    createdAt: '2023-07-16T00:36:45.000Z'
+    data:
+      edited: true
+      editors:
+      - AARon99
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9715295433998108
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+          fullname: AaRon
+          isHf: false
+          isPro: false
+          name: AARon99
+          type: user
+        html: '<p>Do you know if it''s possible to split vram usage using between
+          two gpus with GPTQ''s llama.py?  Anyway thanks again, this was proving to
+          be very difficult to do.</p>
+
+          '
+        raw: Do you know if it's possible to split vram usage using between two gpus
+          with GPTQ's llama.py?  Anyway thanks again, this was proving to be very
+          difficult to do.
+        updatedAt: '2023-07-16T00:37:45.774Z'
+      numEdits: 1
+      reactions: []
+    id: 64b33b9dcba3235a05f09ff0
+    type: comment
+  author: AARon99
+  content: Do you know if it's possible to split vram usage using between two gpus
+    with GPTQ's llama.py?  Anyway thanks again, this was proving to be very difficult
+    to do.
+  created_at: 2023-07-15 23:36:45+00:00
+  edited: true
+  hidden: false
+  id: 64b33b9dcba3235a05f09ff0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-07-16T08:33:41.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9532886743545532
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Great, glad to help. In general I don''t recommend using GPTQ-for-LLaMa
+          to quantise. Use AutoGPTQ.  </p>
+
+          <p>No it''s not. In both GPTQ-for-LLaMa and AutoGPTQ, you can''t really
+          control the VRAM required for quantisation.  In AutoGPTQ you can control
+          where the model weights go, but by default they go to RAM so moving some
+          of the weights on to a second GPU won''t help avoid you running out of VRAM,
+          it might just make it a bit quicker. </p>
+
+          <p>But the one time I tried putting model weights on a second GPU while
+          quantising with AutoGPTQ on the first - which I did on a 2 x A100 80GB system
+          with <code>max_memory =  { 0: 0, 1: ''79GiB'', ''cpu'': ''500GiB'' }</code>
+          -  it failed with a weird error about GPU0 not being initialised so I''m
+          not sure it can even work.  But again that wouldn''t have helped with VRAM
+          issues - I was doing it to try to reduce the RAM requirement, and to try
+          to speed the process up (that was quantizing BLOOMChat and BloomZ, 176B
+          models). But it didn''t work.</p>
+
+          <p>I used to quantise 65B models on a single 4090, so only 24GB VRAM should
+          be required.  You also need plenty of RAM - I think around 160GB RAM is
+          needed for 65B.  And if you have less than 24GB VRAM then I doubt you can
+          do it, even with multiple cards.</p>
+
+          <p>There are two tricks you can use with AutoGPTQ to try to minimise VRAM
+          usage. I''m not sure they''ll help, because again if you don''t have a 24GB
+          card I don''t think you can do it.  But anyway, they are:</p>
+
+          <ol>
+
+          <li>Add <code>cache_examples_on_gpu=False</code> to the <code>.quantize()</code>
+          call. This slightly reduces VRAM usage by not caching the quantisation samples
+          on the GPU.</li>
+
+          <li>Set environment variable <code>PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32</code>
+          which stores data in smaller chunks on the GPU which can allow more to fit.</li>
+
+          </ol>
+
+          '
+        raw: "Great, glad to help. In general I don't recommend using GPTQ-for-LLaMa\
+          \ to quantise. Use AutoGPTQ.  \n\nNo it's not. In both GPTQ-for-LLaMa and\
+          \ AutoGPTQ, you can't really control the VRAM required for quantisation.\
+          \  In AutoGPTQ you can control where the model weights go, but by default\
+          \ they go to RAM so moving some of the weights on to a second GPU won't\
+          \ help avoid you running out of VRAM, it might just make it a bit quicker.\
+          \ \n\nBut the one time I tried putting model weights on a second GPU while\
+          \ quantising with AutoGPTQ on the first - which I did on a 2 x A100 80GB\
+          \ system with `max_memory =  { 0: 0, 1: '79GiB', 'cpu': '500GiB' }` -  it\
+          \ failed with a weird error about GPU0 not being initialised so I'm not\
+          \ sure it can even work.  But again that wouldn't have helped with VRAM\
+          \ issues - I was doing it to try to reduce the RAM requirement, and to try\
+          \ to speed the process up (that was quantizing BLOOMChat and BloomZ, 176B\
+          \ models). But it didn't work.\n\nI used to quantise 65B models on a single\
+          \ 4090, so only 24GB VRAM should be required.  You also need plenty of RAM\
+          \ - I think around 160GB RAM is needed for 65B.  And if you have less than\
+          \ 24GB VRAM then I doubt you can do it, even with multiple cards.\n\nThere\
+          \ are two tricks you can use with AutoGPTQ to try to minimise VRAM usage.\
+          \ I'm not sure they'll help, because again if you don't have a 24GB card\
+          \ I don't think you can do it.  But anyway, they are:\n1. Add `cache_examples_on_gpu=False`\
+          \ to the `.quantize()` call. This slightly reduces VRAM usage by not caching\
+          \ the quantisation samples on the GPU.\n2. Set environment variable `PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32`\
+          \ which stores data in smaller chunks on the GPU which can allow more to\
+          \ fit.\n\n"
+        updatedAt: '2023-07-16T08:33:41.200Z'
+      numEdits: 0
+      reactions: []
+    id: 64b3ab659826b935a2e38b66
+    type: comment
+  author: TheBloke
+  content: "Great, glad to help. In general I don't recommend using GPTQ-for-LLaMa\
+    \ to quantise. Use AutoGPTQ.  \n\nNo it's not. In both GPTQ-for-LLaMa and AutoGPTQ,\
+    \ you can't really control the VRAM required for quantisation.  In AutoGPTQ you\
+    \ can control where the model weights go, but by default they go to RAM so moving\
+    \ some of the weights on to a second GPU won't help avoid you running out of VRAM,\
+    \ it might just make it a bit quicker. \n\nBut the one time I tried putting model\
+    \ weights on a second GPU while quantising with AutoGPTQ on the first - which\
+    \ I did on a 2 x A100 80GB system with `max_memory =  { 0: 0, 1: '79GiB', 'cpu':\
+    \ '500GiB' }` -  it failed with a weird error about GPU0 not being initialised\
+    \ so I'm not sure it can even work.  But again that wouldn't have helped with\
+    \ VRAM issues - I was doing it to try to reduce the RAM requirement, and to try\
+    \ to speed the process up (that was quantizing BLOOMChat and BloomZ, 176B models).\
+    \ But it didn't work.\n\nI used to quantise 65B models on a single 4090, so only\
+    \ 24GB VRAM should be required.  You also need plenty of RAM - I think around\
+    \ 160GB RAM is needed for 65B.  And if you have less than 24GB VRAM then I doubt\
+    \ you can do it, even with multiple cards.\n\nThere are two tricks you can use\
+    \ with AutoGPTQ to try to minimise VRAM usage. I'm not sure they'll help, because\
+    \ again if you don't have a 24GB card I don't think you can do it.  But anyway,\
+    \ they are:\n1. Add `cache_examples_on_gpu=False` to the `.quantize()` call. This\
+    \ slightly reduces VRAM usage by not caching the quantisation samples on the GPU.\n\
+    2. Set environment variable `PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32` which\
+    \ stores data in smaller chunks on the GPU which can allow more to fit.\n\n"
+  created_at: 2023-07-16 07:33:41+00:00
+  edited: false
+  hidden: false
+  id: 64b3ab659826b935a2e38b66
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+      fullname: AaRon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AARon99
+      type: user
+    createdAt: '2023-07-16T12:50:34.000Z'
+    data:
+      edited: false
+      editors:
+      - AARon99
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9618720412254333
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+          fullname: AaRon
+          isHf: false
+          isPro: false
+          name: AARon99
+          type: user
+        html: '<p>Thank you so much!!!  Wow you  have already been so valuable to
+          the community with all the models, I really didn''t expect such a detailed
+          response.  Thank you!  I''m so excited to try out your suggestions today,
+          I have 24GB of vram and 128GB of cpu ram, and just learned how to do swap
+          files with WSL (I''m on a windows machine) so I can use nvme drives for
+          that extra disk-ram.  </p>
+
+          <p>&lt;3</p>
+
+          '
+        raw: "Thank you so much!!!  Wow you  have already been so valuable to the\
+          \ community with all the models, I really didn't expect such a detailed\
+          \ response.  Thank you!  I'm so excited to try out your suggestions today,\
+          \ I have 24GB of vram and 128GB of cpu ram, and just learned how to do swap\
+          \ files with WSL (I'm on a windows machine) so I can use nvme drives for\
+          \ that extra disk-ram.  \n\n<3"
+        updatedAt: '2023-07-16T12:50:34.001Z'
+      numEdits: 0
+      reactions: []
+    id: 64b3e79a28fd98e7cc0924be
+    type: comment
+  author: AARon99
+  content: "Thank you so much!!!  Wow you  have already been so valuable to the community\
+    \ with all the models, I really didn't expect such a detailed response.  Thank\
+    \ you!  I'm so excited to try out your suggestions today, I have 24GB of vram\
+    \ and 128GB of cpu ram, and just learned how to do swap files with WSL (I'm on\
+    \ a windows machine) so I can use nvme drives for that extra disk-ram.  \n\n<3"
+  created_at: 2023-07-16 11:50:34+00:00
+  edited: false
+  hidden: false
+  id: 64b3e79a28fd98e7cc0924be
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-07-16T13:34:30.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8937913775444031
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Ah then yeah it''s going to be ram that''s your issue, but yes if
+          you define a large swap space then it should get it done eventually.</p>
+
+          <p>I''d use auto gptq not Llama.py as mentioned. Here''s the script I use
+          to quickly make AutoGPTQ quants using the wiki text dataset <a rel="nofollow"
+          href="https://gist.github.com/TheBloke/b47c50a70dd4fe653f64a12928286682">https://gist.github.com/TheBloke/b47c50a70dd4fe653f64a12928286682</a></p>
+
+          '
+        raw: 'Ah then yeah it''s going to be ram that''s your issue, but yes if you
+          define a large swap space then it should get it done eventually.
+
+
+          I''d use auto gptq not Llama.py as mentioned. Here''s the script I use to
+          quickly make AutoGPTQ quants using the wiki text dataset https://gist.github.com/TheBloke/b47c50a70dd4fe653f64a12928286682'
+        updatedAt: '2023-07-16T13:34:30.698Z'
+      numEdits: 0
+      reactions: []
+    id: 64b3f1e6a24816979608cd76
+    type: comment
+  author: TheBloke
+  content: 'Ah then yeah it''s going to be ram that''s your issue, but yes if you
+    define a large swap space then it should get it done eventually.
+
+
+    I''d use auto gptq not Llama.py as mentioned. Here''s the script I use to quickly
+    make AutoGPTQ quants using the wiki text dataset https://gist.github.com/TheBloke/b47c50a70dd4fe653f64a12928286682'
+  created_at: 2023-07-16 12:34:30+00:00
+  edited: false
+  hidden: false
+  id: 64b3f1e6a24816979608cd76
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+      fullname: AaRon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AARon99
+      type: user
+    createdAt: '2023-07-16T23:27:20.000Z'
+    data:
+      edited: true
+      editors:
+      - AARon99
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8663869500160217
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+          fullname: AaRon
+          isHf: false
+          isPro: false
+          name: AARon99
+          type: user
+        html: '<p>Frick!! Thank you so much for the information!  </p>
+
+          <p>I am currently quantizing the model using your .py file and AutoGPTQ!
+          </p>
+
+          <p>I also got 64B quantitation working with GPTQ.</p>
+
+          <p>You have already provided so much information already, if you come across
+          this post again and have the time.  I''m curious why one is preferred over
+          the other?  I''m going to test both of these quantized models out when finished
+          and do some comparisons between the two of them.</p>
+
+          <p>For anyone that comes across this post in the future, I am running AutoGPTQ
+          using WSL on Windows 10, I did the git install instead of the pip install.</p>
+
+          <p>This is what I''m running with TheBloke''s .py file that I named autogptq.py:</p>
+
+          <p> PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32 CUDA_VISIBLE_DEVICES=0,1
+          python autogptq.py ~/AutoGPTQ/auto_gptq/quantization/llama-65b ~/AutoGPTQ/auto_gptq/quantization/llama-65b
+          c4 --bits 4 --group_size 128 --desc_act 1  --damp 0.01 --dtype ''float16''
+          --use_triton</p>
+
+          '
+        raw: "Frick!! Thank you so much for the information!  \n\nI am currently quantizing\
+          \ the model using your .py file and AutoGPTQ! \n\nI also got 64B quantitation\
+          \ working with GPTQ.\n\nYou have already provided so much information already,\
+          \ if you come across this post again and have the time.  I'm curious why\
+          \ one is preferred over the other?  I'm going to test both of these quantized\
+          \ models out when finished and do some comparisons between the two of them.\n\
+          \nFor anyone that comes across this post in the future, I am running AutoGPTQ\
+          \ using WSL on Windows 10, I did the git install instead of the pip install.\n\
+          \nThis is what I'm running with TheBloke's .py file that I named autogptq.py:\n\
+          \n PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32 CUDA_VISIBLE_DEVICES=0,1\
+          \ python autogptq.py ~/AutoGPTQ/auto_gptq/quantization/llama-65b ~/AutoGPTQ/auto_gptq/quantization/llama-65b\
+          \ c4 --bits 4 --group_size 128 --desc_act 1  --damp 0.01 --dtype 'float16'\
+          \ --use_triton\n"
+        updatedAt: '2023-07-16T23:28:22.625Z'
+      numEdits: 1
+      reactions: []
+    id: 64b47cd8ffed52962ad30aea
+    type: comment
+  author: AARon99
+  content: "Frick!! Thank you so much for the information!  \n\nI am currently quantizing\
+    \ the model using your .py file and AutoGPTQ! \n\nI also got 64B quantitation\
+    \ working with GPTQ.\n\nYou have already provided so much information already,\
+    \ if you come across this post again and have the time.  I'm curious why one is\
+    \ preferred over the other?  I'm going to test both of these quantized models\
+    \ out when finished and do some comparisons between the two of them.\n\nFor anyone\
+    \ that comes across this post in the future, I am running AutoGPTQ using WSL on\
+    \ Windows 10, I did the git install instead of the pip install.\n\nThis is what\
+    \ I'm running with TheBloke's .py file that I named autogptq.py:\n\n PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:32\
+    \ CUDA_VISIBLE_DEVICES=0,1 python autogptq.py ~/AutoGPTQ/auto_gptq/quantization/llama-65b\
+    \ ~/AutoGPTQ/auto_gptq/quantization/llama-65b c4 --bits 4 --group_size 128 --desc_act\
+    \ 1  --damp 0.01 --dtype 'float16' --use_triton\n"
+  created_at: 2023-07-16 22:27:20+00:00
+  edited: true
+  hidden: false
+  id: 64b47cd8ffed52962ad30aea
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+      fullname: AaRon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AARon99
+      type: user
+    createdAt: '2023-07-17T02:33:38.000Z'
+    data:
+      edited: false
+      editors:
+      - AARon99
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9610242247581482
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c148a32d2e7deeeea6db252b90973ea0.svg
+          fullname: AaRon
+          isHf: false
+          isPro: false
+          name: AARon99
+          type: user
+        html: '<p>Woot the model finished and works! Time to do more testing.</p>
+
+          '
+        raw: Woot the model finished and works! Time to do more testing.
+        updatedAt: '2023-07-17T02:33:38.525Z'
+      numEdits: 0
+      reactions: []
+    id: 64b4a8822fc8324fcb5cde12
+    type: comment
+  author: AARon99
+  content: Woot the model finished and works! Time to do more testing.
+  created_at: 2023-07-17 01:33:38+00:00
+  edited: false
+  hidden: false
+  id: 64b4a8822fc8324fcb5cde12
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: TheBloke/LLaMa-65B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: I was literally just trying to do this and kept running short of vram by 1.5GB,
+  thank you!

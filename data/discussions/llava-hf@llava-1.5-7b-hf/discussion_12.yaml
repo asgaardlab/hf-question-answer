@@ -1,0 +1,815 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kshetrajna12
+conflicting_files: null
+created_at: 2024-01-16 02:56:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+      fullname: Kshetrajna Raghavan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kshetrajna12
+      type: user
+    createdAt: '2024-01-16T02:56:08.000Z'
+    data:
+      edited: true
+      editors:
+      - kshetrajna12
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5226666927337646
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+          fullname: Kshetrajna Raghavan
+          isHf: false
+          isPro: false
+          name: kshetrajna12
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;liuhaotian&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/liuhaotian\">@<span class=\"\
+          underline\">liuhaotian</span></a></span>\n\n\t</span></span> Thanks for\
+          \ this great model!<br>I am trying to finetune the HF version of LLava instead\
+          \ of the other version provided in <code>haotian-liu/LLaVA</code>.</p>\n\
+          <p>The script roughly looks like </p>\n<pre><code>from transformers import\
+          \ pipeline\nfrom PIL import Image    \nimport requests\nfrom datasets import\
+          \ load_dataset\nimport torch\nfrom transformers import AutoProcessor, LlavaForConditionalGeneration\n\
+          from transformers import TrainingArguments, Trainer\n\n\nPATH_TO_SAVE=\"\
+          ........\"\n\nmodel_id = \"llava-hf/llava-1.5-7b-hf\"\nmodel = LlavaForConditionalGeneration.from_pretrained(\n\
+          \    model_id, \n    low_cpu_mem_usage=True, \n)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\
+          \ndef preprocess_data(examples):\n    images = examples['image']\n    texts\
+          \ = ['USER: &lt;image&gt;\\n'+x+'\\nASSISTANT:' for x in examples['text']]\n\
+          \n    outputs = [x for x in examples['answer']]\n    encoding = processor(texts,images,\
+          \ padding=True, truncation=True, return_tensors=\"pt\")\n\n    for k, v\
+          \ in encoding.items():\n          encoding[k] = v.squeeze()\n\n    targets\
+          \ = [processor.tokenizer.encode(x, add_special_tokens=False)+[processor.tokenizer.eos_token_id]\
+          \ for x in outputs]\n\n    encoding[\"labels\"] = targets\n    return encoding\n\
+          \ndataset = load_dataset('.....', split='train')\nprocessed_dataset = dataset.map(preprocess_data,\
+          \ batched=True, remove_columns=['image','text','answer'])\n\n\n\ntraining_args\
+          \ = TrainingArguments(\n    output_dir=PATH_TO_SAVE,\n    per_device_train_batch_size=1,\n\
+          \    num_train_epochs=1,\n    save_steps=200,\n    logging_steps=50,\n \
+          \   learning_rate=5e-5,\n    save_total_limit=2,\n    remove_unused_columns=False,\n\
+          \    push_to_hub=False,\n)\n\ntrainer = Trainer(\n    model=model,\n   \
+          \ args=training_args,\n    train_dataset=processed_dataset,\n    tokenizer=processor.tokenizer,\n\
+          )\n\ntrainer.train()\n</code></pre>\n<p>I keep running into this error</p>\n\
+          <pre><code>---------------------------------------------------------------------------\n\
+          ValueError                                Traceback (most recent call last)\n\
+          Cell In[285], line 1\n----&gt; 1 trainer.train()\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1535         hf_hub_utils.enable_progress_bars()\n   1536\
+          \ else:\n-&gt; 1537     return inner_training_loop(\n   1538         args=args,\n\
+          \   1539         resume_from_checkpoint=resume_from_checkpoint,\n   1540\
+          \         trial=trial,\n   1541         ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1542     )\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1851     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\n   1853 with self.accelerator.accumulate(model):\n\
+          -&gt; 1854     tr_loss_step = self.training_step(model, inputs)\n   1856\
+          \ if (\n   1857     args.logging_nan_inf_filter\n   1858     and not is_torch_tpu_available()\n\
+          \   1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n\
+          \   1860 ):\n   1861     # if loss is nan or inf simply add the average\
+          \ of previous logged losses\n   1862     tr_loss += tr_loss / (1 + self.state.global_step\
+          \ - self._globalstep_last_logged)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+          \ in Trainer.training_step(self, model, inputs)\n   2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2734 with self.compute_loss_context_manager():\n-&gt; 2735     loss\
+          \ = self.compute_loss(model, inputs)\n   2737 if self.args.n_gpu &gt; 1:\n\
+          \   2738     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2756\
+          \ else:\n   2757     labels = None\n-&gt; 2758 outputs = model(**inputs)\n\
+          \   2759 # Save past state if it exists\n   2760 # TODO: this needs to be\
+          \ fixed and made cleaner later.\n   2761 if self.args.past_index &gt;= 0:\n\
+          \nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:405,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n    400     raise ValueError(\n  \
+          \  401         f\"Unexpected select feature strategy: {self.config.vision_feature_select_strategy}\"\
+          \n    402     )\n    404 image_features = self.multi_modal_projector(selected_image_feature)\n\
+          --&gt; 405 inputs_embeds, attention_mask, position_ids = self._merge_input_ids_with_image_features(\n\
+          \    406     image_features, inputs_embeds, input_ids, attention_mask, position_ids\n\
+          \    407 )\n    408 if labels is None:\n    409     labels = torch.full_like(attention_mask,\
+          \ self.config.ignore_index).to(torch.long)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:312,\
+          \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+          \ image_features, inputs_embeds, input_ids, attention_mask, position_ids)\n\
+          \    309 image_to_overwrite &amp;= image_to_overwrite.cumsum(-1) - 1 &gt;=\
+          \ nb_image_pad[:, None]\n    311 if image_to_overwrite.sum() != image_features.shape[:-1].numel():\n\
+          --&gt; 312     raise ValueError(\n    313         f\"The input provided\
+          \ to the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)}\
+          \ while\"\n    314         f\" the number of image given to the model is\
+          \ {num_images}. This prevents correct indexing and breaks batch generation.\"\
+          \n    315     )\n    317 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+          \ embed_dim)\n    318 final_attention_mask |= image_to_overwrite\n\nValueError:\
+          \ The input provided to the model are wrong. The number of image tokens\
+          \ is 1 while the number of image given to the model is 1. This prevents\
+          \ correct indexing and breaks batch generation.\n</code></pre>\n<p>Anyone\
+          \ having similar issues? </p>\n"
+        raw: "@liuhaotian Thanks for this great model!\nI am trying to finetune the\
+          \ HF version of LLava instead of the other version provided in `haotian-liu/LLaVA`.\n\
+          \nThe script roughly looks like \n```\nfrom transformers import pipeline\n\
+          from PIL import Image    \nimport requests\nfrom datasets import load_dataset\n\
+          import torch\nfrom transformers import AutoProcessor, LlavaForConditionalGeneration\n\
+          from transformers import TrainingArguments, Trainer\n\n\nPATH_TO_SAVE=\"\
+          ........\"\n\nmodel_id = \"llava-hf/llava-1.5-7b-hf\"\nmodel = LlavaForConditionalGeneration.from_pretrained(\n\
+          \    model_id, \n    low_cpu_mem_usage=True, \n)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\
+          \ndef preprocess_data(examples):\n    images = examples['image']\n    texts\
+          \ = ['USER: <image>\\n'+x+'\\nASSISTANT:' for x in examples['text']]\n\n\
+          \    outputs = [x for x in examples['answer']]\n    encoding = processor(texts,images,\
+          \ padding=True, truncation=True, return_tensors=\"pt\")\n\n    for k, v\
+          \ in encoding.items():\n          encoding[k] = v.squeeze()\n\n    targets\
+          \ = [processor.tokenizer.encode(x, add_special_tokens=False)+[processor.tokenizer.eos_token_id]\
+          \ for x in outputs]\n\n    encoding[\"labels\"] = targets\n    return encoding\n\
+          \ndataset = load_dataset('.....', split='train')\nprocessed_dataset = dataset.map(preprocess_data,\
+          \ batched=True, remove_columns=['image','text','answer'])\n\n\n\ntraining_args\
+          \ = TrainingArguments(\n    output_dir=PATH_TO_SAVE,\n    per_device_train_batch_size=1,\n\
+          \    num_train_epochs=1,\n    save_steps=200,\n    logging_steps=50,\n \
+          \   learning_rate=5e-5,\n    save_total_limit=2,\n    remove_unused_columns=False,\n\
+          \    push_to_hub=False,\n)\n\ntrainer = Trainer(\n    model=model,\n   \
+          \ args=training_args,\n    train_dataset=processed_dataset,\n    tokenizer=processor.tokenizer,\n\
+          )\n\ntrainer.train()\n```\n\n\nI keep running into this error\n```\n---------------------------------------------------------------------------\n\
+          ValueError                                Traceback (most recent call last)\n\
+          Cell In[285], line 1\n----> 1 trainer.train()\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1535         hf_hub_utils.enable_progress_bars()\n   1536\
+          \ else:\n-> 1537     return inner_training_loop(\n   1538         args=args,\n\
+          \   1539         resume_from_checkpoint=resume_from_checkpoint,\n   1540\
+          \         trial=trial,\n   1541         ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1542     )\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1851     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\n   1853 with self.accelerator.accumulate(model):\n\
+          -> 1854     tr_loss_step = self.training_step(model, inputs)\n   1856 if\
+          \ (\n   1857     args.logging_nan_inf_filter\n   1858     and not is_torch_tpu_available()\n\
+          \   1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n\
+          \   1860 ):\n   1861     # if loss is nan or inf simply add the average\
+          \ of previous logged losses\n   1862     tr_loss += tr_loss / (1 + self.state.global_step\
+          \ - self._globalstep_last_logged)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+          \ in Trainer.training_step(self, model, inputs)\n   2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2734 with self.compute_loss_context_manager():\n-> 2735     loss = self.compute_loss(model,\
+          \ inputs)\n   2737 if self.args.n_gpu > 1:\n   2738     loss = loss.mean()\
+          \  # mean() to average on multi-gpu parallel training\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2756\
+          \ else:\n   2757     labels = None\n-> 2758 outputs = model(**inputs)\n\
+          \   2759 # Save past state if it exists\n   2760 # TODO: this needs to be\
+          \ fixed and made cleaner later.\n   2761 if self.args.past_index >= 0:\n\
+          \nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:405,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n    400     raise ValueError(\n  \
+          \  401         f\"Unexpected select feature strategy: {self.config.vision_feature_select_strategy}\"\
+          \n    402     )\n    404 image_features = self.multi_modal_projector(selected_image_feature)\n\
+          --> 405 inputs_embeds, attention_mask, position_ids = self._merge_input_ids_with_image_features(\n\
+          \    406     image_features, inputs_embeds, input_ids, attention_mask, position_ids\n\
+          \    407 )\n    408 if labels is None:\n    409     labels = torch.full_like(attention_mask,\
+          \ self.config.ignore_index).to(torch.long)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:312,\
+          \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+          \ image_features, inputs_embeds, input_ids, attention_mask, position_ids)\n\
+          \    309 image_to_overwrite &= image_to_overwrite.cumsum(-1) - 1 >= nb_image_pad[:,\
+          \ None]\n    311 if image_to_overwrite.sum() != image_features.shape[:-1].numel():\n\
+          --> 312     raise ValueError(\n    313         f\"The input provided to\
+          \ the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)}\
+          \ while\"\n    314         f\" the number of image given to the model is\
+          \ {num_images}. This prevents correct indexing and breaks batch generation.\"\
+          \n    315     )\n    317 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+          \ embed_dim)\n    318 final_attention_mask |= image_to_overwrite\n\nValueError:\
+          \ The input provided to the model are wrong. The number of image tokens\
+          \ is 1 while the number of image given to the model is 1. This prevents\
+          \ correct indexing and breaks batch generation.\n```\n\nAnyone having similar\
+          \ issues? "
+        updatedAt: '2024-01-16T06:30:09.722Z'
+      numEdits: 2
+      reactions: []
+    id: 65a5f0488a0485c12df60f65
+    type: comment
+  author: kshetrajna12
+  content: "@liuhaotian Thanks for this great model!\nI am trying to finetune the\
+    \ HF version of LLava instead of the other version provided in `haotian-liu/LLaVA`.\n\
+    \nThe script roughly looks like \n```\nfrom transformers import pipeline\nfrom\
+    \ PIL import Image    \nimport requests\nfrom datasets import load_dataset\nimport\
+    \ torch\nfrom transformers import AutoProcessor, LlavaForConditionalGeneration\n\
+    from transformers import TrainingArguments, Trainer\n\n\nPATH_TO_SAVE=\"........\"\
+    \n\nmodel_id = \"llava-hf/llava-1.5-7b-hf\"\nmodel = LlavaForConditionalGeneration.from_pretrained(\n\
+    \    model_id, \n    low_cpu_mem_usage=True, \n)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\
+    \ndef preprocess_data(examples):\n    images = examples['image']\n    texts =\
+    \ ['USER: <image>\\n'+x+'\\nASSISTANT:' for x in examples['text']]\n\n    outputs\
+    \ = [x for x in examples['answer']]\n    encoding = processor(texts,images, padding=True,\
+    \ truncation=True, return_tensors=\"pt\")\n\n    for k, v in encoding.items():\n\
+    \          encoding[k] = v.squeeze()\n\n    targets = [processor.tokenizer.encode(x,\
+    \ add_special_tokens=False)+[processor.tokenizer.eos_token_id] for x in outputs]\n\
+    \n    encoding[\"labels\"] = targets\n    return encoding\n\ndataset = load_dataset('.....',\
+    \ split='train')\nprocessed_dataset = dataset.map(preprocess_data, batched=True,\
+    \ remove_columns=['image','text','answer'])\n\n\n\ntraining_args = TrainingArguments(\n\
+    \    output_dir=PATH_TO_SAVE,\n    per_device_train_batch_size=1,\n    num_train_epochs=1,\n\
+    \    save_steps=200,\n    logging_steps=50,\n    learning_rate=5e-5,\n    save_total_limit=2,\n\
+    \    remove_unused_columns=False,\n    push_to_hub=False,\n)\n\ntrainer = Trainer(\n\
+    \    model=model,\n    args=training_args,\n    train_dataset=processed_dataset,\n\
+    \    tokenizer=processor.tokenizer,\n)\n\ntrainer.train()\n```\n\n\nI keep running\
+    \ into this error\n```\n---------------------------------------------------------------------------\n\
+    ValueError                                Traceback (most recent call last)\n\
+    Cell In[285], line 1\n----> 1 trainer.train()\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+    \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\n   1535         hf_hub_utils.enable_progress_bars()\n   1536 else:\n\
+    -> 1537     return inner_training_loop(\n   1538         args=args,\n   1539 \
+    \        resume_from_checkpoint=resume_from_checkpoint,\n   1540         trial=trial,\n\
+    \   1541         ignore_keys_for_eval=ignore_keys_for_eval,\n   1542     )\n\n\
+    File /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+    \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+    \ trial, ignore_keys_for_eval)\n   1851     self.control = self.callback_handler.on_step_begin(args,\
+    \ self.state, self.control)\n   1853 with self.accelerator.accumulate(model):\n\
+    -> 1854     tr_loss_step = self.training_step(model, inputs)\n   1856 if (\n \
+    \  1857     args.logging_nan_inf_filter\n   1858     and not is_torch_tpu_available()\n\
+    \   1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n  \
+    \ 1860 ):\n   1861     # if loss is nan or inf simply add the average of previous\
+    \ logged losses\n   1862     tr_loss += tr_loss / (1 + self.state.global_step\
+    \ - self._globalstep_last_logged)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+    \ in Trainer.training_step(self, model, inputs)\n   2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+    \   2734 with self.compute_loss_context_manager():\n-> 2735     loss = self.compute_loss(model,\
+    \ inputs)\n   2737 if self.args.n_gpu > 1:\n   2738     loss = loss.mean()  #\
+    \ mean() to average on multi-gpu parallel training\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+    \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2756 else:\n\
+    \   2757     labels = None\n-> 2758 outputs = model(**inputs)\n   2759 # Save\
+    \ past state if it exists\n   2760 # TODO: this needs to be fixed and made cleaner\
+    \ later.\n   2761 if self.args.past_index >= 0:\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:405,\
+    \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values, attention_mask,\
+    \ position_ids, past_key_values, inputs_embeds, vision_feature_layer, vision_feature_select_strategy,\
+    \ labels, use_cache, output_attentions, output_hidden_states, return_dict)\n \
+    \   400     raise ValueError(\n    401         f\"Unexpected select feature strategy:\
+    \ {self.config.vision_feature_select_strategy}\"\n    402     )\n    404 image_features\
+    \ = self.multi_modal_projector(selected_image_feature)\n--> 405 inputs_embeds,\
+    \ attention_mask, position_ids = self._merge_input_ids_with_image_features(\n\
+    \    406     image_features, inputs_embeds, input_ids, attention_mask, position_ids\n\
+    \    407 )\n    408 if labels is None:\n    409     labels = torch.full_like(attention_mask,\
+    \ self.config.ignore_index).to(torch.long)\n\nFile /opt/homebrew/Caskroom/miniconda/base/envs/llava/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:312,\
+    \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+    \ image_features, inputs_embeds, input_ids, attention_mask, position_ids)\n  \
+    \  309 image_to_overwrite &= image_to_overwrite.cumsum(-1) - 1 >= nb_image_pad[:,\
+    \ None]\n    311 if image_to_overwrite.sum() != image_features.shape[:-1].numel():\n\
+    --> 312     raise ValueError(\n    313         f\"The input provided to the model\
+    \ are wrong. The number of image tokens is {torch.sum(special_image_token_mask)}\
+    \ while\"\n    314         f\" the number of image given to the model is {num_images}.\
+    \ This prevents correct indexing and breaks batch generation.\"\n    315     )\n\
+    \    317 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+    \ embed_dim)\n    318 final_attention_mask |= image_to_overwrite\n\nValueError:\
+    \ The input provided to the model are wrong. The number of image tokens is 1 while\
+    \ the number of image given to the model is 1. This prevents correct indexing\
+    \ and breaks batch generation.\n```\n\nAnyone having similar issues? "
+  created_at: 2024-01-16 02:56:08+00:00
+  edited: true
+  hidden: false
+  id: 65a5f0488a0485c12df60f65
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+      fullname: Kshetrajna Raghavan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kshetrajna12
+      type: user
+    createdAt: '2024-01-16T05:14:34.000Z'
+    data:
+      edited: true
+      editors:
+      - kshetrajna12
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8060250878334045
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+          fullname: Kshetrajna Raghavan
+          isHf: false
+          isPro: false
+          name: kshetrajna12
+          type: user
+        html: "<p>This might be a Mac Silicon specific issue since I am getting the\
+          \ same error with the generation script when I move the model and tensors\
+          \ <code>.to('mps')</code>.<br>Running on a linux machine now gives me </p>\n\
+          <pre><code>You're using a LlamaTokenizerFast tokenizer. Please note that\
+          \ with a fast tokenizer, using the __call__ method is faster than using\
+          \ a method to encode the text followed by a call to the pad method to get\
+          \ a padded encoding.\n ---------------------------------------------------------------------------\n\
+          \ IndexError                                Traceback (most recent call\
+          \ last)\n Cell In[10], line 1\n ----&gt; 1 trainer.train()\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n    1535         hf_hub_utils.enable_progress_bars()\n    1536\
+          \ else:\n -&gt; 1537     return inner_training_loop(\n    1538         args=args,\n\
+          \    1539         resume_from_checkpoint=resume_from_checkpoint,\n    1540\
+          \         trial=trial,\n    1541         ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \    1542     )\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n    1851     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\n    1853 with self.accelerator.accumulate(model):\n\
+          \ -&gt; 1854     tr_loss_step = self.training_step(model, inputs)\n    1856\
+          \ if (\n    1857     args.logging_nan_inf_filter\n    1858     and not is_torch_tpu_available()\n\
+          \    1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n\
+          \    1860 ):\n    1861     # if loss is nan or inf simply add the average\
+          \ of previous logged losses\n    1862     tr_loss += tr_loss / (1 + self.state.global_step\
+          \ - self._globalstep_last_logged)\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+          \ in Trainer.training_step(self, model, inputs)\n    2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \    2734 with self.compute_loss_context_manager():\n -&gt; 2735     loss\
+          \ = self.compute_loss(model, inputs)\n    2737 if self.args.n_gpu &gt; 1:\n\
+          \    2738     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n    2756\
+          \ else:\n    2757     labels = None\n -&gt; 2758 outputs = model(**inputs)\n\
+          \    2759 # Save past state if it exists\n    2760 # TODO: this needs to\
+          \ be fixed and made cleaner later.\n    2761 if self.args.past_index &gt;=\
+          \ 0:\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n    1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n    1497 # this function,\
+          \ and just call forward.\n    1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n    1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n    1500       \
+          \  or _global_forward_hooks or _global_forward_pre_hooks):\n -&gt; 1501\
+          \     return forward_call(*args, **kwargs)\n    1502 # Do not call functions\
+          \ when jit is used\n    1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:452,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n     450     shift_attention_mask\
+          \ = attention_mask[..., 1:]\n     451     shift_logits = logits[..., :-1,\
+          \ :][shift_attention_mask.to(logits.device) != 0].contiguous()\n --&gt;\
+          \ 452     shift_labels = labels[..., 1:][shift_attention_mask.to(labels.device)\
+          \ != 0].contiguous()\n     453 else:\n     454     shift_logits = logits[...,\
+          \ :-1, :].contiguous()\n \n IndexError: The shape of the mask [1, 700] at\
+          \ index 1 does not match the shape of the indexed tensor [1, 1] at index\
+          \ 1\n</code></pre>\n"
+        raw: "This might be a Mac Silicon specific issue since I am getting the same\
+          \ error with the generation script when I move the model and tensors `.to('mps')`.\
+          \   \nRunning on a linux machine now gives me \n```\nYou're using a LlamaTokenizerFast\
+          \ tokenizer. Please note that with a fast tokenizer, using the __call__\
+          \ method is faster than using a method to encode the text followed by a\
+          \ call to the pad method to get a padded encoding.\n ---------------------------------------------------------------------------\n\
+          \ IndexError                                Traceback (most recent call\
+          \ last)\n Cell In[10], line 1\n ----> 1 trainer.train()\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n    1535         hf_hub_utils.enable_progress_bars()\n    1536\
+          \ else:\n -> 1537     return inner_training_loop(\n    1538         args=args,\n\
+          \    1539         resume_from_checkpoint=resume_from_checkpoint,\n    1540\
+          \         trial=trial,\n    1541         ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \    1542     )\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n    1851     self.control = self.callback_handler.on_step_begin(args,\
+          \ self.state, self.control)\n    1853 with self.accelerator.accumulate(model):\n\
+          \ -> 1854     tr_loss_step = self.training_step(model, inputs)\n    1856\
+          \ if (\n    1857     args.logging_nan_inf_filter\n    1858     and not is_torch_tpu_available()\n\
+          \    1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n\
+          \    1860 ):\n    1861     # if loss is nan or inf simply add the average\
+          \ of previous logged losses\n    1862     tr_loss += tr_loss / (1 + self.state.global_step\
+          \ - self._globalstep_last_logged)\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+          \ in Trainer.training_step(self, model, inputs)\n    2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \    2734 with self.compute_loss_context_manager():\n -> 2735     loss =\
+          \ self.compute_loss(model, inputs)\n    2737 if self.args.n_gpu > 1:\n \
+          \   2738     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n    2756\
+          \ else:\n    2757     labels = None\n -> 2758 outputs = model(**inputs)\n\
+          \    2759 # Save past state if it exists\n    2760 # TODO: this needs to\
+          \ be fixed and made cleaner later.\n    2761 if self.args.past_index >=\
+          \ 0:\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\n    1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n    1497 # this function,\
+          \ and just call forward.\n    1498 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n    1499         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n    1500       \
+          \  or _global_forward_hooks or _global_forward_pre_hooks):\n -> 1501   \
+          \  return forward_call(*args, **kwargs)\n    1502 # Do not call functions\
+          \ when jit is used\n    1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:452,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n     450     shift_attention_mask\
+          \ = attention_mask[..., 1:]\n     451     shift_logits = logits[..., :-1,\
+          \ :][shift_attention_mask.to(logits.device) != 0].contiguous()\n --> 452\
+          \     shift_labels = labels[..., 1:][shift_attention_mask.to(labels.device)\
+          \ != 0].contiguous()\n     453 else:\n     454     shift_logits = logits[...,\
+          \ :-1, :].contiguous()\n \n IndexError: The shape of the mask [1, 700] at\
+          \ index 1 does not match the shape of the indexed tensor [1, 1] at index\
+          \ 1\n```"
+        updatedAt: '2024-01-16T06:42:19.889Z'
+      numEdits: 1
+      reactions: []
+    id: 65a610bad81b6fa6c8b6fa36
+    type: comment
+  author: kshetrajna12
+  content: "This might be a Mac Silicon specific issue since I am getting the same\
+    \ error with the generation script when I move the model and tensors `.to('mps')`.\
+    \   \nRunning on a linux machine now gives me \n```\nYou're using a LlamaTokenizerFast\
+    \ tokenizer. Please note that with a fast tokenizer, using the __call__ method\
+    \ is faster than using a method to encode the text followed by a call to the pad\
+    \ method to get a padded encoding.\n ---------------------------------------------------------------------------\n\
+    \ IndexError                                Traceback (most recent call last)\n\
+    \ Cell In[10], line 1\n ----> 1 trainer.train()\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1537,\
+    \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\n    1535         hf_hub_utils.enable_progress_bars()\n    1536 else:\n\
+    \ -> 1537     return inner_training_loop(\n    1538         args=args,\n    1539\
+    \         resume_from_checkpoint=resume_from_checkpoint,\n    1540         trial=trial,\n\
+    \    1541         ignore_keys_for_eval=ignore_keys_for_eval,\n    1542     )\n\
+    \ \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:1854,\
+    \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+    \ trial, ignore_keys_for_eval)\n    1851     self.control = self.callback_handler.on_step_begin(args,\
+    \ self.state, self.control)\n    1853 with self.accelerator.accumulate(model):\n\
+    \ -> 1854     tr_loss_step = self.training_step(model, inputs)\n    1856 if (\n\
+    \    1857     args.logging_nan_inf_filter\n    1858     and not is_torch_tpu_available()\n\
+    \    1859     and (torch.isnan(tr_loss_step) or torch.isinf(tr_loss_step))\n \
+    \   1860 ):\n    1861     # if loss is nan or inf simply add the average of previous\
+    \ logged losses\n    1862     tr_loss += tr_loss / (1 + self.state.global_step\
+    \ - self._globalstep_last_logged)\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2735,\
+    \ in Trainer.training_step(self, model, inputs)\n    2732     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+    \    2734 with self.compute_loss_context_manager():\n -> 2735     loss = self.compute_loss(model,\
+    \ inputs)\n    2737 if self.args.n_gpu > 1:\n    2738     loss = loss.mean() \
+    \ # mean() to average on multi-gpu parallel training\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/trainer.py:2758,\
+    \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n    2756 else:\n\
+    \    2757     labels = None\n -> 2758 outputs = model(**inputs)\n    2759 # Save\
+    \ past state if it exists\n    2760 # TODO: this needs to be fixed and made cleaner\
+    \ later.\n    2761 if self.args.past_index >= 0:\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\n    1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n    1497 # this function, and\
+    \ just call forward.\n    1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n    1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n    1500         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    \ -> 1501     return forward_call(*args, **kwargs)\n    1502 # Do not call functions\
+    \ when jit is used\n    1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\n \n File /opt/conda/envs/llava_hf/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:452,\
+    \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values, attention_mask,\
+    \ position_ids, past_key_values, inputs_embeds, vision_feature_layer, vision_feature_select_strategy,\
+    \ labels, use_cache, output_attentions, output_hidden_states, return_dict)\n \
+    \    450     shift_attention_mask = attention_mask[..., 1:]\n     451     shift_logits\
+    \ = logits[..., :-1, :][shift_attention_mask.to(logits.device) != 0].contiguous()\n\
+    \ --> 452     shift_labels = labels[..., 1:][shift_attention_mask.to(labels.device)\
+    \ != 0].contiguous()\n     453 else:\n     454     shift_logits = logits[...,\
+    \ :-1, :].contiguous()\n \n IndexError: The shape of the mask [1, 700] at index\
+    \ 1 does not match the shape of the indexed tensor [1, 1] at index 1\n```"
+  created_at: 2024-01-16 05:14:34+00:00
+  edited: true
+  hidden: false
+  id: 65a610bad81b6fa6c8b6fa36
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+      fullname: Niels Rogge
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: nielsr
+      type: user
+    createdAt: '2024-01-16T10:41:00.000Z'
+    data:
+      edited: false
+      editors:
+      - nielsr
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8505336046218872
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: '<p>Hi,</p>
+
+          <p>This was fixed in <a rel="nofollow" href="https://github.com/huggingface/transformers/pull/28333">https://github.com/huggingface/transformers/pull/28333</a>.
+          For now, you will need to install Transformers from source to use it: pip
+          install <a rel="nofollow" href="mailto:git+git@github.com">git+git@github.com</a>:huggingface/transformers.git.</p>
+
+          '
+        raw: 'Hi,
+
+
+          This was fixed in https://github.com/huggingface/transformers/pull/28333.
+          For now, you will need to install Transformers from source to use it: pip
+          install git+git@github.com:huggingface/transformers.git.'
+        updatedAt: '2024-01-16T10:41:00.058Z'
+      numEdits: 0
+      reactions: []
+    id: 65a65d3c0f169670d71b8be0
+    type: comment
+  author: nielsr
+  content: 'Hi,
+
+
+    This was fixed in https://github.com/huggingface/transformers/pull/28333. For
+    now, you will need to install Transformers from source to use it: pip install
+    git+git@github.com:huggingface/transformers.git.'
+  created_at: 2024-01-16 10:41:00+00:00
+  edited: false
+  hidden: false
+  id: 65a65d3c0f169670d71b8be0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+      fullname: Kshetrajna Raghavan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kshetrajna12
+      type: user
+    createdAt: '2024-01-16T17:33:05.000Z'
+    data:
+      edited: true
+      editors:
+      - kshetrajna12
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5488076210021973
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+          fullname: Kshetrajna Raghavan
+          isHf: false
+          isPro: false
+          name: kshetrajna12
+          type: user
+        html: "<p>Thanks! Is there an example of how to process that dataset? I still\
+          \ run into shape mismatch errors for the labels.<br>probably due to this\
+          \ method.</p>\n<pre><code>def preprocess_data(examples):\n     images =\
+          \ examples['image']\n     texts = ['USER: &lt;image&gt;\\n'+x+'\\nASSISTANT:'\
+          \ for x in examples['text']]\n \n     outputs = [x for x in examples['answer']]\n\
+          \     encoding = processor(texts,images, padding=True, truncation=True,\
+          \ return_tensors=\"pt\")\n \n     for k, v in encoding.items():\n      \
+          \     encoding[k] = v.squeeze()\n \n \n     targets = [torch.tensor(processor.tokenizer.encode(x,\
+          \ add_special_tokens=False)+[processor.tokenizer.eos_token_id]) for x in\
+          \ outputs]\n     targets = pad_sequence(targets, batch_first=True, padding_value=model.config.ignore_index)\n\
+          \ \n     encoding[\"labels\"] = targets\n     return encoding\n</code></pre>\n\
+          <p>I am able to get an output when I use </p>\n<pre><code>processed_dataset\
+          \ = dataset.map(preprocess_data, batched=True, remove_columns=['image','text','answer'])\n\
+          examples = processed_dataset[:2]\nmodel.generate(**inputs, max_new_tokens=200,\
+          \ do_sample=False)\n</code></pre>\n<p>But still fails when I use </p>\n\
+          <pre><code>training_args = TrainingArguments(\n    output_dir=PATH_TO_SAVE,\n\
+          \    per_device_train_batch_size=1,\n    num_train_epochs=1,\n    save_steps=200,\n\
+          \    logging_steps=50,\n    learning_rate=5e-5,\n    save_total_limit=2,\n\
+          \    remove_unused_columns=False,\n    push_to_hub=False,\n)\n\ntrainer\
+          \ = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=processed_dataset,\n\
+          \    tokenizer=processor.tokenizer,\n)\n\ntrainer.train()\n</code></pre>\n\
+          <p>I am launching the script with <code>accelerate</code></p>\n"
+        raw: "Thanks! Is there an example of how to process that dataset? I still\
+          \ run into shape mismatch errors for the labels. \nprobably due to this\
+          \ method.\n\n```\ndef preprocess_data(examples):\n     images = examples['image']\n\
+          \     texts = ['USER: <image>\\n'+x+'\\nASSISTANT:' for x in examples['text']]\n\
+          \ \n     outputs = [x for x in examples['answer']]\n     encoding = processor(texts,images,\
+          \ padding=True, truncation=True, return_tensors=\"pt\")\n \n     for k,\
+          \ v in encoding.items():\n           encoding[k] = v.squeeze()\n \n \n \
+          \    targets = [torch.tensor(processor.tokenizer.encode(x, add_special_tokens=False)+[processor.tokenizer.eos_token_id])\
+          \ for x in outputs]\n     targets = pad_sequence(targets, batch_first=True,\
+          \ padding_value=model.config.ignore_index)\n \n     encoding[\"labels\"\
+          ] = targets\n     return encoding\n```\n\nI am able to get an output when\
+          \ I use \n```\nprocessed_dataset = dataset.map(preprocess_data, batched=True,\
+          \ remove_columns=['image','text','answer'])\nexamples = processed_dataset[:2]\n\
+          model.generate(**inputs, max_new_tokens=200, do_sample=False)\n```\n\nBut\
+          \ still fails when I use \n```\ntraining_args = TrainingArguments(\n   \
+          \ output_dir=PATH_TO_SAVE,\n    per_device_train_batch_size=1,\n    num_train_epochs=1,\n\
+          \    save_steps=200,\n    logging_steps=50,\n    learning_rate=5e-5,\n \
+          \   save_total_limit=2,\n    remove_unused_columns=False,\n    push_to_hub=False,\n\
+          )\n\ntrainer = Trainer(\n    model=model,\n    args=training_args,\n   \
+          \ train_dataset=processed_dataset,\n    tokenizer=processor.tokenizer,\n\
+          )\n\ntrainer.train()\n```\n\nI am launching the script with `accelerate`"
+        updatedAt: '2024-01-17T00:10:56.426Z'
+      numEdits: 1
+      reactions: []
+    id: 65a6bdd10637ea5ccc9b4519
+    type: comment
+  author: kshetrajna12
+  content: "Thanks! Is there an example of how to process that dataset? I still run\
+    \ into shape mismatch errors for the labels. \nprobably due to this method.\n\n\
+    ```\ndef preprocess_data(examples):\n     images = examples['image']\n     texts\
+    \ = ['USER: <image>\\n'+x+'\\nASSISTANT:' for x in examples['text']]\n \n    \
+    \ outputs = [x for x in examples['answer']]\n     encoding = processor(texts,images,\
+    \ padding=True, truncation=True, return_tensors=\"pt\")\n \n     for k, v in encoding.items():\n\
+    \           encoding[k] = v.squeeze()\n \n \n     targets = [torch.tensor(processor.tokenizer.encode(x,\
+    \ add_special_tokens=False)+[processor.tokenizer.eos_token_id]) for x in outputs]\n\
+    \     targets = pad_sequence(targets, batch_first=True, padding_value=model.config.ignore_index)\n\
+    \ \n     encoding[\"labels\"] = targets\n     return encoding\n```\n\nI am able\
+    \ to get an output when I use \n```\nprocessed_dataset = dataset.map(preprocess_data,\
+    \ batched=True, remove_columns=['image','text','answer'])\nexamples = processed_dataset[:2]\n\
+    model.generate(**inputs, max_new_tokens=200, do_sample=False)\n```\n\nBut still\
+    \ fails when I use \n```\ntraining_args = TrainingArguments(\n    output_dir=PATH_TO_SAVE,\n\
+    \    per_device_train_batch_size=1,\n    num_train_epochs=1,\n    save_steps=200,\n\
+    \    logging_steps=50,\n    learning_rate=5e-5,\n    save_total_limit=2,\n   \
+    \ remove_unused_columns=False,\n    push_to_hub=False,\n)\n\ntrainer = Trainer(\n\
+    \    model=model,\n    args=training_args,\n    train_dataset=processed_dataset,\n\
+    \    tokenizer=processor.tokenizer,\n)\n\ntrainer.train()\n```\n\nI am launching\
+    \ the script with `accelerate`"
+  created_at: 2024-01-16 17:33:05+00:00
+  edited: true
+  hidden: false
+  id: 65a6bdd10637ea5ccc9b4519
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+      fullname: Kshetrajna Raghavan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kshetrajna12
+      type: user
+    createdAt: '2024-01-17T17:20:15.000Z'
+    data:
+      edited: true
+      editors:
+      - kshetrajna12
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.57964026927948
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d61f1b45f1e89be7a3be32984d4a3e4.svg
+          fullname: Kshetrajna Raghavan
+          isHf: false
+          isPro: false
+          name: kshetrajna12
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;nielsr&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/nielsr\">@<span class=\"\
+          underline\">nielsr</span></a></span>\n\n\t</span></span> Even with the latest\
+          \ code from git I run into an issue.<br>I have more information on this\
+          \ issue .<br>It looks like there is a difference in how the same input is\
+          \ used during the <code>generate</code> call vs the <code>forward call</code>.<br><code>model.generate(**inputs)</code>\
+          \ works without any issue but<br><code>model.forward(**inputs)</code> throws\
+          \ this error </p>\n<pre><code>---------------------------------------------------------------------------\n\
+          \ RuntimeError                              Traceback (most recent call\
+          \ last)\n Cell In[7], line 1\n ----&gt; 1 model.forward(**i)\n \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:431,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n     426     raise ValueError(\n \
+          \    427         f\"Unexpected select feature strategy: {self.config.vision_feature_select_strategy}\"\
+          \n     428     )\n     430 image_features = self.multi_modal_projector(selected_image_feature)\n\
+          \ --&gt; 431 inputs_embeds, attention_mask, labels, position_ids = self._merge_input_ids_with_image_features(\n\
+          \     432     image_features, inputs_embeds, input_ids, attention_mask,\
+          \ labels\n     433 )\n     434 if labels is None:\n     435     labels =\
+          \ torch.full_like(attention_mask, self.config.ignore_index).to(torch.long)\n\
+          \ \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:333,\
+          \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+          \ image_features, inputs_embeds, input_ids, attention_mask, labels)\n  \
+          \   330 image_to_overwrite = torch.all(final_embedding == 0, dim=-1)\n \
+          \    331 image_to_overwrite &amp;= image_to_overwrite.cumsum(-1) - 1 &gt;=\
+          \ nb_image_pad[:, None].to(target_device)\n --&gt; 333 if image_to_overwrite.sum()\
+          \ != image_features.shape[:-1].numel():\n     334     raise ValueError(\n\
+          \     335         f\"The input provided to the model are wrong. The number\
+          \ of image tokens is {torch.sum(special_image_token_mask)} while\"\n   \
+          \  336         f\" the number of image given to the model is {num_images}.\
+          \ This prevents correct indexing and breaks batch generation.\"\n     337\
+          \     )\n     339 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+          \ embed_dim).to(target_device)\n \n RuntimeError: CUDA error: device-side\
+          \ assert triggered\n CUDA kernel errors might be asynchronously reported\
+          \ at some other API call, so the stacktrace below might be incorrect.\n\
+          \ For debugging consider passing CUDA_LAUNCH_BLOCKING=1.\n Compile with\
+          \ TORCH_USE_CUDA_DSA to enable device-side assertions.\n</code></pre>\n"
+        raw: "@nielsr Even with the latest code from git I run into an issue.\nI have\
+          \ more information on this issue . \nIt looks like there is a difference\
+          \ in how the same input is used during the `generate` call vs the `forward\
+          \ call`. \n```model.generate(**inputs)``` works without any issue but\n\
+          ```model.forward(**inputs)``` throws this error \n```\n---------------------------------------------------------------------------\n\
+          \ RuntimeError                              Traceback (most recent call\
+          \ last)\n Cell In[7], line 1\n ----> 1 model.forward(**i)\n \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:431,\
+          \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, vision_feature_layer,\
+          \ vision_feature_select_strategy, labels, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n     426     raise ValueError(\n \
+          \    427         f\"Unexpected select feature strategy: {self.config.vision_feature_select_strategy}\"\
+          \n     428     )\n     430 image_features = self.multi_modal_projector(selected_image_feature)\n\
+          \ --> 431 inputs_embeds, attention_mask, labels, position_ids = self._merge_input_ids_with_image_features(\n\
+          \     432     image_features, inputs_embeds, input_ids, attention_mask,\
+          \ labels\n     433 )\n     434 if labels is None:\n     435     labels =\
+          \ torch.full_like(attention_mask, self.config.ignore_index).to(torch.long)\n\
+          \ \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:333,\
+          \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+          \ image_features, inputs_embeds, input_ids, attention_mask, labels)\n  \
+          \   330 image_to_overwrite = torch.all(final_embedding == 0, dim=-1)\n \
+          \    331 image_to_overwrite &= image_to_overwrite.cumsum(-1) - 1 >= nb_image_pad[:,\
+          \ None].to(target_device)\n --> 333 if image_to_overwrite.sum() != image_features.shape[:-1].numel():\n\
+          \     334     raise ValueError(\n     335         f\"The input provided\
+          \ to the model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)}\
+          \ while\"\n     336         f\" the number of image given to the model is\
+          \ {num_images}. This prevents correct indexing and breaks batch generation.\"\
+          \n     337     )\n     339 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+          \ embed_dim).to(target_device)\n \n RuntimeError: CUDA error: device-side\
+          \ assert triggered\n CUDA kernel errors might be asynchronously reported\
+          \ at some other API call, so the stacktrace below might be incorrect.\n\
+          \ For debugging consider passing CUDA_LAUNCH_BLOCKING=1.\n Compile with\
+          \ TORCH_USE_CUDA_DSA to enable device-side assertions.\n```"
+        updatedAt: '2024-01-17T17:21:00.266Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - bmazoure
+    id: 65a80c4fd0803e7abc1c59c2
+    type: comment
+  author: kshetrajna12
+  content: "@nielsr Even with the latest code from git I run into an issue.\nI have\
+    \ more information on this issue . \nIt looks like there is a difference in how\
+    \ the same input is used during the `generate` call vs the `forward call`. \n\
+    ```model.generate(**inputs)``` works without any issue but\n```model.forward(**inputs)```\
+    \ throws this error \n```\n---------------------------------------------------------------------------\n\
+    \ RuntimeError                              Traceback (most recent call last)\n\
+    \ Cell In[7], line 1\n ----> 1 model.forward(**i)\n \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:431,\
+    \ in LlavaForConditionalGeneration.forward(self, input_ids, pixel_values, attention_mask,\
+    \ position_ids, past_key_values, inputs_embeds, vision_feature_layer, vision_feature_select_strategy,\
+    \ labels, use_cache, output_attentions, output_hidden_states, return_dict)\n \
+    \    426     raise ValueError(\n     427         f\"Unexpected select feature\
+    \ strategy: {self.config.vision_feature_select_strategy}\"\n     428     )\n \
+    \    430 image_features = self.multi_modal_projector(selected_image_feature)\n\
+    \ --> 431 inputs_embeds, attention_mask, labels, position_ids = self._merge_input_ids_with_image_features(\n\
+    \     432     image_features, inputs_embeds, input_ids, attention_mask, labels\n\
+    \     433 )\n     434 if labels is None:\n     435     labels = torch.full_like(attention_mask,\
+    \ self.config.ignore_index).to(torch.long)\n \n File /opt/conda/envs/llava_finetune/lib/python3.10/site-packages/transformers/models/llava/modeling_llava.py:333,\
+    \ in LlavaForConditionalGeneration._merge_input_ids_with_image_features(self,\
+    \ image_features, inputs_embeds, input_ids, attention_mask, labels)\n     330\
+    \ image_to_overwrite = torch.all(final_embedding == 0, dim=-1)\n     331 image_to_overwrite\
+    \ &= image_to_overwrite.cumsum(-1) - 1 >= nb_image_pad[:, None].to(target_device)\n\
+    \ --> 333 if image_to_overwrite.sum() != image_features.shape[:-1].numel():\n\
+    \     334     raise ValueError(\n     335         f\"The input provided to the\
+    \ model are wrong. The number of image tokens is {torch.sum(special_image_token_mask)}\
+    \ while\"\n     336         f\" the number of image given to the model is {num_images}.\
+    \ This prevents correct indexing and breaks batch generation.\"\n     337    \
+    \ )\n     339 final_embedding[image_to_overwrite] = image_features.contiguous().reshape(-1,\
+    \ embed_dim).to(target_device)\n \n RuntimeError: CUDA error: device-side assert\
+    \ triggered\n CUDA kernel errors might be asynchronously reported at some other\
+    \ API call, so the stacktrace below might be incorrect.\n For debugging consider\
+    \ passing CUDA_LAUNCH_BLOCKING=1.\n Compile with TORCH_USE_CUDA_DSA to enable\
+    \ device-side assertions.\n```"
+  created_at: 2024-01-17 17:20:15+00:00
+  edited: true
+  hidden: false
+  id: 65a80c4fd0803e7abc1c59c2
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 12
+repo_id: llava-hf/llava-1.5-7b-hf
+repo_type: model
+status: open
+target_branch: null
+title: Error with finetuning

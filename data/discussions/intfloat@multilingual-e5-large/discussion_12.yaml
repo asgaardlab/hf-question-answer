@@ -1,0 +1,226 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: fikavec
+conflicting_files: null
+created_at: 2023-08-13 10:35:21+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6cba9a99b3cf3aa76d73bbe23de03750.svg
+      fullname: fikavec
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: fikavec
+      type: user
+    createdAt: '2023-08-13T11:35:21.000Z'
+    data:
+      edited: false
+      editors:
+      - fikavec
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.48662489652633667
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6cba9a99b3cf3aa76d73bbe23de03750.svg
+          fullname: fikavec
+          isHf: false
+          isPro: false
+          name: fikavec
+          type: user
+        html: "<p>And I'm can't find ONNX versions for 'multilingual-e5-base' and\
+          \ 'multilingual-e5-small' models.</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-comment\">##</span>\n<span class=\"hljs-comment\">#\
+          \ Example with using ONNX Runtime (ORT) for inference</span>\n<span class=\"\
+          hljs-comment\">##</span>\n\n<span class=\"hljs-keyword\">import</span> torch\n\
+          <span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoTokenizer\n<span class=\"hljs-keyword\">from</span> optimum.onnxruntime\
+          \ <span class=\"hljs-keyword\">import</span> ORTModelForFeatureExtraction\n\
+          \nmodel_name = <span class=\"hljs-string\">\"intfloat/multilingual-e5-large\"\
+          </span>\ntokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=<span\
+          \ class=\"hljs-literal\">True</span>)\nonnx_model = ORTModelForFeatureExtraction.from_pretrained(model_name,\
+          \ subfolder=<span class=\"hljs-string\">'onnx'</span>) <span class=\"hljs-comment\"\
+          ># onnx checkpoint subfolder</span>\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">encodeONNX</span>(<span class=\"\
+          hljs-params\">texts, do_norm=<span class=\"hljs-literal\">True</span></span>):\n\
+          \    encoded_input = tokenizer(texts, max_length=<span class=\"hljs-number\"\
+          >512</span>, padding=<span class=\"hljs-literal\">True</span>, truncation=<span\
+          \ class=\"hljs-literal\">True</span>, return_tensors=<span class=\"hljs-string\"\
+          >'pt'</span>)\n    <span class=\"hljs-keyword\">with</span> torch.no_grad():\n\
+          \        embeddings = onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state.masked_fill(~encoded_input[<span\
+          \ class=\"hljs-string\">'attention_mask'</span>][..., <span class=\"hljs-literal\"\
+          >None</span>].<span class=\"hljs-built_in\">bool</span>(), <span class=\"\
+          hljs-number\">0.0</span>).<span class=\"hljs-built_in\">sum</span>(dim=<span\
+          \ class=\"hljs-number\">1</span>) / encoded_input[<span class=\"hljs-string\"\
+          >'attention_mask'</span>].<span class=\"hljs-built_in\">sum</span>(dim=<span\
+          \ class=\"hljs-number\">1</span>)[..., <span class=\"hljs-literal\">None</span>]\n\
+          \        <span class=\"hljs-comment\"># or get embeddings with call average_pool\
+          \ function from model card: embeddings = average_pool(onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state,\
+          \ encoded_input['attention_mask'])</span>\n        <span class=\"hljs-keyword\"\
+          >if</span> do_norm:\n            embeddings = torch.nn.functional.normalize(embeddings,\
+          \ p=<span class=\"hljs-number\">2</span>, dim=<span class=\"hljs-number\"\
+          >1</span>)\n    <span class=\"hljs-keyword\">return</span> embeddings\n\n\
+          input_texts = [<span class=\"hljs-string\">'query: how much protein should\
+          \ a female eat'</span>,\n               <span class=\"hljs-string\">'query:\
+          \ \u5357\u74DC\u7684\u5BB6\u5E38\u505A\u6CD5'</span>,\n               <span\
+          \ class=\"hljs-string\">\"passage: As a general guideline, the CDC's average\
+          \ requirement of protein for women ages 19 to 70 is 46 grams per day. But,\
+          \ as you can see from this chart, you'll need to increase that if you're\
+          \ expecting or training for a marathon. Check out the chart below to see\
+          \ how much protein you should be eating each day.\"</span>,\n          \
+          \     <span class=\"hljs-string\">\"passage: 1.\u6E05\u7092\u5357\u74DC\u4E1D\
+          \ \u539F\u6599:\u5AE9\u5357\u74DC\u534A\u4E2A \u8C03\u6599:\u8471\u3001\u76D0\
+          \u3001\u767D\u7CD6\u3001\u9E21\u7CBE \u505A\u6CD5: 1\u3001\u5357\u74DC\u7528\
+          \u5200\u8584\u8584\u7684\u524A\u53BB\u8868\u9762\u4E00\u5C42\u76AE,\u7528\
+          \u52FA\u5B50\u522E\u53BB\u74E4 2\u3001\u64E6\u6210\u7EC6\u4E1D(\u6CA1\u6709\
+          \u64E6\u83DC\u677F\u5C31\u7528\u5200\u6162\u6162\u5207\u6210\u7EC6\u4E1D\
+          ) 3\u3001\u9505\u70E7\u70ED\u653E\u6CB9,\u5165\u8471\u82B1\u7178\u51FA\u9999\
+          \u5473 4\u3001\u5165\u5357\u74DC\u4E1D\u5FEB\u901F\u7FFB\u7092\u4E00\u5206\
+          \u949F\u5DE6\u53F3,\u653E\u76D0\u3001\u4E00\u70B9\u767D\u7CD6\u548C\u9E21\
+          \u7CBE\u8C03\u5473\u51FA\u9505 2.\u9999\u8471\u7092\u5357\u74DC \u539F\u6599\
+          :\u5357\u74DC1\u53EA \u8C03\u6599:\u9999\u8471\u3001\u849C\u672B\u3001\u6A44\
+          \u6984\u6CB9\u3001\u76D0 \u505A\u6CD5: 1\u3001\u5C06\u5357\u74DC\u53BB\u76AE\
+          ,\u5207\u6210\u7247 2\u3001\u6CB9\u95058\u6210\u70ED\u540E,\u5C06\u849C\u672B\
+          \u653E\u5165\u7206\u9999 3\u3001\u7206\u9999\u540E,\u5C06\u5357\u74DC\u7247\
+          \u653E\u5165,\u7FFB\u7092 4\u3001\u5728\u7FFB\u7092\u7684\u540C\u65F6,\u53EF\
+          \u4EE5\u4E0D\u65F6\u5730\u5F80\u9505\u91CC\u52A0\u6C34,\u4F46\u4E0D\u8981\
+          \u592A\u591A 5\u3001\u653E\u5165\u76D0,\u7092\u5300 6\u3001\u5357\u74DC\u5DEE\
+          \u4E0D\u591A\u8F6F\u548C\u7EF5\u4E86\u4E4B\u540E,\u5C31\u53EF\u4EE5\u5173\
+          \u706B 7\u3001\u6492\u5165\u9999\u8471,\u5373\u53EF\u51FA\u9505\"</span>]\n\
+          \n\nembeddings = encodeONNX(input_texts, do_norm=<span class=\"hljs-literal\"\
+          >True</span>)\nscores = (embeddings[:<span class=\"hljs-number\">2</span>]\
+          \ @ embeddings[<span class=\"hljs-number\">2</span>:].T) * <span class=\"\
+          hljs-number\">100</span>\n<span class=\"hljs-built_in\">print</span>(scores.tolist())\n\
+          <span class=\"hljs-comment\"># [[90.81390380859375, 72.13389587402344],\
+          \ [70.53539276123047, 88.76107025146484]]</span>\n</code></pre>\n"
+        raw: "And I'm can't find ONNX versions for 'multilingual-e5-base' and 'multilingual-e5-small'\
+          \ models.\r\n```python\r\n##\r\n# Example with using ONNX Runtime (ORT)\
+          \ for inference\r\n##\r\n\r\nimport torch\r\nfrom transformers import AutoTokenizer\r\
+          \nfrom optimum.onnxruntime import ORTModelForFeatureExtraction\r\n\r\nmodel_name\
+          \ = \"intfloat/multilingual-e5-large\"\r\ntokenizer = AutoTokenizer.from_pretrained(model_name,\
+          \ use_fast=True)\r\nonnx_model = ORTModelForFeatureExtraction.from_pretrained(model_name,\
+          \ subfolder='onnx') # onnx checkpoint subfolder\r\n\r\ndef encodeONNX(texts,\
+          \ do_norm=True):\r\n    encoded_input = tokenizer(texts, max_length=512,\
+          \ padding=True, truncation=True, return_tensors='pt')\r\n    with torch.no_grad():\r\
+          \n        embeddings = onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state.masked_fill(~encoded_input['attention_mask'][...,\
+          \ None].bool(), 0.0).sum(dim=1) / encoded_input['attention_mask'].sum(dim=1)[...,\
+          \ None]\r\n        # or get embeddings with call average_pool function from\
+          \ model card: embeddings = average_pool(onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state,\
+          \ encoded_input['attention_mask'])\r\n        if do_norm:\r\n          \
+          \  embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)\r\n\
+          \    return embeddings\r\n\r\ninput_texts = ['query: how much protein should\
+          \ a female eat',\r\n               'query: \u5357\u74DC\u7684\u5BB6\u5E38\
+          \u505A\u6CD5',\r\n               \"passage: As a general guideline, the\
+          \ CDC's average requirement of protein for women ages 19 to 70 is 46 grams\
+          \ per day. But, as you can see from this chart, you'll need to increase\
+          \ that if you're expecting or training for a marathon. Check out the chart\
+          \ below to see how much protein you should be eating each day.\",\r\n  \
+          \             \"passage: 1.\u6E05\u7092\u5357\u74DC\u4E1D \u539F\u6599:\u5AE9\
+          \u5357\u74DC\u534A\u4E2A \u8C03\u6599:\u8471\u3001\u76D0\u3001\u767D\u7CD6\
+          \u3001\u9E21\u7CBE \u505A\u6CD5: 1\u3001\u5357\u74DC\u7528\u5200\u8584\u8584\
+          \u7684\u524A\u53BB\u8868\u9762\u4E00\u5C42\u76AE,\u7528\u52FA\u5B50\u522E\
+          \u53BB\u74E4 2\u3001\u64E6\u6210\u7EC6\u4E1D(\u6CA1\u6709\u64E6\u83DC\u677F\
+          \u5C31\u7528\u5200\u6162\u6162\u5207\u6210\u7EC6\u4E1D) 3\u3001\u9505\u70E7\
+          \u70ED\u653E\u6CB9,\u5165\u8471\u82B1\u7178\u51FA\u9999\u5473 4\u3001\u5165\
+          \u5357\u74DC\u4E1D\u5FEB\u901F\u7FFB\u7092\u4E00\u5206\u949F\u5DE6\u53F3\
+          ,\u653E\u76D0\u3001\u4E00\u70B9\u767D\u7CD6\u548C\u9E21\u7CBE\u8C03\u5473\
+          \u51FA\u9505 2.\u9999\u8471\u7092\u5357\u74DC \u539F\u6599:\u5357\u74DC\
+          1\u53EA \u8C03\u6599:\u9999\u8471\u3001\u849C\u672B\u3001\u6A44\u6984\u6CB9\
+          \u3001\u76D0 \u505A\u6CD5: 1\u3001\u5C06\u5357\u74DC\u53BB\u76AE,\u5207\u6210\
+          \u7247 2\u3001\u6CB9\u95058\u6210\u70ED\u540E,\u5C06\u849C\u672B\u653E\u5165\
+          \u7206\u9999 3\u3001\u7206\u9999\u540E,\u5C06\u5357\u74DC\u7247\u653E\u5165\
+          ,\u7FFB\u7092 4\u3001\u5728\u7FFB\u7092\u7684\u540C\u65F6,\u53EF\u4EE5\u4E0D\
+          \u65F6\u5730\u5F80\u9505\u91CC\u52A0\u6C34,\u4F46\u4E0D\u8981\u592A\u591A\
+          \ 5\u3001\u653E\u5165\u76D0,\u7092\u5300 6\u3001\u5357\u74DC\u5DEE\u4E0D\
+          \u591A\u8F6F\u548C\u7EF5\u4E86\u4E4B\u540E,\u5C31\u53EF\u4EE5\u5173\u706B\
+          \ 7\u3001\u6492\u5165\u9999\u8471,\u5373\u53EF\u51FA\u9505\"]\r\n\r\n\r\n\
+          embeddings = encodeONNX(input_texts, do_norm=True)\r\nscores = (embeddings[:2]\
+          \ @ embeddings[2:].T) * 100\r\nprint(scores.tolist())\r\n# [[90.81390380859375,\
+          \ 72.13389587402344], [70.53539276123047, 88.76107025146484]]\r\n```"
+        updatedAt: '2023-08-13T11:35:21.130Z'
+      numEdits: 0
+      reactions: []
+    id: 64d8bff92fe2c11264581fb3
+    type: comment
+  author: fikavec
+  content: "And I'm can't find ONNX versions for 'multilingual-e5-base' and 'multilingual-e5-small'\
+    \ models.\r\n```python\r\n##\r\n# Example with using ONNX Runtime (ORT) for inference\r\
+    \n##\r\n\r\nimport torch\r\nfrom transformers import AutoTokenizer\r\nfrom optimum.onnxruntime\
+    \ import ORTModelForFeatureExtraction\r\n\r\nmodel_name = \"intfloat/multilingual-e5-large\"\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)\r\nonnx_model\
+    \ = ORTModelForFeatureExtraction.from_pretrained(model_name, subfolder='onnx')\
+    \ # onnx checkpoint subfolder\r\n\r\ndef encodeONNX(texts, do_norm=True):\r\n\
+    \    encoded_input = tokenizer(texts, max_length=512, padding=True, truncation=True,\
+    \ return_tensors='pt')\r\n    with torch.no_grad():\r\n        embeddings = onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state.masked_fill(~encoded_input['attention_mask'][...,\
+    \ None].bool(), 0.0).sum(dim=1) / encoded_input['attention_mask'].sum(dim=1)[...,\
+    \ None]\r\n        # or get embeddings with call average_pool function from model\
+    \ card: embeddings = average_pool(onnx_model(**encoded_input.to(onnx_model.device)).last_hidden_state,\
+    \ encoded_input['attention_mask'])\r\n        if do_norm:\r\n            embeddings\
+    \ = torch.nn.functional.normalize(embeddings, p=2, dim=1)\r\n    return embeddings\r\
+    \n\r\ninput_texts = ['query: how much protein should a female eat',\r\n      \
+    \         'query: \u5357\u74DC\u7684\u5BB6\u5E38\u505A\u6CD5',\r\n           \
+    \    \"passage: As a general guideline, the CDC's average requirement of protein\
+    \ for women ages 19 to 70 is 46 grams per day. But, as you can see from this chart,\
+    \ you'll need to increase that if you're expecting or training for a marathon.\
+    \ Check out the chart below to see how much protein you should be eating each\
+    \ day.\",\r\n               \"passage: 1.\u6E05\u7092\u5357\u74DC\u4E1D \u539F\
+    \u6599:\u5AE9\u5357\u74DC\u534A\u4E2A \u8C03\u6599:\u8471\u3001\u76D0\u3001\u767D\
+    \u7CD6\u3001\u9E21\u7CBE \u505A\u6CD5: 1\u3001\u5357\u74DC\u7528\u5200\u8584\u8584\
+    \u7684\u524A\u53BB\u8868\u9762\u4E00\u5C42\u76AE,\u7528\u52FA\u5B50\u522E\u53BB\
+    \u74E4 2\u3001\u64E6\u6210\u7EC6\u4E1D(\u6CA1\u6709\u64E6\u83DC\u677F\u5C31\u7528\
+    \u5200\u6162\u6162\u5207\u6210\u7EC6\u4E1D) 3\u3001\u9505\u70E7\u70ED\u653E\u6CB9\
+    ,\u5165\u8471\u82B1\u7178\u51FA\u9999\u5473 4\u3001\u5165\u5357\u74DC\u4E1D\u5FEB\
+    \u901F\u7FFB\u7092\u4E00\u5206\u949F\u5DE6\u53F3,\u653E\u76D0\u3001\u4E00\u70B9\
+    \u767D\u7CD6\u548C\u9E21\u7CBE\u8C03\u5473\u51FA\u9505 2.\u9999\u8471\u7092\u5357\
+    \u74DC \u539F\u6599:\u5357\u74DC1\u53EA \u8C03\u6599:\u9999\u8471\u3001\u849C\u672B\
+    \u3001\u6A44\u6984\u6CB9\u3001\u76D0 \u505A\u6CD5: 1\u3001\u5C06\u5357\u74DC\u53BB\
+    \u76AE,\u5207\u6210\u7247 2\u3001\u6CB9\u95058\u6210\u70ED\u540E,\u5C06\u849C\u672B\
+    \u653E\u5165\u7206\u9999 3\u3001\u7206\u9999\u540E,\u5C06\u5357\u74DC\u7247\u653E\
+    \u5165,\u7FFB\u7092 4\u3001\u5728\u7FFB\u7092\u7684\u540C\u65F6,\u53EF\u4EE5\u4E0D\
+    \u65F6\u5730\u5F80\u9505\u91CC\u52A0\u6C34,\u4F46\u4E0D\u8981\u592A\u591A 5\u3001\
+    \u653E\u5165\u76D0,\u7092\u5300 6\u3001\u5357\u74DC\u5DEE\u4E0D\u591A\u8F6F\u548C\
+    \u7EF5\u4E86\u4E4B\u540E,\u5C31\u53EF\u4EE5\u5173\u706B 7\u3001\u6492\u5165\u9999\
+    \u8471,\u5373\u53EF\u51FA\u9505\"]\r\n\r\n\r\nembeddings = encodeONNX(input_texts,\
+    \ do_norm=True)\r\nscores = (embeddings[:2] @ embeddings[2:].T) * 100\r\nprint(scores.tolist())\r\
+    \n# [[90.81390380859375, 72.13389587402344], [70.53539276123047, 88.76107025146484]]\r\
+    \n```"
+  created_at: 2023-08-13 10:35:21+00:00
+  edited: false
+  hidden: false
+  id: 64d8bff92fe2c11264581fb3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/6cba9a99b3cf3aa76d73bbe23de03750.svg
+      fullname: fikavec
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: fikavec
+      type: user
+    createdAt: '2023-08-21T08:38:42.000Z'
+    data:
+      status: closed
+    id: 64e32292864e78652ee0e53e
+    type: status-change
+  author: fikavec
+  created_at: 2023-08-21 07:38:42+00:00
+  id: 64e32292864e78652ee0e53e
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 12
+repo_id: intfloat/multilingual-e5-large
+repo_type: model
+status: closed
+target_branch: null
+title: Example with using ONNX Runtime (ORT) for inference

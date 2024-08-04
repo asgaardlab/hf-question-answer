@@ -1,0 +1,411 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: dkincaid
+conflicting_files: null
+created_at: 2023-12-27 22:09:02+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1634322030054-noauth.jpeg?w=200&h=200&f=face
+      fullname: David Kincaid
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: dkincaid
+      type: user
+    createdAt: '2023-12-27T22:09:02.000Z'
+    data:
+      edited: true
+      editors:
+      - dkincaid
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5701122879981995
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1634322030054-noauth.jpeg?w=200&h=200&f=face
+          fullname: David Kincaid
+          isHf: false
+          isPro: true
+          name: dkincaid
+          type: user
+        html: "<p>I'm getting an error when I try to set return_timestamps='word'.\
+          \ It seems to want me to set a parameter 'return_segments=True', but when\
+          \ I try to do that I get a different error that the parameter is not valid.</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> transformers <span class=\"\
+          hljs-keyword\">import</span> AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline\n\
+          \ndevice = torch.device(<span class=\"hljs-string\">\"cuda\"</span>) <span\
+          \ class=\"hljs-keyword\">if</span> torch.cuda.is_available() <span class=\"\
+          hljs-keyword\">else</span> torch.device(<span class=\"hljs-string\">\"cpu\"\
+          </span>)\ntorch_dtype = torch.float16 <span class=\"hljs-keyword\">if</span>\
+          \ torch.cuda.is_available() <span class=\"hljs-keyword\">else</span> torch.float32\n\
+          \nmodel_id = <span class=\"hljs-string\">\"openai/whisper-large-v3\"</span>\n\
+          \nmodel = AutoModelForSpeechSeq2Seq.from_pretrained(\n    model_id, torch_dtype=torch_dtype,\
+          \ low_cpu_mem_usage=<span class=\"hljs-literal\">True</span>, use_safetensors=<span\
+          \ class=\"hljs-literal\">True</span>\n)\nmodel.to(device)\n\nprocessor =\
+          \ AutoProcessor.from_pretrained(model_id)\n\npipe = pipeline(\n    <span\
+          \ class=\"hljs-string\">\"automatic-speech-recognition\"</span>,\n    model=model,\n\
+          \    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+          \    <span class=\"hljs-comment\">#max_new_tokens=128,</span>\n    <span\
+          \ class=\"hljs-comment\">#chunk_length_s=30,</span>\n    <span class=\"\
+          hljs-comment\">#batch_size=16,</span>\n    torch_dtype=torch_dtype,\n  \
+          \  device=device,\n    generate_kwargs={<span class=\"hljs-string\">\"language\"\
+          </span>: <span class=\"hljs-string\">\"english\"</span>}\n)\n\nresult =\
+          \ pipe(audio_file_path, return_timestamps=<span class=\"hljs-string\">\"\
+          word\"</span>, generate_kwargs={<span class=\"hljs-string\">\"language\"\
+          </span>: <span class=\"hljs-string\">\"english\"</span>})\n</code></pre>\n\
+          <pre><code class=\"language-python\">ValueError: Make sure to <span class=\"\
+          hljs-built_in\">set</span> `return_segments=<span class=\"hljs-literal\"\
+          >True</span>` to <span class=\"hljs-keyword\">return</span> generation outputs\
+          \ <span class=\"hljs-keyword\">as</span> part of the `<span class=\"hljs-string\"\
+          >'segments'</span> key.`\n</code></pre>\n<p>and if I set <code>return_segments=True</code>\
+          \ I get this error:</p>\n<pre><code class=\"language-python\">TypeError:\
+          \ AutomaticSpeechRecognitionPipeline._sanitize_parameters() got an unexpected\
+          \ keyword argument <span class=\"hljs-string\">'return_segments'</span>\n\
+          </code></pre>\n<p>anyone else run into this and figure out how to fix it?</p>\n"
+        raw: "I'm getting an error when I try to set return_timestamps='word'. It\
+          \ seems to want me to set a parameter 'return_segments=True', but when I\
+          \ try to do that I get a different error that the parameter is not valid.\n\
+          \n```python\nimport torch\nfrom transformers import AutoModelForSpeechSeq2Seq,\
+          \ AutoProcessor, pipeline\n\ndevice = torch.device(\"cuda\") if torch.cuda.is_available()\
+          \ else torch.device(\"cpu\")\ntorch_dtype = torch.float16 if torch.cuda.is_available()\
+          \ else torch.float32\n\nmodel_id = \"openai/whisper-large-v3\"\n\nmodel\
+          \ = AutoModelForSpeechSeq2Seq.from_pretrained(\n    model_id, torch_dtype=torch_dtype,\
+          \ low_cpu_mem_usage=True, use_safetensors=True\n)\nmodel.to(device)\n\n\
+          processor = AutoProcessor.from_pretrained(model_id)\n\npipe = pipeline(\n\
+          \    \"automatic-speech-recognition\",\n    model=model,\n    tokenizer=processor.tokenizer,\n\
+          \    feature_extractor=processor.feature_extractor,\n    #max_new_tokens=128,\n\
+          \    #chunk_length_s=30,\n    #batch_size=16,\n    torch_dtype=torch_dtype,\n\
+          \    device=device,\n    generate_kwargs={\"language\": \"english\"}\n)\n\
+          \nresult = pipe(audio_file_path, return_timestamps=\"word\", generate_kwargs={\"\
+          language\": \"english\"})\n```\n\n```python\nValueError: Make sure to set\
+          \ `return_segments=True` to return generation outputs as part of the `'segments'\
+          \ key.`\n```\n\nand if I set `return_segments=True` I get this error:\n\n\
+          ```python\nTypeError: AutomaticSpeechRecognitionPipeline._sanitize_parameters()\
+          \ got an unexpected keyword argument 'return_segments'\n```\n\nanyone else\
+          \ run into this and figure out how to fix it?\n"
+        updatedAt: '2023-12-27T22:09:31.615Z'
+      numEdits: 1
+      reactions: []
+    id: 658ca07e9a1397992a33e056
+    type: comment
+  author: dkincaid
+  content: "I'm getting an error when I try to set return_timestamps='word'. It seems\
+    \ to want me to set a parameter 'return_segments=True', but when I try to do that\
+    \ I get a different error that the parameter is not valid.\n\n```python\nimport\
+    \ torch\nfrom transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline\n\
+    \ndevice = torch.device(\"cuda\") if torch.cuda.is_available() else torch.device(\"\
+    cpu\")\ntorch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32\n\
+    \nmodel_id = \"openai/whisper-large-v3\"\n\nmodel = AutoModelForSpeechSeq2Seq.from_pretrained(\n\
+    \    model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True\n\
+    )\nmodel.to(device)\n\nprocessor = AutoProcessor.from_pretrained(model_id)\n\n\
+    pipe = pipeline(\n    \"automatic-speech-recognition\",\n    model=model,\n  \
+    \  tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+    \    #max_new_tokens=128,\n    #chunk_length_s=30,\n    #batch_size=16,\n    torch_dtype=torch_dtype,\n\
+    \    device=device,\n    generate_kwargs={\"language\": \"english\"}\n)\n\nresult\
+    \ = pipe(audio_file_path, return_timestamps=\"word\", generate_kwargs={\"language\"\
+    : \"english\"})\n```\n\n```python\nValueError: Make sure to set `return_segments=True`\
+    \ to return generation outputs as part of the `'segments' key.`\n```\n\nand if\
+    \ I set `return_segments=True` I get this error:\n\n```python\nTypeError: AutomaticSpeechRecognitionPipeline._sanitize_parameters()\
+    \ got an unexpected keyword argument 'return_segments'\n```\n\nanyone else run\
+    \ into this and figure out how to fix it?\n"
+  created_at: 2023-12-27 22:09:02+00:00
+  edited: true
+  hidden: false
+  id: 658ca07e9a1397992a33e056
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6e8c835e11b5af62691928e375f3ab5a.svg
+      fullname: Serhii Kravchenko
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: skypro1111
+      type: user
+    createdAt: '2023-12-28T11:55:53.000Z'
+    data:
+      edited: false
+      editors:
+      - skypro1111
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.49699023365974426
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6e8c835e11b5af62691928e375f3ab5a.svg
+          fullname: Serhii Kravchenko
+          isHf: false
+          isPro: false
+          name: skypro1111
+          type: user
+        html: '<p>You should use return_segments param in generate_kwargs</p>
+
+          '
+        raw: You should use return_segments param in generate_kwargs
+        updatedAt: '2023-12-28T11:55:53.485Z'
+      numEdits: 0
+      reactions: []
+    id: 658d62497ecef7270a3eb420
+    type: comment
+  author: skypro1111
+  content: You should use return_segments param in generate_kwargs
+  created_at: 2023-12-28 11:55:53+00:00
+  edited: false
+  hidden: false
+  id: 658d62497ecef7270a3eb420
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1634322030054-noauth.jpeg?w=200&h=200&f=face
+      fullname: David Kincaid
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: dkincaid
+      type: user
+    createdAt: '2023-12-29T02:40:56.000Z'
+    data:
+      edited: false
+      editors:
+      - dkincaid
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4127475917339325
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1634322030054-noauth.jpeg?w=200&h=200&f=face
+          fullname: David Kincaid
+          isHf: false
+          isPro: true
+          name: dkincaid
+          type: user
+        html: "<p>Well, that doesn't work either. That generates this error:</p>\n\
+          <pre><code>---------------------------------------------------------------------------\n\
+          KeyError                                  Traceback (most recent call last)\n\
+          &lt;ipython-input-14-b4642e8f26a4&gt; in &lt;cell line: 2&gt;()\n----&gt;\
+          \ 1 pipe(audio_file, return_timestamps=\"word\", generate_kwargs={\"return_segments\"\
+          : True})\n\n5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/pipelines/automatic_speech_recognition.py\
+          \ in _forward(self, model_inputs, return_timestamps, generate_kwargs)\n\
+          \    575             )\n    576             if return_timestamps == \"word\"\
+          \ and self.type == \"seq2seq_whisper\":\n--&gt; 577                 out\
+          \ = {\"tokens\": tokens[\"sequences\"], \"token_timestamps\": tokens[\"\
+          token_timestamps\"]}\n    578             else:\n    579               \
+          \  out = {\"tokens\": tokens}\n\nKeyError: 'token_timestamps'\n</code></pre>\n"
+        raw: "Well, that doesn't work either. That generates this error:\n\n```\n\
+          ---------------------------------------------------------------------------\n\
+          KeyError                                  Traceback (most recent call last)\n\
+          <ipython-input-14-b4642e8f26a4> in <cell line: 2>()\n----> 1 pipe(audio_file,\
+          \ return_timestamps=\"word\", generate_kwargs={\"return_segments\": True})\n\
+          \n5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/pipelines/automatic_speech_recognition.py\
+          \ in _forward(self, model_inputs, return_timestamps, generate_kwargs)\n\
+          \    575             )\n    576             if return_timestamps == \"word\"\
+          \ and self.type == \"seq2seq_whisper\":\n--> 577                 out = {\"\
+          tokens\": tokens[\"sequences\"], \"token_timestamps\": tokens[\"token_timestamps\"\
+          ]}\n    578             else:\n    579                 out = {\"tokens\"\
+          : tokens}\n\nKeyError: 'token_timestamps'\n```"
+        updatedAt: '2023-12-29T02:40:56.390Z'
+      numEdits: 0
+      reactions: []
+    id: 658e31b89e16fa7510f65a51
+    type: comment
+  author: dkincaid
+  content: "Well, that doesn't work either. That generates this error:\n\n```\n---------------------------------------------------------------------------\n\
+    KeyError                                  Traceback (most recent call last)\n\
+    <ipython-input-14-b4642e8f26a4> in <cell line: 2>()\n----> 1 pipe(audio_file,\
+    \ return_timestamps=\"word\", generate_kwargs={\"return_segments\": True})\n\n\
+    5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/pipelines/automatic_speech_recognition.py\
+    \ in _forward(self, model_inputs, return_timestamps, generate_kwargs)\n    575\
+    \             )\n    576             if return_timestamps == \"word\" and self.type\
+    \ == \"seq2seq_whisper\":\n--> 577                 out = {\"tokens\": tokens[\"\
+    sequences\"], \"token_timestamps\": tokens[\"token_timestamps\"]}\n    578   \
+    \          else:\n    579                 out = {\"tokens\": tokens}\n\nKeyError:\
+    \ 'token_timestamps'\n```"
+  created_at: 2023-12-29 02:40:56+00:00
+  edited: false
+  hidden: false
+  id: 658e31b89e16fa7510f65a51
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/decf9132d67c37dbb1a0de4151249eff.svg
+      fullname: Davide Cantoni
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidecantoni
+      type: user
+    createdAt: '2024-01-13T16:17:53.000Z'
+    data:
+      edited: false
+      editors:
+      - davidecantoni
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.45190301537513733
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/decf9132d67c37dbb1a0de4151249eff.svg
+          fullname: Davide Cantoni
+          isHf: false
+          isPro: false
+          name: davidecantoni
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;dkincaid&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/dkincaid\"\
+          >@<span class=\"underline\">dkincaid</span></a></span>\n\n\t</span></span><br>Try\
+          \ with batch_size=1</p>\n<pre><code>pipe = pipeline(\n    \"automatic-speech-recognition\"\
+          ,\n    model=model,\n    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+          \    #max_new_tokens=128,\n    #chunk_length_s=30,\n    batch_size=1,\n\
+          \    torch_dtype=torch_dtype,\n    device=device,\n    generate_kwargs={\"\
+          language\": \"english\"}\n)\n\nresult = pipe(audio_file_path, return_timestamps=\"\
+          word\", generate_kwargs={\"language\": \"english\"})\n</code></pre>\n"
+        raw: "Hey @dkincaid \nTry with batch_size=1\n```\npipe = pipeline(\n    \"\
+          automatic-speech-recognition\",\n    model=model,\n    tokenizer=processor.tokenizer,\n\
+          \    feature_extractor=processor.feature_extractor,\n    #max_new_tokens=128,\n\
+          \    #chunk_length_s=30,\n    batch_size=1,\n    torch_dtype=torch_dtype,\n\
+          \    device=device,\n    generate_kwargs={\"language\": \"english\"}\n)\n\
+          \nresult = pipe(audio_file_path, return_timestamps=\"word\", generate_kwargs={\"\
+          language\": \"english\"})\n```"
+        updatedAt: '2024-01-13T16:17:53.037Z'
+      numEdits: 0
+      reactions: []
+    id: 65a2b7b181a46e7dd90edb53
+    type: comment
+  author: davidecantoni
+  content: "Hey @dkincaid \nTry with batch_size=1\n```\npipe = pipeline(\n    \"automatic-speech-recognition\"\
+    ,\n    model=model,\n    tokenizer=processor.tokenizer,\n    feature_extractor=processor.feature_extractor,\n\
+    \    #max_new_tokens=128,\n    #chunk_length_s=30,\n    batch_size=1,\n    torch_dtype=torch_dtype,\n\
+    \    device=device,\n    generate_kwargs={\"language\": \"english\"}\n)\n\nresult\
+    \ = pipe(audio_file_path, return_timestamps=\"word\", generate_kwargs={\"language\"\
+    : \"english\"})\n```"
+  created_at: 2024-01-13 16:17:53+00:00
+  edited: false
+  hidden: false
+  id: 65a2b7b181a46e7dd90edb53
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c487c608c3684bc3dc97f79c68dae4bb.svg
+      fullname: chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bdfadsc
+      type: user
+    createdAt: '2024-01-15T05:48:04.000Z'
+    data:
+      edited: false
+      editors:
+      - bdfadsc
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.874186098575592
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c487c608c3684bc3dc97f79c68dae4bb.svg
+          fullname: chen
+          isHf: false
+          isPro: false
+          name: bdfadsc
+          type: user
+        html: "<p>Hello <span data-props=\"{&quot;user&quot;:&quot;dkincaid&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/dkincaid\"\
+          >@<span class=\"underline\">dkincaid</span></a></span>\n\n\t</span></span><br>I\
+          \ encountered the same problem. Have you solved it? Thank you!</p>\n"
+        raw: "Hello @dkincaid \nI encountered the same problem. Have you solved it?\
+          \ Thank you!"
+        updatedAt: '2024-01-15T05:48:04.147Z'
+      numEdits: 0
+      reactions: []
+    id: 65a4c714482c457f35652799
+    type: comment
+  author: bdfadsc
+  content: "Hello @dkincaid \nI encountered the same problem. Have you solved it?\
+    \ Thank you!"
+  created_at: 2024-01-15 05:48:04+00:00
+  edited: false
+  hidden: false
+  id: 65a4c714482c457f35652799
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ea45e1cbdd1d26f5c1fda765c5a62627.svg
+      fullname: Mohammad Khan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: khanms
+      type: user
+    createdAt: '2024-01-20T20:29:56.000Z'
+    data:
+      edited: false
+      editors:
+      - khanms
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8859074711799622
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ea45e1cbdd1d26f5c1fda765c5a62627.svg
+          fullname: Mohammad Khan
+          isHf: false
+          isPro: false
+          name: khanms
+          type: user
+        html: '<p>Try uncommenting or including ''chunk_length_s=30''.  Your audio
+          file may be longer than 30 seconds which becomes a problem when using return_timestamps="word".
+          </p>
+
+          '
+        raw: 'Try uncommenting or including ''chunk_length_s=30''.  Your audio file
+          may be longer than 30 seconds which becomes a problem when using return_timestamps="word". '
+        updatedAt: '2024-01-20T20:29:56.845Z'
+      numEdits: 0
+      reactions: []
+    id: 65ac2d449c81170e315bd907
+    type: comment
+  author: khanms
+  content: 'Try uncommenting or including ''chunk_length_s=30''.  Your audio file
+    may be longer than 30 seconds which becomes a problem when using return_timestamps="word". '
+  created_at: 2024-01-20 20:29:56+00:00
+  edited: false
+  hidden: false
+  id: 65ac2d449c81170e315bd907
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 60
+repo_id: openai/whisper-large-v3
+repo_type: model
+status: open
+target_branch: null
+title: 'Error with word level timestamps - ValueError: set return_segments=True'

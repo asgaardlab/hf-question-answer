@@ -1,0 +1,4 @@
+## https://huggingface.co/togethercomputer/RedPajama-INCITE-Chat-3B-v1/discussions/6
+
+contains_question: yes
+question_part: When I ask for something that generates a long response, it's often truncated (so I'd like to increase max length). When I ask for something simple, like a birth date, it responds and then just continues with random dialogues, that are apparently "memories" from the training data... Can I pass a parameter limiting the chat to one response? Also, is there a context between a message and the previous ones? I asked about a person and received some good info, and then I asked "and when was she born?" and received the birthdate of someone else... or am I expecting too much?

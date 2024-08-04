@@ -1,0 +1,4 @@
+## https://huggingface.co/TheBloke/wizardLM-7B-GPTQ/discussions/5
+
+contains_question: yes  
+question_part: Now, I have read in your repo, that I should use this command line command to launch it (cd text-generation-webui python server.py --model wizardLM-7B-GPTQ --wbits 4 --groupsize 128 --model_type Llama # add any other command line args you want), but I am not really shure, where to run it, so I tried to run it from the text generation webui folder. It kind of worked, but it threw this error: File "C:\AI\oobabooga_windows\oobabooga_windows\text-generation-webui\server.py", line 17, in <module> import gradio as gr ModuleNotFoundError: No module named 'gradio'. This is kind of driving me nuts, does anyone know a fix?

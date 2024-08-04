@@ -1,0 +1,4 @@
+## https://huggingface.co/FlagAlpha/Llama2-Chinese-13b-Chat/discussions/2
+
+contains_question: yes
+question_part: I tried the online chat llama.family it's generating english sentences as a reply even after modifying the system prompt. Is this because the model is not really aligned for QA task because of the architecture I am asking this because I fine-tuned on QA task but with very lengthy contexts but looks like the model is not learning much it doesn't generate anything when asked something in lengthy after fine-tuning. It generates responses to small length questions.  I'm confused if whether I did something wrong while fine-tuning or it's just the model architecture. Also I would like to know more about your approach of training it for QA task for translation. Would appreciate any suggestions.

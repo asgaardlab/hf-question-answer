@@ -1,0 +1,317 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: csu20120504
+conflicting_files: null
+created_at: 2023-08-23 03:30:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+      fullname: csu20120504
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: csu20120504
+      type: user
+    createdAt: '2023-08-23T04:30:03.000Z'
+    data:
+      edited: true
+      editors:
+      - csu20120504
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.32316434383392334
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+          fullname: csu20120504
+          isHf: false
+          isPro: false
+          name: csu20120504
+          type: user
+        html: "<p>\u73AF\u5883:</p>\n<pre><code class=\"language-bash\">root@di-20230821151638-rptqp:~/code/huggingface_store<span\
+          \ class=\"hljs-comment\"># uname -a</span>\nLinux di-20230821151638-rptqp\
+          \ 5.4.143-2-velinux1-amd64 <span class=\"hljs-comment\">#velinux1 SMP Debian\
+          \ 5.4.143-2-velinux1 Fri Sep 23 03:26:48 UTC  x86_64 x86_64 x86_64 GNU/Linux</span>\n\
+          root@di-20230821151638-rptqp:~/code/huggingface_store<span class=\"hljs-comment\"\
+          ># nvcc --version</span>\nnvcc: NVIDIA (R) Cuda compiler driver\nCopyright\
+          \ (c) 2005-2022 NVIDIA Corporation\nBuilt on Wed_Jun__8_16:49:14_PDT_2022\n\
+          Cuda compilation tools, release 11.7, V11.7.99\nBuild cuda_11.7.r11.7/compiler.31442593_0\n\
+          root@di-20230821151638-rptqp:~/code/huggingface_store<span class=\"hljs-comment\"\
+          ># pip freeze</span>\ntorch==1.13.1+cu117\ntransformers==4.31.0\n</code></pre>\n\
+          <p>\u590D\u73B0\u811A\u672C:</p>\n<pre><code class=\"language-py\"><span\
+          \ class=\"hljs-comment\">#!/usr/bin/env python</span>\n<span class=\"hljs-comment\"\
+          ># coding=utf-8</span>\n\n<span class=\"hljs-keyword\">import</span> torch\n\
+          <span class=\"hljs-keyword\">import</span> transformers\n<span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ AutoTokenizer, AutoModel\n<span class=\"hljs-keyword\">import</span> numpy\
+          \ <span class=\"hljs-keyword\">as</span> np\n\n<span class=\"hljs-string\"\
+          >'''</span>\n<span class=\"hljs-string\"># \u5C1D\u8BD5\u4E86\u521D\u59CB\
+          \u5316\u968F\u673A\u6570seed, \u7981\u7528\u968F\u673A\u51FD\u6570, \u4E5F\
+          \u6CA1\u5E2E\u52A9:  https://pytorch.org/docs/stable/notes/randomness.html</span>\n\
+          <span class=\"hljs-string\">import random</span>\n<span class=\"hljs-string\"\
+          >random.seed(0)</span>\n<span class=\"hljs-string\">np.random.seed(0)</span>\n\
+          <span class=\"hljs-string\">torch.manual_seed(0)</span>\n<span class=\"\
+          hljs-string\">torch.use_deterministic_algorithms(True)</span>\n<span class=\"\
+          hljs-string\">transformers.enable_full_determinism(0)</span>\n<span class=\"\
+          hljs-string\">'''</span>\n\n<span class=\"hljs-comment\"># Load model from\
+          \ HuggingFace Hub</span>\ntokenizer = AutoTokenizer.from_pretrained(<span\
+          \ class=\"hljs-string\">'BAAI/bge-large-zh'</span>)\nmodel = AutoModel.from_pretrained(<span\
+          \ class=\"hljs-string\">'BAAI/bge-large-zh'</span>)\ndevice = torch.device(\n\
+          \    <span class=\"hljs-string\">\"cuda:\"</span> + <span class=\"hljs-built_in\"\
+          >str</span>(<span class=\"hljs-number\">0</span>)\n    <span class=\"hljs-keyword\"\
+          >if</span> torch.cuda.is_available()\n    <span class=\"hljs-keyword\">else</span>\
+          \ <span class=\"hljs-string\">\"cpu\"</span>\n)\n<span class=\"hljs-comment\"\
+          >#device = torch.device(\"cpu\")</span>\nmodel = model.to(device)\n\n\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >inference</span>(<span class=\"hljs-params\">sentences</span>):\n    encoded_input\
+          \ = tokenizer(sentences, padding=<span class=\"hljs-literal\">True</span>,\
+          \ truncation=<span class=\"hljs-literal\">True</span>, return_tensors=<span\
+          \ class=\"hljs-string\">'pt'</span>).to(device)\n    <span class=\"hljs-keyword\"\
+          >with</span> torch.no_grad():\n        model_output = model(**encoded_input)\n\
+          \        sentence_embeddings = model_output[<span class=\"hljs-number\"\
+          >0</span>][:, <span class=\"hljs-number\">0</span>]\n    sentence_embeddings\
+          \ = torch.nn.functional.normalize(sentence_embeddings, p=<span class=\"\
+          hljs-number\">2</span>, dim=<span class=\"hljs-number\">1</span>)\n    <span\
+          \ class=\"hljs-keyword\">return</span> sentence_embeddings.tolist()\n\n\n\
+          embedding_list = []\nresult = inference([<span class=\"hljs-string\">\"\u6837\
+          \u4F8B\u6570\u636E\"</span>])\nembedding_list.extend(result)\nresult = inference([<span\
+          \ class=\"hljs-string\">\"\u6837\u4F8B\u6570\u636E\"</span>, <span class=\"\
+          hljs-string\">\"\u6837\u4F8B\u6570\u636E\"</span>])\nembedding_list.extend(result)\n\
+          result = inference([<span class=\"hljs-string\">\"\u6837\u4F8B\u6570\u636E\
+          \"</span>, <span class=\"hljs-string\">\"\u6837\u4F8B\u6570\u636E\"</span>,\
+          \ <span class=\"hljs-string\">\"\u6837\u4F8B\u6570\u636E\"</span>])\nembedding_list.extend(result)\n\
+          \nt = embedding_list[<span class=\"hljs-number\">0</span>]\n<span class=\"\
+          hljs-keyword\">for</span> d <span class=\"hljs-keyword\">in</span> embedding_list:\n\
+          \    <span class=\"hljs-built_in\">print</span>(np.linalg.norm(np.array(t)\
+          \ - np.array(d)))\n</code></pre>\n<p>gpu \u63A8\u7406\u7ED3\u679C:</p>\n\
+          <pre><code>0.0\n# batch_size = 2\n0.0003285772418727933\n0.0003285772418727933\n\
+          # batch_size = 3\n0.0003285772418727933\n0.0003285772418727933\n0.0003285772418727933\n\
+          </code></pre>\n<p>cpu \u63A8\u7406\u7ED3\u679C:</p>\n<pre><code>0.0\n# batch_size\
+          \ = 2\n0.0\n0.0\n# batch_size = 3\n1.840252039479207e-06\n2.4406928888176708e-06\n\
+          2.1033285858599596e-06\n</code></pre>\n<p>\u4E3A\u4EC0\u4E48\u540C\u6837\
+          \u7684\u8F93\u5165\u6587\u672C,  \u6A21\u578B\u8F93\u51FA\u7ED3\u679C\u4F1A\
+          \u56E0\u4E3A batch_size \u53D8\u5316?</p>\n"
+        raw: "\u73AF\u5883:\n\n```bash\nroot@di-20230821151638-rptqp:~/code/huggingface_store#\
+          \ uname -a\nLinux di-20230821151638-rptqp 5.4.143-2-velinux1-amd64 #velinux1\
+          \ SMP Debian 5.4.143-2-velinux1 Fri Sep 23 03:26:48 UTC  x86_64 x86_64 x86_64\
+          \ GNU/Linux\nroot@di-20230821151638-rptqp:~/code/huggingface_store# nvcc\
+          \ --version\nnvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2022\
+          \ NVIDIA Corporation\nBuilt on Wed_Jun__8_16:49:14_PDT_2022\nCuda compilation\
+          \ tools, release 11.7, V11.7.99\nBuild cuda_11.7.r11.7/compiler.31442593_0\n\
+          root@di-20230821151638-rptqp:~/code/huggingface_store# pip freeze\ntorch==1.13.1+cu117\n\
+          transformers==4.31.0\n```\n\n\u590D\u73B0\u811A\u672C:\n\n```py\n#!/usr/bin/env\
+          \ python\n# coding=utf-8\n\nimport torch\nimport transformers\nfrom transformers\
+          \ import AutoTokenizer, AutoModel\nimport numpy as np\n\n'''\n# \u5C1D\u8BD5\
+          \u4E86\u521D\u59CB\u5316\u968F\u673A\u6570seed, \u7981\u7528\u968F\u673A\
+          \u51FD\u6570, \u4E5F\u6CA1\u5E2E\u52A9:  https://pytorch.org/docs/stable/notes/randomness.html\n\
+          import random\nrandom.seed(0)\nnp.random.seed(0)\ntorch.manual_seed(0)\n\
+          torch.use_deterministic_algorithms(True)\ntransformers.enable_full_determinism(0)\n\
+          '''\n\n# Load model from HuggingFace Hub\ntokenizer = AutoTokenizer.from_pretrained('BAAI/bge-large-zh')\n\
+          model = AutoModel.from_pretrained('BAAI/bge-large-zh')\ndevice = torch.device(\n\
+          \    \"cuda:\" + str(0)\n    if torch.cuda.is_available()\n    else \"cpu\"\
+          \n)\n#device = torch.device(\"cpu\")\nmodel = model.to(device)\n\n\ndef\
+          \ inference(sentences):\n    encoded_input = tokenizer(sentences, padding=True,\
+          \ truncation=True, return_tensors='pt').to(device)\n    with torch.no_grad():\n\
+          \        model_output = model(**encoded_input)\n        sentence_embeddings\
+          \ = model_output[0][:, 0]\n    sentence_embeddings = torch.nn.functional.normalize(sentence_embeddings,\
+          \ p=2, dim=1)\n    return sentence_embeddings.tolist()\n\n\nembedding_list\
+          \ = []\nresult = inference([\"\u6837\u4F8B\u6570\u636E\"])\nembedding_list.extend(result)\n\
+          result = inference([\"\u6837\u4F8B\u6570\u636E\", \"\u6837\u4F8B\u6570\u636E\
+          \"])\nembedding_list.extend(result)\nresult = inference([\"\u6837\u4F8B\u6570\
+          \u636E\", \"\u6837\u4F8B\u6570\u636E\", \"\u6837\u4F8B\u6570\u636E\"])\n\
+          embedding_list.extend(result)\n\nt = embedding_list[0]\nfor d in embedding_list:\n\
+          \    print(np.linalg.norm(np.array(t) - np.array(d)))\n\n```\n\ngpu \u63A8\
+          \u7406\u7ED3\u679C:\n\n```\n0.0\n# batch_size = 2\n0.0003285772418727933\n\
+          0.0003285772418727933\n# batch_size = 3\n0.0003285772418727933\n0.0003285772418727933\n\
+          0.0003285772418727933\n```\n\ncpu \u63A8\u7406\u7ED3\u679C:\n\n```\n0.0\n\
+          # batch_size = 2\n0.0\n0.0\n# batch_size = 3\n1.840252039479207e-06\n2.4406928888176708e-06\n\
+          2.1033285858599596e-06\n```\n\n\u4E3A\u4EC0\u4E48\u540C\u6837\u7684\u8F93\
+          \u5165\u6587\u672C,  \u6A21\u578B\u8F93\u51FA\u7ED3\u679C\u4F1A\u56E0\u4E3A\
+          \ batch_size \u53D8\u5316?"
+        updatedAt: '2023-08-23T06:11:12.003Z'
+      numEdits: 2
+      reactions: []
+    id: 64e58b4b92b9d24b2dba84ea
+    type: comment
+  author: csu20120504
+  content: "\u73AF\u5883:\n\n```bash\nroot@di-20230821151638-rptqp:~/code/huggingface_store#\
+    \ uname -a\nLinux di-20230821151638-rptqp 5.4.143-2-velinux1-amd64 #velinux1 SMP\
+    \ Debian 5.4.143-2-velinux1 Fri Sep 23 03:26:48 UTC  x86_64 x86_64 x86_64 GNU/Linux\n\
+    root@di-20230821151638-rptqp:~/code/huggingface_store# nvcc --version\nnvcc: NVIDIA\
+    \ (R) Cuda compiler driver\nCopyright (c) 2005-2022 NVIDIA Corporation\nBuilt\
+    \ on Wed_Jun__8_16:49:14_PDT_2022\nCuda compilation tools, release 11.7, V11.7.99\n\
+    Build cuda_11.7.r11.7/compiler.31442593_0\nroot@di-20230821151638-rptqp:~/code/huggingface_store#\
+    \ pip freeze\ntorch==1.13.1+cu117\ntransformers==4.31.0\n```\n\n\u590D\u73B0\u811A\
+    \u672C:\n\n```py\n#!/usr/bin/env python\n# coding=utf-8\n\nimport torch\nimport\
+    \ transformers\nfrom transformers import AutoTokenizer, AutoModel\nimport numpy\
+    \ as np\n\n'''\n# \u5C1D\u8BD5\u4E86\u521D\u59CB\u5316\u968F\u673A\u6570seed,\
+    \ \u7981\u7528\u968F\u673A\u51FD\u6570, \u4E5F\u6CA1\u5E2E\u52A9:  https://pytorch.org/docs/stable/notes/randomness.html\n\
+    import random\nrandom.seed(0)\nnp.random.seed(0)\ntorch.manual_seed(0)\ntorch.use_deterministic_algorithms(True)\n\
+    transformers.enable_full_determinism(0)\n'''\n\n# Load model from HuggingFace\
+    \ Hub\ntokenizer = AutoTokenizer.from_pretrained('BAAI/bge-large-zh')\nmodel =\
+    \ AutoModel.from_pretrained('BAAI/bge-large-zh')\ndevice = torch.device(\n   \
+    \ \"cuda:\" + str(0)\n    if torch.cuda.is_available()\n    else \"cpu\"\n)\n\
+    #device = torch.device(\"cpu\")\nmodel = model.to(device)\n\n\ndef inference(sentences):\n\
+    \    encoded_input = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt').to(device)\n\
+    \    with torch.no_grad():\n        model_output = model(**encoded_input)\n  \
+    \      sentence_embeddings = model_output[0][:, 0]\n    sentence_embeddings =\
+    \ torch.nn.functional.normalize(sentence_embeddings, p=2, dim=1)\n    return sentence_embeddings.tolist()\n\
+    \n\nembedding_list = []\nresult = inference([\"\u6837\u4F8B\u6570\u636E\"])\n\
+    embedding_list.extend(result)\nresult = inference([\"\u6837\u4F8B\u6570\u636E\"\
+    , \"\u6837\u4F8B\u6570\u636E\"])\nembedding_list.extend(result)\nresult = inference([\"\
+    \u6837\u4F8B\u6570\u636E\", \"\u6837\u4F8B\u6570\u636E\", \"\u6837\u4F8B\u6570\
+    \u636E\"])\nembedding_list.extend(result)\n\nt = embedding_list[0]\nfor d in embedding_list:\n\
+    \    print(np.linalg.norm(np.array(t) - np.array(d)))\n\n```\n\ngpu \u63A8\u7406\
+    \u7ED3\u679C:\n\n```\n0.0\n# batch_size = 2\n0.0003285772418727933\n0.0003285772418727933\n\
+    # batch_size = 3\n0.0003285772418727933\n0.0003285772418727933\n0.0003285772418727933\n\
+    ```\n\ncpu \u63A8\u7406\u7ED3\u679C:\n\n```\n0.0\n# batch_size = 2\n0.0\n0.0\n\
+    # batch_size = 3\n1.840252039479207e-06\n2.4406928888176708e-06\n2.1033285858599596e-06\n\
+    ```\n\n\u4E3A\u4EC0\u4E48\u540C\u6837\u7684\u8F93\u5165\u6587\u672C,  \u6A21\u578B\
+    \u8F93\u51FA\u7ED3\u679C\u4F1A\u56E0\u4E3A batch_size \u53D8\u5316?"
+  created_at: 2023-08-23 03:30:03+00:00
+  edited: true
+  hidden: false
+  id: 64e58b4b92b9d24b2dba84ea
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+      fullname: csu20120504
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: csu20120504
+      type: user
+    createdAt: '2023-08-23T04:39:52.000Z'
+    data:
+      edited: false
+      editors:
+      - csu20120504
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5187684297561646
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+          fullname: csu20120504
+          isHf: false
+          isPro: false
+          name: csu20120504
+          type: user
+        html: "<p>\u7F51\u4E0A\u4E00\u4E9B\u76F8\u5173\u7684\u5E16\u5B50:<br><a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/transformers/issues/2401\"\
+          >https://github.com/huggingface/transformers/issues/2401</a><br><a rel=\"\
+          nofollow\" href=\"https://discuss.huggingface.co/t/results-of-model-generate-are-different-for-different-batch-sizes-of-the-decode-only-model/34878\"\
+          >https://discuss.huggingface.co/t/results-of-model-generate-are-different-for-different-batch-sizes-of-the-decode-only-model/34878</a></p>\n"
+        raw: "\u7F51\u4E0A\u4E00\u4E9B\u76F8\u5173\u7684\u5E16\u5B50:\nhttps://github.com/huggingface/transformers/issues/2401\n\
+          https://discuss.huggingface.co/t/results-of-model-generate-are-different-for-different-batch-sizes-of-the-decode-only-model/34878"
+        updatedAt: '2023-08-23T04:39:52.297Z'
+      numEdits: 0
+      reactions: []
+    id: 64e58d98dea9fdc5788fd367
+    type: comment
+  author: csu20120504
+  content: "\u7F51\u4E0A\u4E00\u4E9B\u76F8\u5173\u7684\u5E16\u5B50:\nhttps://github.com/huggingface/transformers/issues/2401\n\
+    https://discuss.huggingface.co/t/results-of-model-generate-are-different-for-different-batch-sizes-of-the-decode-only-model/34878"
+  created_at: 2023-08-23 03:39:52+00:00
+  edited: false
+  hidden: false
+  id: 64e58d98dea9fdc5788fd367
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+      fullname: csu20120504
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: csu20120504
+      type: user
+    createdAt: '2023-08-23T06:13:37.000Z'
+    data:
+      edited: true
+      editors:
+      - csu20120504
+      hidden: false
+      identifiedLanguage:
+        language: zh
+        probability: 0.9333086609840393
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+          fullname: csu20120504
+          isHf: false
+          isPro: false
+          name: csu20120504
+          type: user
+        html: "<p>\u8FDB\u4E00\u6B65 google,  \u53D1\u73B0\u8FD9\u7BC7\u8FD8\u5728\
+          \ review \u4E2D\u7684 paper: <a rel=\"nofollow\" href=\"https://openreview.net/forum?id=9MDjKb9lGi\"\
+          >The batch size can affect inference results</a>, \u8FD9\u4E2A\u95EE\u9898\
+          \u5E94\u8BE5\u548C GPU \u672C\u8EAB\u6709\u5173.</p>\n"
+        raw: "\u8FDB\u4E00\u6B65 google,  \u53D1\u73B0\u8FD9\u7BC7\u8FD8\u5728 review\
+          \ \u4E2D\u7684 paper: [The batch size can affect inference results](https://openreview.net/forum?id=9MDjKb9lGi),\
+          \ \u8FD9\u4E2A\u95EE\u9898\u5E94\u8BE5\u548C GPU \u672C\u8EAB\u6709\u5173\
+          ."
+        updatedAt: '2023-08-24T09:30:31.189Z'
+      numEdits: 2
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Shitao
+      relatedEventId: 64e5a39171071da798e4de1c
+    id: 64e5a39171071da798e4de19
+    type: comment
+  author: csu20120504
+  content: "\u8FDB\u4E00\u6B65 google,  \u53D1\u73B0\u8FD9\u7BC7\u8FD8\u5728 review\
+    \ \u4E2D\u7684 paper: [The batch size can affect inference results](https://openreview.net/forum?id=9MDjKb9lGi),\
+    \ \u8FD9\u4E2A\u95EE\u9898\u5E94\u8BE5\u548C GPU \u672C\u8EAB\u6709\u5173."
+  created_at: 2023-08-23 05:13:37+00:00
+  edited: true
+  hidden: false
+  id: 64e5a39171071da798e4de19
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/8baf02329ce83b072eee370c239020e5.svg
+      fullname: csu20120504
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: csu20120504
+      type: user
+    createdAt: '2023-08-23T06:13:37.000Z'
+    data:
+      status: closed
+    id: 64e5a39171071da798e4de1c
+    type: status-change
+  author: csu20120504
+  created_at: 2023-08-23 05:13:37+00:00
+  id: 64e5a39171071da798e4de1c
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: BAAI/bge-large-zh
+repo_type: model
+status: closed
+target_branch: null
+title: "\u5BF9\u540C\u4E00\u4E2A\u6587\u672C, \u4F7F\u7528\u4E0D\u540C\u7684 batch\
+  \ size, batch_size=1 \u548C batch_size>1\u65F6\u5F97\u5230\u7684 embedding \u7ED3\
+  \u679C\u6709\u7EC6\u5FAE\u5DEE\u522B."

@@ -1,0 +1,313 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: samfenske
+conflicting_files: null
+created_at: 2023-07-17 15:07:30+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+      fullname: Sam Fenske
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: samfenske
+      type: user
+    createdAt: '2023-07-17T16:07:30.000Z'
+    data:
+      edited: false
+      editors:
+      - samfenske
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.796659529209137
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+          fullname: Sam Fenske
+          isHf: false
+          isPro: false
+          name: samfenske
+          type: user
+        html: '<p>Hello, thank you for having well-documented code and examples! I''ve
+          been able to train a handful of fine-tuning cell classification models,
+          but am having some trouble modeling gene perturbations. My fine-tuned model
+          is trained to classify cell type, from which I would like to individually
+          model the knockouts of two genes in three different cell types. Below is
+          the setup for my InSilicoPerturber. My goal here is to see how removing
+          each gene from cells in specific cell type s affects the placement of that
+          cell type in the cell space- in other words, which cell types does it most
+          closely resemble if we remove this gene? Looking at the cell_states_to_model
+          argument, I made the cell types I want to perturb the goal start states,
+          the related cell types I expect the cell state to potentially shift to as
+          the goal end states, and all other cell types as the alternate possible
+          end states. Each of target_cell_types, related_cell_types, other_cell_types
+          are non-overlapping lists of cell types. Perhaps this is not a proper use
+          case or setup of the perturbation tool? </p>
+
+          <p>isp = InSilicoPerturber(perturb_type="delete",<br>                      perturb_rank_shift=None,<br>                      genes_to_perturb=[gene_1,
+          gene_2],<br>                      combos=0,<br>                      anchor_gene=None,<br>                      model_type="CellClassifier",
+          # using model fine-tuned for cell classification<br>                      num_classes=len(cell_types),<br>                      emb_mode="cell_and_gene",
+          # want to look at impact on both gene and cell embeddings<br>                      cell_emb_style="mean_pool",<br>                      filter_data=None,<br>                      cell_states_to_model={"cell_type":(target_cell_types,
+          related_cell_types, other_cell_types)},<br>                      emb_layer=0,<br>                      forward_batch_size=100,<br>                      nproc=16,<br>                      save_raw_data=True)</p>
+
+          <p>The model is able to run, but I''m getting an error when I try to retrieve
+          the in silico perturbation statistics. Below is call that produced the error
+          followed by the error. I locally reran the steps that precede the error,
+          and found that the error is coming from the dict_list that is used in the
+          isp_stats_to_goal_state() method. I''m not sure exactly what information
+          is stored in the dict_list, but mine has a lot of nan, inf and -inf. Perhaps
+          this could be the source of the ValueError?</p>
+
+          <p>ispstats.get_stats("../../code/models/perturbation_model",<br>                   None,<br>                   "../../data/project/perturbation_model",<br>                   "v1_perturbation_model")</p>
+
+          <p>ValueError                                Traceback (most recent call
+          last)<br>/tmp/ipykernel_119167/121183301.py in <br>----&gt; 1 cos_sims_df
+          = isp_stats_to_goal_state(cos_sims_df_initial, dict_list, ispstats.cell_states_to_model)</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py
+          in isp_stats_to_goal_state(cos_sims_df, dict_list, cell_states_to_model)<br>    124         goal_end_random_megalist
+          = [goal_end for start_state,goal_end in random_tuples]<br>    125     elif
+          alt_end_state_exists == True:<br>--&gt; 126         goal_end_random_megalist
+          = [goal_end for start_state,goal_end,alt_end in random_tuples]<br>    127         alt_end_random_megalist
+          = [alt_end for start_state,goal_end,alt_end in random_tuples]<br>    128
+          </p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py
+          in (.0)<br>    124         goal_end_random_megalist = [goal_end for start_state,goal_end
+          in random_tuples]<br>    125     elif alt_end_state_exists == True:<br>--&gt;
+          126         goal_end_random_megalist = [goal_end for start_state,goal_end,alt_end
+          in random_tuples]<br>    127         alt_end_random_megalist = [alt_end
+          for start_state,goal_end,alt_end in random_tuples]<br>    128 </p>
+
+          <p>ValueError: too many values to unpack (expected 3)</p>
+
+          <p>I would appreciate any help you may be able to provide!</p>
+
+          '
+        raw: "Hello, thank you for having well-documented code and examples! I've\
+          \ been able to train a handful of fine-tuning cell classification models,\
+          \ but am having some trouble modeling gene perturbations. My fine-tuned\
+          \ model is trained to classify cell type, from which I would like to individually\
+          \ model the knockouts of two genes in three different cell types. Below\
+          \ is the setup for my InSilicoPerturber. My goal here is to see how removing\
+          \ each gene from cells in specific cell type s affects the placement of\
+          \ that cell type in the cell space- in other words, which cell types does\
+          \ it most closely resemble if we remove this gene? Looking at the cell_states_to_model\
+          \ argument, I made the cell types I want to perturb the goal start states,\
+          \ the related cell types I expect the cell state to potentially shift to\
+          \ as the goal end states, and all other cell types as the alternate possible\
+          \ end states. Each of target_cell_types, related_cell_types, other_cell_types\
+          \ are non-overlapping lists of cell types. Perhaps this is not a proper\
+          \ use case or setup of the perturbation tool? \r\n\r\nisp = InSilicoPerturber(perturb_type=\"\
+          delete\",\r\n                      perturb_rank_shift=None,\r\n        \
+          \              genes_to_perturb=[gene_1, gene_2],\r\n                  \
+          \    combos=0,\r\n                      anchor_gene=None,\r\n          \
+          \            model_type=\"CellClassifier\", # using model fine-tuned for\
+          \ cell classification\r\n                      num_classes=len(cell_types),\r\
+          \n                      emb_mode=\"cell_and_gene\", # want to look at impact\
+          \ on both gene and cell embeddings\r\n                      cell_emb_style=\"\
+          mean_pool\",\r\n                      filter_data=None,\r\n            \
+          \          cell_states_to_model={\"cell_type\":(target_cell_types, related_cell_types,\
+          \ other_cell_types)},\r\n                      emb_layer=0,\r\n        \
+          \              forward_batch_size=100,\r\n                      nproc=16,\r\
+          \n                      save_raw_data=True)\r\n\r\n\r\nThe model is able\
+          \ to run, but I'm getting an error when I try to retrieve the in silico\
+          \ perturbation statistics. Below is call that produced the error followed\
+          \ by the error. I locally reran the steps that precede the error, and found\
+          \ that the error is coming from the dict_list that is used in the isp_stats_to_goal_state()\
+          \ method. I'm not sure exactly what information is stored in the dict_list,\
+          \ but mine has a lot of nan, inf and -inf. Perhaps this could be the source\
+          \ of the ValueError?\r\n\r\nispstats.get_stats(\"../../code/models/perturbation_model\"\
+          ,\r\n                   None,\r\n                   \"../../data/project/perturbation_model\"\
+          ,\r\n                   \"v1_perturbation_model\")\r\n\r\nValueError   \
+          \                             Traceback (most recent call last)\r\n/tmp/ipykernel_119167/121183301.py\
+          \ in <module>\r\n----> 1 cos_sims_df = isp_stats_to_goal_state(cos_sims_df_initial,\
+          \ dict_list, ispstats.cell_states_to_model)\r\n\r\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py\
+          \ in isp_stats_to_goal_state(cos_sims_df, dict_list, cell_states_to_model)\r\
+          \n    124         goal_end_random_megalist = [goal_end for start_state,goal_end\
+          \ in random_tuples]\r\n    125     elif alt_end_state_exists == True:\r\n\
+          --> 126         goal_end_random_megalist = [goal_end for start_state,goal_end,alt_end\
+          \ in random_tuples]\r\n    127         alt_end_random_megalist = [alt_end\
+          \ for start_state,goal_end,alt_end in random_tuples]\r\n    128 \r\n\r\n\
+          /projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py\
+          \ in <listcomp>(.0)\r\n    124         goal_end_random_megalist = [goal_end\
+          \ for start_state,goal_end in random_tuples]\r\n    125     elif alt_end_state_exists\
+          \ == True:\r\n--> 126         goal_end_random_megalist = [goal_end for start_state,goal_end,alt_end\
+          \ in random_tuples]\r\n    127         alt_end_random_megalist = [alt_end\
+          \ for start_state,goal_end,alt_end in random_tuples]\r\n    128 \r\n\r\n\
+          ValueError: too many values to unpack (expected 3)\r\n\r\n\r\n\r\nI would\
+          \ appreciate any help you may be able to provide!"
+        updatedAt: '2023-07-17T16:07:30.203Z'
+      numEdits: 0
+      reactions: []
+    id: 64b5674273b823a2c283de3a
+    type: comment
+  author: samfenske
+  content: "Hello, thank you for having well-documented code and examples! I've been\
+    \ able to train a handful of fine-tuning cell classification models, but am having\
+    \ some trouble modeling gene perturbations. My fine-tuned model is trained to\
+    \ classify cell type, from which I would like to individually model the knockouts\
+    \ of two genes in three different cell types. Below is the setup for my InSilicoPerturber.\
+    \ My goal here is to see how removing each gene from cells in specific cell type\
+    \ s affects the placement of that cell type in the cell space- in other words,\
+    \ which cell types does it most closely resemble if we remove this gene? Looking\
+    \ at the cell_states_to_model argument, I made the cell types I want to perturb\
+    \ the goal start states, the related cell types I expect the cell state to potentially\
+    \ shift to as the goal end states, and all other cell types as the alternate possible\
+    \ end states. Each of target_cell_types, related_cell_types, other_cell_types\
+    \ are non-overlapping lists of cell types. Perhaps this is not a proper use case\
+    \ or setup of the perturbation tool? \r\n\r\nisp = InSilicoPerturber(perturb_type=\"\
+    delete\",\r\n                      perturb_rank_shift=None,\r\n              \
+    \        genes_to_perturb=[gene_1, gene_2],\r\n                      combos=0,\r\
+    \n                      anchor_gene=None,\r\n                      model_type=\"\
+    CellClassifier\", # using model fine-tuned for cell classification\r\n       \
+    \               num_classes=len(cell_types),\r\n                      emb_mode=\"\
+    cell_and_gene\", # want to look at impact on both gene and cell embeddings\r\n\
+    \                      cell_emb_style=\"mean_pool\",\r\n                     \
+    \ filter_data=None,\r\n                      cell_states_to_model={\"cell_type\"\
+    :(target_cell_types, related_cell_types, other_cell_types)},\r\n             \
+    \         emb_layer=0,\r\n                      forward_batch_size=100,\r\n  \
+    \                    nproc=16,\r\n                      save_raw_data=True)\r\n\
+    \r\n\r\nThe model is able to run, but I'm getting an error when I try to retrieve\
+    \ the in silico perturbation statistics. Below is call that produced the error\
+    \ followed by the error. I locally reran the steps that precede the error, and\
+    \ found that the error is coming from the dict_list that is used in the isp_stats_to_goal_state()\
+    \ method. I'm not sure exactly what information is stored in the dict_list, but\
+    \ mine has a lot of nan, inf and -inf. Perhaps this could be the source of the\
+    \ ValueError?\r\n\r\nispstats.get_stats(\"../../code/models/perturbation_model\"\
+    ,\r\n                   None,\r\n                   \"../../data/project/perturbation_model\"\
+    ,\r\n                   \"v1_perturbation_model\")\r\n\r\nValueError         \
+    \                       Traceback (most recent call last)\r\n/tmp/ipykernel_119167/121183301.py\
+    \ in <module>\r\n----> 1 cos_sims_df = isp_stats_to_goal_state(cos_sims_df_initial,\
+    \ dict_list, ispstats.cell_states_to_model)\r\n\r\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py\
+    \ in isp_stats_to_goal_state(cos_sims_df, dict_list, cell_states_to_model)\r\n\
+    \    124         goal_end_random_megalist = [goal_end for start_state,goal_end\
+    \ in random_tuples]\r\n    125     elif alt_end_state_exists == True:\r\n--> 126\
+    \         goal_end_random_megalist = [goal_end for start_state,goal_end,alt_end\
+    \ in random_tuples]\r\n    127         alt_end_random_megalist = [alt_end for\
+    \ start_state,goal_end,alt_end in random_tuples]\r\n    128 \r\n\r\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/in_silico_perturber_stats.py\
+    \ in <listcomp>(.0)\r\n    124         goal_end_random_megalist = [goal_end for\
+    \ start_state,goal_end in random_tuples]\r\n    125     elif alt_end_state_exists\
+    \ == True:\r\n--> 126         goal_end_random_megalist = [goal_end for start_state,goal_end,alt_end\
+    \ in random_tuples]\r\n    127         alt_end_random_megalist = [alt_end for\
+    \ start_state,goal_end,alt_end in random_tuples]\r\n    128 \r\n\r\nValueError:\
+    \ too many values to unpack (expected 3)\r\n\r\n\r\n\r\nI would appreciate any\
+    \ help you may be able to provide!"
+  created_at: 2023-07-17 15:07:30+00:00
+  edited: false
+  hidden: false
+  id: 64b5674273b823a2c283de3a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-19T20:02:54.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9428671598434448
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer! Please pull the updated
+          version and try running your analysis with just "cell" rather than "cell_and_gene"
+          for the emb_mode. Then, you can separately run the analysis again with "cell_and_gene"
+          with cell_states_to_model being None. The gene embedding shifts are independent
+          of the cell states to model because those are relevant to an in silico perturbation
+          affecting particular downstream genes, as opposed the effect of the perturbation
+          at shifting the cell state. It would be great if you could add an update
+          on whether that resolves your issue. </p>
+
+          <p>Please note that the updated version will run the analysis with both
+          of the genes you supplied being perturbed in combination. If you''d like
+          to perturb them separately, you can run it separately for each gene.</p>
+
+          '
+        raw: "Thank you for your interest in Geneformer! Please pull the updated version\
+          \ and try running your analysis with just \"cell\" rather than \"cell_and_gene\"\
+          \ for the emb_mode. Then, you can separately run the analysis again with\
+          \ \"cell_and_gene\" with cell_states_to_model being None. The gene embedding\
+          \ shifts are independent of the cell states to model because those are relevant\
+          \ to an in silico perturbation affecting particular downstream genes, as\
+          \ opposed the effect of the perturbation at shifting the cell state. It\
+          \ would be great if you could add an update on whether that resolves your\
+          \ issue. \n\nPlease note that the updated version will run the analysis\
+          \ with both of the genes you supplied being perturbed in combination. If\
+          \ you'd like to perturb them separately, you can run it separately for each\
+          \ gene."
+        updatedAt: '2023-07-19T20:02:54.279Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64b8416e8c12f0008b80d5f8
+    id: 64b8416e8c12f0008b80d5f7
+    type: comment
+  author: ctheodoris
+  content: "Thank you for your interest in Geneformer! Please pull the updated version\
+    \ and try running your analysis with just \"cell\" rather than \"cell_and_gene\"\
+    \ for the emb_mode. Then, you can separately run the analysis again with \"cell_and_gene\"\
+    \ with cell_states_to_model being None. The gene embedding shifts are independent\
+    \ of the cell states to model because those are relevant to an in silico perturbation\
+    \ affecting particular downstream genes, as opposed the effect of the perturbation\
+    \ at shifting the cell state. It would be great if you could add an update on\
+    \ whether that resolves your issue. \n\nPlease note that the updated version will\
+    \ run the analysis with both of the genes you supplied being perturbed in combination.\
+    \ If you'd like to perturb them separately, you can run it separately for each\
+    \ gene."
+  created_at: 2023-07-19 19:02:54+00:00
+  edited: false
+  hidden: false
+  id: 64b8416e8c12f0008b80d5f7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-19T20:02:54.000Z'
+    data:
+      status: closed
+    id: 64b8416e8c12f0008b80d5f8
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-07-19 19:02:54+00:00
+  id: 64b8416e8c12f0008b80d5f8
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 121
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: 'Issue getting perturbation stats via get_stats(): too many values to unpack'

@@ -1,0 +1,6 @@
+## https://huggingface.co/ctheodoris/Geneformer/discussions/285
+
+contains_question: yes
+question_part: 1. I am running the provided example code in_silico_perturbation.ipynb. The only change is to change the genes_to_perturb parameter from "all" to a list containing a single gene. I found that the result csv file only contains cosine similarity but no p-value and FDR. How can I get the p-value and FDR? 
+2. If I want to study how the expression/embedding of the remaining genes changes after a single gene is deleted, how should I do it? The purpose of this is that I want to study which related genes will be affected after simulating a gene perturbation, so as to predict the changes in biological pathways after gene perturbation.
+3. In addition, according to the parameter introduction, I noticed that when the genes_to_perturb parameter is set to a list containing multiple genes, these genes will be perturbed as a whole (Otherwise, may provide a list of ENSEMBL IDs of genes perturbed as a group all together) . Suppose I have a list of multiple genes and want to study the results of perturbation of each gene individually and generate a csv containing the perturbation of each gene in the list. How should I do this?

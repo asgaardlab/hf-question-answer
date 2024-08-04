@@ -1,0 +1,130 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: chord
+conflicting_files: null
+created_at: 2023-04-23 14:41:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/decb7d63220c29465ec47fac4626e13e.svg
+      fullname: zhuo chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chord
+      type: user
+    createdAt: '2023-04-23T15:41:03.000Z'
+    data:
+      edited: true
+      editors:
+      - chord
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/decb7d63220c29465ec47fac4626e13e.svg
+          fullname: zhuo chen
+          isHf: false
+          isPro: false
+          name: chord
+          type: user
+        html: "<p>I load the model and evaluate it on mnli data from GLUE, however,\
+          \ it seems that the labels2index is different from that in origin GLUE dataset.<br>GLUE:\
+          \ entailment-&gt;0, neutral-&gt;1, contradiction-&gt;2<br>textattack:  entailment-&gt;2,\
+          \ neutral-&gt;1, contradiction-&gt;0<br>Am I right?</p>\n<p>Here is my code:</p>\n\
+          <pre><code>dataset_to_keys = {\n    \"mnli\": (\"premise\", \"hypothesis\"\
+          ),\n    ...\n}\n\nmodel = AutoModelForSequenceClassification.from_pretrained(\"\
+          textattack/roberta-base-MNLI\")\nmodel.to(device)\nmodel.eval()\ndataset\
+          \ = load_dataset('glue', 'mnli')\nsentence1_key, sentence2_key = dataset_to_keys['mnli']\n\
+          \ndef preprocess_function(examples):\n    tokenizer = AutoTokenizer.from_pretrained(\"\
+          textattack/roberta-base-MNLI\", use_fast=True)\n    if sentence2_key is\
+          \ None:\n        return tokenizer(examples[sentence1_key], truncation=True,\
+          \ padding='max_length', max_length=512, return_tensors='pt')\n    return\
+          \ tokenizer(examples[sentence1_key], examples[sentence2_key], truncation=True,\
+          \ padding='max_length', max_length=512, return_tensors='pt')\n    \nencoded_dataset\
+          \ = dataset.map(preprocess_function, batched=True, num_proc=8, load_from_cache_file=False)\n\
+          encoded_dataset.set_format(type='torch')\n\ndataloader = DataLoader(encoded_dataset['validation_matched'],\
+          \ batch_size=256)\n\nacc = 0\nfor batch in tqdm(dataloader):\n    input_ids\
+          \ = batch['input_ids'].to(device)\n    attention_mask = batch['attention_mask'].to(device)\n\
+          \    label = batch['label'].to(device)\n\n    output = model(input_ids=input_ids,\n\
+          \                        attention_mask=attention_mask,\n              \
+          \          labels=label)\n                \n    logits = output.logits\n\
+          \    pred = logits.argmax(dim=1)\n    acc += (pred==label).int().sum().item()\n\
+          \n    acc /= len(encoded_dataset['validation_matched'])\n    print(\"Eval\
+          \ Acc:\", acc)\n</code></pre>\n<p>(If I change </p>\n<pre><code>acc += (pred==label).int().sum().item()\n\
+          </code></pre>\n<p>to</p>\n<pre><code>acc += (pred==(2-label)).int().sum().item()\n\
+          </code></pre>\n<p>the accuracy becomes ~80%.<br>)</p>\n"
+        raw: "I load the model and evaluate it on mnli data from GLUE, however, it\
+          \ seems that the labels2index is different from that in origin GLUE dataset.\
+          \ \nGLUE: entailment->0, neutral->1, contradiction->2\ntextattack:  entailment->2,\
+          \ neutral->1, contradiction->0\nAm I right?\n\n\nHere is my code:\n\n```\n\
+          dataset_to_keys = {\n    \"mnli\": (\"premise\", \"hypothesis\"),\n    ...\n\
+          }\n\nmodel = AutoModelForSequenceClassification.from_pretrained(\"textattack/roberta-base-MNLI\"\
+          )\nmodel.to(device)\nmodel.eval()\ndataset = load_dataset('glue', 'mnli')\n\
+          sentence1_key, sentence2_key = dataset_to_keys['mnli']\n\ndef preprocess_function(examples):\n\
+          \    tokenizer = AutoTokenizer.from_pretrained(\"textattack/roberta-base-MNLI\"\
+          , use_fast=True)\n    if sentence2_key is None:\n        return tokenizer(examples[sentence1_key],\
+          \ truncation=True, padding='max_length', max_length=512, return_tensors='pt')\n\
+          \    return tokenizer(examples[sentence1_key], examples[sentence2_key],\
+          \ truncation=True, padding='max_length', max_length=512, return_tensors='pt')\n\
+          \    \nencoded_dataset = dataset.map(preprocess_function, batched=True,\
+          \ num_proc=8, load_from_cache_file=False)\nencoded_dataset.set_format(type='torch')\n\
+          \ndataloader = DataLoader(encoded_dataset['validation_matched'], batch_size=256)\n\
+          \nacc = 0\nfor batch in tqdm(dataloader):\n    input_ids = batch['input_ids'].to(device)\n\
+          \    attention_mask = batch['attention_mask'].to(device)\n    label = batch['label'].to(device)\n\
+          \n    output = model(input_ids=input_ids,\n                        attention_mask=attention_mask,\n\
+          \                        labels=label)\n                \n    logits = output.logits\n\
+          \    pred = logits.argmax(dim=1)\n    acc += (pred==label).int().sum().item()\n\
+          \n    acc /= len(encoded_dataset['validation_matched'])\n    print(\"Eval\
+          \ Acc:\", acc)\n```\n\n\n(If I change \n```\nacc += (pred==label).int().sum().item()\n\
+          ```\nto\n```\nacc += (pred==(2-label)).int().sum().item()\n```\nthe accuracy\
+          \ becomes ~80%.\n)"
+        updatedAt: '2023-04-23T16:22:22.532Z'
+      numEdits: 3
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Martins6
+    id: 6445518f7a7b94ddc2d3e63b
+    type: comment
+  author: chord
+  content: "I load the model and evaluate it on mnli data from GLUE, however, it seems\
+    \ that the labels2index is different from that in origin GLUE dataset. \nGLUE:\
+    \ entailment->0, neutral->1, contradiction->2\ntextattack:  entailment->2, neutral->1,\
+    \ contradiction->0\nAm I right?\n\n\nHere is my code:\n\n```\ndataset_to_keys\
+    \ = {\n    \"mnli\": (\"premise\", \"hypothesis\"),\n    ...\n}\n\nmodel = AutoModelForSequenceClassification.from_pretrained(\"\
+    textattack/roberta-base-MNLI\")\nmodel.to(device)\nmodel.eval()\ndataset = load_dataset('glue',\
+    \ 'mnli')\nsentence1_key, sentence2_key = dataset_to_keys['mnli']\n\ndef preprocess_function(examples):\n\
+    \    tokenizer = AutoTokenizer.from_pretrained(\"textattack/roberta-base-MNLI\"\
+    , use_fast=True)\n    if sentence2_key is None:\n        return tokenizer(examples[sentence1_key],\
+    \ truncation=True, padding='max_length', max_length=512, return_tensors='pt')\n\
+    \    return tokenizer(examples[sentence1_key], examples[sentence2_key], truncation=True,\
+    \ padding='max_length', max_length=512, return_tensors='pt')\n    \nencoded_dataset\
+    \ = dataset.map(preprocess_function, batched=True, num_proc=8, load_from_cache_file=False)\n\
+    encoded_dataset.set_format(type='torch')\n\ndataloader = DataLoader(encoded_dataset['validation_matched'],\
+    \ batch_size=256)\n\nacc = 0\nfor batch in tqdm(dataloader):\n    input_ids =\
+    \ batch['input_ids'].to(device)\n    attention_mask = batch['attention_mask'].to(device)\n\
+    \    label = batch['label'].to(device)\n\n    output = model(input_ids=input_ids,\n\
+    \                        attention_mask=attention_mask,\n                    \
+    \    labels=label)\n                \n    logits = output.logits\n    pred = logits.argmax(dim=1)\n\
+    \    acc += (pred==label).int().sum().item()\n\n    acc /= len(encoded_dataset['validation_matched'])\n\
+    \    print(\"Eval Acc:\", acc)\n```\n\n\n(If I change \n```\nacc += (pred==label).int().sum().item()\n\
+    ```\nto\n```\nacc += (pred==(2-label)).int().sum().item()\n```\nthe accuracy becomes\
+    \ ~80%.\n)"
+  created_at: 2023-04-23 14:41:03+00:00
+  edited: true
+  hidden: false
+  id: 6445518f7a7b94ddc2d3e63b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: textattack/roberta-base-MNLI
+repo_type: model
+status: open
+target_branch: null
+title: Got random accuracy

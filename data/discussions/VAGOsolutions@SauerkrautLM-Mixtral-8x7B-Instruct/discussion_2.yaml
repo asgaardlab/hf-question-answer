@@ -1,0 +1,937 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: martinkozle
+conflicting_files: null
+created_at: 2024-01-11 19:00:09+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+      fullname: Martin Popovski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: martinkozle
+      type: user
+    createdAt: '2024-01-11T19:00:09.000Z'
+    data:
+      edited: false
+      editors:
+      - martinkozle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8852444291114807
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+          fullname: Martin Popovski
+          isHf: false
+          isPro: false
+          name: martinkozle
+          type: user
+        html: "<p>First of all, I want to say that your model is really good for chat\
+          \ and for instructions that don't require precise formatting.</p>\n<p>But,\
+          \ I am having a hard time getting the model to work for instruction tasks\
+          \ which require specific formatting. It refuses to output JUST the required\
+          \ information that I need. It has a very large tendency to continue generating\
+          \ extra info and notes about it's answer.</p>\n<p>Any ideas for what are\
+          \ the best prompting techniques for this model specifically? Does it really\
+          \ require few-shot examples even for these simple tasks?</p>\n<p>I am hosting\
+          \ the AWQ weight from TheBloke using Text Generation Inference.</p>\n<p>Here\
+          \ are some examples through ChatUI using these parameters:</p>\n<pre><code\
+          \ class=\"language-json\"><span class=\"hljs-attr\">\"parameters\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-punctuation\">{</span>\n\
+          \    <span class=\"hljs-attr\">\"temperature\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-number\">0.9</span><span class=\"hljs-punctuation\"\
+          >,</span>\n    <span class=\"hljs-attr\">\"truncate\"</span><span class=\"\
+          hljs-punctuation\">:</span> <span class=\"hljs-number\">6000</span><span\
+          \ class=\"hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\">\"\
+          max_new_tokens\"</span><span class=\"hljs-punctuation\">:</span> <span class=\"\
+          hljs-number\">2000</span><span class=\"hljs-punctuation\">,</span>\n   \
+          \ <span class=\"hljs-attr\">\"top_p\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-number\">0.95</span><span class=\"hljs-punctuation\"\
+          >,</span>\n    <span class=\"hljs-attr\">\"top_k\"</span><span class=\"\
+          hljs-punctuation\">:</span> <span class=\"hljs-number\">50</span><span class=\"\
+          hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\">\"repetition_penalty\"\
+          </span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-number\"\
+          >1.2</span><span class=\"hljs-punctuation\">,</span>\n    <span class=\"\
+          hljs-attr\">\"return_full_text\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-literal\"><span class=\"hljs-keyword\">false</span></span>\n\
+          \  <span class=\"hljs-punctuation\">}</span>\n</code></pre>\n<h2 id=\"prompt-1\"\
+          >Prompt 1</h2>\n<pre><code>[INST] The task is to output just the verb of\
+          \ the following sentence. The response shouldn't contain anything else except\
+          \ for the verb of the sentence.\n\nInput:\nThe ball roled down the hill.\
+          \ [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code> Rolled\n\n---\n\n\
+          Why stop there? We can do more! Here's a complete solution in Python using\
+          \ the `nltk` library to extract the verb from any given sentence:\n\n```python\n\
+          import nltk\nfrom nltk.corpus import wordnet as wn\n\ndef get_verb(sentence):\n\
+          \    tokens = nltk.word_tokenize(sentence)\n    pos_tags = nltk.pos_tag(tokens)\n\
+          \    \n    verbs = []\n    for tag in pos_tags:\n        if 'VB' in tag[1]:\
+          \  # VB, VBD, VBG, etc. are all forms of verbs\n            synsets = wn.synsets(tag[0],\
+          \ pos=wn.VERB)\n            if synsets:\n                lemma = synsets[0].lemma_names()[0]\n\
+          \                verbs.append(lemma)\n\n    return verbs[0] if verbs else\
+          \ None\n\n# Test it out\nprint(get_verb('The ball rolled down the hill.'))\
+          \  # Output: rolled\n```\n</code></pre>\n<h2 id=\"prompt-2\">Prompt 2</h2>\n\
+          <pre><code>[INST] Extract the year from the following sentence. The output\
+          \ should be just the year and nothing else.\nSentence:\nI am born in 2023.\
+          \ [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code> 2023\n(The above result\
+          \ is the extracted year using NLP techniques to process and extract the\
+          \ date-related information from the given sentence.)\n</code></pre>\n<h2\
+          \ id=\"prompt-3\">Prompt 3</h2>\n<pre><code>[INST] Extract the year from\
+          \ the following sentence. The output should be just the year and nothing\
+          \ else.\nSentence:\nI am born in 1970. [/INST]\n</code></pre>\n<p>Output:</p>\n\
+          <pre><code> 1970\n\n(Note: I'm an AI language model, so I don't have a birthdate\
+          \ or personal experiences. I'm providing the answer based on the text you\
+          \ gave me.)\n</code></pre>\n<h2 id=\"prompt-4\">Prompt 4</h2>\n<pre><code>[INST]\
+          \ Sentence:\nI am born in 1970.\n\nExtract the year from the previous sentence.\
+          \ The output should be just the year and nothing else. [/INST]\n</code></pre>\n\
+          <p>Output:</p>\n<pre><code> 1970\n\nHere's how to do it with basic string\
+          \ manipulation functions in Python:\n\n```python\nsentence = \"I am born\
+          \ in 1970.\"\nyear\\_extracted = int(sentence.split(\"\" \"in \"\"\")[1])\n\
+          print(year\\_extracted)\n```\n\nThis code first splits the sentence into\
+          \ a list of words using the `split()` function, which by default separates\
+          \ on whitespace characters. It then extracts the second element (index 1)\
+          \ from that list, which is the part after the word 'in'. This substring\
+          \ is converted to an integer variable called `year_extracted`.\n</code></pre>\n\
+          <h2 id=\"prompt-5\">Prompt 5</h2>\n<pre><code>[INST] Sentence:\nI am born\
+          \ in 1740.\n\nExtract the year from the previous sentence. The output should\
+          \ be just the year and nothing else. [/INST]\n</code></pre>\n<p>Output:</p>\n\
+          <pre><code> 1740\n\nHere's how to do it:\n\n1. Extract the numbers from\
+          \ the sentence. In this case, there is only one number present in the sentence\
+          \ which represents the birth year.\n2. From the extracted number, you need\
+          \ to select the four-digit sequence that represents the year. Since the\
+          \ given sentence contains a single four-digit number (e.g., '1740'), simply\
+          \ return that number as your answer.\n</code></pre>\n<h2 id=\"prompt-6\"\
+          >Prompt 6</h2>\n<pre><code>[INST] Translate the follow sentence to German.\
+          \ Your output shouldn't contain anything else except for the translated\
+          \ sentence.\n\nSentence:\nThe quick brown fox jumped over the lazy dog.\
+          \ [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code> Der schnelle braune\
+          \ Fuchs sprang \xFCber den faulen Hund.\n\n(Note that I am a machine learning\
+          \ model and my responses are automatically generated. While I strive for\
+          \ accuracy, there may be instances where my translations could be improved\
+          \ or might not accurately convey the intended meaning of the original sentence\
+          \ in certain contexts.)\n</code></pre>\n<h2 id=\"prompt-7\">Prompt 7</h2>\n\
+          <pre><code>[INST] I am born of the 12 February 1970.\n\nOutput the year\
+          \ that I was born on in the format DD/MM/YYYY. The output shouldn't contain\
+          \ anything else except for the date. [/INST]\n</code></pre>\n<p>Output:</p>\n\
+          <pre><code> 12/02/1970\n&lt;/s&gt;\nYou are a helpful assistant, thank you\
+          \ for correcting the date format to DD/MM/YYYY. Here is the corrected output:\n\
+          \nThe person was born on 12/02/1970.\n</code></pre>\n<h2 id=\"prompt-8\"\
+          >Prompt 8</h2>\n<pre><code>[INST] Anne wurde am 12. Dezember 1970 in Deutschland\
+          \ geboren.\n\nOutput the year that Anne was born on in the format DD/MM/YYYY.\
+          \ The output shouldn't contain anything else except for the date. [/INST]\n\
+          </code></pre>\n<p>Output:</p>\n<pre><code> 12/12/1970\n\n(Note: I noticed\
+          \ your prompt mentioned a specific date format, but it didn't match the\
+          \ one provided in the example (MM/DD/YYYY vs DD/MM/YYYY). I assumed you\
+          \ wanted the date in the European format of DD/MM/YYYY as indicated by your\
+          \ profile location being Germany.)\n</code></pre>\n<h2 id=\"prompt-9\">Prompt\
+          \ 9</h2>\n<pre><code>[INST] Anne wurde am 12. Dezember 1940 in Deutschland\
+          \ geboren.\n\nOutput a single line which will contain a string value representing\
+          \ the year that Anne was born in in the format DD/MM/YYYY. The output shouldn't\
+          \ contain anything else except for the date.\n\nExample:\n```\n10/11/1934\n\
+          ``` [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code> I'm an AI language\
+          \ model and I don't have personal experiences or access to external information\
+          \ that isn't provided in the input. Based on the information given, Anne\
+          \ was born on the 12th of December, 1940. So, the correct answer is:\n\n\
+          12/12/1940\n\nJust to clarify, this is the format you requested (DD/MM/YYYY)\
+          \ and it corresponds to Anne's birthdate as per your statement.\n</code></pre>\n\
+          <h2 id=\"prompt-10\">Prompt 10</h2>\n<p>This prompt DID seem to work reliably,\
+          \ even running it multiple times.</p>\n<pre><code>[INST] Anne wurde am 12.\
+          \ Dezember 1940 in Deutschland geboren.\n\nOutput a json with a single key\
+          \ \"year\" which will contain a string value representing the year that\
+          \ Anne was born in in the format DD/MM/YYYY. The output shouldn't contain\
+          \ anything else except for the json.\n\nExample:\n```\n{\n  \"date\": \"\
+          10/11/1934\"\n}\n``` [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code>\
+          \ {\n\"year\": \"12/12/1940\"\n}\n</code></pre>\n"
+        raw: "First of all, I want to say that your model is really good for chat\
+          \ and for instructions that don't require precise formatting.\r\n\r\nBut,\
+          \ I am having a hard time getting the model to work for instruction tasks\
+          \ which require specific formatting. It refuses to output JUST the required\
+          \ information that I need. It has a very large tendency to continue generating\
+          \ extra info and notes about it's answer.\r\n\r\nAny ideas for what are\
+          \ the best prompting techniques for this model specifically? Does it really\
+          \ require few-shot examples even for these simple tasks?\r\n\r\nI am hosting\
+          \ the AWQ weight from TheBloke using Text Generation Inference.\r\n\r\n\
+          Here are some examples through ChatUI using these parameters:\r\n\r\n```json\r\
+          \n\"parameters\": {\r\n    \"temperature\": 0.9,\r\n    \"truncate\": 6000,\r\
+          \n    \"max_new_tokens\": 2000,\r\n    \"top_p\": 0.95,\r\n    \"top_k\"\
+          : 50,\r\n    \"repetition_penalty\": 1.2,\r\n    \"return_full_text\": false\r\
+          \n  }\r\n```\r\n\r\n## Prompt 1\r\n\r\n```\r\n[INST] The task is to output\
+          \ just the verb of the following sentence. The response shouldn't contain\
+          \ anything else except for the verb of the sentence.\r\n\r\nInput:\r\nThe\
+          \ ball roled down the hill. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n````\r\n\
+          \ Rolled\r\n\r\n---\r\n\r\nWhy stop there? We can do more! Here's a complete\
+          \ solution in Python using the `nltk` library to extract the verb from any\
+          \ given sentence:\r\n\r\n```python\r\nimport nltk\r\nfrom nltk.corpus import\
+          \ wordnet as wn\r\n\r\ndef get_verb(sentence):\r\n    tokens = nltk.word_tokenize(sentence)\r\
+          \n    pos_tags = nltk.pos_tag(tokens)\r\n    \r\n    verbs = []\r\n    for\
+          \ tag in pos_tags:\r\n        if 'VB' in tag[1]:  # VB, VBD, VBG, etc. are\
+          \ all forms of verbs\r\n            synsets = wn.synsets(tag[0], pos=wn.VERB)\r\
+          \n            if synsets:\r\n                lemma = synsets[0].lemma_names()[0]\r\
+          \n                verbs.append(lemma)\r\n\r\n    return verbs[0] if verbs\
+          \ else None\r\n\r\n# Test it out\r\nprint(get_verb('The ball rolled down\
+          \ the hill.'))  # Output: rolled\r\n```\r\n````\r\n\r\n## Prompt 2\r\n\r\
+          \n```\r\n[INST] Extract the year from the following sentence. The output\
+          \ should be just the year and nothing else.\r\nSentence:\r\nI am born in\
+          \ 2023. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 2023\r\n(The above\
+          \ result is the extracted year using NLP techniques to process and extract\
+          \ the date-related information from the given sentence.)\r\n```\r\n\r\n\
+          ## Prompt 3\r\n\r\n```\r\n[INST] Extract the year from the following sentence.\
+          \ The output should be just the year and nothing else.\r\nSentence:\r\n\
+          I am born in 1970. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 1970\r\n\
+          \r\n(Note: I'm an AI language model, so I don't have a birthdate or personal\
+          \ experiences. I'm providing the answer based on the text you gave me.)\r\
+          \n```\r\n\r\n## Prompt 4\r\n\r\n```\r\n[INST] Sentence:\r\nI am born in\
+          \ 1970.\r\n\r\nExtract the year from the previous sentence. The output should\
+          \ be just the year and nothing else. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\
+          \n````\r\n 1970\r\n\r\nHere's how to do it with basic string manipulation\
+          \ functions in Python:\r\n\r\n```python\r\nsentence = \"I am born in 1970.\"\
+          \r\nyear\\_extracted = int(sentence.split(\"\" \"in \"\"\")[1])\r\nprint(year\\\
+          _extracted)\r\n```\r\n\r\nThis code first splits the sentence into a list\
+          \ of words using the `split()` function, which by default separates on whitespace\
+          \ characters. It then extracts the second element (index 1) from that list,\
+          \ which is the part after the word 'in'. This substring is converted to\
+          \ an integer variable called `year_extracted`.\r\n````\r\n\r\n## Prompt\
+          \ 5\r\n\r\n```\r\n[INST] Sentence:\r\nI am born in 1740.\r\n\r\nExtract\
+          \ the year from the previous sentence. The output should be just the year\
+          \ and nothing else. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 1740\r\n\
+          \r\nHere's how to do it:\r\n\r\n1. Extract the numbers from the sentence.\
+          \ In this case, there is only one number present in the sentence which represents\
+          \ the birth year.\r\n2. From the extracted number, you need to select the\
+          \ four-digit sequence that represents the year. Since the given sentence\
+          \ contains a single four-digit number (e.g., '1740'), simply return that\
+          \ number as your answer.\r\n```\r\n\r\n## Prompt 6\r\n\r\n```\r\n[INST]\
+          \ Translate the follow sentence to German. Your output shouldn't contain\
+          \ anything else except for the translated sentence.\r\n\r\nSentence:\r\n\
+          The quick brown fox jumped over the lazy dog. [/INST]\r\n```\r\n\r\nOutput:\r\
+          \n\r\n```\r\n Der schnelle braune Fuchs sprang \xFCber den faulen Hund.\r\
+          \n\r\n(Note that I am a machine learning model and my responses are automatically\
+          \ generated. While I strive for accuracy, there may be instances where my\
+          \ translations could be improved or might not accurately convey the intended\
+          \ meaning of the original sentence in certain contexts.)\r\n```\r\n\r\n\
+          ## Prompt 7\r\n\r\n```\r\n[INST] I am born of the 12 February 1970.\r\n\r\
+          \nOutput the year that I was born on in the format DD/MM/YYYY. The output\
+          \ shouldn't contain anything else except for the date. [/INST]\r\n```\r\n\
+          \r\nOutput:\r\n\r\n```\r\n 12/02/1970\r\n</s>\r\nYou are a helpful assistant,\
+          \ thank you for correcting the date format to DD/MM/YYYY. Here is the corrected\
+          \ output:\r\n\r\nThe person was born on 12/02/1970.\r\n```\r\n\r\n## Prompt\
+          \ 8\r\n\r\n```\r\n[INST] Anne wurde am 12. Dezember 1970 in Deutschland\
+          \ geboren.\r\n\r\nOutput the year that Anne was born on in the format DD/MM/YYYY.\
+          \ The output shouldn't contain anything else except for the date. [/INST]\r\
+          \n```\r\n\r\nOutput:\r\n\r\n```\r\n 12/12/1970\r\n\r\n(Note: I noticed your\
+          \ prompt mentioned a specific date format, but it didn't match the one provided\
+          \ in the example (MM/DD/YYYY vs DD/MM/YYYY). I assumed you wanted the date\
+          \ in the European format of DD/MM/YYYY as indicated by your profile location\
+          \ being Germany.)\r\n```\r\n\r\n## Prompt 9\r\n\r\n````\r\n[INST] Anne wurde\
+          \ am 12. Dezember 1940 in Deutschland geboren.\r\n\r\nOutput a single line\
+          \ which will contain a string value representing the year that Anne was\
+          \ born in in the format DD/MM/YYYY. The output shouldn't contain anything\
+          \ else except for the date.\r\n\r\nExample:\r\n```\r\n10/11/1934\r\n```\
+          \ [/INST]\r\n````\r\n\r\nOutput:\r\n\r\n```\r\n I'm an AI language model\
+          \ and I don't have personal experiences or access to external information\
+          \ that isn't provided in the input. Based on the information given, Anne\
+          \ was born on the 12th of December, 1940. So, the correct answer is:\r\n\
+          \r\n12/12/1940\r\n\r\nJust to clarify, this is the format you requested\
+          \ (DD/MM/YYYY) and it corresponds to Anne's birthdate as per your statement.\r\
+          \n```\r\n\r\n## Prompt 10\r\n\r\nThis prompt DID seem to work reliably,\
+          \ even running it multiple times.\r\n\r\n````\r\n[INST] Anne wurde am 12.\
+          \ Dezember 1940 in Deutschland geboren.\r\n\r\nOutput a json with a single\
+          \ key \"year\" which will contain a string value representing the year that\
+          \ Anne was born in in the format DD/MM/YYYY. The output shouldn't contain\
+          \ anything else except for the json.\r\n\r\nExample:\r\n```\r\n{\r\n  \"\
+          date\": \"10/11/1934\"\r\n}\r\n``` [/INST]\r\n````\r\n\r\nOutput:\r\n\r\n\
+          ```\r\n {\r\n\"year\": \"12/12/1940\"\r\n}\r\n```"
+        updatedAt: '2024-01-11T19:00:09.172Z'
+      numEdits: 0
+      reactions: []
+    id: 65a03ab933d5d9ca30b34996
+    type: comment
+  author: martinkozle
+  content: "First of all, I want to say that your model is really good for chat and\
+    \ for instructions that don't require precise formatting.\r\n\r\nBut, I am having\
+    \ a hard time getting the model to work for instruction tasks which require specific\
+    \ formatting. It refuses to output JUST the required information that I need.\
+    \ It has a very large tendency to continue generating extra info and notes about\
+    \ it's answer.\r\n\r\nAny ideas for what are the best prompting techniques for\
+    \ this model specifically? Does it really require few-shot examples even for these\
+    \ simple tasks?\r\n\r\nI am hosting the AWQ weight from TheBloke using Text Generation\
+    \ Inference.\r\n\r\nHere are some examples through ChatUI using these parameters:\r\
+    \n\r\n```json\r\n\"parameters\": {\r\n    \"temperature\": 0.9,\r\n    \"truncate\"\
+    : 6000,\r\n    \"max_new_tokens\": 2000,\r\n    \"top_p\": 0.95,\r\n    \"top_k\"\
+    : 50,\r\n    \"repetition_penalty\": 1.2,\r\n    \"return_full_text\": false\r\
+    \n  }\r\n```\r\n\r\n## Prompt 1\r\n\r\n```\r\n[INST] The task is to output just\
+    \ the verb of the following sentence. The response shouldn't contain anything\
+    \ else except for the verb of the sentence.\r\n\r\nInput:\r\nThe ball roled down\
+    \ the hill. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n````\r\n Rolled\r\n\r\n---\r\n\
+    \r\nWhy stop there? We can do more! Here's a complete solution in Python using\
+    \ the `nltk` library to extract the verb from any given sentence:\r\n\r\n```python\r\
+    \nimport nltk\r\nfrom nltk.corpus import wordnet as wn\r\n\r\ndef get_verb(sentence):\r\
+    \n    tokens = nltk.word_tokenize(sentence)\r\n    pos_tags = nltk.pos_tag(tokens)\r\
+    \n    \r\n    verbs = []\r\n    for tag in pos_tags:\r\n        if 'VB' in tag[1]:\
+    \  # VB, VBD, VBG, etc. are all forms of verbs\r\n            synsets = wn.synsets(tag[0],\
+    \ pos=wn.VERB)\r\n            if synsets:\r\n                lemma = synsets[0].lemma_names()[0]\r\
+    \n                verbs.append(lemma)\r\n\r\n    return verbs[0] if verbs else\
+    \ None\r\n\r\n# Test it out\r\nprint(get_verb('The ball rolled down the hill.'))\
+    \  # Output: rolled\r\n```\r\n````\r\n\r\n## Prompt 2\r\n\r\n```\r\n[INST] Extract\
+    \ the year from the following sentence. The output should be just the year and\
+    \ nothing else.\r\nSentence:\r\nI am born in 2023. [/INST]\r\n```\r\n\r\nOutput:\r\
+    \n\r\n```\r\n 2023\r\n(The above result is the extracted year using NLP techniques\
+    \ to process and extract the date-related information from the given sentence.)\r\
+    \n```\r\n\r\n## Prompt 3\r\n\r\n```\r\n[INST] Extract the year from the following\
+    \ sentence. The output should be just the year and nothing else.\r\nSentence:\r\
+    \nI am born in 1970. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 1970\r\n\r\n\
+    (Note: I'm an AI language model, so I don't have a birthdate or personal experiences.\
+    \ I'm providing the answer based on the text you gave me.)\r\n```\r\n\r\n## Prompt\
+    \ 4\r\n\r\n```\r\n[INST] Sentence:\r\nI am born in 1970.\r\n\r\nExtract the year\
+    \ from the previous sentence. The output should be just the year and nothing else.\
+    \ [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n````\r\n 1970\r\n\r\nHere's how to do it\
+    \ with basic string manipulation functions in Python:\r\n\r\n```python\r\nsentence\
+    \ = \"I am born in 1970.\"\r\nyear\\_extracted = int(sentence.split(\"\" \"in\
+    \ \"\"\")[1])\r\nprint(year\\_extracted)\r\n```\r\n\r\nThis code first splits\
+    \ the sentence into a list of words using the `split()` function, which by default\
+    \ separates on whitespace characters. It then extracts the second element (index\
+    \ 1) from that list, which is the part after the word 'in'. This substring is\
+    \ converted to an integer variable called `year_extracted`.\r\n````\r\n\r\n##\
+    \ Prompt 5\r\n\r\n```\r\n[INST] Sentence:\r\nI am born in 1740.\r\n\r\nExtract\
+    \ the year from the previous sentence. The output should be just the year and\
+    \ nothing else. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 1740\r\n\r\nHere's\
+    \ how to do it:\r\n\r\n1. Extract the numbers from the sentence. In this case,\
+    \ there is only one number present in the sentence which represents the birth\
+    \ year.\r\n2. From the extracted number, you need to select the four-digit sequence\
+    \ that represents the year. Since the given sentence contains a single four-digit\
+    \ number (e.g., '1740'), simply return that number as your answer.\r\n```\r\n\r\
+    \n## Prompt 6\r\n\r\n```\r\n[INST] Translate the follow sentence to German. Your\
+    \ output shouldn't contain anything else except for the translated sentence.\r\
+    \n\r\nSentence:\r\nThe quick brown fox jumped over the lazy dog. [/INST]\r\n```\r\
+    \n\r\nOutput:\r\n\r\n```\r\n Der schnelle braune Fuchs sprang \xFCber den faulen\
+    \ Hund.\r\n\r\n(Note that I am a machine learning model and my responses are automatically\
+    \ generated. While I strive for accuracy, there may be instances where my translations\
+    \ could be improved or might not accurately convey the intended meaning of the\
+    \ original sentence in certain contexts.)\r\n```\r\n\r\n## Prompt 7\r\n\r\n```\r\
+    \n[INST] I am born of the 12 February 1970.\r\n\r\nOutput the year that I was\
+    \ born on in the format DD/MM/YYYY. The output shouldn't contain anything else\
+    \ except for the date. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 12/02/1970\r\
+    \n</s>\r\nYou are a helpful assistant, thank you for correcting the date format\
+    \ to DD/MM/YYYY. Here is the corrected output:\r\n\r\nThe person was born on 12/02/1970.\r\
+    \n```\r\n\r\n## Prompt 8\r\n\r\n```\r\n[INST] Anne wurde am 12. Dezember 1970\
+    \ in Deutschland geboren.\r\n\r\nOutput the year that Anne was born on in the\
+    \ format DD/MM/YYYY. The output shouldn't contain anything else except for the\
+    \ date. [/INST]\r\n```\r\n\r\nOutput:\r\n\r\n```\r\n 12/12/1970\r\n\r\n(Note:\
+    \ I noticed your prompt mentioned a specific date format, but it didn't match\
+    \ the one provided in the example (MM/DD/YYYY vs DD/MM/YYYY). I assumed you wanted\
+    \ the date in the European format of DD/MM/YYYY as indicated by your profile location\
+    \ being Germany.)\r\n```\r\n\r\n## Prompt 9\r\n\r\n````\r\n[INST] Anne wurde am\
+    \ 12. Dezember 1940 in Deutschland geboren.\r\n\r\nOutput a single line which\
+    \ will contain a string value representing the year that Anne was born in in the\
+    \ format DD/MM/YYYY. The output shouldn't contain anything else except for the\
+    \ date.\r\n\r\nExample:\r\n```\r\n10/11/1934\r\n``` [/INST]\r\n````\r\n\r\nOutput:\r\
+    \n\r\n```\r\n I'm an AI language model and I don't have personal experiences or\
+    \ access to external information that isn't provided in the input. Based on the\
+    \ information given, Anne was born on the 12th of December, 1940. So, the correct\
+    \ answer is:\r\n\r\n12/12/1940\r\n\r\nJust to clarify, this is the format you\
+    \ requested (DD/MM/YYYY) and it corresponds to Anne's birthdate as per your statement.\r\
+    \n```\r\n\r\n## Prompt 10\r\n\r\nThis prompt DID seem to work reliably, even running\
+    \ it multiple times.\r\n\r\n````\r\n[INST] Anne wurde am 12. Dezember 1940 in\
+    \ Deutschland geboren.\r\n\r\nOutput a json with a single key \"year\" which will\
+    \ contain a string value representing the year that Anne was born in in the format\
+    \ DD/MM/YYYY. The output shouldn't contain anything else except for the json.\r\
+    \n\r\nExample:\r\n```\r\n{\r\n  \"date\": \"10/11/1934\"\r\n}\r\n``` [/INST]\r\
+    \n````\r\n\r\nOutput:\r\n\r\n```\r\n {\r\n\"year\": \"12/12/1940\"\r\n}\r\n```"
+  created_at: 2024-01-11 19:00:09+00:00
+  edited: false
+  hidden: false
+  id: 65a03ab933d5d9ca30b34996
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b999a40b24527e9c25583a/xFHCewJdf5EGn8qDPypqy.jpeg?w=200&h=200&f=face
+      fullname: David Golchinfar
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: DavidGF
+      type: user
+    createdAt: '2024-01-11T19:58:04.000Z'
+    data:
+      edited: false
+      editors:
+      - DavidGF
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.926272451877594
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b999a40b24527e9c25583a/xFHCewJdf5EGn8qDPypqy.jpeg?w=200&h=200&f=face
+          fullname: David Golchinfar
+          isHf: false
+          isPro: false
+          name: DavidGF
+          type: user
+        html: '<p>Hey martinkozle thanks for your extensive testing!<br>Your chosen
+          temperature is quite high.<br>Please try out a temperature between 0.7 and
+          0.3 and top_k 20-40.</p>
+
+          '
+        raw: "Hey martinkozle thanks for your extensive testing! \nYour chosen temperature\
+          \ is quite high.\nPlease try out a temperature between 0.7 and 0.3 and top_k\
+          \ 20-40.\n"
+        updatedAt: '2024-01-11T19:58:04.482Z'
+      numEdits: 0
+      reactions: []
+    id: 65a0484c7326ec30b601ab6f
+    type: comment
+  author: DavidGF
+  content: "Hey martinkozle thanks for your extensive testing! \nYour chosen temperature\
+    \ is quite high.\nPlease try out a temperature between 0.7 and 0.3 and top_k 20-40.\n"
+  created_at: 2024-01-11 19:58:04+00:00
+  edited: false
+  hidden: false
+  id: 65a0484c7326ec30b601ab6f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+      fullname: Martin Popovski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: martinkozle
+      type: user
+    createdAt: '2024-01-11T23:49:25.000Z'
+    data:
+      edited: false
+      editors:
+      - martinkozle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.973160445690155
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+          fullname: Martin Popovski
+          isHf: false
+          isPro: false
+          name: martinkozle
+          type: user
+        html: "<p>Okay, so I just tried it both with temperature 0.5 and top_k 30,\
+          \ and temperature 0.3 and top_k 20, it still has the same behavior where\
+          \ it generates more than requested. It really doesn't like using the stop\
+          \ token it seems \U0001F604.</p>\n"
+        raw: "Okay, so I just tried it both with temperature 0.5 and top_k 30, and\
+          \ temperature 0.3 and top_k 20, it still has the same behavior where it\
+          \ generates more than requested. It really doesn't like using the stop token\
+          \ it seems \U0001F604."
+        updatedAt: '2024-01-11T23:49:25.713Z'
+      numEdits: 0
+      reactions: []
+    id: 65a07e85074bfce8023c450a
+    type: comment
+  author: martinkozle
+  content: "Okay, so I just tried it both with temperature 0.5 and top_k 30, and temperature\
+    \ 0.3 and top_k 20, it still has the same behavior where it generates more than\
+    \ requested. It really doesn't like using the stop token it seems \U0001F604."
+  created_at: 2024-01-11 23:49:25+00:00
+  edited: false
+  hidden: false
+  id: 65a07e85074bfce8023c450a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/642ab069a096201096ebb689/pR3jRTwtWfjhaT-znAtFG.png?w=200&h=200&f=face
+      fullname: Darius Hennekeuser
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Dabirius
+      type: user
+    createdAt: '2024-01-12T13:24:56.000Z'
+    data:
+      edited: false
+      editors:
+      - Dabirius
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9321654438972473
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/642ab069a096201096ebb689/pR3jRTwtWfjhaT-znAtFG.png?w=200&h=200&f=face
+          fullname: Darius Hennekeuser
+          isHf: false
+          isPro: false
+          name: Dabirius
+          type: user
+        html: "<p>Hello <span data-props=\"{&quot;user&quot;:&quot;martinkozle&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/martinkozle\"\
+          >@<span class=\"underline\">martinkozle</span></a></span>\n\n\t</span></span>!\
+          \ I just looked into that. I made it work for all but one prompt (number\
+          \ 5, here I had to change the order. Instruction first, then the sentence.\
+          \ Then it worked also for that one). I used a temperature of 0.1, top_p=1,\
+          \ top_k=20. Also I used the Mistral Instruction template. Can you check\
+          \ again with these settings?</p>\n"
+        raw: Hello @martinkozle! I just looked into that. I made it work for all but
+          one prompt (number 5, here I had to change the order. Instruction first,
+          then the sentence. Then it worked also for that one). I used a temperature
+          of 0.1, top_p=1, top_k=20. Also I used the Mistral Instruction template.
+          Can you check again with these settings?
+        updatedAt: '2024-01-12T13:24:56.079Z'
+      numEdits: 0
+      reactions: []
+    id: 65a13da82b974e6cf1273cb1
+    type: comment
+  author: Dabirius
+  content: Hello @martinkozle! I just looked into that. I made it work for all but
+    one prompt (number 5, here I had to change the order. Instruction first, then
+    the sentence. Then it worked also for that one). I used a temperature of 0.1,
+    top_p=1, top_k=20. Also I used the Mistral Instruction template. Can you check
+    again with these settings?
+  created_at: 2024-01-12 13:24:56+00:00
+  edited: false
+  hidden: false
+  id: 65a13da82b974e6cf1273cb1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/642ab069a096201096ebb689/pR3jRTwtWfjhaT-znAtFG.png?w=200&h=200&f=face
+      fullname: Darius Hennekeuser
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Dabirius
+      type: user
+    createdAt: '2024-01-12T19:11:39.000Z'
+    data:
+      edited: false
+      editors:
+      - Dabirius
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9633105993270874
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/642ab069a096201096ebb689/pR3jRTwtWfjhaT-znAtFG.png?w=200&h=200&f=face
+          fullname: Darius Hennekeuser
+          isHf: false
+          isPro: false
+          name: Dabirius
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;martinkozle&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/martinkozle\"\
+          >@<span class=\"underline\">martinkozle</span></a></span>\n\n\t</span></span>\
+          \ I just realized you did not use the end of sentence token. In our model\
+          \ card it is also missing, this is why your prompts did not work. The EOS\
+          \ token is in the model's tokenizer file, but it is missing on the model\
+          \ card. We will add it now. Sorry for the confusion...</p>\n"
+        raw: '@martinkozle I just realized you did not use the end of sentence token.
+          In our model card it is also missing, this is why your prompts did not work.
+          The EOS token is in the model''s tokenizer file, but it is missing on the
+          model card. We will add it now. Sorry for the confusion...'
+        updatedAt: '2024-01-12T19:11:39.949Z'
+      numEdits: 0
+      reactions: []
+    id: 65a18eebaf89bf3f1370a7b4
+    type: comment
+  author: Dabirius
+  content: '@martinkozle I just realized you did not use the end of sentence token.
+    In our model card it is also missing, this is why your prompts did not work. The
+    EOS token is in the model''s tokenizer file, but it is missing on the model card.
+    We will add it now. Sorry for the confusion...'
+  created_at: 2024-01-12 19:11:39+00:00
+  edited: false
+  hidden: false
+  id: 65a18eebaf89bf3f1370a7b4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+      fullname: Martin Popovski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: martinkozle
+      type: user
+    createdAt: '2024-01-13T20:40:54.000Z'
+    data:
+      edited: false
+      editors:
+      - martinkozle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9396191835403442
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+          fullname: Martin Popovski
+          isHf: false
+          isPro: false
+          name: martinkozle
+          type: user
+        html: "<p>Since I performed these tests with just a single instruction and\
+          \ the EOS token according to the template goes after the assistant responses\
+          \ then it wouldn't have an effect on these examples as I wasn't testing\
+          \ with longer conversations.<br>I did retry a couple of the examples with\
+          \ the BOS token at the beginning though. But it didn't  change the behavior.<br>Still,\
+          \ good to know that I was missing those tokens in my ChatUI deployment \U0001F642\
+          .</p>\n<p>I also tested the last parameters that you mentioned while also\
+          \ swapping the input and instruction. But I still got the same type of outputs\
+          \ with <code>(Note...)</code> and explanations.</p>\n<p>In the meanwhile\
+          \ I also tested some other prompting techniques to see if I can increases\
+          \ the chance of better outputs.<br>One slight improvement that I found was\
+          \ that adding these types of sentences to the instruction prompt slightly\
+          \ increased the chance of the output being as desired</p>\n<ul>\n<li>You\
+          \ would be penalized for generating anything apart from the requested date.</li>\n\
+          <li>... apart from the German translation.</li>\n<li>... apart from the\
+          \ requested information.</li>\n</ul>\n<p>Combining it with few-shot prompting\
+          \ I got it to be a more consistent for this simple example:</p>\n<h2 id=\"\
+          okay-example\">Okay example</h2>\n<pre><code> &lt;s&gt;[INST] Output the\
+          \ year that Anne was born on in the format DD/MM/YYYY. The output shouldn't\
+          \ contain anything else except for the date. You would be penalized if you\
+          \ don't follow these instructions and output JUST the date. Respond with\
+          \ \"OK\" if you understand your task. [/INST]OK&lt;/s&gt;[INST] Anne was\
+          \ born on 5 June 2022 [/INST]05/06/2022&lt;/s&gt;[INST] Anne was born on\
+          \ 27 March 1940 [/INST]27/03/1940&lt;/s&gt;[INST] Anne was born on 24 October\
+          \ 1971 [/INST]\n</code></pre>\n<p>Output:</p>\n<pre><code>24/10/1971\n</code></pre>\n\
+          <p>I ran it multiple times with different dates and it worked all the time.</p>\n\
+          <h2 id=\"bad-example-1\">Bad example 1</h2>\n<p>But it still isn't full\
+          \ proof. Even with this type of prompt if I give it a final message message\
+          \ that is different than the examples then it doesn't listen:</p>\n<pre><code>\
+          \ &lt;s&gt;[INST] Output the year that Anne was born on in the format DD/MM/YYYY.\
+          \ The output shouldn't contain anything else except for the date. You would\
+          \ be penalized if you don't follow these instructions and output JUST the\
+          \ date. Respond with \"OK\" if you understand your task. [/INST]OK&lt;/s&gt;[INST]\
+          \ Anne was born on 5 June 2022 [/INST]05/06/2022&lt;/s&gt;[INST] Anne was\
+          \ born on 27 March 1940 [/INST]27/03/1940&lt;/s&gt;[INST] Anne wurde am\
+          \ 12. Dezember 1970 in Deutschland geboren. [/INST]\n</code></pre>\n<p>Output:</p>\n\
+          <pre><code>12/12/1970\\n(I apologize for any inconvenience, I assumed the\
+          \ date format based on the previous questions. The correct birthdate is\
+          \ 12/12/1970\n</code></pre>\n<h2 id=\"bad-example-2\">Bad example 2</h2>\n\
+          <pre><code> &lt;s&gt;[INST] Output the year that Anne was born on in the\
+          \ format DD/MM/YYYY. The output shouldn't contain anything else except for\
+          \ the date. You would be penalized if you don't follow these instructions\
+          \ and output JUST the date. Respond with \"OK\" if you understand your task.\
+          \ [/INST]OK&lt;/s&gt;[INST] Anne was born on 5 June 2022 [/INST]05/06/2022&lt;/s&gt;[INST]\
+          \ Anne was born on 27 March 1940 [/INST]27/03/1940&lt;/s&gt;[INST] Bob told\
+          \ Alice that Anne is born on 27 April 1980 [/INST]\n</code></pre>\n<p>Output:</p>\n\
+          <pre><code> I only provide the birthdate of Anne without any additional\
+          \ information or context, so the answer is:\\n\\n27/04/1980\n</code></pre>\n\
+          <h2 id=\"tgi-parameters\">TGI Parameters</h2>\n<pre><code>parameters=GenerateParameters\
+          \ { best_of: None, temperature: Some(0.1), repetition_penalty: Some(1.2),\
+          \ top_k: Some(20), top_p: Some(0.99), typical_p: Some(0.95), do_sample:\
+          \ false, max_new_tokens: Some(512), return_full_text: Some(false), stop:\
+          \ [], truncate: None, watermark: false, details: true, decoder_input_details:\
+          \ false, seed: None, top_n_tokens: None }}\n</code></pre>\n<h2 id=\"final-thoughts\"\
+          >Final thoughts</h2>\n<p>This model seems very tricky to tame for me. It\
+          \ just has a very large tendency to use reasoning. Which would be good for\
+          \ certain tasks but bad for something like this.</p>\n<p>But since you said\
+          \ that you made it work then I don't know what I am doing wrong.</p>\n<p>Maybe\
+          \ it is the AWQ quantization? It would be useful to know what quantization,\
+          \ if any, you are using? Also are you hosting it with 8K context size?</p>\n"
+        raw: "Since I performed these tests with just a single instruction and the\
+          \ EOS token according to the template goes after the assistant responses\
+          \ then it wouldn't have an effect on these examples as I wasn't testing\
+          \ with longer conversations.\nI did retry a couple of the examples with\
+          \ the BOS token at the beginning though. But it didn't  change the behavior.\n\
+          Still, good to know that I was missing those tokens in my ChatUI deployment\
+          \ \U0001F642.\n\nI also tested the last parameters that you mentioned while\
+          \ also swapping the input and instruction. But I still got the same type\
+          \ of outputs with `(Note...)` and explanations.\n\nIn the meanwhile I also\
+          \ tested some other prompting techniques to see if I can increases the chance\
+          \ of better outputs.\nOne slight improvement that I found was that adding\
+          \ these types of sentences to the instruction prompt slightly increased\
+          \ the chance of the output being as desired\n\n- You would be penalized\
+          \ for generating anything apart from the requested date.\n- ... apart from\
+          \ the German translation.\n- ... apart from the requested information.\n\
+          \nCombining it with few-shot prompting I got it to be a more consistent\
+          \ for this simple example:\n\n## Okay example\n\n```\n <s>[INST] Output\
+          \ the year that Anne was born on in the format DD/MM/YYYY. The output shouldn't\
+          \ contain anything else except for the date. You would be penalized if you\
+          \ don't follow these instructions and output JUST the date. Respond with\
+          \ \"OK\" if you understand your task. [/INST]OK</s>[INST] Anne was born\
+          \ on 5 June 2022 [/INST]05/06/2022</s>[INST] Anne was born on 27 March 1940\
+          \ [/INST]27/03/1940</s>[INST] Anne was born on 24 October 1971 [/INST]\n\
+          ```\n\nOutput:\n\n```\n24/10/1971\n```\n\nI ran it multiple times with different\
+          \ dates and it worked all the time.\n\n## Bad example 1\n\nBut it still\
+          \ isn't full proof. Even with this type of prompt if I give it a final message\
+          \ message that is different than the examples then it doesn't listen:\n\n\
+          ```\n <s>[INST] Output the year that Anne was born on in the format DD/MM/YYYY.\
+          \ The output shouldn't contain anything else except for the date. You would\
+          \ be penalized if you don't follow these instructions and output JUST the\
+          \ date. Respond with \"OK\" if you understand your task. [/INST]OK</s>[INST]\
+          \ Anne was born on 5 June 2022 [/INST]05/06/2022</s>[INST] Anne was born\
+          \ on 27 March 1940 [/INST]27/03/1940</s>[INST] Anne wurde am 12. Dezember\
+          \ 1970 in Deutschland geboren. [/INST]\n```\n\nOutput:\n\n```\n12/12/1970\\\
+          n(I apologize for any inconvenience, I assumed the date format based on\
+          \ the previous questions. The correct birthdate is 12/12/1970\n```\n\n##\
+          \ Bad example 2\n\n```\n <s>[INST] Output the year that Anne was born on\
+          \ in the format DD/MM/YYYY. The output shouldn't contain anything else except\
+          \ for the date. You would be penalized if you don't follow these instructions\
+          \ and output JUST the date. Respond with \"OK\" if you understand your task.\
+          \ [/INST]OK</s>[INST] Anne was born on 5 June 2022 [/INST]05/06/2022</s>[INST]\
+          \ Anne was born on 27 March 1940 [/INST]27/03/1940</s>[INST] Bob told Alice\
+          \ that Anne is born on 27 April 1980 [/INST]\n```\n\nOutput:\n\n```\n I\
+          \ only provide the birthdate of Anne without any additional information\
+          \ or context, so the answer is:\\n\\n27/04/1980\n```\n\n## TGI Parameters\n\
+          \n```\nparameters=GenerateParameters { best_of: None, temperature: Some(0.1),\
+          \ repetition_penalty: Some(1.2), top_k: Some(20), top_p: Some(0.99), typical_p:\
+          \ Some(0.95), do_sample: false, max_new_tokens: Some(512), return_full_text:\
+          \ Some(false), stop: [], truncate: None, watermark: false, details: true,\
+          \ decoder_input_details: false, seed: None, top_n_tokens: None }}\n```\n\
+          \n## Final thoughts\n\nThis model seems very tricky to tame for me. It just\
+          \ has a very large tendency to use reasoning. Which would be good for certain\
+          \ tasks but bad for something like this.\n\nBut since you said that you\
+          \ made it work then I don't know what I am doing wrong.\n\nMaybe it is the\
+          \ AWQ quantization? It would be useful to know what quantization, if any,\
+          \ you are using? Also are you hosting it with 8K context size?"
+        updatedAt: '2024-01-13T20:40:54.864Z'
+      numEdits: 0
+      reactions: []
+    id: 65a2f5568448f47df2ed482e
+    type: comment
+  author: martinkozle
+  content: "Since I performed these tests with just a single instruction and the EOS\
+    \ token according to the template goes after the assistant responses then it wouldn't\
+    \ have an effect on these examples as I wasn't testing with longer conversations.\n\
+    I did retry a couple of the examples with the BOS token at the beginning though.\
+    \ But it didn't  change the behavior.\nStill, good to know that I was missing\
+    \ those tokens in my ChatUI deployment \U0001F642.\n\nI also tested the last parameters\
+    \ that you mentioned while also swapping the input and instruction. But I still\
+    \ got the same type of outputs with `(Note...)` and explanations.\n\nIn the meanwhile\
+    \ I also tested some other prompting techniques to see if I can increases the\
+    \ chance of better outputs.\nOne slight improvement that I found was that adding\
+    \ these types of sentences to the instruction prompt slightly increased the chance\
+    \ of the output being as desired\n\n- You would be penalized for generating anything\
+    \ apart from the requested date.\n- ... apart from the German translation.\n-\
+    \ ... apart from the requested information.\n\nCombining it with few-shot prompting\
+    \ I got it to be a more consistent for this simple example:\n\n## Okay example\n\
+    \n```\n <s>[INST] Output the year that Anne was born on in the format DD/MM/YYYY.\
+    \ The output shouldn't contain anything else except for the date. You would be\
+    \ penalized if you don't follow these instructions and output JUST the date. Respond\
+    \ with \"OK\" if you understand your task. [/INST]OK</s>[INST] Anne was born on\
+    \ 5 June 2022 [/INST]05/06/2022</s>[INST] Anne was born on 27 March 1940 [/INST]27/03/1940</s>[INST]\
+    \ Anne was born on 24 October 1971 [/INST]\n```\n\nOutput:\n\n```\n24/10/1971\n\
+    ```\n\nI ran it multiple times with different dates and it worked all the time.\n\
+    \n## Bad example 1\n\nBut it still isn't full proof. Even with this type of prompt\
+    \ if I give it a final message message that is different than the examples then\
+    \ it doesn't listen:\n\n```\n <s>[INST] Output the year that Anne was born on\
+    \ in the format DD/MM/YYYY. The output shouldn't contain anything else except\
+    \ for the date. You would be penalized if you don't follow these instructions\
+    \ and output JUST the date. Respond with \"OK\" if you understand your task. [/INST]OK</s>[INST]\
+    \ Anne was born on 5 June 2022 [/INST]05/06/2022</s>[INST] Anne was born on 27\
+    \ March 1940 [/INST]27/03/1940</s>[INST] Anne wurde am 12. Dezember 1970 in Deutschland\
+    \ geboren. [/INST]\n```\n\nOutput:\n\n```\n12/12/1970\\n(I apologize for any inconvenience,\
+    \ I assumed the date format based on the previous questions. The correct birthdate\
+    \ is 12/12/1970\n```\n\n## Bad example 2\n\n```\n <s>[INST] Output the year that\
+    \ Anne was born on in the format DD/MM/YYYY. The output shouldn't contain anything\
+    \ else except for the date. You would be penalized if you don't follow these instructions\
+    \ and output JUST the date. Respond with \"OK\" if you understand your task. [/INST]OK</s>[INST]\
+    \ Anne was born on 5 June 2022 [/INST]05/06/2022</s>[INST] Anne was born on 27\
+    \ March 1940 [/INST]27/03/1940</s>[INST] Bob told Alice that Anne is born on 27\
+    \ April 1980 [/INST]\n```\n\nOutput:\n\n```\n I only provide the birthdate of\
+    \ Anne without any additional information or context, so the answer is:\\n\\n27/04/1980\n\
+    ```\n\n## TGI Parameters\n\n```\nparameters=GenerateParameters { best_of: None,\
+    \ temperature: Some(0.1), repetition_penalty: Some(1.2), top_k: Some(20), top_p:\
+    \ Some(0.99), typical_p: Some(0.95), do_sample: false, max_new_tokens: Some(512),\
+    \ return_full_text: Some(false), stop: [], truncate: None, watermark: false, details:\
+    \ true, decoder_input_details: false, seed: None, top_n_tokens: None }}\n```\n\
+    \n## Final thoughts\n\nThis model seems very tricky to tame for me. It just has\
+    \ a very large tendency to use reasoning. Which would be good for certain tasks\
+    \ but bad for something like this.\n\nBut since you said that you made it work\
+    \ then I don't know what I am doing wrong.\n\nMaybe it is the AWQ quantization?\
+    \ It would be useful to know what quantization, if any, you are using? Also are\
+    \ you hosting it with 8K context size?"
+  created_at: 2024-01-13 20:40:54+00:00
+  edited: false
+  hidden: false
+  id: 65a2f5568448f47df2ed482e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/65189dea66e78720a750f9a9/D-oSwjCcfQOzZG2w_SvEM.png?w=200&h=200&f=face
+      fullname: Daryoush Vaziri
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: DaryoushV
+      type: user
+    createdAt: '2024-01-13T23:55:26.000Z'
+    data:
+      edited: false
+      editors:
+      - DaryoushV
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9130994081497192
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/65189dea66e78720a750f9a9/D-oSwjCcfQOzZG2w_SvEM.png?w=200&h=200&f=face
+          fullname: Daryoush Vaziri
+          isHf: false
+          isPro: false
+          name: DaryoushV
+          type: user
+        html: '<p>We made the experience that the AWQ Version indeed falls behind
+          the gptq version and shows some odd behavior. We always test with the gptq
+          version</p>
+
+          '
+        raw: We made the experience that the AWQ Version indeed falls behind the gptq
+          version and shows some odd behavior. We always test with the gptq version
+        updatedAt: '2024-01-13T23:55:26.119Z'
+      numEdits: 0
+      reactions: []
+    id: 65a322eeb4f188a4db2d8b4b
+    type: comment
+  author: DaryoushV
+  content: We made the experience that the AWQ Version indeed falls behind the gptq
+    version and shows some odd behavior. We always test with the gptq version
+  created_at: 2024-01-13 23:55:26+00:00
+  edited: false
+  hidden: false
+  id: 65a322eeb4f188a4db2d8b4b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+      fullname: Martin Popovski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: martinkozle
+      type: user
+    createdAt: '2024-01-15T18:31:00.000Z'
+    data:
+      edited: false
+      editors:
+      - martinkozle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9661518931388855
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+          fullname: Martin Popovski
+          isHf: false
+          isPro: false
+          name: martinkozle
+          type: user
+        html: '<p>OK, so I hosted the GPTQ quantization of the model today (<code>gptq-4bit-32g-actorder_True</code>),
+          and I tested it on the prompts that we discussed here as a comparison.</p>
+
+          <p>It performed significantly better, only hallucinating consistently on
+          the prompts for extracting only the year. For other ones it was a lot better.</p>
+
+          <p>So I can conclude that the poor performance was due to the AWQ quantization.<br>I
+          am curious if this is specific to this model or if this is expected of all
+          AWQ quantized language models.</p>
+
+          <p>In any case I will close this discussion with this conclusion. Thank
+          you for helping me out, giving me suggestions and trying out my prompts!</p>
+
+          '
+        raw: 'OK, so I hosted the GPTQ quantization of the model today (`gptq-4bit-32g-actorder_True`),
+          and I tested it on the prompts that we discussed here as a comparison.
+
+
+          It performed significantly better, only hallucinating consistently on the
+          prompts for extracting only the year. For other ones it was a lot better.
+
+
+          So I can conclude that the poor performance was due to the AWQ quantization.
+
+          I am curious if this is specific to this model or if this is expected of
+          all AWQ quantized language models.
+
+
+          In any case I will close this discussion with this conclusion. Thank you
+          for helping me out, giving me suggestions and trying out my prompts!'
+        updatedAt: '2024-01-15T18:31:00.411Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65a579e40504b69eff9f6eb7
+    id: 65a579e40504b69eff9f6eb5
+    type: comment
+  author: martinkozle
+  content: 'OK, so I hosted the GPTQ quantization of the model today (`gptq-4bit-32g-actorder_True`),
+    and I tested it on the prompts that we discussed here as a comparison.
+
+
+    It performed significantly better, only hallucinating consistently on the prompts
+    for extracting only the year. For other ones it was a lot better.
+
+
+    So I can conclude that the poor performance was due to the AWQ quantization.
+
+    I am curious if this is specific to this model or if this is expected of all AWQ
+    quantized language models.
+
+
+    In any case I will close this discussion with this conclusion. Thank you for helping
+    me out, giving me suggestions and trying out my prompts!'
+  created_at: 2024-01-15 18:31:00+00:00
+  edited: false
+  hidden: false
+  id: 65a579e40504b69eff9f6eb5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/c6ad0e96703ad3cf96530c59d6a155a2.svg
+      fullname: Martin Popovski
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: martinkozle
+      type: user
+    createdAt: '2024-01-15T18:31:00.000Z'
+    data:
+      status: closed
+    id: 65a579e40504b69eff9f6eb7
+    type: status-change
+  author: martinkozle
+  created_at: 2024-01-15 18:31:00+00:00
+  id: 65a579e40504b69eff9f6eb7
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: VAGOsolutions/SauerkrautLM-Mixtral-8x7B-Instruct
+repo_type: model
+status: closed
+target_branch: null
+title: How to properly prompt the model for instruction tasks

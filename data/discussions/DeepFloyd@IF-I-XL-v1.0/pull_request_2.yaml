@@ -1,0 +1,277 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: patrickvonplaten
+conflicting_files: []
+created_at: 2023-04-20 17:35:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-04-20T18:35:06.000Z'
+    data:
+      edited: true
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: "<p>This PR adds the <code>diffusers</code> weights of IF. We tested\
+          \ it using:</p>\n<pre><code class=\"language-py\"><span class=\"hljs-keyword\"\
+          >from</span> diffusers <span class=\"hljs-keyword\">import</span> DiffusionPipeline\n\
+          <span class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >from</span> diffusers.training_utils <span class=\"hljs-keyword\">import</span>\
+          \ enable_full_determinism\n<span class=\"hljs-keyword\">import</span> gc\n\
+          \u200B\nenable_full_determinism(<span class=\"hljs-number\">0</span>)\n\u200B\
+          \ngenerator = torch.Generator().manual_seed(<span class=\"hljs-number\"\
+          >2</span>)\n\u200B\npipe = DiffusionPipeline.from_pretrained(<span class=\"\
+          hljs-string\">\"./IF-I-IF-v1.0\"</span>, torch_dtype=torch.float32)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\n\
+          pipe.to(<span class=\"hljs-string\">'cuda'</span>)\n\u200B\nprompt = <span\
+          \ class=\"hljs-string\">\"a photo of a kangaroo wearing an orange hoodie\
+          \ and blue sunglasses standing in front of the eiffel tower holding a sign\
+          \ that says 'very deep learning'\"</span>\n\u200B\nprompt_embeds, negative_embeds\
+          \ = pipe.encode_prompt(prompt, clean_caption=<span class=\"hljs-literal\"\
+          >True</span>)\n\u200B\nimage = pipe(\n    prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,\
+          \ timesteps=smart100_timesteps, generator=generator, output_type=<span class=\"\
+          hljs-string\">\"pt\"</span>\n).images\n\u200B\n<span class=\"hljs-keyword\"\
+          >del</span> pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\u200B\n<span\
+          \ class=\"hljs-comment\"># save intermediate image</span>\npil_image = image\n\
+          pil_image = (pil_image / <span class=\"hljs-number\">2</span> + <span class=\"\
+          hljs-number\">0.5</span>).clamp(<span class=\"hljs-number\">0</span>, <span\
+          \ class=\"hljs-number\">1</span>)\npil_image = pil_image.cpu().permute(<span\
+          \ class=\"hljs-number\">0</span>, <span class=\"hljs-number\">2</span>,\
+          \ <span class=\"hljs-number\">3</span>, <span class=\"hljs-number\">1</span>).<span\
+          \ class=\"hljs-built_in\">float</span>().numpy()\npil_image = DiffusionPipeline.numpy_to_pil(pil_image)[<span\
+          \ class=\"hljs-number\">0</span>]\npil_image.save(<span class=\"hljs-string\"\
+          >\"./if_stage_I.png\"</span>)\n\u200B\npipe = DiffusionPipeline.from_pretrained(<span\
+          \ class=\"hljs-string\">\"./IF-II-L-v1.0\"</span>, torch_dtype=torch.float32,\
+          \ text_encoder=<span class=\"hljs-literal\">None</span>)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\n\
+          pipe.to(<span class=\"hljs-string\">'cuda'</span>)\n\u200B\nimage = pipe(\n\
+          \    image=image, prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,\
+          \ timesteps=smart50_timesteps, generator=generator, output_type=<span class=\"\
+          hljs-string\">\"pt\"</span>\n).images\n\u200B\n<span class=\"hljs-keyword\"\
+          >del</span> pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\u200B\npil_image\
+          \ = image\npil_image = (pil_image / <span class=\"hljs-number\">2</span>\
+          \ + <span class=\"hljs-number\">0.5</span>).clamp(<span class=\"hljs-number\"\
+          >0</span>, <span class=\"hljs-number\">1</span>)\npil_image = pil_image.cpu().permute(<span\
+          \ class=\"hljs-number\">0</span>, <span class=\"hljs-number\">2</span>,\
+          \ <span class=\"hljs-number\">3</span>, <span class=\"hljs-number\">1</span>).<span\
+          \ class=\"hljs-built_in\">float</span>().numpy()\npil_image = DiffusionPipeline.numpy_to_pil(pil_image)[<span\
+          \ class=\"hljs-number\">0</span>]\npil_image.save(<span class=\"hljs-string\"\
+          >\"./if_stage_II.png\"</span>)\n</code></pre>\n<p>and compared it to IF:</p>\n\
+          <pre><code class=\"language-py\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">import</span> sys\nsys.path.insert(<span\
+          \ class=\"hljs-number\">0</span>, <span class=\"hljs-string\">'IF'</span>)\n\
+          <span class=\"hljs-keyword\">from</span> deepfloyd_if.modules <span class=\"\
+          hljs-keyword\">import</span> IFStageI, IFStageII, IFStageIII\n<span class=\"\
+          hljs-keyword\">from</span> deepfloyd_if.modules.t5 <span class=\"hljs-keyword\"\
+          >import</span> T5Embedder\n<span class=\"hljs-keyword\">from</span> deepfloyd_if.pipelines\
+          \ <span class=\"hljs-keyword\">import</span> dream\n<span class=\"hljs-keyword\"\
+          >import</span> torch\n\u200B\n<span class=\"hljs-keyword\">from</span> diffusers.training_utils\
+          \ <span class=\"hljs-keyword\">import</span> enable_full_determinism\nenable_full_determinism(<span\
+          \ class=\"hljs-number\">0</span>)\n\u200B\ndevice = <span class=\"hljs-string\"\
+          >'cuda:0'</span>\n\u200B\n<span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">t5</span>():\n    <span class=\"hljs-keyword\"\
+          >return</span> T5Embedder(device=device, dir_or_name=<span class=\"hljs-string\"\
+          >\"../IF-I-IF-v1.0/text_encoder\"</span>, torch_dtype=torch.float32)\n\u200B\
+          \n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >if_I</span>():\n    <span class=\"hljs-keyword\">return</span> IFStageI(<span\
+          \ class=\"hljs-string\">'../if/IF-I-IF-v0.2rc/'</span>, device=device, \n\
+          \                model_kwargs={<span class=\"hljs-string\">\"precision\"\
+          </span>: <span class=\"hljs-string\">\"32\"</span>}\n                )\n\
+          \u200B\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">if_II</span>():\n    <span class=\"hljs-keyword\">return</span>\
+          \ IFStageII(<span class=\"hljs-string\">'../if/IF-II-L-v0.2rc/'</span>,\
+          \ device=device, \n                  model_kwargs={<span class=\"hljs-string\"\
+          >\"precision\"</span>: <span class=\"hljs-string\">\"32\"</span>}\n    \
+          \              )\n\u200B\nprompt = <span class=\"hljs-string\">\"a photo\
+          \ of a kangaroo wearing an orange hoodie and blue sunglasses standing in\
+          \ front of the eiffel tower holding a sign that says 'very deep learning'\"\
+          </span>\n\u200B\nresult = dream(\n    t5=t5, if_I=if_I, if_II=if_II\n  \
+          \  prompt=[prompt],\n    if_I_kwargs={\n        <span class=\"hljs-string\"\
+          >\"guidance_scale\"</span>: <span class=\"hljs-number\">7.0</span>,\n  \
+          \      <span class=\"hljs-string\">\"sample_timestep_respacing\"</span>:\
+          \ <span class=\"hljs-string\">\"smart100\"</span>,\n    },\n    if_II_kwargs={\n\
+          \        <span class=\"hljs-string\">\"guidance_scale\"</span>: <span class=\"\
+          hljs-number\">4.0</span>,\n        <span class=\"hljs-string\">\"sample_timestep_respacing\"\
+          </span>: <span class=\"hljs-string\">\"smart50\"</span>,\n    },\n    seed=<span\
+          \ class=\"hljs-literal\">None</span>, <span class=\"hljs-comment\"># not\
+          \ used with our code changes</span>\n    disable_watermark=<span class=\"\
+          hljs-literal\">True</span>\n)\n\u200B\nimage = result[<span class=\"hljs-string\"\
+          >'I'</span>][<span class=\"hljs-number\">0</span>]\nimage.save(<span class=\"\
+          hljs-string\">\"./if_stage_I.png\"</span>)\n\u200B\nimage = result[<span\
+          \ class=\"hljs-string\">'II'</span>][<span class=\"hljs-number\">0</span>]\n\
+          image.save(<span class=\"hljs-string\">\"./if_stage_II.png\"</span>)\n</code></pre>\n\
+          <p>Original picture<br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/Byt8_Y1HHqXMYMeDuihSA.png\"\
+          ><img alt=\"if_stage_III_orig.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/Byt8_Y1HHqXMYMeDuihSA.png\"\
+          ></a></p>\n<p>Diffusers picture<br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/AqXGn58RZUjrJfwdq4yao.png\"\
+          ><img alt=\"if_stage_III_diffusers.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/AqXGn58RZUjrJfwdq4yao.png\"\
+          ></a></p>\n"
+        raw: "This PR adds the `diffusers` weights of IF. We tested it using:\n\n\
+          ```py\nfrom diffusers import DiffusionPipeline\nimport torch\nfrom diffusers.training_utils\
+          \ import enable_full_determinism\nimport gc\n\u200B\nenable_full_determinism(0)\n\
+          \u200B\ngenerator = torch.Generator().manual_seed(2)\n\u200B\npipe = DiffusionPipeline.from_pretrained(\"\
+          ./IF-I-IF-v1.0\", torch_dtype=torch.float32)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\n\
+          pipe.to('cuda')\n\u200B\nprompt = \"a photo of a kangaroo wearing an orange\
+          \ hoodie and blue sunglasses standing in front of the eiffel tower holding\
+          \ a sign that says 'very deep learning'\"\n\u200B\nprompt_embeds, negative_embeds\
+          \ = pipe.encode_prompt(prompt, clean_caption=True)\n\u200B\nimage = pipe(\n\
+          \    prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,\
+          \ timesteps=smart100_timesteps, generator=generator, output_type=\"pt\"\n\
+          ).images\n\u200B\ndel pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\u200B\
+          \n# save intermediate image\npil_image = image\npil_image = (pil_image /\
+          \ 2 + 0.5).clamp(0, 1)\npil_image = pil_image.cpu().permute(0, 2, 3, 1).float().numpy()\n\
+          pil_image = DiffusionPipeline.numpy_to_pil(pil_image)[0]\npil_image.save(\"\
+          ./if_stage_I.png\")\n\u200B\npipe = DiffusionPipeline.from_pretrained(\"\
+          ./IF-II-L-v1.0\", torch_dtype=torch.float32, text_encoder=None)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\n\
+          pipe.to('cuda')\n\u200B\nimage = pipe(\n    image=image, prompt_embeds=prompt_embeds,\
+          \ negative_prompt_embeds=negative_embeds, timesteps=smart50_timesteps, generator=generator,\
+          \ output_type=\"pt\"\n).images\n\u200B\ndel pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\
+          \u200B\npil_image = image\npil_image = (pil_image / 2 + 0.5).clamp(0, 1)\n\
+          pil_image = pil_image.cpu().permute(0, 2, 3, 1).float().numpy()\npil_image\
+          \ = DiffusionPipeline.numpy_to_pil(pil_image)[0]\npil_image.save(\"./if_stage_II.png\"\
+          )\n```\n\nand compared it to IF:\n\n```py\nimport torch\nimport sys\nsys.path.insert(0,\
+          \ 'IF')\nfrom deepfloyd_if.modules import IFStageI, IFStageII, IFStageIII\n\
+          from deepfloyd_if.modules.t5 import T5Embedder\nfrom deepfloyd_if.pipelines\
+          \ import dream\nimport torch\n\u200B\nfrom diffusers.training_utils import\
+          \ enable_full_determinism\nenable_full_determinism(0)\n\u200B\ndevice =\
+          \ 'cuda:0'\n\u200B\ndef t5():\n    return T5Embedder(device=device, dir_or_name=\"\
+          ../IF-I-IF-v1.0/text_encoder\", torch_dtype=torch.float32)\n\u200B\ndef\
+          \ if_I():\n    return IFStageI('../if/IF-I-IF-v0.2rc/', device=device, \n\
+          \                model_kwargs={\"precision\": \"32\"}\n                )\n\
+          \u200B\ndef if_II():\n    return IFStageII('../if/IF-II-L-v0.2rc/', device=device,\
+          \ \n                  model_kwargs={\"precision\": \"32\"}\n           \
+          \       )\n\u200B\nprompt = \"a photo of a kangaroo wearing an orange hoodie\
+          \ and blue sunglasses standing in front of the eiffel tower holding a sign\
+          \ that says 'very deep learning'\"\n\u200B\nresult = dream(\n    t5=t5,\
+          \ if_I=if_I, if_II=if_II\n    prompt=[prompt],\n    if_I_kwargs={\n    \
+          \    \"guidance_scale\": 7.0,\n        \"sample_timestep_respacing\": \"\
+          smart100\",\n    },\n    if_II_kwargs={\n        \"guidance_scale\": 4.0,\n\
+          \        \"sample_timestep_respacing\": \"smart50\",\n    },\n    seed=None,\
+          \ # not used with our code changes\n    disable_watermark=True\n)\n\u200B\
+          \nimage = result['I'][0]\nimage.save(\"./if_stage_I.png\")\n\u200B\nimage\
+          \ = result['II'][0]\nimage.save(\"./if_stage_II.png\")\n```\n\nOriginal\
+          \ picture\n![if_stage_III_orig.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/Byt8_Y1HHqXMYMeDuihSA.png)\n\
+          \n\nDiffusers picture\n![if_stage_III_diffusers.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/AqXGn58RZUjrJfwdq4yao.png)"
+        updatedAt: '2023-04-21T16:31:12.068Z'
+      numEdits: 1
+      reactions: []
+    id: 644185da4c2acf3398aacfc8
+    type: comment
+  author: patrickvonplaten
+  content: "This PR adds the `diffusers` weights of IF. We tested it using:\n\n```py\n\
+    from diffusers import DiffusionPipeline\nimport torch\nfrom diffusers.training_utils\
+    \ import enable_full_determinism\nimport gc\n\u200B\nenable_full_determinism(0)\n\
+    \u200B\ngenerator = torch.Generator().manual_seed(2)\n\u200B\npipe = DiffusionPipeline.from_pretrained(\"\
+    ./IF-I-IF-v1.0\", torch_dtype=torch.float32)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\n\
+    pipe.to('cuda')\n\u200B\nprompt = \"a photo of a kangaroo wearing an orange hoodie\
+    \ and blue sunglasses standing in front of the eiffel tower holding a sign that\
+    \ says 'very deep learning'\"\n\u200B\nprompt_embeds, negative_embeds = pipe.encode_prompt(prompt,\
+    \ clean_caption=True)\n\u200B\nimage = pipe(\n    prompt_embeds=prompt_embeds,\
+    \ negative_prompt_embeds=negative_embeds, timesteps=smart100_timesteps, generator=generator,\
+    \ output_type=\"pt\"\n).images\n\u200B\ndel pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\
+    \u200B\n# save intermediate image\npil_image = image\npil_image = (pil_image /\
+    \ 2 + 0.5).clamp(0, 1)\npil_image = pil_image.cpu().permute(0, 2, 3, 1).float().numpy()\n\
+    pil_image = DiffusionPipeline.numpy_to_pil(pil_image)[0]\npil_image.save(\"./if_stage_I.png\"\
+    )\n\u200B\npipe = DiffusionPipeline.from_pretrained(\"./IF-II-L-v1.0\", torch_dtype=torch.float32,\
+    \ text_encoder=None)\npipe.unet.set_attn_processor(AttnAddedKVProcessor())\npipe.to('cuda')\n\
+    \u200B\nimage = pipe(\n    image=image, prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_embeds,\
+    \ timesteps=smart50_timesteps, generator=generator, output_type=\"pt\"\n).images\n\
+    \u200B\ndel pipe\ngc.collect()\ntorch.cuda.empty_cache()\n\u200B\npil_image =\
+    \ image\npil_image = (pil_image / 2 + 0.5).clamp(0, 1)\npil_image = pil_image.cpu().permute(0,\
+    \ 2, 3, 1).float().numpy()\npil_image = DiffusionPipeline.numpy_to_pil(pil_image)[0]\n\
+    pil_image.save(\"./if_stage_II.png\")\n```\n\nand compared it to IF:\n\n```py\n\
+    import torch\nimport sys\nsys.path.insert(0, 'IF')\nfrom deepfloyd_if.modules\
+    \ import IFStageI, IFStageII, IFStageIII\nfrom deepfloyd_if.modules.t5 import\
+    \ T5Embedder\nfrom deepfloyd_if.pipelines import dream\nimport torch\n\u200B\n\
+    from diffusers.training_utils import enable_full_determinism\nenable_full_determinism(0)\n\
+    \u200B\ndevice = 'cuda:0'\n\u200B\ndef t5():\n    return T5Embedder(device=device,\
+    \ dir_or_name=\"../IF-I-IF-v1.0/text_encoder\", torch_dtype=torch.float32)\n\u200B\
+    \ndef if_I():\n    return IFStageI('../if/IF-I-IF-v0.2rc/', device=device, \n\
+    \                model_kwargs={\"precision\": \"32\"}\n                )\n\u200B\
+    \ndef if_II():\n    return IFStageII('../if/IF-II-L-v0.2rc/', device=device, \n\
+    \                  model_kwargs={\"precision\": \"32\"}\n                  )\n\
+    \u200B\nprompt = \"a photo of a kangaroo wearing an orange hoodie and blue sunglasses\
+    \ standing in front of the eiffel tower holding a sign that says 'very deep learning'\"\
+    \n\u200B\nresult = dream(\n    t5=t5, if_I=if_I, if_II=if_II\n    prompt=[prompt],\n\
+    \    if_I_kwargs={\n        \"guidance_scale\": 7.0,\n        \"sample_timestep_respacing\"\
+    : \"smart100\",\n    },\n    if_II_kwargs={\n        \"guidance_scale\": 4.0,\n\
+    \        \"sample_timestep_respacing\": \"smart50\",\n    },\n    seed=None, #\
+    \ not used with our code changes\n    disable_watermark=True\n)\n\u200B\nimage\
+    \ = result['I'][0]\nimage.save(\"./if_stage_I.png\")\n\u200B\nimage = result['II'][0]\n\
+    image.save(\"./if_stage_II.png\")\n```\n\nOriginal picture\n![if_stage_III_orig.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/Byt8_Y1HHqXMYMeDuihSA.png)\n\
+    \n\nDiffusers picture\n![if_stage_III_diffusers.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/AqXGn58RZUjrJfwdq4yao.png)"
+  created_at: 2023-04-20 17:35:06+00:00
+  edited: true
+  hidden: false
+  id: 644185da4c2acf3398aacfc8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-04-20T18:35:07.000Z'
+    data:
+      oid: ba3fff6d72a26738239c00d597251602a2f8feb5
+      parents:
+      - 8885b6db5b01030313cd0f1855385a2bc462cf9b
+      subject: Add diffusers weights
+    id: 644185db0000000000000000
+    type: commit
+  author: patrickvonplaten
+  created_at: 2023-04-20 17:35:07+00:00
+  id: 644185db0000000000000000
+  oid: ba3fff6d72a26738239c00d597251602a2f8feb5
+  summary: Add diffusers weights
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/Fsx5BMGW6IBcLUz2VJZSS.png?w=200&h=200&f=face
+      fullname: Daria Bakshandaeva
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Gugutse
+      type: user
+    createdAt: '2023-04-21T17:56:01.000Z'
+    data:
+      status: merged
+    id: 6442ce31dad68e008d099aa4
+    type: status-change
+  author: Gugutse
+  created_at: 2023-04-21 16:56:01+00:00
+  id: 6442ce31dad68e008d099aa4
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: 059de9442588a475f713acd57bd3473eb360200c
+num: 2
+repo_id: DeepFloyd/IF-I-XL-v1.0
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: Add diffusers weights

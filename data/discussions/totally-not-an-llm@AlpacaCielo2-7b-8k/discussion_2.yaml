@@ -1,0 +1,217 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Vezora
+conflicting_files: null
+created_at: 2023-08-10 11:06:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/649a54b896d5747b35e2163b/tdZmsov6fN1VHztaE5kX9.jpeg?w=200&h=200&f=face
+      fullname: Vezora
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Vezora
+      type: user
+    createdAt: '2023-08-10T12:06:41.000Z'
+    data:
+      edited: false
+      editors:
+      - Vezora
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9793495535850525
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/649a54b896d5747b35e2163b/tdZmsov6fN1VHztaE5kX9.jpeg?w=200&h=200&f=face
+          fullname: Vezora
+          isHf: false
+          isPro: false
+          name: Vezora
+          type: user
+        html: '<p>How did you merge the models together? Could you possibly provide
+          the script you used?</p>
+
+          '
+        raw: How did you merge the models together? Could you possibly provide the
+          script you used?
+        updatedAt: '2023-08-10T12:06:41.947Z'
+      numEdits: 0
+      reactions: []
+    id: 64d4d2d146bda7d8f5af9c6b
+    type: comment
+  author: Vezora
+  content: How did you merge the models together? Could you possibly provide the script
+    you used?
+  created_at: 2023-08-10 11:06:41+00:00
+  edited: false
+  hidden: false
+  id: 64d4d2d146bda7d8f5af9c6b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6464317c38083255f676ff38/N25A6tTplkgQ7hmhC8vXq.png?w=200&h=200&f=face
+      fullname: Kai Howard
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: totally-not-an-llm
+      type: user
+    createdAt: '2023-08-10T13:55:05.000Z'
+    data:
+      edited: false
+      editors:
+      - totally-not-an-llm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.10927066951990128
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6464317c38083255f676ff38/N25A6tTplkgQ7hmhC8vXq.png?w=200&h=200&f=face
+          fullname: Kai Howard
+          isHf: false
+          isPro: false
+          name: totally-not-an-llm
+          type: user
+        html: "<p>This is the script I used:</p>\n<pre><code>from transformers import\
+          \ AutoModelForCausalLM, AutoTokenizer\nfrom peft import PeftModel\nimport\
+          \ torch\n\nimport os\nimport argparse\n\ndef get_args():\n    parser = argparse.ArgumentParser()\n\
+          \    parser.add_argument(\"--base_model_name_or_path\", type=str)\n    parser.add_argument(\"\
+          --peft_model_path\", type=str)\n    parser.add_argument(\"--output_dir\"\
+          , type=str)\n    parser.add_argument(\"--device\", type=str, default=\"\
+          auto\")\n    parser.add_argument(\"--push_to_hub\", action=\"store_true\"\
+          )\n\n    return parser.parse_args()\n\ndef main():\n    args = get_args()\n\
+          \n    if args.device == 'auto':\n        device_arg = { 'device_map': 'auto'\
+          \ }\n    else:\n        device_arg = { 'device_map': { \"\": args.device}\
+          \ }\n\n    print(f\"Loading base model: {args.base_model_name_or_path}\"\
+          )\n    base_model = AutoModelForCausalLM.from_pretrained(\n        args.base_model_name_or_path,\n\
+          \        return_dict=True,\n        torch_dtype=torch.float16,\n       \
+          \ **device_arg\n    )\n\n    print(f\"Loading PEFT: {args.peft_model_path}\"\
+          )\n    model = PeftModel.from_pretrained(base_model, args.peft_model_path,\
+          \ **device_arg)\n    print(f\"Running merge_and_unload\")\n    model = model.merge_and_unload()\n\
+          \n    tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path)\n\
+          \n    if args.push_to_hub:\n        print(f\"Saving to hub ...\")\n    \
+          \    model.push_to_hub(f\"{args.output_dir}\", use_temp_dir=False)\n   \
+          \     tokenizer.push_to_hub(f\"{args.output_dir}\", use_temp_dir=False)\n\
+          \    else:\n        model.save_pretrained(f\"{args.output_dir}\")\n    \
+          \    tokenizer.save_pretrained(f\"{args.output_dir}\")\n        print(f\"\
+          Model saved to {args.output_dir}\")\n\nif __name__ == \"__main__\" :\n \
+          \   main()\n</code></pre>\n"
+        raw: "This is the script I used:\n\n```\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer\nfrom peft import PeftModel\nimport torch\n\nimport os\n\
+          import argparse\n\ndef get_args():\n    parser = argparse.ArgumentParser()\n\
+          \    parser.add_argument(\"--base_model_name_or_path\", type=str)\n    parser.add_argument(\"\
+          --peft_model_path\", type=str)\n    parser.add_argument(\"--output_dir\"\
+          , type=str)\n    parser.add_argument(\"--device\", type=str, default=\"\
+          auto\")\n    parser.add_argument(\"--push_to_hub\", action=\"store_true\"\
+          )\n\n    return parser.parse_args()\n\ndef main():\n    args = get_args()\n\
+          \n    if args.device == 'auto':\n        device_arg = { 'device_map': 'auto'\
+          \ }\n    else:\n        device_arg = { 'device_map': { \"\": args.device}\
+          \ }\n\n    print(f\"Loading base model: {args.base_model_name_or_path}\"\
+          )\n    base_model = AutoModelForCausalLM.from_pretrained(\n        args.base_model_name_or_path,\n\
+          \        return_dict=True,\n        torch_dtype=torch.float16,\n       \
+          \ **device_arg\n    )\n\n    print(f\"Loading PEFT: {args.peft_model_path}\"\
+          )\n    model = PeftModel.from_pretrained(base_model, args.peft_model_path,\
+          \ **device_arg)\n    print(f\"Running merge_and_unload\")\n    model = model.merge_and_unload()\n\
+          \n    tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path)\n\
+          \n    if args.push_to_hub:\n        print(f\"Saving to hub ...\")\n    \
+          \    model.push_to_hub(f\"{args.output_dir}\", use_temp_dir=False)\n   \
+          \     tokenizer.push_to_hub(f\"{args.output_dir}\", use_temp_dir=False)\n\
+          \    else:\n        model.save_pretrained(f\"{args.output_dir}\")\n    \
+          \    tokenizer.save_pretrained(f\"{args.output_dir}\")\n        print(f\"\
+          Model saved to {args.output_dir}\")\n\nif __name__ == \"__main__\" :\n \
+          \   main()\n```"
+        updatedAt: '2023-08-10T13:55:05.020Z'
+      numEdits: 0
+      reactions: []
+    id: 64d4ec396db135cfc879ce32
+    type: comment
+  author: totally-not-an-llm
+  content: "This is the script I used:\n\n```\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoTokenizer\nfrom peft import PeftModel\nimport torch\n\nimport os\nimport\
+    \ argparse\n\ndef get_args():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"\
+    --base_model_name_or_path\", type=str)\n    parser.add_argument(\"--peft_model_path\"\
+    , type=str)\n    parser.add_argument(\"--output_dir\", type=str)\n    parser.add_argument(\"\
+    --device\", type=str, default=\"auto\")\n    parser.add_argument(\"--push_to_hub\"\
+    , action=\"store_true\")\n\n    return parser.parse_args()\n\ndef main():\n  \
+    \  args = get_args()\n\n    if args.device == 'auto':\n        device_arg = {\
+    \ 'device_map': 'auto' }\n    else:\n        device_arg = { 'device_map': { \"\
+    \": args.device} }\n\n    print(f\"Loading base model: {args.base_model_name_or_path}\"\
+    )\n    base_model = AutoModelForCausalLM.from_pretrained(\n        args.base_model_name_or_path,\n\
+    \        return_dict=True,\n        torch_dtype=torch.float16,\n        **device_arg\n\
+    \    )\n\n    print(f\"Loading PEFT: {args.peft_model_path}\")\n    model = PeftModel.from_pretrained(base_model,\
+    \ args.peft_model_path, **device_arg)\n    print(f\"Running merge_and_unload\"\
+    )\n    model = model.merge_and_unload()\n\n    tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path)\n\
+    \n    if args.push_to_hub:\n        print(f\"Saving to hub ...\")\n        model.push_to_hub(f\"\
+    {args.output_dir}\", use_temp_dir=False)\n        tokenizer.push_to_hub(f\"{args.output_dir}\"\
+    , use_temp_dir=False)\n    else:\n        model.save_pretrained(f\"{args.output_dir}\"\
+    )\n        tokenizer.save_pretrained(f\"{args.output_dir}\")\n        print(f\"\
+    Model saved to {args.output_dir}\")\n\nif __name__ == \"__main__\" :\n    main()\n\
+    ```"
+  created_at: 2023-08-10 12:55:05+00:00
+  edited: false
+  hidden: false
+  id: 64d4ec396db135cfc879ce32
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/649a54b896d5747b35e2163b/tdZmsov6fN1VHztaE5kX9.jpeg?w=200&h=200&f=face
+      fullname: Vezora
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Vezora
+      type: user
+    createdAt: '2023-08-10T23:31:00.000Z'
+    data:
+      edited: false
+      editors:
+      - Vezora
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8410778641700745
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/649a54b896d5747b35e2163b/tdZmsov6fN1VHztaE5kX9.jpeg?w=200&h=200&f=face
+          fullname: Vezora
+          isHf: false
+          isPro: false
+          name: Vezora
+          type: user
+        html: '<p>Thank you! I appreciate it a lot!</p>
+
+          '
+        raw: Thank you! I appreciate it a lot!
+        updatedAt: '2023-08-10T23:31:00.007Z'
+      numEdits: 0
+      reactions: []
+    id: 64d57334badf1110f77f5c8b
+    type: comment
+  author: Vezora
+  content: Thank you! I appreciate it a lot!
+  created_at: 2023-08-10 22:31:00+00:00
+  edited: false
+  hidden: false
+  id: 64d57334badf1110f77f5c8b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: totally-not-an-llm/AlpacaCielo2-7b-8k
+repo_type: model
+status: open
+target_branch: null
+title: How did you merge the models?

@@ -1,0 +1,347 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: country-squire
+conflicting_files: null
+created_at: 2023-05-15 11:31:19+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/H6LRhXr27otDxnm-KiZ-O.png?w=200&h=200&f=face
+      fullname: Boris Horner
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: country-squire
+      type: user
+    createdAt: '2023-05-15T12:31:19.000Z'
+    data:
+      edited: false
+      editors:
+      - country-squire
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/H6LRhXr27otDxnm-KiZ-O.png?w=200&h=200&f=face
+          fullname: Boris Horner
+          isHf: false
+          isPro: false
+          name: country-squire
+          type: user
+        html: '<p>Thanks for the great work!! I am running RedPajama-INCITE-Chat-3B-v1
+          on my local desktop and so far all works fine, but I wasn''t able to find
+          out how to limit the AI to one chat response.</p>
+
+          <p>When I ask for something that generates a long response, it''s often
+          truncated (so I''d like to increase max length). When I ask for something
+          simple, like a birth date, it responds and then just continues with random
+          dialogues, that are apparently "memories" from the training data...</p>
+
+          <p>Can I pass a parameter limiting the chat to one response? I could cut
+          the extra text client side, but that''s not the best solution and wastes
+          GPU time.</p>
+
+          <p>Also, is there a context between a message and the previous ones? I asked
+          about a person and received some good info, and the I asked "and when was
+          she born?" and received the birthdate of someone else... or am I expecting
+          too much? ;-)</p>
+
+          <p>Thanks in advance for your advise...</p>
+
+          '
+        raw: "Thanks for the great work!! I am running RedPajama-INCITE-Chat-3B-v1\
+          \ on my local desktop and so far all works fine, but I wasn't able to find\
+          \ out how to limit the AI to one chat response.\r\n\r\nWhen I ask for something\
+          \ that generates a long response, it's often truncated (so I'd like to increase\
+          \ max length). When I ask for something simple, like a birth date, it responds\
+          \ and then just continues with random dialogues, that are apparently \"\
+          memories\" from the training data...\r\n\r\nCan I pass a parameter limiting\
+          \ the chat to one response? I could cut the extra text client side, but\
+          \ that's not the best solution and wastes GPU time.\r\n\r\nAlso, is there\
+          \ a context between a message and the previous ones? I asked about a person\
+          \ and received some good info, and the I asked \"and when was she born?\"\
+          \ and received the birthdate of someone else... or am I expecting too much?\
+          \ ;-)\r\n\r\nThanks in advance for your advise..."
+        updatedAt: '2023-05-15T12:31:19.608Z'
+      numEdits: 0
+      reactions: []
+    id: 6462261793f702673bf99652
+    type: comment
+  author: country-squire
+  content: "Thanks for the great work!! I am running RedPajama-INCITE-Chat-3B-v1 on\
+    \ my local desktop and so far all works fine, but I wasn't able to find out how\
+    \ to limit the AI to one chat response.\r\n\r\nWhen I ask for something that generates\
+    \ a long response, it's often truncated (so I'd like to increase max length).\
+    \ When I ask for something simple, like a birth date, it responds and then just\
+    \ continues with random dialogues, that are apparently \"memories\" from the training\
+    \ data...\r\n\r\nCan I pass a parameter limiting the chat to one response? I could\
+    \ cut the extra text client side, but that's not the best solution and wastes\
+    \ GPU time.\r\n\r\nAlso, is there a context between a message and the previous\
+    \ ones? I asked about a person and received some good info, and the I asked \"\
+    and when was she born?\" and received the birthdate of someone else... or am I\
+    \ expecting too much? ;-)\r\n\r\nThanks in advance for your advise..."
+  created_at: 2023-05-15 11:31:19+00:00
+  edited: false
+  hidden: false
+  id: 6462261793f702673bf99652
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/52a92eb692207c756f3769bc2bd77fa4.svg
+      fullname: Ralph
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: szeta
+      type: user
+    createdAt: '2023-05-17T22:34:51.000Z'
+    data:
+      edited: false
+      editors:
+      - szeta
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/52a92eb692207c756f3769bc2bd77fa4.svg
+          fullname: Ralph
+          isHf: false
+          isPro: false
+          name: szeta
+          type: user
+        html: "<p>Hi, I added the following stopping criteria, this worked.</p>\n\
+          <pre><code>class StoppingCriteriaSub(StoppingCriteria):\n    def __init__(self,\
+          \ stops=[], encounters=1):\n        super().__init__()\n        self.stops\
+          \ = [stop.to(\"cuda\") for stop in stops]\n\n    def __call__(self, input_ids:\
+          \ torch.LongTensor, scores: torch.FloatTensor):\n        for stop in self.stops:\n\
+          \            if torch.all((stop == input_ids[0][-len(stop) :])).item():\n\
+          \                return True\n\n        return False\n\n\nstop_words = [\"\
+          &lt;human&gt;:\"]\nstop_words_ids = [\n    tokenizer(stop_word, return_tensors=\"\
+          pt\")[\"input_ids\"].squeeze()\n    for stop_word in stop_words\n]\nstopping_criteria\
+          \ = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])\n\
+          </code></pre>\n<p>then pass it into your <code>model.generate()</code> as\
+          \ parameter.<br>And if you want, remove the last <code>&lt;human&gt;:</code>\
+          \ (e.g., <code>output_str = output_str.replace(\"&lt;human&gt;:\", \"\"\
+          )</code></p>\n"
+        raw: "Hi, I added the following stopping criteria, this worked.\n\n```\nclass\
+          \ StoppingCriteriaSub(StoppingCriteria):\n    def __init__(self, stops=[],\
+          \ encounters=1):\n        super().__init__()\n        self.stops = [stop.to(\"\
+          cuda\") for stop in stops]\n\n    def __call__(self, input_ids: torch.LongTensor,\
+          \ scores: torch.FloatTensor):\n        for stop in self.stops:\n       \
+          \     if torch.all((stop == input_ids[0][-len(stop) :])).item():\n     \
+          \           return True\n\n        return False\n\n\nstop_words = [\"<human>:\"\
+          ]\nstop_words_ids = [\n    tokenizer(stop_word, return_tensors=\"pt\")[\"\
+          input_ids\"].squeeze()\n    for stop_word in stop_words\n]\nstopping_criteria\
+          \ = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])\n\
+          ```\n\nthen pass it into your `model.generate()` as parameter.\nAnd if you\
+          \ want, remove the last `<human>:` (e.g., `output_str = output_str.replace(\"\
+          <human>:\", \"\")`"
+        updatedAt: '2023-05-17T22:34:51.112Z'
+      numEdits: 0
+      reactions: []
+    id: 6465568b86e668ad22e8d577
+    type: comment
+  author: szeta
+  content: "Hi, I added the following stopping criteria, this worked.\n\n```\nclass\
+    \ StoppingCriteriaSub(StoppingCriteria):\n    def __init__(self, stops=[], encounters=1):\n\
+    \        super().__init__()\n        self.stops = [stop.to(\"cuda\") for stop\
+    \ in stops]\n\n    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):\n\
+    \        for stop in self.stops:\n            if torch.all((stop == input_ids[0][-len(stop)\
+    \ :])).item():\n                return True\n\n        return False\n\n\nstop_words\
+    \ = [\"<human>:\"]\nstop_words_ids = [\n    tokenizer(stop_word, return_tensors=\"\
+    pt\")[\"input_ids\"].squeeze()\n    for stop_word in stop_words\n]\nstopping_criteria\
+    \ = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])\n```\n\n\
+    then pass it into your `model.generate()` as parameter.\nAnd if you want, remove\
+    \ the last `<human>:` (e.g., `output_str = output_str.replace(\"<human>:\", \"\
+    \")`"
+  created_at: 2023-05-17 21:34:51+00:00
+  edited: false
+  hidden: false
+  id: 6465568b86e668ad22e8d577
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/52a92eb692207c756f3769bc2bd77fa4.svg
+      fullname: Ralph
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: szeta
+      type: user
+    createdAt: '2023-05-17T22:39:58.000Z'
+    data:
+      edited: false
+      editors:
+      - szeta
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/52a92eb692207c756f3769bc2bd77fa4.svg
+          fullname: Ralph
+          isHf: false
+          isPro: false
+          name: szeta
+          type: user
+        html: "<p>for your second question:<br>you need to keep a histroy yourself\
+          \ (of human/bot interaction), and pass it into your prompt (append your\
+          \ new question to the old conversation).</p>\n<p>Below an example implementation\
+          \ (based on FastAPI).</p>\n<p>Be aware that the token size increases and\
+          \ you may want to cut off at one point (or have a secret loop to summarize\
+          \ behind the scenes :-)).</p>\n<pre><code>history = []\n\n<span data-props=\"\
+          {&quot;user&quot;:&quot;router&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/router\">@<span class=\"underline\">router</span></a></span>\n\
+          \n\t</span></span>.post(\"/chat\")\nasync def data(data: dict):\n    response\
+          \ = {}\n    try:\n        input_text = data[\"text\"]\n        input_text_with_hist\
+          \ = \"\\n\".join(history) + \"\\n&lt;human&gt;:\" + input_text\n\n     \
+          \   res = infer(input_text_with_hist)\n        response[\"text\"] = res\n\
+          \        history.append(f'\\n&lt;human&gt;:{data[\"text\"]}\\n')\n     \
+          \   history.append(f\"\\n&lt;bot&gt;: {res}\\n\")\n        print(response)\n\
+          \        return response\n</code></pre>\n"
+        raw: "for your second question:\nyou need to keep a histroy yourself (of human/bot\
+          \ interaction), and pass it into your prompt (append your new question to\
+          \ the old conversation).\n\nBelow an example implementation (based on FastAPI).\n\
+          \nBe aware that the token size increases and you may want to cut off at\
+          \ one point (or have a secret loop to summarize behind the scenes :-)).\n\
+          \n```\nhistory = []\n\n@router.post(\"/chat\")\nasync def data(data: dict):\n\
+          \    response = {}\n    try:\n        input_text = data[\"text\"]\n    \
+          \    input_text_with_hist = \"\\n\".join(history) + \"\\n<human>:\" + input_text\n\
+          \n        res = infer(input_text_with_hist)\n        response[\"text\"]\
+          \ = res\n        history.append(f'\\n<human>:{data[\"text\"]}\\n')\n   \
+          \     history.append(f\"\\n<bot>: {res}\\n\")\n        print(response)\n\
+          \        return response\n```"
+        updatedAt: '2023-05-17T22:39:58.382Z'
+      numEdits: 0
+      reactions: []
+    id: 646557bea0748f9aa4ca478e
+    type: comment
+  author: szeta
+  content: "for your second question:\nyou need to keep a histroy yourself (of human/bot\
+    \ interaction), and pass it into your prompt (append your new question to the\
+    \ old conversation).\n\nBelow an example implementation (based on FastAPI).\n\n\
+    Be aware that the token size increases and you may want to cut off at one point\
+    \ (or have a secret loop to summarize behind the scenes :-)).\n\n```\nhistory\
+    \ = []\n\n@router.post(\"/chat\")\nasync def data(data: dict):\n    response =\
+    \ {}\n    try:\n        input_text = data[\"text\"]\n        input_text_with_hist\
+    \ = \"\\n\".join(history) + \"\\n<human>:\" + input_text\n\n        res = infer(input_text_with_hist)\n\
+    \        response[\"text\"] = res\n        history.append(f'\\n<human>:{data[\"\
+    text\"]}\\n')\n        history.append(f\"\\n<bot>: {res}\\n\")\n        print(response)\n\
+    \        return response\n```"
+  created_at: 2023-05-17 21:39:58+00:00
+  edited: false
+  hidden: false
+  id: 646557bea0748f9aa4ca478e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/H6LRhXr27otDxnm-KiZ-O.png?w=200&h=200&f=face
+      fullname: Boris Horner
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: country-squire
+      type: user
+    createdAt: '2023-05-18T10:01:17.000Z'
+    data:
+      edited: false
+      editors:
+      - country-squire
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/H6LRhXr27otDxnm-KiZ-O.png?w=200&h=200&f=face
+          fullname: Boris Horner
+          isHf: false
+          isPro: false
+          name: country-squire
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;szeta&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/szeta\">@<span class=\"\
+          underline\">szeta</span></a></span>\n\n\t</span></span>  Thanks for the\
+          \ detailed replies! I'll try this out.</p>\n"
+        raw: '@szeta  Thanks for the detailed replies! I''ll try this out.'
+        updatedAt: '2023-05-18T10:01:17.108Z'
+      numEdits: 0
+      reactions: []
+    id: 6465f76de0fe831b478c01b6
+    type: comment
+  author: country-squire
+  content: '@szeta  Thanks for the detailed replies! I''ll try this out.'
+  created_at: 2023-05-18 09:01:17+00:00
+  edited: false
+  hidden: false
+  id: 6465f76de0fe831b478c01b6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5d494f43e4200cf75558063b795e0adf.svg
+      fullname: Shanmuga sundaramraj
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Shanmug
+      type: user
+    createdAt: '2023-06-26T07:42:00.000Z'
+    data:
+      edited: false
+      editors:
+      - Shanmug
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8156534433364868
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5d494f43e4200cf75558063b795e0adf.svg
+          fullname: Shanmuga sundaramraj
+          isHf: false
+          isPro: false
+          name: Shanmug
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;szeta&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/szeta\">@<span class=\"\
+          underline\">szeta</span></a></span>\n\n\t</span></span>, can we create a\
+          \ customized AI chatbot with RedPajama-INCITE-Chat-3B-v1 model by training\
+          \ with our own data? If so can you let me know how to train our own data\
+          \ in the chatbot?</p>\n"
+        raw: Hi @szeta, can we create a customized AI chatbot with RedPajama-INCITE-Chat-3B-v1
+          model by training with our own data? If so can you let me know how to train
+          our own data in the chatbot?
+        updatedAt: '2023-06-26T07:42:00.258Z'
+      numEdits: 0
+      reactions: []
+    id: 649941485f47d122b38b99a9
+    type: comment
+  author: Shanmug
+  content: Hi @szeta, can we create a customized AI chatbot with RedPajama-INCITE-Chat-3B-v1
+    model by training with our own data? If so can you let me know how to train our
+    own data in the chatbot?
+  created_at: 2023-06-26 06:42:00+00:00
+  edited: false
+  hidden: false
+  id: 649941485f47d122b38b99a9
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: togethercomputer/RedPajama-INCITE-Chat-3B-v1
+repo_type: model
+status: open
+target_branch: null
+title: Limit chat to exactly one response

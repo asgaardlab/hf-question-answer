@@ -1,0 +1,466 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ashk72
+conflicting_files: null
+created_at: 2023-11-28 08:52:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4ad158df03d28d5a6c26dd846dd953d6.svg
+      fullname: Ashraf Khan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ashk72
+      type: user
+    createdAt: '2023-11-28T08:52:08.000Z'
+    data:
+      edited: false
+      editors:
+      - ashk72
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4429604709148407
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4ad158df03d28d5a6c26dd846dd953d6.svg
+          fullname: Ashraf Khan
+          isHf: false
+          isPro: false
+          name: ashk72
+          type: user
+        html: "<p>import os<br>import sys<br>from typing import List<br>import re</p>\n\
+          <p>import fire<br>import torch<br>import torch.nn as nn<br>import bitsandbytes\
+          \ as bnb<br>from datasets import load_dataset<br>import transformers<br>from\
+          \ peft import LoraConfig, PeftModel</p>\n<p>from transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer, pipeline, BitsAndBytesConfig<br>from peft import (<br>\
+          \    prepare_model_for_int8_training,<br>    LoraConfig,<br>    get_peft_model,<br>\
+          \    get_peft_model_state_dict,<br>)</p>\n<p>def train(<br>    # model/data\
+          \ params<br>    base_model: str = \"\",  # the only required argument<br>\
+          \    data_path: str = \"./alpaca_data_cleaned.json\",<br>    output_dir:\
+          \ str = \"./lora-alpaca\",<br>    # training hyperparams<br>    batch_size:\
+          \ int = 128,<br>    micro_batch_size: int = 4,<br>    num_epochs: int =\
+          \ 3,<br>    learning_rate: float = 3e-4,<br>    cutoff_len: int = 512,<br>\
+          \    val_set_size: int = 0,<br>    # lora hyperparams<br>    lora_r: int\
+          \ = 8,<br>    lora_alpha: int = 16,<br>    lora_dropout: float = 0.05,<br>\
+          \    lora_target_modules: List[str] = [<br>        \"q_proj\",<br>     \
+          \   \"v_proj\",<br>    ],<br>    # llm hyperparams<br>    train_on_inputs:\
+          \ bool = True,  # if False, masks out inputs in loss<br>    group_by_length:\
+          \ bool = True,  # faster, but produces an odd training loss curve<br>  \
+          \  # other<br>    mask: bool = False,<br>):<br>    print(<br>        f\"\
+          Training Alpaca-LoRA model with params:\\n\"<br>        f\"base_model: {base_model}\\\
+          n\"<br>        f\"data_path: {data_path}\\n\"<br>        f\"output_dir:\
+          \ {output_dir}\\n\"<br>        f\"batch_size: {batch_size}\\n\"<br>    \
+          \    f\"micro_batch_size: {micro_batch_size}\\n\"<br>        f\"num_epochs:\
+          \ {num_epochs}\\n\"<br>        f\"learning_rate: {learning_rate}\\n\"<br>\
+          \        f\"cutoff_len: {cutoff_len}\\n\"<br>        f\"val_set_size: {val_set_size}\\\
+          n\"<br>        f\"lora_r: {lora_r}\\n\"<br>        f\"lora_alpha: {lora_alpha}\\\
+          n\"<br>        f\"lora_dropout: {lora_dropout}\\n\"<br>        f\"lora_target_modules:\
+          \ {lora_target_modules}\\n\"<br>        f\"train_on_inputs: {train_on_inputs}\\\
+          n\"<br>        f\"group_by_length: {group_by_length}\\n\"<br>    )<br> \
+          \   assert (<br>        base_model<br>    ), \"Please specify a --base_model,\
+          \ e.g. --base_model='decapoda-research/llama-7b-hf'\"<br>    gradient_accumulation_steps\
+          \ = batch_size // micro_batch_size</p>\n<pre><code>#quantization_config\
+          \ = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True,load_in_4bit=True,\
+          \ bnb_4bit_compute_dtype=torch.float16)\ndevice_map = \"auto\"\nworld_size\
+          \ = int(os.environ.get(\"WORLD_SIZE\", 1))\nddp = world_size != 1\nif ddp:\n\
+          \    device_map = {\"\": int(os.environ.get(\"LOCAL_RANK\") or 0)}\n   \
+          \ gradient_accumulation_steps = gradient_accumulation_steps // world_size\n\
+          \n\nmodel = AutoModelForCausalLM.from_pretrained(\n    base_model,\n   \
+          \ return_dict=True,\n    torch_dtype=torch.float32,\n    device_map=device_map\n\
+          )\n\ntokenizer = AutoTokenizer.from_pretrained(base_model)\n\ntokenizer.pad_token_id\
+          \ = 0  # unk. we want this to be different from the eos token\ntokenizer.padding_side\
+          \ = \"left\"  # Allow batched inference\n\ndef tokenize(prompt, add_eos_token=True):\n\
+          \    # there's probably a way to do this with the tokenizer settings\n \
+          \   # but again, gotta move fast\n\n    if mask:\n        print('Masking\
+          \ Obersevation')\n        tokenizer.mask_token = \"~\"\n\n        # Split\
+          \ the input text into lines\n        lines = prompt.split('\\n')\n\n   \
+          \     # Initialize an empty list to store the modified lines\n        masked_lines\
+          \ = []\n\n        # Initialize a flag to indicate if we are between \"Observation:\"\
+          \ and \"Thought:\"\n        between_observation_and_thought = False\n\n\
+          \        # Iterate through each line\n        for line in lines:\n     \
+          \       if \"Observation:\" in line:\n                between_observation_and_thought\
+          \ = True\n                #split the line and mask all but the first word\n\
+          \                line = line.split()\n                line[1:] = [tokenizer.mask_token]\
+          \ * len(line[1:])\n                line = \" \".join(line)\n           \
+          \     masked_lines.append(line)  # Add the line as-is\n            else:\n\
+          \                masked_lines.append(line)  # Add the line as-is\n\n   \
+          \     # Concatenate the modified lines to form the masked text\n       \
+          \ masked_text = '\\n'.join(masked_lines)\n\n        prompt = masked_text\n\
+          \n    result = tokenizer(\n        prompt,\n        truncation=True,\n \
+          \       max_length=cutoff_len,\n        padding=False,\n        return_tensors=None\n\
+          \    )\n\n    if (\n        result[\"input_ids\"][-1] != tokenizer.eos_token_id\n\
+          \        and len(result[\"input_ids\"]) &lt; cutoff_len\n        and add_eos_token\n\
+          \    ):\n        result[\"input_ids\"].append(tokenizer.eos_token_id)\n\
+          \        result[\"attention_mask\"].append(1)\n    else:\n        if len(result[\"\
+          input_ids\"]) &gt;= cutoff_len:\n            print(\"WARNING: input too\
+          \ long, truncating\")\n\n    masked_token_id = tokenizer.mask_token_id\n\
+          \    ids = [-100 if token_id == 3695 else token_id for token_id in result[\"\
+          input_ids\"]]\n\n    result[\"labels\"] = result[\"input_ids\"].copy()\n\
+          \n    return result\n\ndef generate_and_tokenize_prompt(data_point):\n \
+          \   full_prompt = generate_prompt(data_point)\n    tokenized_full_prompt\
+          \ = tokenize(full_prompt)\n    if not train_on_inputs:\n        user_prompt\
+          \ = generate_prompt({**data_point, \"output\": \"\"})\n        tokenized_user_prompt\
+          \ = tokenize(user_prompt, add_eos_token=False)\n        user_prompt_len\
+          \ = len(tokenized_user_prompt[\"input_ids\"])\n\n        tokenized_full_prompt[\"\
+          labels\"] = [\n            -100\n        ] * user_prompt_len + tokenized_full_prompt[\"\
+          labels\"][\n            user_prompt_len:\n        ]  # could be sped up,\
+          \ probably\n    return tokenized_full_prompt\n\nmodel = prepare_model_for_int8_training(model)\n\
+          \nconfig = LoraConfig(\n    r=lora_r,\n    lora_alpha=lora_alpha,\n    target_modules=lora_target_modules,\n\
+          \    lora_dropout=lora_dropout,\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\"\
+          ,\n)\nmodel = get_peft_model(model, config)\n\ndata = load_dataset(\"json\"\
+          , data_files=data_path)\n\nif val_set_size &gt; 0:\n    train_val = data[\"\
+          train\"].train_test_split(\n        test_size=val_set_size, shuffle=True,\
+          \ seed=42\n    )\n    train_data = train_val[\"train\"].shuffle().map(generate_and_tokenize_prompt)\n\
+          \    val_data = train_val[\"test\"].shuffle().map(generate_and_tokenize_prompt)\n\
+          else:\n    train_data = data[\"train\"].shuffle().map(generate_and_tokenize_prompt)\n\
+          \    val_data = None\n\ntrainer = transformers.Trainer(\n    model=model,\n\
+          \    train_dataset=train_data,\n    eval_dataset=val_data,\n    args=transformers.TrainingArguments(\n\
+          \        per_device_train_batch_size=micro_batch_size,\n        gradient_accumulation_steps=gradient_accumulation_steps,\n\
+          \        warmup_steps=100,\n        num_train_epochs=num_epochs,\n     \
+          \   learning_rate=learning_rate,\n        logging_steps=10,\n        evaluation_strategy=\"\
+          steps\" if val_set_size &gt; 0 else \"no\",\n        save_strategy=\"steps\"\
+          ,\n        eval_steps=200 if val_set_size &gt; 0 else None,\n        save_steps=200,\n\
+          \        output_dir=output_dir,\n        save_total_limit=3,\n        load_best_model_at_end=True\
+          \ if val_set_size &gt; 0 else False,\n        ddp_find_unused_parameters=False\
+          \ if ddp else None,\n        group_by_length=group_by_length,\n    ),\n\
+          \    data_collator=transformers.DataCollatorForSeq2Seq(\n        tokenizer,\
+          \ pad_to_multiple_of=8, return_tensors=\"pt\", padding=True\n    ),\n)\n\
+          model.config.use_cache = False\n\nif torch.__version__ &gt;= \"2\" and sys.platform\
+          \ != \"win32\":\n    model = torch.compile(model)\n\ntrainer.train()\n\n\
+          model.save_pretrained(output_dir)\n\nmerge_model = AutoModelForCausalLM.from_pretrained(\n\
+          base_model,\nlow_cpu_mem_usage=True,\nreturn_dict=True,\ntorch_dtype=torch.float16,\n\
+          device_map=device_map,\n)\nmodel = PeftModel.from_pretrained(merge_model,\
+          \ output_dir)\nmodel = model.merge_and_unload()\n\n# Reload tokenizer to\
+          \ save it\ntokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)\n\
+          tokenizer.pad_token = tokenizer.eos_token\ntokenizer.padding_side = \"right\"\
+          \n\nmodel.push_to_hub(output_dir, use_temp_dir=False)\ntokenizer.push_to_hub(output_dir,\
+          \ use_temp_dir=False)\n\nprint(\"\\n If there's a warning about missing\
+          \ keys above, please disregard :)\")\nwhile True:\n  prompt = input(\"Enter\
+          \ a prompt: \")\n  if prompt==\"exit\":\n      break\n  pipe = pipeline(task=\"\
+          text-generation\", model=model, tokenizer=tokenizer, max_length=200)\n \
+          \ result = pipe(f\"&lt;s&gt;[INST] {prompt} [/INST]\")\n  print(result[0]['generated_text'])\n\
+          \  print(\"You can end the session by typing exit\")\n</code></pre>\n<p>def\
+          \ generate_prompt(data_point):<br>    print(data_point)<br>    # sorry about\
+          \ the formatting disaster gotta move fast<br>    if data_point[\"input\"\
+          ]:<br>        return f\"\"\"Below is an instruction that describes a task,\
+          \ paired with an input that provides further context. Write a response that\
+          \ appropriately completes the request.</p>\n<h3 id=\"instruction\">Instruction:</h3>\n\
+          <p>{data_point[\"instruction\"]}</p>\n<h3 id=\"input\">Input:</h3>\n<p>{data_point[\"\
+          input\"]}</p>\n<h3 id=\"response\">Response:</h3>\n<p>{data_point[\"output\"\
+          ]}\"\"\"<br>    else:<br>        return f\"\"\"Below is an instruction that\
+          \ describes a task. Write a response that appropriately completes the request.</p>\n\
+          <h3 id=\"instruction-1\">Instruction:</h3>\n<p>{data_point[\"instruction\"\
+          ]}</p>\n<h3 id=\"response-1\">Response:</h3>\n<p>{data_point[\"output\"\
+          ]}\"\"\"</p>\n<p>if <strong>name</strong> == \"<strong>main</strong>\":<br>\
+          \    fire.Fire(train)</p>\n<p>Above is my finetuning code. I am trying to\
+          \ finetune meta-llama/Llama-2-13b-chat-hf, but running into error:<br>self.is_model_parallel\
+          \ = self.args.device != torch.device(devices[0])<br>IndexError: list index\
+          \ out of range</p>\n<p>When I remove device_map=\"auto\", there are other\
+          \ error line NotImplementedError: Cannot copy out of meta tensor; no data!</p>\n\
+          <p>And when I set device_map completely on GPU, using {\"\":0}, I am getting\
+          \ error:RuntimeError: No CUDA GPUs are available</p>\n<p>Is there any particular\
+          \ solution around it as I am new to all this. I am running this in gcp g2-standard-12\
+          \ VM with nvidia L4 GPU. GPU memory is maybe around 24gb</p>\n"
+        raw: "import os\r\nimport sys\r\nfrom typing import List\r\nimport re\r\n\r\
+          \nimport fire\r\nimport torch\r\nimport torch.nn as nn\r\nimport bitsandbytes\
+          \ as bnb\r\nfrom datasets import load_dataset\r\nimport transformers\r\n\
+          from peft import LoraConfig, PeftModel\r\n\r\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer, pipeline, BitsAndBytesConfig\r\nfrom peft import (\r\n\
+          \    prepare_model_for_int8_training,\r\n    LoraConfig,\r\n    get_peft_model,\r\
+          \n    get_peft_model_state_dict,\r\n)\r\n\r\n\r\ndef train(\r\n    # model/data\
+          \ params\r\n    base_model: str = \"\",  # the only required argument\r\n\
+          \    data_path: str = \"./alpaca_data_cleaned.json\",\r\n    output_dir:\
+          \ str = \"./lora-alpaca\",\r\n    # training hyperparams\r\n    batch_size:\
+          \ int = 128,\r\n    micro_batch_size: int = 4,\r\n    num_epochs: int =\
+          \ 3,\r\n    learning_rate: float = 3e-4,\r\n    cutoff_len: int = 512,\r\
+          \n    val_set_size: int = 0,\r\n    # lora hyperparams\r\n    lora_r: int\
+          \ = 8,\r\n    lora_alpha: int = 16,\r\n    lora_dropout: float = 0.05,\r\
+          \n    lora_target_modules: List[str] = [\r\n        \"q_proj\",\r\n    \
+          \    \"v_proj\",\r\n    ],\r\n    # llm hyperparams\r\n    train_on_inputs:\
+          \ bool = True,  # if False, masks out inputs in loss\r\n    group_by_length:\
+          \ bool = True,  # faster, but produces an odd training loss curve\r\n  \
+          \  # other\r\n    mask: bool = False,\r\n):\r\n    print(\r\n        f\"\
+          Training Alpaca-LoRA model with params:\\n\"\r\n        f\"base_model: {base_model}\\\
+          n\"\r\n        f\"data_path: {data_path}\\n\"\r\n        f\"output_dir:\
+          \ {output_dir}\\n\"\r\n        f\"batch_size: {batch_size}\\n\"\r\n    \
+          \    f\"micro_batch_size: {micro_batch_size}\\n\"\r\n        f\"num_epochs:\
+          \ {num_epochs}\\n\"\r\n        f\"learning_rate: {learning_rate}\\n\"\r\n\
+          \        f\"cutoff_len: {cutoff_len}\\n\"\r\n        f\"val_set_size: {val_set_size}\\\
+          n\"\r\n        f\"lora_r: {lora_r}\\n\"\r\n        f\"lora_alpha: {lora_alpha}\\\
+          n\"\r\n        f\"lora_dropout: {lora_dropout}\\n\"\r\n        f\"lora_target_modules:\
+          \ {lora_target_modules}\\n\"\r\n        f\"train_on_inputs: {train_on_inputs}\\\
+          n\"\r\n        f\"group_by_length: {group_by_length}\\n\"\r\n    )\r\n \
+          \   assert (\r\n        base_model \r\n    ), \"Please specify a --base_model,\
+          \ e.g. --base_model='decapoda-research/llama-7b-hf'\"\r\n    gradient_accumulation_steps\
+          \ = batch_size // micro_batch_size\r\n\r\n    #quantization_config = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True,load_in_4bit=True,\
+          \ bnb_4bit_compute_dtype=torch.float16)\r\n    device_map = \"auto\"\r\n\
+          \    world_size = int(os.environ.get(\"WORLD_SIZE\", 1))\r\n    ddp = world_size\
+          \ != 1\r\n    if ddp:\r\n        device_map = {\"\": int(os.environ.get(\"\
+          LOCAL_RANK\") or 0)}\r\n        gradient_accumulation_steps = gradient_accumulation_steps\
+          \ // world_size\r\n\r\n\r\n    model = AutoModelForCausalLM.from_pretrained(\r\
+          \n        base_model,\r\n        return_dict=True,\r\n        torch_dtype=torch.float32,\r\
+          \n        device_map=device_map\r\n    )\r\n\r\n    tokenizer = AutoTokenizer.from_pretrained(base_model)\r\
+          \n\r\n    tokenizer.pad_token_id = 0  # unk. we want this to be different\
+          \ from the eos token\r\n    tokenizer.padding_side = \"left\"  # Allow batched\
+          \ inference\r\n\r\n    def tokenize(prompt, add_eos_token=True):\r\n   \
+          \     # there's probably a way to do this with the tokenizer settings\r\n\
+          \        # but again, gotta move fast\r\n\r\n        if mask:\r\n      \
+          \      print('Masking Obersevation')\r\n            tokenizer.mask_token\
+          \ = \"~\"\r\n\r\n            # Split the input text into lines\r\n     \
+          \       lines = prompt.split('\\n')\r\n\r\n            # Initialize an empty\
+          \ list to store the modified lines\r\n            masked_lines = []\r\n\r\
+          \n            # Initialize a flag to indicate if we are between \"Observation:\"\
+          \ and \"Thought:\"\r\n            between_observation_and_thought = False\r\
+          \n\r\n            # Iterate through each line\r\n            for line in\
+          \ lines:\r\n                if \"Observation:\" in line:\r\n           \
+          \         between_observation_and_thought = True\r\n                   \
+          \ #split the line and mask all but the first word\r\n                  \
+          \  line = line.split()\r\n                    line[1:] = [tokenizer.mask_token]\
+          \ * len(line[1:])\r\n                    line = \" \".join(line)\r\n   \
+          \                 masked_lines.append(line)  # Add the line as-is\r\n  \
+          \              else:\r\n                    masked_lines.append(line)  #\
+          \ Add the line as-is\r\n\r\n            # Concatenate the modified lines\
+          \ to form the masked text\r\n            masked_text = '\\n'.join(masked_lines)\r\
+          \n\r\n            prompt = masked_text\r\n\r\n        result = tokenizer(\r\
+          \n            prompt,\r\n            truncation=True,\r\n            max_length=cutoff_len,\r\
+          \n            padding=False,\r\n            return_tensors=None\r\n    \
+          \    )\r\n\r\n        if (\r\n            result[\"input_ids\"][-1] != tokenizer.eos_token_id\r\
+          \n            and len(result[\"input_ids\"]) < cutoff_len\r\n          \
+          \  and add_eos_token\r\n        ):\r\n            result[\"input_ids\"].append(tokenizer.eos_token_id)\r\
+          \n            result[\"attention_mask\"].append(1)\r\n        else:\r\n\
+          \            if len(result[\"input_ids\"]) >= cutoff_len:\r\n          \
+          \      print(\"WARNING: input too long, truncating\")\r\n\r\n        masked_token_id\
+          \ = tokenizer.mask_token_id\r\n        ids = [-100 if token_id == 3695 else\
+          \ token_id for token_id in result[\"input_ids\"]]\r\n\r\n        result[\"\
+          labels\"] = result[\"input_ids\"].copy()\r\n\r\n        return result\r\n\
+          \r\n    def generate_and_tokenize_prompt(data_point):\r\n        full_prompt\
+          \ = generate_prompt(data_point)\r\n        tokenized_full_prompt = tokenize(full_prompt)\r\
+          \n        if not train_on_inputs:\r\n            user_prompt = generate_prompt({**data_point,\
+          \ \"output\": \"\"})\r\n            tokenized_user_prompt = tokenize(user_prompt,\
+          \ add_eos_token=False)\r\n            user_prompt_len = len(tokenized_user_prompt[\"\
+          input_ids\"])\r\n\r\n            tokenized_full_prompt[\"labels\"] = [\r\
+          \n                -100\r\n            ] * user_prompt_len + tokenized_full_prompt[\"\
+          labels\"][\r\n                user_prompt_len:\r\n            ]  # could\
+          \ be sped up, probably\r\n        return tokenized_full_prompt\r\n\r\n \
+          \   model = prepare_model_for_int8_training(model)\r\n\r\n    config = LoraConfig(\r\
+          \n        r=lora_r,\r\n        lora_alpha=lora_alpha,\r\n        target_modules=lora_target_modules,\r\
+          \n        lora_dropout=lora_dropout,\r\n        bias=\"none\",\r\n     \
+          \   task_type=\"CAUSAL_LM\",\r\n    )\r\n    model = get_peft_model(model,\
+          \ config)\r\n\r\n    data = load_dataset(\"json\", data_files=data_path)\r\
+          \n\r\n    if val_set_size > 0:\r\n        train_val = data[\"train\"].train_test_split(\r\
+          \n            test_size=val_set_size, shuffle=True, seed=42\r\n        )\r\
+          \n        train_data = train_val[\"train\"].shuffle().map(generate_and_tokenize_prompt)\r\
+          \n        val_data = train_val[\"test\"].shuffle().map(generate_and_tokenize_prompt)\r\
+          \n    else:\r\n        train_data = data[\"train\"].shuffle().map(generate_and_tokenize_prompt)\r\
+          \n        val_data = None\r\n\r\n    trainer = transformers.Trainer(\r\n\
+          \        model=model,\r\n        train_dataset=train_data,\r\n        eval_dataset=val_data,\r\
+          \n        args=transformers.TrainingArguments(\r\n            per_device_train_batch_size=micro_batch_size,\r\
+          \n            gradient_accumulation_steps=gradient_accumulation_steps,\r\
+          \n            warmup_steps=100,\r\n            num_train_epochs=num_epochs,\r\
+          \n            learning_rate=learning_rate,\r\n            logging_steps=10,\r\
+          \n            evaluation_strategy=\"steps\" if val_set_size > 0 else \"\
+          no\",\r\n            save_strategy=\"steps\",\r\n            eval_steps=200\
+          \ if val_set_size > 0 else None,\r\n            save_steps=200,\r\n    \
+          \        output_dir=output_dir,\r\n            save_total_limit=3,\r\n \
+          \           load_best_model_at_end=True if val_set_size > 0 else False,\r\
+          \n            ddp_find_unused_parameters=False if ddp else None,\r\n   \
+          \         group_by_length=group_by_length,\r\n        ),\r\n        data_collator=transformers.DataCollatorForSeq2Seq(\r\
+          \n            tokenizer, pad_to_multiple_of=8, return_tensors=\"pt\", padding=True\r\
+          \n        ),\r\n    )\r\n    model.config.use_cache = False\r\n\r\n    if\
+          \ torch.__version__ >= \"2\" and sys.platform != \"win32\":\r\n        model\
+          \ = torch.compile(model)\r\n\r\n    trainer.train()\r\n\r\n    model.save_pretrained(output_dir)\r\
+          \n    \r\n    merge_model = AutoModelForCausalLM.from_pretrained(\r\n  \
+          \  base_model,\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\
+          \n    torch_dtype=torch.float16,\r\n    device_map=device_map,\r\n    )\r\
+          \n    model = PeftModel.from_pretrained(merge_model, output_dir)\r\n   \
+          \ model = model.merge_and_unload()\r\n\r\n    # Reload tokenizer to save\
+          \ it\r\n    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)\r\
+          \n    tokenizer.pad_token = tokenizer.eos_token\r\n    tokenizer.padding_side\
+          \ = \"right\"\r\n    \r\n    model.push_to_hub(output_dir, use_temp_dir=False)\r\
+          \n    tokenizer.push_to_hub(output_dir, use_temp_dir=False)\r\n\r\n    print(\"\
+          \\n If there's a warning about missing keys above, please disregard :)\"\
+          )\r\n    while True:\r\n      prompt = input(\"Enter a prompt: \")\r\n \
+          \     if prompt==\"exit\":\r\n          break\r\n      pipe = pipeline(task=\"\
+          text-generation\", model=model, tokenizer=tokenizer, max_length=200)\r\n\
+          \      result = pipe(f\"<s>[INST] {prompt} [/INST]\")\r\n      print(result[0]['generated_text'])\r\
+          \n      print(\"You can end the session by typing exit\")\r\n\r\ndef generate_prompt(data_point):\r\
+          \n    print(data_point)\r\n    # sorry about the formatting disaster gotta\
+          \ move fast\r\n    if data_point[\"input\"]:\r\n        return f\"\"\"Below\
+          \ is an instruction that describes a task, paired with an input that provides\
+          \ further context. Write a response that appropriately completes the request.\r\
+          \n\r\n### Instruction:\r\n{data_point[\"instruction\"]}\r\n\r\n### Input:\r\
+          \n{data_point[\"input\"]}\r\n\r\n### Response:\r\n{data_point[\"output\"\
+          ]}\"\"\"\r\n    else:\r\n        return f\"\"\"Below is an instruction that\
+          \ describes a task. Write a response that appropriately completes the request.\r\
+          \n\r\n### Instruction:\r\n{data_point[\"instruction\"]}\r\n\r\n### Response:\r\
+          \n{data_point[\"output\"]}\"\"\"\r\n\r\n\r\nif __name__ == \"__main__\"\
+          :\r\n    fire.Fire(train)\r\n\r\n\r\nAbove is my finetuning code. I am trying\
+          \ to finetune meta-llama/Llama-2-13b-chat-hf, but running into error: \r\
+          \nself.is_model_parallel = self.args.device != torch.device(devices[0])\r\
+          \nIndexError: list index out of range\r\n\r\nWhen I remove device_map=\"\
+          auto\", there are other error line NotImplementedError: Cannot copy out\
+          \ of meta tensor; no data!\r\n\r\nAnd when I set device_map completely on\
+          \ GPU, using {\"\":0}, I am getting error:RuntimeError: No CUDA GPUs are\
+          \ available\r\n\r\nIs there any particular solution around it as I am new\
+          \ to all this. I am running this in gcp g2-standard-12 VM with nvidia L4\
+          \ GPU. GPU memory is maybe around 24gb\r\n"
+        updatedAt: '2023-11-28T08:52:08.280Z'
+      numEdits: 0
+      reactions: []
+    id: 6565aa38ee904e90dc42bb13
+    type: comment
+  author: ashk72
+  content: "import os\r\nimport sys\r\nfrom typing import List\r\nimport re\r\n\r\n\
+    import fire\r\nimport torch\r\nimport torch.nn as nn\r\nimport bitsandbytes as\
+    \ bnb\r\nfrom datasets import load_dataset\r\nimport transformers\r\nfrom peft\
+    \ import LoraConfig, PeftModel\r\n\r\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoTokenizer, pipeline, BitsAndBytesConfig\r\nfrom peft import (\r\n    prepare_model_for_int8_training,\r\
+    \n    LoraConfig,\r\n    get_peft_model,\r\n    get_peft_model_state_dict,\r\n\
+    )\r\n\r\n\r\ndef train(\r\n    # model/data params\r\n    base_model: str = \"\
+    \",  # the only required argument\r\n    data_path: str = \"./alpaca_data_cleaned.json\"\
+    ,\r\n    output_dir: str = \"./lora-alpaca\",\r\n    # training hyperparams\r\n\
+    \    batch_size: int = 128,\r\n    micro_batch_size: int = 4,\r\n    num_epochs:\
+    \ int = 3,\r\n    learning_rate: float = 3e-4,\r\n    cutoff_len: int = 512,\r\
+    \n    val_set_size: int = 0,\r\n    # lora hyperparams\r\n    lora_r: int = 8,\r\
+    \n    lora_alpha: int = 16,\r\n    lora_dropout: float = 0.05,\r\n    lora_target_modules:\
+    \ List[str] = [\r\n        \"q_proj\",\r\n        \"v_proj\",\r\n    ],\r\n  \
+    \  # llm hyperparams\r\n    train_on_inputs: bool = True,  # if False, masks out\
+    \ inputs in loss\r\n    group_by_length: bool = True,  # faster, but produces\
+    \ an odd training loss curve\r\n    # other\r\n    mask: bool = False,\r\n):\r\
+    \n    print(\r\n        f\"Training Alpaca-LoRA model with params:\\n\"\r\n  \
+    \      f\"base_model: {base_model}\\n\"\r\n        f\"data_path: {data_path}\\\
+    n\"\r\n        f\"output_dir: {output_dir}\\n\"\r\n        f\"batch_size: {batch_size}\\\
+    n\"\r\n        f\"micro_batch_size: {micro_batch_size}\\n\"\r\n        f\"num_epochs:\
+    \ {num_epochs}\\n\"\r\n        f\"learning_rate: {learning_rate}\\n\"\r\n    \
+    \    f\"cutoff_len: {cutoff_len}\\n\"\r\n        f\"val_set_size: {val_set_size}\\\
+    n\"\r\n        f\"lora_r: {lora_r}\\n\"\r\n        f\"lora_alpha: {lora_alpha}\\\
+    n\"\r\n        f\"lora_dropout: {lora_dropout}\\n\"\r\n        f\"lora_target_modules:\
+    \ {lora_target_modules}\\n\"\r\n        f\"train_on_inputs: {train_on_inputs}\\\
+    n\"\r\n        f\"group_by_length: {group_by_length}\\n\"\r\n    )\r\n    assert\
+    \ (\r\n        base_model \r\n    ), \"Please specify a --base_model, e.g. --base_model='decapoda-research/llama-7b-hf'\"\
+    \r\n    gradient_accumulation_steps = batch_size // micro_batch_size\r\n\r\n \
+    \   #quantization_config = BitsAndBytesConfig(llm_int8_enable_fp32_cpu_offload=True,load_in_4bit=True,\
+    \ bnb_4bit_compute_dtype=torch.float16)\r\n    device_map = \"auto\"\r\n    world_size\
+    \ = int(os.environ.get(\"WORLD_SIZE\", 1))\r\n    ddp = world_size != 1\r\n  \
+    \  if ddp:\r\n        device_map = {\"\": int(os.environ.get(\"LOCAL_RANK\") or\
+    \ 0)}\r\n        gradient_accumulation_steps = gradient_accumulation_steps //\
+    \ world_size\r\n\r\n\r\n    model = AutoModelForCausalLM.from_pretrained(\r\n\
+    \        base_model,\r\n        return_dict=True,\r\n        torch_dtype=torch.float32,\r\
+    \n        device_map=device_map\r\n    )\r\n\r\n    tokenizer = AutoTokenizer.from_pretrained(base_model)\r\
+    \n\r\n    tokenizer.pad_token_id = 0  # unk. we want this to be different from\
+    \ the eos token\r\n    tokenizer.padding_side = \"left\"  # Allow batched inference\r\
+    \n\r\n    def tokenize(prompt, add_eos_token=True):\r\n        # there's probably\
+    \ a way to do this with the tokenizer settings\r\n        # but again, gotta move\
+    \ fast\r\n\r\n        if mask:\r\n            print('Masking Obersevation')\r\n\
+    \            tokenizer.mask_token = \"~\"\r\n\r\n            # Split the input\
+    \ text into lines\r\n            lines = prompt.split('\\n')\r\n\r\n         \
+    \   # Initialize an empty list to store the modified lines\r\n            masked_lines\
+    \ = []\r\n\r\n            # Initialize a flag to indicate if we are between \"\
+    Observation:\" and \"Thought:\"\r\n            between_observation_and_thought\
+    \ = False\r\n\r\n            # Iterate through each line\r\n            for line\
+    \ in lines:\r\n                if \"Observation:\" in line:\r\n              \
+    \      between_observation_and_thought = True\r\n                    #split the\
+    \ line and mask all but the first word\r\n                    line = line.split()\r\
+    \n                    line[1:] = [tokenizer.mask_token] * len(line[1:])\r\n  \
+    \                  line = \" \".join(line)\r\n                    masked_lines.append(line)\
+    \  # Add the line as-is\r\n                else:\r\n                    masked_lines.append(line)\
+    \  # Add the line as-is\r\n\r\n            # Concatenate the modified lines to\
+    \ form the masked text\r\n            masked_text = '\\n'.join(masked_lines)\r\
+    \n\r\n            prompt = masked_text\r\n\r\n        result = tokenizer(\r\n\
+    \            prompt,\r\n            truncation=True,\r\n            max_length=cutoff_len,\r\
+    \n            padding=False,\r\n            return_tensors=None\r\n        )\r\
+    \n\r\n        if (\r\n            result[\"input_ids\"][-1] != tokenizer.eos_token_id\r\
+    \n            and len(result[\"input_ids\"]) < cutoff_len\r\n            and add_eos_token\r\
+    \n        ):\r\n            result[\"input_ids\"].append(tokenizer.eos_token_id)\r\
+    \n            result[\"attention_mask\"].append(1)\r\n        else:\r\n      \
+    \      if len(result[\"input_ids\"]) >= cutoff_len:\r\n                print(\"\
+    WARNING: input too long, truncating\")\r\n\r\n        masked_token_id = tokenizer.mask_token_id\r\
+    \n        ids = [-100 if token_id == 3695 else token_id for token_id in result[\"\
+    input_ids\"]]\r\n\r\n        result[\"labels\"] = result[\"input_ids\"].copy()\r\
+    \n\r\n        return result\r\n\r\n    def generate_and_tokenize_prompt(data_point):\r\
+    \n        full_prompt = generate_prompt(data_point)\r\n        tokenized_full_prompt\
+    \ = tokenize(full_prompt)\r\n        if not train_on_inputs:\r\n            user_prompt\
+    \ = generate_prompt({**data_point, \"output\": \"\"})\r\n            tokenized_user_prompt\
+    \ = tokenize(user_prompt, add_eos_token=False)\r\n            user_prompt_len\
+    \ = len(tokenized_user_prompt[\"input_ids\"])\r\n\r\n            tokenized_full_prompt[\"\
+    labels\"] = [\r\n                -100\r\n            ] * user_prompt_len + tokenized_full_prompt[\"\
+    labels\"][\r\n                user_prompt_len:\r\n            ]  # could be sped\
+    \ up, probably\r\n        return tokenized_full_prompt\r\n\r\n    model = prepare_model_for_int8_training(model)\r\
+    \n\r\n    config = LoraConfig(\r\n        r=lora_r,\r\n        lora_alpha=lora_alpha,\r\
+    \n        target_modules=lora_target_modules,\r\n        lora_dropout=lora_dropout,\r\
+    \n        bias=\"none\",\r\n        task_type=\"CAUSAL_LM\",\r\n    )\r\n    model\
+    \ = get_peft_model(model, config)\r\n\r\n    data = load_dataset(\"json\", data_files=data_path)\r\
+    \n\r\n    if val_set_size > 0:\r\n        train_val = data[\"train\"].train_test_split(\r\
+    \n            test_size=val_set_size, shuffle=True, seed=42\r\n        )\r\n \
+    \       train_data = train_val[\"train\"].shuffle().map(generate_and_tokenize_prompt)\r\
+    \n        val_data = train_val[\"test\"].shuffle().map(generate_and_tokenize_prompt)\r\
+    \n    else:\r\n        train_data = data[\"train\"].shuffle().map(generate_and_tokenize_prompt)\r\
+    \n        val_data = None\r\n\r\n    trainer = transformers.Trainer(\r\n     \
+    \   model=model,\r\n        train_dataset=train_data,\r\n        eval_dataset=val_data,\r\
+    \n        args=transformers.TrainingArguments(\r\n            per_device_train_batch_size=micro_batch_size,\r\
+    \n            gradient_accumulation_steps=gradient_accumulation_steps,\r\n   \
+    \         warmup_steps=100,\r\n            num_train_epochs=num_epochs,\r\n  \
+    \          learning_rate=learning_rate,\r\n            logging_steps=10,\r\n \
+    \           evaluation_strategy=\"steps\" if val_set_size > 0 else \"no\",\r\n\
+    \            save_strategy=\"steps\",\r\n            eval_steps=200 if val_set_size\
+    \ > 0 else None,\r\n            save_steps=200,\r\n            output_dir=output_dir,\r\
+    \n            save_total_limit=3,\r\n            load_best_model_at_end=True if\
+    \ val_set_size > 0 else False,\r\n            ddp_find_unused_parameters=False\
+    \ if ddp else None,\r\n            group_by_length=group_by_length,\r\n      \
+    \  ),\r\n        data_collator=transformers.DataCollatorForSeq2Seq(\r\n      \
+    \      tokenizer, pad_to_multiple_of=8, return_tensors=\"pt\", padding=True\r\n\
+    \        ),\r\n    )\r\n    model.config.use_cache = False\r\n\r\n    if torch.__version__\
+    \ >= \"2\" and sys.platform != \"win32\":\r\n        model = torch.compile(model)\r\
+    \n\r\n    trainer.train()\r\n\r\n    model.save_pretrained(output_dir)\r\n   \
+    \ \r\n    merge_model = AutoModelForCausalLM.from_pretrained(\r\n    base_model,\r\
+    \n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\n    torch_dtype=torch.float16,\r\
+    \n    device_map=device_map,\r\n    )\r\n    model = PeftModel.from_pretrained(merge_model,\
+    \ output_dir)\r\n    model = model.merge_and_unload()\r\n\r\n    # Reload tokenizer\
+    \ to save it\r\n    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)\r\
+    \n    tokenizer.pad_token = tokenizer.eos_token\r\n    tokenizer.padding_side\
+    \ = \"right\"\r\n    \r\n    model.push_to_hub(output_dir, use_temp_dir=False)\r\
+    \n    tokenizer.push_to_hub(output_dir, use_temp_dir=False)\r\n\r\n    print(\"\
+    \\n If there's a warning about missing keys above, please disregard :)\")\r\n\
+    \    while True:\r\n      prompt = input(\"Enter a prompt: \")\r\n      if prompt==\"\
+    exit\":\r\n          break\r\n      pipe = pipeline(task=\"text-generation\",\
+    \ model=model, tokenizer=tokenizer, max_length=200)\r\n      result = pipe(f\"\
+    <s>[INST] {prompt} [/INST]\")\r\n      print(result[0]['generated_text'])\r\n\
+    \      print(\"You can end the session by typing exit\")\r\n\r\ndef generate_prompt(data_point):\r\
+    \n    print(data_point)\r\n    # sorry about the formatting disaster gotta move\
+    \ fast\r\n    if data_point[\"input\"]:\r\n        return f\"\"\"Below is an instruction\
+    \ that describes a task, paired with an input that provides further context. Write\
+    \ a response that appropriately completes the request.\r\n\r\n### Instruction:\r\
+    \n{data_point[\"instruction\"]}\r\n\r\n### Input:\r\n{data_point[\"input\"]}\r\
+    \n\r\n### Response:\r\n{data_point[\"output\"]}\"\"\"\r\n    else:\r\n       \
+    \ return f\"\"\"Below is an instruction that describes a task. Write a response\
+    \ that appropriately completes the request.\r\n\r\n### Instruction:\r\n{data_point[\"\
+    instruction\"]}\r\n\r\n### Response:\r\n{data_point[\"output\"]}\"\"\"\r\n\r\n\
+    \r\nif __name__ == \"__main__\":\r\n    fire.Fire(train)\r\n\r\n\r\nAbove is my\
+    \ finetuning code. I am trying to finetune meta-llama/Llama-2-13b-chat-hf, but\
+    \ running into error: \r\nself.is_model_parallel = self.args.device != torch.device(devices[0])\r\
+    \nIndexError: list index out of range\r\n\r\nWhen I remove device_map=\"auto\"\
+    , there are other error line NotImplementedError: Cannot copy out of meta tensor;\
+    \ no data!\r\n\r\nAnd when I set device_map completely on GPU, using {\"\":0},\
+    \ I am getting error:RuntimeError: No CUDA GPUs are available\r\n\r\nIs there\
+    \ any particular solution around it as I am new to all this. I am running this\
+    \ in gcp g2-standard-12 VM with nvidia L4 GPU. GPU memory is maybe around 24gb\r\
+    \n"
+  created_at: 2023-11-28 08:52:08+00:00
+  edited: false
+  hidden: false
+  id: 6565aa38ee904e90dc42bb13
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: forestai/fireact_llama_2_13b_lora
+repo_type: model
+status: open
+target_branch: null
+title: Error in finetuning

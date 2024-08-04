@@ -1,0 +1,715 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: salma-elshafey
+conflicting_files: null
+created_at: 2022-05-26 12:23:57+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+      fullname: Salma El-Shafey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: salma-elshafey
+      type: user
+    createdAt: '2022-05-26T13:23:57.000Z'
+    data:
+      edited: false
+      editors:
+      - salma-elshafey
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+          fullname: Salma El-Shafey
+          isHf: false
+          isPro: false
+          name: salma-elshafey
+          type: user
+        html: "<p>Hello! Thank you so much for sharing your code :)<br>I have a question,\
+          \ though. I followed a similar code to yours to machine translation task\
+          \ using a pre-trained BERT model on Arabic language named AraBERT as an\
+          \ encoder, and GPT2 as a decoder and fine-tune on a small dataset just to\
+          \ see what the results will look like. However, the model predicts a bunch\
+          \ of exclamation marks \"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\"\
+          . Do you know what the cause of the problem may be and how to solve it?</p>\n\
+          <p>Here is my full code:</p>\n<p>import numpy as np<br>import logging<br>import\
+          \ torch<br>from transformers import BertTokenizer, GPT2Tokenizer, EncoderDecoderModel,\
+          \ Seq2SeqTrainer, Seq2SeqTrainingArguments<br>from datasets import load_dataset,\
+          \ load_metric, DatasetDict, Dataset<br>logging.basicConfig(level=logging.INFO)<br>#arabert_model\
+          \ = AutoModel.from_pretrained(\"bert-base-arabertv02/\")<br>#gpt2_model\
+          \ = AutoModel.from_pretrained(\"gpt2/\")<br>model = EncoderDecoderModel.from_encoder_decoder_pretrained(\"\
+          bert-base-arabertv02/\", \"gpt2/\")</p>\n<h1 id=\"cache-is-currently-not-supported-by-encoderdecoder-framework\"\
+          >cache is currently not supported by EncoderDecoder framework</h1>\n<p>model.decoder.config.use_cache\
+          \ = False<br>bert_tokenizer = BertTokenizer.from_pretrained(\"bert-base-arabertv02/\"\
+          )</p>\n<h1 id=\"cls-token-will-work-as-bos-token\">CLS token will work as\
+          \ BOS token</h1>\n<p>bert_tokenizer.bos_token = bert_tokenizer.cls_token</p>\n\
+          <h1 id=\"sep-token-will-work-as-eos-token\">SEP token will work as EOS token</h1>\n\
+          <p>bert_tokenizer.eos_token = bert_tokenizer.sep_token</p>\n<h1 id=\"make-sure-gpt2-appends-eos-in-begin-and-end\"\
+          >make sure GPT2 appends EOS in begin and end</h1>\n<p>def build_inputs_with_special_tokens(self,\
+          \ token_ids_0, token_ids_1=None):<br>    outputs = [self.bos_token_id] +\
+          \ token_ids_0 + [self.eos_token_id]<br>    return outputs</p>\n<p>GPT2Tokenizer.build_inputs_with_special_tokens\
+          \ = build_inputs_with_special_tokens<br>gpt2_tokenizer = GPT2Tokenizer.from_pretrained(\"\
+          gpt2/\")</p>\n<h1 id=\"set-pad_token_id-to-unk_token_id---be-careful-here-as-unk_token_id--eos_token_id--bos_token_id\"\
+          >set pad_token_id to unk_token_id -&gt; be careful here as unk_token_id\
+          \ == eos_token_id == bos_token_id</h1>\n<p>gpt2_tokenizer.pad_token = gpt2_tokenizer.unk_token</p>\n\
+          <h1 id=\"set-decoding-params\">set decoding params</h1>\n<p>model.config.decoder_start_token_id\
+          \ = gpt2_tokenizer.bos_token_id<br>model.config.eos_token_id = gpt2_tokenizer.eos_token_id<br>model.config.pad_token_id\
+          \ = bert_tokenizer.pad_token_id<br>model.config.max_length = 142<br>model.config.min_length\
+          \ = 1<br>model.config.no_repeat_ngram_size = 3<br>model.early_stopping =\
+          \ True<br>model.length_penalty = 2.0<br>model.num_beams = 5</p>\n<h1 id=\"\
+          load-train-and-validation-data\">load train and validation data</h1>\n<p>dataset\
+          \ = load_dataset(\"ted_talks_iwslt\", language_pair=(\"ar\", \"en\"), year=\"\
+          2014\")<br>metric = load_metric(\"sacrebleu\")<br>dataset = dataset['train']<br>train_test\
+          \ = dataset.train_test_split(0.2)<br>train_test_dataset = DatasetDict({<br>\
+          \   'train': train_test['train'],<br>   'test': train_test['test']})<br>encoder_length\
+          \ = 128<br>decoder_length = 128<br>batch_size = 1</p>\n<h1 id=\"map-data-correctly\"\
+          >map data correctly</h1>\n<p>def map_to_encoder_decoder_inputs(batch): \
+          \   # Tokenizer will automatically set [BOS] </p>\n<pre><code>batch[\"input_ids\"\
+          ] = inputs.input_ids\nbatch[\"attention_mask\"] = inputs.attention_mask\n\
+          batch[\"decoder_input_ids\"] = outputs.input_ids\nbatch[\"labels\"] = outputs.input_ids.copy()\n\
+          batch[\"decoder_attention_mask\"] = outputs.attention_mask\n\n# complicated\
+          \ list comprehension here because pad_token_id alone is not good enough\
+          \ to know whether label should be excluded or not\nbatch[\"labels\"] = [\n\
+          \    [-100 if mask == 0 else token for mask, token in mask_and_tokens] for\
+          \ mask_and_tokens in [zip(masks, labels) for masks, labels in zip(batch[\"\
+          decoder_attention_mask\"], batch[\"labels\"])]\n]\n\nassert all([len(x)\
+          \ == encoder_length for x in inputs.input_ids])\nassert all([len(x) == decoder_length\
+          \ for x in outputs.input_ids])\nreturn batch\n</code></pre>\n<p>def postprocess_text(preds,\
+          \ labels):<br>    preds = [pred.strip() for pred in preds]<br>    labels\
+          \ = [[label.strip()] for label in labels]</p>\n<pre><code>return preds,\
+          \ labels\n</code></pre>\n<p>def compute_metrics(eval_preds):<br>  torch.cuda.empty_cache()<br>\
+          \  with torch.no_grad():<br>    label_ids = eval_preds.label_ids</p>\n<h1\
+          \ id=\"printlabel-ids--label_ids\">print(\"LABEL IDS: \", label_ids)</h1>\n\
+          <pre><code>pred_ids = eval_preds.predictions\n#preds, labels = eval_preds\n\
+          if isinstance(pred_ids, tuple):\n    pred_ids = pred_ids[0]\n</code></pre>\n\
+          <h1 id=\"printprediction-ids--pred_ids\">print(\"PREDICTION IDS: \", pred_ids)</h1>\n\
+          <pre><code>decoded_preds = gpt2_tokenizer.batch_decode(pred_ids, skip_special_tokens=True)\n\
+          </code></pre>\n<h1 id=\"replace--100-in-the-labels-as-we-cant-decode-them\"\
+          >Replace -100 in the labels as we can't decode them.</h1>\n<pre><code>label_ids\
+          \ = np.where(label_ids != -100, label_ids, bert_tokenizer.pad_token_id)\n\
+          label_ids[label_ids == -100] = gpt2_tokenizer.eos_token_id\ndecoded_labels\
+          \ = gpt2_tokenizer.batch_decode(label_ids, skip_special_tokens=True)\nfile\
+          \ = open(\"reference sentences iwslt test\", \"a\")\n# Some simple post-processing\n\
+          decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)\n\
+          for label in decoded_labels:\n  print(\"LABEL: \", label)\nfile2 = open(\"\
+          predicted sentences iwslt test\", \"a\")\nfor pred in decoded_preds:\n \
+          \ print(\"PRED: \", pred)\nresult = metric.compute(predictions=decoded_preds,\
+          \ references=decoded_labels)\nresult = {\"bleu\": result[\"score\"]}\n\n\
+          prediction_lens = [np.count_nonzero(pred != gpt2_tokenizer.pad_token_id)\
+          \ for pred in pred_ids]\nresult[\"gen_len\"] = np.mean(prediction_lens)\n\
+          result = {k: round(v, 4) for k, v in result.items()}\nreturn result\n</code></pre>\n\
+          <h1 id=\"make-train-dataset-ready\">make train dataset ready</h1>\n<p>train_dataset\
+          \ = train_test_dataset.map(<br>    map_to_encoder_decoder_inputs, batched=True,\
+          \ batch_size=batch_size, remove_columns=[\"translation\"],<br>)<br>del(train_test_dataset)<br>train_dataset.set_format(<br>\
+          \    type=\"torch\", columns=[\"input_ids\", \"attention_mask\", \"decoder_input_ids\"\
+          , \"decoder_attention_mask\", \"labels\"],<br>)</p>\n<h1 id=\"same-for-validation-dataset\"\
+          >same for validation dataset</h1>\n<h1 id=\"val_dataset--val_datasetmap\"\
+          >val_dataset = val_dataset.map(</h1>\n<h1 id=\"map_to_encoder_decoder_inputs-batchedtrue-batch_sizebatch_size-remove_columnsar-en\"\
+          >map_to_encoder_decoder_inputs, batched=True, batch_size=batch_size, remove_columns=[\"\
+          ar\", \"en\"],</h1>\n<h1 id=\"\">)</h1>\n<h1 id=\"val_datasetset_format\"\
+          >val_dataset.set_format(</h1>\n<h1 id=\"typetorch-columnsinput_ids-attention_mask-decoder_input_ids-decoder_attention_mask-labels\"\
+          >type=\"torch\", columns=[\"input_ids\", \"attention_mask\", \"decoder_input_ids\"\
+          , \"decoder_attention_mask\", \"labels\"],</h1>\n<h1 id=\"-1\">)</h1>\n\
+          <p>training_args = Seq2SeqTrainingArguments(<br>    f\"arabert2bert-finetuned-ar-to-en-on-iwslt\"\
+          ,<br>    evaluation_strategy=\"epoch\",<br>    learning_rate=2e-5,<br> \
+          \   per_device_train_batch_size=8,<br>    per_device_eval_batch_size=1,<br>\
+          \    weight_decay=0.01,<br>    do_train=True,<br>    do_eval=True,<br> \
+          \   predict_with_generate=True,</p>\n<h1 id=\"eval_accumulation_steps20\"\
+          >eval_accumulation_steps=20,</h1>\n<pre><code>save_total_limit=3,\nnum_train_epochs=1,\n\
+          logging_steps=150,\nfp16=True,\n</code></pre>\n<h1 id=\"no_cudatrue\">no_cuda=True</h1>\n\
+          <p>)</p>\n<p>trainer = Seq2SeqTrainer(model=model, args=training_args, compute_metrics=compute_metrics,\
+          \ train_dataset = train_dataset['train'], eval_dataset=train_dataset['test'])</p>\n\
+          <p>trainer.train()</p>\n<p>Thanks in advance :)</p>\n"
+        raw: "Hello! Thank you so much for sharing your code :)\r\nI have a question,\
+          \ though. I followed a similar code to yours to machine translation task\
+          \ using a pre-trained BERT model on Arabic language named AraBERT as an\
+          \ encoder, and GPT2 as a decoder and fine-tune on a small dataset just to\
+          \ see what the results will look like. However, the model predicts a bunch\
+          \ of exclamation marks \"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\"\
+          . Do you know what the cause of the problem may be and how to solve it?\r\
+          \n\r\nHere is my full code:\r\n\r\nimport numpy as np\r\nimport logging\r\
+          \nimport torch\r\nfrom transformers import BertTokenizer, GPT2Tokenizer,\
+          \ EncoderDecoderModel, Seq2SeqTrainer, Seq2SeqTrainingArguments\r\nfrom\
+          \ datasets import load_dataset, load_metric, DatasetDict, Dataset\r\nlogging.basicConfig(level=logging.INFO)\r\
+          \n#arabert_model = AutoModel.from_pretrained(\"bert-base-arabertv02/\")\r\
+          \n#gpt2_model = AutoModel.from_pretrained(\"gpt2/\")\r\nmodel = EncoderDecoderModel.from_encoder_decoder_pretrained(\"\
+          bert-base-arabertv02/\", \"gpt2/\")\r\n# cache is currently not supported\
+          \ by EncoderDecoder framework\r\nmodel.decoder.config.use_cache = False\r\
+          \nbert_tokenizer = BertTokenizer.from_pretrained(\"bert-base-arabertv02/\"\
+          )\r\n\r\n# CLS token will work as BOS token\r\nbert_tokenizer.bos_token\
+          \ = bert_tokenizer.cls_token\r\n\r\n# SEP token will work as EOS token\r\
+          \nbert_tokenizer.eos_token = bert_tokenizer.sep_token\r\n\r\n\r\n# make\
+          \ sure GPT2 appends EOS in begin and end\r\ndef build_inputs_with_special_tokens(self,\
+          \ token_ids_0, token_ids_1=None):\r\n    outputs = [self.bos_token_id] +\
+          \ token_ids_0 + [self.eos_token_id]\r\n    return outputs\r\n\r\n\r\nGPT2Tokenizer.build_inputs_with_special_tokens\
+          \ = build_inputs_with_special_tokens\r\ngpt2_tokenizer = GPT2Tokenizer.from_pretrained(\"\
+          gpt2/\")\r\n# set pad_token_id to unk_token_id -> be careful here as unk_token_id\
+          \ == eos_token_id == bos_token_id\r\ngpt2_tokenizer.pad_token = gpt2_tokenizer.unk_token\r\
+          \n\r\n\r\n# set decoding params\r\nmodel.config.decoder_start_token_id =\
+          \ gpt2_tokenizer.bos_token_id\r\nmodel.config.eos_token_id = gpt2_tokenizer.eos_token_id\r\
+          \nmodel.config.pad_token_id = bert_tokenizer.pad_token_id\r\nmodel.config.max_length\
+          \ = 142\r\nmodel.config.min_length = 1\r\nmodel.config.no_repeat_ngram_size\
+          \ = 3\r\nmodel.early_stopping = True\r\nmodel.length_penalty = 2.0\r\nmodel.num_beams\
+          \ = 5\r\n\r\n# load train and validation data\r\ndataset = load_dataset(\"\
+          ted_talks_iwslt\", language_pair=(\"ar\", \"en\"), year=\"2014\")\r\nmetric\
+          \ = load_metric(\"sacrebleu\")\r\ndataset = dataset['train']\r\ntrain_test\
+          \ = dataset.train_test_split(0.2)\r\ntrain_test_dataset = DatasetDict({\r\
+          \n   'train': train_test['train'],\r\n   'test': train_test['test']})\r\n\
+          encoder_length = 128\r\ndecoder_length = 128\r\nbatch_size = 1\r\n\r\n#\
+          \ map data correctly\r\ndef map_to_encoder_decoder_inputs(batch):    # Tokenizer\
+          \ will automatically set [BOS] <text> [EOS]\r\n    # use bert tokenizer\
+          \ here for encoder\r\n    inputs = [ex['ar'] for ex in batch['translation']]\r\
+          \n    targets = [ex['en'] for ex in batch['translation']]\r\n    inputs\
+          \ = bert_tokenizer(inputs, padding=\"max_length\", truncation=True, max_length=encoder_length)\r\
+          \n    # force summarization <= 128\r\n    outputs = gpt2_tokenizer(targets,\
+          \ padding=\"max_length\", truncation=True, max_length=decoder_length)\r\n\
+          \r\n    batch[\"input_ids\"] = inputs.input_ids\r\n    batch[\"attention_mask\"\
+          ] = inputs.attention_mask\r\n    batch[\"decoder_input_ids\"] = outputs.input_ids\r\
+          \n    batch[\"labels\"] = outputs.input_ids.copy()\r\n    batch[\"decoder_attention_mask\"\
+          ] = outputs.attention_mask\r\n\r\n    # complicated list comprehension here\
+          \ because pad_token_id alone is not good enough to know whether label should\
+          \ be excluded or not\r\n    batch[\"labels\"] = [\r\n        [-100 if mask\
+          \ == 0 else token for mask, token in mask_and_tokens] for mask_and_tokens\
+          \ in [zip(masks, labels) for masks, labels in zip(batch[\"decoder_attention_mask\"\
+          ], batch[\"labels\"])]\r\n    ]\r\n\r\n    assert all([len(x) == encoder_length\
+          \ for x in inputs.input_ids])\r\n    assert all([len(x) == decoder_length\
+          \ for x in outputs.input_ids])\r\n    return batch\r\n\r\ndef postprocess_text(preds,\
+          \ labels):\r\n    preds = [pred.strip() for pred in preds]\r\n    labels\
+          \ = [[label.strip()] for label in labels]\r\n\r\n    return preds, labels\r\
+          \n\r\ndef compute_metrics(eval_preds):\r\n  torch.cuda.empty_cache()\r\n\
+          \  with torch.no_grad():\r\n    label_ids = eval_preds.label_ids\r\n # \
+          \  print(\"LABEL IDS: \", label_ids)\r\n    pred_ids = eval_preds.predictions\r\
+          \n    #preds, labels = eval_preds\r\n    if isinstance(pred_ids, tuple):\r\
+          \n        pred_ids = pred_ids[0]\r\n\r\n#    print(\"PREDICTION IDS: \"\
+          , pred_ids)\r\n    decoded_preds = gpt2_tokenizer.batch_decode(pred_ids,\
+          \ skip_special_tokens=True)\r\n    \r\n   # Replace -100 in the labels as\
+          \ we can't decode them.\r\n    label_ids = np.where(label_ids != -100, label_ids,\
+          \ bert_tokenizer.pad_token_id)\r\n    label_ids[label_ids == -100] = gpt2_tokenizer.eos_token_id\r\
+          \n    decoded_labels = gpt2_tokenizer.batch_decode(label_ids, skip_special_tokens=True)\r\
+          \n    file = open(\"reference sentences iwslt test\", \"a\")\r\n    # Some\
+          \ simple post-processing\r\n    decoded_preds, decoded_labels = postprocess_text(decoded_preds,\
+          \ decoded_labels)\r\n    for label in decoded_labels:\r\n      print(\"\
+          LABEL: \", label)\r\n    file2 = open(\"predicted sentences iwslt test\"\
+          , \"a\")\r\n    for pred in decoded_preds:\r\n      print(\"PRED: \", pred)\r\
+          \n    result = metric.compute(predictions=decoded_preds, references=decoded_labels)\r\
+          \n    result = {\"bleu\": result[\"score\"]}\r\n\r\n    prediction_lens\
+          \ = [np.count_nonzero(pred != gpt2_tokenizer.pad_token_id) for pred in pred_ids]\r\
+          \n    result[\"gen_len\"] = np.mean(prediction_lens)\r\n    result = {k:\
+          \ round(v, 4) for k, v in result.items()}\r\n    return result\r\n\r\n\r\
+          \n# make train dataset ready\r\ntrain_dataset = train_test_dataset.map(\r\
+          \n    map_to_encoder_decoder_inputs, batched=True, batch_size=batch_size,\
+          \ remove_columns=[\"translation\"],\r\n)\r\ndel(train_test_dataset)\r\n\
+          train_dataset.set_format(\r\n    type=\"torch\", columns=[\"input_ids\"\
+          , \"attention_mask\", \"decoder_input_ids\", \"decoder_attention_mask\"\
+          , \"labels\"],\r\n)\r\n\r\n# same for validation dataset\r\n# val_dataset\
+          \ = val_dataset.map(\r\n#     map_to_encoder_decoder_inputs, batched=True,\
+          \ batch_size=batch_size, remove_columns=[\"ar\", \"en\"],\r\n# )\r\n# val_dataset.set_format(\r\
+          \n#     type=\"torch\", columns=[\"input_ids\", \"attention_mask\", \"decoder_input_ids\"\
+          , \"decoder_attention_mask\", \"labels\"],\r\n# )\r\n\r\ntraining_args =\
+          \ Seq2SeqTrainingArguments(\r\n    f\"arabert2bert-finetuned-ar-to-en-on-iwslt\"\
+          ,\r\n    evaluation_strategy=\"epoch\",\r\n    learning_rate=2e-5,\r\n \
+          \   per_device_train_batch_size=8,\r\n    per_device_eval_batch_size=1,\r\
+          \n    weight_decay=0.01,\r\n    do_train=True,\r\n    do_eval=True,\r\n\
+          \    predict_with_generate=True,\r\n   # eval_accumulation_steps=20,\r\n\
+          \    save_total_limit=3,\r\n    num_train_epochs=1,\r\n    logging_steps=150,\r\
+          \n    fp16=True,\r\n  #  no_cuda=True\r\n)\r\n\r\ntrainer = Seq2SeqTrainer(model=model,\
+          \ args=training_args, compute_metrics=compute_metrics, train_dataset = train_dataset['train'],\
+          \ eval_dataset=train_dataset['test'])\r\n\r\ntrainer.train()\r\n\r\n\r\n\
+          \r\n\r\n\r\nThanks in advance :)"
+        updatedAt: '2022-05-26T13:23:57.000Z'
+      numEdits: 0
+      reactions: []
+    id: 628f7f6d3da3545d146166e3
+    type: comment
+  author: salma-elshafey
+  content: "Hello! Thank you so much for sharing your code :)\r\nI have a question,\
+    \ though. I followed a similar code to yours to machine translation task using\
+    \ a pre-trained BERT model on Arabic language named AraBERT as an encoder, and\
+    \ GPT2 as a decoder and fine-tune on a small dataset just to see what the results\
+    \ will look like. However, the model predicts a bunch of exclamation marks \"\
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\"\
+    . Do you know what the cause of the problem may be and how to solve it?\r\n\r\n\
+    Here is my full code:\r\n\r\nimport numpy as np\r\nimport logging\r\nimport torch\r\
+    \nfrom transformers import BertTokenizer, GPT2Tokenizer, EncoderDecoderModel,\
+    \ Seq2SeqTrainer, Seq2SeqTrainingArguments\r\nfrom datasets import load_dataset,\
+    \ load_metric, DatasetDict, Dataset\r\nlogging.basicConfig(level=logging.INFO)\r\
+    \n#arabert_model = AutoModel.from_pretrained(\"bert-base-arabertv02/\")\r\n#gpt2_model\
+    \ = AutoModel.from_pretrained(\"gpt2/\")\r\nmodel = EncoderDecoderModel.from_encoder_decoder_pretrained(\"\
+    bert-base-arabertv02/\", \"gpt2/\")\r\n# cache is currently not supported by EncoderDecoder\
+    \ framework\r\nmodel.decoder.config.use_cache = False\r\nbert_tokenizer = BertTokenizer.from_pretrained(\"\
+    bert-base-arabertv02/\")\r\n\r\n# CLS token will work as BOS token\r\nbert_tokenizer.bos_token\
+    \ = bert_tokenizer.cls_token\r\n\r\n# SEP token will work as EOS token\r\nbert_tokenizer.eos_token\
+    \ = bert_tokenizer.sep_token\r\n\r\n\r\n# make sure GPT2 appends EOS in begin\
+    \ and end\r\ndef build_inputs_with_special_tokens(self, token_ids_0, token_ids_1=None):\r\
+    \n    outputs = [self.bos_token_id] + token_ids_0 + [self.eos_token_id]\r\n  \
+    \  return outputs\r\n\r\n\r\nGPT2Tokenizer.build_inputs_with_special_tokens =\
+    \ build_inputs_with_special_tokens\r\ngpt2_tokenizer = GPT2Tokenizer.from_pretrained(\"\
+    gpt2/\")\r\n# set pad_token_id to unk_token_id -> be careful here as unk_token_id\
+    \ == eos_token_id == bos_token_id\r\ngpt2_tokenizer.pad_token = gpt2_tokenizer.unk_token\r\
+    \n\r\n\r\n# set decoding params\r\nmodel.config.decoder_start_token_id = gpt2_tokenizer.bos_token_id\r\
+    \nmodel.config.eos_token_id = gpt2_tokenizer.eos_token_id\r\nmodel.config.pad_token_id\
+    \ = bert_tokenizer.pad_token_id\r\nmodel.config.max_length = 142\r\nmodel.config.min_length\
+    \ = 1\r\nmodel.config.no_repeat_ngram_size = 3\r\nmodel.early_stopping = True\r\
+    \nmodel.length_penalty = 2.0\r\nmodel.num_beams = 5\r\n\r\n# load train and validation\
+    \ data\r\ndataset = load_dataset(\"ted_talks_iwslt\", language_pair=(\"ar\", \"\
+    en\"), year=\"2014\")\r\nmetric = load_metric(\"sacrebleu\")\r\ndataset = dataset['train']\r\
+    \ntrain_test = dataset.train_test_split(0.2)\r\ntrain_test_dataset = DatasetDict({\r\
+    \n   'train': train_test['train'],\r\n   'test': train_test['test']})\r\nencoder_length\
+    \ = 128\r\ndecoder_length = 128\r\nbatch_size = 1\r\n\r\n# map data correctly\r\
+    \ndef map_to_encoder_decoder_inputs(batch):    # Tokenizer will automatically\
+    \ set [BOS] <text> [EOS]\r\n    # use bert tokenizer here for encoder\r\n    inputs\
+    \ = [ex['ar'] for ex in batch['translation']]\r\n    targets = [ex['en'] for ex\
+    \ in batch['translation']]\r\n    inputs = bert_tokenizer(inputs, padding=\"max_length\"\
+    , truncation=True, max_length=encoder_length)\r\n    # force summarization <=\
+    \ 128\r\n    outputs = gpt2_tokenizer(targets, padding=\"max_length\", truncation=True,\
+    \ max_length=decoder_length)\r\n\r\n    batch[\"input_ids\"] = inputs.input_ids\r\
+    \n    batch[\"attention_mask\"] = inputs.attention_mask\r\n    batch[\"decoder_input_ids\"\
+    ] = outputs.input_ids\r\n    batch[\"labels\"] = outputs.input_ids.copy()\r\n\
+    \    batch[\"decoder_attention_mask\"] = outputs.attention_mask\r\n\r\n    # complicated\
+    \ list comprehension here because pad_token_id alone is not good enough to know\
+    \ whether label should be excluded or not\r\n    batch[\"labels\"] = [\r\n   \
+    \     [-100 if mask == 0 else token for mask, token in mask_and_tokens] for mask_and_tokens\
+    \ in [zip(masks, labels) for masks, labels in zip(batch[\"decoder_attention_mask\"\
+    ], batch[\"labels\"])]\r\n    ]\r\n\r\n    assert all([len(x) == encoder_length\
+    \ for x in inputs.input_ids])\r\n    assert all([len(x) == decoder_length for\
+    \ x in outputs.input_ids])\r\n    return batch\r\n\r\ndef postprocess_text(preds,\
+    \ labels):\r\n    preds = [pred.strip() for pred in preds]\r\n    labels = [[label.strip()]\
+    \ for label in labels]\r\n\r\n    return preds, labels\r\n\r\ndef compute_metrics(eval_preds):\r\
+    \n  torch.cuda.empty_cache()\r\n  with torch.no_grad():\r\n    label_ids = eval_preds.label_ids\r\
+    \n #   print(\"LABEL IDS: \", label_ids)\r\n    pred_ids = eval_preds.predictions\r\
+    \n    #preds, labels = eval_preds\r\n    if isinstance(pred_ids, tuple):\r\n \
+    \       pred_ids = pred_ids[0]\r\n\r\n#    print(\"PREDICTION IDS: \", pred_ids)\r\
+    \n    decoded_preds = gpt2_tokenizer.batch_decode(pred_ids, skip_special_tokens=True)\r\
+    \n    \r\n   # Replace -100 in the labels as we can't decode them.\r\n    label_ids\
+    \ = np.where(label_ids != -100, label_ids, bert_tokenizer.pad_token_id)\r\n  \
+    \  label_ids[label_ids == -100] = gpt2_tokenizer.eos_token_id\r\n    decoded_labels\
+    \ = gpt2_tokenizer.batch_decode(label_ids, skip_special_tokens=True)\r\n    file\
+    \ = open(\"reference sentences iwslt test\", \"a\")\r\n    # Some simple post-processing\r\
+    \n    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)\r\
+    \n    for label in decoded_labels:\r\n      print(\"LABEL: \", label)\r\n    file2\
+    \ = open(\"predicted sentences iwslt test\", \"a\")\r\n    for pred in decoded_preds:\r\
+    \n      print(\"PRED: \", pred)\r\n    result = metric.compute(predictions=decoded_preds,\
+    \ references=decoded_labels)\r\n    result = {\"bleu\": result[\"score\"]}\r\n\
+    \r\n    prediction_lens = [np.count_nonzero(pred != gpt2_tokenizer.pad_token_id)\
+    \ for pred in pred_ids]\r\n    result[\"gen_len\"] = np.mean(prediction_lens)\r\
+    \n    result = {k: round(v, 4) for k, v in result.items()}\r\n    return result\r\
+    \n\r\n\r\n# make train dataset ready\r\ntrain_dataset = train_test_dataset.map(\r\
+    \n    map_to_encoder_decoder_inputs, batched=True, batch_size=batch_size, remove_columns=[\"\
+    translation\"],\r\n)\r\ndel(train_test_dataset)\r\ntrain_dataset.set_format(\r\
+    \n    type=\"torch\", columns=[\"input_ids\", \"attention_mask\", \"decoder_input_ids\"\
+    , \"decoder_attention_mask\", \"labels\"],\r\n)\r\n\r\n# same for validation dataset\r\
+    \n# val_dataset = val_dataset.map(\r\n#     map_to_encoder_decoder_inputs, batched=True,\
+    \ batch_size=batch_size, remove_columns=[\"ar\", \"en\"],\r\n# )\r\n# val_dataset.set_format(\r\
+    \n#     type=\"torch\", columns=[\"input_ids\", \"attention_mask\", \"decoder_input_ids\"\
+    , \"decoder_attention_mask\", \"labels\"],\r\n# )\r\n\r\ntraining_args = Seq2SeqTrainingArguments(\r\
+    \n    f\"arabert2bert-finetuned-ar-to-en-on-iwslt\",\r\n    evaluation_strategy=\"\
+    epoch\",\r\n    learning_rate=2e-5,\r\n    per_device_train_batch_size=8,\r\n\
+    \    per_device_eval_batch_size=1,\r\n    weight_decay=0.01,\r\n    do_train=True,\r\
+    \n    do_eval=True,\r\n    predict_with_generate=True,\r\n   # eval_accumulation_steps=20,\r\
+    \n    save_total_limit=3,\r\n    num_train_epochs=1,\r\n    logging_steps=150,\r\
+    \n    fp16=True,\r\n  #  no_cuda=True\r\n)\r\n\r\ntrainer = Seq2SeqTrainer(model=model,\
+    \ args=training_args, compute_metrics=compute_metrics, train_dataset = train_dataset['train'],\
+    \ eval_dataset=train_dataset['test'])\r\n\r\ntrainer.train()\r\n\r\n\r\n\r\n\r\
+    \n\r\nThanks in advance :)"
+  created_at: 2022-05-26 12:23:57+00:00
+  edited: false
+  hidden: false
+  id: 628f7f6d3da3545d146166e3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2022-05-26T22:30:55.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;salma-elshafey&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/salma-elshafey\"\
+          >@<span class=\"underline\">salma-elshafey</span></a></span>\n\n\t</span></span>,</p>\n\
+          <p>Thanks for opening the discussion here! Could you maybe put this code\
+          \ in a google colab where I can just run it to see the problem? :-)<br>Thanks!</p>\n"
+        raw: 'Hey @salma-elshafey,
+
+
+          Thanks for opening the discussion here! Could you maybe put this code in
+          a google colab where I can just run it to see the problem? :-)
+
+          Thanks!'
+        updatedAt: '2022-05-26T22:30:55.000Z'
+      numEdits: 0
+      reactions: []
+    id: 628fff9f0ea7e76254bfcb02
+    type: comment
+  author: patrickvonplaten
+  content: 'Hey @salma-elshafey,
+
+
+    Thanks for opening the discussion here! Could you maybe put this code in a google
+    colab where I can just run it to see the problem? :-)
+
+    Thanks!'
+  created_at: 2022-05-26 21:30:55+00:00
+  edited: false
+  hidden: false
+  id: 628fff9f0ea7e76254bfcb02
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+      fullname: Salma El-Shafey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: salma-elshafey
+      type: user
+    createdAt: '2022-05-27T13:20:41.000Z'
+    data:
+      edited: false
+      editors:
+      - salma-elshafey
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+          fullname: Salma El-Shafey
+          isHf: false
+          isPro: false
+          name: salma-elshafey
+          type: user
+        html: '<p>Here''s the link to the notebook: <a rel="nofollow" href="https://colab.research.google.com/drive/1wHRroGCpY1_78oC4e9v4hYJnNJ1Ub-tu?usp=sharing">https://colab.research.google.com/drive/1wHRroGCpY1_78oC4e9v4hYJnNJ1Ub-tu?usp=sharing</a><br>Thank
+          you so much for your help!  :)</p>
+
+          '
+        raw: 'Here''s the link to the notebook: https://colab.research.google.com/drive/1wHRroGCpY1_78oC4e9v4hYJnNJ1Ub-tu?usp=sharing
+
+          Thank you so much for your help!  :)'
+        updatedAt: '2022-05-27T13:20:41.000Z'
+      numEdits: 0
+      reactions: []
+    id: 6290d029a391a907d5e1c62f
+    type: comment
+  author: salma-elshafey
+  content: 'Here''s the link to the notebook: https://colab.research.google.com/drive/1wHRroGCpY1_78oC4e9v4hYJnNJ1Ub-tu?usp=sharing
+
+    Thank you so much for your help!  :)'
+  created_at: 2022-05-27 12:20:41+00:00
+  edited: false
+  hidden: false
+  id: 6290d029a391a907d5e1c62f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/5dd96eb166059660ed1ee413/NQtzmrDdbG0H8qkZvRyGk.jpeg?w=200&h=200&f=face
+      fullname: Julien Chaumond
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: julien-c
+      type: user
+    createdAt: '2022-05-27T21:00:57.000Z'
+    data:
+      edited: false
+      editors:
+      - julien-c
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/5dd96eb166059660ed1ee413/NQtzmrDdbG0H8qkZvRyGk.jpeg?w=200&h=200&f=face
+          fullname: Julien Chaumond
+          isHf: true
+          isPro: true
+          name: julien-c
+          type: user
+        html: '<p>BTW you''ll soon be able to edit comments =)</p>
+
+          '
+        raw: BTW you'll soon be able to edit comments =)
+        updatedAt: '2022-05-27T21:00:57.000Z'
+      numEdits: 0
+      reactions: []
+    id: 62913c095463575364ea9dc3
+    type: comment
+  author: julien-c
+  content: BTW you'll soon be able to edit comments =)
+  created_at: 2022-05-27 20:00:57+00:00
+  edited: false
+  hidden: false
+  id: 62913c095463575364ea9dc3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+      fullname: Salma El-Shafey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: salma-elshafey
+      type: user
+    createdAt: '2022-06-01T13:29:19.000Z'
+    data:
+      edited: false
+      editors:
+      - salma-elshafey
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+          fullname: Salma El-Shafey
+          isHf: false
+          isPro: false
+          name: salma-elshafey
+          type: user
+        html: '<p>Cool! :)</p>
+
+          '
+        raw: Cool! :)
+        updatedAt: '2022-06-01T13:29:19.000Z'
+      numEdits: 0
+      reactions: []
+    id: 629769afefec96a37876c2c3
+    type: comment
+  author: salma-elshafey
+  content: Cool! :)
+  created_at: 2022-06-01 12:29:19+00:00
+  edited: false
+  hidden: false
+  id: 629769afefec96a37876c2c3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+      fullname: Salma El-Shafey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: salma-elshafey
+      type: user
+    createdAt: '2022-06-02T12:00:24.000Z'
+    data:
+      edited: false
+      editors:
+      - salma-elshafey
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+          fullname: Salma El-Shafey
+          isHf: false
+          isPro: false
+          name: salma-elshafey
+          type: user
+        html: "<p>Hey, <span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>,\
+          \ sorry if I'm bothering but did you find where the problem lies?\U0001F605\
+          </p>\n"
+        raw: "Hey, @patrickvonplaten, sorry if I'm bothering but did you find where\
+          \ the problem lies?\U0001F605"
+        updatedAt: '2022-06-02T12:00:24.000Z'
+      numEdits: 0
+      reactions: []
+    id: 6298a658448458f5f0be4718
+    type: comment
+  author: salma-elshafey
+  content: "Hey, @patrickvonplaten, sorry if I'm bothering but did you find where\
+    \ the problem lies?\U0001F605"
+  created_at: 2022-06-02 11:00:24+00:00
+  edited: false
+  hidden: false
+  id: 6298a658448458f5f0be4718
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2022-06-03T09:59:13.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;salma-elshafey&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/salma-elshafey\"\
+          >@<span class=\"underline\">salma-elshafey</span></a></span>\n\n\t</span></span>,\
+          \ </p>\n<p>I sadly don't have the time to fully debug your script, but the\
+          \ problem here seems to be that the model predicts the EOS token id (50256)\
+          \ all the time while getting a very low loss.<br>Could it be that your labels\
+          \ only consist of 50256 tokens? Could you maybe be sure that the label ids\
+          \ that you train the model on are correct?</p>\n"
+        raw: "Hey @salma-elshafey, \n\nI sadly don't have the time to fully debug\
+          \ your script, but the problem here seems to be that the model predicts\
+          \ the EOS token id (50256) all the time while getting a very low loss.\n\
+          Could it be that your labels only consist of 50256 tokens? Could you maybe\
+          \ be sure that the label ids that you train the model on are correct?"
+        updatedAt: '2022-06-03T09:59:13.092Z'
+      numEdits: 0
+      reactions: []
+    id: 6299db715ab4232a3fda6562
+    type: comment
+  author: patrickvonplaten
+  content: "Hey @salma-elshafey, \n\nI sadly don't have the time to fully debug your\
+    \ script, but the problem here seems to be that the model predicts the EOS token\
+    \ id (50256) all the time while getting a very low loss.\nCould it be that your\
+    \ labels only consist of 50256 tokens? Could you maybe be sure that the label\
+    \ ids that you train the model on are correct?"
+  created_at: 2022-06-03 08:59:13+00:00
+  edited: false
+  hidden: false
+  id: 6299db715ab4232a3fda6562
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+      fullname: Salma El-Shafey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: salma-elshafey
+      type: user
+    createdAt: '2022-06-04T10:48:37.000Z'
+    data:
+      edited: false
+      editors:
+      - salma-elshafey
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4bd97bb95d2ee08eeffb53c9c1fed1ba.svg
+          fullname: Salma El-Shafey
+          isHf: false
+          isPro: false
+          name: salma-elshafey
+          type: user
+        html: "<p>Hello, <span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>!\
+          \ I used an older version of the transformes library -specifically v4.2.1-\
+          \ and the problem was solved :)</p>\n"
+        raw: Hello, @patrickvonplaten! I used an older version of the transformes
+          library -specifically v4.2.1- and the problem was solved :)
+        updatedAt: '2022-06-04T10:48:37.962Z'
+      numEdits: 0
+      reactions: []
+    id: 629b388563879b81f0995cb1
+    type: comment
+  author: salma-elshafey
+  content: Hello, @patrickvonplaten! I used an older version of the transformes library
+    -specifically v4.2.1- and the problem was solved :)
+  created_at: 2022-06-04 09:48:37+00:00
+  edited: false
+  hidden: false
+  id: 629b388563879b81f0995cb1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2022-06-07T23:37:09.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: '<p>Awesome, very glad that you got it to work! Do you know by any chance
+          what the problem was? Maybe there is a bug in the newer transformers version</p>
+
+          '
+        raw: Awesome, very glad that you got it to work! Do you know by any chance
+          what the problem was? Maybe there is a bug in the newer transformers version
+        updatedAt: '2022-06-07T23:37:09.232Z'
+      numEdits: 0
+      reactions: []
+    id: 629fe1259c6a6eb5d615b075
+    type: comment
+  author: patrickvonplaten
+  content: Awesome, very glad that you got it to work! Do you know by any chance what
+    the problem was? Maybe there is a bug in the newer transformers version
+  created_at: 2022-06-07 22:37:09+00:00
+  edited: false
+  hidden: false
+  id: 629fe1259c6a6eb5d615b075
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: patrickvonplaten/bert2gpt2-cnn_dailymail-fp16
+repo_type: model
+status: open
+target_branch: null
+title: Model gives weird predictions

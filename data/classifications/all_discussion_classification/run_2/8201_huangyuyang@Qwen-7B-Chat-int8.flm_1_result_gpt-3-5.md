@@ -1,0 +1,5 @@
+## https://huggingface.co/huangyuyang/Qwen-7B-Chat-int8.flm/discussions/1
+
+contains_question: yes
+
+question_part: Is it possible to upload the base model weights for Qwen?

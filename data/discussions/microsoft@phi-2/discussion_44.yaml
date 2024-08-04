@@ -1,0 +1,375 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: DeltaLux
+conflicting_files: null
+created_at: 2023-12-23 19:42:04+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6587254a1a576242efec51fe/ueXomG9Q1RFABvXPjP4ep.png?w=200&h=200&f=face
+      fullname: Delta Lux
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: DeltaLux
+      type: user
+    createdAt: '2023-12-23T19:42:04.000Z'
+    data:
+      edited: false
+      editors:
+      - DeltaLux
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.539316713809967
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6587254a1a576242efec51fe/ueXomG9Q1RFABvXPjP4ep.png?w=200&h=200&f=face
+          fullname: Delta Lux
+          isHf: false
+          isPro: false
+          name: DeltaLux
+          type: user
+        html: "<p>For me, using inference with the model loaded without conversion\
+          \ is slow on CPU so I'm trying to convert the model to OpenVINO which appears\
+          \ to convert correctly and infer quickly after compilation, but I can't\
+          \ get the output to decode. I mark with an emoji and text each step that\
+          \ is successful or fails in my notebook.</p>\n<h2 id=\"\u2705-success-install-python-libraries\"\
+          >[\u2705 Success] Install Python Libraries</h2>\n<pre><code>%pip install\
+          \ --upgrade pip\n%pip install -q \"openvino&gt;=2023.2.0\"\n%pip install\
+          \ -q torch\n%pip install transformers\n%pip install einops\n%pip install\
+          \ accelerate\n</code></pre>\n<h2 id=\"\u2705-success-clone-repository\"\
+          >[\u2705 Success] Clone repository</h2>\n<pre><code>git lfs install \ngit\
+          \ clone https://huggingface.co/microsoft/phi-2\n</code></pre>\n<h2 id=\"\
+          \u2705-success-convert-the-model\">[\u2705 Success] Convert the model</h2>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ openvino <span class=\"hljs-keyword\">as</span> ov\n<span class=\"hljs-keyword\"\
+          >import</span> torch\n<span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoModelForCausalLM, AutoTokenizer\n\
+          core = ov.Core()\n<span class=\"hljs-comment\"># Load the model</span>\n\
+          model = AutoModelForCausalLM.from_pretrained(<span class=\"hljs-string\"\
+          >\"./phi-2\"</span>, torch_dtype=torch.float32, device_map=<span class=\"\
+          hljs-string\">\"cpu\"</span>, trust_remote_code=<span class=\"hljs-literal\"\
+          >True</span>)\n<span class=\"hljs-comment\"># Create a tokenizer to tokenize\
+          \ a sample for conversion of the model</span>\ntokenizer = AutoTokenizer.from_pretrained(<span\
+          \ class=\"hljs-string\">\"./phi-2\"</span>, return_dict=<span class=\"hljs-literal\"\
+          >True</span>)\ninputs = tokenizer(<span class=\"hljs-string\">'Write a detailed\
+          \ analogy between mathematics and a lighthouse.'</span>, return_tensors=<span\
+          \ class=\"hljs-string\">\"pt\"</span>, return_attention_mask=<span class=\"\
+          hljs-literal\">False</span>)\n<span class=\"hljs-comment\"># Convert the\
+          \ model</span>\nopenvino_model = ov.convert_model(input_model=model, example_input=<span\
+          \ class=\"hljs-built_in\">dict</span>(inputs), verbose=<span class=\"hljs-literal\"\
+          >True</span>)\n<span class=\"hljs-comment\"># Save the model</span>\nov.save_model(openvino_model,\
+          \ <span class=\"hljs-string\">\"./openvino-phi2/openvino-phi2.xml\"</span>)\n\
+          </code></pre>\n<h2 id=\"\u2705-success-load-the-converted-model-and-print-inputs-and-outputs-optional---this-is-to-see-the-input-and-output-shapes-and-names\"\
+          >[\u2705 Success] Load the converted model and print inputs and outputs\
+          \ (Optional - this is to see the input and output shapes and names)</h2>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ openvino <span class=\"hljs-keyword\">as</span> ov\n<span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer\n\
+          \nopenvino_model_id = <span class=\"hljs-string\">\"./openvino-phi2/openvino-phi2.xml\"\
+          </span>\ncore = ov.Core()\n<span class=\"hljs-comment\"># Change GPU.1 with\
+          \ the string of your device. Could be same or could change depending on\
+          \ whether you have a dedicated GPU or integrated GPU for inference</span>\n\
+          compiled_model = core.compile_model(model=openvino_model_id, device_name=<span\
+          \ class=\"hljs-string\">\"GPU.1\"</span>)\n\nmodel_inputs = compiled_model.inputs\n\
+          model_input = compiled_model.<span class=\"hljs-built_in\">input</span>(<span\
+          \ class=\"hljs-number\">0</span>)\nmodel_outputs = compiled_model.outputs\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">\"\
+          Model inputs count:\"</span>, <span class=\"hljs-built_in\">len</span>(model_inputs))\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">\"\
+          Model input:\"</span>, model_input)\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Model outputs count:\"</span>, <span class=\"\
+          hljs-built_in\">len</span>(model_outputs))\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"Model outputs:\"</span>)\n<span\
+          \ class=\"hljs-keyword\">for</span> output <span class=\"hljs-keyword\"\
+          >in</span> model_outputs:\n    <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"  \"</span>, output)\n</code></pre>\n<p>Output:</p>\n\
+          <blockquote>\n<p>Model inputs count: 1<br>Model input: &lt;ConstOutput:\
+          \ names[input_ids] shape[?,?] type: i64&gt;<br>Model outputs count: 1<br>Model\
+          \ outputs:<br>   &lt;ConstOutput: names[5195, 5196, logits] shape[?,?,51200]\
+          \ type: f32&gt;</p>\n</blockquote>\n<h2 id=\"\u274C-fail-load-openvino-model-and-try-to-run-inference\"\
+          >[\u274C Fail] Load OpenVINO model and try to run inference</h2>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">import</span> openvino\
+          \ <span class=\"hljs-keyword\">as</span> ov\n<span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer\n\
+          \nopenvino_model_id = <span class=\"hljs-string\">\"./openvino-phi2/openvino-phi2.xml\"\
+          </span>\noriginal_model_id = <span class=\"hljs-string\">\"./phi-2\"</span>\n\
+          core = ov.Core()\n<span class=\"hljs-comment\"># Change GPU.1 with the string\
+          \ of your device. Could be same or could change depending on whether you\
+          \ have a dedicated GPU or integrated GPU for inference</span>\ncompiled_model\
+          \ = core.compile_model(model=openvino_model_id, device_name=<span class=\"\
+          hljs-string\">\"GPU.1\"</span>)\ntokenizer = AutoTokenizer.from_pretrained(original_model_id)\n\
+          inputs = tokenizer(<span class=\"hljs-string\">'Write a detailed analogy\
+          \ between mathematics and a lighthouse.'</span>, return_tensors=<span class=\"\
+          hljs-string\">\"np\"</span>, return_attention_mask=<span class=\"hljs-literal\"\
+          >False</span>)\nresult = compiled_model.infer_new_request(inputs={<span\
+          \ class=\"hljs-string\">\"input_ids\"</span>: inputs[<span class=\"hljs-string\"\
+          >\"input_ids\"</span>]})\ntext = tokenizer.batch_decode([result])[<span\
+          \ class=\"hljs-number\">0</span>]\n<span class=\"hljs-built_in\">print</span>(text)\n\
+          </code></pre>\n<p>Output. Caused by <code>text  = tokenizer.batch_decode([result])[0]</code></p>\n\
+          <pre><code>TypeError: argument 'ids': 'openvino._pyopenvino.ConstOutput'\
+          \ object cannot be interpreted as an integer\n</code></pre>\n<p>Are there\
+          \ other steps needed to decode the output or do I need another tokenizer?</p>\n"
+        raw: "For me, using inference with the model loaded without conversion is\
+          \ slow on CPU so I'm trying to convert the model to OpenVINO which appears\
+          \ to convert correctly and infer quickly after compilation, but I can't\
+          \ get the output to decode. I mark with an emoji and text each step that\
+          \ is successful or fails in my notebook.\r\n\r\n## [\u2705 Success] Install\
+          \ Python Libraries\r\n```\r\n%pip install --upgrade pip\r\n%pip install\
+          \ -q \"openvino>=2023.2.0\"\r\n%pip install -q torch\r\n%pip install transformers\r\
+          \n%pip install einops\r\n%pip install accelerate\r\n```\r\n## [\u2705 Success]\
+          \ Clone repository\r\n```\r\ngit lfs install \r\ngit clone https://huggingface.co/microsoft/phi-2\r\
+          \n```\r\n## [\u2705 Success] Convert the model\r\n```python\r\nimport openvino\
+          \ as ov\r\nimport torch\r\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer\r\ncore = ov.Core()\r\n# Load the model\r\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+          ./phi-2\", torch_dtype=torch.float32, device_map=\"cpu\", trust_remote_code=True)\r\
+          \n# Create a tokenizer to tokenize a sample for conversion of the model\r\
+          \ntokenizer = AutoTokenizer.from_pretrained(\"./phi-2\", return_dict=True)\r\
+          \ninputs = tokenizer('Write a detailed analogy between mathematics and a\
+          \ lighthouse.', return_tensors=\"pt\", return_attention_mask=False)\r\n\
+          # Convert the model\r\nopenvino_model = ov.convert_model(input_model=model,\
+          \ example_input=dict(inputs), verbose=True)\r\n# Save the model\r\nov.save_model(openvino_model,\
+          \ \"./openvino-phi2/openvino-phi2.xml\")\r\n```\r\n## [\u2705 Success] Load\
+          \ the converted model and print inputs and outputs (Optional - this is to\
+          \ see the input and output shapes and names)\r\n```python\r\nimport openvino\
+          \ as ov\r\nfrom transformers import AutoTokenizer\r\n\r\nopenvino_model_id\
+          \ = \"./openvino-phi2/openvino-phi2.xml\"\r\ncore = ov.Core()\r\n# Change\
+          \ GPU.1 with the string of your device. Could be same or could change depending\
+          \ on whether you have a dedicated GPU or integrated GPU for inference\r\n\
+          compiled_model = core.compile_model(model=openvino_model_id, device_name=\"\
+          GPU.1\")\r\n\r\nmodel_inputs = compiled_model.inputs\r\nmodel_input = compiled_model.input(0)\r\
+          \nmodel_outputs = compiled_model.outputs\r\nprint(\"Model inputs count:\"\
+          , len(model_inputs))\r\nprint(\"Model input:\", model_input)\r\nprint(\"\
+          Model outputs count:\", len(model_outputs))\r\nprint(\"Model outputs:\"\
+          )\r\nfor output in model_outputs:\r\n    print(\"  \", output)\r\n```\r\n\
+          Output:\r\n> Model inputs count: 1\r\nModel input: <ConstOutput: names[input_ids]\
+          \ shape[?,?] type: i64>\r\nModel outputs count: 1\r\nModel outputs:\r\n\
+          \   <ConstOutput: names[5195, 5196, logits] shape[?,?,51200] type: f32>\r\
+          \n\r\n## [\u274C Fail] Load OpenVINO model and try to run inference\r\n\
+          ```python\r\nimport openvino as ov\r\nfrom transformers import AutoTokenizer\r\
+          \n\r\nopenvino_model_id = \"./openvino-phi2/openvino-phi2.xml\"\r\noriginal_model_id\
+          \ = \"./phi-2\"\r\ncore = ov.Core()\r\n# Change GPU.1 with the string of\
+          \ your device. Could be same or could change depending on whether you have\
+          \ a dedicated GPU or integrated GPU for inference\r\ncompiled_model = core.compile_model(model=openvino_model_id,\
+          \ device_name=\"GPU.1\")\r\ntokenizer = AutoTokenizer.from_pretrained(original_model_id)\r\
+          \ninputs = tokenizer('Write a detailed analogy between mathematics and a\
+          \ lighthouse.', return_tensors=\"np\", return_attention_mask=False)\r\n\
+          result = compiled_model.infer_new_request(inputs={\"input_ids\": inputs[\"\
+          input_ids\"]})\r\ntext = tokenizer.batch_decode([result])[0]\r\nprint(text)\r\
+          \n```\r\nOutput. Caused by `text  = tokenizer.batch_decode([result])[0]`\r\
+          \n```\r\nTypeError: argument 'ids': 'openvino._pyopenvino.ConstOutput' object\
+          \ cannot be interpreted as an integer\r\n```\r\nAre there other steps needed\
+          \ to decode the output or do I need another tokenizer?"
+        updatedAt: '2023-12-23T19:42:04.755Z'
+      numEdits: 0
+      reactions: []
+    id: 6587380c6b17c0687296dbd7
+    type: comment
+  author: DeltaLux
+  content: "For me, using inference with the model loaded without conversion is slow\
+    \ on CPU so I'm trying to convert the model to OpenVINO which appears to convert\
+    \ correctly and infer quickly after compilation, but I can't get the output to\
+    \ decode. I mark with an emoji and text each step that is successful or fails\
+    \ in my notebook.\r\n\r\n## [\u2705 Success] Install Python Libraries\r\n```\r\
+    \n%pip install --upgrade pip\r\n%pip install -q \"openvino>=2023.2.0\"\r\n%pip\
+    \ install -q torch\r\n%pip install transformers\r\n%pip install einops\r\n%pip\
+    \ install accelerate\r\n```\r\n## [\u2705 Success] Clone repository\r\n```\r\n\
+    git lfs install \r\ngit clone https://huggingface.co/microsoft/phi-2\r\n```\r\n\
+    ## [\u2705 Success] Convert the model\r\n```python\r\nimport openvino as ov\r\n\
+    import torch\r\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\r\
+    \ncore = ov.Core()\r\n# Load the model\r\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+    ./phi-2\", torch_dtype=torch.float32, device_map=\"cpu\", trust_remote_code=True)\r\
+    \n# Create a tokenizer to tokenize a sample for conversion of the model\r\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(\"./phi-2\", return_dict=True)\r\ninputs = tokenizer('Write\
+    \ a detailed analogy between mathematics and a lighthouse.', return_tensors=\"\
+    pt\", return_attention_mask=False)\r\n# Convert the model\r\nopenvino_model =\
+    \ ov.convert_model(input_model=model, example_input=dict(inputs), verbose=True)\r\
+    \n# Save the model\r\nov.save_model(openvino_model, \"./openvino-phi2/openvino-phi2.xml\"\
+    )\r\n```\r\n## [\u2705 Success] Load the converted model and print inputs and\
+    \ outputs (Optional - this is to see the input and output shapes and names)\r\n\
+    ```python\r\nimport openvino as ov\r\nfrom transformers import AutoTokenizer\r\
+    \n\r\nopenvino_model_id = \"./openvino-phi2/openvino-phi2.xml\"\r\ncore = ov.Core()\r\
+    \n# Change GPU.1 with the string of your device. Could be same or could change\
+    \ depending on whether you have a dedicated GPU or integrated GPU for inference\r\
+    \ncompiled_model = core.compile_model(model=openvino_model_id, device_name=\"\
+    GPU.1\")\r\n\r\nmodel_inputs = compiled_model.inputs\r\nmodel_input = compiled_model.input(0)\r\
+    \nmodel_outputs = compiled_model.outputs\r\nprint(\"Model inputs count:\", len(model_inputs))\r\
+    \nprint(\"Model input:\", model_input)\r\nprint(\"Model outputs count:\", len(model_outputs))\r\
+    \nprint(\"Model outputs:\")\r\nfor output in model_outputs:\r\n    print(\"  \"\
+    , output)\r\n```\r\nOutput:\r\n> Model inputs count: 1\r\nModel input: <ConstOutput:\
+    \ names[input_ids] shape[?,?] type: i64>\r\nModel outputs count: 1\r\nModel outputs:\r\
+    \n   <ConstOutput: names[5195, 5196, logits] shape[?,?,51200] type: f32>\r\n\r\
+    \n## [\u274C Fail] Load OpenVINO model and try to run inference\r\n```python\r\
+    \nimport openvino as ov\r\nfrom transformers import AutoTokenizer\r\n\r\nopenvino_model_id\
+    \ = \"./openvino-phi2/openvino-phi2.xml\"\r\noriginal_model_id = \"./phi-2\"\r\
+    \ncore = ov.Core()\r\n# Change GPU.1 with the string of your device. Could be\
+    \ same or could change depending on whether you have a dedicated GPU or integrated\
+    \ GPU for inference\r\ncompiled_model = core.compile_model(model=openvino_model_id,\
+    \ device_name=\"GPU.1\")\r\ntokenizer = AutoTokenizer.from_pretrained(original_model_id)\r\
+    \ninputs = tokenizer('Write a detailed analogy between mathematics and a lighthouse.',\
+    \ return_tensors=\"np\", return_attention_mask=False)\r\nresult = compiled_model.infer_new_request(inputs={\"\
+    input_ids\": inputs[\"input_ids\"]})\r\ntext = tokenizer.batch_decode([result])[0]\r\
+    \nprint(text)\r\n```\r\nOutput. Caused by `text  = tokenizer.batch_decode([result])[0]`\r\
+    \n```\r\nTypeError: argument 'ids': 'openvino._pyopenvino.ConstOutput' object\
+    \ cannot be interpreted as an integer\r\n```\r\nAre there other steps needed to\
+    \ decode the output or do I need another tokenizer?"
+  created_at: 2023-12-23 19:42:04+00:00
+  edited: false
+  hidden: false
+  id: 6587380c6b17c0687296dbd7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ffd0ff33e1db714cbcee7e254eb68828.svg
+      fullname: bh4
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bh4
+      type: user
+    createdAt: '2024-01-01T02:40:00.000Z'
+    data:
+      edited: false
+      editors:
+      - bh4
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9649549126625061
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ffd0ff33e1db714cbcee7e254eb68828.svg
+          fullname: bh4
+          isHf: false
+          isPro: false
+          name: bh4
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;DeltaLux&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/DeltaLux\">@<span class=\"\
+          underline\">DeltaLux</span></a></span>\n\n\t</span></span>   Were you able\
+          \ to decode the output? I would also like to use openvino for inference.</p>\n"
+        raw: '@DeltaLux   Were you able to decode the output? I would also like to
+          use openvino for inference.'
+        updatedAt: '2024-01-01T02:40:00.747Z'
+      numEdits: 0
+      reactions: []
+    id: 6592260043edad21696ba3bc
+    type: comment
+  author: bh4
+  content: '@DeltaLux   Were you able to decode the output? I would also like to use
+    openvino for inference.'
+  created_at: 2024-01-01 02:40:00+00:00
+  edited: false
+  hidden: false
+  id: 6592260043edad21696ba3bc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6587254a1a576242efec51fe/ueXomG9Q1RFABvXPjP4ep.png?w=200&h=200&f=face
+      fullname: Delta Lux
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: DeltaLux
+      type: user
+    createdAt: '2024-01-01T10:31:05.000Z'
+    data:
+      edited: false
+      editors:
+      - DeltaLux
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9216336607933044
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6587254a1a576242efec51fe/ueXomG9Q1RFABvXPjP4ep.png?w=200&h=200&f=face
+          fullname: Delta Lux
+          isHf: false
+          isPro: false
+          name: DeltaLux
+          type: user
+        html: "<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;DeltaLux&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/DeltaLux\"\
+          >@<span class=\"underline\">DeltaLux</span></a></span>\n\n\t</span></span>\
+          \   Were you able to decode the output? I would also like to use openvino\
+          \ for inference.</p>\n</blockquote>\n<p>No success. I tried creating various\
+          \ ONNX configurations to see if I could convert the model to ONNX instead,\
+          \ but nothing I got is working. When converted to OpenVino format the resulting\
+          \ model outputs an OpenVINO <code>Tensor: shape[1, 10, 51200] type: f32</code>.\
+          \ The type is the result of a cast operation to f32 at the end of the NN.\
+          \ The original output using the HF library is a Torch tensor <code>shape[1,\
+          \ 20] type:torch.int64</code> unless one changes the <code>max_length</code>\
+          \ property which would give a different shape with the number of elements\
+          \ specified on the property. I haven't tried creating a different tokenizer\
+          \ with its own encoder and decoder yet.</p>\n<p>We might have to wait for\
+          \ an ONNX configuration to be added to the HF optimum library. I tried to\
+          \ see if I could contribute it myself, yet my test configurations have not\
+          \ created a working ONNX model.</p>\n"
+        raw: '> @DeltaLux   Were you able to decode the output? I would also like
+          to use openvino for inference.
+
+
+          No success. I tried creating various ONNX configurations to see if I could
+          convert the model to ONNX instead, but nothing I got is working. When converted
+          to OpenVino format the resulting model outputs an OpenVINO `Tensor: shape[1,
+          10, 51200] type: f32`. The type is the result of a cast operation to f32
+          at the end of the NN. The original output using the HF library is a Torch
+          tensor `shape[1, 20] type:torch.int64` unless one changes the `max_length`
+          property which would give a different shape with the number of elements
+          specified on the property. I haven''t tried creating a different tokenizer
+          with its own encoder and decoder yet.
+
+
+          We might have to wait for an ONNX configuration to be added to the HF optimum
+          library. I tried to see if I could contribute it myself, yet my test configurations
+          have not created a working ONNX model.'
+        updatedAt: '2024-01-01T10:31:05.725Z'
+      numEdits: 0
+      reactions: []
+    id: 659294690c99312905759594
+    type: comment
+  author: DeltaLux
+  content: '> @DeltaLux   Were you able to decode the output? I would also like to
+    use openvino for inference.
+
+
+    No success. I tried creating various ONNX configurations to see if I could convert
+    the model to ONNX instead, but nothing I got is working. When converted to OpenVino
+    format the resulting model outputs an OpenVINO `Tensor: shape[1, 10, 51200] type:
+    f32`. The type is the result of a cast operation to f32 at the end of the NN.
+    The original output using the HF library is a Torch tensor `shape[1, 20] type:torch.int64`
+    unless one changes the `max_length` property which would give a different shape
+    with the number of elements specified on the property. I haven''t tried creating
+    a different tokenizer with its own encoder and decoder yet.
+
+
+    We might have to wait for an ONNX configuration to be added to the HF optimum
+    library. I tried to see if I could contribute it myself, yet my test configurations
+    have not created a working ONNX model.'
+  created_at: 2024-01-01 10:31:05+00:00
+  edited: false
+  hidden: false
+  id: 659294690c99312905759594
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 44
+repo_id: microsoft/phi-2
+repo_type: model
+status: open
+target_branch: null
+title: Can inference be done with the model converted to OpenVINO?

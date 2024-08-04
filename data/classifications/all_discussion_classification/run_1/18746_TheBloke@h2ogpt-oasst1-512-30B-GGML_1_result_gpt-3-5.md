@@ -1,0 +1,5 @@
+## https://huggingface.co/TheBloke/h2ogpt-oasst1-512-30B-GGML/discussions/1
+
+contains_question: yes
+
+question_part: I have a pc with an rtx 3060 (12GB), i7 10700 and 32GB ram running a model of "gptj 6b GPTQ-4bit-128g" in text-generation-webui. This model reaches a maximum of 8GB in memory, and even though the speed is very good, I would like to know if the number of tokens per second can be further accelerated. so that the waiting time when using the api in python or tavernIA is faster in seconds.

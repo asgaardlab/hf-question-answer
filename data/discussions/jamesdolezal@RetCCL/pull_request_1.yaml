@@ -1,0 +1,236 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kaczmarj
+conflicting_files: []
+created_at: 2023-06-05 20:57:22+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/646dfe75df618b303b41e268/XJzZjZfx9iQ6A7bF8wdzD.jpeg?w=200&h=200&f=face
+      fullname: Jakub Kaczmarzyk
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kaczmarj
+      type: user
+    createdAt: '2023-06-05T21:57:22.000Z'
+    data:
+      edited: true
+      editors:
+      - kaczmarj
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8100966215133667
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/646dfe75df618b303b41e268/XJzZjZfx9iQ6A7bF8wdzD.jpeg?w=200&h=200&f=face
+          fullname: Jakub Kaczmarzyk
+          isHf: false
+          isPro: false
+          name: kaczmarj
+          type: user
+        html: "<p>This commit adds TorchScript and Safetensors versions of the RetCCL\
+          \ model. Torchscript allows the model to be used without code defining its\
+          \ implementation and without a Python runtime. This can help others incorporate\
+          \ RetCCL into other applications. In fact I was planning to upload RetCCL\
+          \ to HuggingFace but I found this repository first. I am hoping to use the\
+          \ Torchscript version of this model in several applications and to pull\
+          \ it from this repository.</p>\n<p>Safetensors is a file format developed\
+          \ by HuggingFace to deal with some drawbacks of the PyTorch pickle-based\
+          \ format. I have uploaded a safetensors version here.</p>\n<p>Here is the\
+          \ code I used to create the two files here. First I cloned the RetCCL GitHub\
+          \ repo, and then made minor changes to ResNet.py to satisfy TorchScript\
+          \ requirements. Namely, I set <code>self.instDis = nn.Identity()</code>\
+          \ and <code>self.groupDis = nn.Identity()</code> if those attributes were\
+          \ not set.</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >import</span> numpy <span class=\"hljs-keyword\">as</span> np\n<span class=\"\
+          hljs-keyword\">from</span> safetensors.torch <span class=\"hljs-keyword\"\
+          >import</span> save_file\n<span class=\"hljs-keyword\">import</span> torch\n\
+          <span class=\"hljs-keyword\">from</span> torch <span class=\"hljs-keyword\"\
+          >import</span> nn\n<span class=\"hljs-keyword\">import</span> ResNet\n\n\
+          model = ResNet.resnet50(num_classes=<span class=\"hljs-number\">128</span>,mlp=<span\
+          \ class=\"hljs-literal\">False</span>, two_branch=<span class=\"hljs-literal\"\
+          >False</span>, normlinear=<span class=\"hljs-literal\">True</span>)\npretext_model\
+          \ = torch.load(<span class=\"hljs-string\">\"/home/jakub/Downloads/retccl.pth\"\
+          </span>, map_location=<span class=\"hljs-string\">\"cpu\"</span>)\nmodel.fc\
+          \ = nn.Identity()\nmodel.load_state_dict(pretext_model, strict=<span class=\"\
+          hljs-literal\">True</span>)\nmodel.<span class=\"hljs-built_in\">eval</span>()\n\
+          \n<span class=\"hljs-comment\"># Save torchscript model.</span>\nmodel_jit\
+          \ = torch.jit.script(model, example_inputs=[(torch.ones(<span class=\"hljs-number\"\
+          >1</span>, <span class=\"hljs-number\">3</span>, <span class=\"hljs-number\"\
+          >224</span>, <span class=\"hljs-number\">224</span>),)])\ntorch.jit.save(model_jit,\
+          \ <span class=\"hljs-string\">\"retccl_torchscript.pth\"</span>)\n\n<span\
+          \ class=\"hljs-comment\"># Save safetensors weights</span>\nsave_file(pretext_model,\
+          \ <span class=\"hljs-string\">\"retccl.safetensors\"</span>)\n\n<span class=\"\
+          hljs-comment\"># Ensure model outputs are the same in JIT and original model.</span>\n\
+          x = torch.ones(<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\"\
+          >3</span>, <span class=\"hljs-number\">224</span>, <span class=\"hljs-number\"\
+          >224</span>)\n<span class=\"hljs-keyword\">with</span> torch.no_grad():\n\
+          \    orig = model(x)\n    new = model_jit(x)\n\n<span class=\"hljs-keyword\"\
+          >assert</span> np.array_equal(orig, new)\n</code></pre>\n"
+        raw: "This commit adds TorchScript and Safetensors versions of the RetCCL\
+          \ model. Torchscript allows the model to be used without code defining its\
+          \ implementation and without a Python runtime. This can help others incorporate\
+          \ RetCCL into other applications. In fact I was planning to upload RetCCL\
+          \ to HuggingFace but I found this repository first. I am hoping to use the\
+          \ Torchscript version of this model in several applications and to pull\
+          \ it from this repository.\n\nSafetensors is a file format developed by\
+          \ HuggingFace to deal with some drawbacks of the PyTorch pickle-based format.\
+          \ I have uploaded a safetensors version here.\n\nHere is the code I used\
+          \ to create the two files here. First I cloned the RetCCL GitHub repo, and\
+          \ then made minor changes to ResNet.py to satisfy TorchScript requirements.\
+          \ Namely, I set `self.instDis = nn.Identity()` and `self.groupDis = nn.Identity()`\
+          \ if those attributes were not set.\n\n```python\nimport numpy as np\nfrom\
+          \ safetensors.torch import save_file\nimport torch\nfrom torch import nn\n\
+          import ResNet\n\nmodel = ResNet.resnet50(num_classes=128,mlp=False, two_branch=False,\
+          \ normlinear=True)\npretext_model = torch.load(\"/home/jakub/Downloads/retccl.pth\"\
+          , map_location=\"cpu\")\nmodel.fc = nn.Identity()\nmodel.load_state_dict(pretext_model,\
+          \ strict=True)\nmodel.eval()\n\n# Save torchscript model.\nmodel_jit = torch.jit.script(model,\
+          \ example_inputs=[(torch.ones(1, 3, 224, 224),)])\ntorch.jit.save(model_jit,\
+          \ \"retccl_torchscript.pth\")\n\n# Save safetensors weights\nsave_file(pretext_model,\
+          \ \"retccl.safetensors\")\n\n# Ensure model outputs are the same in JIT\
+          \ and original model.\nx = torch.ones(1, 3, 224, 224)\nwith torch.no_grad():\n\
+          \    orig = model(x)\n    new = model_jit(x)\n\nassert np.array_equal(orig,\
+          \ new)\n```"
+        updatedAt: '2023-06-05T21:58:22.549Z'
+      numEdits: 1
+      reactions: []
+    id: 647e5a4210b7a3b15712dd7d
+    type: comment
+  author: kaczmarj
+  content: "This commit adds TorchScript and Safetensors versions of the RetCCL model.\
+    \ Torchscript allows the model to be used without code defining its implementation\
+    \ and without a Python runtime. This can help others incorporate RetCCL into other\
+    \ applications. In fact I was planning to upload RetCCL to HuggingFace but I found\
+    \ this repository first. I am hoping to use the Torchscript version of this model\
+    \ in several applications and to pull it from this repository.\n\nSafetensors\
+    \ is a file format developed by HuggingFace to deal with some drawbacks of the\
+    \ PyTorch pickle-based format. I have uploaded a safetensors version here.\n\n\
+    Here is the code I used to create the two files here. First I cloned the RetCCL\
+    \ GitHub repo, and then made minor changes to ResNet.py to satisfy TorchScript\
+    \ requirements. Namely, I set `self.instDis = nn.Identity()` and `self.groupDis\
+    \ = nn.Identity()` if those attributes were not set.\n\n```python\nimport numpy\
+    \ as np\nfrom safetensors.torch import save_file\nimport torch\nfrom torch import\
+    \ nn\nimport ResNet\n\nmodel = ResNet.resnet50(num_classes=128,mlp=False, two_branch=False,\
+    \ normlinear=True)\npretext_model = torch.load(\"/home/jakub/Downloads/retccl.pth\"\
+    , map_location=\"cpu\")\nmodel.fc = nn.Identity()\nmodel.load_state_dict(pretext_model,\
+    \ strict=True)\nmodel.eval()\n\n# Save torchscript model.\nmodel_jit = torch.jit.script(model,\
+    \ example_inputs=[(torch.ones(1, 3, 224, 224),)])\ntorch.jit.save(model_jit, \"\
+    retccl_torchscript.pth\")\n\n# Save safetensors weights\nsave_file(pretext_model,\
+    \ \"retccl.safetensors\")\n\n# Ensure model outputs are the same in JIT and original\
+    \ model.\nx = torch.ones(1, 3, 224, 224)\nwith torch.no_grad():\n    orig = model(x)\n\
+    \    new = model_jit(x)\n\nassert np.array_equal(orig, new)\n```"
+  created_at: 2023-06-05 20:57:22+00:00
+  edited: true
+  hidden: false
+  id: 647e5a4210b7a3b15712dd7d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/646dfe75df618b303b41e268/XJzZjZfx9iQ6A7bF8wdzD.jpeg?w=200&h=200&f=face
+      fullname: Jakub Kaczmarzyk
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kaczmarj
+      type: user
+    createdAt: '2023-06-05T21:57:23.000Z'
+    data:
+      oid: 1a4c40463986058b20a87fdc2bd5db370eca34f2
+      parents:
+      - b93463e885bbaaddc9b4f73cb16b54690cf0cf98
+      subject: add torchscript and safetensors versions of retccl model
+    id: 647e5a430000000000000000
+    type: commit
+  author: kaczmarj
+  created_at: 2023-06-05 20:57:23+00:00
+  id: 647e5a430000000000000000
+  oid: 1a4c40463986058b20a87fdc2bd5db370eca34f2
+  summary: add torchscript and safetensors versions of retccl model
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7cef708bf671ece99606c337e0027cba.svg
+      fullname: James Dolezal
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: jamesdolezal
+      type: user
+    createdAt: '2023-06-07T19:02:50.000Z'
+    data:
+      edited: false
+      editors:
+      - jamesdolezal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9644191265106201
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7cef708bf671ece99606c337e0027cba.svg
+          fullname: James Dolezal
+          isHf: false
+          isPro: false
+          name: jamesdolezal
+          type: user
+        html: '<p>Thanks for the contribution! I will review and merge later today
+          or tomorrow.</p>
+
+          '
+        raw: Thanks for the contribution! I will review and merge later today or tomorrow.
+        updatedAt: '2023-06-07T19:02:50.531Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - kaczmarj
+    id: 6480d45ae1421e205fddcae7
+    type: comment
+  author: jamesdolezal
+  content: Thanks for the contribution! I will review and merge later today or tomorrow.
+  created_at: 2023-06-07 18:02:50+00:00
+  edited: false
+  hidden: false
+  id: 6480d45ae1421e205fddcae7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/7cef708bf671ece99606c337e0027cba.svg
+      fullname: James Dolezal
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: jamesdolezal
+      type: user
+    createdAt: '2023-06-08T18:46:52.000Z'
+    data:
+      status: merged
+    id: 6482221c085cd9e6cc93a565
+    type: status-change
+  author: jamesdolezal
+  created_at: 2023-06-08 17:46:52+00:00
+  id: 6482221c085cd9e6cc93a565
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: 076c6d18dd11f9ca951c6e294c31a021b42df494
+num: 1
+repo_id: jamesdolezal/RetCCL
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: add torchscript and safetensors versions of retccl model

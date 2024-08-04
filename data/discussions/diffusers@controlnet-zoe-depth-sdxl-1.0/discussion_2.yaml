@@ -1,0 +1,415 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Andyrasika
+conflicting_files: null
+created_at: 2023-09-10 06:23:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6290ec00a29097b211b94f0f/7OYU-yroOUxJryJkl33L6.png?w=200&h=200&f=face
+      fullname: Ankush Singal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Andyrasika
+      type: user
+    createdAt: '2023-09-10T07:23:50.000Z'
+    data:
+      edited: false
+      editors:
+      - Andyrasika
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.32362449169158936
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6290ec00a29097b211b94f0f/7OYU-yroOUxJryJkl33L6.png?w=200&h=200&f=face
+          fullname: Ankush Singal
+          isHf: false
+          isPro: false
+          name: Andyrasika
+          type: user
+        html: "<pre><code>!git clone https://github.com/isl-org/ZoeDepth.git\n%cd\
+          \ ZoeDepth\n</code></pre>\n<pre><code>import torch\nimport matplotlib\n\
+          import matplotlib.cm\nimport numpy as np\n\nfrom zoedepth.utils.misc import\
+          \ get_image_from_url, colorize\nfrom PIL import Image\nimport matplotlib.pyplot\
+          \ as plt\n\n\n\ntorch.hub.help(\"intel-isl/MiDaS\", \"DPT_BEiT_L_384\",\
+          \ force_reload=True)  # Triggers fresh download of MiDaS repo\nzoe = torch.hub.load(\"\
+          .\", \"ZoeD_N\", source=\"local\", pretrained=True)\nzoe = zoe.to(\"cuda\"\
+          )\n\n\ndef colorize(value, vmin=None, vmax=None, cmap='gray_r', invalid_val=-99,\
+          \ invalid_mask=None, background_color=(128, 128, 128, 255), gamma_corrected=False,\
+          \ value_transform=None):\n    if isinstance(value, torch.Tensor):\n    \
+          \    value = value.detach().cpu().numpy()\n\n    value = value.squeeze()\n\
+          \    if invalid_mask is None:\n        invalid_mask = value == invalid_val\n\
+          \    mask = np.logical_not(invalid_mask)\n\n    # normalize\n    vmin =\
+          \ np.percentile(value[mask],2) if vmin is None else vmin\n    vmax = np.percentile(value[mask],85)\
+          \ if vmax is None else vmax\n    if vmin != vmax:\n        value = (value\
+          \ - vmin) / (vmax - vmin)  # vmin..vmax\n    else:\n        # Avoid 0-division\n\
+          \        value = value * 0.\n\n    # squeeze last dim if it exists\n   \
+          \ # grey out the invalid values\n\n    value[invalid_mask] = np.nan\n  \
+          \  cmapper = matplotlib.cm.get_cmap(cmap)\n    if value_transform:\n   \
+          \     value = value_transform(value)\n        # value = value / value.max()\n\
+          \    value = cmapper(value, bytes=True)  # (nxmx4)\n\n    # img = value[:,\
+          \ :, :]\n    img = value[...]\n    img[invalid_mask] = background_color\n\
+          \n    # gamma correction\n    img = img / 255\n    img = np.power(img, 2.2)\n\
+          \    img = img * 255\n    img = img.astype(np.uint8)\n    img = Image.fromarray(img)\n\
+          \    return img\n\n\ndef get_zoe_depth_map(image):\n    with torch.autocast(\"\
+          cuda\", enabled=True):\n        depth = model_zoe_n.infer_pil(image)\n \
+          \   depth = colorize(depth, cmap=\"gray_r\")\n    return depth\n</code></pre>\n\
+          <p>ERROR:</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[11], line 11\n      7 from PIL import Image\n      8 import matplotlib.pyplot\
+          \ as plt\n---&gt; 11 zoe = torch.hub.load(\".\", \"ZoeD_N\", source=\"local\"\
+          , pretrained=True)\n     13 torch.hub.help(\"intel-isl/MiDaS\", \"DPT_BEiT_L_384\"\
+          , force_reload=True)  # Triggers fresh download of MiDaS repo\n     14 zoe\
+          \ = torch.hub.load(\".\", \"ZoeD_N\", source=\"local\", pretrained=True)\n\
+          \nFile /usr/local/lib/python3.10/dist-packages/torch/hub.py:542, in load(repo_or_dir,\
+          \ model, source, trust_repo, force_reload, verbose, skip_validation, *args,\
+          \ **kwargs)\n    538 if source == 'github':\n    539     repo_or_dir = _get_cache_or_reload(repo_or_dir,\
+          \ force_reload, trust_repo, \"load\",\n    540                         \
+          \               verbose=verbose, skip_validation=skip_validation)\n--&gt;\
+          \ 542 model = _load_local(repo_or_dir, model, *args, **kwargs)\n    543\
+          \ return model\n\nFile /usr/local/lib/python3.10/dist-packages/torch/hub.py:572,\
+          \ in _load_local(hubconf_dir, model, *args, **kwargs)\n    569 hub_module\
+          \ = _import_module(MODULE_HUBCONF, hubconf_path)\n    571 entry = _load_entry_from_hubconf(hub_module,\
+          \ model)\n--&gt; 572 model = entry(*args, **kwargs)\n    574 sys.path.remove(hubconf_dir)\n\
+          \    576 return model\n\nFile /workspace/ZoeDepth/./hubconf.py:69, in ZoeD_N(pretrained,\
+          \ midas_model_type, config_mode, **kwargs)\n     66     pretrained_resource\
+          \ = \"url::https://github.com/isl-org/ZoeDepth/releases/download/v1.0/ZoeD_M12_N.pt\"\
+          \n     68 config = get_config(\"zoedepth\", config_mode, pretrained_resource=pretrained_resource,\
+          \ **kwargs)\n---&gt; 69 model = build_model(config)\n     70 return model\n\
+          \nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/builder.py:51,\
+          \ in build_model(config)\n     48 except AttributeError as e:\n     49 \
+          \    raise ValueError(\n     50         f\"Model {config.model} has no get_version\
+          \ function.\") from e\n---&gt; 51 return get_version(config.version_name).build_from_config(config)\n\
+          \nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:250,\
+          \ in ZoeDepth.build_from_config(config)\n    248 @staticmethod\n    249\
+          \ def build_from_config(config):\n--&gt; 250     return ZoeDepth.build(**config)\n\
+          \nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:245,\
+          \ in ZoeDepth.build(midas_model_type, pretrained_resource, use_pretrained_midas,\
+          \ train_midas, freeze_midas_bn, **kwargs)\n    243 if pretrained_resource:\n\
+          \    244     assert isinstance(pretrained_resource, str), \"pretrained_resource\
+          \ must be a string\"\n--&gt; 245     model = load_state_from_resource(model,\
+          \ pretrained_resource)\n    246 return model\n\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:84,\
+          \ in load_state_from_resource(model, resource)\n     82 if resource.startswith('url::'):\n\
+          \     83     url = resource.split('url::')[1]\n---&gt; 84     return load_state_dict_from_url(model,\
+          \ url, progress=True)\n     86 elif resource.startswith('local::'):\n  \
+          \   87     path = resource.split('local::')[1]\n\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:61,\
+          \ in load_state_dict_from_url(model, url, **kwargs)\n     59 def load_state_dict_from_url(model,\
+          \ url, **kwargs):\n     60     state_dict = torch.hub.load_state_dict_from_url(url,\
+          \ map_location='cpu', **kwargs)\n---&gt; 61     return load_state_dict(model,\
+          \ state_dict)\n\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:49,\
+          \ in load_state_dict(model, state_dict)\n     45         k = 'module.' +\
+          \ k\n     47     state[k] = v\n---&gt; 49 model.load_state_dict(state)\n\
+          \     50 print(\"Loaded successfully\")\n     51 return model\n\nFile /usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py:1671,\
+          \ in Module.load_state_dict(self, state_dict, strict)\n   1666         error_msgs.insert(\n\
+          \   1667             0, 'Missing key(s) in state_dict: {}. '.format(\n \
+          \  1668                 ', '.join('\"{}\"'.format(k) for k in missing_keys)))\n\
+          \   1670 if len(error_msgs) &gt; 0:\n-&gt; 1671     raise RuntimeError('Error(s)\
+          \ in loading state_dict for {}:\\n\\t{}'.format(\n   1672              \
+          \          self.__class__.__name__, \"\\n\\t\".join(error_msgs)))\n   1673\
+          \ return _IncompatibleKeys(missing_keys, unexpected_keys)\n\nRuntimeError:\
+          \ Error(s) in loading state_dict for ZoeDepth:\n    Unexpected key(s) in\
+          \ state_dict: \"core.core.pretrained.model.blocks.0.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.1.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.2.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.3.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.4.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.5.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.6.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.7.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.8.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.9.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.10.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.11.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.12.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.13.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.14.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.15.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.16.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.17.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.18.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.19.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.20.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.21.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.22.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.23.attn.relative_position_index\"\
+          . \n</code></pre>\n"
+        raw: "```\r\n!git clone https://github.com/isl-org/ZoeDepth.git\r\n%cd ZoeDepth\r\
+          \n```\r\n```\r\nimport torch\r\nimport matplotlib\r\nimport matplotlib.cm\r\
+          \nimport numpy as np\r\n\r\nfrom zoedepth.utils.misc import get_image_from_url,\
+          \ colorize\r\nfrom PIL import Image\r\nimport matplotlib.pyplot as plt\r\
+          \n\r\n\r\n\r\ntorch.hub.help(\"intel-isl/MiDaS\", \"DPT_BEiT_L_384\", force_reload=True)\
+          \  # Triggers fresh download of MiDaS repo\r\nzoe = torch.hub.load(\".\"\
+          , \"ZoeD_N\", source=\"local\", pretrained=True)\r\nzoe = zoe.to(\"cuda\"\
+          )\r\n\r\n\r\ndef colorize(value, vmin=None, vmax=None, cmap='gray_r', invalid_val=-99,\
+          \ invalid_mask=None, background_color=(128, 128, 128, 255), gamma_corrected=False,\
+          \ value_transform=None):\r\n    if isinstance(value, torch.Tensor):\r\n\
+          \        value = value.detach().cpu().numpy()\r\n\r\n    value = value.squeeze()\r\
+          \n    if invalid_mask is None:\r\n        invalid_mask = value == invalid_val\r\
+          \n    mask = np.logical_not(invalid_mask)\r\n\r\n    # normalize\r\n   \
+          \ vmin = np.percentile(value[mask],2) if vmin is None else vmin\r\n    vmax\
+          \ = np.percentile(value[mask],85) if vmax is None else vmax\r\n    if vmin\
+          \ != vmax:\r\n        value = (value - vmin) / (vmax - vmin)  # vmin..vmax\r\
+          \n    else:\r\n        # Avoid 0-division\r\n        value = value * 0.\r\
+          \n\r\n    # squeeze last dim if it exists\r\n    # grey out the invalid\
+          \ values\r\n\r\n    value[invalid_mask] = np.nan\r\n    cmapper = matplotlib.cm.get_cmap(cmap)\r\
+          \n    if value_transform:\r\n        value = value_transform(value)\r\n\
+          \        # value = value / value.max()\r\n    value = cmapper(value, bytes=True)\
+          \  # (nxmx4)\r\n\r\n    # img = value[:, :, :]\r\n    img = value[...]\r\
+          \n    img[invalid_mask] = background_color\r\n\r\n    # gamma correction\r\
+          \n    img = img / 255\r\n    img = np.power(img, 2.2)\r\n    img = img *\
+          \ 255\r\n    img = img.astype(np.uint8)\r\n    img = Image.fromarray(img)\r\
+          \n    return img\r\n\r\n\r\ndef get_zoe_depth_map(image):\r\n    with torch.autocast(\"\
+          cuda\", enabled=True):\r\n        depth = model_zoe_n.infer_pil(image)\r\
+          \n    depth = colorize(depth, cmap=\"gray_r\")\r\n    return depth\r\n```\r\
+          \nERROR:\r\n```\r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\nCell In[11], line 11\r\n      7 from PIL import Image\r\n   \
+          \   8 import matplotlib.pyplot as plt\r\n---> 11 zoe = torch.hub.load(\"\
+          .\", \"ZoeD_N\", source=\"local\", pretrained=True)\r\n     13 torch.hub.help(\"\
+          intel-isl/MiDaS\", \"DPT_BEiT_L_384\", force_reload=True)  # Triggers fresh\
+          \ download of MiDaS repo\r\n     14 zoe = torch.hub.load(\".\", \"ZoeD_N\"\
+          , source=\"local\", pretrained=True)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/torch/hub.py:542,\
+          \ in load(repo_or_dir, model, source, trust_repo, force_reload, verbose,\
+          \ skip_validation, *args, **kwargs)\r\n    538 if source == 'github':\r\n\
+          \    539     repo_or_dir = _get_cache_or_reload(repo_or_dir, force_reload,\
+          \ trust_repo, \"load\",\r\n    540                                     \
+          \   verbose=verbose, skip_validation=skip_validation)\r\n--> 542 model =\
+          \ _load_local(repo_or_dir, model, *args, **kwargs)\r\n    543 return model\r\
+          \n\r\nFile /usr/local/lib/python3.10/dist-packages/torch/hub.py:572, in\
+          \ _load_local(hubconf_dir, model, *args, **kwargs)\r\n    569 hub_module\
+          \ = _import_module(MODULE_HUBCONF, hubconf_path)\r\n    571 entry = _load_entry_from_hubconf(hub_module,\
+          \ model)\r\n--> 572 model = entry(*args, **kwargs)\r\n    574 sys.path.remove(hubconf_dir)\r\
+          \n    576 return model\r\n\r\nFile /workspace/ZoeDepth/./hubconf.py:69,\
+          \ in ZoeD_N(pretrained, midas_model_type, config_mode, **kwargs)\r\n   \
+          \  66     pretrained_resource = \"url::https://github.com/isl-org/ZoeDepth/releases/download/v1.0/ZoeD_M12_N.pt\"\
+          \r\n     68 config = get_config(\"zoedepth\", config_mode, pretrained_resource=pretrained_resource,\
+          \ **kwargs)\r\n---> 69 model = build_model(config)\r\n     70 return model\r\
+          \n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/builder.py:51,\
+          \ in build_model(config)\r\n     48 except AttributeError as e:\r\n    \
+          \ 49     raise ValueError(\r\n     50         f\"Model {config.model} has\
+          \ no get_version function.\") from e\r\n---> 51 return get_version(config.version_name).build_from_config(config)\r\
+          \n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:250,\
+          \ in ZoeDepth.build_from_config(config)\r\n    248 @staticmethod\r\n   \
+          \ 249 def build_from_config(config):\r\n--> 250     return ZoeDepth.build(**config)\r\
+          \n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:245,\
+          \ in ZoeDepth.build(midas_model_type, pretrained_resource, use_pretrained_midas,\
+          \ train_midas, freeze_midas_bn, **kwargs)\r\n    243 if pretrained_resource:\r\
+          \n    244     assert isinstance(pretrained_resource, str), \"pretrained_resource\
+          \ must be a string\"\r\n--> 245     model = load_state_from_resource(model,\
+          \ pretrained_resource)\r\n    246 return model\r\n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:84,\
+          \ in load_state_from_resource(model, resource)\r\n     82 if resource.startswith('url::'):\r\
+          \n     83     url = resource.split('url::')[1]\r\n---> 84     return load_state_dict_from_url(model,\
+          \ url, progress=True)\r\n     86 elif resource.startswith('local::'):\r\n\
+          \     87     path = resource.split('local::')[1]\r\n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:61,\
+          \ in load_state_dict_from_url(model, url, **kwargs)\r\n     59 def load_state_dict_from_url(model,\
+          \ url, **kwargs):\r\n     60     state_dict = torch.hub.load_state_dict_from_url(url,\
+          \ map_location='cpu', **kwargs)\r\n---> 61     return load_state_dict(model,\
+          \ state_dict)\r\n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:49,\
+          \ in load_state_dict(model, state_dict)\r\n     45         k = 'module.'\
+          \ + k\r\n     47     state[k] = v\r\n---> 49 model.load_state_dict(state)\r\
+          \n     50 print(\"Loaded successfully\")\r\n     51 return model\r\n\r\n\
+          File /usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py:1671,\
+          \ in Module.load_state_dict(self, state_dict, strict)\r\n   1666       \
+          \  error_msgs.insert(\r\n   1667             0, 'Missing key(s) in state_dict:\
+          \ {}. '.format(\r\n   1668                 ', '.join('\"{}\"'.format(k)\
+          \ for k in missing_keys)))\r\n   1670 if len(error_msgs) > 0:\r\n-> 1671\
+          \     raise RuntimeError('Error(s) in loading state_dict for {}:\\n\\t{}'.format(\r\
+          \n   1672                        self.__class__.__name__, \"\\n\\t\".join(error_msgs)))\r\
+          \n   1673 return _IncompatibleKeys(missing_keys, unexpected_keys)\r\n\r\n\
+          RuntimeError: Error(s) in loading state_dict for ZoeDepth:\r\n\tUnexpected\
+          \ key(s) in state_dict: \"core.core.pretrained.model.blocks.0.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.1.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.2.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.3.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.4.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.5.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.6.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.7.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.8.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.9.attn.relative_position_index\",\
+          \ \"core.core.pretrained.model.blocks.10.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.11.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.12.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.13.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.14.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.15.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.16.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.17.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.18.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.19.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.20.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.21.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.22.attn.relative_position_index\"\
+          , \"core.core.pretrained.model.blocks.23.attn.relative_position_index\"\
+          . \r\n```\r\n\r\n"
+        updatedAt: '2023-09-10T07:23:50.308Z'
+      numEdits: 0
+      reactions: []
+    id: 64fd6f06b8d50cebd67453f9
+    type: comment
+  author: Andyrasika
+  content: "```\r\n!git clone https://github.com/isl-org/ZoeDepth.git\r\n%cd ZoeDepth\r\
+    \n```\r\n```\r\nimport torch\r\nimport matplotlib\r\nimport matplotlib.cm\r\n\
+    import numpy as np\r\n\r\nfrom zoedepth.utils.misc import get_image_from_url,\
+    \ colorize\r\nfrom PIL import Image\r\nimport matplotlib.pyplot as plt\r\n\r\n\
+    \r\n\r\ntorch.hub.help(\"intel-isl/MiDaS\", \"DPT_BEiT_L_384\", force_reload=True)\
+    \  # Triggers fresh download of MiDaS repo\r\nzoe = torch.hub.load(\".\", \"ZoeD_N\"\
+    , source=\"local\", pretrained=True)\r\nzoe = zoe.to(\"cuda\")\r\n\r\n\r\ndef\
+    \ colorize(value, vmin=None, vmax=None, cmap='gray_r', invalid_val=-99, invalid_mask=None,\
+    \ background_color=(128, 128, 128, 255), gamma_corrected=False, value_transform=None):\r\
+    \n    if isinstance(value, torch.Tensor):\r\n        value = value.detach().cpu().numpy()\r\
+    \n\r\n    value = value.squeeze()\r\n    if invalid_mask is None:\r\n        invalid_mask\
+    \ = value == invalid_val\r\n    mask = np.logical_not(invalid_mask)\r\n\r\n  \
+    \  # normalize\r\n    vmin = np.percentile(value[mask],2) if vmin is None else\
+    \ vmin\r\n    vmax = np.percentile(value[mask],85) if vmax is None else vmax\r\
+    \n    if vmin != vmax:\r\n        value = (value - vmin) / (vmax - vmin)  # vmin..vmax\r\
+    \n    else:\r\n        # Avoid 0-division\r\n        value = value * 0.\r\n\r\n\
+    \    # squeeze last dim if it exists\r\n    # grey out the invalid values\r\n\r\
+    \n    value[invalid_mask] = np.nan\r\n    cmapper = matplotlib.cm.get_cmap(cmap)\r\
+    \n    if value_transform:\r\n        value = value_transform(value)\r\n      \
+    \  # value = value / value.max()\r\n    value = cmapper(value, bytes=True)  #\
+    \ (nxmx4)\r\n\r\n    # img = value[:, :, :]\r\n    img = value[...]\r\n    img[invalid_mask]\
+    \ = background_color\r\n\r\n    # gamma correction\r\n    img = img / 255\r\n\
+    \    img = np.power(img, 2.2)\r\n    img = img * 255\r\n    img = img.astype(np.uint8)\r\
+    \n    img = Image.fromarray(img)\r\n    return img\r\n\r\n\r\ndef get_zoe_depth_map(image):\r\
+    \n    with torch.autocast(\"cuda\", enabled=True):\r\n        depth = model_zoe_n.infer_pil(image)\r\
+    \n    depth = colorize(depth, cmap=\"gray_r\")\r\n    return depth\r\n```\r\n\
+    ERROR:\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \nCell In[11], line 11\r\n      7 from PIL import Image\r\n      8 import matplotlib.pyplot\
+    \ as plt\r\n---> 11 zoe = torch.hub.load(\".\", \"ZoeD_N\", source=\"local\",\
+    \ pretrained=True)\r\n     13 torch.hub.help(\"intel-isl/MiDaS\", \"DPT_BEiT_L_384\"\
+    , force_reload=True)  # Triggers fresh download of MiDaS repo\r\n     14 zoe =\
+    \ torch.hub.load(\".\", \"ZoeD_N\", source=\"local\", pretrained=True)\r\n\r\n\
+    File /usr/local/lib/python3.10/dist-packages/torch/hub.py:542, in load(repo_or_dir,\
+    \ model, source, trust_repo, force_reload, verbose, skip_validation, *args, **kwargs)\r\
+    \n    538 if source == 'github':\r\n    539     repo_or_dir = _get_cache_or_reload(repo_or_dir,\
+    \ force_reload, trust_repo, \"load\",\r\n    540                             \
+    \           verbose=verbose, skip_validation=skip_validation)\r\n--> 542 model\
+    \ = _load_local(repo_or_dir, model, *args, **kwargs)\r\n    543 return model\r\
+    \n\r\nFile /usr/local/lib/python3.10/dist-packages/torch/hub.py:572, in _load_local(hubconf_dir,\
+    \ model, *args, **kwargs)\r\n    569 hub_module = _import_module(MODULE_HUBCONF,\
+    \ hubconf_path)\r\n    571 entry = _load_entry_from_hubconf(hub_module, model)\r\
+    \n--> 572 model = entry(*args, **kwargs)\r\n    574 sys.path.remove(hubconf_dir)\r\
+    \n    576 return model\r\n\r\nFile /workspace/ZoeDepth/./hubconf.py:69, in ZoeD_N(pretrained,\
+    \ midas_model_type, config_mode, **kwargs)\r\n     66     pretrained_resource\
+    \ = \"url::https://github.com/isl-org/ZoeDepth/releases/download/v1.0/ZoeD_M12_N.pt\"\
+    \r\n     68 config = get_config(\"zoedepth\", config_mode, pretrained_resource=pretrained_resource,\
+    \ **kwargs)\r\n---> 69 model = build_model(config)\r\n     70 return model\r\n\
+    \r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/builder.py:51,\
+    \ in build_model(config)\r\n     48 except AttributeError as e:\r\n     49   \
+    \  raise ValueError(\r\n     50         f\"Model {config.model} has no get_version\
+    \ function.\") from e\r\n---> 51 return get_version(config.version_name).build_from_config(config)\r\
+    \n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:250,\
+    \ in ZoeDepth.build_from_config(config)\r\n    248 @staticmethod\r\n    249 def\
+    \ build_from_config(config):\r\n--> 250     return ZoeDepth.build(**config)\r\n\
+    \r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/zoedepth/zoedepth_v1.py:245,\
+    \ in ZoeDepth.build(midas_model_type, pretrained_resource, use_pretrained_midas,\
+    \ train_midas, freeze_midas_bn, **kwargs)\r\n    243 if pretrained_resource:\r\
+    \n    244     assert isinstance(pretrained_resource, str), \"pretrained_resource\
+    \ must be a string\"\r\n--> 245     model = load_state_from_resource(model, pretrained_resource)\r\
+    \n    246 return model\r\n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:84,\
+    \ in load_state_from_resource(model, resource)\r\n     82 if resource.startswith('url::'):\r\
+    \n     83     url = resource.split('url::')[1]\r\n---> 84     return load_state_dict_from_url(model,\
+    \ url, progress=True)\r\n     86 elif resource.startswith('local::'):\r\n    \
+    \ 87     path = resource.split('local::')[1]\r\n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:61,\
+    \ in load_state_dict_from_url(model, url, **kwargs)\r\n     59 def load_state_dict_from_url(model,\
+    \ url, **kwargs):\r\n     60     state_dict = torch.hub.load_state_dict_from_url(url,\
+    \ map_location='cpu', **kwargs)\r\n---> 61     return load_state_dict(model, state_dict)\r\
+    \n\r\nFile ~/.cache/torch/hub/isl-org_ZoeDepth_main/zoedepth/models/model_io.py:49,\
+    \ in load_state_dict(model, state_dict)\r\n     45         k = 'module.' + k\r\
+    \n     47     state[k] = v\r\n---> 49 model.load_state_dict(state)\r\n     50\
+    \ print(\"Loaded successfully\")\r\n     51 return model\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py:1671,\
+    \ in Module.load_state_dict(self, state_dict, strict)\r\n   1666         error_msgs.insert(\r\
+    \n   1667             0, 'Missing key(s) in state_dict: {}. '.format(\r\n   1668\
+    \                 ', '.join('\"{}\"'.format(k) for k in missing_keys)))\r\n  \
+    \ 1670 if len(error_msgs) > 0:\r\n-> 1671     raise RuntimeError('Error(s) in\
+    \ loading state_dict for {}:\\n\\t{}'.format(\r\n   1672                     \
+    \   self.__class__.__name__, \"\\n\\t\".join(error_msgs)))\r\n   1673 return _IncompatibleKeys(missing_keys,\
+    \ unexpected_keys)\r\n\r\nRuntimeError: Error(s) in loading state_dict for ZoeDepth:\r\
+    \n\tUnexpected key(s) in state_dict: \"core.core.pretrained.model.blocks.0.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.1.attn.relative_position_index\", \"core.core.pretrained.model.blocks.2.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.3.attn.relative_position_index\", \"core.core.pretrained.model.blocks.4.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.5.attn.relative_position_index\", \"core.core.pretrained.model.blocks.6.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.7.attn.relative_position_index\", \"core.core.pretrained.model.blocks.8.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.9.attn.relative_position_index\", \"core.core.pretrained.model.blocks.10.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.11.attn.relative_position_index\", \"core.core.pretrained.model.blocks.12.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.13.attn.relative_position_index\", \"core.core.pretrained.model.blocks.14.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.15.attn.relative_position_index\", \"core.core.pretrained.model.blocks.16.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.17.attn.relative_position_index\", \"core.core.pretrained.model.blocks.18.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.19.attn.relative_position_index\", \"core.core.pretrained.model.blocks.20.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.21.attn.relative_position_index\", \"core.core.pretrained.model.blocks.22.attn.relative_position_index\"\
+    , \"core.core.pretrained.model.blocks.23.attn.relative_position_index\". \r\n\
+    ```\r\n\r\n"
+  created_at: 2023-09-10 06:23:50+00:00
+  edited: false
+  hidden: false
+  id: 64fd6f06b8d50cebd67453f9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6414b5af19cea34cb5e2fd4e/GU7DD62D3Sx2hqHW8EM-z.jpeg?w=200&h=200&f=face
+      fullname: Luis Vega
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: vegaluisjose
+      type: user
+    createdAt: '2023-09-26T00:21:30.000Z'
+    data:
+      edited: false
+      editors:
+      - vegaluisjose
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6188117265701294
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6414b5af19cea34cb5e2fd4e/GU7DD62D3Sx2hqHW8EM-z.jpeg?w=200&h=200&f=face
+          fullname: Luis Vega
+          isHf: false
+          isPro: false
+          name: vegaluisjose
+          type: user
+        html: '<p>Installing the right version of <code>timm</code> did the trick
+          for me <code>python3 -m pip install timm==0.6.12</code></p>
+
+          '
+        raw: Installing the right version of `timm` did the trick for me `python3
+          -m pip install timm==0.6.12`
+        updatedAt: '2023-09-26T00:21:30.787Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Andyrasika
+    id: 6512240aaef55ad5e498433a
+    type: comment
+  author: vegaluisjose
+  content: Installing the right version of `timm` did the trick for me `python3 -m
+    pip install timm==0.6.12`
+  created_at: 2023-09-25 23:21:30+00:00
+  edited: false
+  hidden: false
+  id: 6512240aaef55ad5e498433a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: diffusers/controlnet-zoe-depth-sdxl-1.0
+repo_type: model
+status: open
+target_branch: null
+title: Error(s) in loading state_dict for ZoeDepth

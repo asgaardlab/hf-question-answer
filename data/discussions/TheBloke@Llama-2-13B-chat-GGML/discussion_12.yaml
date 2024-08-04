@@ -1,0 +1,208 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: tanner-sorensen
+conflicting_files: null
+created_at: 2023-08-18 14:59:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a7f764ec4692eb580dac1d473160bcf2.svg
+      fullname: Tanner Sorensen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tanner-sorensen
+      type: user
+    createdAt: '2023-08-18T15:59:41.000Z'
+    data:
+      edited: false
+      editors:
+      - tanner-sorensen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7466329336166382
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a7f764ec4692eb580dac1d473160bcf2.svg
+          fullname: Tanner Sorensen
+          isHf: false
+          isPro: false
+          name: tanner-sorensen
+          type: user
+        html: '<p>As I understand it, the basic format of the prompts for the base
+          instruction fine-tuned checkpoint is the following:</p>
+
+          <pre><code>&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\n{system_prompt}\n&lt;&lt;/SYS&gt;&gt;\n\n{instruction}
+          [/INST] {response} &lt;/s&gt;
+
+          </code></pre>
+
+          <p>This is based on these:</p>
+
+          <ul>
+
+          <li><a href="https://huggingface.co/spaces/huggingface-projects/llama-2-13b-chat/blob/main/model.py">https://huggingface.co/spaces/huggingface-projects/llama-2-13b-chat/blob/main/model.py</a></li>
+
+          <li><a href="https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5">https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5</a></li>
+
+          </ul>
+
+          <p>Now, when we create the strings we are using for fine-tuning, we do not
+          insert <code>&lt;s&gt;</code> at the start of the string because the tokenizer
+          takes care of this for us before we feed it into the model (see below):</p>
+
+          <pre><code>&gt;&gt;&gt; import transformers
+
+          &gt;&gt;&gt; from transformers import AutoTokenizer
+
+          &gt;&gt;&gt; tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf",
+          use_auth_token="...")
+
+          &gt;&gt;&gt; tokens = tokenizer("this is a test")
+
+          &gt;&gt;&gt; tokenized_string = tokenizer.decode(tokens.input_ids, skip_special_tokens=False)
+
+          &gt;&gt;&gt; tokenized_string
+
+          ''&lt;s&gt; this is a test''
+
+          </code></pre>
+
+          <p>We noticed that the tokenizer does not automatically insert the end-of-sentence
+          token (see just above). Thus, as a precaution, we insert <code>&lt;/s&gt;</code>
+          at the end of the response as an end-of-sentence token. We can use this
+          token as a stopping criterion.</p>
+
+          <pre><code>&gt;&gt;&gt; import transformers
+
+          &gt;&gt;&gt; from transformers import AutoTokenizer
+
+          &gt;&gt;&gt; tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf",
+          use_auth_token="...")
+
+          &gt;&gt;&gt; tokenizer.decode(tokenizer.eos_token_id)
+
+          ''&lt;/s&gt;''
+
+          </code></pre>
+
+          <p>Since the tokenizer adds <code>&lt;s&gt;</code> but not <code>&lt;/s&gt;</code>,
+          is it correct to use this as the input to the tokenizer, then?</p>
+
+          <pre><code>[INST] &lt;&lt;SYS&gt;&gt;\n{system_prompt}\n&lt;&lt;/SYS&gt;&gt;\n\n{instruction}
+          [/INST] {response} &lt;/s&gt;
+
+          </code></pre>
+
+          '
+        raw: "As I understand it, the basic format of the prompts for the base instruction\
+          \ fine-tuned checkpoint is the following:\r\n```\r\n<s>[INST] <<SYS>>\\\
+          n{system_prompt}\\n<</SYS>>\\n\\n{instruction} [/INST] {response} </s>\r\
+          \n```\r\n\r\nThis is based on these:\r\n- https://huggingface.co/spaces/huggingface-projects/llama-2-13b-chat/blob/main/model.py\r\
+          \n- https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5\r\
+          \n\r\nNow, when we create the strings we are using for fine-tuning, we do\
+          \ not insert `<s>` at the start of the string because the tokenizer takes\
+          \ care of this for us before we feed it into the model (see below):\r\n\
+          ```\r\n>>> import transformers\r\n>>> from transformers import AutoTokenizer\r\
+          \n>>> tokenizer = AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-13b-chat-hf\"\
+          , use_auth_token=\"...\")\r\n>>> tokens = tokenizer(\"this is a test\")\r\
+          \n>>> tokenized_string = tokenizer.decode(tokens.input_ids, skip_special_tokens=False)\r\
+          \n>>> tokenized_string\r\n'<s> this is a test'\r\n```\r\n\r\nWe noticed\
+          \ that the tokenizer does not automatically insert the end-of-sentence token\
+          \ (see just above). Thus, as a precaution, we insert `</s>` at the end of\
+          \ the response as an end-of-sentence token. We can use this token as a stopping\
+          \ criterion.\r\n```\r\n>>> import transformers\r\n>>> from transformers\
+          \ import AutoTokenizer\r\n>>> tokenizer = AutoTokenizer.from_pretrained(\"\
+          meta-llama/Llama-2-13b-chat-hf\", use_auth_token=\"...\")\r\n>>> tokenizer.decode(tokenizer.eos_token_id)\r\
+          \n'</s>'\r\n```\r\n\r\nSince the tokenizer adds `<s>` but not `</s>`, is\
+          \ it correct to use this as the input to the tokenizer, then?\r\n```\r\n\
+          [INST] <<SYS>>\\n{system_prompt}\\n<</SYS>>\\n\\n{instruction} [/INST] {response}\
+          \ </s>\r\n```"
+        updatedAt: '2023-08-18T15:59:41.891Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - HITHESHSANKARARAMAN
+    id: 64df956dee991015189b7747
+    type: comment
+  author: tanner-sorensen
+  content: "As I understand it, the basic format of the prompts for the base instruction\
+    \ fine-tuned checkpoint is the following:\r\n```\r\n<s>[INST] <<SYS>>\\n{system_prompt}\\\
+    n<</SYS>>\\n\\n{instruction} [/INST] {response} </s>\r\n```\r\n\r\nThis is based\
+    \ on these:\r\n- https://huggingface.co/spaces/huggingface-projects/llama-2-13b-chat/blob/main/model.py\r\
+    \n- https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5\r\n\r\n\
+    Now, when we create the strings we are using for fine-tuning, we do not insert\
+    \ `<s>` at the start of the string because the tokenizer takes care of this for\
+    \ us before we feed it into the model (see below):\r\n```\r\n>>> import transformers\r\
+    \n>>> from transformers import AutoTokenizer\r\n>>> tokenizer = AutoTokenizer.from_pretrained(\"\
+    meta-llama/Llama-2-13b-chat-hf\", use_auth_token=\"...\")\r\n>>> tokens = tokenizer(\"\
+    this is a test\")\r\n>>> tokenized_string = tokenizer.decode(tokens.input_ids,\
+    \ skip_special_tokens=False)\r\n>>> tokenized_string\r\n'<s> this is a test'\r\
+    \n```\r\n\r\nWe noticed that the tokenizer does not automatically insert the end-of-sentence\
+    \ token (see just above). Thus, as a precaution, we insert `</s>` at the end of\
+    \ the response as an end-of-sentence token. We can use this token as a stopping\
+    \ criterion.\r\n```\r\n>>> import transformers\r\n>>> from transformers import\
+    \ AutoTokenizer\r\n>>> tokenizer = AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-13b-chat-hf\"\
+    , use_auth_token=\"...\")\r\n>>> tokenizer.decode(tokenizer.eos_token_id)\r\n\
+    '</s>'\r\n```\r\n\r\nSince the tokenizer adds `<s>` but not `</s>`, is it correct\
+    \ to use this as the input to the tokenizer, then?\r\n```\r\n[INST] <<SYS>>\\\
+    n{system_prompt}\\n<</SYS>>\\n\\n{instruction} [/INST] {response} </s>\r\n```"
+  created_at: 2023-08-18 14:59:41+00:00
+  edited: false
+  hidden: false
+  id: 64df956dee991015189b7747
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7f4d1aa4f0871d4f99610528c2437b1e.svg
+      fullname: HITHESH SANKARARAMAN
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: HITHESHSANKARARAMAN
+      type: user
+    createdAt: '2023-08-20T12:00:41.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/7f4d1aa4f0871d4f99610528c2437b1e.svg
+          fullname: HITHESH SANKARARAMAN
+          isHf: false
+          isPro: false
+          name: HITHESHSANKARARAMAN
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-08-20T19:29:49.752Z'
+      numEdits: 1
+      reactions: []
+    id: 64e20069f6c2311e7e1219b8
+    type: comment
+  author: HITHESHSANKARARAMAN
+  content: This comment has been hidden
+  created_at: 2023-08-20 11:00:41+00:00
+  edited: true
+  hidden: true
+  id: 64e20069f6c2311e7e1219b8
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 12
+repo_id: TheBloke/Llama-2-13B-chat-GGML
+repo_type: model
+status: open
+target_branch: null
+title: end of sentence token in fine-tuning dataset

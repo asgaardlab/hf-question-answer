@@ -1,0 +1,755 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: shermansiu
+conflicting_files: null
+created_at: 2023-12-07 02:35:11+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T02:35:11.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8584054708480835
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: "<p>\U0001F680 Gemini highlights:</p>\n<h1>Dataset:</h1>\n<ul>\n<li>Multimodal\
+          \ and multilingual</li>\n<li>Web documents, books, and code</li>\n</ul>\n\
+          <h2 id=\"dataset-size\">Dataset size</h2>\n<ul>\n<li>#Tokens to train Pro+Ultra\
+          \ chosen using Chinchilla scaling laws.</li>\n<li>Nano models trained on\
+          \ more tokens than predicted by Chinchilla scaling laws, following LLaMa</li>\n\
+          </ul>\n<h2 id=\"filtering\">Filtering</h2>\n<ul>\n<li>Quality filtering:\
+          \ Heuristics + model classifiers</li>\n<li>Safety filtering done to remove\
+          \ harmful content</li>\n</ul>\n<h2 id=\"dataset-composition\">Dataset composition</h2>\n\
+          <ul>\n<li>Which datasets to include + weighting determined by ablations\
+          \ on smaller models</li>\n<li>Training done in multiple stages: weight of\
+          \ domain-relevant data increased towards the end of training</li>\n<li>Data\
+          \ quality is critical</li>\n</ul>\n<h1 id=\"model-architecture\">Model architecture:</h1>\n\
+          <ul>\n<li>Transformer, decoder-only</li>\n<li>32,768 context length</li>\n\
+          <li>Uses multi-query attention (and other ways to make transformers efficient,\
+          \ which are not mentioned)</li>\n</ul>\n<h2 id=\"model-sizes\">Model sizes</h2>\n\
+          <ul>\n<li>4 model sizes</li>\n<li>Ultra &lt;-&gt; GPT-4V (performance-wise\
+          \ on benchmarks)</li>\n<li>Pro &lt;-&gt; GPT3.5/4-Turbo (empirically, as\
+          \ reported by people using Bard today)</li>\n<li>Nano: Nano-1: 1.8B, Nano-2:\
+          \ 3.25B. 4-bit quantized. Distilled from larger models. Nano-1 designed\
+          \ for low memory devices, Nano-2 for high memory devices. ({Gemini Nano\
+          \ is on Pixel 8 phones <a rel=\"nofollow\" href=\"%5Bhttps://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/%5D(https://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/\"\
+          >as of today</a> })</li>\n</ul>\n<h1 id=\"input\">Input:</h1>\n<ul>\n<li>Text,\
+          \ interleaved with images, audio, video</li>\n<li>Multi-modal starting from\
+          \ pre-training, as opposed to adding other modalities to text later</li>\n\
+          <li>Text input: Sentencepiece tokenizer (unk. if BPE, Wordpiece or unigram)</li>\n\
+          <li>Visual input: \"Inspired by previous work: Flamingo, CoCa, PaLI\" -\
+          \ i.e. ViT (probably PaLI-style because simplest + most recent)</li>\n<li>Video:\
+          \ Frames encoded as image inputs (evaluation done on 16 frames, equally\
+          \ spaced apart)</li>\n<li>Audio: Universal Speech Model (USM) features @\
+          \ 16kHz</li>\n</ul>\n<h1 id=\"output\">Output:</h1>\n<ul>\n<li>Text + image</li>\n\
+          <li>Image: inspired by previous approaches (cited DALL-E and Parti): probably\
+          \ Parti because auto-regressive</li>\n</ul>\n<h1 id=\"implementation-details\"\
+          >Implementation Details</h1>\n<ul>\n<li>Programmed in Jax (unsurprisingly)</li>\n\
+          <li>Trained using Pathways on TPUv5e and TPUv4 (also unsurprisingly)</li>\n\
+          <li>Saves in-memory copy of model in case of hardware failure, instead of\
+          \ checkpointing and saving to disk. Saves recovery time and model trains\
+          \ for 97% of the time (up from 85%). Takes more training resources than\
+          \ checkpointing. ({<a rel=\"nofollow\" href=\"https://twitter.com/JeffDean/status/1732557000180220241?t=JhuzqbpLY2i2YUTZJSo9_g&amp;s=19\"\
+          >Jeff Dean on X</a>: Only matters for larger models, shouldn't matter for\
+          \ smaller ones})</li>\n</ul>\n<h1 id=\"alignment\">Alignment:</h1>\n<ul>\n\
+          <li>Quality &gt; Quantity, esp. for larger models when instruction tuning\
+          \ (SFT, reward model training, RLHF) (avoiding dataset leakage)</li>\n<li>Quotes\
+          \ LLaMa 2 for quality: LLaMa 2 uses fewer but high-quality/diversity self-collected\
+          \ SFT data (esp. for chat instructions) instead of millions of low-quality/diversity,\
+          \ third-party SFT data (from various sources), which improves results (LLaMa\
+          \ 2 uses 27,540 annotations)</li>\n<li>Must balance reward model with examples\
+          \ of refusals and helpful responses</li>\n<li>Multi-objective optimization\
+          \ with weighted sum of reward scores from helpfulness, factuality, safety\
+          \ used to train multi-headed reward model (i.e. three outputs for helpfulness,\
+          \ factuality, and safety, RM loss is a weighted sum, so is the reward)</li>\n\
+          <li>To generate harmful response dataset: For each of 20 types of identified\
+          \ harm types, pass several variants of Google's content policy language\
+          \ as \"constitutions\" to pre-aligned model and use 0-shot CoT to revise\
+          \ responses and choose between multiple response candidates</li>\n</ul>\n\
+          <h2 id=\"factuality-focused-adaptation-part-of-instruction-tuning\">Factuality-focused\
+          \ adaptation (part of instruction tuning):</h2>\n<ul>\n<li>Attribution:\
+          \ If asked to generate a response that is attributed to the prompt context,\
+          \ Gemini should be faithful to the context (incl. summarization, citation,\
+          \ QA given long prompt (e.g. book), prompted output format adherence)</li>\n\
+          <li>Closed book response generation: Don't answer fact-seeking prompt without\
+          \ sources, whether directly or if semi-creative prompt indirectly requires\
+          \ facts to give answer</li>\n<li>Hallucination: Should hedge instead of\
+          \ trying to answer \"unanswerable\" questions</li>\n</ul>\n<h1 id=\"novel-mmlu-decoding-scheme-uncertainty-routed-chain-of-thought\"\
+          >Novel MMLU decoding scheme: uncertainty-routed chain-of-thought</h1>\n\
+          <ul>\n<li>Produce k chain-of-thought samples, select majority vote IF model\
+          \ is confident beyond a threshold</li>\n<li>Otherwise, return greedy sample\
+          \ choice</li>\n<li>Improves Gemini Ultra on MMLU by 6% (84.0-&gt;90.0),\
+          \ vs. 3.1% (84.2-&gt;87.3) on GPT-4V</li>\n<li>CoT only improves Gemini\
+          \ Ultra's perf. on MMLU by 1%</li>\n</ul>\n<p>(Everything else are just\
+          \ examples of use case/benchmark results)</p>\n"
+        raw: "\U0001F680 Gemini highlights:\n\n# Dataset:\n- Multimodal and multilingual\n\
+          - Web documents, books, and code\n## Dataset size\n- #Tokens to train Pro+Ultra\
+          \ chosen using Chinchilla scaling laws.\n- Nano models trained on more tokens\
+          \ than predicted by Chinchilla scaling laws, following LLaMa\n## Filtering\n\
+          - Quality filtering: Heuristics + model classifiers\n- Safety filtering\
+          \ done to remove harmful content\n## Dataset composition\n- Which datasets\
+          \ to include + weighting determined by ablations on smaller models\n- Training\
+          \ done in multiple stages: weight of domain-relevant data increased towards\
+          \ the end of training\n- Data quality is critical\n\n# Model architecture:\n\
+          - Transformer, decoder-only\n- 32,768 context length\n- Uses multi-query\
+          \ attention (and other ways to make transformers efficient, which are not\
+          \ mentioned)\n\n## Model sizes\n- 4 model sizes\n- Ultra <-> GPT-4V (performance-wise\
+          \ on benchmarks)\n- Pro <-> GPT3.5/4-Turbo (empirically, as reported by\
+          \ people using Bard today)\n- Nano: Nano-1: 1.8B, Nano-2: 3.25B. 4-bit quantized.\
+          \ Distilled from larger models. Nano-1 designed for low memory devices,\
+          \ Nano-2 for high memory devices. ({Gemini Nano is on Pixel 8 phones [as\
+          \ of today]([https://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/](https://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/)\
+          \ })\n\n# Input:\n- Text, interleaved with images, audio, video\n- Multi-modal\
+          \ starting from pre-training, as opposed to adding other modalities to text\
+          \ later\n- Text input: Sentencepiece tokenizer (unk. if BPE, Wordpiece or\
+          \ unigram)\n- Visual input: \"Inspired by previous work: Flamingo, CoCa,\
+          \ PaLI\" - i.e. ViT (probably PaLI-style because simplest + most recent)\n\
+          - Video: Frames encoded as image inputs (evaluation done on 16 frames, equally\
+          \ spaced apart)\n- Audio: Universal Speech Model (USM) features @ 16kHz\n\
+          \n# Output:\n- Text + image\n- Image: inspired by previous approaches (cited\
+          \ DALL-E and Parti): probably Parti because auto-regressive\n\n# Implementation\
+          \ Details\n- Programmed in Jax (unsurprisingly)\n- Trained using Pathways\
+          \ on TPUv5e and TPUv4 (also unsurprisingly)\n- Saves in-memory copy of model\
+          \ in case of hardware failure, instead of checkpointing and saving to disk.\
+          \ Saves recovery time and model trains for 97% of the time (up from 85%).\
+          \ Takes more training resources than checkpointing. ({[Jeff Dean on X](https://twitter.com/JeffDean/status/1732557000180220241?t=JhuzqbpLY2i2YUTZJSo9_g&s=19):\
+          \ Only matters for larger models, shouldn't matter for smaller ones})\n\n\
+          # Alignment:\n- Quality > Quantity, esp. for larger models when instruction\
+          \ tuning (SFT, reward model training, RLHF) (avoiding dataset leakage)\n\
+          - Quotes LLaMa 2 for quality: LLaMa 2 uses fewer but high-quality/diversity\
+          \ self-collected SFT data (esp. for chat instructions) instead of millions\
+          \ of low-quality/diversity, third-party SFT data (from various sources),\
+          \ which improves results (LLaMa 2 uses 27,540 annotations)\n- Must balance\
+          \ reward model with examples of refusals and helpful responses\n- Multi-objective\
+          \ optimization with weighted sum of reward scores from helpfulness, factuality,\
+          \ safety used to train multi-headed reward model (i.e. three outputs for\
+          \ helpfulness, factuality, and safety, RM loss is a weighted sum, so is\
+          \ the reward)\n- To generate harmful response dataset: For each of 20 types\
+          \ of identified harm types, pass several variants of Google's content policy\
+          \ language as \"constitutions\" to pre-aligned model and use 0-shot CoT\
+          \ to revise responses and choose between multiple response candidates\n\n\
+          ## Factuality-focused adaptation (part of instruction tuning):\n- Attribution:\
+          \ If asked to generate a response that is attributed to the prompt context,\
+          \ Gemini should be faithful to the context (incl. summarization, citation,\
+          \ QA given long prompt (e.g. book), prompted output format adherence)\n\
+          - Closed book response generation: Don't answer fact-seeking prompt without\
+          \ sources, whether directly or if semi-creative prompt indirectly requires\
+          \ facts to give answer\n- Hallucination: Should hedge instead of trying\
+          \ to answer \"unanswerable\" questions\n\n# Novel MMLU decoding scheme:\
+          \ uncertainty-routed chain-of-thought\n- Produce k chain-of-thought samples,\
+          \ select majority vote IF model is confident beyond a threshold\n- Otherwise,\
+          \ return greedy sample choice\n- Improves Gemini Ultra on MMLU by 6% (84.0->90.0),\
+          \ vs. 3.1% (84.2->87.3) on GPT-4V\n- CoT only improves Gemini Ultra's perf.\
+          \ on MMLU by 1%\n\n(Everything else are just examples of use case/benchmark\
+          \ results)"
+        updatedAt: '2023-12-08T19:32:20.165Z'
+      numEdits: 9
+      reactions:
+      - count: 2
+        reaction: "\u2764\uFE0F"
+        users:
+        - clem
+        - yihaopeng
+    id: 65712f5f9937724f955b7c9c
+    type: comment
+  author: shermansiu
+  content: "\U0001F680 Gemini highlights:\n\n# Dataset:\n- Multimodal and multilingual\n\
+    - Web documents, books, and code\n## Dataset size\n- #Tokens to train Pro+Ultra\
+    \ chosen using Chinchilla scaling laws.\n- Nano models trained on more tokens\
+    \ than predicted by Chinchilla scaling laws, following LLaMa\n## Filtering\n-\
+    \ Quality filtering: Heuristics + model classifiers\n- Safety filtering done to\
+    \ remove harmful content\n## Dataset composition\n- Which datasets to include\
+    \ + weighting determined by ablations on smaller models\n- Training done in multiple\
+    \ stages: weight of domain-relevant data increased towards the end of training\n\
+    - Data quality is critical\n\n# Model architecture:\n- Transformer, decoder-only\n\
+    - 32,768 context length\n- Uses multi-query attention (and other ways to make\
+    \ transformers efficient, which are not mentioned)\n\n## Model sizes\n- 4 model\
+    \ sizes\n- Ultra <-> GPT-4V (performance-wise on benchmarks)\n- Pro <-> GPT3.5/4-Turbo\
+    \ (empirically, as reported by people using Bard today)\n- Nano: Nano-1: 1.8B,\
+    \ Nano-2: 3.25B. 4-bit quantized. Distilled from larger models. Nano-1 designed\
+    \ for low memory devices, Nano-2 for high memory devices. ({Gemini Nano is on\
+    \ Pixel 8 phones [as of today]([https://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/](https://store.google.com/intl/en/ideas/articles/pixel-feature-drop-december-2023/)\
+    \ })\n\n# Input:\n- Text, interleaved with images, audio, video\n- Multi-modal\
+    \ starting from pre-training, as opposed to adding other modalities to text later\n\
+    - Text input: Sentencepiece tokenizer (unk. if BPE, Wordpiece or unigram)\n- Visual\
+    \ input: \"Inspired by previous work: Flamingo, CoCa, PaLI\" - i.e. ViT (probably\
+    \ PaLI-style because simplest + most recent)\n- Video: Frames encoded as image\
+    \ inputs (evaluation done on 16 frames, equally spaced apart)\n- Audio: Universal\
+    \ Speech Model (USM) features @ 16kHz\n\n# Output:\n- Text + image\n- Image: inspired\
+    \ by previous approaches (cited DALL-E and Parti): probably Parti because auto-regressive\n\
+    \n# Implementation Details\n- Programmed in Jax (unsurprisingly)\n- Trained using\
+    \ Pathways on TPUv5e and TPUv4 (also unsurprisingly)\n- Saves in-memory copy of\
+    \ model in case of hardware failure, instead of checkpointing and saving to disk.\
+    \ Saves recovery time and model trains for 97% of the time (up from 85%). Takes\
+    \ more training resources than checkpointing. ({[Jeff Dean on X](https://twitter.com/JeffDean/status/1732557000180220241?t=JhuzqbpLY2i2YUTZJSo9_g&s=19):\
+    \ Only matters for larger models, shouldn't matter for smaller ones})\n\n# Alignment:\n\
+    - Quality > Quantity, esp. for larger models when instruction tuning (SFT, reward\
+    \ model training, RLHF) (avoiding dataset leakage)\n- Quotes LLaMa 2 for quality:\
+    \ LLaMa 2 uses fewer but high-quality/diversity self-collected SFT data (esp.\
+    \ for chat instructions) instead of millions of low-quality/diversity, third-party\
+    \ SFT data (from various sources), which improves results (LLaMa 2 uses 27,540\
+    \ annotations)\n- Must balance reward model with examples of refusals and helpful\
+    \ responses\n- Multi-objective optimization with weighted sum of reward scores\
+    \ from helpfulness, factuality, safety used to train multi-headed reward model\
+    \ (i.e. three outputs for helpfulness, factuality, and safety, RM loss is a weighted\
+    \ sum, so is the reward)\n- To generate harmful response dataset: For each of\
+    \ 20 types of identified harm types, pass several variants of Google's content\
+    \ policy language as \"constitutions\" to pre-aligned model and use 0-shot CoT\
+    \ to revise responses and choose between multiple response candidates\n\n## Factuality-focused\
+    \ adaptation (part of instruction tuning):\n- Attribution: If asked to generate\
+    \ a response that is attributed to the prompt context, Gemini should be faithful\
+    \ to the context (incl. summarization, citation, QA given long prompt (e.g. book),\
+    \ prompted output format adherence)\n- Closed book response generation: Don't\
+    \ answer fact-seeking prompt without sources, whether directly or if semi-creative\
+    \ prompt indirectly requires facts to give answer\n- Hallucination: Should hedge\
+    \ instead of trying to answer \"unanswerable\" questions\n\n# Novel MMLU decoding\
+    \ scheme: uncertainty-routed chain-of-thought\n- Produce k chain-of-thought samples,\
+    \ select majority vote IF model is confident beyond a threshold\n- Otherwise,\
+    \ return greedy sample choice\n- Improves Gemini Ultra on MMLU by 6% (84.0->90.0),\
+    \ vs. 3.1% (84.2->87.3) on GPT-4V\n- CoT only improves Gemini Ultra's perf. on\
+    \ MMLU by 1%\n\n(Everything else are just examples of use case/benchmark results)"
+  created_at: 2023-12-07 02:35:11+00:00
+  edited: true
+  hidden: false
+  id: 65712f5f9937724f955b7c9c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663101490826-6320e992beec1969845be447.jpeg?w=200&h=200&f=face
+      fullname: Masoud Maani
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maani
+      type: user
+    createdAt: '2023-12-07T03:33:31.000Z'
+    data:
+      edited: true
+      editors:
+      - Maani
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8377357721328735
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663101490826-6320e992beec1969845be447.jpeg?w=200&h=200&f=face
+          fullname: Masoud Maani
+          isHf: false
+          isPro: false
+          name: Maani
+          type: user
+        html: '<p>Anyone got a guess or a leak on model''s parameters numbers!?</p>
+
+          '
+        raw: Anyone got a guess or a leak on model's parameters numbers!?
+        updatedAt: '2023-12-07T03:34:16.385Z'
+      numEdits: 1
+      reactions: []
+    id: 65713d0bc8018fe6408f5013
+    type: comment
+  author: Maani
+  content: Anyone got a guess or a leak on model's parameters numbers!?
+  created_at: 2023-12-07 03:33:31+00:00
+  edited: true
+  hidden: false
+  id: 65713d0bc8018fe6408f5013
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T03:47:42.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7252563834190369
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: "<p>Guess: <del>Pro=\u224820B, Ultra=\u2248200B.</del><br><del>Pro=\u2248\
+          70B, Ultra=\u2248200B</del><br>Pro=\u224830-70B, Ultra=\u2248150B-1.5T</p>\n\
+          <p>For a better analysis, plot MMLU (or other metric) vs. log(#parameters)\
+          \ for a bunch of the newer LLMs and LMMs and extrapolate until you find\
+          \ a suitable number for Pro and Ultra, LOL</p>\n<p>Edit: Or just find the\
+          \ max. number of tokens you can train on from the Internet, then use Chinchilla\
+          \ scaling laws to find the corresponding model size.</p>\n"
+        raw: "Guess: ~Pro=\u224820B, Ultra=\u2248200B.~\n~Pro=\u224870B, Ultra=\u2248\
+          200B~\nPro=\u224830-70B, Ultra=\u2248150B-1.5T\n\nFor a better analysis,\
+          \ plot MMLU (or other metric) vs. log(#parameters) for a bunch of the newer\
+          \ LLMs and LMMs and extrapolate until you find a suitable number for Pro\
+          \ and Ultra, LOL\n\nEdit: Or just find the max. number of tokens you can\
+          \ train on from the Internet, then use Chinchilla scaling laws to find the\
+          \ corresponding model size."
+        updatedAt: '2023-12-08T16:50:59.795Z'
+      numEdits: 5
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Maani
+    id: 6571405e16f66fc3fb4a5b44
+    type: comment
+  author: shermansiu
+  content: "Guess: ~Pro=\u224820B, Ultra=\u2248200B.~\n~Pro=\u224870B, Ultra=\u2248\
+    200B~\nPro=\u224830-70B, Ultra=\u2248150B-1.5T\n\nFor a better analysis, plot\
+    \ MMLU (or other metric) vs. log(#parameters) for a bunch of the newer LLMs and\
+    \ LMMs and extrapolate until you find a suitable number for Pro and Ultra, LOL\n\
+    \nEdit: Or just find the max. number of tokens you can train on from the Internet,\
+    \ then use Chinchilla scaling laws to find the corresponding model size."
+  created_at: 2023-12-07 03:47:42+00:00
+  edited: true
+  hidden: false
+  id: 6571405e16f66fc3fb4a5b44
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T03:52:39.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.40345683693885803
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: '<p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/UfXRUU824_6MrnXSuCElu.png"><img
+          alt="Gemini-nano-text.png" src="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/UfXRUU824_6MrnXSuCElu.png"></a><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/xVG7eNRYZi9fv0q_4SUNo.png"><img
+          alt="Gemini-nano-image.png" src="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/xVG7eNRYZi9fv0q_4SUNo.png"></a></p>
+
+          '
+        raw: '![Gemini-nano-text.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/UfXRUU824_6MrnXSuCElu.png)![Gemini-nano-image.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/xVG7eNRYZi9fv0q_4SUNo.png)'
+        updatedAt: '2023-12-07T18:07:05.312Z'
+      numEdits: 4
+      reactions:
+      - count: 2
+        reaction: "\u2764\uFE0F"
+        users:
+        - clem
+        - Maani
+    id: 657141879435343c81f37830
+    type: comment
+  author: shermansiu
+  content: '![Gemini-nano-text.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/UfXRUU824_6MrnXSuCElu.png)![Gemini-nano-image.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/xVG7eNRYZi9fv0q_4SUNo.png)'
+  created_at: 2023-12-07 03:52:39+00:00
+  edited: true
+  hidden: false
+  id: 657141879435343c81f37830
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663101490826-6320e992beec1969845be447.jpeg?w=200&h=200&f=face
+      fullname: Masoud Maani
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maani
+      type: user
+    createdAt: '2023-12-07T03:57:40.000Z'
+    data:
+      edited: true
+      editors:
+      - Maani
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9527646899223328
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1663101490826-6320e992beec1969845be447.jpeg?w=200&h=200&f=face
+          fullname: Masoud Maani
+          isHf: false
+          isPro: false
+          name: Maani
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;shermansiu&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/shermansiu\">@<span class=\"\
+          underline\">shermansiu</span></a></span>\n\n\t</span></span> thanks man!</p>\n"
+        raw: '@shermansiu thanks man!
+
+          '
+        updatedAt: '2023-12-07T04:36:01.151Z'
+      numEdits: 1
+      reactions: []
+    id: 657142b4b6f7eb7f3117e1bd
+    type: comment
+  author: Maani
+  content: '@shermansiu thanks man!
+
+    '
+  created_at: 2023-12-07 03:57:40+00:00
+  edited: true
+  hidden: false
+  id: 657142b4b6f7eb7f3117e1bd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T04:12:07.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8872172236442566
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: '<p><strong>Automatic Speech Recognition:</strong><br>FLEURS is evaluated
+          on 62 languages, even though the full dataset has 102 languages, following
+          USM. As for other metrics... I couldn''t find them on the Whisper paper/model
+          page to get the full v2/v3 (large-1.5B) metrics for better comparison.</p>
+
+          <p>Gemini Nano-1 and Nano-2 beat Whisper v2 and v3 though, from the reported
+          results.</p>
+
+          <p>All Gemini models (even 1.8B) have beaten the previous SOTA Whisper-v3-large
+          (1.55B)</p>
+
+          <p><strong>Machine Translation:</strong><br>WMT23: Presented at EMNLP 2023
+          and metrics for other models aren''t available yet</p>
+
+          '
+        raw: '**Automatic Speech Recognition:**
+
+          FLEURS is evaluated on 62 languages, even though the full dataset has 102
+          languages, following USM. As for other metrics... I couldn''t find them
+          on the Whisper paper/model page to get the full v2/v3 (large-1.5B) metrics
+          for better comparison.
+
+
+          Gemini Nano-1 and Nano-2 beat Whisper v2 and v3 though, from the reported
+          results.
+
+
+          All Gemini models (even 1.8B) have beaten the previous SOTA Whisper-v3-large
+          (1.55B)
+
+
+          **Machine Translation:**
+
+          WMT23: Presented at EMNLP 2023 and metrics for other models aren''t available
+          yet'
+        updatedAt: '2023-12-07T06:43:50.552Z'
+      numEdits: 1
+      reactions: []
+    id: 657146175e889f5dd49544c0
+    type: comment
+  author: shermansiu
+  content: '**Automatic Speech Recognition:**
+
+    FLEURS is evaluated on 62 languages, even though the full dataset has 102 languages,
+    following USM. As for other metrics... I couldn''t find them on the Whisper paper/model
+    page to get the full v2/v3 (large-1.5B) metrics for better comparison.
+
+
+    Gemini Nano-1 and Nano-2 beat Whisper v2 and v3 though, from the reported results.
+
+
+    All Gemini models (even 1.8B) have beaten the previous SOTA Whisper-v3-large (1.55B)
+
+
+    **Machine Translation:**
+
+    WMT23: Presented at EMNLP 2023 and metrics for other models aren''t available
+    yet'
+  created_at: 2023-12-07 04:12:07+00:00
+  edited: true
+  hidden: false
+  id: 657146175e889f5dd49544c0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T21:47:34.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8159552812576294
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: '<h1 id="pro-and-ultra-models">Pro and Ultra models</h1>
+
+          <h2 id="text">Text</h2>
+
+          <p>Pro and Ultra are generally better than OSS models at text, esp. for
+          math. OSS is not far behind though.<br>I removed DROP for the same reason
+          it was removed from HF Open LLM Leaderboard.<br>Not enough LLMs use Natural2Code.<br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3v38vDJgnNRpPZL64Z02q.png"><img
+          alt="Gemini-proultra-text.png" src="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3v38vDJgnNRpPZL64Z02q.png"></a></p>
+
+          <h2 id="image">Image</h2>
+
+          <p>For images, 7-13B OSS models have the same performance as Pro. Performance
+          improvements could come by scaling up the number of parameters.<br><a rel="nofollow"
+          href="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3Dz-RvGGxAEttDnIA9bHu.png"><img
+          alt="Gemini-proultra-image.png" src="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3Dz-RvGGxAEttDnIA9bHu.png"></a></p>
+
+          <h2 id="video">Video</h2>
+
+          <p>Gemini Pro and Ultra don''t do nearly as well as I thought it would on
+          video, esp. given the parameter sizes of the OSS models they''re competing
+          against.<br><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/WABG-Wp75A4dy98zdCffd.png"><img
+          alt="Gemini-proultra-video.png" src="https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/WABG-Wp75A4dy98zdCffd.png"></a></p>
+
+          <h2 id="multilingual">Multilingual</h2>
+
+          <p>Too few new LLM papers report benchmarks on MGSM (math), XLSum (summarization),
+          Wikilingua (summarization), opting instead to benchmark on Chinese benchmarks
+          to test for multilinguality (e.g. CMMLU (language understanding), GAOKAO
+          (university admissions test), C-Eval (multiple choice questions for 52 disciplines
+          (from humanities to STEM) and 4 difficulties (middle school, high school,
+          college-level, professional))</p>
+
+          <h2 id="automatic-speech-recognition">Automatic Speech Recognition</h2>
+
+          <p>Once again, Nano models beat the OSS SOTA (Whisper-v3-large-1.55B). Comparing
+          it to the Pro and Ultra models is unnecessary.</p>
+
+          '
+        raw: '# Pro and Ultra models
+
+          ## Text
+
+          Pro and Ultra are generally better than OSS models at text, esp. for math.
+          OSS is not far behind though.
+
+          I removed DROP for the same reason it was removed from HF Open LLM Leaderboard.
+
+          Not enough LLMs use Natural2Code.
+
+          ![Gemini-proultra-text.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3v38vDJgnNRpPZL64Z02q.png)
+
+          ## Image
+
+          For images, 7-13B OSS models have the same performance as Pro. Performance
+          improvements could come by scaling up the number of parameters.
+
+          ![Gemini-proultra-image.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3Dz-RvGGxAEttDnIA9bHu.png)
+
+
+          ## Video
+
+          Gemini Pro and Ultra don''t do nearly as well as I thought it would on video,
+          esp. given the parameter sizes of the OSS models they''re competing against.
+
+          ![Gemini-proultra-video.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/WABG-Wp75A4dy98zdCffd.png)
+
+          ## Multilingual
+
+          Too few new LLM papers report benchmarks on MGSM (math), XLSum (summarization),
+          Wikilingua (summarization), opting instead to benchmark on Chinese benchmarks
+          to test for multilinguality (e.g. CMMLU (language understanding), GAOKAO
+          (university admissions test), C-Eval (multiple choice questions for 52 disciplines
+          (from humanities to STEM) and 4 difficulties (middle school, high school,
+          college-level, professional))
+
+          ## Automatic Speech Recognition
+
+          Once again, Nano models beat the OSS SOTA (Whisper-v3-large-1.55B). Comparing
+          it to the Pro and Ultra models is unnecessary.'
+        updatedAt: '2023-12-09T14:06:56.333Z'
+      numEdits: 1
+      reactions: []
+    id: 65723d767b5f2b6f3c339c5e
+    type: comment
+  author: shermansiu
+  content: '# Pro and Ultra models
+
+    ## Text
+
+    Pro and Ultra are generally better than OSS models at text, esp. for math. OSS
+    is not far behind though.
+
+    I removed DROP for the same reason it was removed from HF Open LLM Leaderboard.
+
+    Not enough LLMs use Natural2Code.
+
+    ![Gemini-proultra-text.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3v38vDJgnNRpPZL64Z02q.png)
+
+    ## Image
+
+    For images, 7-13B OSS models have the same performance as Pro. Performance improvements
+    could come by scaling up the number of parameters.
+
+    ![Gemini-proultra-image.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/3Dz-RvGGxAEttDnIA9bHu.png)
+
+
+    ## Video
+
+    Gemini Pro and Ultra don''t do nearly as well as I thought it would on video,
+    esp. given the parameter sizes of the OSS models they''re competing against.
+
+    ![Gemini-proultra-video.png](https://cdn-uploads.huggingface.co/production/uploads/630d73387dacb93b335b00e9/WABG-Wp75A4dy98zdCffd.png)
+
+    ## Multilingual
+
+    Too few new LLM papers report benchmarks on MGSM (math), XLSum (summarization),
+    Wikilingua (summarization), opting instead to benchmark on Chinese benchmarks
+    to test for multilinguality (e.g. CMMLU (language understanding), GAOKAO (university
+    admissions test), C-Eval (multiple choice questions for 52 disciplines (from humanities
+    to STEM) and 4 difficulties (middle school, high school, college-level, professional))
+
+    ## Automatic Speech Recognition
+
+    Once again, Nano models beat the OSS SOTA (Whisper-v3-large-1.55B). Comparing
+    it to the Pro and Ultra models is unnecessary.'
+  created_at: 2023-12-07 21:47:34+00:00
+  edited: true
+  hidden: false
+  id: 65723d767b5f2b6f3c339c5e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+      fullname: Sherman Siu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: shermansiu
+      type: user
+    createdAt: '2023-12-07T21:55:13.000Z'
+    data:
+      edited: true
+      editors:
+      - shermansiu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8891516327857971
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ded3550aedf77a58175a66319d01820.svg
+          fullname: Sherman Siu
+          isHf: false
+          isPro: false
+          name: shermansiu
+          type: user
+        html: "<p>And yes, I'm comparing generalist models to a bunch of specialized\
+          \ models. \xAF\\_(\u30C4)_/\xAF</p>\n"
+        raw: "And yes, I'm comparing generalist models to a bunch of specialized models.\
+          \ \xAF\\\\\\_(\u30C4)_/\xAF"
+        updatedAt: '2023-12-07T21:58:31.458Z'
+      numEdits: 2
+      reactions: []
+    id: 65723f41a63ffd289babd61d
+    type: comment
+  author: shermansiu
+  content: "And yes, I'm comparing generalist models to a bunch of specialized models.\
+    \ \xAF\\\\\\_(\u30C4)_/\xAF"
+  created_at: 2023-12-07 21:55:13+00:00
+  edited: true
+  hidden: false
+  id: 65723f41a63ffd289babd61d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 13
+repo_id: clem/gemini
+repo_type: model
+status: open
+target_branch: null
+title: Detailed Gemini Summary

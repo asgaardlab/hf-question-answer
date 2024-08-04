@@ -1,0 +1,4 @@
+## https://huggingface.co/LoneStriker/Aurora-Nights-103B-v1.0-3.5bpw-h6-exl2/discussions/2
+
+contains_question: yes
+question_part: I've been using your 5.0bpw exl2 model of the previous 103b model from sophosympatheia, Rogue-Rose-103b-v0.2-5.0bpw-h6-exl2-2. It has been performing really well. Now I've been testing Aurora-Nights-103B-v1.0 using the Q5 GGUF from TheBloke, and I'm really impressed with its output, but I've always had huge issues with tk/s performance using GGUF. And your exl2 models are always so good, fast, and easy to use. Do you have any plans for an Aurora-Nights-103B-v1.0-5.0bpw-h6-exl2? I'm not sure if there's enough demand, not sure how many people used Rogue-Rose-103b-v0.2-5.0bpw-h6-exl2-2, but I did, and love it. Thanks!

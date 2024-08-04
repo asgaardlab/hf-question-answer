@@ -1,0 +1,4 @@
+## https://huggingface.co/nitrosocke/redshift-diffusion/discussions/5
+
+contains_question: yes
+question_part: I know you had a thread somewhere, or at least I thought you did, inviting people to talk about what they're doing with redshift and posting pics, but I can't seem to find it.  For one of my projects, I merged first with Definitive Degenerate at 0.5 and then took that and merged with SD-v1.5 ema only at 0.5.  I don't do explicit stuff like you may assume at first, but I do prefer the freedom. Redshift took this to the next level for what I was looking for. I'd upload what I'm working on but I'm not sure if it's allowed here.

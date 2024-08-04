@@ -1,0 +1,866 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Rijgersberg
+conflicting_files: []
+created_at: 2022-09-08 08:18:15+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+      fullname: Edwin Rijgersberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rijgersberg
+      type: user
+    createdAt: '2022-09-08T09:18:15.000Z'
+    data:
+      edited: false
+      editors:
+      - Rijgersberg
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+          fullname: Edwin Rijgersberg
+          isHf: false
+          isPro: false
+          name: Rijgersberg
+          type: user
+        html: '<p>When using this model, it outputs many <code>&lt;s&gt;</code>-tokens,
+          including in the middle of words. You can observe this by running locally,
+          or by using the widget on this page.</p>
+
+          <p>It seems to be fixed by switching the vocab ids of <code>&lt;s&gt;</code>
+          and <code>&lt;pad&gt;</code>.</p>
+
+          <p>Other GroNLP-models also seem affected by this, for example <a href="https://huggingface.co/GroNLP/wav2vec2-dutch-large-ft-cgn">https://huggingface.co/GroNLP/wav2vec2-dutch-large-ft-cgn</a></p>
+
+          '
+        raw: 'When using this model, it outputs many `<s>`-tokens, including in the
+          middle of words. You can observe this by running locally, or by using the
+          widget on this page.
+
+
+          It seems to be fixed by switching the vocab ids of `<s>` and `<pad>`.
+
+
+          Other GroNLP-models also seem affected by this, for example https://huggingface.co/GroNLP/wav2vec2-dutch-large-ft-cgn'
+        updatedAt: '2022-09-08T09:18:15.075Z'
+      numEdits: 0
+      reactions: []
+    id: 6319b357063671aa39d52930
+    type: comment
+  author: Rijgersberg
+  content: 'When using this model, it outputs many `<s>`-tokens, including in the
+    middle of words. You can observe this by running locally, or by using the widget
+    on this page.
+
+
+    It seems to be fixed by switching the vocab ids of `<s>` and `<pad>`.
+
+
+    Other GroNLP-models also seem affected by this, for example https://huggingface.co/GroNLP/wav2vec2-dutch-large-ft-cgn'
+  created_at: 2022-09-08 08:18:15+00:00
+  edited: false
+  hidden: false
+  id: 6319b357063671aa39d52930
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    createdAt: '2022-09-08T09:18:16.000Z'
+    data:
+      oid: 93d00ba05016dd3dbebb49609770a3b672a9126f
+      parents:
+      - 0837ce3c1e2dbd29dc4657d3bc23476c723242ba
+      subject: Fix mixup of `<pad>` and `<s>` tokens in vocab
+    id: 6319b3580000000000000000
+    type: commit
+  author: deleted
+  created_at: 2022-09-08 08:18:16+00:00
+  id: 6319b3580000000000000000
+  oid: 93d00ba05016dd3dbebb49609770a3b672a9126f
+  summary: Fix mixup of `<pad>` and `<s>` tokens in vocab
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-08T09:59:30.000Z'
+    data:
+      edited: true
+      editors:
+      - wietsedv
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+          fullname: Wietse de Vries
+          isHf: false
+          isPro: false
+          name: wietsedv
+          type: user
+        html: '<p>Thank you for your interest in this model. I checked and the problem
+          is not that <code>&lt;s&gt;</code> and <code>&lt;pad&gt;</code> are swapped,
+          but that the output contains spurious <code>&lt;s&gt;</code> output. I have
+          noticed this myself when we made this model. The <code>&lt;s&gt;</code>
+          token should be part of the output, but ideally only as the first token.
+          My hypothesis is that the model might confuse silences with the small silences
+          at the start of audio in the training data. However, it does depend on your
+          exact audio whether these spurious <code>&lt;s&gt;</code> tokens appear.</p>
+
+          <p>The <code>&lt;pad&gt;</code> token should never be part of any output.
+          This token is only used during training, and is masked. So the model will
+          not give this token as output.</p>
+
+          <p>The general solution to this problem at inference is to pass <code>skip_special_tokens=True</code>
+          to your decode call (see the <a href="https://huggingface.co/docs/transformers/model_doc/wav2vec2#transformers.Wav2Vec2CTCTokenizer.decode.skip_special_tokens">docs</a>).
+          Maybe I can enable this as well in the inference widget, but I''ll have
+          to look into that.</p>
+
+          <p>Let me know if this does not solve your problem or if you need more help.</p>
+
+          '
+        raw: 'Thank you for your interest in this model. I checked and the problem
+          is not that `<s>` and `<pad>` are swapped, but that the output contains
+          spurious `<s>` output. I have noticed this myself when we made this model.
+          The `<s>` token should be part of the output, but ideally only as the first
+          token. My hypothesis is that the model might confuse silences with the small
+          silences at the start of audio in the training data. However, it does depend
+          on your exact audio whether these spurious `<s>` tokens appear.
+
+
+          The `<pad>` token should never be part of any output. This token is only
+          used during training, and is masked. So the model will not give this token
+          as output.
+
+
+          The general solution to this problem at inference is to pass `skip_special_tokens=True`
+          to your decode call (see the [docs](https://huggingface.co/docs/transformers/model_doc/wav2vec2#transformers.Wav2Vec2CTCTokenizer.decode.skip_special_tokens)).
+          Maybe I can enable this as well in the inference widget, but I''ll have
+          to look into that.
+
+
+          Let me know if this does not solve your problem or if you need more help.'
+        updatedAt: '2022-09-08T10:01:35.767Z'
+      numEdits: 3
+      reactions: []
+      relatedEventId: 6319bd02307cb8119904cad0
+    id: 6319bd02307cb8119904cacf
+    type: comment
+  author: wietsedv
+  content: 'Thank you for your interest in this model. I checked and the problem is
+    not that `<s>` and `<pad>` are swapped, but that the output contains spurious
+    `<s>` output. I have noticed this myself when we made this model. The `<s>` token
+    should be part of the output, but ideally only as the first token. My hypothesis
+    is that the model might confuse silences with the small silences at the start
+    of audio in the training data. However, it does depend on your exact audio whether
+    these spurious `<s>` tokens appear.
+
+
+    The `<pad>` token should never be part of any output. This token is only used
+    during training, and is masked. So the model will not give this token as output.
+
+
+    The general solution to this problem at inference is to pass `skip_special_tokens=True`
+    to your decode call (see the [docs](https://huggingface.co/docs/transformers/model_doc/wav2vec2#transformers.Wav2Vec2CTCTokenizer.decode.skip_special_tokens)).
+    Maybe I can enable this as well in the inference widget, but I''ll have to look
+    into that.
+
+
+    Let me know if this does not solve your problem or if you need more help.'
+  created_at: 2022-09-08 08:59:30+00:00
+  edited: true
+  hidden: false
+  id: 6319bd02307cb8119904cacf
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-08T09:59:30.000Z'
+    data:
+      status: closed
+    id: 6319bd02307cb8119904cad0
+    type: status-change
+  author: wietsedv
+  created_at: 2022-09-08 08:59:30+00:00
+  id: 6319bd02307cb8119904cad0
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+      fullname: Edwin Rijgersberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rijgersberg
+      type: user
+    createdAt: '2022-09-08T10:38:03.000Z'
+    data:
+      edited: true
+      editors:
+      - Rijgersberg
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+          fullname: Edwin Rijgersberg
+          isHf: false
+          isPro: false
+          name: Rijgersberg
+          type: user
+        html: "<p>Thank you very much for the super-fast response and the suggestion!</p>\n\
+          <p>The reason I suspected a switch in the vocab is because the ids in <code>vocab.json</code>\
+          \ don't correspond to the ids in <code>config.json</code>:</p>\n<pre><code>\
+          \  \"bos_token_id\": 1,\n  \"eos_token_id\": 2,\n  \"pad_token_id\": 0,\n\
+          </code></pre>\n<p>However, you're right that it's even weirder to have <code>&lt;pad&gt;</code>\
+          \ tokens in the middle of the output than it it to have <code>&lt;s&gt;</code>.</p>\n\
+          <p>As to your suggestion: I tried <code>skip_special_tokens=True</code>\
+          \ before, because I agree that it should be the cleanest way to get readable\
+          \ output. However, in this model I observe that this removes any and all\
+          \ occurrences of repeated letters. This best shown by this example of this\
+          \ example from Commonvoice-nl (sorry, this is part of our test data, I don't\
+          \ have the original filename available right now).</p>\n<pre><code class=\"\
+          language-python\">tokenizer.decode(predicted_ids[<span class=\"hljs-number\"\
+          >0</span>])\n<span class=\"hljs-string\">\"&lt;s&gt;J&lt;s&gt;A&lt;s&gt;\
+          \ &lt;s&gt;GOE&lt;s&gt;D&lt;s&gt;E&lt;s&gt;M&lt;s&gt;OR&lt;s&gt;G&lt;s&gt;EN&lt;s&gt;\
+          \ &lt;s&gt;M&lt;s&gt;A&lt;s&gt;AR&lt;s&gt;T&lt;s&gt;E&lt;s&gt;N&lt;s&gt;\
+          \ P&lt;s&gt;A&lt;s&gt;S&lt;s&gt;C&lt;s&gt;A&lt;s&gt;L&lt;s&gt; &lt;s&gt;J&lt;s&gt;A&lt;s&gt;Z&lt;s&gt;E&lt;s&gt;K&lt;s&gt;E&lt;s&gt;R&lt;s&gt;\
+          \ HE&lt;s&gt;EFT &lt;s&gt;IE D&lt;s&gt;E W&lt;s&gt;AN&lt;s&gt;DEL&lt;s&gt;SCHOE&lt;s&gt;N&lt;s&gt;EN\
+          \ &lt;s&gt;A&lt;s&gt;A&lt;s&gt;N&lt;s&gt; &lt;s&gt;W&lt;s&gt;AN&lt;s&gt;T&lt;s&gt;\
+          \ &lt;s&gt;HET &lt;s&gt;IS N&lt;s&gt;OG&lt;s&gt; E&lt;s&gt;EN STU&lt;s&gt;K&lt;s&gt;J&lt;s&gt;E&lt;s&gt;\
+          \ &lt;s&gt;S&lt;s&gt;&lt;unk&gt;&lt;s&gt;L&lt;s&gt; &lt;s&gt;HOE&lt;s&gt;V&lt;s&gt;E&lt;s&gt;EL&lt;s&gt;\
+          \ &lt;s&gt;K&lt;s&gt;I&lt;s&gt;L&lt;s&gt;O&lt;s&gt;M&lt;s&gt;E&lt;s&gt;T&lt;s&gt;E&lt;s&gt;R&lt;s&gt;S&lt;s&gt;\
+          \ &lt;s&gt;Z&lt;s&gt;IJ&lt;s&gt;N&lt;s&gt; &lt;s&gt;'&lt;s&gt;T&lt;s&gt;\
+          \ &lt;s&gt;T&lt;s&gt;O&lt;s&gt;T &lt;s&gt;IN D&lt;s&gt;EN &lt;s&gt;H&lt;s&gt;A&lt;s&gt;A&lt;s&gt;G&lt;s&gt;?\
+          \ &lt;s&gt;\"</span>\n</code></pre>\n<pre><code class=\"language-python\"\
+          >tokenizer.decode(predicted_ids[<span class=\"hljs-number\">0</span>]).replace(<span\
+          \ class=\"hljs-string\">'&lt;s&gt;'</span>, <span class=\"hljs-string\"\
+          >''</span>)\n<span class=\"hljs-string\">\"JA GOEDEMORGEN MAARTEN PASCAL\
+          \ JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT HET IS NOG EEN STUKJE S&lt;unk&gt;L\
+          \ HOEVEEL KILOMETERS ZIJN 'T TOT IN DEN HAAG? \"</span>\n</code></pre>\n\
+          <pre><code class=\"language-python\">tokenizer.decode(predicted_ids[<span\
+          \ class=\"hljs-number\">0</span>], skip_special_tokens=<span class=\"hljs-literal\"\
+          >True</span>)\n<span class=\"hljs-string\">\"JA GOEDEMORGEN MARTEN PASCAL\
+          \ JAZEKER HEFT IE DE WANDELSCHOENEN AN WANT HET IS NOG EN STUKJE SL HOEVEL\
+          \ KILOMETERS ZIJN 'T TOT IN DEN HAG?\"</span>\n</code></pre>\n<p>Now I suspect\
+          \ that this is somehow a bug in <code>transformers</code> that is being\
+          \ triggered here, because I don't observe this behavior in all models. But\
+          \ it does preclude me from using <code>skip_special_tokens</code> for now.</p>\n"
+        raw: "Thank you very much for the super-fast response and the suggestion!\n\
+          \nThe reason I suspected a switch in the vocab is because the ids in `vocab.json`\
+          \ don't correspond to the ids in `config.json`:\n```\n  \"bos_token_id\"\
+          : 1,\n  \"eos_token_id\": 2,\n  \"pad_token_id\": 0,\n```\nHowever, you're\
+          \ right that it's even weirder to have `<pad>` tokens in the middle of the\
+          \ output than it it to have `<s>`.\n\nAs to your suggestion: I tried `skip_special_tokens=True`\
+          \ before, because I agree that it should be the cleanest way to get readable\
+          \ output. However, in this model I observe that this removes any and all\
+          \ occurrences of repeated letters. This best shown by this example of this\
+          \ example from Commonvoice-nl (sorry, this is part of our test data, I don't\
+          \ have the original filename available right now).\n\n```python\ntokenizer.decode(predicted_ids[0])\n\
+          \"<s>J<s>A<s> <s>GOE<s>D<s>E<s>M<s>OR<s>G<s>EN<s> <s>M<s>A<s>AR<s>T<s>E<s>N<s>\
+          \ P<s>A<s>S<s>C<s>A<s>L<s> <s>J<s>A<s>Z<s>E<s>K<s>E<s>R<s> HE<s>EFT <s>IE\
+          \ D<s>E W<s>AN<s>DEL<s>SCHOE<s>N<s>EN <s>A<s>A<s>N<s> <s>W<s>AN<s>T<s> <s>HET\
+          \ <s>IS N<s>OG<s> E<s>EN STU<s>K<s>J<s>E<s> <s>S<s><unk><s>L<s> <s>HOE<s>V<s>E<s>EL<s>\
+          \ <s>K<s>I<s>L<s>O<s>M<s>E<s>T<s>E<s>R<s>S<s> <s>Z<s>IJ<s>N<s> <s>'<s>T<s>\
+          \ <s>T<s>O<s>T <s>IN D<s>EN <s>H<s>A<s>A<s>G<s>? <s>\"\n```\n```python\n\
+          tokenizer.decode(predicted_ids[0]).replace('<s>', '')\n\"JA GOEDEMORGEN\
+          \ MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT HET IS NOG\
+          \ EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN 'T TOT IN DEN HAAG? \"\n```\n\
+          \n```python\ntokenizer.decode(predicted_ids[0], skip_special_tokens=True)\n\
+          \"JA GOEDEMORGEN MARTEN PASCAL JAZEKER HEFT IE DE WANDELSCHOENEN AN WANT\
+          \ HET IS NOG EN STUKJE SL HOEVEL KILOMETERS ZIJN 'T TOT IN DEN HAG?\"\n\
+          ```\n\nNow I suspect that this is somehow a bug in `transformers` that is\
+          \ being triggered here, because I don't observe this behavior in all models.\
+          \ But it does preclude me from using `skip_special_tokens` for now."
+        updatedAt: '2022-09-08T10:46:35.700Z'
+      numEdits: 2
+      reactions: []
+    id: 6319c60b0d7478ae00695c45
+    type: comment
+  author: Rijgersberg
+  content: "Thank you very much for the super-fast response and the suggestion!\n\n\
+    The reason I suspected a switch in the vocab is because the ids in `vocab.json`\
+    \ don't correspond to the ids in `config.json`:\n```\n  \"bos_token_id\": 1,\n\
+    \  \"eos_token_id\": 2,\n  \"pad_token_id\": 0,\n```\nHowever, you're right that\
+    \ it's even weirder to have `<pad>` tokens in the middle of the output than it\
+    \ it to have `<s>`.\n\nAs to your suggestion: I tried `skip_special_tokens=True`\
+    \ before, because I agree that it should be the cleanest way to get readable output.\
+    \ However, in this model I observe that this removes any and all occurrences of\
+    \ repeated letters. This best shown by this example of this example from Commonvoice-nl\
+    \ (sorry, this is part of our test data, I don't have the original filename available\
+    \ right now).\n\n```python\ntokenizer.decode(predicted_ids[0])\n\"<s>J<s>A<s>\
+    \ <s>GOE<s>D<s>E<s>M<s>OR<s>G<s>EN<s> <s>M<s>A<s>AR<s>T<s>E<s>N<s> P<s>A<s>S<s>C<s>A<s>L<s>\
+    \ <s>J<s>A<s>Z<s>E<s>K<s>E<s>R<s> HE<s>EFT <s>IE D<s>E W<s>AN<s>DEL<s>SCHOE<s>N<s>EN\
+    \ <s>A<s>A<s>N<s> <s>W<s>AN<s>T<s> <s>HET <s>IS N<s>OG<s> E<s>EN STU<s>K<s>J<s>E<s>\
+    \ <s>S<s><unk><s>L<s> <s>HOE<s>V<s>E<s>EL<s> <s>K<s>I<s>L<s>O<s>M<s>E<s>T<s>E<s>R<s>S<s>\
+    \ <s>Z<s>IJ<s>N<s> <s>'<s>T<s> <s>T<s>O<s>T <s>IN D<s>EN <s>H<s>A<s>A<s>G<s>?\
+    \ <s>\"\n```\n```python\ntokenizer.decode(predicted_ids[0]).replace('<s>', '')\n\
+    \"JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT HET\
+    \ IS NOG EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN 'T TOT IN DEN HAAG? \"\n```\n\
+    \n```python\ntokenizer.decode(predicted_ids[0], skip_special_tokens=True)\n\"\
+    JA GOEDEMORGEN MARTEN PASCAL JAZEKER HEFT IE DE WANDELSCHOENEN AN WANT HET IS\
+    \ NOG EN STUKJE SL HOEVEL KILOMETERS ZIJN 'T TOT IN DEN HAG?\"\n```\n\nNow I suspect\
+    \ that this is somehow a bug in `transformers` that is being triggered here, because\
+    \ I don't observe this behavior in all models. But it does preclude me from using\
+    \ `skip_special_tokens` for now."
+  created_at: 2022-09-08 09:38:03+00:00
+  edited: true
+  hidden: false
+  id: 6319c60b0d7478ae00695c45
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-08T10:56:33.000Z'
+    data:
+      edited: false
+      editors:
+      - wietsedv
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+          fullname: Wietse de Vries
+          isHf: false
+          isPro: false
+          name: wietsedv
+          type: user
+        html: '<p>Thank you for this clarification! The config and vocab indeed contradict
+          eachother. So you might be correct that they should be switched, depending
+          on when the mixup occurred. I suspect that it has to do with the conversion
+          from <code>fairseq</code> to <code>transformers</code>. I cannot test this
+          right now, but could you share with me what the exact output would be with
+          your changed vocab? With and without <code>skip_special_tokens=True</code>?</p>
+
+          '
+        raw: Thank you for this clarification! The config and vocab indeed contradict
+          eachother. So you might be correct that they should be switched, depending
+          on when the mixup occurred. I suspect that it has to do with the conversion
+          from `fairseq` to `transformers`. I cannot test this right now, but could
+          you share with me what the exact output would be with your changed vocab?
+          With and without `skip_special_tokens=True`?
+        updatedAt: '2022-09-08T10:56:33.452Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6319ca6109baf858242007ef
+    id: 6319ca6109baf858242007ee
+    type: comment
+  author: wietsedv
+  content: Thank you for this clarification! The config and vocab indeed contradict
+    eachother. So you might be correct that they should be switched, depending on
+    when the mixup occurred. I suspect that it has to do with the conversion from
+    `fairseq` to `transformers`. I cannot test this right now, but could you share
+    with me what the exact output would be with your changed vocab? With and without
+    `skip_special_tokens=True`?
+  created_at: 2022-09-08 09:56:33+00:00
+  edited: false
+  hidden: false
+  id: 6319ca6109baf858242007ee
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-08T10:56:33.000Z'
+    data:
+      status: open
+    id: 6319ca6109baf858242007ef
+    type: status-change
+  author: wietsedv
+  created_at: 2022-09-08 09:56:33+00:00
+  id: 6319ca6109baf858242007ef
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+      fullname: Edwin Rijgersberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rijgersberg
+      type: user
+    createdAt: '2022-09-08T13:41:12.000Z'
+    data:
+      edited: false
+      editors:
+      - Rijgersberg
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+          fullname: Edwin Rijgersberg
+          isHf: false
+          isPro: false
+          name: Rijgersberg
+          type: user
+        html: '<p>The output in the reply above was with the code as-is.</p>
+
+          <p>If you apply this PR the output becomes:</p>
+
+          <pre><code class="language-python">tokenizer.decode(predicted_ids[<span
+          class="hljs-number">0</span>])
+
+          <span class="hljs-string">"JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE
+          DE WANDELSCHOENEN AAN WANT HET IS NOG EEN STUKJE S&lt;unk&gt;L HOEVEEL KILOMETERS
+          ZIJN ''T TOT IN DEN HAAG?"</span>
+
+          </code></pre>
+
+          <pre><code class="language-python">tokenizer.decode(predicted_ids[<span
+          class="hljs-number">0</span>]).replace(<span class="hljs-string">''&lt;s&gt;''</span>,
+          <span class="hljs-string">''''</span>)
+
+          <span class="hljs-string">"JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE
+          DE WANDELSCHOENEN AAN WANT HET IS NOG EEN STUKJE S&lt;unk&gt;L HOEVEEL KILOMETERS
+          ZIJN ''T TOT IN DEN HAAG?"</span>
+
+          </code></pre>
+
+          <pre><code class="language-python">tokenizer.decode(predicted_ids[<span
+          class="hljs-number">0</span>], skip_special_tokens=<span class="hljs-literal">True</span>)
+
+          <span class="hljs-string">"JA GOEDEMORGEN MARTEN PASCAL JAZEKER HEFT IE
+          DE WANDELSCHOENEN AN WANT HET IS NOG EN STUKJE SL HOEVEL KILOMETERS ZIJN
+          ''T TOT IN DEN HAG?"</span>
+
+          </code></pre>
+
+          <p>So changing the ids does not change the weird behavior of setting <code>skip_special_tokens=True</code>,
+          but it does make the default output more readable. There could still be
+          something we''re missing here though, I''ll update if I find out more.</p>
+
+          '
+        raw: 'The output in the reply above was with the code as-is.
+
+
+          If you apply this PR the output becomes:
+
+
+          ```python
+
+          tokenizer.decode(predicted_ids[0])
+
+          "JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT
+          HET IS NOG EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN ''T TOT IN DEN HAAG?"
+
+          ```
+
+
+          ```python
+
+          tokenizer.decode(predicted_ids[0]).replace(''<s>'', '''')
+
+          "JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT
+          HET IS NOG EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN ''T TOT IN DEN HAAG?"
+
+          ```
+
+
+          ```python
+
+          tokenizer.decode(predicted_ids[0], skip_special_tokens=True)
+
+          "JA GOEDEMORGEN MARTEN PASCAL JAZEKER HEFT IE DE WANDELSCHOENEN AN WANT
+          HET IS NOG EN STUKJE SL HOEVEL KILOMETERS ZIJN ''T TOT IN DEN HAG?"
+
+          ```
+
+
+          So changing the ids does not change the weird behavior of setting `skip_special_tokens=True`,
+          but it does make the default output more readable. There could still be
+          something we''re missing here though, I''ll update if I find out more.'
+        updatedAt: '2022-09-08T13:41:12.611Z'
+      numEdits: 0
+      reactions: []
+    id: 6319f0f8307cb811990743cd
+    type: comment
+  author: Rijgersberg
+  content: 'The output in the reply above was with the code as-is.
+
+
+    If you apply this PR the output becomes:
+
+
+    ```python
+
+    tokenizer.decode(predicted_ids[0])
+
+    "JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT HET
+    IS NOG EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN ''T TOT IN DEN HAAG?"
+
+    ```
+
+
+    ```python
+
+    tokenizer.decode(predicted_ids[0]).replace(''<s>'', '''')
+
+    "JA GOEDEMORGEN MAARTEN PASCAL JAZEKER HEEFT IE DE WANDELSCHOENEN AAN WANT HET
+    IS NOG EEN STUKJE S<unk>L HOEVEEL KILOMETERS ZIJN ''T TOT IN DEN HAAG?"
+
+    ```
+
+
+    ```python
+
+    tokenizer.decode(predicted_ids[0], skip_special_tokens=True)
+
+    "JA GOEDEMORGEN MARTEN PASCAL JAZEKER HEFT IE DE WANDELSCHOENEN AN WANT HET IS
+    NOG EN STUKJE SL HOEVEL KILOMETERS ZIJN ''T TOT IN DEN HAG?"
+
+    ```
+
+
+    So changing the ids does not change the weird behavior of setting `skip_special_tokens=True`,
+    but it does make the default output more readable. There could still be something
+    we''re missing here though, I''ll update if I find out more.'
+  created_at: 2022-09-08 12:41:12+00:00
+  edited: false
+  hidden: false
+  id: 6319f0f8307cb811990743cd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+      fullname: Edwin Rijgersberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rijgersberg
+      type: user
+    createdAt: '2022-09-08T14:25:12.000Z'
+    data:
+      edited: true
+      editors:
+      - Rijgersberg
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+          fullname: Edwin Rijgersberg
+          isHf: false
+          isPro: false
+          name: Rijgersberg
+          type: user
+        html: "<p>By the way I've written a stand-alone script that demonstrates the\
+          \ behavior, rather than debugging within a larger repo.</p>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">import</span> torch\n\
+          <span class=\"hljs-keyword\">from</span> datasets <span class=\"hljs-keyword\"\
+          >import</span> load_dataset, Audio\n<span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> Wav2Vec2ForCTC,\
+          \ Wav2Vec2Processor\n\n\nmodel = Wav2Vec2ForCTC.from_pretrained(<span class=\"\
+          hljs-string\">\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"</span>)\nprocessor\
+          \ = Wav2Vec2Processor.from_pretrained(<span class=\"hljs-string\">\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"\
+          </span>)\n\n<span class=\"hljs-comment\"># load first sample of Dutch common_voice</span>\n\
+          dataset = load_dataset(<span class=\"hljs-string\">\"common_voice\"</span>,\
+          \ <span class=\"hljs-string\">\"nl\"</span>, split=<span class=\"hljs-string\"\
+          >\"test\"</span>, streaming=<span class=\"hljs-literal\">True</span>)\n\
+          dataset = dataset.cast_column(<span class=\"hljs-string\">\"audio\"</span>,\
+          \ Audio(sampling_rate=<span class=\"hljs-number\">16_000</span>))\nsample\
+          \ = <span class=\"hljs-built_in\">next</span>(<span class=\"hljs-built_in\"\
+          >iter</span>(dataset))\n\n<span class=\"hljs-comment\"># forward sample\
+          \ through model to get greedily predicted transcription ids</span>\ninput_values\
+          \ = processor(sample[<span class=\"hljs-string\">\"audio\"</span>][<span\
+          \ class=\"hljs-string\">\"array\"</span>], return_tensors=<span class=\"\
+          hljs-string\">\"pt\"</span>).input_values\n<span class=\"hljs-keyword\"\
+          >with</span> torch.no_grad():\n    logits = model(input_values).logits\n\
+          predicted_ids = torch.argmax(logits, dim=-<span class=\"hljs-number\">1</span>)[<span\
+          \ class=\"hljs-number\">0</span>]\n\n<span class=\"hljs-comment\"># decode\
+          \ predicted tokens</span>\n<span class=\"hljs-built_in\">print</span>(processor.decode(predicted_ids))\n\
+          <span class=\"hljs-built_in\">print</span>(processor.decode(predicted_ids).replace(<span\
+          \ class=\"hljs-string\">'&lt;s&gt;'</span>, <span class=\"hljs-string\"\
+          >''</span>))\n<span class=\"hljs-built_in\">print</span>(processor.decode(predicted_ids,\
+          \ skip_special_tokens=<span class=\"hljs-literal\">True</span>))\n<span\
+          \ class=\"hljs-built_in\">print</span>()\n<span class=\"hljs-built_in\"\
+          >print</span>(processor.decode(predicted_ids, group_tokens=<span class=\"\
+          hljs-literal\">False</span>))\n<span class=\"hljs-built_in\">print</span>(processor.decode(predicted_ids,\
+          \ skip_special_tokens=<span class=\"hljs-literal\">True</span>, group_tokens=<span\
+          \ class=\"hljs-literal\">False</span>))\n</code></pre>\n<p>Original output:</p>\n\
+          <pre><code>&lt;s&gt;H&lt;s&gt;ET&lt;s&gt; &lt;s&gt;C&lt;s&gt;O&lt;s&gt;N&lt;s&gt;T&lt;s&gt;AI&lt;s&gt;N&lt;s&gt;E&lt;s&gt;SCH&lt;s&gt;I&lt;s&gt;P&lt;s&gt;\
+          \ &lt;s&gt;L&lt;s&gt;A&lt;s&gt;G&lt;s&gt; &lt;s&gt;A&lt;s&gt;AN&lt;s&gt;G&lt;s&gt;E&lt;s&gt;M&lt;s&gt;E&lt;s&gt;ER&lt;s&gt;D&lt;s&gt;\
+          \ &lt;s&gt;IN D&lt;s&gt;E &lt;s&gt;H&lt;s&gt;A&lt;s&gt;V&lt;s&gt;EN&lt;s&gt;\
+          \ &lt;s&gt;\nHET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN \nHET CONTAINESCHIP\
+          \ LAG ANGEMERD IN DE HAVEN\n\n&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;H&lt;s&gt;ET&lt;s&gt;\
+          \ &lt;s&gt;C&lt;s&gt;&lt;s&gt;O&lt;s&gt;N&lt;s&gt;&lt;s&gt;T&lt;s&gt;&lt;s&gt;&lt;s&gt;AI&lt;s&gt;&lt;s&gt;N&lt;s&gt;&lt;s&gt;E&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;SCH&lt;s&gt;&lt;s&gt;I&lt;s&gt;&lt;s&gt;P&lt;s&gt;&lt;s&gt;\
+          \ &lt;s&gt;L&lt;s&gt;&lt;s&gt;A&lt;s&gt;G&lt;s&gt;  &lt;s&gt;&lt;s&gt;A&lt;s&gt;&lt;s&gt;AN&lt;s&gt;&lt;s&gt;&lt;s&gt;G&lt;s&gt;E&lt;s&gt;&lt;s&gt;M&lt;s&gt;E&lt;s&gt;&lt;s&gt;ER&lt;s&gt;&lt;s&gt;D&lt;s&gt;\
+          \  &lt;s&gt;IN  D&lt;s&gt;E  &lt;s&gt;H&lt;s&gt;&lt;s&gt;AA&lt;s&gt;&lt;s&gt;&lt;s&gt;V&lt;s&gt;&lt;s&gt;&lt;s&gt;EN&lt;s&gt;&lt;s&gt;&lt;s&gt;\
+          \  &lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;&lt;s&gt;\n\
+          HET CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\n</code></pre>\n<p>PR\
+          \ output:</p>\n<pre><code>HET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN\n\
+          HET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN\nHET CONTAINESCHIP LAG ANGEMERD\
+          \ IN DE HAVEN\n\nHET CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\nHET\
+          \ CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\n</code></pre>\n"
+        raw: "By the way I've written a stand-alone script that demonstrates the behavior,\
+          \ rather than debugging within a larger repo.\n\n```python\nimport torch\n\
+          from datasets import load_dataset, Audio\nfrom transformers import Wav2Vec2ForCTC,\
+          \ Wav2Vec2Processor\n\n\nmodel = Wav2Vec2ForCTC.from_pretrained(\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"\
+          )\nprocessor = Wav2Vec2Processor.from_pretrained(\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"\
+          )\n\n# load first sample of Dutch common_voice\ndataset = load_dataset(\"\
+          common_voice\", \"nl\", split=\"test\", streaming=True)\ndataset = dataset.cast_column(\"\
+          audio\", Audio(sampling_rate=16_000))\nsample = next(iter(dataset))\n\n\
+          # forward sample through model to get greedily predicted transcription ids\n\
+          input_values = processor(sample[\"audio\"][\"array\"], return_tensors=\"\
+          pt\").input_values\nwith torch.no_grad():\n    logits = model(input_values).logits\n\
+          predicted_ids = torch.argmax(logits, dim=-1)[0]\n\n# decode predicted tokens\n\
+          print(processor.decode(predicted_ids))\nprint(processor.decode(predicted_ids).replace('<s>',\
+          \ ''))\nprint(processor.decode(predicted_ids, skip_special_tokens=True))\n\
+          print()\nprint(processor.decode(predicted_ids, group_tokens=False))\nprint(processor.decode(predicted_ids,\
+          \ skip_special_tokens=True, group_tokens=False))\n```\n\nOriginal output:\n\
+          ```\n<s>H<s>ET<s> <s>C<s>O<s>N<s>T<s>AI<s>N<s>E<s>SCH<s>I<s>P<s> <s>L<s>A<s>G<s>\
+          \ <s>A<s>AN<s>G<s>E<s>M<s>E<s>ER<s>D<s> <s>IN D<s>E <s>H<s>A<s>V<s>EN<s>\
+          \ <s>\nHET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN \nHET CONTAINESCHIP\
+          \ LAG ANGEMERD IN DE HAVEN\n\n<s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s>H<s>ET<s>\
+          \ <s>C<s><s>O<s>N<s><s>T<s><s><s>AI<s><s>N<s><s>E<s><s><s><s>SCH<s><s>I<s><s>P<s><s>\
+          \ <s>L<s><s>A<s>G<s>  <s><s>A<s><s>AN<s><s><s>G<s>E<s><s>M<s>E<s><s>ER<s><s>D<s>\
+          \  <s>IN  D<s>E  <s>H<s><s>AA<s><s><s>V<s><s><s>EN<s><s><s>  <s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s>\n\
+          HET CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\n```\n\nPR output:\n```\n\
+          HET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN\nHET CONTAINESCHIP LAG AANGEMEERD\
+          \ IN DE HAVEN\nHET CONTAINESCHIP LAG ANGEMERD IN DE HAVEN\n\nHET CONTAINESCHIP\
+          \ LAG  AANGEMEERD  IN  DE  HAAVEN\nHET CONTAINESCHIP LAG  AANGEMEERD  IN\
+          \  DE  HAAVEN\n```"
+        updatedAt: '2022-09-09T07:45:50.269Z'
+      numEdits: 1
+      reactions: []
+    id: 6319fb48615c77c25d6925e0
+    type: comment
+  author: Rijgersberg
+  content: "By the way I've written a stand-alone script that demonstrates the behavior,\
+    \ rather than debugging within a larger repo.\n\n```python\nimport torch\nfrom\
+    \ datasets import load_dataset, Audio\nfrom transformers import Wav2Vec2ForCTC,\
+    \ Wav2Vec2Processor\n\n\nmodel = Wav2Vec2ForCTC.from_pretrained(\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"\
+    )\nprocessor = Wav2Vec2Processor.from_pretrained(\"GroNLP/wav2vec2-large-xlsr-53-ft-cgn\"\
+    )\n\n# load first sample of Dutch common_voice\ndataset = load_dataset(\"common_voice\"\
+    , \"nl\", split=\"test\", streaming=True)\ndataset = dataset.cast_column(\"audio\"\
+    , Audio(sampling_rate=16_000))\nsample = next(iter(dataset))\n\n# forward sample\
+    \ through model to get greedily predicted transcription ids\ninput_values = processor(sample[\"\
+    audio\"][\"array\"], return_tensors=\"pt\").input_values\nwith torch.no_grad():\n\
+    \    logits = model(input_values).logits\npredicted_ids = torch.argmax(logits,\
+    \ dim=-1)[0]\n\n# decode predicted tokens\nprint(processor.decode(predicted_ids))\n\
+    print(processor.decode(predicted_ids).replace('<s>', ''))\nprint(processor.decode(predicted_ids,\
+    \ skip_special_tokens=True))\nprint()\nprint(processor.decode(predicted_ids, group_tokens=False))\n\
+    print(processor.decode(predicted_ids, skip_special_tokens=True, group_tokens=False))\n\
+    ```\n\nOriginal output:\n```\n<s>H<s>ET<s> <s>C<s>O<s>N<s>T<s>AI<s>N<s>E<s>SCH<s>I<s>P<s>\
+    \ <s>L<s>A<s>G<s> <s>A<s>AN<s>G<s>E<s>M<s>E<s>ER<s>D<s> <s>IN D<s>E <s>H<s>A<s>V<s>EN<s>\
+    \ <s>\nHET CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN \nHET CONTAINESCHIP LAG ANGEMERD\
+    \ IN DE HAVEN\n\n<s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s>H<s>ET<s>\
+    \ <s>C<s><s>O<s>N<s><s>T<s><s><s>AI<s><s>N<s><s>E<s><s><s><s>SCH<s><s>I<s><s>P<s><s>\
+    \ <s>L<s><s>A<s>G<s>  <s><s>A<s><s>AN<s><s><s>G<s>E<s><s>M<s>E<s><s>ER<s><s>D<s>\
+    \  <s>IN  D<s>E  <s>H<s><s>AA<s><s><s>V<s><s><s>EN<s><s><s>  <s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s><s>\n\
+    HET CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\n```\n\nPR output:\n```\nHET\
+    \ CONTAINESCHIP LAG AANGEMEERD IN DE HAVEN\nHET CONTAINESCHIP LAG AANGEMEERD IN\
+    \ DE HAVEN\nHET CONTAINESCHIP LAG ANGEMERD IN DE HAVEN\n\nHET CONTAINESCHIP LAG\
+    \  AANGEMEERD  IN  DE  HAAVEN\nHET CONTAINESCHIP LAG  AANGEMEERD  IN  DE  HAAVEN\n\
+    ```"
+  created_at: 2022-09-08 13:25:12+00:00
+  edited: true
+  hidden: false
+  id: 6319fb48615c77c25d6925e0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+      fullname: Edwin Rijgersberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rijgersberg
+      type: user
+    createdAt: '2022-09-09T07:56:42.000Z'
+    data:
+      edited: true
+      editors:
+      - Rijgersberg
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6319b164bc8f3b313f7a1db0/Hh0kuwsAnD2AOKdL6PpRs.png?w=200&h=200&f=face
+          fullname: Edwin Rijgersberg
+          isHf: false
+          isPro: false
+          name: Rijgersberg
+          type: user
+        html: "<p>I'm new to the whole ASR-field so I've learned a few new things\
+          \ yesterday:</p>\n<ul>\n<li>The raw output of the CTC-algorithm includes\
+          \ a <em>blank</em> token, and repeated tokens (including blank tokens) need\
+          \ collapsing to form the final output: <a rel=\"nofollow\" href=\"https://distill.pub/2017/ctc/\"\
+          >https://distill.pub/2017/ctc/</a></li>\n<li>In <a href=\"https://huggingface.co/blog/fine-tune-wav2vec2-english\"\
+          >Fine-Tune Wav2Vec2 for English ASR with \U0001F917 Transformers </a> it\
+          \ is heavily implied that the <code>&lt;pad&gt;</code> token is used to\
+          \ fill the role of the blank token</li>\n<li>You can ask the tokenizer to\
+          \ decode the raw output by specifying <code>group_tokens=False</code>.</li>\n\
+          </ul>\n<p>I've added the raw output to the example above. There you can\
+          \ clearly see the tokenizer outputs a <em>lot</em> of <code>&lt;s&gt;</code>\
+          \ tokens, which get collapsed by the CTC-algorithm into spurious single\
+          \ instances. To me it looks consistent with the number of blank tokens I\
+          \ would expect.</p>\n"
+        raw: "I'm new to the whole ASR-field so I've learned a few new things yesterday:\n\
+          \n- The raw output of the CTC-algorithm includes a _blank_ token, and repeated\
+          \ tokens (including blank tokens) need collapsing to form the final output:\
+          \ https://distill.pub/2017/ctc/\n- In [Fine-Tune Wav2Vec2 for English ASR\
+          \ with \U0001F917 Transformers ](https://huggingface.co/blog/fine-tune-wav2vec2-english)\
+          \ it is heavily implied that the `<pad>` token is used to fill the role\
+          \ of the blank token\n- You can ask the tokenizer to decode the raw output\
+          \ by specifying `group_tokens=False`.\n\nI've added the raw output to the\
+          \ example above. There you can clearly see the tokenizer outputs a _lot_\
+          \ of `<s>` tokens, which get collapsed by the CTC-algorithm into spurious\
+          \ single instances. To me it looks consistent with the number of blank tokens\
+          \ I would expect."
+        updatedAt: '2022-09-09T07:57:23.052Z'
+      numEdits: 1
+      reactions: []
+    id: 631af1bab043abe8c4fc90b8
+    type: comment
+  author: Rijgersberg
+  content: "I'm new to the whole ASR-field so I've learned a few new things yesterday:\n\
+    \n- The raw output of the CTC-algorithm includes a _blank_ token, and repeated\
+    \ tokens (including blank tokens) need collapsing to form the final output: https://distill.pub/2017/ctc/\n\
+    - In [Fine-Tune Wav2Vec2 for English ASR with \U0001F917 Transformers ](https://huggingface.co/blog/fine-tune-wav2vec2-english)\
+    \ it is heavily implied that the `<pad>` token is used to fill the role of the\
+    \ blank token\n- You can ask the tokenizer to decode the raw output by specifying\
+    \ `group_tokens=False`.\n\nI've added the raw output to the example above. There\
+    \ you can clearly see the tokenizer outputs a _lot_ of `<s>` tokens, which get\
+    \ collapsed by the CTC-algorithm into spurious single instances. To me it looks\
+    \ consistent with the number of blank tokens I would expect."
+  created_at: 2022-09-09 06:56:42+00:00
+  edited: true
+  hidden: false
+  id: 631af1bab043abe8c4fc90b8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-09T08:13:09.000Z'
+    data:
+      edited: false
+      editors:
+      - wietsedv
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+          fullname: Wietse de Vries
+          isHf: false
+          isPro: false
+          name: wietsedv
+          type: user
+        html: '<p>Thank you for researching this issue and giving this extensive help!
+          You seem to be right and the issue should indeed be solved by your patch.
+          I will merge this and apply the change to the other models. I checked the
+          original fairseq models, and it''s indeed the vocab that needs to be changed,
+          not the config. Thanks!</p>
+
+          '
+        raw: Thank you for researching this issue and giving this extensive help!
+          You seem to be right and the issue should indeed be solved by your patch.
+          I will merge this and apply the change to the other models. I checked the
+          original fairseq models, and it's indeed the vocab that needs to be changed,
+          not the config. Thanks!
+        updatedAt: '2022-09-09T08:13:09.535Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - gsarti
+      relatedEventId: 631af595838c835180e6eaed
+    id: 631af595838c835180e6eaec
+    type: comment
+  author: wietsedv
+  content: Thank you for researching this issue and giving this extensive help! You
+    seem to be right and the issue should indeed be solved by your patch. I will merge
+    this and apply the change to the other models. I checked the original fairseq
+    models, and it's indeed the vocab that needs to be changed, not the config. Thanks!
+  created_at: 2022-09-09 07:13:09+00:00
+  edited: false
+  hidden: false
+  id: 631af595838c835180e6eaec
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1607353290462-5dfa3865da6d0311fd3d5428.png?w=200&h=200&f=face
+      fullname: Wietse de Vries
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: wietsedv
+      type: user
+    createdAt: '2022-09-09T08:13:09.000Z'
+    data:
+      status: merged
+    id: 631af595838c835180e6eaed
+    type: status-change
+  author: wietsedv
+  created_at: 2022-09-09 07:13:09+00:00
+  id: 631af595838c835180e6eaed
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: 25c8b2f3c41e5cd939ae7624e702ebfba44ed443
+num: 1
+repo_id: GroNLP/wav2vec2-large-xlsr-53-ft-cgn
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: Fix mixup of `<pad>` and `<s>` tokens in vocab

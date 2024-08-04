@@ -1,0 +1,4 @@
+## https://huggingface.co/asas-ai/jais-13b-chat-8bit/discussions/4
+
+contains_question: yes  
+question_part: When i run my code by using this repo, it gives RuntimeError: a leaf Variable that requires grad is being used in an in-place operation error. I changed the 869 line in modeling_jais.py as : hidden_states *= torch.tensor(float(self.embeddings_scale), dtype=hidden_states.dtype, device=hidden_states.device) to: scale_factor_hidden = torch.tensor(float(self.embeddings_scale), dtype=hidden_states.dtype, device=hidden_states.device) hidden_states = hidden_states * scale_factor_hidden and i load model from local folder, it gives still same error. How can I solve this

@@ -1,0 +1,195 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: petermills
+conflicting_files: null
+created_at: 2022-09-23 08:04:30+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/07f2c638e17e91e54aaf403b4d847428.svg
+      fullname: 'Peter Mills '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: petermills
+      type: user
+    createdAt: '2022-09-23T09:04:30.000Z'
+    data:
+      edited: false
+      editors:
+      - petermills
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/07f2c638e17e91e54aaf403b4d847428.svg
+          fullname: 'Peter Mills '
+          isHf: false
+          isPro: false
+          name: petermills
+          type: user
+        html: '<p>I found, and was using this example before I found out about load_in_8bit.
+          It worked and I was able to fine-tune the model on colab.<br>After fine-tuning
+          and <code>save_pretrained</code>, I realised that I was unable to load the
+          fine-tuned model in another notebook using <code>from_pretrained</code>
+          discovering that there were version issues with pytorch and transformers.<br>I''ve
+          been trying to use load_in_8bit to fine-tune however it fills the gpu memory
+          and crashes as soon as the training loop starts.<br>What''s the difference
+          between this notebook and <code>load_in_8bit</code>?<br>Is it LoRA, and
+          how could this be implemented with <code>load_in_8bit</code>? </p>
+
+          <p>Thanks </p>
+
+          '
+        raw: "I found, and was using this example before I found out about load_in_8bit.\
+          \ It worked and I was able to fine-tune the model on colab.\r\nAfter fine-tuning\
+          \ and `save_pretrained`, I realised that I was unable to load the fine-tuned\
+          \ model in another notebook using `from_pretrained` discovering that there\
+          \ were version issues with pytorch and transformers.\r\nI've been trying\
+          \ to use load_in_8bit to fine-tune however it fills the gpu memory and crashes\
+          \ as soon as the training loop starts.  \r\nWhat's the difference between\
+          \ this notebook and `load_in_8bit`?\r\nIs it LoRA, and how could this be\
+          \ implemented with `load_in_8bit`? \r\n\r\nThanks "
+        updatedAt: '2022-09-23T09:04:30.640Z'
+      numEdits: 0
+      reactions: []
+    id: 632d769e8e9032e826ce0e54
+    type: comment
+  author: petermills
+  content: "I found, and was using this example before I found out about load_in_8bit.\
+    \ It worked and I was able to fine-tune the model on colab.\r\nAfter fine-tuning\
+    \ and `save_pretrained`, I realised that I was unable to load the fine-tuned model\
+    \ in another notebook using `from_pretrained` discovering that there were version\
+    \ issues with pytorch and transformers.\r\nI've been trying to use load_in_8bit\
+    \ to fine-tune however it fills the gpu memory and crashes as soon as the training\
+    \ loop starts.  \r\nWhat's the difference between this notebook and `load_in_8bit`?\r\
+    \nIs it LoRA, and how could this be implemented with `load_in_8bit`? \r\n\r\n\
+    Thanks "
+  created_at: 2022-09-23 08:04:30+00:00
+  edited: false
+  hidden: false
+  id: 632d769e8e9032e826ce0e54
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1640134437444-609baae0fe087f3d04cf0481.jpeg?w=200&h=200&f=face
+      fullname: Yozh
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: justheuristic
+      type: user
+    createdAt: '2022-09-26T09:59:25.000Z'
+    data:
+      edited: true
+      editors:
+      - justheuristic
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1640134437444-609baae0fe087f3d04cf0481.jpeg?w=200&h=200&f=face
+          fullname: Yozh
+          isHf: false
+          isPro: false
+          name: justheuristic
+          type: user
+        html: '<p>TL;DR</p>
+
+          <ul>
+
+          <li>load_in_8bit does forward pass faster, especially for small batches
+          || this implementation is slower because it needs to de-quantize weights,
+          while load_in_8bit runs forward pass with quantized weights</li>
+
+          <li>load_in_8bit currently requires Turing GPUs or newer (e.g. colab T4
+          or 2080 are fine, colab K80 or 1080Ti are not) || this implementation works
+          with any GPU or CPU</li>
+
+          <li>load_in_8bit currently supports only forward pass, i.e. no finetuning,
+          BUT they are working on LoRA implementation there and will post update in
+          a few weeks.</li>
+
+          </ul>
+
+          <blockquote>
+
+          <p>Is it LoRA, and how could this be implemented with load_in_8bit? </p>
+
+          </blockquote>
+
+          <p>Currently, it requires some coding:</p>
+
+          <ul>
+
+          <li>please install the <em>latest</em> bitsandbytes (i.e. this week''s version)</li>
+
+          <li>write a LoRA wrapper around bnb.nn.Linear8bitLt<br>-- in this wrapper,
+          make sure you pass has_fp16_weights=True and memory_efficient_backward=True
+          (<a rel="nofollow" href="https://github.com/TimDettmers/bitsandbytes/pull/33/files#diff-7967f3c2b2edae9571c29f7a36a1c3792a94f870bab3c36b44ba6d2097fb7457R457">see
+          example test</a>)</li>
+
+          <li>use your wrapped layer instead of standard bnb.nn.Linear8bitLt</li>
+
+          </ul>
+
+          <p>Or wait for a couple of weeks till bnb and HF guys do that for you ;)</p>
+
+          '
+        raw: "TL;DR\n- load_in_8bit does forward pass faster, especially for small\
+          \ batches || this implementation is slower because it needs to de-quantize\
+          \ weights, while load_in_8bit runs forward pass with quantized weights\n\
+          - load_in_8bit currently requires Turing GPUs or newer (e.g. colab T4 or\
+          \ 2080 are fine, colab K80 or 1080Ti are not) || this implementation works\
+          \ with any GPU or CPU\n- load_in_8bit currently supports only forward pass,\
+          \ i.e. no finetuning, BUT they are working on LoRA implementation there\
+          \ and will post update in a few weeks.\n\n\n> Is it LoRA, and how could\
+          \ this be implemented with load_in_8bit? \n\nCurrently, it requires some\
+          \ coding:\n\n- please install the *latest* bitsandbytes (i.e. this week's\
+          \ version)\n- write a LoRA wrapper around bnb.nn.Linear8bitLt\n-- in this\
+          \ wrapper, make sure you pass has_fp16_weights=True and memory_efficient_backward=True\
+          \ ([see example test](https://github.com/TimDettmers/bitsandbytes/pull/33/files#diff-7967f3c2b2edae9571c29f7a36a1c3792a94f870bab3c36b44ba6d2097fb7457R457))\n\
+          - use your wrapped layer instead of standard bnb.nn.Linear8bitLt\n\nOr wait\
+          \ for a couple of weeks till bnb and HF guys do that for you ;)"
+        updatedAt: '2022-09-26T09:59:38.912Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - chiaolun
+    id: 633177fdb7b8e9d6e8985e2b
+    type: comment
+  author: justheuristic
+  content: "TL;DR\n- load_in_8bit does forward pass faster, especially for small batches\
+    \ || this implementation is slower because it needs to de-quantize weights, while\
+    \ load_in_8bit runs forward pass with quantized weights\n- load_in_8bit currently\
+    \ requires Turing GPUs or newer (e.g. colab T4 or 2080 are fine, colab K80 or\
+    \ 1080Ti are not) || this implementation works with any GPU or CPU\n- load_in_8bit\
+    \ currently supports only forward pass, i.e. no finetuning, BUT they are working\
+    \ on LoRA implementation there and will post update in a few weeks.\n\n\n> Is\
+    \ it LoRA, and how could this be implemented with load_in_8bit? \n\nCurrently,\
+    \ it requires some coding:\n\n- please install the *latest* bitsandbytes (i.e.\
+    \ this week's version)\n- write a LoRA wrapper around bnb.nn.Linear8bitLt\n--\
+    \ in this wrapper, make sure you pass has_fp16_weights=True and memory_efficient_backward=True\
+    \ ([see example test](https://github.com/TimDettmers/bitsandbytes/pull/33/files#diff-7967f3c2b2edae9571c29f7a36a1c3792a94f870bab3c36b44ba6d2097fb7457R457))\n\
+    - use your wrapped layer instead of standard bnb.nn.Linear8bitLt\n\nOr wait for\
+    \ a couple of weeks till bnb and HF guys do that for you ;)"
+  created_at: 2022-09-26 08:59:25+00:00
+  edited: true
+  hidden: false
+  id: 633177fdb7b8e9d6e8985e2b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: hivemind/gpt-j-6B-8bit
+repo_type: model
+status: open
+target_branch: null
+title: load_in_8bit fine-tuning requires more memory than this notebook

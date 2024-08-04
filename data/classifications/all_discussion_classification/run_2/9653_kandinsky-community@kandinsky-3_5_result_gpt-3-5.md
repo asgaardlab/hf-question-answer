@@ -1,0 +1,5 @@
+## https://huggingface.co/kandinsky-community/kandinsky-3/discussions/5
+
+contains_question: yes
+
+question_part: The alignment, quality everything is bad compared to 2.2. I am not sure exactly whats causing this. But there is something with the unet to clearly understand the embedding from the flan model since it is based on a new biggan architecture with attention pooling, it has some issues with some things here and there. I also check the source, what is the actual meaning of attention mask? It is set to 128 . I don't what it is but maybe the projection? it is still good at complex prompts, but the generation quality is far behind that of its preceding models. Will sebr ai fix these issues. I will post out more issues when I found one. Btw anime surrounding images look like water color painting expect for the character. But I hope if these are solved it is basically game over for midjourney. Hats off to team kandinsky!

@@ -1,0 +1,378 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AmlanSamanta
+conflicting_files: null
+created_at: 2023-07-27 13:50:11+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+      fullname: Amlan Samanta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AmlanSamanta
+      type: user
+    createdAt: '2023-07-27T14:50:11.000Z'
+    data:
+      edited: false
+      editors:
+      - AmlanSamanta
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7275510430335999
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+          fullname: Amlan Samanta
+          isHf: false
+          isPro: false
+          name: AmlanSamanta
+          type: user
+        html: '<p>Hi all,</p>
+
+          <p>We are facing issues while using this model on the aforementioned machine.
+          We were able to run the same experiment on G5 instance successfully but
+          we are observing that the same code is not working on Inf2 machine instance.
+          We are aware that it has Accelerator instead of NVIDIA GPU. Hence we tried
+          the neuron-core''s capability and added required helper code for using the
+          capability of neuron-cores of the instance by using the torch-neuronx library.
+          The code changes and respective error screenshots are provided below for
+          your reference:</p>
+
+          <p>Code without any torch-neuronx usage - Generation code snippet:</p>
+
+          <p>generation_output = model.generate(<br>input_ids = input_ids,<br>attention_mask
+          = attention_mask,<br>generation_config = generation_config,<br>return_dict_in_generate
+          = True,<br>output_scores = False,<br>max_new_tokens = max_new_tokens,<br>early_stopping
+          = True<br>)<br>#print("generation_output")<br>#print(generation_output)<br>s
+          = generation_output.sequences[0]<br>output = tokenizer.decode(s)</p>
+
+          <p>without any changes.png</p>
+
+          <p>Code using torch-neuronx - helper function code snippet:</p>
+
+          <p>def generate_sample_inputs(tokenizer, sequence_length):<br>dummy_input
+          = "dummy"<br>embeddings = tokenizer(dummy_input, max_length=sequence_length,
+          padding="max_length",return_tensors="pt")<br>return tuple(embeddings.values())</p>
+
+          <p>def compile_model_inf2(model, tokenizer, sequence_length, num_neuron_cores):</p>
+
+          <h1 id="use-only-one-neuron-core">use only one neuron core</h1>
+
+          <p>os.environ["NEURON_RT_NUM_CORES"] = str(num_neuron_cores)<br>import torch_neuronx<br>payload
+          = generate_sample_inputs(tokenizer, sequence_length)<br>return torch_neuronx.trace(model,
+          payload)</p>
+
+          <p>model = compile_model_inf2(model, tokenizer, sequence_length=512, num_neuron_cores=1)</p>
+
+          <p>with torch-neuron related code1.png</p>
+
+          <p>with torch-neuron related code2.png</p>
+
+          <p>Can this github issue address our specific problems mentioned above?<br><a
+          rel="nofollow" href="https://github.com/oobabooga/text-generation-webui/issues/2260">https://github.com/oobabooga/text-generation-webui/issues/2260</a></p>
+
+          <p>My queries are basically:</p>
+
+          <p>1.Is it even feasible to do inference on this machine or should we go
+          for G4dn.8xlarge as we are facing so many issues in Inf2?<br>2. Can we try
+          Llama 2 on Inferentia 2 8xlarge machine or this is not supported? If not,
+          which machine instance we should try considering cost-effectiveness?</p>
+
+          '
+        raw: "Hi all,\r\n\r\nWe are facing issues while using this model on the aforementioned\
+          \ machine. We were able to run the same experiment on G5 instance successfully\
+          \ but we are observing that the same code is not working on Inf2 machine\
+          \ instance. We are aware that it has Accelerator instead of NVIDIA GPU.\
+          \ Hence we tried the neuron-core's capability and added required helper\
+          \ code for using the capability of neuron-cores of the instance by using\
+          \ the torch-neuronx library. The code changes and respective error screenshots\
+          \ are provided below for your reference:\r\n\r\nCode without any torch-neuronx\
+          \ usage - Generation code snippet:\r\n\r\ngeneration_output = model.generate(\r\
+          \ninput_ids = input_ids,\r\nattention_mask = attention_mask,\r\ngeneration_config\
+          \ = generation_config,\r\nreturn_dict_in_generate = True,\r\noutput_scores\
+          \ = False,\r\nmax_new_tokens = max_new_tokens,\r\nearly_stopping = True\r\
+          \n)\r\n#print(\"generation_output\")\r\n#print(generation_output)\r\ns =\
+          \ generation_output.sequences[0]\r\noutput = tokenizer.decode(s)\r\n\r\n\
+          without any changes.png\r\n\r\nCode using torch-neuronx - helper function\
+          \ code snippet:\r\n\r\ndef generate_sample_inputs(tokenizer, sequence_length):\r\
+          \ndummy_input = \"dummy\"\r\nembeddings = tokenizer(dummy_input, max_length=sequence_length,\
+          \ padding=\"max_length\",return_tensors=\"pt\")\r\nreturn tuple(embeddings.values())\r\
+          \n\r\ndef compile_model_inf2(model, tokenizer, sequence_length, num_neuron_cores):\r\
+          \n# use only one neuron core\r\nos.environ[\"NEURON_RT_NUM_CORES\"] = str(num_neuron_cores)\r\
+          \nimport torch_neuronx\r\npayload = generate_sample_inputs(tokenizer, sequence_length)\r\
+          \nreturn torch_neuronx.trace(model, payload)\r\n\r\nmodel = compile_model_inf2(model,\
+          \ tokenizer, sequence_length=512, num_neuron_cores=1)\r\n\r\nwith torch-neuron\
+          \ related code1.png\r\n\r\nwith torch-neuron related code2.png\r\n\r\nCan\
+          \ this github issue address our specific problems mentioned above?\r\nhttps://github.com/oobabooga/text-generation-webui/issues/2260\r\
+          \n\r\nMy queries are basically:\r\n\r\n1.Is it even feasible to do inference\
+          \ on this machine or should we go for G4dn.8xlarge as we are facing so many\
+          \ issues in Inf2?\r\n2. Can we try Llama 2 on Inferentia 2 8xlarge machine\
+          \ or this is not supported? If not, which machine instance we should try\
+          \ considering cost-effectiveness?"
+        updatedAt: '2023-07-27T14:50:11.089Z'
+      numEdits: 0
+      reactions: []
+    id: 64c284239077ab020d9ba532
+    type: comment
+  author: AmlanSamanta
+  content: "Hi all,\r\n\r\nWe are facing issues while using this model on the aforementioned\
+    \ machine. We were able to run the same experiment on G5 instance successfully\
+    \ but we are observing that the same code is not working on Inf2 machine instance.\
+    \ We are aware that it has Accelerator instead of NVIDIA GPU. Hence we tried the\
+    \ neuron-core's capability and added required helper code for using the capability\
+    \ of neuron-cores of the instance by using the torch-neuronx library. The code\
+    \ changes and respective error screenshots are provided below for your reference:\r\
+    \n\r\nCode without any torch-neuronx usage - Generation code snippet:\r\n\r\n\
+    generation_output = model.generate(\r\ninput_ids = input_ids,\r\nattention_mask\
+    \ = attention_mask,\r\ngeneration_config = generation_config,\r\nreturn_dict_in_generate\
+    \ = True,\r\noutput_scores = False,\r\nmax_new_tokens = max_new_tokens,\r\nearly_stopping\
+    \ = True\r\n)\r\n#print(\"generation_output\")\r\n#print(generation_output)\r\n\
+    s = generation_output.sequences[0]\r\noutput = tokenizer.decode(s)\r\n\r\nwithout\
+    \ any changes.png\r\n\r\nCode using torch-neuronx - helper function code snippet:\r\
+    \n\r\ndef generate_sample_inputs(tokenizer, sequence_length):\r\ndummy_input =\
+    \ \"dummy\"\r\nembeddings = tokenizer(dummy_input, max_length=sequence_length,\
+    \ padding=\"max_length\",return_tensors=\"pt\")\r\nreturn tuple(embeddings.values())\r\
+    \n\r\ndef compile_model_inf2(model, tokenizer, sequence_length, num_neuron_cores):\r\
+    \n# use only one neuron core\r\nos.environ[\"NEURON_RT_NUM_CORES\"] = str(num_neuron_cores)\r\
+    \nimport torch_neuronx\r\npayload = generate_sample_inputs(tokenizer, sequence_length)\r\
+    \nreturn torch_neuronx.trace(model, payload)\r\n\r\nmodel = compile_model_inf2(model,\
+    \ tokenizer, sequence_length=512, num_neuron_cores=1)\r\n\r\nwith torch-neuron\
+    \ related code1.png\r\n\r\nwith torch-neuron related code2.png\r\n\r\nCan this\
+    \ github issue address our specific problems mentioned above?\r\nhttps://github.com/oobabooga/text-generation-webui/issues/2260\r\
+    \n\r\nMy queries are basically:\r\n\r\n1.Is it even feasible to do inference on\
+    \ this machine or should we go for G4dn.8xlarge as we are facing so many issues\
+    \ in Inf2?\r\n2. Can we try Llama 2 on Inferentia 2 8xlarge machine or this is\
+    \ not supported? If not, which machine instance we should try considering cost-effectiveness?"
+  created_at: 2023-07-27 13:50:11+00:00
+  edited: false
+  hidden: false
+  id: 64c284239077ab020d9ba532
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+      fullname: Amlan Samanta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AmlanSamanta
+      type: user
+    createdAt: '2023-07-27T14:51:23.000Z'
+    data:
+      edited: true
+      editors:
+      - AmlanSamanta
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.41486743092536926
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+          fullname: Amlan Samanta
+          isHf: false
+          isPro: false
+          name: AmlanSamanta
+          type: user
+        html: '<p>Hi all, </p>
+
+          <p>We are facing issues while using this model on the aforementioned machine.
+          We were able to run the same experiment on G5 instance successfully but
+          we are observing that the same code is not working on Inf2 machine instance.
+          We are aware that it has Accelerator instead of NVIDIA GPU. Hence we tried
+          the neuron-core''s capability and added required helper code for using the
+          capability of neuron-cores of the instance by using the torch-neuronx library.
+          The code changes and respective error screenshots are provided below for
+          your reference:</p>
+
+          <p>Code without any torch-neuronx usage - Generation code snippet:</p>
+
+          <p>generation_output = model.generate(<br>                                  input_ids
+          = input_ids,<br>                                  attention_mask = attention_mask,<br>                                  generation_config
+          = generation_config,<br>                                  return_dict_in_generate
+          = True,<br>                                  output_scores = False,<br>                                  max_new_tokens
+          = max_new_tokens,<br>                                  early_stopping =
+          True<br>                        )<br>    #print("generation_output")<br>    #print(generation_output)<br>    s
+          = generation_output.sequences[0]<br>    output = tokenizer.decode(s)</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/WRuzywqcqnFcsMcRBmd5t.png"><img
+          alt="without any changes.png" src="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/WRuzywqcqnFcsMcRBmd5t.png"></a></p>
+
+          <p>Code using torch-neuronx - helper function code snippet:</p>
+
+          <p>def generate_sample_inputs(tokenizer, sequence_length):<br>  dummy_input
+          = "dummy"<br>  embeddings = tokenizer(dummy_input, max_length=sequence_length,
+          padding="max_length",return_tensors="pt")<br>  return tuple(embeddings.values())</p>
+
+          <p>def compile_model_inf2(model, tokenizer, sequence_length, num_neuron_cores):<br>    #
+          use only one neuron core<br>    os.environ["NEURON_RT_NUM_CORES"] = str(num_neuron_cores)<br>    import
+          torch_neuronx<br>    payload = generate_sample_inputs(tokenizer, sequence_length)<br>    return
+          torch_neuronx.trace(model, payload)</p>
+
+          <p>model = compile_model_inf2(model, tokenizer, sequence_length=512, num_neuron_cores=1)</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/5iX6PUq_Z7Rx7xuUDPKFU.png"><img
+          alt="with torch-neuron related code1.png" src="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/5iX6PUq_Z7Rx7xuUDPKFU.png"></a></p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/xqfpJ1rYkUXDsJ5J1KLEo.png"><img
+          alt="with torch-neuron related code2.png" src="https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/xqfpJ1rYkUXDsJ5J1KLEo.png"></a></p>
+
+          <p>Can this github issue address our specific problems mentioned above?<br><a
+          rel="nofollow" href="https://github.com/oobabooga/text-generation-webui/issues/2260">https://github.com/oobabooga/text-generation-webui/issues/2260</a>
+          </p>
+
+          <p>My queries are basically:</p>
+
+          <ol>
+
+          <li>Is it even feasible to do inference on this machine or should we go
+          for G4dn.8xlarge as we are facing so many issues in Inf2?</li>
+
+          <li>Can we try Llama 2 on Inferentia 2 8xlarge machine or this is not supported?
+          If not, which machine instance we should try considering cost-effectiveness?</li>
+
+          </ol>
+
+          '
+        raw: "Hi all, \n\nWe are facing issues while using this model on the aforementioned\
+          \ machine. We were able to run the same experiment on G5 instance successfully\
+          \ but we are observing that the same code is not working on Inf2 machine\
+          \ instance. We are aware that it has Accelerator instead of NVIDIA GPU.\
+          \ Hence we tried the neuron-core's capability and added required helper\
+          \ code for using the capability of neuron-cores of the instance by using\
+          \ the torch-neuronx library. The code changes and respective error screenshots\
+          \ are provided below for your reference:\n\nCode without any torch-neuronx\
+          \ usage - Generation code snippet:\n\ngeneration_output = model.generate(\n\
+          \                                  input_ids = input_ids, \n           \
+          \                       attention_mask = attention_mask, \n            \
+          \                      generation_config = generation_config,\n        \
+          \                          return_dict_in_generate = True, \n          \
+          \                        output_scores = False, \n                     \
+          \             max_new_tokens = max_new_tokens, \n                      \
+          \            early_stopping = True\n                        )\n    #print(\"\
+          generation_output\")\n    #print(generation_output)\n    s = generation_output.sequences[0]\n\
+          \    output = tokenizer.decode(s)\n\n\n![without any changes.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/WRuzywqcqnFcsMcRBmd5t.png)\n\
+          \n\nCode using torch-neuronx - helper function code snippet:\n\ndef generate_sample_inputs(tokenizer,\
+          \ sequence_length):\n  dummy_input = \"dummy\"\n  embeddings = tokenizer(dummy_input,\
+          \ max_length=sequence_length, padding=\"max_length\",return_tensors=\"pt\"\
+          )\n  return tuple(embeddings.values())\n\ndef compile_model_inf2(model,\
+          \ tokenizer, sequence_length, num_neuron_cores):\n    # use only one neuron\
+          \ core\n    os.environ[\"NEURON_RT_NUM_CORES\"] = str(num_neuron_cores)\n\
+          \    import torch_neuronx\n    payload = generate_sample_inputs(tokenizer,\
+          \ sequence_length)\n    return torch_neuronx.trace(model, payload)\n\nmodel\
+          \ = compile_model_inf2(model, tokenizer, sequence_length=512, num_neuron_cores=1)\n\
+          \n\n![with torch-neuron related code1.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/5iX6PUq_Z7Rx7xuUDPKFU.png)\n\
+          \n\n![with torch-neuron related code2.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/xqfpJ1rYkUXDsJ5J1KLEo.png)\n\
+          \n\n\n\nCan this github issue address our specific problems mentioned above?\
+          \ \nhttps://github.com/oobabooga/text-generation-webui/issues/2260 \n\n\
+          My queries are basically:\n1. Is it even feasible to do inference on this\
+          \ machine or should we go for G4dn.8xlarge as we are facing so many issues\
+          \ in Inf2?\n2. Can we try Llama 2 on Inferentia 2 8xlarge machine or this\
+          \ is not supported? If not, which machine instance we should try considering\
+          \ cost-effectiveness?\n"
+        updatedAt: '2023-07-27T14:54:22.578Z'
+      numEdits: 1
+      reactions: []
+      relatedEventId: 64c2846b6aa3a75f631cb118
+    id: 64c2846b6aa3a75f631cb116
+    type: comment
+  author: AmlanSamanta
+  content: "Hi all, \n\nWe are facing issues while using this model on the aforementioned\
+    \ machine. We were able to run the same experiment on G5 instance successfully\
+    \ but we are observing that the same code is not working on Inf2 machine instance.\
+    \ We are aware that it has Accelerator instead of NVIDIA GPU. Hence we tried the\
+    \ neuron-core's capability and added required helper code for using the capability\
+    \ of neuron-cores of the instance by using the torch-neuronx library. The code\
+    \ changes and respective error screenshots are provided below for your reference:\n\
+    \nCode without any torch-neuronx usage - Generation code snippet:\n\ngeneration_output\
+    \ = model.generate(\n                                  input_ids = input_ids,\
+    \ \n                                  attention_mask = attention_mask, \n    \
+    \                              generation_config = generation_config,\n      \
+    \                            return_dict_in_generate = True, \n              \
+    \                    output_scores = False, \n                               \
+    \   max_new_tokens = max_new_tokens, \n                                  early_stopping\
+    \ = True\n                        )\n    #print(\"generation_output\")\n    #print(generation_output)\n\
+    \    s = generation_output.sequences[0]\n    output = tokenizer.decode(s)\n\n\n\
+    ![without any changes.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/WRuzywqcqnFcsMcRBmd5t.png)\n\
+    \n\nCode using torch-neuronx - helper function code snippet:\n\ndef generate_sample_inputs(tokenizer,\
+    \ sequence_length):\n  dummy_input = \"dummy\"\n  embeddings = tokenizer(dummy_input,\
+    \ max_length=sequence_length, padding=\"max_length\",return_tensors=\"pt\")\n\
+    \  return tuple(embeddings.values())\n\ndef compile_model_inf2(model, tokenizer,\
+    \ sequence_length, num_neuron_cores):\n    # use only one neuron core\n    os.environ[\"\
+    NEURON_RT_NUM_CORES\"] = str(num_neuron_cores)\n    import torch_neuronx\n   \
+    \ payload = generate_sample_inputs(tokenizer, sequence_length)\n    return torch_neuronx.trace(model,\
+    \ payload)\n\nmodel = compile_model_inf2(model, tokenizer, sequence_length=512,\
+    \ num_neuron_cores=1)\n\n\n![with torch-neuron related code1.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/5iX6PUq_Z7Rx7xuUDPKFU.png)\n\
+    \n\n![with torch-neuron related code2.png](https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/xqfpJ1rYkUXDsJ5J1KLEo.png)\n\
+    \n\n\n\nCan this github issue address our specific problems mentioned above? \n\
+    https://github.com/oobabooga/text-generation-webui/issues/2260 \n\nMy queries\
+    \ are basically:\n1. Is it even feasible to do inference on this machine or should\
+    \ we go for G4dn.8xlarge as we are facing so many issues in Inf2?\n2. Can we try\
+    \ Llama 2 on Inferentia 2 8xlarge machine or this is not supported? If not, which\
+    \ machine instance we should try considering cost-effectiveness?\n"
+  created_at: 2023-07-27 13:51:23+00:00
+  edited: true
+  hidden: false
+  id: 64c2846b6aa3a75f631cb116
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+      fullname: Amlan Samanta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AmlanSamanta
+      type: user
+    createdAt: '2023-07-27T14:51:23.000Z'
+    data:
+      status: closed
+    id: 64c2846b6aa3a75f631cb118
+    type: status-change
+  author: AmlanSamanta
+  created_at: 2023-07-27 13:51:23+00:00
+  id: 64c2846b6aa3a75f631cb118
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/641c00cc999935676ec73f9c/-LeCTMuzJuBJDK80GRy76.jpeg?w=200&h=200&f=face
+      fullname: Amlan Samanta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AmlanSamanta
+      type: user
+    createdAt: '2023-07-27T14:57:16.000Z'
+    data:
+      status: open
+    id: 64c285cc275309cb8be1dc7c
+    type: status-change
+  author: AmlanSamanta
+  created_at: 2023-07-27 13:57:16+00:00
+  id: 64c285cc275309cb8be1dc7c
+  new_status: open
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: mrm8488/falcoder-7b
+repo_type: model
+status: open
+target_branch: null
+title: Issue with Falcoder LLM while trying to use it on AWS EC2 Inferentia 2.8xlarge
+  Instance

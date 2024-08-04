@@ -1,0 +1,486 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cyenjoylife
+conflicting_files: null
+created_at: 2023-08-26 08:19:46+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5b136e8a584eaec1fe167bfa6091bd06.svg
+      fullname: Yue Chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyenjoylife
+      type: user
+    createdAt: '2023-08-26T09:19:46.000Z'
+    data:
+      edited: false
+      editors:
+      - cyenjoylife
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9355329871177673
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5b136e8a584eaec1fe167bfa6091bd06.svg
+          fullname: Yue Chen
+          isHf: false
+          isPro: false
+          name: cyenjoylife
+          type: user
+        html: '<p>I was trying to finetune a long-t5-tglobal-xl on BookSum but got
+          OOM when setting input_len=14000. The training is run on 4 Nvidia A100-80GB.
+          I didn''t use fp16 due to overflow in the intermediate hidden states. </p>
+
+          <p>Could you please provide me with some details about how you solve the
+          memory problem? Did you place the layers on different devices?</p>
+
+          <p>Truly appreciate your fantastic work! Looking forward to your reply!</p>
+
+          '
+        raw: "I was trying to finetune a long-t5-tglobal-xl on BookSum but got OOM\
+          \ when setting input_len=14000. The training is run on 4 Nvidia A100-80GB.\
+          \ I didn't use fp16 due to overflow in the intermediate hidden states. \r\
+          \n\r\nCould you please provide me with some details about how you solve\
+          \ the memory problem? Did you place the layers on different devices?\r\n\
+          \r\nTruly appreciate your fantastic work! Looking forward to your reply!"
+        updatedAt: '2023-08-26T09:19:46.034Z'
+      numEdits: 0
+      reactions: []
+    id: 64e9c3b2b96ff0e17528757d
+    type: comment
+  author: cyenjoylife
+  content: "I was trying to finetune a long-t5-tglobal-xl on BookSum but got OOM when\
+    \ setting input_len=14000. The training is run on 4 Nvidia A100-80GB. I didn't\
+    \ use fp16 due to overflow in the intermediate hidden states. \r\n\r\nCould you\
+    \ please provide me with some details about how you solve the memory problem?\
+    \ Did you place the layers on different devices?\r\n\r\nTruly appreciate your\
+    \ fantastic work! Looking forward to your reply!"
+  created_at: 2023-08-26 08:19:46+00:00
+  edited: false
+  hidden: false
+  id: 64e9c3b2b96ff0e17528757d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+      fullname: Peter Szemraj
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: pszemraj
+      type: user
+    createdAt: '2023-08-26T19:38:22.000Z'
+    data:
+      edited: true
+      editors:
+      - pszemraj
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8772028684616089
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+          fullname: Peter Szemraj
+          isHf: false
+          isPro: false
+          name: pszemraj
+          type: user
+        html: "<p>Hi! Thanks for your compliments and interest in the model! Fine-tuning\
+          \ this is definitely tricky in terms of memory, so you're not alone.  For\
+          \ fine-tuning this on 16384 tokens, here's what I used:</p>\n<ol>\n<li><code>bf16</code>\
+          \ - helps reduce memory usage without causing overflow. See <a href=\"https://huggingface.co/docs/transformers/perf_train_gpu_one\"\
+          >the efficient training on GPU page</a> if you haven't already. AFAIK I\
+          \ have never been able to tune <code>xl</code> in fp32, but comparisons\
+          \ on smaller models like the <code>tglobal-base</code> showed no degradation\
+          \ in fp32 vs. bf16 validation performance - you may want to validate yourself\
+          \ for your data, but this should hold. IIRC Google themselves typically\
+          \ use bfloat16 for training/tuning. </li>\n<li>deepspeed - I used ZeRO2,\
+          \ which offloads the optimizer to the CPU. With the configuration below\
+          \ and a decent amount of RAM (128GB+), I was able to fine-tune with a single\
+          \ A100 80GB, albeit slowly. There is some discussion/links to this on the\
+          \ page linked above. I've included my configuration below, which still works,\
+          \ but this is dated ~August 2022, so I'd recommend checking the deepspeed\
+          \ docs for the latest syntax and/or improvements.</li>\n<li>tf32 - magic\
+          \ NVIDIA CUDA level data type. As far as I know, this <strong>doesn't</strong>\
+          \ reduce memory requirements in any significant way, it just speeds things\
+          \ up.  As such, it's really more of a counter to mitigate the effects of\
+          \ other memory-saving methods that typically cause your training to slow\
+          \ down. It's also discussed in the linked guide.</li>\n</ol>\n<p>Things\
+          \ I <strong>didn't</strong> try for long-context text2text models</p>\n\
+          <ul>\n<li>Deepspeed ZeRO 3 or newer - Deepspeed Zero 2 works, and brief\
+          \ tests with Zero 3 showed no noticeable improvement over Zero 2, while\
+          \ being significantly more annoying to use. This is probably due to the\
+          \ fact that (for an 'XL' model) there are relatively few parameters in 3B,\
+          \ and the real problem is that there are large gradients/memory requirements\
+          \ from the <strong>model inputs</strong> rather than traditional memory\
+          \ constraints from <strong>batch size</strong> or <strong>model size</strong>.</li>\n\
+          <li>8-bit optimizers - having the optimizer in 8-bit (either Adam or LION)\
+          \ obviously reduces the memory requirements quite a bit, as this helps with\
+          \ the \"large model inputs\" problem directly. Implementation <a href=\"\
+          https://huggingface.co/docs/transformers/perf_train_gpu_one#8bit-adam\"\
+          >is not as easy as it sounds though</a> - you probably need to make a change\
+          \ to the embedding layer or something for stable training. See the link\
+          \ in the previous sentence for details and/or <code>bitsandbytes</code>\
+          \ documentation.</li>\n<li>flash attention - TogetherComputer published\
+          \ a <a href=\"https://huggingface.co/togethercomputer/LLaMA-2-7B-32K\">llama\
+          \ checkpoint with a context length of 32,768</a> using flash attention.\
+          \ I suspect that Long-T5 could easily handle this, or perhaps even more,\
+          \ if it were to be implemented. That said, it will probably require rewriting\
+          \ most of the modeling code to use flash attention. If you do this, I am\
+          \ all ears and happy to test it :)</li>\n</ul>\n<p>Hope this helps! </p>\n\
+          <h3 id=\"deepspeed-zero-2-config\">deepspeed ZeRO-2 config</h3>\n<p>as stated\
+          \ above this is dated ~August 2022, so I'd recommend checking the deepspeed\
+          \ docs for the latest syntax and/or improvements.</p>\n<pre><code class=\"\
+          language-json\"><span class=\"hljs-punctuation\">{</span>\n    <span class=\"\
+          hljs-attr\">\"bfloat16\"</span><span class=\"hljs-punctuation\">:</span>\
+          \ <span class=\"hljs-punctuation\">{</span>\n        <span class=\"hljs-attr\"\
+          >\"enabled\"</span><span class=\"hljs-punctuation\">:</span> <span class=\"\
+          hljs-string\">\"auto\"</span>\n    <span class=\"hljs-punctuation\">}</span><span\
+          \ class=\"hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\">\"\
+          gradient_accumulation_steps\"</span><span class=\"hljs-punctuation\">:</span>\
+          \ <span class=\"hljs-string\">\"auto\"</span><span class=\"hljs-punctuation\"\
+          >,</span>\n    <span class=\"hljs-attr\">\"gradient_clipping\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-string\">\"auto\"\
+          </span><span class=\"hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\"\
+          >\"optimizer\"</span><span class=\"hljs-punctuation\">:</span> <span class=\"\
+          hljs-punctuation\">{</span>\n        <span class=\"hljs-attr\">\"params\"\
+          </span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-punctuation\"\
+          >{</span>\n            <span class=\"hljs-attr\">\"betas\"</span><span class=\"\
+          hljs-punctuation\">:</span> <span class=\"hljs-string\">\"auto\"</span><span\
+          \ class=\"hljs-punctuation\">,</span>\n            <span class=\"hljs-attr\"\
+          >\"eps\"</span><span class=\"hljs-punctuation\">:</span> <span class=\"\
+          hljs-string\">\"auto\"</span><span class=\"hljs-punctuation\">,</span>\n\
+          \            <span class=\"hljs-attr\">\"lr\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-string\">\"auto\"</span><span class=\"hljs-punctuation\"\
+          >,</span>\n            <span class=\"hljs-attr\">\"weight_decay\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-string\">\"auto\"\
+          </span>\n        <span class=\"hljs-punctuation\">}</span><span class=\"\
+          hljs-punctuation\">,</span>\n        <span class=\"hljs-attr\">\"type\"\
+          </span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-string\"\
+          >\"AdamW\"</span>\n    <span class=\"hljs-punctuation\">}</span><span class=\"\
+          hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\">\"steps_per_print\"\
+          </span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-number\"\
+          >4000</span><span class=\"hljs-punctuation\">,</span>\n    <span class=\"\
+          hljs-attr\">\"train_batch_size\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-string\">\"auto\"</span><span class=\"hljs-punctuation\"\
+          >,</span>\n    <span class=\"hljs-attr\">\"train_micro_batch_size_per_gpu\"\
+          </span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-string\"\
+          >\"auto\"</span><span class=\"hljs-punctuation\">,</span>\n    <span class=\"\
+          hljs-attr\">\"wall_clock_breakdown\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-literal\"><span class=\"hljs-keyword\">false</span></span><span\
+          \ class=\"hljs-punctuation\">,</span>\n    <span class=\"hljs-attr\">\"\
+          zero_optimization\"</span><span class=\"hljs-punctuation\">:</span> <span\
+          \ class=\"hljs-punctuation\">{</span>\n        <span class=\"hljs-attr\"\
+          >\"allgather_bucket_size\"</span><span class=\"hljs-punctuation\">:</span>\
+          \ <span class=\"hljs-number\">200000000.0</span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"allgather_partitions\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-literal\"><span\
+          \ class=\"hljs-keyword\">true</span></span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"contiguous_gradients\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-literal\"><span\
+          \ class=\"hljs-keyword\">true</span></span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"offload_optimizer\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-punctuation\">{</span>\n\
+          \            <span class=\"hljs-attr\">\"device\"</span><span class=\"hljs-punctuation\"\
+          >:</span> <span class=\"hljs-string\">\"cpu\"</span><span class=\"hljs-punctuation\"\
+          >,</span>\n            <span class=\"hljs-attr\">\"pin_memory\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-literal\"><span\
+          \ class=\"hljs-keyword\">true</span></span>\n        <span class=\"hljs-punctuation\"\
+          >}</span><span class=\"hljs-punctuation\">,</span>\n        <span class=\"\
+          hljs-attr\">\"overlap_comm\"</span><span class=\"hljs-punctuation\">:</span>\
+          \ <span class=\"hljs-literal\"><span class=\"hljs-keyword\">true</span></span><span\
+          \ class=\"hljs-punctuation\">,</span>\n        <span class=\"hljs-attr\"\
+          >\"reduce_bucket_size\"</span><span class=\"hljs-punctuation\">:</span>\
+          \ <span class=\"hljs-number\">200000000.0</span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"reduce_scatter\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-literal\"><span\
+          \ class=\"hljs-keyword\">true</span></span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"round_robin_gradients\"</span><span\
+          \ class=\"hljs-punctuation\">:</span> <span class=\"hljs-literal\"><span\
+          \ class=\"hljs-keyword\">true</span></span><span class=\"hljs-punctuation\"\
+          >,</span>\n        <span class=\"hljs-attr\">\"stage\"</span><span class=\"\
+          hljs-punctuation\">:</span> <span class=\"hljs-number\">2</span>\n    <span\
+          \ class=\"hljs-punctuation\">}</span>\n<span class=\"hljs-punctuation\"\
+          >}</span>\n</code></pre>\n"
+        raw: "Hi! Thanks for your compliments and interest in the model! Fine-tuning\
+          \ this is definitely tricky in terms of memory, so you're not alone.  For\
+          \ fine-tuning this on 16384 tokens, here's what I used:\n\n1. `bf16` - helps\
+          \ reduce memory usage without causing overflow. See [the efficient training\
+          \ on GPU page](https://huggingface.co/docs/transformers/perf_train_gpu_one)\
+          \ if you haven't already. AFAIK I have never been able to tune `xl` in fp32,\
+          \ but comparisons on smaller models like the `tglobal-base` showed no degradation\
+          \ in fp32 vs. bf16 validation performance - you may want to validate yourself\
+          \ for your data, but this should hold. IIRC Google themselves typically\
+          \ use bfloat16 for training/tuning. \n2. deepspeed - I used ZeRO2, which\
+          \ offloads the optimizer to the CPU. With the configuration below and a\
+          \ decent amount of RAM (128GB+), I was able to fine-tune with a single A100\
+          \ 80GB, albeit slowly. There is some discussion/links to this on the page\
+          \ linked above. I've included my configuration below, which still works,\
+          \ but this is dated ~August 2022, so I'd recommend checking the deepspeed\
+          \ docs for the latest syntax and/or improvements.\n3. tf32 - magic NVIDIA\
+          \ CUDA level data type. As far as I know, this **doesn't** reduce memory\
+          \ requirements in any significant way, it just speeds things up.  As such,\
+          \ it's really more of a counter to mitigate the effects of other memory-saving\
+          \ methods that typically cause your training to slow down. It's also discussed\
+          \ in the linked guide.\n\nThings I **didn't** try for long-context text2text\
+          \ models\n\n- Deepspeed ZeRO 3 or newer - Deepspeed Zero 2 works, and brief\
+          \ tests with Zero 3 showed no noticeable improvement over Zero 2, while\
+          \ being significantly more annoying to use. This is probably due to the\
+          \ fact that (for an 'XL' model) there are relatively few parameters in 3B,\
+          \ and the real problem is that there are large gradients/memory requirements\
+          \ from the **model inputs** rather than traditional memory constraints from\
+          \ **batch size** or **model size**.\n- 8-bit optimizers - having the optimizer\
+          \ in 8-bit (either Adam or LION) obviously reduces the memory requirements\
+          \ quite a bit, as this helps with the \"large model inputs\" problem directly.\
+          \ Implementation [is not as easy as it sounds though](https://huggingface.co/docs/transformers/perf_train_gpu_one#8bit-adam)\
+          \ - you probably need to make a change to the embedding layer or something\
+          \ for stable training. See the link in the previous sentence for details\
+          \ and/or `bitsandbytes` documentation.\n- flash attention - TogetherComputer\
+          \ published a [llama checkpoint with a context length of 32,768](https://huggingface.co/togethercomputer/LLaMA-2-7B-32K)\
+          \ using flash attention. I suspect that Long-T5 could easily handle this,\
+          \ or perhaps even more, if it were to be implemented. That said, it will\
+          \ probably require rewriting most of the modeling code to use flash attention.\
+          \ If you do this, I am all ears and happy to test it :)\n\nHope this helps!\
+          \ \n\n### deepspeed ZeRO-2 config\n\nas stated above this is dated ~August\
+          \ 2022, so I'd recommend checking the deepspeed docs for the latest syntax\
+          \ and/or improvements.\n\n```json\n{\n    \"bfloat16\": {\n        \"enabled\"\
+          : \"auto\"\n    },\n    \"gradient_accumulation_steps\": \"auto\",\n   \
+          \ \"gradient_clipping\": \"auto\",\n    \"optimizer\": {\n        \"params\"\
+          : {\n            \"betas\": \"auto\",\n            \"eps\": \"auto\",\n\
+          \            \"lr\": \"auto\",\n            \"weight_decay\": \"auto\"\n\
+          \        },\n        \"type\": \"AdamW\"\n    },\n    \"steps_per_print\"\
+          : 4000,\n    \"train_batch_size\": \"auto\",\n    \"train_micro_batch_size_per_gpu\"\
+          : \"auto\",\n    \"wall_clock_breakdown\": false,\n    \"zero_optimization\"\
+          : {\n        \"allgather_bucket_size\": 200000000.0,\n        \"allgather_partitions\"\
+          : true,\n        \"contiguous_gradients\": true,\n        \"offload_optimizer\"\
+          : {\n            \"device\": \"cpu\",\n            \"pin_memory\": true\n\
+          \        },\n        \"overlap_comm\": true,\n        \"reduce_bucket_size\"\
+          : 200000000.0,\n        \"reduce_scatter\": true,\n        \"round_robin_gradients\"\
+          : true,\n        \"stage\": 2\n    }\n}\n```"
+        updatedAt: '2023-08-26T19:40:49.966Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - cyenjoylife
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - cyenjoylife
+    id: 64ea54ae4b996ef709cad63a
+    type: comment
+  author: pszemraj
+  content: "Hi! Thanks for your compliments and interest in the model! Fine-tuning\
+    \ this is definitely tricky in terms of memory, so you're not alone.  For fine-tuning\
+    \ this on 16384 tokens, here's what I used:\n\n1. `bf16` - helps reduce memory\
+    \ usage without causing overflow. See [the efficient training on GPU page](https://huggingface.co/docs/transformers/perf_train_gpu_one)\
+    \ if you haven't already. AFAIK I have never been able to tune `xl` in fp32, but\
+    \ comparisons on smaller models like the `tglobal-base` showed no degradation\
+    \ in fp32 vs. bf16 validation performance - you may want to validate yourself\
+    \ for your data, but this should hold. IIRC Google themselves typically use bfloat16\
+    \ for training/tuning. \n2. deepspeed - I used ZeRO2, which offloads the optimizer\
+    \ to the CPU. With the configuration below and a decent amount of RAM (128GB+),\
+    \ I was able to fine-tune with a single A100 80GB, albeit slowly. There is some\
+    \ discussion/links to this on the page linked above. I've included my configuration\
+    \ below, which still works, but this is dated ~August 2022, so I'd recommend checking\
+    \ the deepspeed docs for the latest syntax and/or improvements.\n3. tf32 - magic\
+    \ NVIDIA CUDA level data type. As far as I know, this **doesn't** reduce memory\
+    \ requirements in any significant way, it just speeds things up.  As such, it's\
+    \ really more of a counter to mitigate the effects of other memory-saving methods\
+    \ that typically cause your training to slow down. It's also discussed in the\
+    \ linked guide.\n\nThings I **didn't** try for long-context text2text models\n\
+    \n- Deepspeed ZeRO 3 or newer - Deepspeed Zero 2 works, and brief tests with Zero\
+    \ 3 showed no noticeable improvement over Zero 2, while being significantly more\
+    \ annoying to use. This is probably due to the fact that (for an 'XL' model) there\
+    \ are relatively few parameters in 3B, and the real problem is that there are\
+    \ large gradients/memory requirements from the **model inputs** rather than traditional\
+    \ memory constraints from **batch size** or **model size**.\n- 8-bit optimizers\
+    \ - having the optimizer in 8-bit (either Adam or LION) obviously reduces the\
+    \ memory requirements quite a bit, as this helps with the \"large model inputs\"\
+    \ problem directly. Implementation [is not as easy as it sounds though](https://huggingface.co/docs/transformers/perf_train_gpu_one#8bit-adam)\
+    \ - you probably need to make a change to the embedding layer or something for\
+    \ stable training. See the link in the previous sentence for details and/or `bitsandbytes`\
+    \ documentation.\n- flash attention - TogetherComputer published a [llama checkpoint\
+    \ with a context length of 32,768](https://huggingface.co/togethercomputer/LLaMA-2-7B-32K)\
+    \ using flash attention. I suspect that Long-T5 could easily handle this, or perhaps\
+    \ even more, if it were to be implemented. That said, it will probably require\
+    \ rewriting most of the modeling code to use flash attention. If you do this,\
+    \ I am all ears and happy to test it :)\n\nHope this helps! \n\n### deepspeed\
+    \ ZeRO-2 config\n\nas stated above this is dated ~August 2022, so I'd recommend\
+    \ checking the deepspeed docs for the latest syntax and/or improvements.\n\n```json\n\
+    {\n    \"bfloat16\": {\n        \"enabled\": \"auto\"\n    },\n    \"gradient_accumulation_steps\"\
+    : \"auto\",\n    \"gradient_clipping\": \"auto\",\n    \"optimizer\": {\n    \
+    \    \"params\": {\n            \"betas\": \"auto\",\n            \"eps\": \"\
+    auto\",\n            \"lr\": \"auto\",\n            \"weight_decay\": \"auto\"\
+    \n        },\n        \"type\": \"AdamW\"\n    },\n    \"steps_per_print\": 4000,\n\
+    \    \"train_batch_size\": \"auto\",\n    \"train_micro_batch_size_per_gpu\":\
+    \ \"auto\",\n    \"wall_clock_breakdown\": false,\n    \"zero_optimization\":\
+    \ {\n        \"allgather_bucket_size\": 200000000.0,\n        \"allgather_partitions\"\
+    : true,\n        \"contiguous_gradients\": true,\n        \"offload_optimizer\"\
+    : {\n            \"device\": \"cpu\",\n            \"pin_memory\": true\n    \
+    \    },\n        \"overlap_comm\": true,\n        \"reduce_bucket_size\": 200000000.0,\n\
+    \        \"reduce_scatter\": true,\n        \"round_robin_gradients\": true,\n\
+    \        \"stage\": 2\n    }\n}\n```"
+  created_at: 2023-08-26 18:38:22+00:00
+  edited: true
+  hidden: false
+  id: 64ea54ae4b996ef709cad63a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionEvent
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+      fullname: Peter Szemraj
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: pszemraj
+      type: user
+    createdAt: '2023-08-26T19:41:59.000Z'
+    data:
+      pinned: true
+    id: 64ea55878c523cced20e6f8f
+    type: pinning-change
+  author: pszemraj
+  created_at: 2023-08-26 18:41:59+00:00
+  id: 64ea55878c523cced20e6f8f
+  type: pinning-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5b136e8a584eaec1fe167bfa6091bd06.svg
+      fullname: Yue Chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyenjoylife
+      type: user
+    createdAt: '2023-08-27T08:21:37.000Z'
+    data:
+      edited: false
+      editors:
+      - cyenjoylife
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5b136e8a584eaec1fe167bfa6091bd06.svg
+          fullname: Yue Chen
+          isHf: false
+          isPro: false
+          name: cyenjoylife
+          type: user
+        html: '<p>Greatly appreciate your prompt response! Your information is highly
+          informative for beginners looking to train an LLM on lengthy sequences.
+          I''ll try your configuration and hope it works for me :)</p>
+
+          '
+        raw: Greatly appreciate your prompt response! Your information is highly informative
+          for beginners looking to train an LLM on lengthy sequences. I'll try your
+          configuration and hope it works for me :)
+        updatedAt: '2023-08-27T08:21:37.877Z'
+      numEdits: 0
+      reactions: []
+    id: 64eb079114c57101f3c172d5
+    type: comment
+  author: cyenjoylife
+  content: Greatly appreciate your prompt response! Your information is highly informative
+    for beginners looking to train an LLM on lengthy sequences. I'll try your configuration
+    and hope it works for me :)
+  created_at: 2023-08-27 07:21:37+00:00
+  edited: false
+  hidden: false
+  id: 64eb079114c57101f3c172d5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+      fullname: Peter Szemraj
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: pszemraj
+      type: user
+    createdAt: '2023-08-28T14:26:25.000Z'
+    data:
+      edited: false
+      editors:
+      - pszemraj
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9582027196884155
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+          fullname: Peter Szemraj
+          isHf: false
+          isPro: false
+          name: pszemraj
+          type: user
+        html: '<p>you''re welcome! hope it works out. if you have any more problems
+          feel free to comment here or reopen if there is a problem with this checkpoint!</p>
+
+          '
+        raw: you're welcome! hope it works out. if you have any more problems feel
+          free to comment here or reopen if there is a problem with this checkpoint!
+        updatedAt: '2023-08-28T14:26:25.401Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64ecae9176a07046863abd5f
+    id: 64ecae9176a07046863abd5b
+    type: comment
+  author: pszemraj
+  content: you're welcome! hope it works out. if you have any more problems feel free
+    to comment here or reopen if there is a problem with this checkpoint!
+  created_at: 2023-08-28 13:26:25+00:00
+  edited: false
+  hidden: false
+  id: 64ecae9176a07046863abd5b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641390233716-60bccec062080d33f875cd0c.png?w=200&h=200&f=face
+      fullname: Peter Szemraj
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: pszemraj
+      type: user
+    createdAt: '2023-08-28T14:26:25.000Z'
+    data:
+      status: closed
+    id: 64ecae9176a07046863abd5f
+    type: status-change
+  author: pszemraj
+  created_at: 2023-08-28 13:26:25+00:00
+  id: 64ecae9176a07046863abd5f
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: pszemraj/long-t5-tglobal-xl-16384-book-summary
+repo_type: model
+status: closed
+target_branch: null
+title: Hit OOM finetuning long-t5-tglobal-xl on input_len=14000

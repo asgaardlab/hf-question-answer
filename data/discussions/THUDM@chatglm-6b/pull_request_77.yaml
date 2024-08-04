@@ -1,0 +1,186 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: zhaoqf123
+conflicting_files: []
+created_at: 2023-06-03 19:21:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a9cbe382c509e14dac11b6c8c1c29818.svg
+      fullname: James
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zhaoqf123
+      type: user
+    createdAt: '2023-06-03T20:21:50.000Z'
+    data:
+      edited: true
+      editors:
+      - zhaoqf123
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.457546204328537
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a9cbe382c509e14dac11b6c8c1c29818.svg
+          fullname: James
+          isHf: false
+          isPro: false
+          name: zhaoqf123
+          type: user
+        html: "<p>Without this, when tuning with LoRA + gradient checkpointing, the\
+          \ last transformer layer, i.e., layer-27's LoRA weights won't be updated!\
+          \ </p>\n<p>For example, if we use this callback to log the weight change\
+          \ of LoRA weights in each layer, we will find that no weight update for\
+          \ the last layer in TensorBoard.</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\"\
+          >ParamsTensorBoardCallback</span>(<span class=\"hljs-title class_ inherited__\"\
+          >TensorBoardCallback</span>):\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">__init__</span>(<span class=\"hljs-params\"\
+          >self, tb_writer=<span class=\"hljs-literal\">None</span>, params=<span\
+          \ class=\"hljs-literal\">None</span>, process_name=<span class=\"hljs-keyword\"\
+          >lambda</span> x:x</span>):\n        <span class=\"hljs-built_in\">super</span>().__init__(tb_writer)\n\
+          \        self.params = params\n        self._process_name = process_name\n\
+          \n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >on_step_end</span>(<span class=\"hljs-params\">self, args, state, control,\
+          \ **kwargs</span>):\n        <span class=\"hljs-keyword\">if</span> state.global_step\
+          \ % args.logging_steps == <span class=\"hljs-number\">0</span>:\n      \
+          \      dict_ = {}\n            model = kwargs[<span class=\"hljs-string\"\
+          >\"model\"</span>]\n            <span class=\"hljs-keyword\">for</span>\
+          \ name <span class=\"hljs-keyword\">in</span> self.params:\n           \
+          \     param = model.get_parameter(name)\n                param = param.flatten()\n\
+          \                name_p = self._process_name(name)\n                dict_tmp\
+          \ = {\n                    <span class=\"hljs-string\">f\"<span class=\"\
+          hljs-subst\">{name_p}</span>_mean\"</span>: param.mean().item(),\n     \
+          \               <span class=\"hljs-string\">f\"<span class=\"hljs-subst\"\
+          >{name_p}</span>_max\"</span>: param.<span class=\"hljs-built_in\">max</span>().item(),\n\
+          \                    <span class=\"hljs-string\">f\"<span class=\"hljs-subst\"\
+          >{name_p}</span>_q75\"</span>: param.quantile(<span class=\"hljs-number\"\
+          >0.75</span>).item(),\n                    <span class=\"hljs-string\">f\"\
+          <span class=\"hljs-subst\">{name_p}</span>_q25\"</span>: param.quantile(<span\
+          \ class=\"hljs-number\">0.25</span>).item(),\n                    <span\
+          \ class=\"hljs-string\">f\"<span class=\"hljs-subst\">{name_p}</span>_min\"\
+          </span>: param.<span class=\"hljs-built_in\">min</span>().item(),\n    \
+          \                <span class=\"hljs-string\">f\"<span class=\"hljs-subst\"\
+          >{name_p}</span>_median\"</span>: param.median().item(),\n             \
+          \       <span class=\"hljs-string\">f\"<span class=\"hljs-subst\">{name_p}</span>_std\"\
+          </span>: param.std().item(),\n                }\n                dict_.update(dict_tmp)\n\
+          \            self.on_log(args, state, control, logs=dict_, **kwargs)\n\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >get_params_for_logging</span>(<span class=\"hljs-params\">model</span>):\n\
+          \    ls_params = []\n    <span class=\"hljs-keyword\">for</span> name, param\
+          \ <span class=\"hljs-keyword\">in</span> model.named_parameters():\n   \
+          \     <span class=\"hljs-keyword\">if</span> param.requires_grad:\n    \
+          \        ls_params.append(name)\n    <span class=\"hljs-keyword\">return</span>\
+          \ ls_params\n\nls_params = get_params_for_logging(model)\ntb_cb = ParamsTensorBoardCallback(\n\
+          \    <span class=\"hljs-literal\">None</span>, ls_params, process_name=<span\
+          \ class=\"hljs-keyword\">lambda</span> x: x[<span class=\"hljs-number\"\
+          >36</span>:]\n)\n\ntrainer = Trainer(\n        model=model,\n        train_dataset=train_data,\n\
+          \        eval_dataset=val_data,\n        args=args,\n        data_collator=data_collator,\n\
+          \        callbacks=[tb_cb]\n    )\n</code></pre>\n<p>I have made a similar\
+          \ <a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/pull/23990\"\
+          >PR</a> for llama model in transformer repo.</p>\n"
+        raw: "Without this, when tuning with LoRA + gradient checkpointing, the last\
+          \ transformer layer, i.e., layer-27's LoRA weights won't be updated! \n\n\
+          For example, if we use this callback to log the weight change of LoRA weights\
+          \ in each layer, we will find that no weight update for the last layer in\
+          \ TensorBoard.\n\n```python\nclass ParamsTensorBoardCallback(TensorBoardCallback):\n\
+          \    def __init__(self, tb_writer=None, params=None, process_name=lambda\
+          \ x:x):\n        super().__init__(tb_writer)\n        self.params = params\n\
+          \        self._process_name = process_name\n\n    def on_step_end(self,\
+          \ args, state, control, **kwargs):\n        if state.global_step % args.logging_steps\
+          \ == 0:\n            dict_ = {}\n            model = kwargs[\"model\"]\n\
+          \            for name in self.params:\n                param = model.get_parameter(name)\n\
+          \                param = param.flatten()\n                name_p = self._process_name(name)\n\
+          \                dict_tmp = {\n                    f\"{name_p}_mean\": param.mean().item(),\n\
+          \                    f\"{name_p}_max\": param.max().item(),\n          \
+          \          f\"{name_p}_q75\": param.quantile(0.75).item(),\n           \
+          \         f\"{name_p}_q25\": param.quantile(0.25).item(),\n            \
+          \        f\"{name_p}_min\": param.min().item(),\n                    f\"\
+          {name_p}_median\": param.median().item(),\n                    f\"{name_p}_std\"\
+          : param.std().item(),\n                }\n                dict_.update(dict_tmp)\n\
+          \            self.on_log(args, state, control, logs=dict_, **kwargs)\n\n\
+          def get_params_for_logging(model):\n    ls_params = []\n    for name, param\
+          \ in model.named_parameters():\n        if param.requires_grad:\n      \
+          \      ls_params.append(name)\n    return ls_params\n\nls_params = get_params_for_logging(model)\n\
+          tb_cb = ParamsTensorBoardCallback(\n    None, ls_params, process_name=lambda\
+          \ x: x[36:]\n)\n\ntrainer = Trainer(\n        model=model,\n        train_dataset=train_data,\n\
+          \        eval_dataset=val_data,\n        args=args,\n        data_collator=data_collator,\n\
+          \        callbacks=[tb_cb]\n    )\n```\n\nI have made a similar [PR](https://github.com/huggingface/transformers/pull/23990)\
+          \ for llama model in transformer repo."
+        updatedAt: '2023-06-06T08:27:34.175Z'
+      numEdits: 2
+      reactions: []
+    id: 647ba0deb31514a4a6e3c0a8
+    type: comment
+  author: zhaoqf123
+  content: "Without this, when tuning with LoRA + gradient checkpointing, the last\
+    \ transformer layer, i.e., layer-27's LoRA weights won't be updated! \n\nFor example,\
+    \ if we use this callback to log the weight change of LoRA weights in each layer,\
+    \ we will find that no weight update for the last layer in TensorBoard.\n\n```python\n\
+    class ParamsTensorBoardCallback(TensorBoardCallback):\n    def __init__(self,\
+    \ tb_writer=None, params=None, process_name=lambda x:x):\n        super().__init__(tb_writer)\n\
+    \        self.params = params\n        self._process_name = process_name\n\n \
+    \   def on_step_end(self, args, state, control, **kwargs):\n        if state.global_step\
+    \ % args.logging_steps == 0:\n            dict_ = {}\n            model = kwargs[\"\
+    model\"]\n            for name in self.params:\n                param = model.get_parameter(name)\n\
+    \                param = param.flatten()\n                name_p = self._process_name(name)\n\
+    \                dict_tmp = {\n                    f\"{name_p}_mean\": param.mean().item(),\n\
+    \                    f\"{name_p}_max\": param.max().item(),\n                \
+    \    f\"{name_p}_q75\": param.quantile(0.75).item(),\n                    f\"\
+    {name_p}_q25\": param.quantile(0.25).item(),\n                    f\"{name_p}_min\"\
+    : param.min().item(),\n                    f\"{name_p}_median\": param.median().item(),\n\
+    \                    f\"{name_p}_std\": param.std().item(),\n                }\n\
+    \                dict_.update(dict_tmp)\n            self.on_log(args, state,\
+    \ control, logs=dict_, **kwargs)\n\ndef get_params_for_logging(model):\n    ls_params\
+    \ = []\n    for name, param in model.named_parameters():\n        if param.requires_grad:\n\
+    \            ls_params.append(name)\n    return ls_params\n\nls_params = get_params_for_logging(model)\n\
+    tb_cb = ParamsTensorBoardCallback(\n    None, ls_params, process_name=lambda x:\
+    \ x[36:]\n)\n\ntrainer = Trainer(\n        model=model,\n        train_dataset=train_data,\n\
+    \        eval_dataset=val_data,\n        args=args,\n        data_collator=data_collator,\n\
+    \        callbacks=[tb_cb]\n    )\n```\n\nI have made a similar [PR](https://github.com/huggingface/transformers/pull/23990)\
+    \ for llama model in transformer repo."
+  created_at: 2023-06-03 19:21:50+00:00
+  edited: true
+  hidden: false
+  id: 647ba0deb31514a4a6e3c0a8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/a9cbe382c509e14dac11b6c8c1c29818.svg
+      fullname: James
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zhaoqf123
+      type: user
+    createdAt: '2023-06-03T20:21:51.000Z'
+    data:
+      oid: 3d854f824ea771ad5eb9b0d19210433a918e8e6a
+      parents:
+      - 1d240ba371910e9282298d4592532d7f0f3e9f3e
+      subject: add gradient checkpointing for the final_layernorm module.
+    id: 647ba0df0000000000000000
+    type: commit
+  author: zhaoqf123
+  created_at: 2023-06-03 19:21:51+00:00
+  id: 647ba0df0000000000000000
+  oid: 3d854f824ea771ad5eb9b0d19210433a918e8e6a
+  summary: add gradient checkpointing for the final_layernorm module.
+  type: commit
+is_pull_request: true
+merge_commit_oid: null
+num: 77
+repo_id: THUDM/chatglm-6b
+repo_type: model
+status: open
+target_branch: refs/heads/main
+title: add gradient checkpointing for the final_layernorm module.

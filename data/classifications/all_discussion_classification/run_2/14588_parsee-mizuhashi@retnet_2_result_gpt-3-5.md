@@ -1,0 +1,4 @@
+## https://huggingface.co/parsee-mizuhashi/retnet/discussions/2
+
+contains_question: yes
+question_part: just asking some general questions regarding this model, which may help you finish it and/or help the community contribute to it - [ ] do weights in this repo belong to the UniFineLarge ? if not specify which one. - [ ] are you using [openai/clip-vit-large-patch14](https://huggingface.co/openai/clip-vit-large-patch14) ? - [ ] which OFA are you using ? , are the weights included in the checkpoint ? - [ ] are roberta's weights included in your checkpoint, if not which checkpoint are you using ? - [ ] do you want your model to be saved under the `Visual Question Answering`pipeline, `Zero-Shot Image Classification` pipeline or other.

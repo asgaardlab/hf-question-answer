@@ -1,0 +1,288 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kjhamilton
+conflicting_files: null
+created_at: 2024-01-02 15:48:28+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6840addccbf91294c15a5892a5aafe6a.svg
+      fullname: Kevin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kjhamilton
+      type: user
+    createdAt: '2024-01-02T15:48:28.000Z'
+    data:
+      edited: false
+      editors:
+      - kjhamilton
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7675291299819946
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6840addccbf91294c15a5892a5aafe6a.svg
+          fullname: Kevin
+          isHf: false
+          isPro: false
+          name: kjhamilton
+          type: user
+        html: '<p>In a sequence of messages, should the tools be included once at
+          the top and then each message?</p>
+
+          <p>{tools}<br>User Query: {question}<br>Bot Response: {response}<br>User
+          Query: {question2}<br>...</p>
+
+          <p>Also is there a place to properly put a system message or instruction?
+          For example to guide responses to be brief.</p>
+
+          '
+        raw: "In a sequence of messages, should the tools be included once at the\
+          \ top and then each message?\r\n\r\n{tools}\r\nUser Query: {question}<human_end>\r\
+          \nBot Response: {response}<bot_end>\r\nUser Query: {question2}<human_end>\r\
+          \n...\r\n\r\nAlso is there a place to properly put a system message or instruction?\
+          \ For example to guide responses to be brief."
+        updatedAt: '2024-01-02T15:48:28.485Z'
+      numEdits: 0
+      reactions: []
+    id: 6594304c5b7553ca5c126637
+    type: comment
+  author: kjhamilton
+  content: "In a sequence of messages, should the tools be included once at the top\
+    \ and then each message?\r\n\r\n{tools}\r\nUser Query: {question}<human_end>\r\
+    \nBot Response: {response}<bot_end>\r\nUser Query: {question2}<human_end>\r\n\
+    ...\r\n\r\nAlso is there a place to properly put a system message or instruction?\
+    \ For example to guide responses to be brief."
+  created_at: 2024-01-02 15:48:28+00:00
+  edited: false
+  hidden: false
+  id: 6594304c5b7553ca5c126637
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d2aa2af71b8dd66f7633776ef8ebc212.svg
+      fullname: Venkat Srinivasan
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: venkat-srinivasan-nexusflow
+      type: user
+    createdAt: '2024-01-10T18:00:56.000Z'
+    data:
+      edited: false
+      editors:
+      - venkat-srinivasan-nexusflow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5838772654533386
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d2aa2af71b8dd66f7633776ef8ebc212.svg
+          fullname: Venkat Srinivasan
+          isHf: false
+          isPro: false
+          name: venkat-srinivasan-nexusflow
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;kjhamilton&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/kjhamilton\"\
+          >@<span class=\"underline\">kjhamilton</span></a></span>\n\n\t</span></span>,</p>\n\
+          <p>Apologies for the delay.</p>\n<p>For multi turn, you can attach the history\
+          \ to the user query field. For example, check out these turns:</p>\n<pre><code>\"\
+          Get me best vegetarian chinese restaurant in Tennyson Park in Oakland?\"\
+          ,\n\"Actually, let's do Vegan?\",\n\"Hmm, now let's change it to the San\
+          \ Francisco downtown instead.\"\n</code></pre>\n<p>These are the Raven Calls:</p>\n\
+          <pre><code>Call: call_search(query='vegetarian chinese restaurant in Tennyson\
+          \ Park in Oakland')\nCall: call_search(query='vegan chinese restaurant in\
+          \ Tennyson Park in Oakland')\nCall: call_search(query='vegan chinese restaurant\
+          \ in San Francisco downtown')\n</code></pre>\n<p>Here's how to do it: </p>\n\
+          <pre><code>def chat(my_question):\n    history.append(my_question)\n   \
+          \ inner_prompt = prompt.format(query = \"\\n\".join(history))\n    output\
+          \ = query({\n        \"inputs\" : inner_prompt,\n        \"parameters\"\
+          \ : {\"do_sample\" : False, \"temperature\" : 0.001, \"max_new_tokens\"\
+          \ : 2048, \"stop\" : [\"Thought:\"]}\n    })\n    output = output[0][\"\
+          generated_text\"].replace(\"Thought:\", \"\").strip()\n    print (output)\n\
+          \    history.append(output)\n    return output\n</code></pre>\n<p>Here's\
+          \ the full file: </p>\n<pre><code>import requests\n\nAPI_URL = \"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+          \nheaders = {\n    \"Content-Type\": \"application/json\"\n}\n\ndef query(payload):\n\
+          \    response = requests.post(API_URL, headers=headers, json=payload)\n\
+          \    return response.json()\n\nprompt = '''\nFunction:\ndef call_search(query):\n\
+          \  \"\"\"\n  Get google search results for a given query.\n  \"\"\"\n\n\
+          User Query: {query}&lt;human_end&gt;\n\n'''\n\nhistory = []\ndef chat(my_question):\n\
+          \    history.append(my_question)\n    inner_prompt = prompt.format(query\
+          \ = \"\\n\".join(history))\n    output = query({\n        \"inputs\" : inner_prompt,\n\
+          \        \"parameters\" : {\"do_sample\" : False, \"temperature\" : 0.001,\
+          \ \"max_new_tokens\" : 2048, \"stop\" : [\"Thought:\"]}\n    })\n    output\
+          \ = output[0][\"generated_text\"].replace(\"Thought:\", \"\").strip()\n\
+          \    print (output)\n    history.append(output)\n    return output\n\nMULTITURN\
+          \ = \\\n[\n     \"Get me best vegetarian chinese restaurant in Tennyson\
+          \ Park in Oakland?\",\n     \"Actually, let's do Vegan?\",\n     \"Hmm,\
+          \ now let's change it to the San Francisco downtown instead.\"\n]\n\nfor\
+          \ turn in MULTITURN:\n    chat(turn)\n</code></pre>\n"
+        raw: "Hi @kjhamilton,\n\nApologies for the delay.\n\nFor multi turn, you can\
+          \ attach the history to the user query field. For example, check out these\
+          \ turns:\n\n```\n\"Get me best vegetarian chinese restaurant in Tennyson\
+          \ Park in Oakland?\",\n\"Actually, let's do Vegan?\",\n\"Hmm, now let's\
+          \ change it to the San Francisco downtown instead.\"\n```\n\nThese are the\
+          \ Raven Calls:\n```\nCall: call_search(query='vegetarian chinese restaurant\
+          \ in Tennyson Park in Oakland')\nCall: call_search(query='vegan chinese\
+          \ restaurant in Tennyson Park in Oakland')\nCall: call_search(query='vegan\
+          \ chinese restaurant in San Francisco downtown')\n```\n\nHere's how to do\
+          \ it: \n```\ndef chat(my_question):\n    history.append(my_question)\n \
+          \   inner_prompt = prompt.format(query = \"\\n\".join(history))\n    output\
+          \ = query({\n        \"inputs\" : inner_prompt,\n        \"parameters\"\
+          \ : {\"do_sample\" : False, \"temperature\" : 0.001, \"max_new_tokens\"\
+          \ : 2048, \"stop\" : [\"Thought:\"]}\n    })\n    output = output[0][\"\
+          generated_text\"].replace(\"Thought:\", \"\").strip()\n    print (output)\n\
+          \    history.append(output)\n    return output\n```\n\nHere's the full file:\
+          \ \n\n```\nimport requests\n\nAPI_URL = \"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+          \nheaders = {\n\t\"Content-Type\": \"application/json\"\n}\n\ndef query(payload):\n\
+          \tresponse = requests.post(API_URL, headers=headers, json=payload)\n\treturn\
+          \ response.json()\n\nprompt = '''\nFunction:\ndef call_search(query):\n\
+          \  \"\"\"\n  Get google search results for a given query.\n  \"\"\"\n\n\
+          User Query: {query}<human_end>\n\n'''\n\nhistory = []\ndef chat(my_question):\n\
+          \    history.append(my_question)\n    inner_prompt = prompt.format(query\
+          \ = \"\\n\".join(history))\n    output = query({\n        \"inputs\" : inner_prompt,\n\
+          \        \"parameters\" : {\"do_sample\" : False, \"temperature\" : 0.001,\
+          \ \"max_new_tokens\" : 2048, \"stop\" : [\"Thought:\"]}\n    })\n    output\
+          \ = output[0][\"generated_text\"].replace(\"Thought:\", \"\").strip()\n\
+          \    print (output)\n    history.append(output)\n    return output\n\nMULTITURN\
+          \ = \\\n[\n     \"Get me best vegetarian chinese restaurant in Tennyson\
+          \ Park in Oakland?\",\n     \"Actually, let's do Vegan?\",\n     \"Hmm,\
+          \ now let's change it to the San Francisco downtown instead.\"\n]\n\nfor\
+          \ turn in MULTITURN:\n    chat(turn)\n```\n"
+        updatedAt: '2024-01-10T18:00:56.879Z'
+      numEdits: 0
+      reactions: []
+    id: 659edb58c4a3b8af42a979b5
+    type: comment
+  author: venkat-srinivasan-nexusflow
+  content: "Hi @kjhamilton,\n\nApologies for the delay.\n\nFor multi turn, you can\
+    \ attach the history to the user query field. For example, check out these turns:\n\
+    \n```\n\"Get me best vegetarian chinese restaurant in Tennyson Park in Oakland?\"\
+    ,\n\"Actually, let's do Vegan?\",\n\"Hmm, now let's change it to the San Francisco\
+    \ downtown instead.\"\n```\n\nThese are the Raven Calls:\n```\nCall: call_search(query='vegetarian\
+    \ chinese restaurant in Tennyson Park in Oakland')\nCall: call_search(query='vegan\
+    \ chinese restaurant in Tennyson Park in Oakland')\nCall: call_search(query='vegan\
+    \ chinese restaurant in San Francisco downtown')\n```\n\nHere's how to do it:\
+    \ \n```\ndef chat(my_question):\n    history.append(my_question)\n    inner_prompt\
+    \ = prompt.format(query = \"\\n\".join(history))\n    output = query({\n     \
+    \   \"inputs\" : inner_prompt,\n        \"parameters\" : {\"do_sample\" : False,\
+    \ \"temperature\" : 0.001, \"max_new_tokens\" : 2048, \"stop\" : [\"Thought:\"\
+    ]}\n    })\n    output = output[0][\"generated_text\"].replace(\"Thought:\", \"\
+    \").strip()\n    print (output)\n    history.append(output)\n    return output\n\
+    ```\n\nHere's the full file: \n\n```\nimport requests\n\nAPI_URL = \"https://rjmy54al17scvxjr.us-east-1.aws.endpoints.huggingface.cloud\"\
+    \nheaders = {\n\t\"Content-Type\": \"application/json\"\n}\n\ndef query(payload):\n\
+    \tresponse = requests.post(API_URL, headers=headers, json=payload)\n\treturn response.json()\n\
+    \nprompt = '''\nFunction:\ndef call_search(query):\n  \"\"\"\n  Get google search\
+    \ results for a given query.\n  \"\"\"\n\nUser Query: {query}<human_end>\n\n'''\n\
+    \nhistory = []\ndef chat(my_question):\n    history.append(my_question)\n    inner_prompt\
+    \ = prompt.format(query = \"\\n\".join(history))\n    output = query({\n     \
+    \   \"inputs\" : inner_prompt,\n        \"parameters\" : {\"do_sample\" : False,\
+    \ \"temperature\" : 0.001, \"max_new_tokens\" : 2048, \"stop\" : [\"Thought:\"\
+    ]}\n    })\n    output = output[0][\"generated_text\"].replace(\"Thought:\", \"\
+    \").strip()\n    print (output)\n    history.append(output)\n    return output\n\
+    \nMULTITURN = \\\n[\n     \"Get me best vegetarian chinese restaurant in Tennyson\
+    \ Park in Oakland?\",\n     \"Actually, let's do Vegan?\",\n     \"Hmm, now let's\
+    \ change it to the San Francisco downtown instead.\"\n]\n\nfor turn in MULTITURN:\n\
+    \    chat(turn)\n```\n"
+  created_at: 2024-01-10 18:00:56+00:00
+  edited: false
+  hidden: false
+  id: 659edb58c4a3b8af42a979b5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6840addccbf91294c15a5892a5aafe6a.svg
+      fullname: Kevin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kjhamilton
+      type: user
+    createdAt: '2024-01-11T16:42:18.000Z'
+    data:
+      edited: false
+      editors:
+      - kjhamilton
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9474249482154846
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6840addccbf91294c15a5892a5aafe6a.svg
+          fullname: Kevin
+          isHf: false
+          isPro: false
+          name: kjhamilton
+          type: user
+        html: '<p>thank you for this very detailed answer! </p>
+
+          <p>it seems like this model always responds with a function call, is that
+          expected? Will it do a chat sequence like:</p>
+
+          <p>User: Get me best vegetarian chinese restaurant in Tennyson Park in Oakland?</p>
+
+          <p>Assistant: Function call</p>
+
+          <p>Append function call response</p>
+
+          <p>Assistant: The best vegetarian chinese restaurant is .... continue interpreted
+          response</p>
+
+          <p>User: how much wood would a woodchuck, if a woodchuck could chuck wood?</p>
+
+          <p>Assistant (no function call) - however much wood a woodchuck could if
+          a wood chuck could chuck wood.</p>
+
+          '
+        raw: "thank you for this very detailed answer! \n\nit seems like this model\
+          \ always responds with a function call, is that expected? Will it do a chat\
+          \ sequence like:\n\nUser: Get me best vegetarian chinese restaurant in Tennyson\
+          \ Park in Oakland?\n\nAssistant: Function call\n\nAppend function call response\n\
+          \nAssistant: The best vegetarian chinese restaurant is .... continue interpreted\
+          \ response\n\nUser: how much wood would a woodchuck, if a woodchuck could\
+          \ chuck wood?\n\nAssistant (no function call) - however much wood a woodchuck\
+          \ could if a wood chuck could chuck wood.\n"
+        updatedAt: '2024-01-11T16:42:18.350Z'
+      numEdits: 0
+      reactions: []
+    id: 65a01a6adb5d37ad5e5c1688
+    type: comment
+  author: kjhamilton
+  content: "thank you for this very detailed answer! \n\nit seems like this model\
+    \ always responds with a function call, is that expected? Will it do a chat sequence\
+    \ like:\n\nUser: Get me best vegetarian chinese restaurant in Tennyson Park in\
+    \ Oakland?\n\nAssistant: Function call\n\nAppend function call response\n\nAssistant:\
+    \ The best vegetarian chinese restaurant is .... continue interpreted response\n\
+    \nUser: how much wood would a woodchuck, if a woodchuck could chuck wood?\n\n\
+    Assistant (no function call) - however much wood a woodchuck could if a wood chuck\
+    \ could chuck wood.\n"
+  created_at: 2024-01-11 16:42:18+00:00
+  edited: false
+  hidden: false
+  id: 65a01a6adb5d37ad5e5c1688
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 13
+repo_id: Nexusflow/NexusRaven-V2-13B
+repo_type: model
+status: open
+target_branch: null
+title: Prompt to use for sequence of messages

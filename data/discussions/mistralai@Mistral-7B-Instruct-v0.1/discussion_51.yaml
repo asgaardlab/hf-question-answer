@@ -1,0 +1,396 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Mel-Iza0
+conflicting_files: null
+created_at: 2023-10-16 19:03:52+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/635fd68ad9e4214b9a6571a7/aEpfbcB0JG_y18Qlovz8I.jpeg?w=200&h=200&f=face
+      fullname: Mel Augusto
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Mel-Iza0
+      type: user
+    createdAt: '2023-10-16T20:03:52.000Z'
+    data:
+      edited: true
+      editors:
+      - Mel-Iza0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4636222720146179
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/635fd68ad9e4214b9a6571a7/aEpfbcB0JG_y18Qlovz8I.jpeg?w=200&h=200&f=face
+          fullname: Mel Augusto
+          isHf: false
+          isPro: false
+          name: Mel-Iza0
+          type: user
+        html: "<p>Hello Mistral community!<br>I'm trying to fine-tune the model without\
+          \ quantization, but when I get to the training phase, I encounter this error\
+          \ and haven't been able to resolve it. I've attempted various approaches\
+          \ regarding the input data in SFTTrainer \u2013 both using formatting functions\
+          \ and without, just with a text field. I've also experimented with different\
+          \ parameters, but I'm not sure what the issue is. Could someone please assist\
+          \ me?</p>\n<p>Error Message:</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          &lt;ipython-input-123-35d2cb304d95&gt; in &lt;cell line: 1&gt;()\n     \
+          \ 1 with ClearCache():\n----&gt; 2     trainer.train()\n      3     trainer.save_model(model_complete_name)\n\
+          \n5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py\
+          \ in train(self, resume_from_checkpoint, trial, ignore_keys_for_eval, **kwargs)\n\
+          \   1495                 # Disable progress bars when uploading models during\
+          \ checkpoints to avoid polluting stdout\n   1496                 hf_hub_utils.disable_progress_bars()\n\
+          -&gt; 1497                 return inner_training_loop(\n   1498        \
+          \             args=args,\n   1499                     resume_from_checkpoint=resume_from_checkpoint,\n\
+          \n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py in _inner_training_loop(self,\
+          \ batch_size, args, resume_from_checkpoint, trial, ignore_keys_for_eval)\n\
+          \   1799 \n   1800                 with self.accelerator.accumulate(model):\n\
+          -&gt; 1801                     tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1802 \n   1803                 if (\n\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py\
+          \ in training_step(self, model, inputs)\n   2657                 scaled_loss.backward()\n\
+          \   2658         else:\n-&gt; 2659             self.accelerator.backward(loss)\n\
+          \   2660 \n   2661         return loss.detach() / self.args.gradient_accumulation_steps\n\
+          \n/usr/local/lib/python3.10/dist-packages/accelerate/accelerator.py in backward(self,\
+          \ loss, **kwargs)\n   1982             return\n   1983         elif self.scaler\
+          \ is not None:\n-&gt; 1984             self.scaler.scale(loss).backward(**kwargs)\n\
+          \   1985         else:\n   1986             loss.backward(**kwargs)\n\n\
+          /usr/local/lib/python3.10/dist-packages/torch/_tensor.py in backward(self,\
+          \ gradient, retain_graph, create_graph, inputs)\n    485               \
+          \  inputs=inputs,\n    486             )\n--&gt; 487         torch.autograd.backward(\n\
+          \    488             self, gradient, retain_graph, create_graph, inputs=inputs\n\
+          \    489         )\n\n/usr/local/lib/python3.10/dist-packages/torch/autograd/__init__.py\
+          \ in backward(tensors, grad_tensors, retain_graph, create_graph, grad_variables,\
+          \ inputs)\n    198     # some Python versions print out the first line of\
+          \ a multi-line function\n    199     # calls in the traceback and some print\
+          \ out the last line\n--&gt; 200     Variable._execution_engine.run_backward(\
+          \  # Calls into the C++ engine to run the backward pass\n    201       \
+          \  tensors, grad_tensors_, retain_graph, create_graph, inputs,\n    202\
+          \         allow_unreachable=True, accumulate_grad=True)  # Calls into the\
+          \ C++ engine to run the backward pass\n\nRuntimeError: element 0 of tensors\
+          \ does not require grad and does not have a grad_fn\n</code></pre>\n<p>My\
+          \ code:</p>\n<pre><code>model_id = 'mistralai/Mistral-7B-Instruct-v0.1'\n\
+          model = AutoModelForCausalLM.from_pretrained(model_id, use_cache=False)\n\
+          \nmodel.config.pretraining_tp = 1\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          tokenizer.pad_token = tokenizer.eos_token\ntokenizer.padding_side = \"right\"\
+          \n\npeft_config = LoraConfig(\n        r=16,\n        lora_alpha=16,\n \
+          \       lora_dropout=0.1,\n        bias=\"none\",\n        task_type=\"\
+          CAUSAL_LM\",\n        target_modules=[\"q_proj\",\n                    \
+          \    \"k_proj\",\n                        \"v_proj\"\n                 \
+          \       \"o_proj\"],\n)\n\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_peft_model(model, peft_config)\n\nmax_seq_length = 2048\n\n\
+          trainer = SFTTrainer(\n    model=model,\n    train_dataset=data.with_format(\"\
+          torch\"),\n    peft_config=peft_config,\n    max_seq_length=max_seq_length,\n\
+          \    tokenizer=tokenizer,\n    packing=True,\n    formatting_func=format_instruction,\n\
+          \    args=TrainingArguments(\n        output_dir=model_complete_name,\n\
+          \        num_train_epochs=training_arguments_mistral['num_train_epochs'],\n\
+          \        per_device_train_batch_size=training_arguments_mistral['per_device_train_batch_size'],\n\
+          \        gradient_accumulation_steps=training_arguments_mistral['gradient_accumulation_steps'],\n\
+          \        gradient_checkpointing=training_arguments_mistral['gradient_checkpointing'],\n\
+          \        optim=training_arguments_mistral['optim'],\n        lr_scheduler_type=training_arguments_mistral['lr_scheduler_type'],\n\
+          \        logging_steps=training_arguments_mistral['logging_steps'],\n  \
+          \      save_strategy=training_arguments_mistral['save_strategy'],\n    \
+          \    save_total_limit=training_arguments_mistral['save_total_limit'],\n\
+          \        learning_rate=training_arguments_mistral['learning_rate'],\n  \
+          \      fp16=training_arguments_mistral['fp16'],\n        max_steps=training_arguments_mistral['max_steps'],\n\
+          \        max_grad_norm=training_arguments_mistral['max_grad_norm'],\n  \
+          \      warmup_ratio=training_arguments_mistral['warmup_ratio'],\n      \
+          \  disable_tqdm=training_arguments_mistral['disable_tqdm'],\n        weight_decay=training_arguments_mistral['weight_decay'],\n\
+          \        hub_model_id=training_arguments_mistral['hub_model_id'],\n    \
+          \    push_to_hub=training_arguments_mistral['push_to_hub'],\n        hub_strategy=training_arguments_mistral['hub_strategy'],\n\
+          \        hub_always_push=training_arguments_mistral['hub_always_push'],\n\
+          \        hub_token=training_arguments_mistral['hub_token'],\n        hub_private_repo=training_arguments_mistral['hub_private_repo']\n\
+          \        ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False)\n)\n\n    trainer.train()\n    trainer.save_model(model_complete_name)\n\
+          </code></pre>\n<p>I also tried loading the model like this:</p>\n<pre><code>model\
+          \ = AutoModelForCausalLM.from_pretrained(model_id,\n                   \
+          \                                  use_cache=False,\n                  \
+          \                                   device_map=\"auto\",\n             \
+          \                                        torch_dtype=torch.float16)\n\n\
+          model.config.pretraining_tp = 1\n</code></pre>\n<p>My dataset format:</p>\n\
+          <pre><code>Dataset({\n    features: ['column1', 'column2', 'column3', 'column4',\
+          \ 'column5'],\n    num_rows: 2000\n})\n</code></pre>\n<p>Note: when I run\
+          \ this code with quantization, it works fine, but I'm unsure which parameter\
+          \ to adjust or what configuration to make. I've also tried loading the model\
+          \ without the PEFT configuration</p>\n"
+        raw: "Hello Mistral community! \nI'm trying to fine-tune the model without\
+          \ quantization, but when I get to the training phase, I encounter this error\
+          \ and haven't been able to resolve it. I've attempted various approaches\
+          \ regarding the input data in SFTTrainer \u2013 both using formatting functions\
+          \ and without, just with a text field. I've also experimented with different\
+          \ parameters, but I'm not sure what the issue is. Could someone please assist\
+          \ me?\n\nError Message:\n```\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          <ipython-input-123-35d2cb304d95> in <cell line: 1>()\n      1 with ClearCache():\n\
+          ----> 2     trainer.train()\n      3     trainer.save_model(model_complete_name)\n\
+          \n5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py\
+          \ in train(self, resume_from_checkpoint, trial, ignore_keys_for_eval, **kwargs)\n\
+          \   1495                 # Disable progress bars when uploading models during\
+          \ checkpoints to avoid polluting stdout\n   1496                 hf_hub_utils.disable_progress_bars()\n\
+          -> 1497                 return inner_training_loop(\n   1498           \
+          \          args=args,\n   1499                     resume_from_checkpoint=resume_from_checkpoint,\n\
+          \n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py in _inner_training_loop(self,\
+          \ batch_size, args, resume_from_checkpoint, trial, ignore_keys_for_eval)\n\
+          \   1799 \n   1800                 with self.accelerator.accumulate(model):\n\
+          -> 1801                     tr_loss_step = self.training_step(model, inputs)\n\
+          \   1802 \n   1803                 if (\n\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py\
+          \ in training_step(self, model, inputs)\n   2657                 scaled_loss.backward()\n\
+          \   2658         else:\n-> 2659             self.accelerator.backward(loss)\n\
+          \   2660 \n   2661         return loss.detach() / self.args.gradient_accumulation_steps\n\
+          \n/usr/local/lib/python3.10/dist-packages/accelerate/accelerator.py in backward(self,\
+          \ loss, **kwargs)\n   1982             return\n   1983         elif self.scaler\
+          \ is not None:\n-> 1984             self.scaler.scale(loss).backward(**kwargs)\n\
+          \   1985         else:\n   1986             loss.backward(**kwargs)\n\n\
+          /usr/local/lib/python3.10/dist-packages/torch/_tensor.py in backward(self,\
+          \ gradient, retain_graph, create_graph, inputs)\n    485               \
+          \  inputs=inputs,\n    486             )\n--> 487         torch.autograd.backward(\n\
+          \    488             self, gradient, retain_graph, create_graph, inputs=inputs\n\
+          \    489         )\n\n/usr/local/lib/python3.10/dist-packages/torch/autograd/__init__.py\
+          \ in backward(tensors, grad_tensors, retain_graph, create_graph, grad_variables,\
+          \ inputs)\n    198     # some Python versions print out the first line of\
+          \ a multi-line function\n    199     # calls in the traceback and some print\
+          \ out the last line\n--> 200     Variable._execution_engine.run_backward(\
+          \  # Calls into the C++ engine to run the backward pass\n    201       \
+          \  tensors, grad_tensors_, retain_graph, create_graph, inputs,\n    202\
+          \         allow_unreachable=True, accumulate_grad=True)  # Calls into the\
+          \ C++ engine to run the backward pass\n\nRuntimeError: element 0 of tensors\
+          \ does not require grad and does not have a grad_fn\n```\n\nMy code:\n```\n\
+          model_id = 'mistralai/Mistral-7B-Instruct-v0.1'\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+          \ use_cache=False)\n\nmodel.config.pretraining_tp = 1\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          tokenizer.pad_token = tokenizer.eos_token\ntokenizer.padding_side = \"right\"\
+          \n\npeft_config = LoraConfig(\n        r=16,\n        lora_alpha=16,\n \
+          \       lora_dropout=0.1,\n        bias=\"none\",\n        task_type=\"\
+          CAUSAL_LM\",\n        target_modules=[\"q_proj\",\n                    \
+          \    \"k_proj\",\n                        \"v_proj\"\n                 \
+          \       \"o_proj\"],\n)\n\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_peft_model(model, peft_config)\n\nmax_seq_length = 2048\n\n\
+          trainer = SFTTrainer(\n    model=model,\n    train_dataset=data.with_format(\"\
+          torch\"),\n    peft_config=peft_config,\n    max_seq_length=max_seq_length,\n\
+          \    tokenizer=tokenizer,\n    packing=True,\n    formatting_func=format_instruction,\n\
+          \    args=TrainingArguments(\n        output_dir=model_complete_name,\n\
+          \        num_train_epochs=training_arguments_mistral['num_train_epochs'],\n\
+          \        per_device_train_batch_size=training_arguments_mistral['per_device_train_batch_size'],\n\
+          \        gradient_accumulation_steps=training_arguments_mistral['gradient_accumulation_steps'],\n\
+          \        gradient_checkpointing=training_arguments_mistral['gradient_checkpointing'],\n\
+          \        optim=training_arguments_mistral['optim'],\n        lr_scheduler_type=training_arguments_mistral['lr_scheduler_type'],\n\
+          \        logging_steps=training_arguments_mistral['logging_steps'],\n  \
+          \      save_strategy=training_arguments_mistral['save_strategy'],\n    \
+          \    save_total_limit=training_arguments_mistral['save_total_limit'],\n\
+          \        learning_rate=training_arguments_mistral['learning_rate'],\n  \
+          \      fp16=training_arguments_mistral['fp16'],\n        max_steps=training_arguments_mistral['max_steps'],\n\
+          \        max_grad_norm=training_arguments_mistral['max_grad_norm'],\n  \
+          \      warmup_ratio=training_arguments_mistral['warmup_ratio'],\n      \
+          \  disable_tqdm=training_arguments_mistral['disable_tqdm'],\n        weight_decay=training_arguments_mistral['weight_decay'],\n\
+          \        hub_model_id=training_arguments_mistral['hub_model_id'],\n    \
+          \    push_to_hub=training_arguments_mistral['push_to_hub'],\n        hub_strategy=training_arguments_mistral['hub_strategy'],\n\
+          \        hub_always_push=training_arguments_mistral['hub_always_push'],\n\
+          \        hub_token=training_arguments_mistral['hub_token'],\n        hub_private_repo=training_arguments_mistral['hub_private_repo']\n\
+          \        ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False)\n)\n\n    trainer.train()\n    trainer.save_model(model_complete_name)\n\
+          ```\n\nI also tried loading the model like this:\n```\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\n\
+          \                                                     use_cache=False,\n\
+          \                                                     device_map=\"auto\"\
+          ,\n                                                     torch_dtype=torch.float16)\n\
+          \nmodel.config.pretraining_tp = 1\n```\n\nMy dataset format:\n```\nDataset({\n\
+          \    features: ['column1', 'column2', 'column3', 'column4', 'column5'],\n\
+          \    num_rows: 2000\n})\n```\n\nNote: when I run this code with quantization,\
+          \ it works fine, but I'm unsure which parameter to adjust or what configuration\
+          \ to make. I've also tried loading the model without the PEFT configuration"
+        updatedAt: '2023-10-16T20:12:07.223Z'
+      numEdits: 1
+      reactions: []
+    id: 652d972851e6916c5f70bc0f
+    type: comment
+  author: Mel-Iza0
+  content: "Hello Mistral community! \nI'm trying to fine-tune the model without quantization,\
+    \ but when I get to the training phase, I encounter this error and haven't been\
+    \ able to resolve it. I've attempted various approaches regarding the input data\
+    \ in SFTTrainer \u2013 both using formatting functions and without, just with\
+    \ a text field. I've also experimented with different parameters, but I'm not\
+    \ sure what the issue is. Could someone please assist me?\n\nError Message:\n\
+    ```\n---------------------------------------------------------------------------\n\
+    RuntimeError                              Traceback (most recent call last)\n\
+    <ipython-input-123-35d2cb304d95> in <cell line: 1>()\n      1 with ClearCache():\n\
+    ----> 2     trainer.train()\n      3     trainer.save_model(model_complete_name)\n\
+    \n5 frames\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py in\
+    \ train(self, resume_from_checkpoint, trial, ignore_keys_for_eval, **kwargs)\n\
+    \   1495                 # Disable progress bars when uploading models during\
+    \ checkpoints to avoid polluting stdout\n   1496                 hf_hub_utils.disable_progress_bars()\n\
+    -> 1497                 return inner_training_loop(\n   1498                 \
+    \    args=args,\n   1499                     resume_from_checkpoint=resume_from_checkpoint,\n\
+    \n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py in _inner_training_loop(self,\
+    \ batch_size, args, resume_from_checkpoint, trial, ignore_keys_for_eval)\n   1799\
+    \ \n   1800                 with self.accelerator.accumulate(model):\n-> 1801\
+    \                     tr_loss_step = self.training_step(model, inputs)\n   1802\
+    \ \n   1803                 if (\n\n/usr/local/lib/python3.10/dist-packages/transformers/trainer.py\
+    \ in training_step(self, model, inputs)\n   2657                 scaled_loss.backward()\n\
+    \   2658         else:\n-> 2659             self.accelerator.backward(loss)\n\
+    \   2660 \n   2661         return loss.detach() / self.args.gradient_accumulation_steps\n\
+    \n/usr/local/lib/python3.10/dist-packages/accelerate/accelerator.py in backward(self,\
+    \ loss, **kwargs)\n   1982             return\n   1983         elif self.scaler\
+    \ is not None:\n-> 1984             self.scaler.scale(loss).backward(**kwargs)\n\
+    \   1985         else:\n   1986             loss.backward(**kwargs)\n\n/usr/local/lib/python3.10/dist-packages/torch/_tensor.py\
+    \ in backward(self, gradient, retain_graph, create_graph, inputs)\n    485   \
+    \              inputs=inputs,\n    486             )\n--> 487         torch.autograd.backward(\n\
+    \    488             self, gradient, retain_graph, create_graph, inputs=inputs\n\
+    \    489         )\n\n/usr/local/lib/python3.10/dist-packages/torch/autograd/__init__.py\
+    \ in backward(tensors, grad_tensors, retain_graph, create_graph, grad_variables,\
+    \ inputs)\n    198     # some Python versions print out the first line of a multi-line\
+    \ function\n    199     # calls in the traceback and some print out the last line\n\
+    --> 200     Variable._execution_engine.run_backward(  # Calls into the C++ engine\
+    \ to run the backward pass\n    201         tensors, grad_tensors_, retain_graph,\
+    \ create_graph, inputs,\n    202         allow_unreachable=True, accumulate_grad=True)\
+    \  # Calls into the C++ engine to run the backward pass\n\nRuntimeError: element\
+    \ 0 of tensors does not require grad and does not have a grad_fn\n```\n\nMy code:\n\
+    ```\nmodel_id = 'mistralai/Mistral-7B-Instruct-v0.1'\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+    \ use_cache=False)\n\nmodel.config.pretraining_tp = 1\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+    tokenizer.pad_token = tokenizer.eos_token\ntokenizer.padding_side = \"right\"\n\
+    \npeft_config = LoraConfig(\n        r=16,\n        lora_alpha=16,\n        lora_dropout=0.1,\n\
+    \        bias=\"none\",\n        task_type=\"CAUSAL_LM\",\n        target_modules=[\"\
+    q_proj\",\n                        \"k_proj\",\n                        \"v_proj\"\
+    \n                        \"o_proj\"],\n)\n\nmodel = prepare_model_for_kbit_training(model)\n\
+    model = get_peft_model(model, peft_config)\n\nmax_seq_length = 2048\n\ntrainer\
+    \ = SFTTrainer(\n    model=model,\n    train_dataset=data.with_format(\"torch\"\
+    ),\n    peft_config=peft_config,\n    max_seq_length=max_seq_length,\n    tokenizer=tokenizer,\n\
+    \    packing=True,\n    formatting_func=format_instruction,\n    args=TrainingArguments(\n\
+    \        output_dir=model_complete_name,\n        num_train_epochs=training_arguments_mistral['num_train_epochs'],\n\
+    \        per_device_train_batch_size=training_arguments_mistral['per_device_train_batch_size'],\n\
+    \        gradient_accumulation_steps=training_arguments_mistral['gradient_accumulation_steps'],\n\
+    \        gradient_checkpointing=training_arguments_mistral['gradient_checkpointing'],\n\
+    \        optim=training_arguments_mistral['optim'],\n        lr_scheduler_type=training_arguments_mistral['lr_scheduler_type'],\n\
+    \        logging_steps=training_arguments_mistral['logging_steps'],\n        save_strategy=training_arguments_mistral['save_strategy'],\n\
+    \        save_total_limit=training_arguments_mistral['save_total_limit'],\n  \
+    \      learning_rate=training_arguments_mistral['learning_rate'],\n        fp16=training_arguments_mistral['fp16'],\n\
+    \        max_steps=training_arguments_mistral['max_steps'],\n        max_grad_norm=training_arguments_mistral['max_grad_norm'],\n\
+    \        warmup_ratio=training_arguments_mistral['warmup_ratio'],\n        disable_tqdm=training_arguments_mistral['disable_tqdm'],\n\
+    \        weight_decay=training_arguments_mistral['weight_decay'],\n        hub_model_id=training_arguments_mistral['hub_model_id'],\n\
+    \        push_to_hub=training_arguments_mistral['push_to_hub'],\n        hub_strategy=training_arguments_mistral['hub_strategy'],\n\
+    \        hub_always_push=training_arguments_mistral['hub_always_push'],\n    \
+    \    hub_token=training_arguments_mistral['hub_token'],\n        hub_private_repo=training_arguments_mistral['hub_private_repo']\n\
+    \        ),\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+    \ mlm=False)\n)\n\n    trainer.train()\n    trainer.save_model(model_complete_name)\n\
+    ```\n\nI also tried loading the model like this:\n```\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\n\
+    \                                                     use_cache=False,\n     \
+    \                                                device_map=\"auto\",\n      \
+    \                                               torch_dtype=torch.float16)\n\n\
+    model.config.pretraining_tp = 1\n```\n\nMy dataset format:\n```\nDataset({\n \
+    \   features: ['column1', 'column2', 'column3', 'column4', 'column5'],\n    num_rows:\
+    \ 2000\n})\n```\n\nNote: when I run this code with quantization, it works fine,\
+    \ but I'm unsure which parameter to adjust or what configuration to make. I've\
+    \ also tried loading the model without the PEFT configuration"
+  created_at: 2023-10-16 19:03:52+00:00
+  edited: true
+  hidden: false
+  id: 652d972851e6916c5f70bc0f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/635fd68ad9e4214b9a6571a7/aEpfbcB0JG_y18Qlovz8I.jpeg?w=200&h=200&f=face
+      fullname: Mel Augusto
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Mel-Iza0
+      type: user
+    createdAt: '2023-10-17T20:21:52.000Z'
+    data:
+      edited: false
+      editors:
+      - Mel-Iza0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7065097093582153
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/635fd68ad9e4214b9a6571a7/aEpfbcB0JG_y18Qlovz8I.jpeg?w=200&h=200&f=face
+          fullname: Mel Augusto
+          isHf: false
+          isPro: false
+          name: Mel-Iza0
+          type: user
+        html: '<p><em>Update</em> <br><br>The issue was resolved with the use of this
+          configuration after applying Peft transformations:</p>
+
+          <pre><code>model.gradient_checkpointing_enable()
+
+          model.enable_input_require_grads()
+
+          </code></pre>
+
+          '
+        raw: '*Update* <br>
+
+          The issue was resolved with the use of this configuration after applying
+          Peft transformations:
+
+          ```
+
+          model.gradient_checkpointing_enable()
+
+          model.enable_input_require_grads()
+
+          ```'
+        updatedAt: '2023-10-17T20:21:52.744Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 652eece0a0f516a99de5aee4
+    id: 652eece0a0f516a99de5aee2
+    type: comment
+  author: Mel-Iza0
+  content: '*Update* <br>
+
+    The issue was resolved with the use of this configuration after applying Peft
+    transformations:
+
+    ```
+
+    model.gradient_checkpointing_enable()
+
+    model.enable_input_require_grads()
+
+    ```'
+  created_at: 2023-10-17 19:21:52+00:00
+  edited: false
+  hidden: false
+  id: 652eece0a0f516a99de5aee2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/635fd68ad9e4214b9a6571a7/aEpfbcB0JG_y18Qlovz8I.jpeg?w=200&h=200&f=face
+      fullname: Mel Augusto
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Mel-Iza0
+      type: user
+    createdAt: '2023-10-17T20:21:52.000Z'
+    data:
+      status: closed
+    id: 652eece0a0f516a99de5aee4
+    type: status-change
+  author: Mel-Iza0
+  created_at: 2023-10-17 19:21:52+00:00
+  id: 652eece0a0f516a99de5aee4
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 51
+repo_id: mistralai/Mistral-7B-Instruct-v0.1
+repo_type: model
+status: closed
+target_branch: null
+title: Error  occurred while training the model with tensors with no grads

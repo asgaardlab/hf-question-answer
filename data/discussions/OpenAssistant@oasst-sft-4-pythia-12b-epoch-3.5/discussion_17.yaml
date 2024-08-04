@@ -1,0 +1,356 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: banank1989
+conflicting_files: null
+created_at: 2023-05-29 08:46:57+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f76876fa8db2a29352b87dc0b1f85d81.svg
+      fullname: Ankit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: banank1989
+      type: user
+    createdAt: '2023-05-29T09:46:57.000Z'
+    data:
+      edited: false
+      editors:
+      - banank1989
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f76876fa8db2a29352b87dc0b1f85d81.svg
+          fullname: Ankit
+          isHf: false
+          isPro: false
+          name: banank1989
+          type: user
+        html: "<p>I am trying to fine tune the LLM(OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5)\
+          \ with my data.</p>\n<p>My code:</p>\n<pre><code>import torch\nfrom transformers\
+          \ import LineByLineTextDataset, DataCollatorForLanguageModeling\nfrom transformers\
+          \ import Trainer, TrainingArguments\nfrom transformers import AutoTokenizer,\
+          \ AutoModelForCausalLM\n\ntokenizer = AutoTokenizer.from_pretrained(\"OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\"\
+          , padding_side=\"left\")\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+          OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\", \n                   \
+          \                          load_in_8bit=True,\n                        \
+          \                     device_map=\"auto\")\n\nfrom datasets import load_dataset\n\
+          \n# Load the dataset\ndataset = load_dataset('parquet', data_files='data/dataset.parquet')\n\
+          \n# Tokenize and format the dataset\ndef tokenize_function(examples):\n\
+          \    return tokenizer(examples['TEXT'], truncation=True, max_length=128,\
+          \ padding='max_length')\n\n\ntokenized_dataset = dataset.map(tokenize_function,\
+          \ batched=True)\ntraining_args = TrainingArguments(\n    output_dir=\"./results\"\
+          ,\n    num_train_epochs=100,\n    per_device_train_batch_size=2,\n    per_device_eval_batch_size=4,\n\
+          \    warmup_steps=500,\n    weight_decay=0.01,\n    logging_dir=\"./logs\"\
+          ,\n    logging_steps=4\n)\n\n\n\ndata_collator = DataCollatorForLanguageModeling(\n\
+          \    tokenizer=tokenizer, mlm=False,\n)\n\n# Create the Trainer and train\n\
+          trainer = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=tokenized_dataset['train'],\n\
+          \    data_collator=data_collator,\n)\n\ntrainer.train()\n\n# Save the trained\
+          \ model\ntrainer.save_model(\"model\")  # replace with the path where you\
+          \ want to save the model\ntokenizer.save_pretrained(\"model\")\n</code></pre>\n\
+          <p>Now the issue is while training, loss is 0.000000 meaning there is something\
+          \ wrong with my training, Also when I am loading the trainied model, answers\
+          \ are not coming at all(Which should not be the case). Also the downloaded\
+          \ actual model disk size is 23GB but mine model size is 9.6GB</p>\n<p>My\
+          \ raw data is in csv which I have then converted to parquet. My dataset\
+          \ has 3 columns(TEXT, source, metadata). Also my dataset only contains 12\
+          \ rows. I have also tried the same with some another dataset from huggingface,\
+          \ same</p>\n"
+        raw: "I am trying to fine tune the LLM(OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5)\
+          \ with my data.\r\n\r\nMy code:\r\n```\r\nimport torch\r\nfrom transformers\
+          \ import LineByLineTextDataset, DataCollatorForLanguageModeling\r\nfrom\
+          \ transformers import Trainer, TrainingArguments\r\nfrom transformers import\
+          \ AutoTokenizer, AutoModelForCausalLM\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\", padding_side=\"left\"\
+          )\r\nmodel = AutoModelForCausalLM.from_pretrained(\"OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\"\
+          , \r\n                                             load_in_8bit=True,\r\n\
+          \                                             device_map=\"auto\")\r\n\r\
+          \nfrom datasets import load_dataset\r\n\r\n# Load the dataset\r\ndataset\
+          \ = load_dataset('parquet', data_files='data/dataset.parquet')\r\n\r\n#\
+          \ Tokenize and format the dataset\r\ndef tokenize_function(examples):\r\n\
+          \    return tokenizer(examples['TEXT'], truncation=True, max_length=128,\
+          \ padding='max_length')\r\n\r\n\r\ntokenized_dataset = dataset.map(tokenize_function,\
+          \ batched=True)\r\ntraining_args = TrainingArguments(\r\n    output_dir=\"\
+          ./results\",\r\n    num_train_epochs=100,\r\n    per_device_train_batch_size=2,\r\
+          \n    per_device_eval_batch_size=4,\r\n    warmup_steps=500,\r\n    weight_decay=0.01,\r\
+          \n    logging_dir=\"./logs\",\r\n    logging_steps=4\r\n)\r\n\r\n\r\n\r\n\
+          data_collator = DataCollatorForLanguageModeling(\r\n    tokenizer=tokenizer,\
+          \ mlm=False,\r\n)\r\n\r\n# Create the Trainer and train\r\ntrainer = Trainer(\r\
+          \n    model=model,\r\n    args=training_args,\r\n    train_dataset=tokenized_dataset['train'],\r\
+          \n    data_collator=data_collator,\r\n)\r\n\r\ntrainer.train()\r\n\r\n#\
+          \ Save the trained model\r\ntrainer.save_model(\"model\")  # replace with\
+          \ the path where you want to save the model\r\ntokenizer.save_pretrained(\"\
+          model\")\r\n```\r\nNow the issue is while training, loss is 0.000000 meaning\
+          \ there is something wrong with my training, Also when I am loading the\
+          \ trainied model, answers are not coming at all(Which should not be the\
+          \ case). Also the downloaded actual model disk size is 23GB but mine model\
+          \ size is 9.6GB\r\n\r\nMy raw data is in csv which I have then converted\
+          \ to parquet. My dataset has 3 columns(TEXT, source, metadata). Also my\
+          \ dataset only contains 12 rows. I have also tried the same with some another\
+          \ dataset from huggingface, same\r\n"
+        updatedAt: '2023-05-29T09:46:57.166Z'
+      numEdits: 0
+      reactions: []
+    id: 64747491e0b188d3cb2096bd
+    type: comment
+  author: banank1989
+  content: "I am trying to fine tune the LLM(OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5)\
+    \ with my data.\r\n\r\nMy code:\r\n```\r\nimport torch\r\nfrom transformers import\
+    \ LineByLineTextDataset, DataCollatorForLanguageModeling\r\nfrom transformers\
+    \ import Trainer, TrainingArguments\r\nfrom transformers import AutoTokenizer,\
+    \ AutoModelForCausalLM\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\"\
+    , padding_side=\"left\")\r\nmodel = AutoModelForCausalLM.from_pretrained(\"OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5\"\
+    , \r\n                                             load_in_8bit=True,\r\n    \
+    \                                         device_map=\"auto\")\r\n\r\nfrom datasets\
+    \ import load_dataset\r\n\r\n# Load the dataset\r\ndataset = load_dataset('parquet',\
+    \ data_files='data/dataset.parquet')\r\n\r\n# Tokenize and format the dataset\r\
+    \ndef tokenize_function(examples):\r\n    return tokenizer(examples['TEXT'], truncation=True,\
+    \ max_length=128, padding='max_length')\r\n\r\n\r\ntokenized_dataset = dataset.map(tokenize_function,\
+    \ batched=True)\r\ntraining_args = TrainingArguments(\r\n    output_dir=\"./results\"\
+    ,\r\n    num_train_epochs=100,\r\n    per_device_train_batch_size=2,\r\n    per_device_eval_batch_size=4,\r\
+    \n    warmup_steps=500,\r\n    weight_decay=0.01,\r\n    logging_dir=\"./logs\"\
+    ,\r\n    logging_steps=4\r\n)\r\n\r\n\r\n\r\ndata_collator = DataCollatorForLanguageModeling(\r\
+    \n    tokenizer=tokenizer, mlm=False,\r\n)\r\n\r\n# Create the Trainer and train\r\
+    \ntrainer = Trainer(\r\n    model=model,\r\n    args=training_args,\r\n    train_dataset=tokenized_dataset['train'],\r\
+    \n    data_collator=data_collator,\r\n)\r\n\r\ntrainer.train()\r\n\r\n# Save the\
+    \ trained model\r\ntrainer.save_model(\"model\")  # replace with the path where\
+    \ you want to save the model\r\ntokenizer.save_pretrained(\"model\")\r\n```\r\n\
+    Now the issue is while training, loss is 0.000000 meaning there is something wrong\
+    \ with my training, Also when I am loading the trainied model, answers are not\
+    \ coming at all(Which should not be the case). Also the downloaded actual model\
+    \ disk size is 23GB but mine model size is 9.6GB\r\n\r\nMy raw data is in csv\
+    \ which I have then converted to parquet. My dataset has 3 columns(TEXT, source,\
+    \ metadata). Also my dataset only contains 12 rows. I have also tried the same\
+    \ with some another dataset from huggingface, same\r\n"
+  created_at: 2023-05-29 08:46:57+00:00
+  edited: false
+  hidden: false
+  id: 64747491e0b188d3cb2096bd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+      fullname: NIKHIL JAISWAL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: nikhiljais
+      type: user
+    createdAt: '2023-06-07T11:40:17.000Z'
+    data:
+      edited: false
+      editors:
+      - nikhiljais
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9893117547035217
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+          fullname: NIKHIL JAISWAL
+          isHf: false
+          isPro: false
+          name: nikhiljais
+          type: user
+        html: "<p>hi <span data-props=\"{&quot;user&quot;:&quot;banank1989&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/banank1989\"\
+          >@<span class=\"underline\">banank1989</span></a></span>\n\n\t</span></span>\
+          \ were you able to fine-tune the model?</p>\n"
+        raw: hi @banank1989 were you able to fine-tune the model?
+        updatedAt: '2023-06-07T11:40:17.138Z'
+      numEdits: 0
+      reactions: []
+    id: 64806ca19aafd41918a6726d
+    type: comment
+  author: nikhiljais
+  content: hi @banank1989 were you able to fine-tune the model?
+  created_at: 2023-06-07 10:40:17+00:00
+  edited: false
+  hidden: false
+  id: 64806ca19aafd41918a6726d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f76876fa8db2a29352b87dc0b1f85d81.svg
+      fullname: Ankit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: banank1989
+      type: user
+    createdAt: '2023-06-13T06:50:45.000Z'
+    data:
+      edited: false
+      editors:
+      - banank1989
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3489498794078827
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f76876fa8db2a29352b87dc0b1f85d81.svg
+          fullname: Ankit
+          isHf: false
+          isPro: false
+          name: banank1989
+          type: user
+        html: '<p>Using LoRA. yes</p>
+
+          '
+        raw: Using LoRA. yes
+        updatedAt: '2023-06-13T06:50:45.258Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 648811c58e004bb92b0bb53a
+    id: 648811c58e004bb92b0bb539
+    type: comment
+  author: banank1989
+  content: Using LoRA. yes
+  created_at: 2023-06-13 05:50:45+00:00
+  edited: false
+  hidden: false
+  id: 648811c58e004bb92b0bb539
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/f76876fa8db2a29352b87dc0b1f85d81.svg
+      fullname: Ankit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: banank1989
+      type: user
+    createdAt: '2023-06-13T06:50:45.000Z'
+    data:
+      status: closed
+    id: 648811c58e004bb92b0bb53a
+    type: status-change
+  author: banank1989
+  created_at: 2023-06-13 05:50:45+00:00
+  id: 648811c58e004bb92b0bb53a
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+      fullname: NIKHIL JAISWAL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: nikhiljais
+      type: user
+    createdAt: '2023-06-13T17:49:38.000Z'
+    data:
+      edited: false
+      editors:
+      - nikhiljais
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8590611219406128
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+          fullname: NIKHIL JAISWAL
+          isHf: false
+          isPro: false
+          name: nikhiljais
+          type: user
+        html: "<p>HI <span data-props=\"{&quot;user&quot;:&quot;banank1989&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/banank1989\"\
+          >@<span class=\"underline\">banank1989</span></a></span>\n\n\t</span></span>\
+          \ can you please share me the code snippet or resource material where I\
+          \ can find how to finetune using LoRA. It would be a great help. Thanks</p>\n"
+        raw: HI @banank1989 can you please share me the code snippet or resource material
+          where I can find how to finetune using LoRA. It would be a great help. Thanks
+        updatedAt: '2023-06-13T17:49:38.641Z'
+      numEdits: 0
+      reactions: []
+    id: 6488ac323a0dbb29df5d0008
+    type: comment
+  author: nikhiljais
+  content: HI @banank1989 can you please share me the code snippet or resource material
+    where I can find how to finetune using LoRA. It would be a great help. Thanks
+  created_at: 2023-06-13 16:49:38+00:00
+  edited: false
+  hidden: false
+  id: 6488ac323a0dbb29df5d0008
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+      fullname: NIKHIL JAISWAL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: nikhiljais
+      type: user
+    createdAt: '2023-06-15T18:29:11.000Z'
+    data:
+      edited: false
+      editors:
+      - nikhiljais
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8590611219406128
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eb3e699b3b92068fa6731432b0302220.svg
+          fullname: NIKHIL JAISWAL
+          isHf: false
+          isPro: false
+          name: nikhiljais
+          type: user
+        html: "<p>HI <span data-props=\"{&quot;user&quot;:&quot;banank1989&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/banank1989\"\
+          >@<span class=\"underline\">banank1989</span></a></span>\n\n\t</span></span>\
+          \ can you please share me the code snippet or resource material where I\
+          \ can find how to finetune using LoRA. It would be a great help. Thanks</p>\n"
+        raw: HI @banank1989 can you please share me the code snippet or resource material
+          where I can find how to finetune using LoRA. It would be a great help. Thanks
+        updatedAt: '2023-06-15T18:29:11.428Z'
+      numEdits: 0
+      reactions: []
+    id: 648b58774a4c5bd8dba2ca7d
+    type: comment
+  author: nikhiljais
+  content: HI @banank1989 can you please share me the code snippet or resource material
+    where I can find how to finetune using LoRA. It would be a great help. Thanks
+  created_at: 2023-06-15 17:29:11+00:00
+  edited: false
+  hidden: false
+  id: 648b58774a4c5bd8dba2ca7d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 17
+repo_id: OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5
+repo_type: model
+status: closed
+target_branch: null
+title: Loss is 0.00000 (Also model not answering after training)

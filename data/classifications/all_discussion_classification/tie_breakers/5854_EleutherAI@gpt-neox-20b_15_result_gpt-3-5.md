@@ -1,0 +1,5 @@
+## https://huggingface.co/EleutherAI/gpt-neox-20b/discussions/15
+
+contains_question: yes
+
+question_part: Then ask: what are large language models?

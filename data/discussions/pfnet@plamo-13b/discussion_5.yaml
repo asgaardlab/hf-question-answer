@@ -1,0 +1,451 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: hibikaze
+conflicting_files: null
+created_at: 2023-10-04 16:57:35+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665401046570-627a044ccd5b87302d3cd79c.jpeg?w=200&h=200&f=face
+      fullname: Hiroki Yamaguchi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: hibikaze
+      type: user
+    createdAt: '2023-10-04T17:57:35.000Z'
+    data:
+      edited: false
+      editors:
+      - hibikaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3648318648338318
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665401046570-627a044ccd5b87302d3cd79c.jpeg?w=200&h=200&f=face
+          fullname: Hiroki Yamaguchi
+          isHf: false
+          isPro: false
+          name: hibikaze
+          type: user
+        html: "<p>We performed inference under the following conditions.<br>\u30FB\
+          transformers==4.33.1<br>\u30FBUse two GPUs (with device_map=\"auto\")<br>\u30FB\
+          8bit quantized<br>\u30FBUse peft</p>\n<p>When using beam search as the decoding\
+          \ strategy, the following error occurred.</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[11], line 93\n     91 with torch.cuda.amp.autocast():\n     92 \
+          \    with torch.no_grad():\n---&gt; 93         output_tokens = peft_model.generate(\n\
+          \     94             **batch,\n     95             max_new_tokens=max_new_token_len,\n\
+          \     96             do_sample=False,\n     97             num_beams=2,\n\
+          \     98             #num_beam_groups=2,\n     99             #no_repeat_ngram_size=2,\n\
+          \    100             #early_stopping=True,\n    101             #penalty_alpha=0.6,\n\
+          \    102             #temperature=1.0,\n    103             #top_k=4,\n\
+          \    104             #top_p=0.95,\n    105             #diversity_penalty=1.0,\n\
+          \    106             #repetition_penalty=1.0,\n    107             #bad_words_ids=,\n\
+          \    108             #force_words_ids=,\n    109             #constraints=,\n\
+          \    110             pad_token_id=tokenizer.pad_token_id,\n    111     \
+          \        eos_token_id=tokenizer.eos_token_id,\n    112         )\n    114\
+          \ decoded_output = tokenizer.decode(output_tokens[0], skip_special_tokens=True)\n\
+          \    115 print(decoded_output)\n\nFile /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:975,\
+          \ in generate(self, **kwargs)\n    969     warnings.warn(\"Token type ids\
+          \ are not supported for parameter efficient tuning. Ignoring token type\
+          \ ids\")\n    970     kwargs[\"token_type_ids\"] = None\n    971 kwargs.update(\n\
+          \    972     {\n    973         \"attention_mask\": attention_mask,\n  \
+          \  974         \"labels\": labels,\n--&gt; 975         \"output_attentions\"\
+          : output_attentions,\n    976         \"output_hidden_states\": output_hidden_states,\n\
+          \    977         \"return_dict\": return_dict,\n    978     }\n    979 )\n\
+          \    981 if peft_config.peft_type == PeftType.PREFIX_TUNING:\n    982  \
+          \   past_key_values = self.get_prompt(batch_size)\n\nFile /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator.&lt;locals&gt;.decorate_context(*args, **kwargs)\n\
+          \    112 @functools.wraps(func)\n    113 def decorate_context(*args, **kwargs):\n\
+          \    114     with ctx_factory():\n--&gt; 115         return func(*args,\
+          \ **kwargs)\n\nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1681,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\n\
+          \   1674     input_ids, model_kwargs = self._expand_inputs_for_generation(\n\
+          \   1675         input_ids=input_ids,\n   1676         expand_size=generation_config.num_beams,\n\
+          \   1677         is_encoder_decoder=self.config.is_encoder_decoder,\n  \
+          \ 1678         **model_kwargs,\n   1679     )\n   1680     # 13. run beam\
+          \ search\n-&gt; 1681     return self.beam_search(\n   1682         input_ids,\n\
+          \   1683         beam_scorer,\n   1684         logits_processor=logits_processor,\n\
+          \   1685         stopping_criteria=stopping_criteria,\n   1686         pad_token_id=generation_config.pad_token_id,\n\
+          \   1687         eos_token_id=generation_config.eos_token_id,\n   1688 \
+          \        output_scores=generation_config.output_scores,\n   1689       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1690         synced_gpus=synced_gpus,\n   1691         **model_kwargs,\n\
+          \   1692     )\n   1694 elif generation_mode == GenerationMode.BEAM_SAMPLE:\n\
+          \   1695     # 11. prepare logits warper\n   1696     logits_warper = self._get_logits_warper(generation_config)\n\
+          \nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:3091,\
+          \ in GenerationMixin.beam_search(self, input_ids, beam_scorer, logits_processor,\
+          \ stopping_criteria, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ **model_kwargs)\n   3087 model_kwargs = self._update_model_kwargs_for_generation(\n\
+          \   3088     outputs, model_kwargs, is_encoder_decoder=self.config.is_encoder_decoder\n\
+          \   3089 )\n   3090 if model_kwargs[\"past_key_values\"] is not None:\n\
+          -&gt; 3091     model_kwargs[\"past_key_values\"] = self._reorder_cache(model_kwargs[\"\
+          past_key_values\"], beam_idx)\n   3093 if return_dict_in_generate and output_scores:\n\
+          \   3094     beam_indices = tuple((beam_indices[beam_idx[i]] + (beam_idx[i],)\
+          \ for i in range(len(beam_indices))))\n\nFile ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+          \ in PlamoForCausalLM._reorder_cache(past_key_values, beam_idx)\n    702\
+          \ reordered_past: Tuple[Any, ...] = ()\n    703 for layer_past in past_key_values:\n\
+          --&gt; 704     reordered_past += (tuple(past_state.index_select(0, beam_idx)\
+          \ for past_state in layer_past),)\n    705 return reordered_past\n\nFile\
+          \ ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+          \ in &lt;genexpr&gt;(.0)\n    702 reordered_past: Tuple[Any, ...] = ()\n\
+          \    703 for layer_past in past_key_values:\n--&gt; 704     reordered_past\
+          \ += (tuple(past_state.index_select(0, beam_idx) for past_state in layer_past),)\n\
+          \    705 return reordered_past\n\nRuntimeError: Expected all tensors to\
+          \ be on the same device, but found at least two devices, cuda:1 and cuda:0!\
+          \ (when checking argument for argument index in method wrapper_CUDA__index_select)\n\
+          </code></pre>\n<p>I was able to prevent the error by modifying \"modeling_plamo.py\"\
+          \ as follows. (The repository below was created for verification purposes\
+          \ and will be deleted as soon as it is no longer needed)<br><a href=\"https://huggingface.co/hibikaze/change-modeling-plamo-13b/commit/1435eef93e8ed93a3faa1592080bdf0c08765933\"\
+          >https://huggingface.co/hibikaze/change-modeling-plamo-13b/commit/1435eef93e8ed93a3faa1592080bdf0c08765933</a></p>\n\
+          <p>(reference)<br><a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/blob/2d8ee9817c0ad750b37e7fefef692a5c473b5770/src/transformers/models/opt/modeling_opt.py#L1007\"\
+          >https://github.com/huggingface/transformers/blob/2d8ee9817c0ad750b37e7fefef692a5c473b5770/src/transformers/models/opt/modeling_opt.py#L1007</a></p>\n"
+        raw: "We performed inference under the following conditions.\r\n\u30FBtransformers==4.33.1\r\
+          \n\u30FBUse two GPUs (with device_map=\"auto\")\r\n\u30FB8bit quantized\r\
+          \n\u30FBUse peft\r\n\r\nWhen using beam search as the decoding strategy,\
+          \ the following error occurred.\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\nCell In[11], line 93\r\n     91 with torch.cuda.amp.autocast():\r\
+          \n     92     with torch.no_grad():\r\n---> 93         output_tokens = peft_model.generate(\r\
+          \n     94             **batch,\r\n     95             max_new_tokens=max_new_token_len,\r\
+          \n     96             do_sample=False,\r\n     97             num_beams=2,\r\
+          \n     98             #num_beam_groups=2,\r\n     99             #no_repeat_ngram_size=2,\r\
+          \n    100             #early_stopping=True,\r\n    101             #penalty_alpha=0.6,\r\
+          \n    102             #temperature=1.0,\r\n    103             #top_k=4,\r\
+          \n    104             #top_p=0.95,\r\n    105             #diversity_penalty=1.0,\r\
+          \n    106             #repetition_penalty=1.0,\r\n    107             #bad_words_ids=,\r\
+          \n    108             #force_words_ids=,\r\n    109             #constraints=,\r\
+          \n    110             pad_token_id=tokenizer.pad_token_id,\r\n    111  \
+          \           eos_token_id=tokenizer.eos_token_id,\r\n    112         )\r\n\
+          \    114 decoded_output = tokenizer.decode(output_tokens[0], skip_special_tokens=True)\r\
+          \n    115 print(decoded_output)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:975,\
+          \ in generate(self, **kwargs)\r\n    969     warnings.warn(\"Token type\
+          \ ids are not supported for parameter efficient tuning. Ignoring token type\
+          \ ids\")\r\n    970     kwargs[\"token_type_ids\"] = None\r\n    971 kwargs.update(\r\
+          \n    972     {\r\n    973         \"attention_mask\": attention_mask,\r\
+          \n    974         \"labels\": labels,\r\n--> 975         \"output_attentions\"\
+          : output_attentions,\r\n    976         \"output_hidden_states\": output_hidden_states,\r\
+          \n    977         \"return_dict\": return_dict,\r\n    978     }\r\n   \
+          \ 979 )\r\n    981 if peft_config.peft_type == PeftType.PREFIX_TUNING:\r\
+          \n    982     past_key_values = self.get_prompt(batch_size)\r\n\r\nFile\
+          \ /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\r\n  \
+          \  112 @functools.wraps(func)\r\n    113 def decorate_context(*args, **kwargs):\r\
+          \n    114     with ctx_factory():\r\n--> 115         return func(*args,\
+          \ **kwargs)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1681,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\r\
+          \n   1674     input_ids, model_kwargs = self._expand_inputs_for_generation(\r\
+          \n   1675         input_ids=input_ids,\r\n   1676         expand_size=generation_config.num_beams,\r\
+          \n   1677         is_encoder_decoder=self.config.is_encoder_decoder,\r\n\
+          \   1678         **model_kwargs,\r\n   1679     )\r\n   1680     # 13. run\
+          \ beam search\r\n-> 1681     return self.beam_search(\r\n   1682       \
+          \  input_ids,\r\n   1683         beam_scorer,\r\n   1684         logits_processor=logits_processor,\r\
+          \n   1685         stopping_criteria=stopping_criteria,\r\n   1686      \
+          \   pad_token_id=generation_config.pad_token_id,\r\n   1687         eos_token_id=generation_config.eos_token_id,\r\
+          \n   1688         output_scores=generation_config.output_scores,\r\n   1689\
+          \         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+          \n   1690         synced_gpus=synced_gpus,\r\n   1691         **model_kwargs,\r\
+          \n   1692     )\r\n   1694 elif generation_mode == GenerationMode.BEAM_SAMPLE:\r\
+          \n   1695     # 11. prepare logits warper\r\n   1696     logits_warper =\
+          \ self._get_logits_warper(generation_config)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:3091,\
+          \ in GenerationMixin.beam_search(self, input_ids, beam_scorer, logits_processor,\
+          \ stopping_criteria, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ **model_kwargs)\r\n   3087 model_kwargs = self._update_model_kwargs_for_generation(\r\
+          \n   3088     outputs, model_kwargs, is_encoder_decoder=self.config.is_encoder_decoder\r\
+          \n   3089 )\r\n   3090 if model_kwargs[\"past_key_values\"] is not None:\r\
+          \n-> 3091     model_kwargs[\"past_key_values\"] = self._reorder_cache(model_kwargs[\"\
+          past_key_values\"], beam_idx)\r\n   3093 if return_dict_in_generate and\
+          \ output_scores:\r\n   3094     beam_indices = tuple((beam_indices[beam_idx[i]]\
+          \ + (beam_idx[i],) for i in range(len(beam_indices))))\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+          \ in PlamoForCausalLM._reorder_cache(past_key_values, beam_idx)\r\n    702\
+          \ reordered_past: Tuple[Any, ...] = ()\r\n    703 for layer_past in past_key_values:\r\
+          \n--> 704     reordered_past += (tuple(past_state.index_select(0, beam_idx)\
+          \ for past_state in layer_past),)\r\n    705 return reordered_past\r\n\r\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+          \ in <genexpr>(.0)\r\n    702 reordered_past: Tuple[Any, ...] = ()\r\n \
+          \   703 for layer_past in past_key_values:\r\n--> 704     reordered_past\
+          \ += (tuple(past_state.index_select(0, beam_idx) for past_state in layer_past),)\r\
+          \n    705 return reordered_past\r\n\r\nRuntimeError: Expected all tensors\
+          \ to be on the same device, but found at least two devices, cuda:1 and cuda:0!\
+          \ (when checking argument for argument index in method wrapper_CUDA__index_select)\r\
+          \n```\r\n\r\nI was able to prevent the error by modifying \"modeling_plamo.py\"\
+          \ as follows. (The repository below was created for verification purposes\
+          \ and will be deleted as soon as it is no longer needed)\r\nhttps://huggingface.co/hibikaze/change-modeling-plamo-13b/commit/1435eef93e8ed93a3faa1592080bdf0c08765933\r\
+          \n\r\n(reference)\r\nhttps://github.com/huggingface/transformers/blob/2d8ee9817c0ad750b37e7fefef692a5c473b5770/src/transformers/models/opt/modeling_opt.py#L1007"
+        updatedAt: '2023-10-04T17:57:35.722Z'
+      numEdits: 0
+      reactions: []
+    id: 651da78f3139749ac660b496
+    type: comment
+  author: hibikaze
+  content: "We performed inference under the following conditions.\r\n\u30FBtransformers==4.33.1\r\
+    \n\u30FBUse two GPUs (with device_map=\"auto\")\r\n\u30FB8bit quantized\r\n\u30FB\
+    Use peft\r\n\r\nWhen using beam search as the decoding strategy, the following\
+    \ error occurred.\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \nCell In[11], line 93\r\n     91 with torch.cuda.amp.autocast():\r\n     92 \
+    \    with torch.no_grad():\r\n---> 93         output_tokens = peft_model.generate(\r\
+    \n     94             **batch,\r\n     95             max_new_tokens=max_new_token_len,\r\
+    \n     96             do_sample=False,\r\n     97             num_beams=2,\r\n\
+    \     98             #num_beam_groups=2,\r\n     99             #no_repeat_ngram_size=2,\r\
+    \n    100             #early_stopping=True,\r\n    101             #penalty_alpha=0.6,\r\
+    \n    102             #temperature=1.0,\r\n    103             #top_k=4,\r\n \
+    \   104             #top_p=0.95,\r\n    105             #diversity_penalty=1.0,\r\
+    \n    106             #repetition_penalty=1.0,\r\n    107             #bad_words_ids=,\r\
+    \n    108             #force_words_ids=,\r\n    109             #constraints=,\r\
+    \n    110             pad_token_id=tokenizer.pad_token_id,\r\n    111        \
+    \     eos_token_id=tokenizer.eos_token_id,\r\n    112         )\r\n    114 decoded_output\
+    \ = tokenizer.decode(output_tokens[0], skip_special_tokens=True)\r\n    115 print(decoded_output)\r\
+    \n\r\nFile /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:975, in\
+    \ generate(self, **kwargs)\r\n    969     warnings.warn(\"Token type ids are not\
+    \ supported for parameter efficient tuning. Ignoring token type ids\")\r\n   \
+    \ 970     kwargs[\"token_type_ids\"] = None\r\n    971 kwargs.update(\r\n    972\
+    \     {\r\n    973         \"attention_mask\": attention_mask,\r\n    974    \
+    \     \"labels\": labels,\r\n--> 975         \"output_attentions\": output_attentions,\r\
+    \n    976         \"output_hidden_states\": output_hidden_states,\r\n    977 \
+    \        \"return_dict\": return_dict,\r\n    978     }\r\n    979 )\r\n    981\
+    \ if peft_config.peft_type == PeftType.PREFIX_TUNING:\r\n    982     past_key_values\
+    \ = self.get_prompt(batch_size)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115,\
+    \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\r\n    112 @functools.wraps(func)\r\
+    \n    113 def decorate_context(*args, **kwargs):\r\n    114     with ctx_factory():\r\
+    \n--> 115         return func(*args, **kwargs)\r\n\r\nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1681,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\r\n   1674  \
+    \   input_ids, model_kwargs = self._expand_inputs_for_generation(\r\n   1675 \
+    \        input_ids=input_ids,\r\n   1676         expand_size=generation_config.num_beams,\r\
+    \n   1677         is_encoder_decoder=self.config.is_encoder_decoder,\r\n   1678\
+    \         **model_kwargs,\r\n   1679     )\r\n   1680     # 13. run beam search\r\
+    \n-> 1681     return self.beam_search(\r\n   1682         input_ids,\r\n   1683\
+    \         beam_scorer,\r\n   1684         logits_processor=logits_processor,\r\
+    \n   1685         stopping_criteria=stopping_criteria,\r\n   1686         pad_token_id=generation_config.pad_token_id,\r\
+    \n   1687         eos_token_id=generation_config.eos_token_id,\r\n   1688    \
+    \     output_scores=generation_config.output_scores,\r\n   1689         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+    \n   1690         synced_gpus=synced_gpus,\r\n   1691         **model_kwargs,\r\
+    \n   1692     )\r\n   1694 elif generation_mode == GenerationMode.BEAM_SAMPLE:\r\
+    \n   1695     # 11. prepare logits warper\r\n   1696     logits_warper = self._get_logits_warper(generation_config)\r\
+    \n\r\nFile /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:3091,\
+    \ in GenerationMixin.beam_search(self, input_ids, beam_scorer, logits_processor,\
+    \ stopping_criteria, max_length, pad_token_id, eos_token_id, output_attentions,\
+    \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus, **model_kwargs)\r\
+    \n   3087 model_kwargs = self._update_model_kwargs_for_generation(\r\n   3088\
+    \     outputs, model_kwargs, is_encoder_decoder=self.config.is_encoder_decoder\r\
+    \n   3089 )\r\n   3090 if model_kwargs[\"past_key_values\"] is not None:\r\n->\
+    \ 3091     model_kwargs[\"past_key_values\"] = self._reorder_cache(model_kwargs[\"\
+    past_key_values\"], beam_idx)\r\n   3093 if return_dict_in_generate and output_scores:\r\
+    \n   3094     beam_indices = tuple((beam_indices[beam_idx[i]] + (beam_idx[i],)\
+    \ for i in range(len(beam_indices))))\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+    \ in PlamoForCausalLM._reorder_cache(past_key_values, beam_idx)\r\n    702 reordered_past:\
+    \ Tuple[Any, ...] = ()\r\n    703 for layer_past in past_key_values:\r\n--> 704\
+    \     reordered_past += (tuple(past_state.index_select(0, beam_idx) for past_state\
+    \ in layer_past),)\r\n    705 return reordered_past\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/pfnet/plamo-13b/e28ebda68a728f36f9279afe14cb68e94ac95eff/modeling_plamo.py:704,\
+    \ in <genexpr>(.0)\r\n    702 reordered_past: Tuple[Any, ...] = ()\r\n    703\
+    \ for layer_past in past_key_values:\r\n--> 704     reordered_past += (tuple(past_state.index_select(0,\
+    \ beam_idx) for past_state in layer_past),)\r\n    705 return reordered_past\r\
+    \n\r\nRuntimeError: Expected all tensors to be on the same device, but found at\
+    \ least two devices, cuda:1 and cuda:0! (when checking argument for argument index\
+    \ in method wrapper_CUDA__index_select)\r\n```\r\n\r\nI was able to prevent the\
+    \ error by modifying \"modeling_plamo.py\" as follows. (The repository below was\
+    \ created for verification purposes and will be deleted as soon as it is no longer\
+    \ needed)\r\nhttps://huggingface.co/hibikaze/change-modeling-plamo-13b/commit/1435eef93e8ed93a3faa1592080bdf0c08765933\r\
+    \n\r\n(reference)\r\nhttps://github.com/huggingface/transformers/blob/2d8ee9817c0ad750b37e7fefef692a5c473b5770/src/transformers/models/opt/modeling_opt.py#L1007"
+  created_at: 2023-10-04 16:57:35+00:00
+  edited: false
+  hidden: false
+  id: 651da78f3139749ac660b496
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ICTuyjzcut5mWWWPYXC_X.jpeg?w=200&h=200&f=face
+      fullname: Daiki Higurashi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: dhigurashi
+      type: user
+    createdAt: '2023-10-06T05:16:16.000Z'
+    data:
+      edited: false
+      editors:
+      - dhigurashi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9449363946914673
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ICTuyjzcut5mWWWPYXC_X.jpeg?w=200&h=200&f=face
+          fullname: Daiki Higurashi
+          isHf: false
+          isPro: false
+          name: dhigurashi
+          type: user
+        html: '<p>Thank you for your suggestion! Your proposed change seems beneficial.
+          If you''re interested, would you be willing to submit a PR? If not, don''t
+          worry, we can implement the change on our end. Either way, we appreciate
+          your input!</p>
+
+          '
+        raw: Thank you for your suggestion! Your proposed change seems beneficial.
+          If you're interested, would you be willing to submit a PR? If not, don't
+          worry, we can implement the change on our end. Either way, we appreciate
+          your input!
+        updatedAt: '2023-10-06T05:16:16.113Z'
+      numEdits: 0
+      reactions: []
+    id: 651f9820bde3dc56b9d8c440
+    type: comment
+  author: dhigurashi
+  content: Thank you for your suggestion! Your proposed change seems beneficial. If
+    you're interested, would you be willing to submit a PR? If not, don't worry, we
+    can implement the change on our end. Either way, we appreciate your input!
+  created_at: 2023-10-06 04:16:16+00:00
+  edited: false
+  hidden: false
+  id: 651f9820bde3dc56b9d8c440
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665401046570-627a044ccd5b87302d3cd79c.jpeg?w=200&h=200&f=face
+      fullname: Hiroki Yamaguchi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: hibikaze
+      type: user
+    createdAt: '2023-10-06T05:25:15.000Z'
+    data:
+      edited: false
+      editors:
+      - hibikaze
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9249162077903748
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1665401046570-627a044ccd5b87302d3cd79c.jpeg?w=200&h=200&f=face
+          fullname: Hiroki Yamaguchi
+          isHf: false
+          isPro: false
+          name: hibikaze
+          type: user
+        html: '<p>Thank you for the confirmation.<br>I''ve submitted a pull request.</p>
+
+          '
+        raw: 'Thank you for the confirmation.
+
+          I''ve submitted a pull request.'
+        updatedAt: '2023-10-06T05:25:15.707Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - sokada
+        - dhigurashi
+    id: 651f9a3b854b66fbfd831c10
+    type: comment
+  author: hibikaze
+  content: 'Thank you for the confirmation.
+
+    I''ve submitted a pull request.'
+  created_at: 2023-10-06 04:25:15+00:00
+  edited: false
+  hidden: false
+  id: 651f9a3b854b66fbfd831c10
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ICTuyjzcut5mWWWPYXC_X.jpeg?w=200&h=200&f=face
+      fullname: Daiki Higurashi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: dhigurashi
+      type: user
+    createdAt: '2023-10-10T06:23:45.000Z'
+    data:
+      edited: false
+      editors:
+      - dhigurashi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9994364976882935
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ICTuyjzcut5mWWWPYXC_X.jpeg?w=200&h=200&f=face
+          fullname: Daiki Higurashi
+          isHf: false
+          isPro: false
+          name: dhigurashi
+          type: user
+        html: '<p>Closed by <a href="/pfnet/plamo-13b/discussions/6">#6</a></p>
+
+          '
+        raw: 'Closed by #6'
+        updatedAt: '2023-10-10T06:23:45.096Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6524edf1563d19d784a946ca
+    id: 6524edf1563d19d784a946c4
+    type: comment
+  author: dhigurashi
+  content: 'Closed by #6'
+  created_at: 2023-10-10 05:23:45+00:00
+  edited: false
+  hidden: false
+  id: 6524edf1563d19d784a946c4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/ICTuyjzcut5mWWWPYXC_X.jpeg?w=200&h=200&f=face
+      fullname: Daiki Higurashi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: dhigurashi
+      type: user
+    createdAt: '2023-10-10T06:23:45.000Z'
+    data:
+      status: closed
+    id: 6524edf1563d19d784a946ca
+    type: status-change
+  author: dhigurashi
+  created_at: 2023-10-10 05:23:45+00:00
+  id: 6524edf1563d19d784a946ca
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: pfnet/plamo-13b
+repo_type: model
+status: closed
+target_branch: null
+title: Beam search fails when running on multiple GPUs

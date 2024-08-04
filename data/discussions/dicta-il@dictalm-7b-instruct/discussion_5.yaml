@@ -1,0 +1,260 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: sivan22
+conflicting_files: null
+created_at: 2023-11-05 12:35:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/640cf6843623f6a56ddce7b7/4B04RWSBGjtRu6aXRlpHX.jpeg?w=200&h=200&f=face
+      fullname: Sivan Ratson
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sivan22
+      type: user
+    createdAt: '2023-11-05T12:35:03.000Z'
+    data:
+      edited: false
+      editors:
+      - sivan22
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46158352494239807
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/640cf6843623f6a56ddce7b7/4B04RWSBGjtRu6aXRlpHX.jpeg?w=200&h=200&f=face
+          fullname: Sivan Ratson
+          isHf: false
+          isPro: false
+          name: sivan22
+          type: user
+        html: "<p>I was trying to finetune the model using LoRA and 4-bit quantization.\
+          \ i've  used PEFT and SFTTrainer from TRL.<br>but i was not  sure which\
+          \ layers  i should pick for training with LoRA (<code>target_modules</code>\
+          \ in the code) and which should be trained directly (<code>modules_to_save</code>\
+          \ in the code).</p>\n<p><span data-props=\"{&quot;user&quot;:&quot;Shaltiel&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Shaltiel\"\
+          >@<span class=\"underline\">Shaltiel</span></a></span>\n\n\t</span></span>\
+          \ , can you please direct me on this?</p>\n<p>thanks!</p>\n<p>the code:\
+          \ </p>\n<pre><code>\nimport os, torch, logging\nfrom datasets import load_dataset\n\
+          from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,\
+          \ HfArgumentParser, TrainingArguments, pipeline\nfrom peft import LoraConfig,\
+          \ PeftModel\nfrom trl import SFTTrainer\n \n# Dataset\ndata_name = \"Norod78/hewiki-20220901-articles-dataset\"\
+          \ntraining_data = load_dataset(data_name, split='train[0:1000]')\n# Model\
+          \ and tokenizer names\nbase_model_name = \"dicta-il/dictalm-7b\"\nrefined_model\
+          \ = \"dictalm-7b-finetuned\"\n \n# Tokenizer\ntokenizer = AutoTokenizer.from_pretrained(base_model_name,\
+          \ trust_remote_code=True)\n \n# Quantization Config\nquant_config = BitsAndBytesConfig(\n\
+          \    load_in_4bit=True,\n    bnb_4bit_compute_dtype=torch.float16,\n   \
+          \ bnb_4bit_use_double_quant=True\n)\n \n# Model\nbase_model = AutoModelForCausalLM.from_pretrained(\n\
+          \    base_model_name,\n    quantization_config=quant_config,\n    device_map={\"\
+          \": 0},\n    trust_remote_code=True\n)\nbase_model.config.use_cache = False\n\
+          base_model.config.pretraining_tp = 1\n \n# LoRA Config\npeft_parameters\
+          \ = LoraConfig(\n    lora_alpha=16,\n    lora_dropout=0.1,\n    r=8,\n \
+          \   bias=\"none\",\n    task_type=\"CAUSAL_LM\",    \n    target_modules=[r\"\
+          megatron_gpt.layers.[0-31].self_attention.dense\",r\"megatron_gpt.layers.[0-31].mlp.dense_h_to_4h\"\
+          ,\n                    r\"megatron_gpt.layers.[0-31].mlp.dense_4h_to_h\"\
+          ,r\"megatron_gpt.layers.[0-31].self_attention.query_key_value\"]\n    save_modules=None\n\
+          )\nfrom peft import get_peft_model\npeft_model = get_peft_model(base_model,\
+          \ peft_parameters)\npeft_model.print_trainable_parameters()\n \n# Training\
+          \ Params\ntrain_params = TrainingArguments(\n    output_dir=\"./results_modified\"\
+          ,\n    num_train_epochs=1,\n    per_device_train_batch_size=4,\n    gradient_accumulation_steps=1,\n\
+          \    optim=\"paged_adamw_32bit\",\n    save_steps=25,\n    logging_steps=25,\n\
+          \    learning_rate=2e-4,\n    weight_decay=0.001,\n    fp16=False,\n   \
+          \ bf16=False,\n    max_grad_norm=0.3,\n    max_steps=-1,\n    warmup_ratio=0.03,\n\
+          \    group_by_length=True,\n    lr_scheduler_type=\"constant\"\n)\n \n#\
+          \ Trainer\nfine_tuning = SFTTrainer(\n    model=base_model,\n    train_dataset=training_data,\n\
+          \    peft_config=peft_parameters,\n    dataset_text_field=\"text\",\n  \
+          \  tokenizer=tokenizer,\n    args=train_params\n)\n \n# Training\nfine_tuning.train()\n\
+          \ \n# Save Model\nfine_tuning.model.save_pretrained(refined_model)\n</code></pre>\n"
+        raw: "I was trying to finetune the model using LoRA and 4-bit quantization.\
+          \ i've  used PEFT and SFTTrainer from TRL.\r\nbut i was not  sure which\
+          \ layers  i should pick for training with LoRA (`target_modules` in the\
+          \ code) and which should be trained directly (`modules_to_save` in the code).\r\
+          \n\r\n@Shaltiel , can you please direct me on this?\r\n\r\nthanks!\r\n\r\
+          \nthe code: \r\n\r\n```\r\n\r\nimport os, torch, logging\r\nfrom datasets\
+          \ import load_dataset\r\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer, BitsAndBytesConfig, HfArgumentParser, TrainingArguments,\
+          \ pipeline\r\nfrom peft import LoraConfig, PeftModel\r\nfrom trl import\
+          \ SFTTrainer\r\n \r\n# Dataset\r\ndata_name = \"Norod78/hewiki-20220901-articles-dataset\"\
+          \r\ntraining_data = load_dataset(data_name, split='train[0:1000]')\r\n#\
+          \ Model and tokenizer names\r\nbase_model_name = \"dicta-il/dictalm-7b\"\
+          \r\nrefined_model = \"dictalm-7b-finetuned\"\r\n \r\n# Tokenizer\r\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)\r\
+          \n \r\n# Quantization Config\r\nquant_config = BitsAndBytesConfig(\r\n \
+          \   load_in_4bit=True,\r\n    bnb_4bit_compute_dtype=torch.float16,\r\n\
+          \    bnb_4bit_use_double_quant=True\r\n)\r\n \r\n# Model\r\nbase_model =\
+          \ AutoModelForCausalLM.from_pretrained(\r\n    base_model_name,\r\n    quantization_config=quant_config,\r\
+          \n    device_map={\"\": 0},\r\n    trust_remote_code=True\r\n)\r\nbase_model.config.use_cache\
+          \ = False\r\nbase_model.config.pretraining_tp = 1\r\n \r\n# LoRA Config\r\
+          \npeft_parameters = LoraConfig(\r\n    lora_alpha=16,\r\n    lora_dropout=0.1,\r\
+          \n    r=8,\r\n    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\",    \r\n\
+          \    target_modules=[r\"megatron_gpt.layers.[0-31].self_attention.dense\"\
+          ,r\"megatron_gpt.layers.[0-31].mlp.dense_h_to_4h\",\r\n                \
+          \    r\"megatron_gpt.layers.[0-31].mlp.dense_4h_to_h\",r\"megatron_gpt.layers.[0-31].self_attention.query_key_value\"\
+          ]\r\n    save_modules=None\r\n)\r\nfrom peft import get_peft_model\r\npeft_model\
+          \ = get_peft_model(base_model, peft_parameters)\r\npeft_model.print_trainable_parameters()\r\
+          \n \r\n# Training Params\r\ntrain_params = TrainingArguments(\r\n    output_dir=\"\
+          ./results_modified\",\r\n    num_train_epochs=1,\r\n    per_device_train_batch_size=4,\r\
+          \n    gradient_accumulation_steps=1,\r\n    optim=\"paged_adamw_32bit\"\
+          ,\r\n    save_steps=25,\r\n    logging_steps=25,\r\n    learning_rate=2e-4,\r\
+          \n    weight_decay=0.001,\r\n    fp16=False,\r\n    bf16=False,\r\n    max_grad_norm=0.3,\r\
+          \n    max_steps=-1,\r\n    warmup_ratio=0.03,\r\n    group_by_length=True,\r\
+          \n    lr_scheduler_type=\"constant\"\r\n)\r\n \r\n# Trainer\r\nfine_tuning\
+          \ = SFTTrainer(\r\n    model=base_model,\r\n    train_dataset=training_data,\r\
+          \n    peft_config=peft_parameters,\r\n    dataset_text_field=\"text\",\r\
+          \n    tokenizer=tokenizer,\r\n    args=train_params\r\n)\r\n \r\n# Training\r\
+          \nfine_tuning.train()\r\n \r\n# Save Model\r\nfine_tuning.model.save_pretrained(refined_model)\r\
+          \n\r\n```\r\n"
+        updatedAt: '2023-11-05T12:35:03.748Z'
+      numEdits: 0
+      reactions: []
+    id: 65478bf762fae6b2a76eace2
+    type: comment
+  author: sivan22
+  content: "I was trying to finetune the model using LoRA and 4-bit quantization.\
+    \ i've  used PEFT and SFTTrainer from TRL.\r\nbut i was not  sure which layers\
+    \  i should pick for training with LoRA (`target_modules` in the code) and which\
+    \ should be trained directly (`modules_to_save` in the code).\r\n\r\n@Shaltiel\
+    \ , can you please direct me on this?\r\n\r\nthanks!\r\n\r\nthe code: \r\n\r\n\
+    ```\r\n\r\nimport os, torch, logging\r\nfrom datasets import load_dataset\r\n\
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,\
+    \ HfArgumentParser, TrainingArguments, pipeline\r\nfrom peft import LoraConfig,\
+    \ PeftModel\r\nfrom trl import SFTTrainer\r\n \r\n# Dataset\r\ndata_name = \"\
+    Norod78/hewiki-20220901-articles-dataset\"\r\ntraining_data = load_dataset(data_name,\
+    \ split='train[0:1000]')\r\n# Model and tokenizer names\r\nbase_model_name = \"\
+    dicta-il/dictalm-7b\"\r\nrefined_model = \"dictalm-7b-finetuned\"\r\n \r\n# Tokenizer\r\
+    \ntokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)\r\
+    \n \r\n# Quantization Config\r\nquant_config = BitsAndBytesConfig(\r\n    load_in_4bit=True,\r\
+    \n    bnb_4bit_compute_dtype=torch.float16,\r\n    bnb_4bit_use_double_quant=True\r\
+    \n)\r\n \r\n# Model\r\nbase_model = AutoModelForCausalLM.from_pretrained(\r\n\
+    \    base_model_name,\r\n    quantization_config=quant_config,\r\n    device_map={\"\
+    \": 0},\r\n    trust_remote_code=True\r\n)\r\nbase_model.config.use_cache = False\r\
+    \nbase_model.config.pretraining_tp = 1\r\n \r\n# LoRA Config\r\npeft_parameters\
+    \ = LoraConfig(\r\n    lora_alpha=16,\r\n    lora_dropout=0.1,\r\n    r=8,\r\n\
+    \    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\",    \r\n    target_modules=[r\"\
+    megatron_gpt.layers.[0-31].self_attention.dense\",r\"megatron_gpt.layers.[0-31].mlp.dense_h_to_4h\"\
+    ,\r\n                    r\"megatron_gpt.layers.[0-31].mlp.dense_4h_to_h\",r\"\
+    megatron_gpt.layers.[0-31].self_attention.query_key_value\"]\r\n    save_modules=None\r\
+    \n)\r\nfrom peft import get_peft_model\r\npeft_model = get_peft_model(base_model,\
+    \ peft_parameters)\r\npeft_model.print_trainable_parameters()\r\n \r\n# Training\
+    \ Params\r\ntrain_params = TrainingArguments(\r\n    output_dir=\"./results_modified\"\
+    ,\r\n    num_train_epochs=1,\r\n    per_device_train_batch_size=4,\r\n    gradient_accumulation_steps=1,\r\
+    \n    optim=\"paged_adamw_32bit\",\r\n    save_steps=25,\r\n    logging_steps=25,\r\
+    \n    learning_rate=2e-4,\r\n    weight_decay=0.001,\r\n    fp16=False,\r\n  \
+    \  bf16=False,\r\n    max_grad_norm=0.3,\r\n    max_steps=-1,\r\n    warmup_ratio=0.03,\r\
+    \n    group_by_length=True,\r\n    lr_scheduler_type=\"constant\"\r\n)\r\n \r\n\
+    # Trainer\r\nfine_tuning = SFTTrainer(\r\n    model=base_model,\r\n    train_dataset=training_data,\r\
+    \n    peft_config=peft_parameters,\r\n    dataset_text_field=\"text\",\r\n   \
+    \ tokenizer=tokenizer,\r\n    args=train_params\r\n)\r\n \r\n# Training\r\nfine_tuning.train()\r\
+    \n \r\n# Save Model\r\nfine_tuning.model.save_pretrained(refined_model)\r\n\r\n\
+    ```\r\n"
+  created_at: 2023-11-05 12:35:03+00:00
+  edited: false
+  hidden: false
+  id: 65478bf762fae6b2a76eace2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/668dfce780e1681234f9116822592119.svg
+      fullname: Shmidman
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Shaltiel
+      type: user
+    createdAt: '2023-11-05T13:55:56.000Z'
+    data:
+      edited: false
+      editors:
+      - Shaltiel
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.540915310382843
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/668dfce780e1681234f9116822592119.svg
+          fullname: Shmidman
+          isHf: false
+          isPro: false
+          name: Shaltiel
+          type: user
+        html: "<p>When I've fine-tuned the model using QLoRA I used the default settings\
+          \ in their repository, and it worked quite well. The target_modules were\
+          \ every Linear layer in the model.</p>\n<p>Found using this code:</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">find_all_linear_names</span>(<span\
+          \ class=\"hljs-params\">args, model</span>):\n    cls = bnb.nn.Linear4bit\
+          \ <span class=\"hljs-keyword\">if</span> args.bits == <span class=\"hljs-number\"\
+          >4</span> <span class=\"hljs-keyword\">else</span> (bnb.nn.Linear8bitLt\
+          \ <span class=\"hljs-keyword\">if</span> args.bits == <span class=\"hljs-number\"\
+          >8</span> <span class=\"hljs-keyword\">else</span> torch.nn.Linear)\n  \
+          \  lora_module_names = <span class=\"hljs-built_in\">set</span>()\n    <span\
+          \ class=\"hljs-keyword\">for</span> name, module <span class=\"hljs-keyword\"\
+          >in</span> model.named_modules():\n        <span class=\"hljs-keyword\"\
+          >if</span> <span class=\"hljs-built_in\">isinstance</span>(module, cls):\n\
+          \            names = name.split(<span class=\"hljs-string\">'.'</span>)\n\
+          \            lora_module_names.add(names[<span class=\"hljs-number\">0</span>]\
+          \ <span class=\"hljs-keyword\">if</span> <span class=\"hljs-built_in\">len</span>(names)\
+          \ == <span class=\"hljs-number\">1</span> <span class=\"hljs-keyword\">else</span>\
+          \ <span class=\"hljs-string\">'.'</span> + names[-<span class=\"hljs-number\"\
+          >1</span>])\n\n\n    <span class=\"hljs-keyword\">if</span> <span class=\"\
+          hljs-string\">'lm_head'</span> <span class=\"hljs-keyword\">in</span> lora_module_names:\
+          \ <span class=\"hljs-comment\"># needed for 16-bit</span>\n        lora_module_names.remove(<span\
+          \ class=\"hljs-string\">'lm_head'</span>)\n    <span class=\"hljs-keyword\"\
+          >return</span> <span class=\"hljs-built_in\">list</span>(lora_module_names)\n\
+          </code></pre>\n"
+        raw: "When I've fine-tuned the model using QLoRA I used the default settings\
+          \ in their repository, and it worked quite well. The target_modules were\
+          \ every Linear layer in the model.\n\nFound using this code:\n\n```python\n\
+          def find_all_linear_names(args, model):\n    cls = bnb.nn.Linear4bit if\
+          \ args.bits == 4 else (bnb.nn.Linear8bitLt if args.bits == 8 else torch.nn.Linear)\n\
+          \    lora_module_names = set()\n    for name, module in model.named_modules():\n\
+          \        if isinstance(module, cls):\n            names = name.split('.')\n\
+          \            lora_module_names.add(names[0] if len(names) == 1 else '.'\
+          \ + names[-1])\n\n\n    if 'lm_head' in lora_module_names: # needed for\
+          \ 16-bit\n        lora_module_names.remove('lm_head')\n    return list(lora_module_names)\n\
+          ```"
+        updatedAt: '2023-11-05T13:55:56.169Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Hiveurban
+    id: 65479eecdbce6bd2be1629f8
+    type: comment
+  author: Shaltiel
+  content: "When I've fine-tuned the model using QLoRA I used the default settings\
+    \ in their repository, and it worked quite well. The target_modules were every\
+    \ Linear layer in the model.\n\nFound using this code:\n\n```python\ndef find_all_linear_names(args,\
+    \ model):\n    cls = bnb.nn.Linear4bit if args.bits == 4 else (bnb.nn.Linear8bitLt\
+    \ if args.bits == 8 else torch.nn.Linear)\n    lora_module_names = set()\n   \
+    \ for name, module in model.named_modules():\n        if isinstance(module, cls):\n\
+    \            names = name.split('.')\n            lora_module_names.add(names[0]\
+    \ if len(names) == 1 else '.' + names[-1])\n\n\n    if 'lm_head' in lora_module_names:\
+    \ # needed for 16-bit\n        lora_module_names.remove('lm_head')\n    return\
+    \ list(lora_module_names)\n```"
+  created_at: 2023-11-05 13:55:56+00:00
+  edited: false
+  hidden: false
+  id: 65479eecdbce6bd2be1629f8
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: dicta-il/dictalm-7b-instruct
+repo_type: model
+status: open
+target_branch: null
+title: QLoRA fine-tuning

@@ -1,0 +1,345 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: itsAnnieeeeee
+conflicting_files:
+- geneformer/in_silico_perturber.py
+created_at: 2023-12-14 08:59:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6862c8ff250868a6938c71fe8ae2094a.svg
+      fullname: AL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: itsAnnieeeeee
+      type: user
+    createdAt: '2023-12-14T08:59:50.000Z'
+    data:
+      edited: false
+      editors:
+      - itsAnnieeeeee
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7094230651855469
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6862c8ff250868a6938c71fe8ae2094a.svg
+          fullname: AL
+          isHf: false
+          isPro: false
+          name: itsAnnieeeeee
+          type: user
+        html: '<p>Thank you very much for your great work.</p>
+
+          <p>But I found two errors when I tried to use this model to perturb one
+          gene on my datasets (which means I input a list with the esemble id of the
+          gene I want to perturb).</p>
+
+          <p>The first one I found is that the dimensions of minibatch_emb and minibatch_comparison
+          are usually not the same and the difference is equal to 1 all the time.
+          This happened when batches were padded.(needs_pad_or_trunc == True in Function
+          compute_batch_embeddings).</p>
+
+          <p>This is because original batch samples were padded with the max length
+          of perturbed batch samples, which is one token (perturb_gene) less than
+          the true max length. In this step, the lenghts of original and perturbed
+          samples are the same (but not a correct process). After the embeddings were
+          calculated, the embedding of perturb gene in original data is removed by
+          function remove_indices_from_emb_batch. This is step cause the difference
+          between the length of original and perturbed batch samples (however this
+          step is a correct process).</p>
+
+          <p>So what we need to do is padding the original samples with their own
+          max length, which can be quite easy. Just keep the parameter  _max_len==None.</p>
+
+          <p>The second error happened successively. It''s also because of the vairous
+          token lengths of different batches. One can either pad them to the same
+          length(eg. 2048) or use a list to store them. I choose the latter one.</p>
+
+          <p>Additional, when I provide more than one gene in the list with the model,
+          a different error will also occur. Sorry, I have not find time to dive into
+          that issue.</p>
+
+          <p>But at least, this script can handle with one gene deletion perturbation
+          :D .</p>
+
+          <hr>
+
+          <p>Supplymentary:<br>My Params:<br>isp = InSilicoPerturber(perturb_type="delete",<br>                        perturb_rank_shift=None,<br>                        genes_to_perturb=["ENSGxxxxxx"],<br>                        combos=0,<br>                        anchor_gene=None,<br>                        model_type="Pretrained",<br>                        num_classes=0,<br>                        emb_mode="cell_and_gene",<br>                        cell_emb_style="mean_pool",<br>                        cell_states_to_model=None,<br>                        max_ncells=None,<br>                        emb_layer=-1,<br>                        forward_batch_size=16,<br>                        nproc=16)<br>isp.perturb_data("../fine_tuned_models/with_my_data/models",<br>                 "../datasets/my_data.dataset",<br>                 "../outputs/perturb_GENE/",<br>                 "perturb_GENE")</p>
+
+          <p>ERROR1:<br>RuntimeError: The size of tensor a (2047) must match the size
+          of tensor b (2046) at non-singleton dimension 1</p>
+
+          <p>Evidence for ERROR1:<br>[PADDING]<br>minibatch_length_set{2019, 2021,
+          2023, 2024, 2025, 2026, 2027, 2030}<br>input_data_minibatch.shape:torch.Size([16,
+          2030])<br>minibatch_length_set{2020, 2022, 2024, 2025, 2026, 2027, 2028,
+          2031}<br>input_data_minibatch.shape:torch.Size([16, 2030])<br>[QUANT_COS_SIM]<br>minibatch_emb.shape:torch.Size([16,
+          2030, 256]),<br>minibatch_comparison.shape:torch.Size([16, 2029, 256])</p>
+
+          <p>ERROR2:<br>Traceback (most recent call last):<br>  File "in_silico_perturbation.py",
+          line 31, in <br>    isp.perturb_data("../fine_tuned_models/with_my_data/models",<br>  File
+          "/Geneformer/geneformer/in_silico_perturber.py", line 1045, in perturb_data<br>    self.in_silico_perturb(model,<br>  File
+          "/Geneformer/geneformer/in_silico_perturber.py", line 1133, in in_silico_perturb<br>    cos_sims_data
+          = quant_cos_sims(model,<br>  File "/Geneformer/geneformer/in_silico_perturber.py",
+          line 534, in quant_cos_sims<br>    cos_sims_stack = torch.cat(cos_sims)<br>RuntimeError:
+          Sizes of tensors must match except in dimension 0. Expected size 2047 but
+          got size 2046 for tensor number 24 in the list.</p>
+
+          <p>ADDITIONAL ERROR:<br>[PARAM]<br>genes_to_perturb=["ENSGxxxxxx1","ENSGxxxxxx2"]<br>[ERROR]<br>Traceback
+          (most recent call last):<br>  File "in_silico_perturbation.py", line 31,
+          in <br>    isp.perturb_data("../fine_tuned_models/with_my_data/models",<br>  File
+          "/Geneformer/geneformer/in_silico_perturber.py", line 984, in perturb_data<br>    filtered_input_data,<br>  File
+          "/Geneformer/geneformer/in_silico_perturber.py", line 1062, in in_silico_perturb<br>    self.perturb_type,<br>  File
+          "/Geneformer/geneformer/in_silico_perturber.py", line 426, in quant_cos_sims<br>    end_range
+          = [i for i in range(orig_max_len - tokens_to_perturb, orig_max_len)]<br>TypeError:
+          unsupported operand type(s) for -: ''int'' and ''list''</p>
+
+          '
+        raw: "Thank you very much for your great work.\n\nBut I found two errors when\
+          \ I tried to use this model to perturb one gene on my datasets (which means\
+          \ I input a list with the esemble id of the gene I want to perturb).\n\n\
+          The first one I found is that the dimensions of minibatch_emb and minibatch_comparison\
+          \ are usually not the same and the difference is equal to 1 all the time.\
+          \ This happened when batches were padded.(needs_pad_or_trunc == True in\
+          \ Function compute_batch_embeddings).\n\nThis is because original batch\
+          \ samples were padded with the max length of perturbed batch samples, which\
+          \ is one token (perturb_gene) less than the true max length. In this step,\
+          \ the lenghts of original and perturbed samples are the same (but not a\
+          \ correct process). After the embeddings were calculated, the embedding\
+          \ of perturb gene in original data is removed by function remove_indices_from_emb_batch.\
+          \ This is step cause the difference between the length of original and perturbed\
+          \ batch samples (however this step is a correct process).\n\nSo what we\
+          \ need to do is padding the original samples with their own max length,\
+          \ which can be quite easy. Just keep the parameter  _max_len==None.\n\n\
+          The second error happened successively. It's also because of the vairous\
+          \ token lengths of different batches. One can either pad them to the same\
+          \ length(eg. 2048) or use a list to store them. I choose the latter one.\n\
+          \nAdditional, when I provide more than one gene in the list with the model,\
+          \ a different error will also occur. Sorry, I have not find time to dive\
+          \ into that issue.\n\nBut at least, this script can handle with one gene\
+          \ deletion perturbation :D .\n\n----------------------------------------------------------------------------------------\n\
+          \nSupplymentary:\nMy Params:\nisp = InSilicoPerturber(perturb_type=\"delete\"\
+          ,\n                        perturb_rank_shift=None,\n                  \
+          \      genes_to_perturb=[\"ENSGxxxxxx\"], \n                        combos=0,\n\
+          \                        anchor_gene=None,\n                        model_type=\"\
+          Pretrained\",\n                        num_classes=0,\n                \
+          \        emb_mode=\"cell_and_gene\",\n                        cell_emb_style=\"\
+          mean_pool\",\n                        cell_states_to_model=None,\n     \
+          \                   max_ncells=None, \n                        emb_layer=-1,\
+          \ \n                        forward_batch_size=16,\n                   \
+          \     nproc=16)\nisp.perturb_data(\"../fine_tuned_models/with_my_data/models\"\
+          ,\n                 \"../datasets/my_data.dataset\",\n                 \"\
+          ../outputs/perturb_GENE/\",\n                 \"perturb_GENE\")\n\nERROR1:\n\
+          RuntimeError: The size of tensor a (2047) must match the size of tensor\
+          \ b (2046) at non-singleton dimension 1\n\nEvidence for ERROR1:\n[PADDING]\n\
+          minibatch_length_set{2019, 2021, 2023, 2024, 2025, 2026, 2027, 2030}\ninput_data_minibatch.shape:torch.Size([16,\
+          \ 2030])\nminibatch_length_set{2020, 2022, 2024, 2025, 2026, 2027, 2028,\
+          \ 2031}\ninput_data_minibatch.shape:torch.Size([16, 2030])\n[QUANT_COS_SIM]\n\
+          minibatch_emb.shape:torch.Size([16, 2030, 256]),\nminibatch_comparison.shape:torch.Size([16,\
+          \ 2029, 256])\n\nERROR2:\nTraceback (most recent call last):\n  File \"\
+          in_silico_perturbation.py\", line 31, in <module>\n    isp.perturb_data(\"\
+          ../fine_tuned_models/with_my_data/models\",\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+          , line 1045, in perturb_data\n    self.in_silico_perturb(model,\n  File\
+          \ \"/Geneformer/geneformer/in_silico_perturber.py\", line 1133, in in_silico_perturb\n\
+          \    cos_sims_data = quant_cos_sims(model, \n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+          , line 534, in quant_cos_sims\n    cos_sims_stack = torch.cat(cos_sims)\n\
+          RuntimeError: Sizes of tensors must match except in dimension 0. Expected\
+          \ size 2047 but got size 2046 for tensor number 24 in the list.\n\nADDITIONAL\
+          \ ERROR:\n[PARAM]\ngenes_to_perturb=[\"ENSGxxxxxx1\",\"ENSGxxxxxx2\"] \n\
+          [ERROR]\nTraceback (most recent call last):\n  File \"in_silico_perturbation.py\"\
+          , line 31, in <module>\n    isp.perturb_data(\"../fine_tuned_models/with_my_data/models\"\
+          ,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\", line 984, in\
+          \ perturb_data\n    filtered_input_data,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+          , line 1062, in in_silico_perturb\n    self.perturb_type,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+          , line 426, in quant_cos_sims\n    end_range = [i for i in range(orig_max_len\
+          \ - tokens_to_perturb, orig_max_len)]\nTypeError: unsupported operand type(s)\
+          \ for -: 'int' and 'list'"
+        updatedAt: '2023-12-14T08:59:50.592Z'
+      numEdits: 0
+      reactions: []
+    id: 657ac406e221007741e629a6
+    type: comment
+  author: itsAnnieeeeee
+  content: "Thank you very much for your great work.\n\nBut I found two errors when\
+    \ I tried to use this model to perturb one gene on my datasets (which means I\
+    \ input a list with the esemble id of the gene I want to perturb).\n\nThe first\
+    \ one I found is that the dimensions of minibatch_emb and minibatch_comparison\
+    \ are usually not the same and the difference is equal to 1 all the time. This\
+    \ happened when batches were padded.(needs_pad_or_trunc == True in Function compute_batch_embeddings).\n\
+    \nThis is because original batch samples were padded with the max length of perturbed\
+    \ batch samples, which is one token (perturb_gene) less than the true max length.\
+    \ In this step, the lenghts of original and perturbed samples are the same (but\
+    \ not a correct process). After the embeddings were calculated, the embedding\
+    \ of perturb gene in original data is removed by function remove_indices_from_emb_batch.\
+    \ This is step cause the difference between the length of original and perturbed\
+    \ batch samples (however this step is a correct process).\n\nSo what we need to\
+    \ do is padding the original samples with their own max length, which can be quite\
+    \ easy. Just keep the parameter  _max_len==None.\n\nThe second error happened\
+    \ successively. It's also because of the vairous token lengths of different batches.\
+    \ One can either pad them to the same length(eg. 2048) or use a list to store\
+    \ them. I choose the latter one.\n\nAdditional, when I provide more than one gene\
+    \ in the list with the model, a different error will also occur. Sorry, I have\
+    \ not find time to dive into that issue.\n\nBut at least, this script can handle\
+    \ with one gene deletion perturbation :D .\n\n----------------------------------------------------------------------------------------\n\
+    \nSupplymentary:\nMy Params:\nisp = InSilicoPerturber(perturb_type=\"delete\"\
+    ,\n                        perturb_rank_shift=None,\n                        genes_to_perturb=[\"\
+    ENSGxxxxxx\"], \n                        combos=0,\n                        anchor_gene=None,\n\
+    \                        model_type=\"Pretrained\",\n                        num_classes=0,\n\
+    \                        emb_mode=\"cell_and_gene\",\n                       \
+    \ cell_emb_style=\"mean_pool\",\n                        cell_states_to_model=None,\n\
+    \                        max_ncells=None, \n                        emb_layer=-1,\
+    \ \n                        forward_batch_size=16,\n                        nproc=16)\n\
+    isp.perturb_data(\"../fine_tuned_models/with_my_data/models\",\n             \
+    \    \"../datasets/my_data.dataset\",\n                 \"../outputs/perturb_GENE/\"\
+    ,\n                 \"perturb_GENE\")\n\nERROR1:\nRuntimeError: The size of tensor\
+    \ a (2047) must match the size of tensor b (2046) at non-singleton dimension 1\n\
+    \nEvidence for ERROR1:\n[PADDING]\nminibatch_length_set{2019, 2021, 2023, 2024,\
+    \ 2025, 2026, 2027, 2030}\ninput_data_minibatch.shape:torch.Size([16, 2030])\n\
+    minibatch_length_set{2020, 2022, 2024, 2025, 2026, 2027, 2028, 2031}\ninput_data_minibatch.shape:torch.Size([16,\
+    \ 2030])\n[QUANT_COS_SIM]\nminibatch_emb.shape:torch.Size([16, 2030, 256]),\n\
+    minibatch_comparison.shape:torch.Size([16, 2029, 256])\n\nERROR2:\nTraceback (most\
+    \ recent call last):\n  File \"in_silico_perturbation.py\", line 31, in <module>\n\
+    \    isp.perturb_data(\"../fine_tuned_models/with_my_data/models\",\n  File \"\
+    /Geneformer/geneformer/in_silico_perturber.py\", line 1045, in perturb_data\n\
+    \    self.in_silico_perturb(model,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+    , line 1133, in in_silico_perturb\n    cos_sims_data = quant_cos_sims(model, \n\
+    \  File \"/Geneformer/geneformer/in_silico_perturber.py\", line 534, in quant_cos_sims\n\
+    \    cos_sims_stack = torch.cat(cos_sims)\nRuntimeError: Sizes of tensors must\
+    \ match except in dimension 0. Expected size 2047 but got size 2046 for tensor\
+    \ number 24 in the list.\n\nADDITIONAL ERROR:\n[PARAM]\ngenes_to_perturb=[\"ENSGxxxxxx1\"\
+    ,\"ENSGxxxxxx2\"] \n[ERROR]\nTraceback (most recent call last):\n  File \"in_silico_perturbation.py\"\
+    , line 31, in <module>\n    isp.perturb_data(\"../fine_tuned_models/with_my_data/models\"\
+    ,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\", line 984, in perturb_data\n\
+    \    filtered_input_data,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+    , line 1062, in in_silico_perturb\n    self.perturb_type,\n  File \"/Geneformer/geneformer/in_silico_perturber.py\"\
+    , line 426, in quant_cos_sims\n    end_range = [i for i in range(orig_max_len\
+    \ - tokens_to_perturb, orig_max_len)]\nTypeError: unsupported operand type(s)\
+    \ for -: 'int' and 'list'"
+  created_at: 2023-12-14 08:59:50+00:00
+  edited: false
+  hidden: false
+  id: 657ac406e221007741e629a6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/6862c8ff250868a6938c71fe8ae2094a.svg
+      fullname: AL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: itsAnnieeeeee
+      type: user
+    createdAt: '2023-12-14T08:59:51.000Z'
+    data:
+      oid: 5e2332396ef51b155ce6c4df39062cdbd85fc2e6
+      parents:
+      - fd93ebf0b0db9f28af97ead009566412399dd971
+      subject: Update geneformer/in_silico_perturber.py
+    id: 657ac4070000000000000000
+    type: commit
+  author: itsAnnieeeeee
+  created_at: 2023-12-14 08:59:51+00:00
+  id: 657ac4070000000000000000
+  oid: 5e2332396ef51b155ce6c4df39062cdbd85fc2e6
+  summary: Update geneformer/in_silico_perturber.py
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-12-15T09:04:04.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9427299499511719
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer and for your patience!
+          We deeply appreciate your contribution to resolving this error. We had been
+          working on a resolution to this and adding some features for gene embeddings.
+          We pushed an update that should resolve this issue. If you continue to face
+          errors after pulling the updated code, please let us know by either reopening
+          this discussion if it''s the same error or opening a new discussion if it''s
+          a new error. Thank you!</p>
+
+          '
+        raw: Thank you for your interest in Geneformer and for your patience! We deeply
+          appreciate your contribution to resolving this error. We had been working
+          on a resolution to this and adding some features for gene embeddings. We
+          pushed an update that should resolve this issue. If you continue to face
+          errors after pulling the updated code, please let us know by either reopening
+          this discussion if it's the same error or opening a new discussion if it's
+          a new error. Thank you!
+        updatedAt: '2023-12-15T09:04:04.624Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 657c16841953a4194acc3775
+    id: 657c16841953a4194acc3773
+    type: comment
+  author: ctheodoris
+  content: Thank you for your interest in Geneformer and for your patience! We deeply
+    appreciate your contribution to resolving this error. We had been working on a
+    resolution to this and adding some features for gene embeddings. We pushed an
+    update that should resolve this issue. If you continue to face errors after pulling
+    the updated code, please let us know by either reopening this discussion if it's
+    the same error or opening a new discussion if it's a new error. Thank you!
+  created_at: 2023-12-15 09:04:04+00:00
+  edited: false
+  hidden: false
+  id: 657c16841953a4194acc3773
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-12-15T09:04:04.000Z'
+    data:
+      status: closed
+    id: 657c16841953a4194acc3775
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-12-15 09:04:04+00:00
+  id: 657c16841953a4194acc3775
+  new_status: closed
+  type: status-change
+is_pull_request: true
+merge_commit_oid: null
+num: 283
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: refs/heads/main
+title: Update geneformer/in_silico_perturber.py

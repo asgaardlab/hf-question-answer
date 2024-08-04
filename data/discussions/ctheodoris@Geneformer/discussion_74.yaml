@@ -1,0 +1,1641 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: pchiang5
+conflicting_files: null
+created_at: 2023-06-30 04:26:59+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+      fullname: PC
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pchiang5
+      type: user
+    createdAt: '2023-06-30T05:26:59.000Z'
+    data:
+      edited: false
+      editors:
+      - pchiang5
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.25789138674736023
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+          fullname: PC
+          isHf: false
+          isPro: false
+          name: pchiang5
+          type: user
+        html: "<p>Thank you for providing Geneformer. When I tried hyperparamter training\
+          \ with the input below:</p>\n<h1 id=\"set-training-arguments\">set training\
+          \ arguments</h1>\n<p>training_args = {<br>    \"do_train\": True,<br>  \
+          \  \"do_eval\": True,<br>    \"evaluation_strategy\": \"steps\",<br>   \
+          \ \"eval_steps\": logging_steps,<br>    \"logging_steps\": logging_steps,<br>\
+          \    \"group_by_length\": True,<br>    \"save_steps\": 7248,<br>    \"length_column_name\"\
+          : \"length\",<br>    \"disable_tqdm\": True,<br>    \"skip_memory_metrics\"\
+          : True, # memory tracker causes errors in raytune<br>    \"per_device_train_batch_size\"\
+          : geneformer_batch_size,<br>    \"per_device_eval_batch_size\": geneformer_batch_size,<br>\
+          \    \"num_train_epochs\": epochs,<br>    \"load_best_model_at_end\": True,\
+          \ #original true<br>    \"output_dir\": output_dir,<br>}</p>\n<p>training_args_init\
+          \ = TrainingArguments(**training_args)</p>\n<h1 id=\"create-the-trainer\"\
+          >create the trainer</h1>\n<p>trainer = Trainer(<br>    model_init=model_init,<br>\
+          \    args=training_args_init,<br>    data_collator=DataCollatorForCellClassification(),<br>\
+          \    train_dataset=classifier_trainset,<br>    eval_dataset=classifier_validset,<br>\
+          \    compute_metrics=compute_metrics,<br>)</p>\n<h1 id=\"specify-raytune-hyperparameter-search-space\"\
+          >specify raytune hyperparameter search space</h1>\n<p>ray_config = {<br>\
+          \    \"num_train_epochs\": tune.choice([epochs]),<br>    \"learning_rate\"\
+          : tune.loguniform(1e-6, 1e-3),<br>    \"weight_decay\": tune.uniform(0.0,\
+          \ 0.3),<br>    \"lr_scheduler_type\": tune.choice([\"linear\",\"cosine\"\
+          ,\"polynomial\"]),<br>    \"warmup_steps\": tune.uniform(100, 2000),<br>\
+          \    \"seed\": tune.uniform(0,100),<br>    \"per_device_train_batch_size\"\
+          : tune.choice([geneformer_batch_size])<br>}</p>\n<p>hyperopt_search = HyperOptSearch(<br>\
+          \    metric=\"eval_accuracy\", mode=\"max\")</p>\n<h1 id=\"optimize-hyperparameters\"\
+          >optimize hyperparameters</h1>\n<p>trainer.hyperparameter_search(<br>  \
+          \  direction=\"maximize\",<br>    backend=\"ray\",<br>    resources_per_trial={\"\
+          cpu\":36,\"gpu\":1},<br>    hp_space=lambda _: ray_config,<br>    search_alg=hyperopt_search,<br>\
+          \    n_trials=100, # number of trials<br>    progress_reporter=tune.CLIReporter(max_report_frequency=600,<br>\
+          \                                                   sort_by_metric=True,<br>\
+          \                                                   max_progress_rows=100,<br>\
+          \                                                   mode=\"max\",<br>  \
+          \                                                 metric=\"eval_accuracy\"\
+          ,<br>                                                   metric_columns=[\"\
+          loss\", \"eval_loss\", \"eval_accuracy\"])<br>)</p>\n<p>The following error\
+          \ occurred. Could you kindly help me locate the problem?  </p>\n<p>== Status\
+          \ ==<br>Current time: 2023-06-30 13:08:26 (running for 00:40:00.32)<br>Using\
+          \ FIFO scheduling algorithm.<br>Logical resource usage: 36.0/48 CPUs, 1.0/1\
+          \ GPUs<br>Result logdir: /root/ray_results/_objective_2023-06-30_12-28-26<br>Number\
+          \ of trials: 2/100 (1 PENDING, 1 RUNNING)<br>+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+<br>|\
+          \ Trial name          | status   | loc                   |   learning_rate\
+          \ | lr_scheduler_type   |   num_train_epochs |   per_device_train_bat |\
+          \    seed |   warmup_steps |   weight_decay |<br>|                     |\
+          \          |                       |                 |                 \
+          \    |                    |                ch_size |         |         \
+          \       |                |<br>|---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------|<br>|\
+          \ _objective_c3280932 | RUNNING  | 172.31.110.212:728665 |     6.60963e-06\
+          \ | polynomial          |                  1 |                      2 |\
+          \ 68.3648 |        1617.92 |       0.150326 |<br>| _objective_bd8a2bfc |\
+          \ PENDING  |                       |     0.000120052 | linear          \
+          \    |                  1 |                      2 | 17.703  |        1592.29\
+          \ |       0.2757   |<br>+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+</p>\n\
+          <p>(_objective pid=728665) {'loss': 0.9496, 'learning_rate': 6.0923637356386e-06,\
+          \ 'epoch': 0.1}<br>(_objective pid=728665) {'eval_runtime': 0.001, 'eval_samples_per_second':\
+          \ 0.0, 'eval_steps_per_second': 0.0, 'epoch': 0.1}<br>\u256D\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u256E<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:815\
+          \ in    \u2502<br>\u2502 _on_result                                    \
+          \                                                   \u2502<br>\u2502   \
+          \                                                                      \
+          \                         \u2502<br>\u2502    812 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   f\"{args}, {kwargs}\"                            \
+          \                       \u2502<br>\u2502    813 \u2502   \u2502   \u2502\
+          \   \u2502   )                                                         \
+          \                \u2502<br>\u2502    814 \u2502   \u2502   \u2502   \u2502\
+          \   try:                                                               \
+          \       \u2502<br>\u2502 \u2771  815 \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   on_result(trial, *args, **kwargs)                          \
+          \           \u2502<br>\u2502    816 \u2502   \u2502   \u2502   \u2502  \
+          \ except Exception as e:                                               \
+          \     \u2502<br>\u2502    817 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   logger.debug(                                                      \
+          \   \u2502<br>\u2502    818 \u2502   \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   f\"Error handling {method_name.upper()} result \"          \
+          \         \u2502<br>\u2502                                             \
+          \                                                     \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:735\
+          \ in       \u2502<br>\u2502 _on_training_result                        \
+          \                                                      \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502    732 \u2502   \u2502   if\
+          \ not isinstance(result, list):                                        \
+          \          \u2502<br>\u2502    733 \u2502   \u2502   \u2502   result = [result]\
+          \                                                             \u2502<br>\u2502\
+          \    734 \u2502   \u2502   with warn_if_slow(\"process_trial_result\"):\
+          \                                        \u2502<br>\u2502 \u2771  735 \u2502\
+          \   \u2502   \u2502   self._process_trial_results(trial, result)       \
+          \                             \u2502<br>\u2502    736 \u2502   \u2502  \
+          \ self._maybe_execute_queued_decision(trial)                           \
+          \             \u2502<br>\u2502    737 \u2502                           \
+          \                                                              \u2502<br>\u2502\
+          \    738 \u2502   def _process_trial_results(self, trial, results):    \
+          \                                 \u2502<br>\u2502                     \
+          \                                                                      \
+          \       \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:748\
+          \ in       \u2502<br>\u2502 _process_trial_results                     \
+          \                                                      \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502    745 \u2502   \u2502   ):\
+          \                                                                      \
+          \          \u2502<br>\u2502    746 \u2502   \u2502   \u2502   for i, result\
+          \ in enumerate(results):                                          \u2502\
+          <br>\u2502    747 \u2502   \u2502   \u2502   \u2502   with warn_if_slow(\"\
+          process_trial_result\"):                                \u2502<br>\u2502\
+          \ \u2771  748 \u2502   \u2502   \u2502   \u2502   \u2502   decision = self._process_trial_result(trial,\
+          \ result)                  \u2502<br>\u2502    749 \u2502   \u2502   \u2502\
+          \   \u2502   if decision is None:                                      \
+          \                \u2502<br>\u2502    750 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   # If we didn't get a decision, this means a               \
+          \            \u2502<br>\u2502    751 \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   # non-training future (e.g. a save) was scheduled.         \
+          \           \u2502<br>\u2502                                           \
+          \                                                       \u2502<br>\u2502\
+          \ /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:785\
+          \ in       \u2502<br>\u2502 _process_trial_result                      \
+          \                                                      \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502    782 \u2502   \u2502   self._total_time\
+          \ += result.get(TIME_THIS_ITER_S, 0)                               \u2502\
+          <br>\u2502    783 \u2502   \u2502                                      \
+          \                                               \u2502<br>\u2502    784\
+          \ \u2502   \u2502   flat_result = flatten_dict(result)                 \
+          \                               \u2502<br>\u2502 \u2771  785 \u2502   \u2502\
+          \   self._validate_result_metrics(flat_result)                         \
+          \               \u2502<br>\u2502    786 \u2502   \u2502                \
+          \                                                                     \u2502\
+          <br>\u2502    787 \u2502   \u2502   if self._stopper(trial.trial_id, result)\
+          \ or trial.should_stop(flat_result):       \u2502<br>\u2502    788 \u2502\
+          \   \u2502   \u2502   decision = TrialScheduler.STOP                   \
+          \                             \u2502<br>\u2502                         \
+          \                                                                      \
+          \   \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:883\
+          \ in       \u2502<br>\u2502 _validate_result_metrics                   \
+          \                                                      \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502    880 \u2502   \u2502   \u2502\
+          \   \u2502   location = None                                           \
+          \                \u2502<br>\u2502    881 \u2502   \u2502   \u2502      \
+          \                                                                      \
+          \     \u2502<br>\u2502    882 \u2502   \u2502   \u2502   if report_metric:\
+          \                                                             \u2502<br>\u2502\
+          \ \u2771  883 \u2502   \u2502   \u2502   \u2502   raise ValueError(    \
+          \                                                     \u2502<br>\u2502 \
+          \   884 \u2502   \u2502   \u2502   \u2502   \u2502   \"Trial returned a\
+          \ result which did not include the \"                  \u2502<br>\u2502\
+          \    885 \u2502   \u2502   \u2502   \u2502   \u2502   \"specified metric(s)\
+          \ <code>{}</code> that <code>{}</code> expects. \"                     \
+          \   \u2502<br>\u2502    886 \u2502   \u2502   \u2502   \u2502   \u2502 \
+          \  \"Make sure your calls to <code>tune.report()</code> include the \" \
+          \               \u2502<br>\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F<br>ValueError: Trial returned\
+          \ a result which did not include the specified metric(s) <code>eval_accuracy</code>\
+          \ that <code>SearchGenerator</code><br>expects. Make sure your calls to\
+          \ <code>tune.report()</code> include the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING<br>environment\
+          \ variable to 1. Result: {'objective': None, 'eval_runtime': 0.001, 'eval_samples_per_second':\
+          \ 0.0,<br>'eval_steps_per_second': 0.0, 'epoch': 0.1, 'time_this_iter_s':\
+          \ 2627.347311973572, 'done': False, 'training_iteration':<br>1, 'trial_id':\
+          \ 'c3280932', 'date': '2023-06-30_13-12-17', 'timestamp': 1688101937, 'time_total_s':\
+          \ 2627.347311973572,<br>'pid': 728665, 'hostname': 'DESKTOP-6FHRRIO', 'node_ip':\
+          \ '172.31.110.212', 'time_since_restore': 2627.347311973572,<br>'iterations_since_restore':\
+          \ 1, 'config/num_train_epochs': 1, 'config/learning_rate': 6.609632605618226e-06,<br>'config/weight_decay':\
+          \ 0.15032619764660335, 'config/lr_scheduler_type': 'polynomial', 'config/warmup_steps':<br>1617.919440294964,\
+          \ 'config/seed': 68.36480039671002, 'config/per_device_train_batch_size':\
+          \ 2}</p>\n<p>During handling of the above exception, another exception occurred:</p>\n\
+          <p>\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent\
+          \ call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E<br>\u2502\
+          \ in :2                                                                \
+          \                    \u2502<br>\u2502                                  \
+          \                                                                \u2502\
+          <br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/trainer.py:2628\
+          \ in                 \u2502<br>\u2502 hyperparameter_search            \
+          \                                                                \u2502\
+          <br>\u2502                                                             \
+          \                                     \u2502<br>\u2502   2625 \u2502   \u2502\
+          \   \u2502   HPSearchBackend.SIGOPT: run_hp_search_sigopt,             \
+          \                    \u2502<br>\u2502   2626 \u2502   \u2502   \u2502  \
+          \ HPSearchBackend.WANDB: run_hp_search_wandb,                          \
+          \         \u2502<br>\u2502   2627 \u2502   \u2502   }                  \
+          \                                                               \u2502<br>\u2502\
+          \ \u2771 2628 \u2502   \u2502   best_run = backend_dict[backend](self, n_trials,\
+          \ direction, **kwargs)             \u2502<br>\u2502   2629 \u2502   \u2502\
+          \                                                                      \
+          \               \u2502<br>\u2502   2630 \u2502   \u2502   self.hp_search_backend\
+          \ = None                                                     \u2502<br>\u2502\
+          \   2631 \u2502   \u2502   return best_run                             \
+          \                                      \u2502<br>\u2502                \
+          \                                                                      \
+          \            \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/integrations.py:353\
+          \ in             \u2502<br>\u2502 run_hp_search_ray                    \
+          \                                                            \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502    350 \u2502   if hasattr(trainable,\
+          \ \"<strong>mixins</strong>\"):                                        \
+          \          \u2502<br>\u2502    351 \u2502   \u2502   dynamic_modules_import_trainable.<strong>mixins</strong>\
+          \ = trainable.<strong>mixins</strong>                \u2502<br>\u2502  \
+          \  352 \u2502                                                          \
+          \                               \u2502<br>\u2502 \u2771  353 \u2502   analysis\
+          \ = ray.tune.run(                                                      \
+          \        \u2502<br>\u2502    354 \u2502   \u2502   dynamic_modules_import_trainable,\
+          \                                                 \u2502<br>\u2502    355\
+          \ \u2502   \u2502   config=trainer.hp_space(None),                     \
+          \                               \u2502<br>\u2502    356 \u2502   \u2502\
+          \   num_samples=n_trials,                                              \
+          \               \u2502<br>\u2502                                       \
+          \                                                           \u2502<br>\u2502\
+          \ /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/tune.py:1070\
+          \ in run                    \u2502<br>\u2502                           \
+          \                                                                      \
+          \ \u2502<br>\u2502   1067 \u2502   \u2502   \u2502   while (           \
+          \                                                            \u2502<br>\u2502\
+          \   1068 \u2502   \u2502   \u2502   \u2502   not runner.is_finished() and\
+          \ not experiment_interrupted_event.is_set()    \u2502<br>\u2502   1069 \u2502\
+          \   \u2502   \u2502   ):                                               \
+          \                             \u2502<br>\u2502 \u2771 1070 \u2502   \u2502\
+          \   \u2502   \u2502   runner.step()                                    \
+          \                         \u2502<br>\u2502   1071 \u2502   \u2502   \u2502\
+          \   \u2502   if has_verbosity(Verbosity.V1_EXPERIMENT):                \
+          \                \u2502<br>\u2502   1072 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   _report_progress(runner, progress_reporter)               \
+          \            \u2502<br>\u2502   1073                                   \
+          \                                                        \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:256\
+          \ in    \u2502<br>\u2502 step                                          \
+          \                                                   \u2502<br>\u2502   \
+          \                                                                      \
+          \                         \u2502<br>\u2502    253 \u2502   \u2502   self._maybe_add_actors()\
+          \                                                          \u2502<br>\u2502\
+          \    254 \u2502   \u2502                                               \
+          \                                      \u2502<br>\u2502    255 \u2502  \
+          \ \u2502   # Handle one event                                          \
+          \                      \u2502<br>\u2502 \u2771  256 \u2502   \u2502   if\
+          \ not self._actor_manager.next(timeout=0.1):                           \
+          \          \u2502<br>\u2502    257 \u2502   \u2502   \u2502   # If there\
+          \ are no actors running, warn about potentially                      \u2502\
+          <br>\u2502    258 \u2502   \u2502   \u2502   # insufficient resources  \
+          \                                                    \u2502<br>\u2502  \
+          \  259 \u2502   \u2502   \u2502   if not self._actor_manager.num_live_actors:\
+          \                                   \u2502<br>\u2502                   \
+          \                                                                      \
+          \         \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:22\
+          \ \u2502<br>\u2502 4 in next                                           \
+          \                                             \u2502<br>\u2502         \
+          \                                                                      \
+          \                   \u2502<br>\u2502   221 \u2502   \u2502   if future in\
+          \ actor_state_futures:                                                 \
+          \ \u2502<br>\u2502   222 \u2502   \u2502   \u2502   self._actor_state_events.resolve_future(future)\
+          \                                \u2502<br>\u2502   223 \u2502   \u2502\
+          \   elif future in actor_task_futures:                                 \
+          \                \u2502<br>\u2502 \u2771 224 \u2502   \u2502   \u2502  \
+          \ self._actor_task_events.resolve_future(future)                       \
+          \          \u2502<br>\u2502   225 \u2502   \u2502   else:              \
+          \                                                                \u2502\
+          <br>\u2502   226 \u2502   \u2502   \u2502   self._handle_ready_resource_future()\
+          \                                           \u2502<br>\u2502   227 \u2502\
+          \   \u2502   \u2502   # Ready resource futures don't count as one event\
+          \ as they don't trigger        \u2502<br>\u2502                        \
+          \                                                                      \
+          \    \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/event_manager.py:11\
+          \ \u2502<br>\u2502 8 in resolve_future                                 \
+          \                                             \u2502<br>\u2502         \
+          \                                                                      \
+          \                   \u2502<br>\u2502   115 \u2502   \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \        \u2502<br>\u2502   116 \u2502   \u2502   else:                \
+          \                                                              \u2502<br>\u2502\
+          \   117 \u2502   \u2502   \u2502   if on_result:                       \
+          \                                           \u2502<br>\u2502 \u2771 118\
+          \ \u2502   \u2502   \u2502   \u2502   on_result(result)                \
+          \                                          \u2502<br>\u2502   119 \u2502\
+          \                                                                      \
+          \                    \u2502<br>\u2502   120 \u2502   def wait(         \
+          \                                                                     \u2502\
+          <br>\u2502   121 \u2502   \u2502   self,                               \
+          \                                               \u2502<br>\u2502       \
+          \                                                                      \
+          \                     \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:75\
+          \ \u2502<br>\u2502 2 in on_result                                      \
+          \                                             \u2502<br>\u2502         \
+          \                                                                      \
+          \                   \u2502<br>\u2502   749 \u2502   \u2502   \u2502   )\
+          \ from e                                                               \
+          \        \u2502<br>\u2502   750 \u2502   \u2502                        \
+          \                                                              \u2502<br>\u2502\
+          \   751 \u2502   \u2502   def on_result(result: Any):                  \
+          \                                      \u2502<br>\u2502 \u2771 752 \u2502\
+          \   \u2502   \u2502   self._actor_task_resolved(                       \
+          \                              \u2502<br>\u2502   753 \u2502   \u2502  \
+          \ \u2502   \u2502   tracked_actor_task=tracked_actor_task, result=result\
+          \                       \u2502<br>\u2502   754 \u2502   \u2502   \u2502\
+          \   )                                                                  \
+          \            \u2502<br>\u2502   755                                    \
+          \                                                        \u2502<br>\u2502\
+          \                                                                      \
+          \                            \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:30\
+          \ \u2502<br>\u2502 0 in _actor_task_resolved                           \
+          \                                             \u2502<br>\u2502         \
+          \                                                                      \
+          \                   \u2502<br>\u2502   297 \u2502   \u2502             \
+          \                                                                      \
+          \   \u2502<br>\u2502   298 \u2502   \u2502   # Trigger actor task result\
+          \ callback                                               \u2502<br>\u2502\
+          \   299 \u2502   \u2502   if tracked_actor_task._on_result:            \
+          \                                      \u2502<br>\u2502 \u2771 300 \u2502\
+          \   \u2502   \u2502   tracked_actor_task._on_result(tracked_actor, result)\
+          \                           \u2502<br>\u2502   301 \u2502              \
+          \                                                                      \
+          \      \u2502<br>\u2502   302 \u2502   def _handle_ready_resource_future(self):\
+          \                                               \u2502<br>\u2502   303 \u2502\
+          \   \u2502   \"\"\"Handle a resource future that became ready.         \
+          \                            \u2502<br>\u2502                          \
+          \                                                                      \
+          \  \u2502<br>\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:824\
+          \ in    \u2502<br>\u2502 _on_result                                    \
+          \                                                   \u2502<br>\u2502   \
+          \                                                                      \
+          \                         \u2502<br>\u2502    821 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   if e is TuneError or self._fail_fast == self.RAISE:\
+          \                   \u2502<br>\u2502    822 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   raise e                                          \
+          \                 \u2502<br>\u2502    823 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   else:                                                     \
+          \            \u2502<br>\u2502 \u2771  824 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   raise TuneError(traceback.format_exc())          \
+          \                 \u2502<br>\u2502    825 \u2502   \u2502              \
+          \                                                                      \
+          \ \u2502<br>\u2502    826 \u2502   \u2502   if on_error:               \
+          \                                                       \u2502<br>\u2502\
+          \    827                                                               \
+          \                            \u2502<br>\u2570\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F<br>TuneError:\
+          \ Traceback (most recent call last):<br>  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py\"\
+          , line 815, in _on_result<br>    on_result(trial, *args, **kwargs)<br> \
+          \ File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 735, in<br>_on_training_result<br>    self._process_trial_results(trial,\
+          \ result)<br>  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 748, in<br>_process_trial_results<br>    decision = self._process_trial_result(trial,\
+          \ result)<br>  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 785, in<br>_process_trial_result<br>    self._validate_result_metrics(flat_result)<br>\
+          \  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 883, in<br>_validate_result_metrics<br>    raise ValueError(<br>ValueError:\
+          \ Trial returned a result which did not include the specified metric(s)\
+          \ <code>eval_accuracy</code> that <code>SearchGenerator</code><br>expects.\
+          \ Make sure your calls to <code>tune.report()</code> include the metric,\
+          \ or set the TUNE_DISABLE_STRICT_METRIC_CHECKING<br>environment variable\
+          \ to 1. Result: {'objective': None, 'eval_runtime': 0.001, 'eval_samples_per_second':\
+          \ 0.0,<br>'eval_steps_per_second': 0.0, 'epoch': 0.1, 'time_this_iter_s':\
+          \ 2627.347311973572, 'done': False, 'training_iteration':<br>1, 'trial_id':\
+          \ 'c3280932', 'date': '2023-06-30_13-12-17', 'timestamp': 1688101937, 'time_total_s':\
+          \ 2627.347311973572,<br>'pid': 728665, 'hostname': 'DESKTOP-6FHRRIO', 'node_ip':\
+          \ '172.31.110.212', 'time_since_restore': 2627.347311973572,<br>'iterations_since_restore':\
+          \ 1, 'config/num_train_epochs': 1, 'config/learning_rate': 6.609632605618226e-06,<br>'config/weight_decay':\
+          \ 0.15032619764660335, 'config/lr_scheduler_type': 'polynomial', 'config/warmup_steps':<br>1617.919440294964,\
+          \ 'config/seed': 68.36480039671002, 'config/per_device_train_batch_size':\
+          \ 2}</p>\n"
+        raw: "Thank you for providing Geneformer. When I tried hyperparamter training\
+          \ with the input below:\r\n\r\n\r\n# set training arguments\r\ntraining_args\
+          \ = {\r\n    \"do_train\": True,\r\n    \"do_eval\": True,\r\n    \"evaluation_strategy\"\
+          : \"steps\",\r\n    \"eval_steps\": logging_steps,\r\n    \"logging_steps\"\
+          : logging_steps,\r\n    \"group_by_length\": True,\r\n    \"save_steps\"\
+          : 7248,\r\n    \"length_column_name\": \"length\",\r\n    \"disable_tqdm\"\
+          : True,\r\n    \"skip_memory_metrics\": True, # memory tracker causes errors\
+          \ in raytune\r\n    \"per_device_train_batch_size\": geneformer_batch_size,\r\
+          \n    \"per_device_eval_batch_size\": geneformer_batch_size,\r\n    \"num_train_epochs\"\
+          : epochs,\r\n    \"load_best_model_at_end\": True, #original true\r\n  \
+          \  \"output_dir\": output_dir,\r\n}\r\n\r\ntraining_args_init = TrainingArguments(**training_args)\r\
+          \n\r\n# create the trainer\r\ntrainer = Trainer(\r\n    model_init=model_init,\r\
+          \n    args=training_args_init,\r\n    data_collator=DataCollatorForCellClassification(),\r\
+          \n    train_dataset=classifier_trainset,\r\n    eval_dataset=classifier_validset,\r\
+          \n    compute_metrics=compute_metrics,\r\n)\r\n\r\n# specify raytune hyperparameter\
+          \ search space\r\nray_config = {\r\n    \"num_train_epochs\": tune.choice([epochs]),\r\
+          \n    \"learning_rate\": tune.loguniform(1e-6, 1e-3),\r\n    \"weight_decay\"\
+          : tune.uniform(0.0, 0.3),\r\n    \"lr_scheduler_type\": tune.choice([\"\
+          linear\",\"cosine\",\"polynomial\"]),\r\n    \"warmup_steps\": tune.uniform(100,\
+          \ 2000),\r\n    \"seed\": tune.uniform(0,100),\r\n    \"per_device_train_batch_size\"\
+          : tune.choice([geneformer_batch_size])\r\n}\r\n\r\nhyperopt_search = HyperOptSearch(\r\
+          \n    metric=\"eval_accuracy\", mode=\"max\")\r\n\r\n# optimize hyperparameters\r\
+          \ntrainer.hyperparameter_search(\r\n    direction=\"maximize\",\r\n    backend=\"\
+          ray\",\r\n    resources_per_trial={\"cpu\":36,\"gpu\":1},\r\n    hp_space=lambda\
+          \ _: ray_config,\r\n    search_alg=hyperopt_search,\r\n    n_trials=100,\
+          \ # number of trials\r\n    progress_reporter=tune.CLIReporter(max_report_frequency=600,\r\
+          \n                                                   sort_by_metric=True,\r\
+          \n                                                   max_progress_rows=100,\r\
+          \n                                                   mode=\"max\",\r\n \
+          \                                                  metric=\"eval_accuracy\"\
+          ,\r\n                                                   metric_columns=[\"\
+          loss\", \"eval_loss\", \"eval_accuracy\"])\r\n)\r\n\r\n\r\nThe following\
+          \ error occurred. Could you kindly help me locate the problem?  \r\n\r\n\
+          \r\n== Status ==\r\nCurrent time: 2023-06-30 13:08:26 (running for 00:40:00.32)\r\
+          \nUsing FIFO scheduling algorithm.\r\nLogical resource usage: 36.0/48 CPUs,\
+          \ 1.0/1 GPUs\r\nResult logdir: /root/ray_results/_objective_2023-06-30_12-28-26\r\
+          \nNumber of trials: 2/100 (1 PENDING, 1 RUNNING)\r\n+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+\r\
+          \n| Trial name          | status   | loc                   |   learning_rate\
+          \ | lr_scheduler_type   |   num_train_epochs |   per_device_train_bat |\
+          \    seed |   warmup_steps |   weight_decay |\r\n|                     |\
+          \          |                       |                 |                 \
+          \    |                    |                ch_size |         |         \
+          \       |                |\r\n|---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------|\r\
+          \n| _objective_c3280932 | RUNNING  | 172.31.110.212:728665 |     6.60963e-06\
+          \ | polynomial          |                  1 |                      2 |\
+          \ 68.3648 |        1617.92 |       0.150326 |\r\n| _objective_bd8a2bfc |\
+          \ PENDING  |                       |     0.000120052 | linear          \
+          \    |                  1 |                      2 | 17.703  |        1592.29\
+          \ |       0.2757   |\r\n+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+\r\
+          \n\r\n\r\n(_objective pid=728665) {'loss': 0.9496, 'learning_rate': 6.0923637356386e-06,\
+          \ 'epoch': 0.1}\r\n(_objective pid=728665) {'eval_runtime': 0.001, 'eval_samples_per_second':\
+          \ 0.0, 'eval_steps_per_second': 0.0, 'epoch': 0.1}\r\n\u256D\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u256E\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:815\
+          \ in    \u2502\r\n\u2502 _on_result                                    \
+          \                                                   \u2502\r\n\u2502   \
+          \                                                                      \
+          \                         \u2502\r\n\u2502    812 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   f\"{args}, {kwargs}\"                            \
+          \                       \u2502\r\n\u2502    813 \u2502   \u2502   \u2502\
+          \   \u2502   )                                                         \
+          \                \u2502\r\n\u2502    814 \u2502   \u2502   \u2502   \u2502\
+          \   try:                                                               \
+          \       \u2502\r\n\u2502 \u2771  815 \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   on_result(trial, *args, **kwargs)                          \
+          \           \u2502\r\n\u2502    816 \u2502   \u2502   \u2502   \u2502  \
+          \ except Exception as e:                                               \
+          \     \u2502\r\n\u2502    817 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   logger.debug(                                                      \
+          \   \u2502\r\n\u2502    818 \u2502   \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   f\"Error handling {method_name.upper()} result \"          \
+          \         \u2502\r\n\u2502                                             \
+          \                                                     \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:735\
+          \ in       \u2502\r\n\u2502 _on_training_result                        \
+          \                                                      \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502    732 \u2502   \u2502   if\
+          \ not isinstance(result, list):                                        \
+          \          \u2502\r\n\u2502    733 \u2502   \u2502   \u2502   result = [result]\
+          \                                                             \u2502\r\n\
+          \u2502    734 \u2502   \u2502   with warn_if_slow(\"process_trial_result\"\
+          ):                                        \u2502\r\n\u2502 \u2771  735 \u2502\
+          \   \u2502   \u2502   self._process_trial_results(trial, result)       \
+          \                             \u2502\r\n\u2502    736 \u2502   \u2502  \
+          \ self._maybe_execute_queued_decision(trial)                           \
+          \             \u2502\r\n\u2502    737 \u2502                           \
+          \                                                              \u2502\r\n\
+          \u2502    738 \u2502   def _process_trial_results(self, trial, results):\
+          \                                     \u2502\r\n\u2502                 \
+          \                                                                      \
+          \           \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:748\
+          \ in       \u2502\r\n\u2502 _process_trial_results                     \
+          \                                                      \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502    745 \u2502   \u2502   ):\
+          \                                                                      \
+          \          \u2502\r\n\u2502    746 \u2502   \u2502   \u2502   for i, result\
+          \ in enumerate(results):                                          \u2502\
+          \r\n\u2502    747 \u2502   \u2502   \u2502   \u2502   with warn_if_slow(\"\
+          process_trial_result\"):                                \u2502\r\n\u2502\
+          \ \u2771  748 \u2502   \u2502   \u2502   \u2502   \u2502   decision = self._process_trial_result(trial,\
+          \ result)                  \u2502\r\n\u2502    749 \u2502   \u2502   \u2502\
+          \   \u2502   if decision is None:                                      \
+          \                \u2502\r\n\u2502    750 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   # If we didn't get a decision, this means a               \
+          \            \u2502\r\n\u2502    751 \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   # non-training future (e.g. a save) was scheduled.         \
+          \           \u2502\r\n\u2502                                           \
+          \                                                       \u2502\r\n\u2502\
+          \ /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:785\
+          \ in       \u2502\r\n\u2502 _process_trial_result                      \
+          \                                                      \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502    782 \u2502   \u2502   self._total_time\
+          \ += result.get(TIME_THIS_ITER_S, 0)                               \u2502\
+          \r\n\u2502    783 \u2502   \u2502                                      \
+          \                                               \u2502\r\n\u2502    784\
+          \ \u2502   \u2502   flat_result = flatten_dict(result)                 \
+          \                               \u2502\r\n\u2502 \u2771  785 \u2502   \u2502\
+          \   self._validate_result_metrics(flat_result)                         \
+          \               \u2502\r\n\u2502    786 \u2502   \u2502                \
+          \                                                                     \u2502\
+          \r\n\u2502    787 \u2502   \u2502   if self._stopper(trial.trial_id, result)\
+          \ or trial.should_stop(flat_result):       \u2502\r\n\u2502    788 \u2502\
+          \   \u2502   \u2502   decision = TrialScheduler.STOP                   \
+          \                             \u2502\r\n\u2502                         \
+          \                                                                      \
+          \   \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:883\
+          \ in       \u2502\r\n\u2502 _validate_result_metrics                   \
+          \                                                      \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502    880 \u2502   \u2502   \u2502\
+          \   \u2502   location = None                                           \
+          \                \u2502\r\n\u2502    881 \u2502   \u2502   \u2502      \
+          \                                                                      \
+          \     \u2502\r\n\u2502    882 \u2502   \u2502   \u2502   if report_metric:\
+          \                                                             \u2502\r\n\
+          \u2502 \u2771  883 \u2502   \u2502   \u2502   \u2502   raise ValueError(\
+          \                                                         \u2502\r\n\u2502\
+          \    884 \u2502   \u2502   \u2502   \u2502   \u2502   \"Trial returned a\
+          \ result which did not include the \"                  \u2502\r\n\u2502\
+          \    885 \u2502   \u2502   \u2502   \u2502   \u2502   \"specified metric(s)\
+          \ `{}` that `{}` expects. \"                        \u2502\r\n\u2502   \
+          \ 886 \u2502   \u2502   \u2502   \u2502   \u2502   \"Make sure your calls\
+          \ to `tune.report()` include the \"                \u2502\r\n\u2570\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u256F\r\nValueError: Trial returned a result which did not include\
+          \ the specified metric(s) `eval_accuracy` that `SearchGenerator`\r\nexpects.\
+          \ Make sure your calls to `tune.report()` include the metric, or set the\
+          \ TUNE_DISABLE_STRICT_METRIC_CHECKING\r\nenvironment variable to 1. Result:\
+          \ {'objective': None, 'eval_runtime': 0.001, 'eval_samples_per_second':\
+          \ 0.0,\r\n'eval_steps_per_second': 0.0, 'epoch': 0.1, 'time_this_iter_s':\
+          \ 2627.347311973572, 'done': False, 'training_iteration':\r\n1, 'trial_id':\
+          \ 'c3280932', 'date': '2023-06-30_13-12-17', 'timestamp': 1688101937, 'time_total_s':\
+          \ 2627.347311973572,\r\n'pid': 728665, 'hostname': 'DESKTOP-6FHRRIO', 'node_ip':\
+          \ '172.31.110.212', 'time_since_restore': 2627.347311973572,\r\n'iterations_since_restore':\
+          \ 1, 'config/num_train_epochs': 1, 'config/learning_rate': 6.609632605618226e-06,\r\
+          \n'config/weight_decay': 0.15032619764660335, 'config/lr_scheduler_type':\
+          \ 'polynomial', 'config/warmup_steps':\r\n1617.919440294964, 'config/seed':\
+          \ 68.36480039671002, 'config/per_device_train_batch_size': 2}\r\n\r\nDuring\
+          \ handling of the above exception, another exception occurred:\r\n\r\n\u256D\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last)\
+          \ \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\r\n\u2502 in <module>:2\
+          \                                                                      \
+          \              \u2502\r\n\u2502                                        \
+          \                                                          \u2502\r\n\u2502\
+          \ /home/pc/miniconda3/lib/python3.10/site-packages/transformers/trainer.py:2628\
+          \ in                 \u2502\r\n\u2502 hyperparameter_search            \
+          \                                                                \u2502\r\
+          \n\u2502                                                               \
+          \                                   \u2502\r\n\u2502   2625 \u2502   \u2502\
+          \   \u2502   HPSearchBackend.SIGOPT: run_hp_search_sigopt,             \
+          \                    \u2502\r\n\u2502   2626 \u2502   \u2502   \u2502  \
+          \ HPSearchBackend.WANDB: run_hp_search_wandb,                          \
+          \         \u2502\r\n\u2502   2627 \u2502   \u2502   }                  \
+          \                                                               \u2502\r\
+          \n\u2502 \u2771 2628 \u2502   \u2502   best_run = backend_dict[backend](self,\
+          \ n_trials, direction, **kwargs)             \u2502\r\n\u2502   2629 \u2502\
+          \   \u2502                                                             \
+          \                        \u2502\r\n\u2502   2630 \u2502   \u2502   self.hp_search_backend\
+          \ = None                                                     \u2502\r\n\u2502\
+          \   2631 \u2502   \u2502   return best_run                             \
+          \                                      \u2502\r\n\u2502                \
+          \                                                                      \
+          \            \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/integrations.py:353\
+          \ in             \u2502\r\n\u2502 run_hp_search_ray                    \
+          \                                                            \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502    350 \u2502   if hasattr(trainable,\
+          \ \"__mixins__\"):                                                  \u2502\
+          \r\n\u2502    351 \u2502   \u2502   dynamic_modules_import_trainable.__mixins__\
+          \ = trainable.__mixins__                \u2502\r\n\u2502    352 \u2502 \
+          \                                                                      \
+          \                  \u2502\r\n\u2502 \u2771  353 \u2502   analysis = ray.tune.run(\
+          \                                                              \u2502\r\n\
+          \u2502    354 \u2502   \u2502   dynamic_modules_import_trainable,      \
+          \                                           \u2502\r\n\u2502    355 \u2502\
+          \   \u2502   config=trainer.hp_space(None),                            \
+          \                        \u2502\r\n\u2502    356 \u2502   \u2502   num_samples=n_trials,\
+          \                                                             \u2502\r\n\
+          \u2502                                                                 \
+          \                                 \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/tune.py:1070\
+          \ in run                    \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   1067 \u2502   \u2502   \u2502   while (           \
+          \                                                            \u2502\r\n\u2502\
+          \   1068 \u2502   \u2502   \u2502   \u2502   not runner.is_finished() and\
+          \ not experiment_interrupted_event.is_set()    \u2502\r\n\u2502   1069 \u2502\
+          \   \u2502   \u2502   ):                                               \
+          \                             \u2502\r\n\u2502 \u2771 1070 \u2502   \u2502\
+          \   \u2502   \u2502   runner.step()                                    \
+          \                         \u2502\r\n\u2502   1071 \u2502   \u2502   \u2502\
+          \   \u2502   if has_verbosity(Verbosity.V1_EXPERIMENT):                \
+          \                \u2502\r\n\u2502   1072 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   _report_progress(runner, progress_reporter)               \
+          \            \u2502\r\n\u2502   1073                                   \
+          \                                                        \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:256\
+          \ in    \u2502\r\n\u2502 step                                          \
+          \                                                   \u2502\r\n\u2502   \
+          \                                                                      \
+          \                         \u2502\r\n\u2502    253 \u2502   \u2502   self._maybe_add_actors()\
+          \                                                          \u2502\r\n\u2502\
+          \    254 \u2502   \u2502                                               \
+          \                                      \u2502\r\n\u2502    255 \u2502  \
+          \ \u2502   # Handle one event                                          \
+          \                      \u2502\r\n\u2502 \u2771  256 \u2502   \u2502   if\
+          \ not self._actor_manager.next(timeout=0.1):                           \
+          \          \u2502\r\n\u2502    257 \u2502   \u2502   \u2502   # If there\
+          \ are no actors running, warn about potentially                      \u2502\
+          \r\n\u2502    258 \u2502   \u2502   \u2502   # insufficient resources  \
+          \                                                    \u2502\r\n\u2502  \
+          \  259 \u2502   \u2502   \u2502   if not self._actor_manager.num_live_actors:\
+          \                                   \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:22\
+          \ \u2502\r\n\u2502 4 in next                                           \
+          \                                             \u2502\r\n\u2502         \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   221 \u2502   \u2502   if future in\
+          \ actor_state_futures:                                                 \
+          \ \u2502\r\n\u2502   222 \u2502   \u2502   \u2502   self._actor_state_events.resolve_future(future)\
+          \                                \u2502\r\n\u2502   223 \u2502   \u2502\
+          \   elif future in actor_task_futures:                                 \
+          \                \u2502\r\n\u2502 \u2771 224 \u2502   \u2502   \u2502  \
+          \ self._actor_task_events.resolve_future(future)                       \
+          \          \u2502\r\n\u2502   225 \u2502   \u2502   else:              \
+          \                                                                \u2502\r\
+          \n\u2502   226 \u2502   \u2502   \u2502   self._handle_ready_resource_future()\
+          \                                           \u2502\r\n\u2502   227 \u2502\
+          \   \u2502   \u2502   # Ready resource futures don't count as one event\
+          \ as they don't trigger        \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/event_manager.py:11\
+          \ \u2502\r\n\u2502 8 in resolve_future                                 \
+          \                                             \u2502\r\n\u2502         \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \        \u2502\r\n\u2502   116 \u2502   \u2502   else:                \
+          \                                                              \u2502\r\n\
+          \u2502   117 \u2502   \u2502   \u2502   if on_result:                  \
+          \                                                \u2502\r\n\u2502 \u2771\
+          \ 118 \u2502   \u2502   \u2502   \u2502   on_result(result)            \
+          \                                              \u2502\r\n\u2502   119 \u2502\
+          \                                                                      \
+          \                    \u2502\r\n\u2502   120 \u2502   def wait(         \
+          \                                                                     \u2502\
+          \r\n\u2502   121 \u2502   \u2502   self,                               \
+          \                                               \u2502\r\n\u2502       \
+          \                                                                      \
+          \                     \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:75\
+          \ \u2502\r\n\u2502 2 in on_result                                      \
+          \                                             \u2502\r\n\u2502         \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   749 \u2502   \u2502   \u2502   )\
+          \ from e                                                               \
+          \        \u2502\r\n\u2502   750 \u2502   \u2502                        \
+          \                                                              \u2502\r\n\
+          \u2502   751 \u2502   \u2502   def on_result(result: Any):             \
+          \                                           \u2502\r\n\u2502 \u2771 752\
+          \ \u2502   \u2502   \u2502   self._actor_task_resolved(                \
+          \                                     \u2502\r\n\u2502   753 \u2502   \u2502\
+          \   \u2502   \u2502   tracked_actor_task=tracked_actor_task, result=result\
+          \                       \u2502\r\n\u2502   754 \u2502   \u2502   \u2502\
+          \   )                                                                  \
+          \            \u2502\r\n\u2502   755                                    \
+          \                                                        \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:30\
+          \ \u2502\r\n\u2502 0 in _actor_task_resolved                           \
+          \                                             \u2502\r\n\u2502         \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   297 \u2502   \u2502             \
+          \                                                                      \
+          \   \u2502\r\n\u2502   298 \u2502   \u2502   # Trigger actor task result\
+          \ callback                                               \u2502\r\n\u2502\
+          \   299 \u2502   \u2502   if tracked_actor_task._on_result:            \
+          \                                      \u2502\r\n\u2502 \u2771 300 \u2502\
+          \   \u2502   \u2502   tracked_actor_task._on_result(tracked_actor, result)\
+          \                           \u2502\r\n\u2502   301 \u2502              \
+          \                                                                      \
+          \      \u2502\r\n\u2502   302 \u2502   def _handle_ready_resource_future(self):\
+          \                                               \u2502\r\n\u2502   303 \u2502\
+          \   \u2502   \"\"\"Handle a resource future that became ready.         \
+          \                            \u2502\r\n\u2502                          \
+          \                                                                      \
+          \  \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:824\
+          \ in    \u2502\r\n\u2502 _on_result                                    \
+          \                                                   \u2502\r\n\u2502   \
+          \                                                                      \
+          \                         \u2502\r\n\u2502    821 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   if e is TuneError or self._fail_fast == self.RAISE:\
+          \                   \u2502\r\n\u2502    822 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   raise e                                          \
+          \                 \u2502\r\n\u2502    823 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   else:                                                     \
+          \            \u2502\r\n\u2502 \u2771  824 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   raise TuneError(traceback.format_exc())          \
+          \                 \u2502\r\n\u2502    825 \u2502   \u2502              \
+          \                                                                      \
+          \ \u2502\r\n\u2502    826 \u2502   \u2502   if on_error:               \
+          \                                                       \u2502\r\n\u2502\
+          \    827                                                               \
+          \                            \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nTuneError:\
+          \ Traceback (most recent call last):\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py\"\
+          , line 815, in _on_result\r\n    on_result(trial, *args, **kwargs)\r\n \
+          \ File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 735, in\r\n_on_training_result\r\n    self._process_trial_results(trial,\
+          \ result)\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 748, in\r\n_process_trial_results\r\n    decision = self._process_trial_result(trial,\
+          \ result)\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 785, in\r\n_process_trial_result\r\n    self._validate_result_metrics(flat_result)\r\
+          \n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+          , line 883, in\r\n_validate_result_metrics\r\n    raise ValueError(\r\n\
+          ValueError: Trial returned a result which did not include the specified\
+          \ metric(s) `eval_accuracy` that `SearchGenerator`\r\nexpects. Make sure\
+          \ your calls to `tune.report()` include the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\r\
+          \nenvironment variable to 1. Result: {'objective': None, 'eval_runtime':\
+          \ 0.001, 'eval_samples_per_second': 0.0,\r\n'eval_steps_per_second': 0.0,\
+          \ 'epoch': 0.1, 'time_this_iter_s': 2627.347311973572, 'done': False, 'training_iteration':\r\
+          \n1, 'trial_id': 'c3280932', 'date': '2023-06-30_13-12-17', 'timestamp':\
+          \ 1688101937, 'time_total_s': 2627.347311973572,\r\n'pid': 728665, 'hostname':\
+          \ 'DESKTOP-6FHRRIO', 'node_ip': '172.31.110.212', 'time_since_restore':\
+          \ 2627.347311973572,\r\n'iterations_since_restore': 1, 'config/num_train_epochs':\
+          \ 1, 'config/learning_rate': 6.609632605618226e-06,\r\n'config/weight_decay':\
+          \ 0.15032619764660335, 'config/lr_scheduler_type': 'polynomial', 'config/warmup_steps':\r\
+          \n1617.919440294964, 'config/seed': 68.36480039671002, 'config/per_device_train_batch_size':\
+          \ 2}\r\n\r\n\r\n"
+        updatedAt: '2023-06-30T05:26:59.329Z'
+      numEdits: 0
+      reactions: []
+    id: 649e67a39154faad4cb4a31f
+    type: comment
+  author: pchiang5
+  content: "Thank you for providing Geneformer. When I tried hyperparamter training\
+    \ with the input below:\r\n\r\n\r\n# set training arguments\r\ntraining_args =\
+    \ {\r\n    \"do_train\": True,\r\n    \"do_eval\": True,\r\n    \"evaluation_strategy\"\
+    : \"steps\",\r\n    \"eval_steps\": logging_steps,\r\n    \"logging_steps\": logging_steps,\r\
+    \n    \"group_by_length\": True,\r\n    \"save_steps\": 7248,\r\n    \"length_column_name\"\
+    : \"length\",\r\n    \"disable_tqdm\": True,\r\n    \"skip_memory_metrics\": True,\
+    \ # memory tracker causes errors in raytune\r\n    \"per_device_train_batch_size\"\
+    : geneformer_batch_size,\r\n    \"per_device_eval_batch_size\": geneformer_batch_size,\r\
+    \n    \"num_train_epochs\": epochs,\r\n    \"load_best_model_at_end\": True, #original\
+    \ true\r\n    \"output_dir\": output_dir,\r\n}\r\n\r\ntraining_args_init = TrainingArguments(**training_args)\r\
+    \n\r\n# create the trainer\r\ntrainer = Trainer(\r\n    model_init=model_init,\r\
+    \n    args=training_args_init,\r\n    data_collator=DataCollatorForCellClassification(),\r\
+    \n    train_dataset=classifier_trainset,\r\n    eval_dataset=classifier_validset,\r\
+    \n    compute_metrics=compute_metrics,\r\n)\r\n\r\n# specify raytune hyperparameter\
+    \ search space\r\nray_config = {\r\n    \"num_train_epochs\": tune.choice([epochs]),\r\
+    \n    \"learning_rate\": tune.loguniform(1e-6, 1e-3),\r\n    \"weight_decay\"\
+    : tune.uniform(0.0, 0.3),\r\n    \"lr_scheduler_type\": tune.choice([\"linear\"\
+    ,\"cosine\",\"polynomial\"]),\r\n    \"warmup_steps\": tune.uniform(100, 2000),\r\
+    \n    \"seed\": tune.uniform(0,100),\r\n    \"per_device_train_batch_size\": tune.choice([geneformer_batch_size])\r\
+    \n}\r\n\r\nhyperopt_search = HyperOptSearch(\r\n    metric=\"eval_accuracy\",\
+    \ mode=\"max\")\r\n\r\n# optimize hyperparameters\r\ntrainer.hyperparameter_search(\r\
+    \n    direction=\"maximize\",\r\n    backend=\"ray\",\r\n    resources_per_trial={\"\
+    cpu\":36,\"gpu\":1},\r\n    hp_space=lambda _: ray_config,\r\n    search_alg=hyperopt_search,\r\
+    \n    n_trials=100, # number of trials\r\n    progress_reporter=tune.CLIReporter(max_report_frequency=600,\r\
+    \n                                                   sort_by_metric=True,\r\n\
+    \                                                   max_progress_rows=100,\r\n\
+    \                                                   mode=\"max\",\r\n        \
+    \                                           metric=\"eval_accuracy\",\r\n    \
+    \                                               metric_columns=[\"loss\", \"eval_loss\"\
+    , \"eval_accuracy\"])\r\n)\r\n\r\n\r\nThe following error occurred. Could you\
+    \ kindly help me locate the problem?  \r\n\r\n\r\n== Status ==\r\nCurrent time:\
+    \ 2023-06-30 13:08:26 (running for 00:40:00.32)\r\nUsing FIFO scheduling algorithm.\r\
+    \nLogical resource usage: 36.0/48 CPUs, 1.0/1 GPUs\r\nResult logdir: /root/ray_results/_objective_2023-06-30_12-28-26\r\
+    \nNumber of trials: 2/100 (1 PENDING, 1 RUNNING)\r\n+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+\r\
+    \n| Trial name          | status   | loc                   |   learning_rate |\
+    \ lr_scheduler_type   |   num_train_epochs |   per_device_train_bat |    seed\
+    \ |   warmup_steps |   weight_decay |\r\n|                     |          |  \
+    \                     |                 |                     |              \
+    \      |                ch_size |         |                |                |\r\
+    \n|---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------|\r\
+    \n| _objective_c3280932 | RUNNING  | 172.31.110.212:728665 |     6.60963e-06 |\
+    \ polynomial          |                  1 |                      2 | 68.3648\
+    \ |        1617.92 |       0.150326 |\r\n| _objective_bd8a2bfc | PENDING  |  \
+    \                     |     0.000120052 | linear              |              \
+    \    1 |                      2 | 17.703  |        1592.29 |       0.2757   |\r\
+    \n+---------------------+----------+-----------------------+-----------------+---------------------+--------------------+------------------------+---------+----------------+----------------+\r\
+    \n\r\n\r\n(_objective pid=728665) {'loss': 0.9496, 'learning_rate': 6.0923637356386e-06,\
+    \ 'epoch': 0.1}\r\n(_objective pid=728665) {'eval_runtime': 0.001, 'eval_samples_per_second':\
+    \ 0.0, 'eval_steps_per_second': 0.0, 'epoch': 0.1}\r\n\u256D\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u256E\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:815\
+    \ in    \u2502\r\n\u2502 _on_result                                          \
+    \                                             \u2502\r\n\u2502               \
+    \                                                                            \
+    \       \u2502\r\n\u2502    812 \u2502   \u2502   \u2502   \u2502   \u2502   f\"\
+    {args}, {kwargs}\"                                                   \u2502\r\n\
+    \u2502    813 \u2502   \u2502   \u2502   \u2502   )                          \
+    \                                               \u2502\r\n\u2502    814 \u2502\
+    \   \u2502   \u2502   \u2502   try:                                          \
+    \                            \u2502\r\n\u2502 \u2771  815 \u2502   \u2502   \u2502\
+    \   \u2502   \u2502   on_result(trial, *args, **kwargs)                      \
+    \               \u2502\r\n\u2502    816 \u2502   \u2502   \u2502   \u2502   except\
+    \ Exception as e:                                                    \u2502\r\n\
+    \u2502    817 \u2502   \u2502   \u2502   \u2502   \u2502   logger.debug(     \
+    \                                                    \u2502\r\n\u2502    818 \u2502\
+    \   \u2502   \u2502   \u2502   \u2502   \u2502   f\"Error handling {method_name.upper()}\
+    \ result \"                   \u2502\r\n\u2502                               \
+    \                                                                   \u2502\r\n\
+    \u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:735\
+    \ in       \u2502\r\n\u2502 _on_training_result                              \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502    732 \u2502   \u2502   if not isinstance(result,\
+    \ list):                                                  \u2502\r\n\u2502   \
+    \ 733 \u2502   \u2502   \u2502   result = [result]                           \
+    \                                  \u2502\r\n\u2502    734 \u2502   \u2502   with\
+    \ warn_if_slow(\"process_trial_result\"):                                    \
+    \    \u2502\r\n\u2502 \u2771  735 \u2502   \u2502   \u2502   self._process_trial_results(trial,\
+    \ result)                                    \u2502\r\n\u2502    736 \u2502  \
+    \ \u2502   self._maybe_execute_queued_decision(trial)                        \
+    \                \u2502\r\n\u2502    737 \u2502                              \
+    \                                                           \u2502\r\n\u2502 \
+    \   738 \u2502   def _process_trial_results(self, trial, results):           \
+    \                          \u2502\r\n\u2502                                  \
+    \                                                                \u2502\r\n\u2502\
+    \ /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:748\
+    \ in       \u2502\r\n\u2502 _process_trial_results                           \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502    745 \u2502   \u2502   ):                      \
+    \                                                          \u2502\r\n\u2502  \
+    \  746 \u2502   \u2502   \u2502   for i, result in enumerate(results):       \
+    \                                   \u2502\r\n\u2502    747 \u2502   \u2502  \
+    \ \u2502   \u2502   with warn_if_slow(\"process_trial_result\"):             \
+    \                   \u2502\r\n\u2502 \u2771  748 \u2502   \u2502   \u2502   \u2502\
+    \   \u2502   decision = self._process_trial_result(trial, result)            \
+    \      \u2502\r\n\u2502    749 \u2502   \u2502   \u2502   \u2502   if decision\
+    \ is None:                                                      \u2502\r\n\u2502\
+    \    750 \u2502   \u2502   \u2502   \u2502   \u2502   # If we didn't get a decision,\
+    \ this means a                           \u2502\r\n\u2502    751 \u2502   \u2502\
+    \   \u2502   \u2502   \u2502   # non-training future (e.g. a save) was scheduled.\
+    \                    \u2502\r\n\u2502                                        \
+    \                                                          \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:785\
+    \ in       \u2502\r\n\u2502 _process_trial_result                            \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502    782 \u2502   \u2502   self._total_time += result.get(TIME_THIS_ITER_S,\
+    \ 0)                               \u2502\r\n\u2502    783 \u2502   \u2502   \
+    \                                                                            \
+    \      \u2502\r\n\u2502    784 \u2502   \u2502   flat_result = flatten_dict(result)\
+    \                                                \u2502\r\n\u2502 \u2771  785\
+    \ \u2502   \u2502   self._validate_result_metrics(flat_result)               \
+    \                         \u2502\r\n\u2502    786 \u2502   \u2502            \
+    \                                                                         \u2502\
+    \r\n\u2502    787 \u2502   \u2502   if self._stopper(trial.trial_id, result) or\
+    \ trial.should_stop(flat_result):       \u2502\r\n\u2502    788 \u2502   \u2502\
+    \   \u2502   decision = TrialScheduler.STOP                                  \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py:883\
+    \ in       \u2502\r\n\u2502 _validate_result_metrics                         \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502    880 \u2502   \u2502   \u2502   \u2502   location\
+    \ = None                                                           \u2502\r\n\u2502\
+    \    881 \u2502   \u2502   \u2502                                            \
+    \                                     \u2502\r\n\u2502    882 \u2502   \u2502\
+    \   \u2502   if report_metric:                                               \
+    \              \u2502\r\n\u2502 \u2771  883 \u2502   \u2502   \u2502   \u2502\
+    \   raise ValueError(                                                        \
+    \ \u2502\r\n\u2502    884 \u2502   \u2502   \u2502   \u2502   \u2502   \"Trial\
+    \ returned a result which did not include the \"                  \u2502\r\n\u2502\
+    \    885 \u2502   \u2502   \u2502   \u2502   \u2502   \"specified metric(s) `{}`\
+    \ that `{}` expects. \"                        \u2502\r\n\u2502    886 \u2502\
+    \   \u2502   \u2502   \u2502   \u2502   \"Make sure your calls to `tune.report()`\
+    \ include the \"                \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u256F\r\nValueError: Trial returned a result which did not include\
+    \ the specified metric(s) `eval_accuracy` that `SearchGenerator`\r\nexpects. Make\
+    \ sure your calls to `tune.report()` include the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\r\
+    \nenvironment variable to 1. Result: {'objective': None, 'eval_runtime': 0.001,\
+    \ 'eval_samples_per_second': 0.0,\r\n'eval_steps_per_second': 0.0, 'epoch': 0.1,\
+    \ 'time_this_iter_s': 2627.347311973572, 'done': False, 'training_iteration':\r\
+    \n1, 'trial_id': 'c3280932', 'date': '2023-06-30_13-12-17', 'timestamp': 1688101937,\
+    \ 'time_total_s': 2627.347311973572,\r\n'pid': 728665, 'hostname': 'DESKTOP-6FHRRIO',\
+    \ 'node_ip': '172.31.110.212', 'time_since_restore': 2627.347311973572,\r\n'iterations_since_restore':\
+    \ 1, 'config/num_train_epochs': 1, 'config/learning_rate': 6.609632605618226e-06,\r\
+    \n'config/weight_decay': 0.15032619764660335, 'config/lr_scheduler_type': 'polynomial',\
+    \ 'config/warmup_steps':\r\n1617.919440294964, 'config/seed': 68.36480039671002,\
+    \ 'config/per_device_train_batch_size': 2}\r\n\r\nDuring handling of the above\
+    \ exception, another exception occurred:\r\n\r\n\u256D\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\
+    \r\n\u2502 in <module>:2                                                     \
+    \                               \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/trainer.py:2628\
+    \ in                 \u2502\r\n\u2502 hyperparameter_search                  \
+    \                                                          \u2502\r\n\u2502  \
+    \                                                                            \
+    \                    \u2502\r\n\u2502   2625 \u2502   \u2502   \u2502   HPSearchBackend.SIGOPT:\
+    \ run_hp_search_sigopt,                                 \u2502\r\n\u2502   2626\
+    \ \u2502   \u2502   \u2502   HPSearchBackend.WANDB: run_hp_search_wandb,     \
+    \                              \u2502\r\n\u2502   2627 \u2502   \u2502   }   \
+    \                                                                            \
+    \  \u2502\r\n\u2502 \u2771 2628 \u2502   \u2502   best_run = backend_dict[backend](self,\
+    \ n_trials, direction, **kwargs)             \u2502\r\n\u2502   2629 \u2502  \
+    \ \u2502                                                                     \
+    \                \u2502\r\n\u2502   2630 \u2502   \u2502   self.hp_search_backend\
+    \ = None                                                     \u2502\r\n\u2502\
+    \   2631 \u2502   \u2502   return best_run                                   \
+    \                                \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/integrations.py:353\
+    \ in             \u2502\r\n\u2502 run_hp_search_ray                          \
+    \                                                      \u2502\r\n\u2502      \
+    \                                                                            \
+    \                \u2502\r\n\u2502    350 \u2502   if hasattr(trainable, \"__mixins__\"\
+    ):                                                  \u2502\r\n\u2502    351 \u2502\
+    \   \u2502   dynamic_modules_import_trainable.__mixins__ = trainable.__mixins__\
+    \                \u2502\r\n\u2502    352 \u2502                              \
+    \                                                           \u2502\r\n\u2502 \u2771\
+    \  353 \u2502   analysis = ray.tune.run(                                     \
+    \                         \u2502\r\n\u2502    354 \u2502   \u2502   dynamic_modules_import_trainable,\
+    \                                                 \u2502\r\n\u2502    355 \u2502\
+    \   \u2502   config=trainer.hp_space(None),                                  \
+    \                  \u2502\r\n\u2502    356 \u2502   \u2502   num_samples=n_trials,\
+    \                                                             \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/tune.py:1070\
+    \ in run                    \u2502\r\n\u2502                                 \
+    \                                                                 \u2502\r\n\u2502\
+    \   1067 \u2502   \u2502   \u2502   while (                                  \
+    \                                     \u2502\r\n\u2502   1068 \u2502   \u2502\
+    \   \u2502   \u2502   not runner.is_finished() and not experiment_interrupted_event.is_set()\
+    \    \u2502\r\n\u2502   1069 \u2502   \u2502   \u2502   ):                   \
+    \                                                         \u2502\r\n\u2502 \u2771\
+    \ 1070 \u2502   \u2502   \u2502   \u2502   runner.step()                     \
+    \                                        \u2502\r\n\u2502   1071 \u2502   \u2502\
+    \   \u2502   \u2502   if has_verbosity(Verbosity.V1_EXPERIMENT):             \
+    \                   \u2502\r\n\u2502   1072 \u2502   \u2502   \u2502   \u2502\
+    \   \u2502   _report_progress(runner, progress_reporter)                     \
+    \      \u2502\r\n\u2502   1073                                               \
+    \                                            \u2502\r\n\u2502                \
+    \                                                                            \
+    \      \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:256\
+    \ in    \u2502\r\n\u2502 step                                                \
+    \                                             \u2502\r\n\u2502               \
+    \                                                                            \
+    \       \u2502\r\n\u2502    253 \u2502   \u2502   self._maybe_add_actors()   \
+    \                                                       \u2502\r\n\u2502    254\
+    \ \u2502   \u2502                                                            \
+    \                         \u2502\r\n\u2502    255 \u2502   \u2502   # Handle one\
+    \ event                                                                \u2502\r\
+    \n\u2502 \u2771  256 \u2502   \u2502   if not self._actor_manager.next(timeout=0.1):\
+    \                                     \u2502\r\n\u2502    257 \u2502   \u2502\
+    \   \u2502   # If there are no actors running, warn about potentially        \
+    \              \u2502\r\n\u2502    258 \u2502   \u2502   \u2502   # insufficient\
+    \ resources                                                      \u2502\r\n\u2502\
+    \    259 \u2502   \u2502   \u2502   if not self._actor_manager.num_live_actors:\
+    \                                   \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:22\
+    \ \u2502\r\n\u2502 4 in next                                                 \
+    \                                       \u2502\r\n\u2502                     \
+    \                                                                            \
+    \ \u2502\r\n\u2502   221 \u2502   \u2502   if future in actor_state_futures: \
+    \                                                 \u2502\r\n\u2502   222 \u2502\
+    \   \u2502   \u2502   self._actor_state_events.resolve_future(future)        \
+    \                        \u2502\r\n\u2502   223 \u2502   \u2502   elif future\
+    \ in actor_task_futures:                                                 \u2502\
+    \r\n\u2502 \u2771 224 \u2502   \u2502   \u2502   self._actor_task_events.resolve_future(future)\
+    \                                 \u2502\r\n\u2502   225 \u2502   \u2502   else:\
+    \                                                                            \
+    \  \u2502\r\n\u2502   226 \u2502   \u2502   \u2502   self._handle_ready_resource_future()\
+    \                                           \u2502\r\n\u2502   227 \u2502   \u2502\
+    \   \u2502   # Ready resource futures don't count as one event as they don't trigger\
+    \        \u2502\r\n\u2502                                                    \
+    \                                              \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/event_manager.py:11\
+    \ \u2502\r\n\u2502 8 in resolve_future                                       \
+    \                                       \u2502\r\n\u2502                     \
+    \                                                                            \
+    \ \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   \u2502   raise e         \
+    \                                                           \u2502\r\n\u2502 \
+    \  116 \u2502   \u2502   else:                                               \
+    \                               \u2502\r\n\u2502   117 \u2502   \u2502   \u2502\
+    \   if on_result:                                                            \
+    \      \u2502\r\n\u2502 \u2771 118 \u2502   \u2502   \u2502   \u2502   on_result(result)\
+    \                                                          \u2502\r\n\u2502  \
+    \ 119 \u2502                                                                 \
+    \                         \u2502\r\n\u2502   120 \u2502   def wait(          \
+    \                                                                    \u2502\r\n\
+    \u2502   121 \u2502   \u2502   self,                                         \
+    \                                     \u2502\r\n\u2502                       \
+    \                                                                           \u2502\
+    \r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:75\
+    \ \u2502\r\n\u2502 2 in on_result                                            \
+    \                                       \u2502\r\n\u2502                     \
+    \                                                                            \
+    \ \u2502\r\n\u2502   749 \u2502   \u2502   \u2502   ) from e                 \
+    \                                                      \u2502\r\n\u2502   750\
+    \ \u2502   \u2502                                                            \
+    \                          \u2502\r\n\u2502   751 \u2502   \u2502   def on_result(result:\
+    \ Any):                                                        \u2502\r\n\u2502\
+    \ \u2771 752 \u2502   \u2502   \u2502   self._actor_task_resolved(           \
+    \                                          \u2502\r\n\u2502   753 \u2502   \u2502\
+    \   \u2502   \u2502   tracked_actor_task=tracked_actor_task, result=result   \
+    \                    \u2502\r\n\u2502   754 \u2502   \u2502   \u2502   )     \
+    \                                                                         \u2502\
+    \r\n\u2502   755                                                             \
+    \                               \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/air/execution/_internal/actor_manager.py:30\
+    \ \u2502\r\n\u2502 0 in _actor_task_resolved                                 \
+    \                                       \u2502\r\n\u2502                     \
+    \                                                                            \
+    \ \u2502\r\n\u2502   297 \u2502   \u2502                                     \
+    \                                                 \u2502\r\n\u2502   298 \u2502\
+    \   \u2502   # Trigger actor task result callback                            \
+    \                   \u2502\r\n\u2502   299 \u2502   \u2502   if tracked_actor_task._on_result:\
+    \                                                  \u2502\r\n\u2502 \u2771 300\
+    \ \u2502   \u2502   \u2502   tracked_actor_task._on_result(tracked_actor, result)\
+    \                           \u2502\r\n\u2502   301 \u2502                    \
+    \                                                                      \u2502\r\
+    \n\u2502   302 \u2502   def _handle_ready_resource_future(self):             \
+    \                                  \u2502\r\n\u2502   303 \u2502   \u2502   \"\
+    \"\"Handle a resource future that became ready.                              \
+    \       \u2502\r\n\u2502                                                     \
+    \                                             \u2502\r\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py:824\
+    \ in    \u2502\r\n\u2502 _on_result                                          \
+    \                                             \u2502\r\n\u2502               \
+    \                                                                            \
+    \       \u2502\r\n\u2502    821 \u2502   \u2502   \u2502   \u2502   \u2502   if\
+    \ e is TuneError or self._fail_fast == self.RAISE:                   \u2502\r\n\
+    \u2502    822 \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   raise e  \
+    \                                                         \u2502\r\n\u2502   \
+    \ 823 \u2502   \u2502   \u2502   \u2502   \u2502   else:                     \
+    \                                            \u2502\r\n\u2502 \u2771  824 \u2502\
+    \   \u2502   \u2502   \u2502   \u2502   \u2502   raise TuneError(traceback.format_exc())\
+    \                           \u2502\r\n\u2502    825 \u2502   \u2502          \
+    \                                                                           \u2502\
+    \r\n\u2502    826 \u2502   \u2502   if on_error:                             \
+    \                                         \u2502\r\n\u2502    827            \
+    \                                                                            \
+    \   \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nTuneError:\
+    \ Traceback (most recent call last):\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/tune_controller.py\"\
+    , line 815, in _on_result\r\n    on_result(trial, *args, **kwargs)\r\n  File \"\
+    /home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+    , line 735, in\r\n_on_training_result\r\n    self._process_trial_results(trial,\
+    \ result)\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+    , line 748, in\r\n_process_trial_results\r\n    decision = self._process_trial_result(trial,\
+    \ result)\r\n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+    , line 785, in\r\n_process_trial_result\r\n    self._validate_result_metrics(flat_result)\r\
+    \n  File \"/home/pc/miniconda3/lib/python3.10/site-packages/ray/tune/execution/trial_runner.py\"\
+    , line 883, in\r\n_validate_result_metrics\r\n    raise ValueError(\r\nValueError:\
+    \ Trial returned a result which did not include the specified metric(s) `eval_accuracy`\
+    \ that `SearchGenerator`\r\nexpects. Make sure your calls to `tune.report()` include\
+    \ the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\r\nenvironment variable\
+    \ to 1. Result: {'objective': None, 'eval_runtime': 0.001, 'eval_samples_per_second':\
+    \ 0.0,\r\n'eval_steps_per_second': 0.0, 'epoch': 0.1, 'time_this_iter_s': 2627.347311973572,\
+    \ 'done': False, 'training_iteration':\r\n1, 'trial_id': 'c3280932', 'date': '2023-06-30_13-12-17',\
+    \ 'timestamp': 1688101937, 'time_total_s': 2627.347311973572,\r\n'pid': 728665,\
+    \ 'hostname': 'DESKTOP-6FHRRIO', 'node_ip': '172.31.110.212', 'time_since_restore':\
+    \ 2627.347311973572,\r\n'iterations_since_restore': 1, 'config/num_train_epochs':\
+    \ 1, 'config/learning_rate': 6.609632605618226e-06,\r\n'config/weight_decay':\
+    \ 0.15032619764660335, 'config/lr_scheduler_type': 'polynomial', 'config/warmup_steps':\r\
+    \n1617.919440294964, 'config/seed': 68.36480039671002, 'config/per_device_train_batch_size':\
+    \ 2}\r\n\r\n\r\n"
+  created_at: 2023-06-30 04:26:59+00:00
+  edited: false
+  hidden: false
+  id: 649e67a39154faad4cb4a31f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+      fullname: PC
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pchiang5
+      type: user
+    createdAt: '2023-06-30T07:52:37.000Z'
+    data:
+      edited: false
+      editors:
+      - pchiang5
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4636676013469696
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+          fullname: PC
+          isHf: false
+          isPro: false
+          name: pchiang5
+          type: user
+        html: "<p>BTW, there was another error below when I ran the native code in\
+          \ the notebook: </p>\n<p>\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \ Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u256E<br>\u2502 in :20                                    \
+          \                                               \u2502<br>\u2502 in <strong>init</strong>:111\
+          \                                                                      \
+          \            \u2502<br>\u2502                                          \
+          \                                                        \u2502<br>\u2502\
+          \ /home/pc/miniconda3/lib/python3.10/site-packages/transformers/training_args.py:1251\
+          \ in           \u2502<br>\u2502 <strong>post_init</strong>             \
+          \                                                                      \
+          \ \u2502<br>\u2502                                                     \
+          \                                             \u2502<br>\u2502   1248 \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   \"--load_best_model_at_end\
+          \ requires the saving steps to be a   \u2502<br>\u2502   1249 \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   \u2502   f\"steps, but found {self.save_steps},\
+          \ which is not a multipl  \u2502<br>\u2502   1250 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   )                                       \
+          \                          \u2502<br>\u2502 \u2771 1251 \u2502   \u2502\
+          \   \u2502   \u2502   raise ValueError(                                \
+          \                         \u2502<br>\u2502   1252 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   \"--load_best_model_at_end requires the saving steps\
+          \ to be a round mu  \u2502<br>\u2502   1253 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   f\"steps, but found {self.save_steps}, which is not a round\
+          \ multiple   \u2502<br>\u2502   1254 \u2502   \u2502   \u2502   \u2502 \
+          \  )                                                                   \
+          \      \u2502<br>\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u256F<br>ValueError: --load_best_model_at_end\
+          \ requires the saving steps to be a round multiple of the evaluation steps,\
+          \ but found<br>453, which is not a round multiple of 7248.</p>\n<p>The error\
+          \ could be bypassed by adding \"save_steps\": 7248 to \"training_args\"\
+          .  The original <code>ValueError: Trial returned a result which did not\
+          \ include the specified metric(s) eval_accuracy that SearchGenerator expects.\
+          \ Make sure your calls to tune.report() include the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\
+          \ environment variable to 1.</code> happened after adding that line.</p>\n"
+        raw: "\nBTW, there was another error below when I ran the native code in the\
+          \ notebook: \n\n\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most\
+          \ recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\
+          \n\u2502 in <module>:20                                                \
+          \                                   \u2502\n\u2502 in __init__:111     \
+          \                                                                      \
+          \       \u2502\n\u2502                                                 \
+          \                                                 \u2502\n\u2502 /home/pc/miniconda3/lib/python3.10/site-packages/transformers/training_args.py:1251\
+          \ in           \u2502\n\u2502 __post_init__                            \
+          \                                                        \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502   1248 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   \"--load_best_model_at_end requires\
+          \ the saving steps to be a   \u2502\n\u2502   1249 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   f\"steps, but found {self.save_steps},\
+          \ which is not a multipl  \u2502\n\u2502   1250 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   )                                       \
+          \                          \u2502\n\u2502 \u2771 1251 \u2502   \u2502  \
+          \ \u2502   \u2502   raise ValueError(                                  \
+          \                       \u2502\n\u2502   1252 \u2502   \u2502   \u2502 \
+          \  \u2502   \u2502   \"--load_best_model_at_end requires the saving steps\
+          \ to be a round mu  \u2502\n\u2502   1253 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   f\"steps, but found {self.save_steps}, which is not a round\
+          \ multiple   \u2502\n\u2502   1254 \u2502   \u2502   \u2502   \u2502   )\
+          \                                                                      \
+          \   \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u256F\nValueError: --load_best_model_at_end\
+          \ requires the saving steps to be a round multiple of the evaluation steps,\
+          \ but found\n453, which is not a round multiple of 7248.\n\nThe error could\
+          \ be bypassed by adding \"save_steps\": 7248 to \"training_args\".  The\
+          \ original `ValueError: Trial returned a result which did not include the\
+          \ specified metric(s) eval_accuracy that SearchGenerator\nexpects. Make\
+          \ sure your calls to tune.report() include the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\n\
+          environment variable to 1.` happened after adding that line.\n"
+        updatedAt: '2023-06-30T07:52:37.530Z'
+      numEdits: 0
+      reactions: []
+    id: 649e89c5146ec61a0b72d999
+    type: comment
+  author: pchiang5
+  content: "\nBTW, there was another error below when I ran the native code in the\
+    \ notebook: \n\n\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last)\
+    \ \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u256E\n\u2502 in <module>:20            \
+    \                                                                       \u2502\
+    \n\u2502 in __init__:111                                                     \
+    \                             \u2502\n\u2502                                 \
+    \                                                                 \u2502\n\u2502\
+    \ /home/pc/miniconda3/lib/python3.10/site-packages/transformers/training_args.py:1251\
+    \ in           \u2502\n\u2502 __post_init__                                  \
+    \                                                  \u2502\n\u2502            \
+    \                                                                            \
+    \          \u2502\n\u2502   1248 \u2502   \u2502   \u2502   \u2502   \u2502  \
+    \ \u2502   \u2502   \"--load_best_model_at_end requires the saving steps to be\
+    \ a   \u2502\n\u2502   1249 \u2502   \u2502   \u2502   \u2502   \u2502   \u2502\
+    \   \u2502   f\"steps, but found {self.save_steps}, which is not a multipl  \u2502\
+    \n\u2502   1250 \u2502   \u2502   \u2502   \u2502   \u2502   \u2502   )      \
+    \                                                           \u2502\n\u2502 \u2771\
+    \ 1251 \u2502   \u2502   \u2502   \u2502   raise ValueError(                 \
+    \                                        \u2502\n\u2502   1252 \u2502   \u2502\
+    \   \u2502   \u2502   \u2502   \"--load_best_model_at_end requires the saving\
+    \ steps to be a round mu  \u2502\n\u2502   1253 \u2502   \u2502   \u2502   \u2502\
+    \   \u2502   f\"steps, but found {self.save_steps}, which is not a round multiple\
+    \   \u2502\n\u2502   1254 \u2502   \u2502   \u2502   \u2502   )              \
+    \                                                           \u2502\n\u2570\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u256F\nValueError: --load_best_model_at_end\
+    \ requires the saving steps to be a round multiple of the evaluation steps, but\
+    \ found\n453, which is not a round multiple of 7248.\n\nThe error could be bypassed\
+    \ by adding \"save_steps\": 7248 to \"training_args\".  The original `ValueError:\
+    \ Trial returned a result which did not include the specified metric(s) eval_accuracy\
+    \ that SearchGenerator\nexpects. Make sure your calls to tune.report() include\
+    \ the metric, or set the TUNE_DISABLE_STRICT_METRIC_CHECKING\nenvironment variable\
+    \ to 1.` happened after adding that line.\n"
+  created_at: 2023-06-30 06:52:37+00:00
+  edited: false
+  hidden: false
+  id: 649e89c5146ec61a0b72d999
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-30T11:42:33.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9557380676269531
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer. The first error appears
+          to be due to the name in the provided metrics being different than expected
+          by RayTune so I would suggest determining the name it should look for and
+          providing that accordingly. The second error can be solved based on the
+          suggestion Huggingface provides in the error message.</p>
+
+          '
+        raw: Thank you for your interest in Geneformer. The first error appears to
+          be due to the name in the provided metrics being different than expected
+          by RayTune so I would suggest determining the name it should look for and
+          providing that accordingly. The second error can be solved based on the
+          suggestion Huggingface provides in the error message.
+        updatedAt: '2023-06-30T11:42:33.674Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 649ebfa9402ad391e6245ef2
+    id: 649ebfa9402ad391e6245ef0
+    type: comment
+  author: ctheodoris
+  content: Thank you for your interest in Geneformer. The first error appears to be
+    due to the name in the provided metrics being different than expected by RayTune
+    so I would suggest determining the name it should look for and providing that
+    accordingly. The second error can be solved based on the suggestion Huggingface
+    provides in the error message.
+  created_at: 2023-06-30 10:42:33+00:00
+  edited: false
+  hidden: false
+  id: 649ebfa9402ad391e6245ef0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-30T11:42:33.000Z'
+    data:
+      status: closed
+    id: 649ebfa9402ad391e6245ef2
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-06-30 10:42:33+00:00
+  id: 649ebfa9402ad391e6245ef2
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+      fullname: PC
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pchiang5
+      type: user
+    createdAt: '2023-07-01T00:11:49.000Z'
+    data:
+      edited: false
+      editors:
+      - pchiang5
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7738848924636841
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+          fullname: PC
+          isHf: false
+          isPro: false
+          name: pchiang5
+          type: user
+        html: '<p>Thank you for your answers. However, I followed the notebook "hyperparam_optimiz_for_disease_classifier.py"
+          and used your DCM dataset as the test. Moreover, I noted the use of <code>accuracy'':
+          acc</code> and not `eval_accuracy'': acc'' in the following section:</p>
+
+          <p>def compute_metrics(pred):<br>    labels = pred.label_ids<br>    preds
+          = pred.predictions.argmax(-1)<br>    # calculate accuracy using sklearn''s
+          function<br>    acc = accuracy_score(labels, preds)<br>    return {<br>      ''accuracy'':
+          acc,<br>    }</p>
+
+          <p>So I changed to <code>eval_accuracy</code> and set <code>"save_steps":
+          7248</code>, but the identical error message jumped out. Do I have to indicate
+          the ''eval_accuracy'' otherwhere as the input for <code>SearchGenerator</code>?</p>
+
+          '
+        raw: "Thank you for your answers. However, I followed the notebook \"hyperparam_optimiz_for_disease_classifier.py\"\
+          \ and used your DCM dataset as the test. Moreover, I noted the use of `accuracy':\
+          \ acc` and not `eval_accuracy': acc' in the following section:\n\ndef compute_metrics(pred):\n\
+          \    labels = pred.label_ids\n    preds = pred.predictions.argmax(-1)\n\
+          \    # calculate accuracy using sklearn's function\n    acc = accuracy_score(labels,\
+          \ preds)\n    return {\n      'accuracy': acc,\n    }\n\nSo I changed to\
+          \ `eval_accuracy` and set `\"save_steps\": 7248`, but the identical error\
+          \ message jumped out. Do I have to indicate the 'eval_accuracy' otherwhere\
+          \ as the input for `SearchGenerator`?"
+        updatedAt: '2023-07-01T00:11:49.785Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 649f6f4553158a7180544095
+    id: 649f6f4553158a7180544094
+    type: comment
+  author: pchiang5
+  content: "Thank you for your answers. However, I followed the notebook \"hyperparam_optimiz_for_disease_classifier.py\"\
+    \ and used your DCM dataset as the test. Moreover, I noted the use of `accuracy':\
+    \ acc` and not `eval_accuracy': acc' in the following section:\n\ndef compute_metrics(pred):\n\
+    \    labels = pred.label_ids\n    preds = pred.predictions.argmax(-1)\n    # calculate\
+    \ accuracy using sklearn's function\n    acc = accuracy_score(labels, preds)\n\
+    \    return {\n      'accuracy': acc,\n    }\n\nSo I changed to `eval_accuracy`\
+    \ and set `\"save_steps\": 7248`, but the identical error message jumped out.\
+    \ Do I have to indicate the 'eval_accuracy' otherwhere as the input for `SearchGenerator`?"
+  created_at: 2023-06-30 23:11:49+00:00
+  edited: false
+  hidden: false
+  id: 649f6f4553158a7180544094
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+      fullname: PC
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pchiang5
+      type: user
+    createdAt: '2023-07-01T00:11:49.000Z'
+    data:
+      status: open
+    id: 649f6f4553158a7180544095
+    type: status-change
+  author: pchiang5
+  created_at: 2023-06-30 23:11:49+00:00
+  id: 649f6f4553158a7180544095
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-01T01:24:14.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9579097032546997
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your question. The example we provided is exactly
+          how we performed the analysis. As you note, the names are different in the
+          definition of the compute_metrics and in the variable name passed to RayTune.
+          We had to arrange it that way because the name was altered from what we
+          had labeled it as. If in your versions it is a different name, you should
+          do the same and determine what the variable is named so that you can indicate
+          it correctly to RayTune. There are a few places within the code where this
+          referenced so I would suggest you modify it in all of those locations. For
+          the "save_steps", it would be more robust to make it a multiple of "logging_steps".</p>
+
+          '
+        raw: Thank you for your question. The example we provided is exactly how we
+          performed the analysis. As you note, the names are different in the definition
+          of the compute_metrics and in the variable name passed to RayTune. We had
+          to arrange it that way because the name was altered from what we had labeled
+          it as. If in your versions it is a different name, you should do the same
+          and determine what the variable is named so that you can indicate it correctly
+          to RayTune. There are a few places within the code where this referenced
+          so I would suggest you modify it in all of those locations. For the "save_steps",
+          it would be more robust to make it a multiple of "logging_steps".
+        updatedAt: '2023-07-01T01:24:14.931Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 649f803e83476d0912243e06
+    id: 649f803e83476d0912243e05
+    type: comment
+  author: ctheodoris
+  content: Thank you for your question. The example we provided is exactly how we
+    performed the analysis. As you note, the names are different in the definition
+    of the compute_metrics and in the variable name passed to RayTune. We had to arrange
+    it that way because the name was altered from what we had labeled it as. If in
+    your versions it is a different name, you should do the same and determine what
+    the variable is named so that you can indicate it correctly to RayTune. There
+    are a few places within the code where this referenced so I would suggest you
+    modify it in all of those locations. For the "save_steps", it would be more robust
+    to make it a multiple of "logging_steps".
+  created_at: 2023-07-01 00:24:14+00:00
+  edited: false
+  hidden: false
+  id: 649f803e83476d0912243e05
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-01T01:24:14.000Z'
+    data:
+      status: closed
+    id: 649f803e83476d0912243e06
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-07-01 00:24:14+00:00
+  id: 649f803e83476d0912243e06
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+      fullname: PC
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pchiang5
+      type: user
+    createdAt: '2023-07-02T01:27:15.000Z'
+    data:
+      edited: false
+      editors:
+      - pchiang5
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9625557065010071
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1092f31a9ffd1e9813369b91311f765a.svg
+          fullname: PC
+          isHf: false
+          isPro: false
+          name: pchiang5
+          type: user
+        html: '<p>Thank you. I got it to work by using the <code>organ_trainset</code>
+          and <code>organ_evalset</code> (unmodified) in your cell_classification.ipynb
+          as the input for the hyperparameter optimization. I guess somewhere was
+          messed up during the label assignment with my original trials. </p>
+
+          '
+        raw: 'Thank you. I got it to work by using the `organ_trainset` and `organ_evalset`
+          (unmodified) in your cell_classification.ipynb as the input for the hyperparameter
+          optimization. I guess somewhere was messed up during the label assignment
+          with my original trials. '
+        updatedAt: '2023-07-02T01:27:15.217Z'
+      numEdits: 0
+      reactions: []
+    id: 64a0d273c1be6b3301f66c40
+    type: comment
+  author: pchiang5
+  content: 'Thank you. I got it to work by using the `organ_trainset` and `organ_evalset`
+    (unmodified) in your cell_classification.ipynb as the input for the hyperparameter
+    optimization. I guess somewhere was messed up during the label assignment with
+    my original trials. '
+  created_at: 2023-07-02 00:27:15+00:00
+  edited: false
+  hidden: false
+  id: 64a0d273c1be6b3301f66c40
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 74
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: 'error: `eval_accuracy` not included '

@@ -1,0 +1,254 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AlexMercerXX
+conflicting_files: null
+created_at: 2024-01-25 03:06:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4ee92ed17ed26c36738ed8d623c384dc.svg
+      fullname: Anwesh Mohanty
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AlexMercerXX
+      type: user
+    createdAt: '2024-01-25T03:06:44.000Z'
+    data:
+      edited: false
+      editors:
+      - AlexMercerXX
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5255338549613953
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4ee92ed17ed26c36738ed8d623c384dc.svg
+          fullname: Anwesh Mohanty
+          isHf: false
+          isPro: false
+          name: AlexMercerXX
+          type: user
+        html: "<p>I am new to working with Hugging Face models and LLMs in general\
+          \ so any help will be appreciated. </p>\n<p>I am trying to run a supervised\
+          \ fine-tuning experiment with phi2 on my custom dataset. I have collected\
+          \ data samples of the form {\"instruction\": ... , \"input\":...,\"output\"\
+          :...}.<br>I am getting this error during the training process and I am unable\
+          \ to understand where it is coming from. The model starts training and every\
+          \ time after running on 2-3 input sequences it crashes with this error.\
+          \ </p>\n<p>File \"/huggingface/modules/transformers_modules/phi-2/modeling_phi.py\"\
+          , line 158, in _apply_rotary_emb_qkv<br>    q_rot = torch.cat([q1 * c -\
+          \ q2 * s, q1 * s + q2 * c], axis=-1).to(qkv.dtype)<br>                 \
+          \      ~~~^~~<br>RuntimeError: The size of tensor a (328) must match the\
+          \ size of tensor b (319) at non-singleton dimension 1</p>\n<p>I am attaching\
+          \ my code for supervised fine-tuning:</p>\n<pre><code>import glob\nimport\
+          \ re\nfrom transformers import AutoTokenizer, AutoModelForCausalLM,TrainingArguments,Trainer,BitsAndBytesConfig\n\
+          import torch \nimport torch.nn as nn\nfrom torch.cuda.amp import autocast\n\
+          from datasets import Dataset,load_dataset\nimport json \nimport peft\nfrom\
+          \ trl import SFTTrainer\nfrom accelerate import FullyShardedDataParallelPlugin,\
+          \ Accelerator\nfrom torch.distributed.fsdp.fully_sharded_data_parallel import\
+          \ FullOptimStateDictConfig, FullStateDictConfig\nfrom peft import LoraConfig\n\
+          \nfsdp_plugin = FullyShardedDataParallelPlugin(\n    state_dict_config=FullStateDictConfig(offload_to_cpu=True,\
+          \ rank0_only=False),\n    optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True,\
+          \ rank0_only=False),\n)\n\naccelerator = Accelerator(fsdp_plugin=fsdp_plugin)\n\
+          \nbnb_config = BitsAndBytesConfig(\n load_in_4bit=True,\n bnb_4bit_quant_type=\"\
+          nf4\",\n bnb_4bit_compute_dtype='float16',\n bnb_4bit_use_double_quant=True,\n\
+          )\n\nmodel = AutoModelForCausalLM.from_pretrained(\"phi-2\", quantization_config\
+          \ = bnb_config, trust_remote_code=True, load_in_8bit = True, torch_dtype=torch.float16,\
+          \ revision=\"refs/pr/1\")\nmodel.config.use_cache = False\nprint(model)\n\
+          \npeft_config = LoraConfig(\n    r=32,\n    lora_alpha=64,\n    lora_dropout=0.05,\n\
+          \    bias='none',\n    task_type='CAUSAL_LM',\n    # target_modules=[\"\
+          out_proj\", \"Wqkv\"]\n    target_modules = [\"Wqkv\"] #,\"fc1\",\"fc2\"\
+          ]\n)\n\nmodel = peft.get_peft_model(model, peft_config)\nmodel = accelerator.prepare_model(model)\n\
+          \nif torch.cuda.device_count() &gt; 1: # If more than 1 GPU\n    model.is_parallelizable\
+          \ = True\n    model.model_parallel = True\n\nmodel.print_trainable_parameters()\n\
+          \ntokenizer = AutoTokenizer.from_pretrained(\"phi-2\", trust_remote_code=True)\n\
+          tokenizer.pad_token = tokenizer.eos_token\ntokenizer.padding_side = \"right\"\
+          \n\ncustom_dataset = load_dataset(\"json\",data_files=\"sft_dataset.json\"\
+          ,split='train')\n\ndef formatting_prompts_func(examples):\n    output_text\
+          \ = []\n    for i in range(len(examples[\"instruction\"])):\n        instruction\
+          \ = examples[\"instruction\"][i]\n        input_text = examples[\"input\"\
+          ][i]\n        response = examples[\"output\"][i]\n\n        if len(input_text)\
+          \ &gt;= 2:\n            text = f'''Below is an instruction that describes\
+          \ a task, paired with an input that provides further context. Write a response\
+          \ that appropriately completes the request.\n            \n            ###\
+          \ Instruction:\n            {instruction}\n            \n            ###\
+          \ Input:\n            {input_text}\n            \n            ### Response:\n\
+          \            {response}\n            '''\n        else:\n            text\
+          \ = f'''Below is an instruction that describes a task, paired with an input\
+          \ that provides further context. Write a response that appropriately completes\
+          \ the request.\n            \n            ### Instruction:\n           \
+          \ {instruction}\n            \n            ### Response:\n            {response}\n\
+          \            '''\n        output_text.append(text)\n    return output_text\n\
+          \ntraining_args = TrainingArguments(\n    output_dir=\"results\",\n    num_train_epochs=3,\n\
+          \    per_device_train_batch_size=1,\n    # per_device_eval_batch_size=2,\n\
+          \    warmup_steps=500,\n    weight_decay=0.01,\n    logging_dir=\"logs\"\
+          ,\n    logging_steps=1,\n    remove_unused_columns=True,\n    gradient_accumulation_steps=4,\n\
+          \    # gradient_checkpointing=True,\n    bf16=False,\n    fp16 = True,\n\
+          \    lr_scheduler_type=\"cosine\",\n    optim = \"paged_adamw_8bit\",\n\
+          \    max_grad_norm=0.3,\n    learning_rate=2.5e-5,\n)\n\ntrainer = SFTTrainer(\n\
+          \    model=model,\n    args=training_args,\n    train_dataset=custom_dataset,\n\
+          \    packing=False,\n    max_seq_length=2048,\n    # eval_dataset=custom_dataset,\n\
+          \    # peft_config=peft_config,\n    formatting_func=formatting_prompts_func,\n\
+          \    tokenizer=tokenizer,\n)\ntrainer.train()\nmodel.save_pretrained(\"\
+          fine_tuned_model\")\n</code></pre>\n<p>Another query: Is it possible to\
+          \ run this experiment on 2 8GB GPUs? I have been trying to setup another\
+          \ code based on another notebook on the internet but one of the GPUs keeps\
+          \ going out of memory. </p>\n"
+        raw: "I am new to working with Hugging Face models and LLMs in general so\
+          \ any help will be appreciated. \r\n\r\nI am trying to run a supervised\
+          \ fine-tuning experiment with phi2 on my custom dataset. I have collected\
+          \ data samples of the form {\"instruction\": ... , \"input\":...,\"output\"\
+          :...}. \r\nI am getting this error during the training process and I am\
+          \ unable to understand where it is coming from. The model starts training\
+          \ and every time after running on 2-3 input sequences it crashes with this\
+          \ error. \r\n \r\nFile \"/huggingface/modules/transformers_modules/phi-2/modeling_phi.py\"\
+          , line 158, in _apply_rotary_emb_qkv\r\n    q_rot = torch.cat([q1 * c -\
+          \ q2 * s, q1 * s + q2 * c], axis=-1).to(qkv.dtype)\r\n                 \
+          \      ~~~^~~\r\nRuntimeError: The size of tensor a (328) must match the\
+          \ size of tensor b (319) at non-singleton dimension 1\r\n\r\nI am attaching\
+          \ my code for supervised fine-tuning:\r\n```\r\nimport glob\r\nimport re\r\
+          \nfrom transformers import AutoTokenizer, AutoModelForCausalLM,TrainingArguments,Trainer,BitsAndBytesConfig\r\
+          \nimport torch \r\nimport torch.nn as nn\r\nfrom torch.cuda.amp import autocast\r\
+          \nfrom datasets import Dataset,load_dataset\r\nimport json \r\nimport peft\r\
+          \nfrom trl import SFTTrainer\r\nfrom accelerate import FullyShardedDataParallelPlugin,\
+          \ Accelerator\r\nfrom torch.distributed.fsdp.fully_sharded_data_parallel\
+          \ import FullOptimStateDictConfig, FullStateDictConfig\r\nfrom peft import\
+          \ LoraConfig\r\n\r\nfsdp_plugin = FullyShardedDataParallelPlugin(\r\n  \
+          \  state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),\r\
+          \n    optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True,\
+          \ rank0_only=False),\r\n)\r\n\r\naccelerator = Accelerator(fsdp_plugin=fsdp_plugin)\r\
+          \n\r\nbnb_config = BitsAndBytesConfig(\r\n load_in_4bit=True,\r\n bnb_4bit_quant_type=\"\
+          nf4\",\r\n bnb_4bit_compute_dtype='float16',\r\n bnb_4bit_use_double_quant=True,\r\
+          \n)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\"phi-2\", quantization_config\
+          \ = bnb_config, trust_remote_code=True, load_in_8bit = True, torch_dtype=torch.float16,\
+          \ revision=\"refs/pr/1\")\r\nmodel.config.use_cache = False\r\nprint(model)\r\
+          \n\r\npeft_config = LoraConfig(\r\n    r=32,\r\n    lora_alpha=64,\r\n \
+          \   lora_dropout=0.05,\r\n    bias='none',\r\n    task_type='CAUSAL_LM',\r\
+          \n    # target_modules=[\"out_proj\", \"Wqkv\"]\r\n    target_modules =\
+          \ [\"Wqkv\"] #,\"fc1\",\"fc2\"]\r\n)\r\n\r\nmodel = peft.get_peft_model(model,\
+          \ peft_config)\r\nmodel = accelerator.prepare_model(model)\r\n\r\nif torch.cuda.device_count()\
+          \ > 1: # If more than 1 GPU\r\n    model.is_parallelizable = True\r\n  \
+          \  model.model_parallel = True\r\n\r\nmodel.print_trainable_parameters()\r\
+          \n\r\ntokenizer = AutoTokenizer.from_pretrained(\"phi-2\", trust_remote_code=True)\r\
+          \ntokenizer.pad_token = tokenizer.eos_token\r\ntokenizer.padding_side =\
+          \ \"right\"\r\n\r\ncustom_dataset = load_dataset(\"json\",data_files=\"\
+          sft_dataset.json\",split='train')\r\n\r\ndef formatting_prompts_func(examples):\r\
+          \n    output_text = []\r\n    for i in range(len(examples[\"instruction\"\
+          ])):\r\n        instruction = examples[\"instruction\"][i]\r\n        input_text\
+          \ = examples[\"input\"][i]\r\n        response = examples[\"output\"][i]\r\
+          \n\r\n        if len(input_text) >= 2:\r\n            text = f'''Below is\
+          \ an instruction that describes a task, paired with an input that provides\
+          \ further context. Write a response that appropriately completes the request.\r\
+          \n            \r\n            ### Instruction:\r\n            {instruction}\r\
+          \n            \r\n            ### Input:\r\n            {input_text}\r\n\
+          \            \r\n            ### Response:\r\n            {response}\r\n\
+          \            '''\r\n        else:\r\n            text = f'''Below is an\
+          \ instruction that describes a task, paired with an input that provides\
+          \ further context. Write a response that appropriately completes the request.\r\
+          \n            \r\n            ### Instruction:\r\n            {instruction}\r\
+          \n            \r\n            ### Response:\r\n            {response}\r\n\
+          \            '''\r\n        output_text.append(text)\r\n    return output_text\r\
+          \n\r\ntraining_args = TrainingArguments(\r\n    output_dir=\"results\",\r\
+          \n    num_train_epochs=3,\r\n    per_device_train_batch_size=1,\r\n    #\
+          \ per_device_eval_batch_size=2,\r\n    warmup_steps=500,\r\n    weight_decay=0.01,\r\
+          \n    logging_dir=\"logs\",\r\n    logging_steps=1,\r\n    remove_unused_columns=True,\r\
+          \n    gradient_accumulation_steps=4,\r\n    # gradient_checkpointing=True,\r\
+          \n    bf16=False,\r\n    fp16 = True,\r\n    lr_scheduler_type=\"cosine\"\
+          ,\r\n    optim = \"paged_adamw_8bit\",\r\n    max_grad_norm=0.3,\r\n   \
+          \ learning_rate=2.5e-5,\r\n)\r\n\r\ntrainer = SFTTrainer(\r\n    model=model,\r\
+          \n    args=training_args,\r\n    train_dataset=custom_dataset,\r\n    packing=False,\r\
+          \n    max_seq_length=2048,\r\n    # eval_dataset=custom_dataset,\r\n   \
+          \ # peft_config=peft_config,\r\n    formatting_func=formatting_prompts_func,\r\
+          \n    tokenizer=tokenizer,\r\n)\r\ntrainer.train()\r\nmodel.save_pretrained(\"\
+          fine_tuned_model\")\r\n```\r\n\r\nAnother query: Is it possible to run this\
+          \ experiment on 2 8GB GPUs? I have been trying to setup another code based\
+          \ on another notebook on the internet but one of the GPUs keeps going out\
+          \ of memory. \r\n\r\n"
+        updatedAt: '2024-01-25T03:06:44.978Z'
+      numEdits: 0
+      reactions: []
+    id: 65b1d044ebf519303989f4c5
+    type: comment
+  author: AlexMercerXX
+  content: "I am new to working with Hugging Face models and LLMs in general so any\
+    \ help will be appreciated. \r\n\r\nI am trying to run a supervised fine-tuning\
+    \ experiment with phi2 on my custom dataset. I have collected data samples of\
+    \ the form {\"instruction\": ... , \"input\":...,\"output\":...}. \r\nI am getting\
+    \ this error during the training process and I am unable to understand where it\
+    \ is coming from. The model starts training and every time after running on 2-3\
+    \ input sequences it crashes with this error. \r\n \r\nFile \"/huggingface/modules/transformers_modules/phi-2/modeling_phi.py\"\
+    , line 158, in _apply_rotary_emb_qkv\r\n    q_rot = torch.cat([q1 * c - q2 * s,\
+    \ q1 * s + q2 * c], axis=-1).to(qkv.dtype)\r\n                       ~~~^~~\r\n\
+    RuntimeError: The size of tensor a (328) must match the size of tensor b (319)\
+    \ at non-singleton dimension 1\r\n\r\nI am attaching my code for supervised fine-tuning:\r\
+    \n```\r\nimport glob\r\nimport re\r\nfrom transformers import AutoTokenizer, AutoModelForCausalLM,TrainingArguments,Trainer,BitsAndBytesConfig\r\
+    \nimport torch \r\nimport torch.nn as nn\r\nfrom torch.cuda.amp import autocast\r\
+    \nfrom datasets import Dataset,load_dataset\r\nimport json \r\nimport peft\r\n\
+    from trl import SFTTrainer\r\nfrom accelerate import FullyShardedDataParallelPlugin,\
+    \ Accelerator\r\nfrom torch.distributed.fsdp.fully_sharded_data_parallel import\
+    \ FullOptimStateDictConfig, FullStateDictConfig\r\nfrom peft import LoraConfig\r\
+    \n\r\nfsdp_plugin = FullyShardedDataParallelPlugin(\r\n    state_dict_config=FullStateDictConfig(offload_to_cpu=True,\
+    \ rank0_only=False),\r\n    optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True,\
+    \ rank0_only=False),\r\n)\r\n\r\naccelerator = Accelerator(fsdp_plugin=fsdp_plugin)\r\
+    \n\r\nbnb_config = BitsAndBytesConfig(\r\n load_in_4bit=True,\r\n bnb_4bit_quant_type=\"\
+    nf4\",\r\n bnb_4bit_compute_dtype='float16',\r\n bnb_4bit_use_double_quant=True,\r\
+    \n)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\"phi-2\", quantization_config\
+    \ = bnb_config, trust_remote_code=True, load_in_8bit = True, torch_dtype=torch.float16,\
+    \ revision=\"refs/pr/1\")\r\nmodel.config.use_cache = False\r\nprint(model)\r\n\
+    \r\npeft_config = LoraConfig(\r\n    r=32,\r\n    lora_alpha=64,\r\n    lora_dropout=0.05,\r\
+    \n    bias='none',\r\n    task_type='CAUSAL_LM',\r\n    # target_modules=[\"out_proj\"\
+    , \"Wqkv\"]\r\n    target_modules = [\"Wqkv\"] #,\"fc1\",\"fc2\"]\r\n)\r\n\r\n\
+    model = peft.get_peft_model(model, peft_config)\r\nmodel = accelerator.prepare_model(model)\r\
+    \n\r\nif torch.cuda.device_count() > 1: # If more than 1 GPU\r\n    model.is_parallelizable\
+    \ = True\r\n    model.model_parallel = True\r\n\r\nmodel.print_trainable_parameters()\r\
+    \n\r\ntokenizer = AutoTokenizer.from_pretrained(\"phi-2\", trust_remote_code=True)\r\
+    \ntokenizer.pad_token = tokenizer.eos_token\r\ntokenizer.padding_side = \"right\"\
+    \r\n\r\ncustom_dataset = load_dataset(\"json\",data_files=\"sft_dataset.json\"\
+    ,split='train')\r\n\r\ndef formatting_prompts_func(examples):\r\n    output_text\
+    \ = []\r\n    for i in range(len(examples[\"instruction\"])):\r\n        instruction\
+    \ = examples[\"instruction\"][i]\r\n        input_text = examples[\"input\"][i]\r\
+    \n        response = examples[\"output\"][i]\r\n\r\n        if len(input_text)\
+    \ >= 2:\r\n            text = f'''Below is an instruction that describes a task,\
+    \ paired with an input that provides further context. Write a response that appropriately\
+    \ completes the request.\r\n            \r\n            ### Instruction:\r\n \
+    \           {instruction}\r\n            \r\n            ### Input:\r\n      \
+    \      {input_text}\r\n            \r\n            ### Response:\r\n         \
+    \   {response}\r\n            '''\r\n        else:\r\n            text = f'''Below\
+    \ is an instruction that describes a task, paired with an input that provides\
+    \ further context. Write a response that appropriately completes the request.\r\
+    \n            \r\n            ### Instruction:\r\n            {instruction}\r\n\
+    \            \r\n            ### Response:\r\n            {response}\r\n     \
+    \       '''\r\n        output_text.append(text)\r\n    return output_text\r\n\r\
+    \ntraining_args = TrainingArguments(\r\n    output_dir=\"results\",\r\n    num_train_epochs=3,\r\
+    \n    per_device_train_batch_size=1,\r\n    # per_device_eval_batch_size=2,\r\n\
+    \    warmup_steps=500,\r\n    weight_decay=0.01,\r\n    logging_dir=\"logs\",\r\
+    \n    logging_steps=1,\r\n    remove_unused_columns=True,\r\n    gradient_accumulation_steps=4,\r\
+    \n    # gradient_checkpointing=True,\r\n    bf16=False,\r\n    fp16 = True,\r\n\
+    \    lr_scheduler_type=\"cosine\",\r\n    optim = \"paged_adamw_8bit\",\r\n  \
+    \  max_grad_norm=0.3,\r\n    learning_rate=2.5e-5,\r\n)\r\n\r\ntrainer = SFTTrainer(\r\
+    \n    model=model,\r\n    args=training_args,\r\n    train_dataset=custom_dataset,\r\
+    \n    packing=False,\r\n    max_seq_length=2048,\r\n    # eval_dataset=custom_dataset,\r\
+    \n    # peft_config=peft_config,\r\n    formatting_func=formatting_prompts_func,\r\
+    \n    tokenizer=tokenizer,\r\n)\r\ntrainer.train()\r\nmodel.save_pretrained(\"\
+    fine_tuned_model\")\r\n```\r\n\r\nAnother query: Is it possible to run this experiment\
+    \ on 2 8GB GPUs? I have been trying to setup another code based on another notebook\
+    \ on the internet but one of the GPUs keeps going out of memory. \r\n\r\n"
+  created_at: 2024-01-25 03:06:44+00:00
+  edited: false
+  hidden: false
+  id: 65b1d044ebf519303989f4c5
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 96
+repo_id: microsoft/phi-2
+repo_type: model
+status: open
+target_branch: null
+title: supervised finetuning error

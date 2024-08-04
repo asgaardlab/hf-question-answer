@@ -1,0 +1,1174 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: gcamposampie
+conflicting_files: null
+created_at: 2022-12-11 12:06:38+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-11T12:06:38.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: "<p>Hi! First of all, thanks for sharing this wonderful model. I'm trying\
+          \ to fine-tune bloom-1b7 using Megatron-Deepspeed on a custom dataset, but\
+          \ I'm stuck on the following error, which I can't really understand.</p>\n\
+          <pre><code>File \"/home/deepspeed/deepspeed/runtime/state_dict_factory.py\"\
+          , line 187, in check_ckpt_list\n      assert len(self.ckpt_list) == sd['mp_world_size'],\
+          \ f\"checkpoint count {len(self.ckpt_list)} is different from saved mp_world_size\
+          \ {sd['mp_world_size']}\"\n  AssertionError: checkpoint count 1 is different\
+          \ from saved mp_world_size 4\n</code></pre>\n<p>I'm not really sure why\
+          \ mp_world_size is set to 4, and if that is an attribute computed dynamically\
+          \ from the parameters of the training script or if it's already saved in\
+          \ the model. </p>\n<p>The training script I'm using to fine-tune the model\
+          \ (adapted from <a rel=\"nofollow\" href=\"https://github.com/bigscience-workshop/bigscience/blob/master/train/tr13-mtf/smaller_models/tr13b-1b3-ml-xp3capmixnewcodelonglossseq.slurm\"\
+          >bloomz</a>) is the following.</p>\n<pre><code>#!/bin/bash\n\nMODEL=$1 #\
+          \ MODEL\n\n# define first check from which restart the training\n# comment\
+          \ this line after the first successful run\nif [ \"$MODEL\"=\"1b7\" ]\n\
+          then\n    echo \"global_step340500\" &gt; /path/checkpoints/latest # 1b7\n\
+          else\n    echo \"global_step660750\" &gt; /path/checkpoints/latest # 1b3\n\
+          fi\n\nDATA_OUTPUT_PATH=/path\nCHECKPOINT_PATH=$DATA_OUTPUT_PATH/checkpoints\n\
+          REPO_PATH=$DATA_OUTPUT_PATH/tr13b-1B3\nTENSORBOARD_PATH=$REPO_PATH/tensorboard\n\
+          LOGS_PATH=$REPO_PATH/logs\nmkdir -p $LOGS_PATH\nmkdir -p $TENSORBOARD_PATH\n\
+          \n\nMEGATRON_DEEPSPEED_REPO=/home/Megatron-DeepSpeed\ncd $MEGATRON_DEEPSPEED_REPO\n\
+          \nKILL_SWITCH_PATH=$MEGATRON_DEEPSPEED_REPO/kill-switch-tr13b-1B3-mtf\n\n\
+          TRAIN_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/train.txt\nVALID_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/validation.txt\n\
+          TOKENIZER_NAME_OR_PATH=bigscience/tokenizer\n\n# defining the right environment\
+          \ variables\nexport TRANSFORMERS_CACHE=$DATA_OUTPUT_PATH/models\nexport\
+          \ HF_DATASETS_CACHE=$DATA_OUTPUT_PATH/datasets\nexport HF_MODULES_CACHE=$DATA_OUTPUT_PATH/modules\n\
+          export HF_METRICS_CACHE=$DATA_OUTPUT_PATH/metrics\nexport HF_DATASETS_OFFLINE=1\n\
+          export TRANSFORMERS_OFFLINE=1\n\n\nGPUS_PER_NODE=8\nNNODES=1\nPP_SIZE=2\n\
+          TP_SIZE=2\nMICRO_BATCH_SIZE=1\nGLOBAL_BATCH_SIZE=8\n\nNLAYERS=24\nif [ \"\
+          $MODEL\"=\"1b7\" ]\nthen\n    NHIDDEN=2048\nelse\n    NHIDDEN=1536\nfi\n\
+          NHEADS=16\nSEQ_LEN=2048\nSAVE_INTERVAL=10\nTRAIN_SAMPLES=361\n\n# Uncomment\
+          \ for the first step\n# --no-load-optim \\\n# --reset-progress \\\nOPTIMIZER_ARGS=\"\
+          \ \\\n    --optimizer adam \\\n    --adam-beta1 0.9 \\\n    --adam-beta2\
+          \ 0.95 \\\n    --adam-eps 1e-8 \\\n    --lr 2e-5 \\\n    --lr-decay-style\
+          \ constant \\\n    --lr-warmup-samples 0 \\\n    --clip-grad 1.0 \\\n  \
+          \  --weight-decay 1e-4 \\\n    --norm-target-loss \\\n    \"\n\nEXIT_OPTS=\"\
+          \ \\\n    --exit-duration-in-mins 5990 \\\n    \"\n\nGPT_ARGS=\" \\\n  \
+          \  --pp-partition-method 'type:transformer|embedding' \\\n    --num-layers\
+          \ $NLAYERS \\\n    --hidden-size $NHIDDEN \\\n    --num-attention-heads\
+          \ $NHEADS \\\n    --seq-length $SEQ_LEN \\\n    --max-position-embeddings\
+          \ $SEQ_LEN \\\n    --micro-batch-size $MICRO_BATCH_SIZE \\\n    --global-batch-size\
+          \ $GLOBAL_BATCH_SIZE \\\n    --train-samples $TRAIN_SAMPLES \\\n    --tokenizer-type\
+          \ PretrainedFromHF \\\n    --tokenizer-name-or-path $TOKENIZER_NAME_OR_PATH\
+          \ \\\n    --init-method-std 0.0048 \\\n    --embed-layernorm \\\n    --fp16\
+          \ \\\n    --seed 42 \\\n    --position-embedding-type alibi \\\n    --checkpoint-activations\
+          \ \\\n    --abort-on-unmet-fused-kernel-constraints \\\n    --kill-switch-path\
+          \ $KILL_SWITCH_PATH \\\n    --pad-vocab-size-to 250880 \\\n    $OPTIMIZER_ARGS\
+          \ \\\n    $EXIT_OPTS \\\n    \"\n\nOUTPUT_ARGS=\" \\\n    --log-interval\
+          \ 1 \\\n    --save-interval $SAVE_INTERVAL \\\n    --eval-interval 125 \\\
+          \n    --eval-iters 10 \\\n    --tensorboard-dir $TENSORBOARD_PATH \\\n \
+          \   --tensorboard-queue-size 5 \\\n    --log-timers-to-tensorboard \\\n\
+          \    --log-batch-size-to-tensorboard \\\n    --log-validation-ppl-to-tensorboard\
+          \ \\\n    \"\n\nZERO_STAGE=1\n\nconfig_json=\"./ds_config.$SLURM_JOBID.json\"\
+          \n\n# Deepspeed figures out GAS dynamically from dynamic GBS via set_train_batch_size()\n\
+          cat &lt;&lt;EOT &gt; $config_json\n{\n  \"train_micro_batch_size_per_gpu\"\
+          : $MICRO_BATCH_SIZE,\n  \"train_batch_size\": $GLOBAL_BATCH_SIZE,\n  \"\
+          gradient_clipping\": 1.0,\n  \"zero_optimization\": {\n    \"stage\": $ZERO_STAGE\n\
+          \  },\n  \"fp16\": {\n    \"enabled\": true,\n    \"loss_scale\": 0,\n \
+          \   \"loss_scale_window\": 500,\n    \"hysteresis\": 2,\n    \"min_loss_scale\"\
+          : 1,\n    \"initial_scale_power\": 12\n  },\n  \"steps_per_print\": 1000,\n\
+          \  \"wall_clock_breakdown\": false\n}\nEOT\n\n\nDEEPSPEED_ARGS=\" \\\n \
+          \   --deepspeed \\\n    --deepspeed_config ${config_json} \\\n    --zero-stage\
+          \ ${ZERO_STAGE} \\\n    --deepspeed-activation-checkpointing \\\n    \"\n\
+          \nexport LAUNCHER=\"python -u -m torch.distributed.run \\\n    --nproc_per_node\
+          \ $GPUS_PER_NODE \\\n    --nnodes $NNODES \\\n    --max_restarts 0 \\\n\
+          \    --tee 3 \\\n    \"\n\nexport CMD=\" \\\n    `pwd`/finetune_t0.py \\\
+          \n    --tensor-model-parallel-size $TP_SIZE \\\n    --pipeline-model-parallel-size\
+          \ $PP_SIZE \\\n    $GPT_ARGS \\\n    $OUTPUT_ARGS \\\n    --save $CHECKPOINT_PATH\
+          \ \\\n    --load $CHECKPOINT_PATH \\\n    --train-weighted-split-paths-path\
+          \ $TRAIN_DATA_PATH \\\n    --valid-weighted-split-paths-path $VALID_DATA_PATH\
+          \ \\\n    --dataloader-type single \\\n    --data-impl mmap \\\n    --distributed-backend\
+          \ nccl \\\n     $DEEPSPEED_ARGS \\\n    \"\n\necho $CMD\n\n# do not remove\
+          \ or the training will hang and nodes will be lost w/o this workaround\n\
+          export CUDA_LAUNCH_BLOCKING=1\n\n# hide duplicated errors using this hack\
+          \ - will be properly fixed in pt-1.12\nexport TORCHELASTIC_ERROR_FILE=/tmp/torch-elastic-error.json\n\
+          \nclear; srun --nodes=$NNODES --ntasks-per-node=1 --gres=gpu:$GPUS_PER_NODE\
+          \ bash -c \"$LAUNCHER $CMD\" 2&gt;&amp;1 | tee -a $LOGS_PATH/main_log.txt\n\
+          </code></pre>\n"
+        raw: "Hi! First of all, thanks for sharing this wonderful model. I'm trying\
+          \ to fine-tune bloom-1b7 using Megatron-Deepspeed on a custom dataset, but\
+          \ I'm stuck on the following error, which I can't really understand.\r\n\
+          ```\r\nFile \"/home/deepspeed/deepspeed/runtime/state_dict_factory.py\"\
+          , line 187, in check_ckpt_list\r\n      assert len(self.ckpt_list) == sd['mp_world_size'],\
+          \ f\"checkpoint count {len(self.ckpt_list)} is different from saved mp_world_size\
+          \ {sd['mp_world_size']}\"\r\n  AssertionError: checkpoint count 1 is different\
+          \ from saved mp_world_size 4\r\n```\r\nI'm not really sure why mp_world_size\
+          \ is set to 4, and if that is an attribute computed dynamically from the\
+          \ parameters of the training script or if it's already saved in the model.\
+          \ \r\n\r\nThe training script I'm using to fine-tune the model (adapted\
+          \ from [bloomz](https://github.com/bigscience-workshop/bigscience/blob/master/train/tr13-mtf/smaller_models/tr13b-1b3-ml-xp3capmixnewcodelonglossseq.slurm))\
+          \ is the following.\r\n```\r\n#!/bin/bash\r\n\r\nMODEL=$1 # MODEL\r\n\r\n\
+          # define first check from which restart the training\r\n# comment this line\
+          \ after the first successful run\r\nif [ \"$MODEL\"=\"1b7\" ]\r\nthen\r\n\
+          \    echo \"global_step340500\" > /path/checkpoints/latest # 1b7\r\nelse\r\
+          \n    echo \"global_step660750\" > /path/checkpoints/latest # 1b3\r\nfi\r\
+          \n\r\nDATA_OUTPUT_PATH=/path\r\nCHECKPOINT_PATH=$DATA_OUTPUT_PATH/checkpoints\r\
+          \nREPO_PATH=$DATA_OUTPUT_PATH/tr13b-1B3\r\nTENSORBOARD_PATH=$REPO_PATH/tensorboard\r\
+          \nLOGS_PATH=$REPO_PATH/logs\r\nmkdir -p $LOGS_PATH\r\nmkdir -p $TENSORBOARD_PATH\r\
+          \n\r\n\r\nMEGATRON_DEEPSPEED_REPO=/home/Megatron-DeepSpeed\r\ncd $MEGATRON_DEEPSPEED_REPO\r\
+          \n\r\nKILL_SWITCH_PATH=$MEGATRON_DEEPSPEED_REPO/kill-switch-tr13b-1B3-mtf\r\
+          \n\r\nTRAIN_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/train.txt\r\nVALID_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/validation.txt\r\
+          \nTOKENIZER_NAME_OR_PATH=bigscience/tokenizer\r\n\r\n# defining the right\
+          \ environment variables\r\nexport TRANSFORMERS_CACHE=$DATA_OUTPUT_PATH/models\r\
+          \nexport HF_DATASETS_CACHE=$DATA_OUTPUT_PATH/datasets\r\nexport HF_MODULES_CACHE=$DATA_OUTPUT_PATH/modules\r\
+          \nexport HF_METRICS_CACHE=$DATA_OUTPUT_PATH/metrics\r\nexport HF_DATASETS_OFFLINE=1\r\
+          \nexport TRANSFORMERS_OFFLINE=1\r\n\r\n\r\nGPUS_PER_NODE=8\r\nNNODES=1\r\
+          \nPP_SIZE=2\r\nTP_SIZE=2\r\nMICRO_BATCH_SIZE=1\r\nGLOBAL_BATCH_SIZE=8\r\n\
+          \r\nNLAYERS=24\r\nif [ \"$MODEL\"=\"1b7\" ]\r\nthen\r\n    NHIDDEN=2048\r\
+          \nelse\r\n    NHIDDEN=1536\r\nfi\r\nNHEADS=16\r\nSEQ_LEN=2048\r\nSAVE_INTERVAL=10\r\
+          \nTRAIN_SAMPLES=361\r\n\r\n# Uncomment for the first step\r\n# --no-load-optim\
+          \ \\\r\n# --reset-progress \\\r\nOPTIMIZER_ARGS=\" \\\r\n    --optimizer\
+          \ adam \\\r\n    --adam-beta1 0.9 \\\r\n    --adam-beta2 0.95 \\\r\n   \
+          \ --adam-eps 1e-8 \\\r\n    --lr 2e-5 \\\r\n    --lr-decay-style constant\
+          \ \\\r\n    --lr-warmup-samples 0 \\\r\n    --clip-grad 1.0 \\\r\n    --weight-decay\
+          \ 1e-4 \\\r\n    --norm-target-loss \\\r\n    \"\r\n\r\nEXIT_OPTS=\" \\\r\
+          \n    --exit-duration-in-mins 5990 \\\r\n    \"\r\n\r\nGPT_ARGS=\" \\\r\n\
+          \    --pp-partition-method 'type:transformer|embedding' \\\r\n    --num-layers\
+          \ $NLAYERS \\\r\n    --hidden-size $NHIDDEN \\\r\n    --num-attention-heads\
+          \ $NHEADS \\\r\n    --seq-length $SEQ_LEN \\\r\n    --max-position-embeddings\
+          \ $SEQ_LEN \\\r\n    --micro-batch-size $MICRO_BATCH_SIZE \\\r\n    --global-batch-size\
+          \ $GLOBAL_BATCH_SIZE \\\r\n    --train-samples $TRAIN_SAMPLES \\\r\n   \
+          \ --tokenizer-type PretrainedFromHF \\\r\n    --tokenizer-name-or-path $TOKENIZER_NAME_OR_PATH\
+          \ \\\r\n    --init-method-std 0.0048 \\\r\n    --embed-layernorm \\\r\n\
+          \    --fp16 \\\r\n    --seed 42 \\\r\n    --position-embedding-type alibi\
+          \ \\\r\n    --checkpoint-activations \\\r\n    --abort-on-unmet-fused-kernel-constraints\
+          \ \\\r\n    --kill-switch-path $KILL_SWITCH_PATH \\\r\n    --pad-vocab-size-to\
+          \ 250880 \\\r\n    $OPTIMIZER_ARGS \\\r\n    $EXIT_OPTS \\\r\n    \"\r\n\
+          \r\nOUTPUT_ARGS=\" \\\r\n    --log-interval 1 \\\r\n    --save-interval\
+          \ $SAVE_INTERVAL \\\r\n    --eval-interval 125 \\\r\n    --eval-iters 10\
+          \ \\\r\n    --tensorboard-dir $TENSORBOARD_PATH \\\r\n    --tensorboard-queue-size\
+          \ 5 \\\r\n    --log-timers-to-tensorboard \\\r\n    --log-batch-size-to-tensorboard\
+          \ \\\r\n    --log-validation-ppl-to-tensorboard \\\r\n    \"\r\n\r\nZERO_STAGE=1\r\
+          \n\r\nconfig_json=\"./ds_config.$SLURM_JOBID.json\"\r\n\r\n# Deepspeed figures\
+          \ out GAS dynamically from dynamic GBS via set_train_batch_size()\r\ncat\
+          \ <<EOT > $config_json\r\n{\r\n  \"train_micro_batch_size_per_gpu\": $MICRO_BATCH_SIZE,\r\
+          \n  \"train_batch_size\": $GLOBAL_BATCH_SIZE,\r\n  \"gradient_clipping\"\
+          : 1.0,\r\n  \"zero_optimization\": {\r\n    \"stage\": $ZERO_STAGE\r\n \
+          \ },\r\n  \"fp16\": {\r\n    \"enabled\": true,\r\n    \"loss_scale\": 0,\r\
+          \n    \"loss_scale_window\": 500,\r\n    \"hysteresis\": 2,\r\n    \"min_loss_scale\"\
+          : 1,\r\n    \"initial_scale_power\": 12\r\n  },\r\n  \"steps_per_print\"\
+          : 1000,\r\n  \"wall_clock_breakdown\": false\r\n}\r\nEOT\r\n\r\n\r\nDEEPSPEED_ARGS=\"\
+          \ \\\r\n    --deepspeed \\\r\n    --deepspeed_config ${config_json} \\\r\
+          \n    --zero-stage ${ZERO_STAGE} \\\r\n    --deepspeed-activation-checkpointing\
+          \ \\\r\n    \"\r\n\r\nexport LAUNCHER=\"python -u -m torch.distributed.run\
+          \ \\\r\n    --nproc_per_node $GPUS_PER_NODE \\\r\n    --nnodes $NNODES \\\
+          \r\n    --max_restarts 0 \\\r\n    --tee 3 \\\r\n    \"\r\n\r\nexport CMD=\"\
+          \ \\\r\n    `pwd`/finetune_t0.py \\\r\n    --tensor-model-parallel-size\
+          \ $TP_SIZE \\\r\n    --pipeline-model-parallel-size $PP_SIZE \\\r\n    $GPT_ARGS\
+          \ \\\r\n    $OUTPUT_ARGS \\\r\n    --save $CHECKPOINT_PATH \\\r\n    --load\
+          \ $CHECKPOINT_PATH \\\r\n    --train-weighted-split-paths-path $TRAIN_DATA_PATH\
+          \ \\\r\n    --valid-weighted-split-paths-path $VALID_DATA_PATH \\\r\n  \
+          \  --dataloader-type single \\\r\n    --data-impl mmap \\\r\n    --distributed-backend\
+          \ nccl \\\r\n     $DEEPSPEED_ARGS \\\r\n    \"\r\n\r\necho $CMD\r\n\r\n\
+          # do not remove or the training will hang and nodes will be lost w/o this\
+          \ workaround\r\nexport CUDA_LAUNCH_BLOCKING=1\r\n\r\n# hide duplicated errors\
+          \ using this hack - will be properly fixed in pt-1.12\r\nexport TORCHELASTIC_ERROR_FILE=/tmp/torch-elastic-error.json\r\
+          \n\r\nclear; srun --nodes=$NNODES --ntasks-per-node=1 --gres=gpu:$GPUS_PER_NODE\
+          \ bash -c \"$LAUNCHER $CMD\" 2>&1 | tee -a $LOGS_PATH/main_log.txt\r\n```"
+        updatedAt: '2022-12-11T12:06:38.519Z'
+      numEdits: 0
+      reactions: []
+    id: 6395c7ceab3455c2bd67fe3e
+    type: comment
+  author: gcamposampie
+  content: "Hi! First of all, thanks for sharing this wonderful model. I'm trying\
+    \ to fine-tune bloom-1b7 using Megatron-Deepspeed on a custom dataset, but I'm\
+    \ stuck on the following error, which I can't really understand.\r\n```\r\nFile\
+    \ \"/home/deepspeed/deepspeed/runtime/state_dict_factory.py\", line 187, in check_ckpt_list\r\
+    \n      assert len(self.ckpt_list) == sd['mp_world_size'], f\"checkpoint count\
+    \ {len(self.ckpt_list)} is different from saved mp_world_size {sd['mp_world_size']}\"\
+    \r\n  AssertionError: checkpoint count 1 is different from saved mp_world_size\
+    \ 4\r\n```\r\nI'm not really sure why mp_world_size is set to 4, and if that is\
+    \ an attribute computed dynamically from the parameters of the training script\
+    \ or if it's already saved in the model. \r\n\r\nThe training script I'm using\
+    \ to fine-tune the model (adapted from [bloomz](https://github.com/bigscience-workshop/bigscience/blob/master/train/tr13-mtf/smaller_models/tr13b-1b3-ml-xp3capmixnewcodelonglossseq.slurm))\
+    \ is the following.\r\n```\r\n#!/bin/bash\r\n\r\nMODEL=$1 # MODEL\r\n\r\n# define\
+    \ first check from which restart the training\r\n# comment this line after the\
+    \ first successful run\r\nif [ \"$MODEL\"=\"1b7\" ]\r\nthen\r\n    echo \"global_step340500\"\
+    \ > /path/checkpoints/latest # 1b7\r\nelse\r\n    echo \"global_step660750\" >\
+    \ /path/checkpoints/latest # 1b3\r\nfi\r\n\r\nDATA_OUTPUT_PATH=/path\r\nCHECKPOINT_PATH=$DATA_OUTPUT_PATH/checkpoints\r\
+    \nREPO_PATH=$DATA_OUTPUT_PATH/tr13b-1B3\r\nTENSORBOARD_PATH=$REPO_PATH/tensorboard\r\
+    \nLOGS_PATH=$REPO_PATH/logs\r\nmkdir -p $LOGS_PATH\r\nmkdir -p $TENSORBOARD_PATH\r\
+    \n\r\n\r\nMEGATRON_DEEPSPEED_REPO=/home/Megatron-DeepSpeed\r\ncd $MEGATRON_DEEPSPEED_REPO\r\
+    \n\r\nKILL_SWITCH_PATH=$MEGATRON_DEEPSPEED_REPO/kill-switch-tr13b-1B3-mtf\r\n\r\
+    \nTRAIN_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/train.txt\r\nVALID_DATA_PATH=$MEGATRON_DEEPSPEED_REPO/data/validation.txt\r\
+    \nTOKENIZER_NAME_OR_PATH=bigscience/tokenizer\r\n\r\n# defining the right environment\
+    \ variables\r\nexport TRANSFORMERS_CACHE=$DATA_OUTPUT_PATH/models\r\nexport HF_DATASETS_CACHE=$DATA_OUTPUT_PATH/datasets\r\
+    \nexport HF_MODULES_CACHE=$DATA_OUTPUT_PATH/modules\r\nexport HF_METRICS_CACHE=$DATA_OUTPUT_PATH/metrics\r\
+    \nexport HF_DATASETS_OFFLINE=1\r\nexport TRANSFORMERS_OFFLINE=1\r\n\r\n\r\nGPUS_PER_NODE=8\r\
+    \nNNODES=1\r\nPP_SIZE=2\r\nTP_SIZE=2\r\nMICRO_BATCH_SIZE=1\r\nGLOBAL_BATCH_SIZE=8\r\
+    \n\r\nNLAYERS=24\r\nif [ \"$MODEL\"=\"1b7\" ]\r\nthen\r\n    NHIDDEN=2048\r\n\
+    else\r\n    NHIDDEN=1536\r\nfi\r\nNHEADS=16\r\nSEQ_LEN=2048\r\nSAVE_INTERVAL=10\r\
+    \nTRAIN_SAMPLES=361\r\n\r\n# Uncomment for the first step\r\n# --no-load-optim\
+    \ \\\r\n# --reset-progress \\\r\nOPTIMIZER_ARGS=\" \\\r\n    --optimizer adam\
+    \ \\\r\n    --adam-beta1 0.9 \\\r\n    --adam-beta2 0.95 \\\r\n    --adam-eps\
+    \ 1e-8 \\\r\n    --lr 2e-5 \\\r\n    --lr-decay-style constant \\\r\n    --lr-warmup-samples\
+    \ 0 \\\r\n    --clip-grad 1.0 \\\r\n    --weight-decay 1e-4 \\\r\n    --norm-target-loss\
+    \ \\\r\n    \"\r\n\r\nEXIT_OPTS=\" \\\r\n    --exit-duration-in-mins 5990 \\\r\
+    \n    \"\r\n\r\nGPT_ARGS=\" \\\r\n    --pp-partition-method 'type:transformer|embedding'\
+    \ \\\r\n    --num-layers $NLAYERS \\\r\n    --hidden-size $NHIDDEN \\\r\n    --num-attention-heads\
+    \ $NHEADS \\\r\n    --seq-length $SEQ_LEN \\\r\n    --max-position-embeddings\
+    \ $SEQ_LEN \\\r\n    --micro-batch-size $MICRO_BATCH_SIZE \\\r\n    --global-batch-size\
+    \ $GLOBAL_BATCH_SIZE \\\r\n    --train-samples $TRAIN_SAMPLES \\\r\n    --tokenizer-type\
+    \ PretrainedFromHF \\\r\n    --tokenizer-name-or-path $TOKENIZER_NAME_OR_PATH\
+    \ \\\r\n    --init-method-std 0.0048 \\\r\n    --embed-layernorm \\\r\n    --fp16\
+    \ \\\r\n    --seed 42 \\\r\n    --position-embedding-type alibi \\\r\n    --checkpoint-activations\
+    \ \\\r\n    --abort-on-unmet-fused-kernel-constraints \\\r\n    --kill-switch-path\
+    \ $KILL_SWITCH_PATH \\\r\n    --pad-vocab-size-to 250880 \\\r\n    $OPTIMIZER_ARGS\
+    \ \\\r\n    $EXIT_OPTS \\\r\n    \"\r\n\r\nOUTPUT_ARGS=\" \\\r\n    --log-interval\
+    \ 1 \\\r\n    --save-interval $SAVE_INTERVAL \\\r\n    --eval-interval 125 \\\r\
+    \n    --eval-iters 10 \\\r\n    --tensorboard-dir $TENSORBOARD_PATH \\\r\n   \
+    \ --tensorboard-queue-size 5 \\\r\n    --log-timers-to-tensorboard \\\r\n    --log-batch-size-to-tensorboard\
+    \ \\\r\n    --log-validation-ppl-to-tensorboard \\\r\n    \"\r\n\r\nZERO_STAGE=1\r\
+    \n\r\nconfig_json=\"./ds_config.$SLURM_JOBID.json\"\r\n\r\n# Deepspeed figures\
+    \ out GAS dynamically from dynamic GBS via set_train_batch_size()\r\ncat <<EOT\
+    \ > $config_json\r\n{\r\n  \"train_micro_batch_size_per_gpu\": $MICRO_BATCH_SIZE,\r\
+    \n  \"train_batch_size\": $GLOBAL_BATCH_SIZE,\r\n  \"gradient_clipping\": 1.0,\r\
+    \n  \"zero_optimization\": {\r\n    \"stage\": $ZERO_STAGE\r\n  },\r\n  \"fp16\"\
+    : {\r\n    \"enabled\": true,\r\n    \"loss_scale\": 0,\r\n    \"loss_scale_window\"\
+    : 500,\r\n    \"hysteresis\": 2,\r\n    \"min_loss_scale\": 1,\r\n    \"initial_scale_power\"\
+    : 12\r\n  },\r\n  \"steps_per_print\": 1000,\r\n  \"wall_clock_breakdown\": false\r\
+    \n}\r\nEOT\r\n\r\n\r\nDEEPSPEED_ARGS=\" \\\r\n    --deepspeed \\\r\n    --deepspeed_config\
+    \ ${config_json} \\\r\n    --zero-stage ${ZERO_STAGE} \\\r\n    --deepspeed-activation-checkpointing\
+    \ \\\r\n    \"\r\n\r\nexport LAUNCHER=\"python -u -m torch.distributed.run \\\r\
+    \n    --nproc_per_node $GPUS_PER_NODE \\\r\n    --nnodes $NNODES \\\r\n    --max_restarts\
+    \ 0 \\\r\n    --tee 3 \\\r\n    \"\r\n\r\nexport CMD=\" \\\r\n    `pwd`/finetune_t0.py\
+    \ \\\r\n    --tensor-model-parallel-size $TP_SIZE \\\r\n    --pipeline-model-parallel-size\
+    \ $PP_SIZE \\\r\n    $GPT_ARGS \\\r\n    $OUTPUT_ARGS \\\r\n    --save $CHECKPOINT_PATH\
+    \ \\\r\n    --load $CHECKPOINT_PATH \\\r\n    --train-weighted-split-paths-path\
+    \ $TRAIN_DATA_PATH \\\r\n    --valid-weighted-split-paths-path $VALID_DATA_PATH\
+    \ \\\r\n    --dataloader-type single \\\r\n    --data-impl mmap \\\r\n    --distributed-backend\
+    \ nccl \\\r\n     $DEEPSPEED_ARGS \\\r\n    \"\r\n\r\necho $CMD\r\n\r\n# do not\
+    \ remove or the training will hang and nodes will be lost w/o this workaround\r\
+    \nexport CUDA_LAUNCH_BLOCKING=1\r\n\r\n# hide duplicated errors using this hack\
+    \ - will be properly fixed in pt-1.12\r\nexport TORCHELASTIC_ERROR_FILE=/tmp/torch-elastic-error.json\r\
+    \n\r\nclear; srun --nodes=$NNODES --ntasks-per-node=1 --gres=gpu:$GPUS_PER_NODE\
+    \ bash -c \"$LAUNCHER $CMD\" 2>&1 | tee -a $LOGS_PATH/main_log.txt\r\n```"
+  created_at: 2022-12-11 12:06:38+00:00
+  edited: false
+  hidden: false
+  id: 6395c7ceab3455c2bd67fe3e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+      fullname: Niklas Muennighoff
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Muennighoff
+      type: user
+    createdAt: '2022-12-11T12:13:39.000Z'
+    data:
+      edited: false
+      editors:
+      - Muennighoff
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+          fullname: Niklas Muennighoff
+          isHf: false
+          isPro: false
+          name: Muennighoff
+          type: user
+        html: '<p>Hi! The problem is likely that you''re trying to finetune it with
+          a different shape than the saved checkpoint.</p>
+
+          <p>The 1B7 script: <a rel="nofollow" href="https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/smaller_models/tr11b-1B3-ml.slurm">https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/smaller_models/tr11b-1B3-ml.slurm</a></p>
+
+          <p>Comparing it with your script it seems like TP &amp; PP are the same,
+          but your DP is different. 1B7 was trained on 16 nodes (<code>#SBATCH --nodes=16</code>),
+          so DP is 16 * 8 / (2 * 2) = 32, while your DP seems to be 1 * 8 / (2 * 2)
+          = 2, as it looks like you''re running on one node?<br>If you can''t scale
+          to the same DP by increasing your nodes, you can also drop the optimizer
+          states with <code>--no-load-optim</code> &amp; just start with a new optimizer
+          from scratch. We also reset the optimizer for bloomz finetuning.</p>
+
+          '
+        raw: 'Hi! The problem is likely that you''re trying to finetune it with a
+          different shape than the saved checkpoint.
+
+
+          The 1B7 script: https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/smaller_models/tr11b-1B3-ml.slurm
+
+
+          Comparing it with your script it seems like TP & PP are the same, but your
+          DP is different. 1B7 was trained on 16 nodes (`#SBATCH --nodes=16`), so
+          DP is 16 * 8 / (2 * 2) = 32, while your DP seems to be 1 * 8 / (2 * 2) =
+          2, as it looks like you''re running on one node?
+
+          If you can''t scale to the same DP by increasing your nodes, you can also
+          drop the optimizer states with `--no-load-optim` & just start with a new
+          optimizer from scratch. We also reset the optimizer for bloomz finetuning.'
+        updatedAt: '2022-12-11T12:13:39.246Z'
+      numEdits: 0
+      reactions: []
+    id: 6395c973e673ee4831fa1d82
+    type: comment
+  author: Muennighoff
+  content: 'Hi! The problem is likely that you''re trying to finetune it with a different
+    shape than the saved checkpoint.
+
+
+    The 1B7 script: https://github.com/bigscience-workshop/bigscience/blob/master/train/tr11-176B-ml/smaller_models/tr11b-1B3-ml.slurm
+
+
+    Comparing it with your script it seems like TP & PP are the same, but your DP
+    is different. 1B7 was trained on 16 nodes (`#SBATCH --nodes=16`), so DP is 16
+    * 8 / (2 * 2) = 32, while your DP seems to be 1 * 8 / (2 * 2) = 2, as it looks
+    like you''re running on one node?
+
+    If you can''t scale to the same DP by increasing your nodes, you can also drop
+    the optimizer states with `--no-load-optim` & just start with a new optimizer
+    from scratch. We also reset the optimizer for bloomz finetuning.'
+  created_at: 2022-12-11 12:13:39+00:00
+  edited: false
+  hidden: false
+  id: 6395c973e673ee4831fa1d82
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-11T14:33:10.000Z'
+    data:
+      edited: true
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>Thanks for your swift feedback! Unfortunately I don''t have the
+          hardware resources to start the training on 16 different nodes, and I can
+          only run the fine-tuning on a single node with multiple gpus. </p>
+
+          <p>I''ve now tried to follow your suggestion and drop the optimizer states
+          using the option <code>--no-load-optim</code>, but it doesn''t really work.
+          It still tries to load <code>mp_rank_00_model_states.pt</code> and fail
+          because of the mismatch between the real and expected number of checkpoint
+          files.</p>
+
+          <p>The only solution I found to avoid loading the optimizer states is to
+          remove <code>latest</code> from the checkpoint directory. This actually
+          allows the training to start. However, is this equivalent to fine-tuning
+          the pre-trained model or am I, in this case, training bloom architecture
+          from scratch?</p>
+
+          '
+        raw: "Thanks for your swift feedback! Unfortunately I don't have the hardware\
+          \ resources to start the training on 16 different nodes, and I can only\
+          \ run the fine-tuning on a single node with multiple gpus. \n\nI've now\
+          \ tried to follow your suggestion and drop the optimizer states using the\
+          \ option `--no-load-optim`, but it doesn't really work. It still tries to\
+          \ load `mp_rank_00_model_states.pt` and fail because of the mismatch between\
+          \ the real and expected number of checkpoint files.\n\nThe only solution\
+          \ I found to avoid loading the optimizer states is to remove `latest` from\
+          \ the checkpoint directory. This actually allows the training to start.\
+          \ However, is this equivalent to fine-tuning the pre-trained model or am\
+          \ I, in this case, training bloom architecture from scratch?"
+        updatedAt: '2022-12-11T14:33:34.600Z'
+      numEdits: 1
+      reactions: []
+    id: 6395ea26f0dc0fd8541afe99
+    type: comment
+  author: gcamposampie
+  content: "Thanks for your swift feedback! Unfortunately I don't have the hardware\
+    \ resources to start the training on 16 different nodes, and I can only run the\
+    \ fine-tuning on a single node with multiple gpus. \n\nI've now tried to follow\
+    \ your suggestion and drop the optimizer states using the option `--no-load-optim`,\
+    \ but it doesn't really work. It still tries to load `mp_rank_00_model_states.pt`\
+    \ and fail because of the mismatch between the real and expected number of checkpoint\
+    \ files.\n\nThe only solution I found to avoid loading the optimizer states is\
+    \ to remove `latest` from the checkpoint directory. This actually allows the training\
+    \ to start. However, is this equivalent to fine-tuning the pre-trained model or\
+    \ am I, in this case, training bloom architecture from scratch?"
+  created_at: 2022-12-11 14:33:10+00:00
+  edited: true
+  hidden: false
+  id: 6395ea26f0dc0fd8541afe99
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+      fullname: Niklas Muennighoff
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Muennighoff
+      type: user
+    createdAt: '2022-12-11T14:38:42.000Z'
+    data:
+      edited: false
+      editors:
+      - Muennighoff
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+          fullname: Niklas Muennighoff
+          isHf: false
+          isPro: false
+          name: Muennighoff
+          type: user
+        html: "<p>Yeah without <code>latest</code> you are training from scratch.\
+          \ You may also need to add <code>--reset-progress</code> and maybe there's\
+          \ some modification in DeepSpeed / MegDS needed to skip the optimizer loading\
+          \ (it should be possible without).</p>\n<p>I think <span data-props=\"{&quot;user&quot;:&quot;razent&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/razent\"\
+          >@<span class=\"underline\">razent</span></a></span>\n\n\t</span></span>\
+          \ made it work without loading the optimizer states, maybe he wants to share?\
+          \ \U0001F917</p>\n"
+        raw: "Yeah without `latest` you are training from scratch. You may also need\
+          \ to add `--reset-progress` and maybe there's some modification in DeepSpeed\
+          \ / MegDS needed to skip the optimizer loading (it should be possible without).\n\
+          \nI think @razent made it work without loading the optimizer states, maybe\
+          \ he wants to share? \U0001F917"
+        updatedAt: '2022-12-11T14:38:42.217Z'
+      numEdits: 0
+      reactions: []
+    id: 6395eb72f0dc0fd8541b26b9
+    type: comment
+  author: Muennighoff
+  content: "Yeah without `latest` you are training from scratch. You may also need\
+    \ to add `--reset-progress` and maybe there's some modification in DeepSpeed /\
+    \ MegDS needed to skip the optimizer loading (it should be possible without).\n\
+    \nI think @razent made it work without loading the optimizer states, maybe he\
+    \ wants to share? \U0001F917"
+  created_at: 2022-12-11 14:38:42+00:00
+  edited: false
+  hidden: false
+  id: 6395eb72f0dc0fd8541b26b9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-11T14:47:51.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>yes, I also tried adding <code>--reset-progress</code> as in the
+          SLURM script you linked before but it didn''t help unfortunately.</p>
+
+          '
+        raw: yes, I also tried adding `--reset-progress` as in the SLURM script you
+          linked before but it didn't help unfortunately.
+        updatedAt: '2022-12-11T14:47:51.288Z'
+      numEdits: 0
+      reactions: []
+    id: 6395ed97f0dc0fd8541b6a36
+    type: comment
+  author: gcamposampie
+  content: yes, I also tried adding `--reset-progress` as in the SLURM script you
+    linked before but it didn't help unfortunately.
+  created_at: 2022-12-11 14:47:51+00:00
+  edited: false
+  hidden: false
+  id: 6395ed97f0dc0fd8541b6a36
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1623321109321-5f9588e9cf95e81b6854e24e.jpeg?w=200&h=200&f=face
+      fullname: Hieu Tran
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: razent
+      type: user
+    createdAt: '2022-12-17T19:00:53.000Z'
+    data:
+      edited: false
+      editors:
+      - razent
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1623321109321-5f9588e9cf95e81b6854e24e.jpeg?w=200&h=200&f=face
+          fullname: Hieu Tran
+          isHf: false
+          isPro: false
+          name: razent
+          type: user
+        html: '<p>Hi,<br>You should add both <code>--reset-progress</code> and <code>--no-load-optim</code>
+          to the finetuning script and create the <code>latest</code> file as well.
+          The <code>latest</code> file contains the checkpoint''s global step (i.g.,
+          global_step10000). It will load the model checkpoint without optimizer loading.</p>
+
+          '
+        raw: "Hi, \nYou should add both `--reset-progress` and `--no-load-optim` to\
+          \ the finetuning script and create the `latest` file as well. The `latest`\
+          \ file contains the checkpoint's global step (i.g., global_step10000). It\
+          \ will load the model checkpoint without optimizer loading."
+        updatedAt: '2022-12-17T19:00:53.092Z'
+      numEdits: 0
+      reactions: []
+    id: 639e11e56f45b49b2fb6cd79
+    type: comment
+  author: razent
+  content: "Hi, \nYou should add both `--reset-progress` and `--no-load-optim` to\
+    \ the finetuning script and create the `latest` file as well. The `latest` file\
+    \ contains the checkpoint's global step (i.g., global_step10000). It will load\
+    \ the model checkpoint without optimizer loading."
+  created_at: 2022-12-17 19:00:53+00:00
+  edited: false
+  hidden: false
+  id: 639e11e56f45b49b2fb6cd79
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-17T21:36:04.000Z'
+    data:
+      edited: true
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: "<p>Thanks <span data-props=\"{&quot;user&quot;:&quot;razent&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/razent\"\
+          >@<span class=\"underline\">razent</span></a></span>\n\n\t</span></span>\
+          \ for your answer! </p>\n<p>Unfortunately I'm already using this configuration\
+          \ (both arguments and <code>latest</code> containing the checkpoint's global\
+          \ step) but the tuning still fails.<br>Is there any other way to fix the\
+          \ mismatch between the <code>mp_world_size</code> (4, and I don't quite\
+          \ get what this parameter should represent) and the actual number of checkpoints\
+          \ shared in your repository (only 1)?</p>\n"
+        raw: "Thanks @razent for your answer! \n\nUnfortunately I'm already using\
+          \ this configuration (both arguments and `latest` containing the checkpoint's\
+          \ global step) but the tuning still fails.\nIs there any other way to fix\
+          \ the mismatch between the `mp_world_size` (4, and I don't quite get what\
+          \ this parameter should represent) and the actual number of checkpoints\
+          \ shared in your repository (only 1)?"
+        updatedAt: '2022-12-18T07:34:47.748Z'
+      numEdits: 1
+      reactions: []
+    id: 639e36447145123e0d538756
+    type: comment
+  author: gcamposampie
+  content: "Thanks @razent for your answer! \n\nUnfortunately I'm already using this\
+    \ configuration (both arguments and `latest` containing the checkpoint's global\
+    \ step) but the tuning still fails.\nIs there any other way to fix the mismatch\
+    \ between the `mp_world_size` (4, and I don't quite get what this parameter should\
+    \ represent) and the actual number of checkpoints shared in your repository (only\
+    \ 1)?"
+  created_at: 2022-12-17 21:36:04+00:00
+  edited: true
+  hidden: false
+  id: 639e36447145123e0d538756
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-19T09:46:20.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>I went through the code more carefully, and I got the following
+          insights:</p>
+
+          <ul>
+
+          <li><code>--no-load-optimizer</code> and <code>--reset-progress</code> are
+          working fine, as all the flags along the way are correctly set</li>
+
+          <li>the script get stuck when the initialization of the SDLoaderBase, more
+          precisely in the <code>check_ckpt_list()</code>method</li>
+
+          <li>here, the checkpoint list for the model states is [''checkpoints/global_step340500/mp_rank_00_model_states.pt''],
+          while the loaded model has a <code>mp_world_size</code> equal to 4 (for
+          what I understood is expecting 4 files instead of just 1)</li>
+
+          <li>I tried to hard-code a different <code>mp_world_size</code> (setting
+          it to <code>len(self.ckpt_list)</code>); however, it fails right after when
+          loading the first layer (layer 01) with the following error "AssertionError:
+          key: attention.dense.weight is not found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt"</li>
+
+          </ul>
+
+          <p>At this point I''m wondering, is the <code>mp_rank_00_model_states.pt</code>
+          pickle pushed to this repo the correct file? Am I missing something?</p>
+
+          '
+        raw: 'I went through the code more carefully, and I got the following insights:
+
+          - `--no-load-optimizer` and `--reset-progress` are working fine, as all
+          the flags along the way are correctly set
+
+          - the script get stuck when the initialization of the SDLoaderBase, more
+          precisely in the `check_ckpt_list()`method
+
+          - here, the checkpoint list for the model states is [''checkpoints/global_step340500/mp_rank_00_model_states.pt''],
+          while the loaded model has a `mp_world_size` equal to 4 (for what I understood
+          is expecting 4 files instead of just 1)
+
+          - I tried to hard-code a different `mp_world_size` (setting it to `len(self.ckpt_list)`);
+          however, it fails right after when loading the first layer (layer 01) with
+          the following error "AssertionError: key: attention.dense.weight is not
+          found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt"
+
+
+          At this point I''m wondering, is the `mp_rank_00_model_states.pt` pickle
+          pushed to this repo the correct file? Am I missing something?'
+        updatedAt: '2022-12-19T09:46:20.413Z'
+      numEdits: 0
+      reactions: []
+    id: 63a032ec6b087d7413bcaa71
+    type: comment
+  author: gcamposampie
+  content: 'I went through the code more carefully, and I got the following insights:
+
+    - `--no-load-optimizer` and `--reset-progress` are working fine, as all the flags
+    along the way are correctly set
+
+    - the script get stuck when the initialization of the SDLoaderBase, more precisely
+    in the `check_ckpt_list()`method
+
+    - here, the checkpoint list for the model states is [''checkpoints/global_step340500/mp_rank_00_model_states.pt''],
+    while the loaded model has a `mp_world_size` equal to 4 (for what I understood
+    is expecting 4 files instead of just 1)
+
+    - I tried to hard-code a different `mp_world_size` (setting it to `len(self.ckpt_list)`);
+    however, it fails right after when loading the first layer (layer 01) with the
+    following error "AssertionError: key: attention.dense.weight is not found in the
+    checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt"
+
+
+    At this point I''m wondering, is the `mp_rank_00_model_states.pt` pickle pushed
+    to this repo the correct file? Am I missing something?'
+  created_at: 2022-12-19 09:46:20+00:00
+  edited: false
+  hidden: false
+  id: 63a032ec6b087d7413bcaa71
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+      fullname: Niklas Muennighoff
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Muennighoff
+      type: user
+    createdAt: '2022-12-19T11:21:39.000Z'
+    data:
+      edited: true
+      editors:
+      - Muennighoff
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+          fullname: Niklas Muennighoff
+          isHf: false
+          isPro: false
+          name: Muennighoff
+          type: user
+        html: '<blockquote>
+
+          <p>I went through the code more carefully, and I got the following insights:</p>
+
+          <ul>
+
+          <li><code>--no-load-optimizer</code> and <code>--reset-progress</code> are
+          working fine, as all the flags along the way are correctly set</li>
+
+          <li>the script get stuck when the initialization of the SDLoaderBase, more
+          precisely in the <code>check_ckpt_list()</code>method</li>
+
+          <li>here, the checkpoint list for the model states is [''checkpoints/global_step340500/mp_rank_00_model_states.pt''],
+          while the loaded model has a <code>mp_world_size</code> equal to 4 (for
+          what I understood is expecting 4 files instead of just 1)</li>
+
+          <li>I tried to hard-code a different <code>mp_world_size</code> (setting
+          it to <code>len(self.ckpt_list)</code>); however, it fails right after when
+          loading the first layer (layer 01) with the following error "AssertionError:
+          key: attention.dense.weight is not found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt"</li>
+
+          </ul>
+
+          <p>At this point I''m wondering, is the <code>mp_rank_00_model_states.pt</code>
+          pickle pushed to this repo the correct file? Am I missing something?</p>
+
+          </blockquote>
+
+          <p>Pretty sure it''s the correct file - You can also easily check the contents
+          of the files btw:</p>
+
+          <pre><code>import torch
+
+          x = torch.load("mp_rank_00_model_states.pt")
+
+          x.keys()
+
+          </code></pre>
+
+          <p> I think you just need to change some code in DeepSpeed where it tries
+          to load the optimizer checkpoint despite being given the <code>--no-load-optim</code>
+          instruction.</p>
+
+          '
+        raw: "> I went through the code more carefully, and I got the following insights:\n\
+          > - `--no-load-optimizer` and `--reset-progress` are working fine, as all\
+          \ the flags along the way are correctly set\n> - the script get stuck when\
+          \ the initialization of the SDLoaderBase, more precisely in the `check_ckpt_list()`method\n\
+          > - here, the checkpoint list for the model states is ['checkpoints/global_step340500/mp_rank_00_model_states.pt'],\
+          \ while the loaded model has a `mp_world_size` equal to 4 (for what I understood\
+          \ is expecting 4 files instead of just 1)\n> - I tried to hard-code a different\
+          \ `mp_world_size` (setting it to `len(self.ckpt_list)`); however, it fails\
+          \ right after when loading the first layer (layer 01) with the following\
+          \ error \"AssertionError: key: attention.dense.weight is not found in the\
+          \ checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt\"\
+          \n> \n> At this point I'm wondering, is the `mp_rank_00_model_states.pt`\
+          \ pickle pushed to this repo the correct file? Am I missing something?\n\
+          \nPretty sure it's the correct file - You can also easily check the contents\
+          \ of the files btw:\n```\nimport torch\nx = torch.load(\"mp_rank_00_model_states.pt\"\
+          )\nx.keys()\n```\n I think you just need to change some code in DeepSpeed\
+          \ where it tries to load the optimizer checkpoint despite being given the\
+          \ `--no-load-optim` instruction."
+        updatedAt: '2022-12-19T11:21:49.453Z'
+      numEdits: 1
+      reactions: []
+    id: 63a04943e648d425374afd13
+    type: comment
+  author: Muennighoff
+  content: "> I went through the code more carefully, and I got the following insights:\n\
+    > - `--no-load-optimizer` and `--reset-progress` are working fine, as all the\
+    \ flags along the way are correctly set\n> - the script get stuck when the initialization\
+    \ of the SDLoaderBase, more precisely in the `check_ckpt_list()`method\n> - here,\
+    \ the checkpoint list for the model states is ['checkpoints/global_step340500/mp_rank_00_model_states.pt'],\
+    \ while the loaded model has a `mp_world_size` equal to 4 (for what I understood\
+    \ is expecting 4 files instead of just 1)\n> - I tried to hard-code a different\
+    \ `mp_world_size` (setting it to `len(self.ckpt_list)`); however, it fails right\
+    \ after when loading the first layer (layer 01) with the following error \"AssertionError:\
+    \ key: attention.dense.weight is not found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt\"\
+    \n> \n> At this point I'm wondering, is the `mp_rank_00_model_states.pt` pickle\
+    \ pushed to this repo the correct file? Am I missing something?\n\nPretty sure\
+    \ it's the correct file - You can also easily check the contents of the files\
+    \ btw:\n```\nimport torch\nx = torch.load(\"mp_rank_00_model_states.pt\")\nx.keys()\n\
+    ```\n I think you just need to change some code in DeepSpeed where it tries to\
+    \ load the optimizer checkpoint despite being given the `--no-load-optim` instruction."
+  created_at: 2022-12-19 11:21:39+00:00
+  edited: true
+  hidden: false
+  id: 63a04943e648d425374afd13
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-19T13:33:45.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>But the problem is not just with the optimizer state, right? The
+          second exception I get (<code>AssertionError: key: attention.dense.weight
+          is not found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt</code>)
+          is still related to it?</p>
+
+          '
+        raw: 'But the problem is not just with the optimizer state, right? The second
+          exception I get (`AssertionError: key: attention.dense.weight is not found
+          in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt`)
+          is still related to it?'
+        updatedAt: '2022-12-19T13:33:45.279Z'
+      numEdits: 0
+      reactions: []
+    id: 63a068390c6d9efa3063a415
+    type: comment
+  author: gcamposampie
+  content: 'But the problem is not just with the optimizer state, right? The second
+    exception I get (`AssertionError: key: attention.dense.weight is not found in
+    the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt`)
+    is still related to it?'
+  created_at: 2022-12-19 13:33:45+00:00
+  edited: false
+  hidden: false
+  id: 63a068390c6d9efa3063a415
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+      fullname: Niklas Muennighoff
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Muennighoff
+      type: user
+    createdAt: '2022-12-19T13:49:45.000Z'
+    data:
+      edited: false
+      editors:
+      - Muennighoff
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+          fullname: Niklas Muennighoff
+          isHf: false
+          isPro: false
+          name: Muennighoff
+          type: user
+        html: '<blockquote>
+
+          <p>But the problem is not just with the optimizer state, right? The second
+          exception I get (<code>AssertionError: key: attention.dense.weight is not
+          found in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt</code>)
+          is still related to it?</p>
+
+          </blockquote>
+
+          <p>I think that error is because when hardcoding a different <code>mp_world_size</code>,
+          you may be messing with the PP &amp; TP configurations, so it looks for
+          the <code>attention.dense.weight</code> in the wrong file.</p>
+
+          '
+        raw: '> But the problem is not just with the optimizer state, right? The second
+          exception I get (`AssertionError: key: attention.dense.weight is not found
+          in the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt`)
+          is still related to it?
+
+
+          I think that error is because when hardcoding a different `mp_world_size`,
+          you may be messing with the PP & TP configurations, so it looks for the
+          `attention.dense.weight` in the wrong file.'
+        updatedAt: '2022-12-19T13:49:45.378Z'
+      numEdits: 0
+      reactions: []
+    id: 63a06bf9e648d425374f26a7
+    type: comment
+  author: Muennighoff
+  content: '> But the problem is not just with the optimizer state, right? The second
+    exception I get (`AssertionError: key: attention.dense.weight is not found in
+    the checkpoint checkpoints/global_step340500/layer_01-model_00-model_states.pt`)
+    is still related to it?
+
+
+    I think that error is because when hardcoding a different `mp_world_size`, you
+    may be messing with the PP & TP configurations, so it looks for the `attention.dense.weight`
+    in the wrong file.'
+  created_at: 2022-12-19 13:49:45+00:00
+  edited: false
+  hidden: false
+  id: 63a06bf9e648d425374f26a7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-23T15:44:06.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>Yes, you might be right. In the end I did not manage to find a solution
+          for the issue, so I switched to bloom-3b. The fine tuning script for the
+          latter worked like a charm, so I''m quite convinced that it wasn''t an issue
+          on my side (but maybe I was just unlucky with sizes and tuning setting).
+          Thanks anyway for the support!</p>
+
+          '
+        raw: Yes, you might be right. In the end I did not manage to find a solution
+          for the issue, so I switched to bloom-3b. The fine tuning script for the
+          latter worked like a charm, so I'm quite convinced that it wasn't an issue
+          on my side (but maybe I was just unlucky with sizes and tuning setting).
+          Thanks anyway for the support!
+        updatedAt: '2022-12-23T15:44:06.375Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - Muennighoff
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Muennighoff
+    id: 63a5ccc6832a4005800b1614
+    type: comment
+  author: gcamposampie
+  content: Yes, you might be right. In the end I did not manage to find a solution
+    for the issue, so I switched to bloom-3b. The fine tuning script for the latter
+    worked like a charm, so I'm quite convinced that it wasn't an issue on my side
+    (but maybe I was just unlucky with sizes and tuning setting). Thanks anyway for
+    the support!
+  created_at: 2022-12-23 15:44:06+00:00
+  edited: false
+  hidden: false
+  id: 63a5ccc6832a4005800b1614
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ae02c5050e56283b1cdc28e96d5865d.svg
+      fullname: Kevin Schneier
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kschneier
+      type: user
+    createdAt: '2023-02-17T17:07:44.000Z'
+    data:
+      edited: false
+      editors:
+      - kschneier
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ae02c5050e56283b1cdc28e96d5865d.svg
+          fullname: Kevin Schneier
+          isHf: false
+          isPro: false
+          name: kschneier
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;gcamposampie&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/gcamposampie\"\
+          >@<span class=\"underline\">gcamposampie</span></a></span>\n\n\t</span></span>\
+          \ could you share any edits you made to get bloom-3b working? I have been\
+          \ getting the same error you had for bloom-1b7 but when I switched to bloom-3b\
+          \ I am still erroring out</p>\n"
+        raw: '@gcamposampie could you share any edits you made to get bloom-3b working?
+          I have been getting the same error you had for bloom-1b7 but when I switched
+          to bloom-3b I am still erroring out'
+        updatedAt: '2023-02-17T17:07:44.121Z'
+      numEdits: 0
+      reactions: []
+    id: 63efb46062d52902221d7f96
+    type: comment
+  author: kschneier
+  content: '@gcamposampie could you share any edits you made to get bloom-3b working?
+    I have been getting the same error you had for bloom-1b7 but when I switched to
+    bloom-3b I am still erroring out'
+  created_at: 2023-02-17 17:07:44+00:00
+  edited: false
+  hidden: false
+  id: 63efb46062d52902221d7f96
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2023-02-18T07:58:35.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;kschneier&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/kschneier\">@<span class=\"\
+          underline\">kschneier</span></a></span>\n\n\t</span></span> I just updated\
+          \ the following parameters according to bloom-3b specs:</p>\n<pre><code>NLAYERS=30\n\
+          NHEADS=32\nNHIDDEN=2560\n</code></pre>\n<p>and set <code>latest</code> to\
+          \ \"global_step337250\", downloading the corresponding checkpoint from HF</p>\n"
+        raw: '@kschneier I just updated the following parameters according to bloom-3b
+          specs:
+
+          ```
+
+          NLAYERS=30
+
+          NHEADS=32
+
+          NHIDDEN=2560
+
+          ```
+
+          and set `latest` to "global_step337250", downloading the corresponding checkpoint
+          from HF'
+        updatedAt: '2023-02-18T07:58:35.015Z'
+      numEdits: 0
+      reactions: []
+    id: 63f0852b36d0cf1141206f5d
+    type: comment
+  author: gcamposampie
+  content: '@kschneier I just updated the following parameters according to bloom-3b
+    specs:
+
+    ```
+
+    NLAYERS=30
+
+    NHEADS=32
+
+    NHIDDEN=2560
+
+    ```
+
+    and set `latest` to "global_step337250", downloading the corresponding checkpoint
+    from HF'
+  created_at: 2023-02-18 07:58:35+00:00
+  edited: false
+  hidden: false
+  id: 63f0852b36d0cf1141206f5d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: bigscience/bloom-1b7-optimizer-states
+repo_type: model
+status: open
+target_branch: null
+title: Problem with bloom-1b7 finetuning

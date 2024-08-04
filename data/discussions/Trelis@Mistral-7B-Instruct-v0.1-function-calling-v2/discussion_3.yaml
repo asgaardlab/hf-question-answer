@@ -1,0 +1,823 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Jdo300
+conflicting_files: null
+created_at: 2023-10-28 22:20:04+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+      fullname: Jason Owens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Jdo300
+      type: user
+    createdAt: '2023-10-28T23:20:04.000Z'
+    data:
+      edited: false
+      editors:
+      - Jdo300
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9042469263076782
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+          fullname: Jason Owens
+          isHf: false
+          isPro: false
+          name: Jdo300
+          type: user
+        html: '<p>I''m in the process of writing a wrapper/parser script that can
+          connect to this model via an API call and then convert the prompt format
+          between Mistral and the standard, OpenAI Completion object syntax. So far,
+          I''ve been using the server that is created by llama.cpp to interact it
+          and I want to use it with the MemGPT framework, which requires the function
+          calling capability. Do you have a recommended framework to take advantage
+          of the function calling feature (ideally one that can work with OpenAI API
+          compatible completion objects)?</p>
+
+          '
+        raw: I'm in the process of writing a wrapper/parser script that can connect
+          to this model via an API call and then convert the prompt format between
+          Mistral and the standard, OpenAI Completion object syntax. So far, I've
+          been using the server that is created by llama.cpp to interact it and I
+          want to use it with the MemGPT framework, which requires the function calling
+          capability. Do you have a recommended framework to take advantage of the
+          function calling feature (ideally one that can work with OpenAI API compatible
+          completion objects)?
+        updatedAt: '2023-10-28T23:20:04.538Z'
+      numEdits: 0
+      reactions: []
+    id: 653d9724de20728b27d6beb3
+    type: comment
+  author: Jdo300
+  content: I'm in the process of writing a wrapper/parser script that can connect
+    to this model via an API call and then convert the prompt format between Mistral
+    and the standard, OpenAI Completion object syntax. So far, I've been using the
+    server that is created by llama.cpp to interact it and I want to use it with the
+    MemGPT framework, which requires the function calling capability. Do you have
+    a recommended framework to take advantage of the function calling feature (ideally
+    one that can work with OpenAI API compatible completion objects)?
+  created_at: 2023-10-28 22:20:04+00:00
+  edited: false
+  hidden: false
+  id: 653d9724de20728b27d6beb3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+      fullname: Jason Owens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Jdo300
+      type: user
+    createdAt: '2023-10-29T12:55:34.000Z'
+    data:
+      edited: false
+      editors:
+      - Jdo300
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4477821886539459
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+          fullname: Jason Owens
+          isHf: false
+          isPro: false
+          name: Jdo300
+          type: user
+        html: "<p>Here's some additional information. Here's the draft of the wrapper\
+          \ script that I created. I am able toe query the LLM and get a response,\
+          \ but it doesn't seem to be recognizing the function calls I'm sending it.\
+          \ Here's the code for the script:</p>\n<pre><code>import requests\nimport\
+          \ json\nimport re  # Regular expression library\nfrom abc import ABC, abstractmethod\n\
+          import logging\n\nlogging.basicConfig(filename='mistral_wrapper.log', level=logging.DEBUG,\n\
+          \                    format='%(asctime)s %(levelname)s %(name)s %(message)s')\n\
+          logger = logging.getLogger(__name__)\n\n# Add StreamHandler to print log\
+          \ messages to console\nconsole_handler = logging.StreamHandler()\nconsole_handler.setLevel(logging.DEBUG)\n\
+          formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -\
+          \ %(message)s')\nconsole_handler.setFormatter(formatter)\nlogger.addHandler(console_handler)\n\
+          \n\n# Base class from wrapper_base.py included below\n\nclass LLMChatCompletionWrapper(ABC):\n\
+          \n    @abstractmethod\n    def chat_completion_to_prompt(self, messages,\
+          \ functions):\n        \"\"\"Go from ChatCompletion to a single prompt string\"\
+          \"\"\n        pass\n\n    @abstractmethod\n    def output_to_chat_completion_response(self,\
+          \ raw_llm_output):\n        \"\"\"Turn the LLM output string into a ChatCompletion\
+          \ response\"\"\"\n        pass\n\n#---------------------------------------------------------------\n\
+          \n# Wrapper Class Implementation below\nclass OllamaMistral7BWrapper(LLMChatCompletionWrapper):\n\
+          \    def __init__(self, api_url):\n        self.api_url = api_url\n\n  \
+          \  def chat_completion_to_prompt(self, messages, functions):\n        #\
+          \ Define the roles and markers\n        B_INST, E_INST = \"[INST]\", \"\
+          [/INST]\"\n        B_FUNC, E_FUNC = \"&lt;FUNCTIONS&gt;\", \"&lt;/FUNCTIONS&gt;\\\
+          n\\n\"\n        B_SYS, E_SYS = \"&lt;&lt;SYS&gt;&gt;\\n\", \"\\n&lt;&lt;/SYS&gt;&gt;\\\
+          n\\n\"\n\n        # Extract the system and user prompts from the messages\n\
+          \        system_prompt = ''\n        user_prompt = ''\n        for message\
+          \ in messages:\n            if message['role'] == 'system':\n          \
+          \      system_prompt = message['content']\n            elif message['role']\
+          \ == 'user':\n                user_prompt = message['content']\n\n     \
+          \   # Convert each function metadata dictionary to a single-line string\n\
+          \        function_metadata_strs = [json.dumps(func) for func in functions]\n\
+          \        # Join the single-line strings with two newline characters to separate\
+          \ them with a blank line\n        function_list = '\\n\\n'.join(function_metadata_strs)\n\
+          \n        # Format the prompt template based on whether there's a system\
+          \ prompt or not\n        if system_prompt:\n            prompt = f\"{B_FUNC}{function_list}{E_FUNC}{B_INST}\
+          \ {B_SYS}{system_prompt.strip()}{E_SYS} {user_prompt.strip()} {E_INST}\\\
+          n\\n\"\n        else:\n            prompt = f\"{B_FUNC}{function_list}{E_FUNC}{B_INST}\
+          \ {user_prompt.strip()} {E_INST}\\n\\n\"\n        \n        return prompt\n\
+          \n    def output_to_chat_completion_response(self, raw_llm_output):\n  \
+          \      content = raw_llm_output['content']\n        function_call = None\n\
+          \        try:\n            # Extract the result part of the response\n \
+          \           result_start_idx = content.find('result:')\n            if result_start_idx\
+          \ != -1:\n                result_text = content[result_start_idx + len('result:'):].strip()\n\
+          \                \n        except Exception as e:\n            logging.error(f\"\
+          An error occurred while extracting the result: {e}\")\n            function_call\
+          \ = None\n\n            # Look for a JSON object in 'content' that contains\
+          \ the function call request\n            function_call_match = re.search(r'\\\
+          {\\s*\"function\":\\s*\".+?\",\\s*\"arguments\":\\s*\\{.+?\\}\\s*\\}', content)\n\
+          \            if function_call_match:\n                function_call_str\
+          \ = function_call_match.group(0)\n                function_call = json.loads(function_call_str)\n\
+          \            else:\n                function_call = None\n\n        except\
+          \ json.JSONDecodeError:\n            # Handle cases where there is no JSON\
+          \ object in the response\n            pass\n        \n        response =\
+          \ {\n            'message': {\n                'role': 'assistant',\n  \
+          \              'content': content,\n                'function_call': function_call\n\
+          \            }\n        }\n        return response\n\n    def call_llama(self,\
+          \ model, prompt):\n        headers = {\n            'Content-Type': 'application/json',\n\
+          \        }\n        data = json.dumps({'model': model, 'prompt': prompt,\
+          \ 'stream': False})\n        response = requests.post(f'{self.api_url}/completion',\
+          \ headers=headers, data=data)\n\n\n        try:\n            if response.status_code\
+          \ == 200:\n                return response.json()\n            else:\n \
+          \               logger.error(f'API call failed with status code: {response.status_code},\
+          \ Response: {response.text}')\n\n        except json.JSONDecodeError:\n\
+          \            logger.error(f'Failed to decode JSON: {response.text}')\n\n\
+          \n    def chat_completion(self, messages, functions):\n        model = 'mistral'\
+          \  # Placeholder, replace with the actual model name for Mistral-7B\n  \
+          \      # TODO: Replace with the actual model name for Mistral-7B\n     \
+          \   formatted_request = self.chat_completion_to_prompt(messages, functions)\n\
+          \        logger.debug(f'Formatted request: {formatted_request}')  # for\
+          \ debugging and checking the output before it gets passed to the model\n\
+          \        raw_llm_output = self.call_llama(model, formatted_request)\n  \
+          \      logger.debug('Raw output received')\n        logger.debug(f'Raw output:\
+          \ {raw_llm_output}')\n        chat_completion_response = self.output_to_chat_completion_response(raw_llm_output)\n\
+          \        return chat_completion_response\n\n#---------------------------------------------------------------\n\
+          \n# Example program to test Wrapper class\n\napi_url = 'http://172.26.165.179:8080'\
+          \  # Replace with the actual Ollama API base URL\n\nollama_wrapper = OllamaMistral7BWrapper(api_url)\n\
+          \nmessages = [\n    {\"role\": \"system\", \"content\": 'You are a helpful\
+          \ assistant'},\n    {\"role\": \"user\", \"content\": 'Please calculate\
+          \ the foo of 4 and 5 and return the result'}\n]\n\nfunctions = [\n    {\n\
+          \        \"function\": \"foo\",\n        \"description\": \"Calculates the\
+          \ foo of two numbers\",\n        \"arguments\": [\n            {\n     \
+          \           \"name\": \"number1\",\n                \"type\": \"number\"\
+          ,\n                \"description\": \"First number to calculate the foo\
+          \ of\"\n            },\n            {\n                \"name\": \"number2\"\
+          ,\n                \"type\": \"number\",\n                \"description\"\
+          : \"Second number to calculate the foo of\"\n            }\n        ]\n\
+          \    }\n]\n\nresponse = ollama_wrapper.chat_completion(messages, functions)\n\
+          logger.debug(f'Final chat completion response: {response}')\n</code></pre>\n\
+          <p>And here's the log output from the script:</p>\n<pre><code>2023-10-29\
+          \ 07:50:40,348 - __main__ - DEBUG - Formatted request: &lt;FUNCTIONS&gt;{\"\
+          function\": \"foo\", \"description\": \"Calculates the foo of two numbers\"\
+          , \"arguments\": [{\"name\": \"number1\", \"type\": \"number\", \"description\"\
+          : \"First number to calculate the foo of\"}, {\"name\": \"number2\", \"\
+          type\": \"number\", \"description\": \"Second number to calculate the foo\
+          \ of\"}]}&lt;/FUNCTIONS&gt;\n\n[INST] &lt;&lt;SYS&gt;&gt;\nYou are a helpful\
+          \ assistant\n&lt;&lt;/SYS&gt;&gt;\n\n Please calculate the foo of 4 and\
+          \ 5 and return the result [/INST]\n\n\n2023-10-29 07:50:52,208 - __main__\
+          \ - DEBUG - Raw output received\n2023-10-29 07:50:52,208 - __main__ - DEBUG\
+          \ - Raw output: {'content': '{% set num1 = 4 %}\\n{% set num2 = 5 %}\\n{%\
+          \ set result = foo(num1, num2) %}\\nThe foo of {{ num1 }} and {{ num2 }}\
+          \ is {{ result }}.', 'generation_settings': {'frequency_penalty': 0.0, 'grammar':\
+          \ '', 'ignore_eos': False, 'logit_bias': [], 'mirostat': 0, 'mirostat_eta':\
+          \ 0.10000000149011612, 'mirostat_tau': 5.0, 'model': '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+          \ 'n_ctx': 8000, 'n_keep': 0, 'n_predict': -1, 'n_probs': 0, 'penalize_nl':\
+          \ True, 'presence_penalty': 0.0, 'repeat_last_n': 64, 'repeat_penalty':\
+          \ 1.100000023841858, 'seed': 4294967295, 'stop': [], 'stream': False, 'temp':\
+          \ 0.800000011920929, 'tfs_z': 1.0, 'top_k': 40, 'top_p': 0.949999988079071,\
+          \ 'typical_p': 1.0}, 'model': '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+          \ 'prompt': '&lt;FUNCTIONS&gt;{\"function\": \"foo\", \"description\": \"\
+          Calculates the foo of two numbers\", \"arguments\": [{\"name\": \"number1\"\
+          , \"type\": \"number\", \"description\": \"First number to calculate the\
+          \ foo of\"}, {\"name\": \"number2\", \"type\": \"number\", \"description\"\
+          : \"Second number to calculate the foo of\"}]}&lt;/FUNCTIONS&gt;\\n\\n[INST]\
+          \ &lt;&lt;SYS&gt;&gt;\\nYou are a helpful assistant\\n&lt;&lt;/SYS&gt;&gt;\\\
+          n\\n Please calculate the foo of 4 and 5 and return the result [/INST]\\\
+          n\\n', 'slot_id': 0, 'stop': True, 'stopped_eos': True, 'stopped_limit':\
+          \ False, 'stopped_word': False, 'stopping_word': '', 'timings': {'predicted_ms':\
+          \ 6395.44, 'predicted_n': 55, 'predicted_per_second': 8.59987741265652,\
+          \ 'predicted_per_token_ms': 116.28072727272726, 'prompt_ms': 5447.577, 'prompt_n':\
+          \ 124, 'prompt_per_second': 22.76241345464231, 'prompt_per_token_ms': 43.93207258064516},\
+          \ 'tokens_cached': 179, 'tokens_evaluated': 124, 'tokens_predicted': 55,\
+          \ 'truncated': False}\n2023-10-29 07:50:52,210 - __main__ - DEBUG - Final\
+          \ chat completion response: {'message': {'role': 'assistant', 'content':\
+          \ '{% set num1 = 4 %}\\n{% set num2 = 5 %}\\n{% set result = foo(num1, num2)\
+          \ %}\\nThe foo of {{ num1 }} and {{ num2 }} is {{ result }}.', 'function_call':\
+          \ None}}\n</code></pre>\n<p>I'm assuming that I'm probably formatting something\
+          \ wrong unless the issue is with how I'm providing the information to the\
+          \ API server (using llama.cpp). Any help greatly appreciated!</p>\n"
+        raw: "Here's some additional information. Here's the draft of the wrapper\
+          \ script that I created. I am able toe query the LLM and get a response,\
+          \ but it doesn't seem to be recognizing the function calls I'm sending it.\
+          \ Here's the code for the script:\n\n```\nimport requests\nimport json\n\
+          import re  # Regular expression library\nfrom abc import ABC, abstractmethod\n\
+          import logging\n\nlogging.basicConfig(filename='mistral_wrapper.log', level=logging.DEBUG,\n\
+          \                    format='%(asctime)s %(levelname)s %(name)s %(message)s')\n\
+          logger = logging.getLogger(__name__)\n\n# Add StreamHandler to print log\
+          \ messages to console\nconsole_handler = logging.StreamHandler()\nconsole_handler.setLevel(logging.DEBUG)\n\
+          formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -\
+          \ %(message)s')\nconsole_handler.setFormatter(formatter)\nlogger.addHandler(console_handler)\n\
+          \n\n# Base class from wrapper_base.py included below\n\nclass LLMChatCompletionWrapper(ABC):\n\
+          \n    @abstractmethod\n    def chat_completion_to_prompt(self, messages,\
+          \ functions):\n        \"\"\"Go from ChatCompletion to a single prompt string\"\
+          \"\"\n        pass\n\n    @abstractmethod\n    def output_to_chat_completion_response(self,\
+          \ raw_llm_output):\n        \"\"\"Turn the LLM output string into a ChatCompletion\
+          \ response\"\"\"\n        pass\n\n#---------------------------------------------------------------\n\
+          \n# Wrapper Class Implementation below\nclass OllamaMistral7BWrapper(LLMChatCompletionWrapper):\n\
+          \    def __init__(self, api_url):\n        self.api_url = api_url\n\n  \
+          \  def chat_completion_to_prompt(self, messages, functions):\n        #\
+          \ Define the roles and markers\n        B_INST, E_INST = \"[INST]\", \"\
+          [/INST]\"\n        B_FUNC, E_FUNC = \"<FUNCTIONS>\", \"</FUNCTIONS>\\n\\\
+          n\"\n        B_SYS, E_SYS = \"<<SYS>>\\n\", \"\\n<</SYS>>\\n\\n\"\n\n  \
+          \      # Extract the system and user prompts from the messages\n       \
+          \ system_prompt = ''\n        user_prompt = ''\n        for message in messages:\n\
+          \            if message['role'] == 'system':\n                system_prompt\
+          \ = message['content']\n            elif message['role'] == 'user':\n  \
+          \              user_prompt = message['content']\n\n        # Convert each\
+          \ function metadata dictionary to a single-line string\n        function_metadata_strs\
+          \ = [json.dumps(func) for func in functions]\n        # Join the single-line\
+          \ strings with two newline characters to separate them with a blank line\n\
+          \        function_list = '\\n\\n'.join(function_metadata_strs)\n\n     \
+          \   # Format the prompt template based on whether there's a system prompt\
+          \ or not\n        if system_prompt:\n            prompt = f\"{B_FUNC}{function_list}{E_FUNC}{B_INST}\
+          \ {B_SYS}{system_prompt.strip()}{E_SYS} {user_prompt.strip()} {E_INST}\\\
+          n\\n\"\n        else:\n            prompt = f\"{B_FUNC}{function_list}{E_FUNC}{B_INST}\
+          \ {user_prompt.strip()} {E_INST}\\n\\n\"\n        \n        return prompt\n\
+          \n    def output_to_chat_completion_response(self, raw_llm_output):\n  \
+          \      content = raw_llm_output['content']\n        function_call = None\n\
+          \        try:\n            # Extract the result part of the response\n \
+          \           result_start_idx = content.find('result:')\n            if result_start_idx\
+          \ != -1:\n                result_text = content[result_start_idx + len('result:'):].strip()\n\
+          \                \n        except Exception as e:\n            logging.error(f\"\
+          An error occurred while extracting the result: {e}\")\n            function_call\
+          \ = None\n\n            # Look for a JSON object in 'content' that contains\
+          \ the function call request\n            function_call_match = re.search(r'\\\
+          {\\s*\"function\":\\s*\".+?\",\\s*\"arguments\":\\s*\\{.+?\\}\\s*\\}', content)\n\
+          \            if function_call_match:\n                function_call_str\
+          \ = function_call_match.group(0)\n                function_call = json.loads(function_call_str)\n\
+          \            else:\n                function_call = None\n\n        except\
+          \ json.JSONDecodeError:\n            # Handle cases where there is no JSON\
+          \ object in the response\n            pass\n        \n        response =\
+          \ {\n            'message': {\n                'role': 'assistant',\n  \
+          \              'content': content,\n                'function_call': function_call\n\
+          \            }\n        }\n        return response\n\n    def call_llama(self,\
+          \ model, prompt):\n        headers = {\n            'Content-Type': 'application/json',\n\
+          \        }\n        data = json.dumps({'model': model, 'prompt': prompt,\
+          \ 'stream': False})\n        response = requests.post(f'{self.api_url}/completion',\
+          \ headers=headers, data=data)\n\n\n        try:\n            if response.status_code\
+          \ == 200:\n                return response.json()\n            else:\n \
+          \               logger.error(f'API call failed with status code: {response.status_code},\
+          \ Response: {response.text}')\n\n        except json.JSONDecodeError:\n\
+          \            logger.error(f'Failed to decode JSON: {response.text}')\n\n\
+          \n    def chat_completion(self, messages, functions):\n        model = 'mistral'\
+          \  # Placeholder, replace with the actual model name for Mistral-7B\n  \
+          \      # TODO: Replace with the actual model name for Mistral-7B\n     \
+          \   formatted_request = self.chat_completion_to_prompt(messages, functions)\n\
+          \        logger.debug(f'Formatted request: {formatted_request}')  # for\
+          \ debugging and checking the output before it gets passed to the model\n\
+          \        raw_llm_output = self.call_llama(model, formatted_request)\n  \
+          \      logger.debug('Raw output received')\n        logger.debug(f'Raw output:\
+          \ {raw_llm_output}')\n        chat_completion_response = self.output_to_chat_completion_response(raw_llm_output)\n\
+          \        return chat_completion_response\n\n#---------------------------------------------------------------\n\
+          \n# Example program to test Wrapper class\n\napi_url = 'http://172.26.165.179:8080'\
+          \  # Replace with the actual Ollama API base URL\n\nollama_wrapper = OllamaMistral7BWrapper(api_url)\n\
+          \nmessages = [\n    {\"role\": \"system\", \"content\": 'You are a helpful\
+          \ assistant'},\n    {\"role\": \"user\", \"content\": 'Please calculate\
+          \ the foo of 4 and 5 and return the result'}\n]\n\nfunctions = [\n    {\n\
+          \        \"function\": \"foo\",\n        \"description\": \"Calculates the\
+          \ foo of two numbers\",\n        \"arguments\": [\n            {\n     \
+          \           \"name\": \"number1\",\n                \"type\": \"number\"\
+          ,\n                \"description\": \"First number to calculate the foo\
+          \ of\"\n            },\n            {\n                \"name\": \"number2\"\
+          ,\n                \"type\": \"number\",\n                \"description\"\
+          : \"Second number to calculate the foo of\"\n            }\n        ]\n\
+          \    }\n]\n\nresponse = ollama_wrapper.chat_completion(messages, functions)\n\
+          logger.debug(f'Final chat completion response: {response}')\n```\n\nAnd\
+          \ here's the log output from the script:\n\n```\n2023-10-29 07:50:40,348\
+          \ - __main__ - DEBUG - Formatted request: <FUNCTIONS>{\"function\": \"foo\"\
+          , \"description\": \"Calculates the foo of two numbers\", \"arguments\"\
+          : [{\"name\": \"number1\", \"type\": \"number\", \"description\": \"First\
+          \ number to calculate the foo of\"}, {\"name\": \"number2\", \"type\": \"\
+          number\", \"description\": \"Second number to calculate the foo of\"}]}</FUNCTIONS>\n\
+          \n[INST] <<SYS>>\nYou are a helpful assistant\n<</SYS>>\n\n Please calculate\
+          \ the foo of 4 and 5 and return the result [/INST]\n\n\n2023-10-29 07:50:52,208\
+          \ - __main__ - DEBUG - Raw output received\n2023-10-29 07:50:52,208 - __main__\
+          \ - DEBUG - Raw output: {'content': '{% set num1 = 4 %}\\n{% set num2 =\
+          \ 5 %}\\n{% set result = foo(num1, num2) %}\\nThe foo of {{ num1 }} and\
+          \ {{ num2 }} is {{ result }}.', 'generation_settings': {'frequency_penalty':\
+          \ 0.0, 'grammar': '', 'ignore_eos': False, 'logit_bias': [], 'mirostat':\
+          \ 0, 'mirostat_eta': 0.10000000149011612, 'mirostat_tau': 5.0, 'model':\
+          \ '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+          \ 'n_ctx': 8000, 'n_keep': 0, 'n_predict': -1, 'n_probs': 0, 'penalize_nl':\
+          \ True, 'presence_penalty': 0.0, 'repeat_last_n': 64, 'repeat_penalty':\
+          \ 1.100000023841858, 'seed': 4294967295, 'stop': [], 'stream': False, 'temp':\
+          \ 0.800000011920929, 'tfs_z': 1.0, 'top_k': 40, 'top_p': 0.949999988079071,\
+          \ 'typical_p': 1.0}, 'model': '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+          \ 'prompt': '<FUNCTIONS>{\"function\": \"foo\", \"description\": \"Calculates\
+          \ the foo of two numbers\", \"arguments\": [{\"name\": \"number1\", \"type\"\
+          : \"number\", \"description\": \"First number to calculate the foo of\"\
+          }, {\"name\": \"number2\", \"type\": \"number\", \"description\": \"Second\
+          \ number to calculate the foo of\"}]}</FUNCTIONS>\\n\\n[INST] <<SYS>>\\\
+          nYou are a helpful assistant\\n<</SYS>>\\n\\n Please calculate the foo of\
+          \ 4 and 5 and return the result [/INST]\\n\\n', 'slot_id': 0, 'stop': True,\
+          \ 'stopped_eos': True, 'stopped_limit': False, 'stopped_word': False, 'stopping_word':\
+          \ '', 'timings': {'predicted_ms': 6395.44, 'predicted_n': 55, 'predicted_per_second':\
+          \ 8.59987741265652, 'predicted_per_token_ms': 116.28072727272726, 'prompt_ms':\
+          \ 5447.577, 'prompt_n': 124, 'prompt_per_second': 22.76241345464231, 'prompt_per_token_ms':\
+          \ 43.93207258064516}, 'tokens_cached': 179, 'tokens_evaluated': 124, 'tokens_predicted':\
+          \ 55, 'truncated': False}\n2023-10-29 07:50:52,210 - __main__ - DEBUG -\
+          \ Final chat completion response: {'message': {'role': 'assistant', 'content':\
+          \ '{% set num1 = 4 %}\\n{% set num2 = 5 %}\\n{% set result = foo(num1, num2)\
+          \ %}\\nThe foo of {{ num1 }} and {{ num2 }} is {{ result }}.', 'function_call':\
+          \ None}}\n```\n\nI'm assuming that I'm probably formatting something wrong\
+          \ unless the issue is with how I'm providing the information to the API\
+          \ server (using llama.cpp). Any help greatly appreciated!"
+        updatedAt: '2023-10-29T12:55:34.256Z'
+      numEdits: 0
+      reactions: []
+    id: 653e5646284fa7923cca8388
+    type: comment
+  author: Jdo300
+  content: "Here's some additional information. Here's the draft of the wrapper script\
+    \ that I created. I am able toe query the LLM and get a response, but it doesn't\
+    \ seem to be recognizing the function calls I'm sending it. Here's the code for\
+    \ the script:\n\n```\nimport requests\nimport json\nimport re  # Regular expression\
+    \ library\nfrom abc import ABC, abstractmethod\nimport logging\n\nlogging.basicConfig(filename='mistral_wrapper.log',\
+    \ level=logging.DEBUG,\n                    format='%(asctime)s %(levelname)s\
+    \ %(name)s %(message)s')\nlogger = logging.getLogger(__name__)\n\n# Add StreamHandler\
+    \ to print log messages to console\nconsole_handler = logging.StreamHandler()\n\
+    console_handler.setLevel(logging.DEBUG)\nformatter = logging.Formatter('%(asctime)s\
+    \ - %(name)s - %(levelname)s - %(message)s')\nconsole_handler.setFormatter(formatter)\n\
+    logger.addHandler(console_handler)\n\n\n# Base class from wrapper_base.py included\
+    \ below\n\nclass LLMChatCompletionWrapper(ABC):\n\n    @abstractmethod\n    def\
+    \ chat_completion_to_prompt(self, messages, functions):\n        \"\"\"Go from\
+    \ ChatCompletion to a single prompt string\"\"\"\n        pass\n\n    @abstractmethod\n\
+    \    def output_to_chat_completion_response(self, raw_llm_output):\n        \"\
+    \"\"Turn the LLM output string into a ChatCompletion response\"\"\"\n        pass\n\
+    \n#---------------------------------------------------------------\n\n# Wrapper\
+    \ Class Implementation below\nclass OllamaMistral7BWrapper(LLMChatCompletionWrapper):\n\
+    \    def __init__(self, api_url):\n        self.api_url = api_url\n\n    def chat_completion_to_prompt(self,\
+    \ messages, functions):\n        # Define the roles and markers\n        B_INST,\
+    \ E_INST = \"[INST]\", \"[/INST]\"\n        B_FUNC, E_FUNC = \"<FUNCTIONS>\",\
+    \ \"</FUNCTIONS>\\n\\n\"\n        B_SYS, E_SYS = \"<<SYS>>\\n\", \"\\n<</SYS>>\\\
+    n\\n\"\n\n        # Extract the system and user prompts from the messages\n  \
+    \      system_prompt = ''\n        user_prompt = ''\n        for message in messages:\n\
+    \            if message['role'] == 'system':\n                system_prompt =\
+    \ message['content']\n            elif message['role'] == 'user':\n          \
+    \      user_prompt = message['content']\n\n        # Convert each function metadata\
+    \ dictionary to a single-line string\n        function_metadata_strs = [json.dumps(func)\
+    \ for func in functions]\n        # Join the single-line strings with two newline\
+    \ characters to separate them with a blank line\n        function_list = '\\n\\\
+    n'.join(function_metadata_strs)\n\n        # Format the prompt template based\
+    \ on whether there's a system prompt or not\n        if system_prompt:\n     \
+    \       prompt = f\"{B_FUNC}{function_list}{E_FUNC}{B_INST} {B_SYS}{system_prompt.strip()}{E_SYS}\
+    \ {user_prompt.strip()} {E_INST}\\n\\n\"\n        else:\n            prompt =\
+    \ f\"{B_FUNC}{function_list}{E_FUNC}{B_INST} {user_prompt.strip()} {E_INST}\\\
+    n\\n\"\n        \n        return prompt\n\n    def output_to_chat_completion_response(self,\
+    \ raw_llm_output):\n        content = raw_llm_output['content']\n        function_call\
+    \ = None\n        try:\n            # Extract the result part of the response\n\
+    \            result_start_idx = content.find('result:')\n            if result_start_idx\
+    \ != -1:\n                result_text = content[result_start_idx + len('result:'):].strip()\n\
+    \                \n        except Exception as e:\n            logging.error(f\"\
+    An error occurred while extracting the result: {e}\")\n            function_call\
+    \ = None\n\n            # Look for a JSON object in 'content' that contains the\
+    \ function call request\n            function_call_match = re.search(r'\\{\\s*\"\
+    function\":\\s*\".+?\",\\s*\"arguments\":\\s*\\{.+?\\}\\s*\\}', content)\n   \
+    \         if function_call_match:\n                function_call_str = function_call_match.group(0)\n\
+    \                function_call = json.loads(function_call_str)\n            else:\n\
+    \                function_call = None\n\n        except json.JSONDecodeError:\n\
+    \            # Handle cases where there is no JSON object in the response\n  \
+    \          pass\n        \n        response = {\n            'message': {\n  \
+    \              'role': 'assistant',\n                'content': content,\n   \
+    \             'function_call': function_call\n            }\n        }\n     \
+    \   return response\n\n    def call_llama(self, model, prompt):\n        headers\
+    \ = {\n            'Content-Type': 'application/json',\n        }\n        data\
+    \ = json.dumps({'model': model, 'prompt': prompt, 'stream': False})\n        response\
+    \ = requests.post(f'{self.api_url}/completion', headers=headers, data=data)\n\n\
+    \n        try:\n            if response.status_code == 200:\n                return\
+    \ response.json()\n            else:\n                logger.error(f'API call\
+    \ failed with status code: {response.status_code}, Response: {response.text}')\n\
+    \n        except json.JSONDecodeError:\n            logger.error(f'Failed to decode\
+    \ JSON: {response.text}')\n\n\n    def chat_completion(self, messages, functions):\n\
+    \        model = 'mistral'  # Placeholder, replace with the actual model name\
+    \ for Mistral-7B\n        # TODO: Replace with the actual model name for Mistral-7B\n\
+    \        formatted_request = self.chat_completion_to_prompt(messages, functions)\n\
+    \        logger.debug(f'Formatted request: {formatted_request}')  # for debugging\
+    \ and checking the output before it gets passed to the model\n        raw_llm_output\
+    \ = self.call_llama(model, formatted_request)\n        logger.debug('Raw output\
+    \ received')\n        logger.debug(f'Raw output: {raw_llm_output}')\n        chat_completion_response\
+    \ = self.output_to_chat_completion_response(raw_llm_output)\n        return chat_completion_response\n\
+    \n#---------------------------------------------------------------\n\n# Example\
+    \ program to test Wrapper class\n\napi_url = 'http://172.26.165.179:8080'  # Replace\
+    \ with the actual Ollama API base URL\n\nollama_wrapper = OllamaMistral7BWrapper(api_url)\n\
+    \nmessages = [\n    {\"role\": \"system\", \"content\": 'You are a helpful assistant'},\n\
+    \    {\"role\": \"user\", \"content\": 'Please calculate the foo of 4 and 5 and\
+    \ return the result'}\n]\n\nfunctions = [\n    {\n        \"function\": \"foo\"\
+    ,\n        \"description\": \"Calculates the foo of two numbers\",\n        \"\
+    arguments\": [\n            {\n                \"name\": \"number1\",\n      \
+    \          \"type\": \"number\",\n                \"description\": \"First number\
+    \ to calculate the foo of\"\n            },\n            {\n                \"\
+    name\": \"number2\",\n                \"type\": \"number\",\n                \"\
+    description\": \"Second number to calculate the foo of\"\n            }\n    \
+    \    ]\n    }\n]\n\nresponse = ollama_wrapper.chat_completion(messages, functions)\n\
+    logger.debug(f'Final chat completion response: {response}')\n```\n\nAnd here's\
+    \ the log output from the script:\n\n```\n2023-10-29 07:50:40,348 - __main__ -\
+    \ DEBUG - Formatted request: <FUNCTIONS>{\"function\": \"foo\", \"description\"\
+    : \"Calculates the foo of two numbers\", \"arguments\": [{\"name\": \"number1\"\
+    , \"type\": \"number\", \"description\": \"First number to calculate the foo of\"\
+    }, {\"name\": \"number2\", \"type\": \"number\", \"description\": \"Second number\
+    \ to calculate the foo of\"}]}</FUNCTIONS>\n\n[INST] <<SYS>>\nYou are a helpful\
+    \ assistant\n<</SYS>>\n\n Please calculate the foo of 4 and 5 and return the result\
+    \ [/INST]\n\n\n2023-10-29 07:50:52,208 - __main__ - DEBUG - Raw output received\n\
+    2023-10-29 07:50:52,208 - __main__ - DEBUG - Raw output: {'content': '{% set num1\
+    \ = 4 %}\\n{% set num2 = 5 %}\\n{% set result = foo(num1, num2) %}\\nThe foo of\
+    \ {{ num1 }} and {{ num2 }} is {{ result }}.', 'generation_settings': {'frequency_penalty':\
+    \ 0.0, 'grammar': '', 'ignore_eos': False, 'logit_bias': [], 'mirostat': 0, 'mirostat_eta':\
+    \ 0.10000000149011612, 'mirostat_tau': 5.0, 'model': '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+    \ 'n_ctx': 8000, 'n_keep': 0, 'n_predict': -1, 'n_probs': 0, 'penalize_nl': True,\
+    \ 'presence_penalty': 0.0, 'repeat_last_n': 64, 'repeat_penalty': 1.100000023841858,\
+    \ 'seed': 4294967295, 'stop': [], 'stream': False, 'temp': 0.800000011920929,\
+    \ 'tfs_z': 1.0, 'top_k': 40, 'top_p': 0.949999988079071, 'typical_p': 1.0}, 'model':\
+    \ '/home/jowens/models/7B/Mistral-7B-Instruct-v0.1-function-calling-v2/Mistral-7B-Instruct-v0.1-function-calling-v2.Q4_K.gguf',\
+    \ 'prompt': '<FUNCTIONS>{\"function\": \"foo\", \"description\": \"Calculates\
+    \ the foo of two numbers\", \"arguments\": [{\"name\": \"number1\", \"type\":\
+    \ \"number\", \"description\": \"First number to calculate the foo of\"}, {\"\
+    name\": \"number2\", \"type\": \"number\", \"description\": \"Second number to\
+    \ calculate the foo of\"}]}</FUNCTIONS>\\n\\n[INST] <<SYS>>\\nYou are a helpful\
+    \ assistant\\n<</SYS>>\\n\\n Please calculate the foo of 4 and 5 and return the\
+    \ result [/INST]\\n\\n', 'slot_id': 0, 'stop': True, 'stopped_eos': True, 'stopped_limit':\
+    \ False, 'stopped_word': False, 'stopping_word': '', 'timings': {'predicted_ms':\
+    \ 6395.44, 'predicted_n': 55, 'predicted_per_second': 8.59987741265652, 'predicted_per_token_ms':\
+    \ 116.28072727272726, 'prompt_ms': 5447.577, 'prompt_n': 124, 'prompt_per_second':\
+    \ 22.76241345464231, 'prompt_per_token_ms': 43.93207258064516}, 'tokens_cached':\
+    \ 179, 'tokens_evaluated': 124, 'tokens_predicted': 55, 'truncated': False}\n\
+    2023-10-29 07:50:52,210 - __main__ - DEBUG - Final chat completion response: {'message':\
+    \ {'role': 'assistant', 'content': '{% set num1 = 4 %}\\n{% set num2 = 5 %}\\\
+    n{% set result = foo(num1, num2) %}\\nThe foo of {{ num1 }} and {{ num2 }} is\
+    \ {{ result }}.', 'function_call': None}}\n```\n\nI'm assuming that I'm probably\
+    \ formatting something wrong unless the issue is with how I'm providing the information\
+    \ to the API server (using llama.cpp). Any help greatly appreciated!"
+  created_at: 2023-10-29 11:55:34+00:00
+  edited: false
+  hidden: false
+  id: 653e5646284fa7923cca8388
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-29T19:37:25.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9633999466896057
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: '<p>Howdy!</p>
+
+          <p>I haven''t built a wrapper myself for a server, and I haven''t done much
+          with llama cpp on function calling other than this <a rel="nofollow" href="https://youtu.be/nDJMHFsBU7M">video</a>,
+          and I know that was working correctly at the time.</p>
+
+          <p>After installing llama cpp, have you tried just running the server and
+          sending some requests from the command line (perhaps with the help of a
+          short sh script because inputting functions via command line can be tricky)?</p>
+
+          <p>I''d probably start with that and confirm that what you send to the server
+          is formatted as llama cpp expects and also gives you back what you expect.</p>
+
+          <p>For initial debugging, it''s probably simpler to also leave out the system
+          message as well.</p>
+
+          <p>Other small things:</p>
+
+          <ul>
+
+          <li>you have ''model = ''mistral'''' and I''m not sure that''s calling the
+          right model</li>
+
+          <li>worth doing some logging in call_llama to ensure that what actually
+          goes to the server is what you think it is.</li>
+
+          </ul>
+
+          '
+        raw: 'Howdy!
+
+
+          I haven''t built a wrapper myself for a server, and I haven''t done much
+          with llama cpp on function calling other than this [video](https://youtu.be/nDJMHFsBU7M),
+          and I know that was working correctly at the time.
+
+
+          After installing llama cpp, have you tried just running the server and sending
+          some requests from the command line (perhaps with the help of a short sh
+          script because inputting functions via command line can be tricky)?
+
+
+          I''d probably start with that and confirm that what you send to the server
+          is formatted as llama cpp expects and also gives you back what you expect.
+
+
+          For initial debugging, it''s probably simpler to also leave out the system
+          message as well.
+
+
+          Other small things:
+
+          - you have ''model = ''mistral'''' and I''m not sure that''s calling the
+          right model
+
+          - worth doing some logging in call_llama to ensure that what actually goes
+          to the server is what you think it is.'
+        updatedAt: '2023-10-29T19:37:25.113Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 653eb475d6f7982a7a860d74
+    id: 653eb475d6f7982a7a860d73
+    type: comment
+  author: RonanMcGovern
+  content: 'Howdy!
+
+
+    I haven''t built a wrapper myself for a server, and I haven''t done much with
+    llama cpp on function calling other than this [video](https://youtu.be/nDJMHFsBU7M),
+    and I know that was working correctly at the time.
+
+
+    After installing llama cpp, have you tried just running the server and sending
+    some requests from the command line (perhaps with the help of a short sh script
+    because inputting functions via command line can be tricky)?
+
+
+    I''d probably start with that and confirm that what you send to the server is
+    formatted as llama cpp expects and also gives you back what you expect.
+
+
+    For initial debugging, it''s probably simpler to also leave out the system message
+    as well.
+
+
+    Other small things:
+
+    - you have ''model = ''mistral'''' and I''m not sure that''s calling the right
+    model
+
+    - worth doing some logging in call_llama to ensure that what actually goes to
+    the server is what you think it is.'
+  created_at: 2023-10-29 18:37:25+00:00
+  edited: false
+  hidden: false
+  id: 653eb475d6f7982a7a860d73
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-29T19:37:25.000Z'
+    data:
+      status: closed
+    id: 653eb475d6f7982a7a860d74
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-10-29 18:37:25+00:00
+  id: 653eb475d6f7982a7a860d74
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-29T19:37:27.000Z'
+    data:
+      status: open
+    id: 653eb47789f7466f2cc0fd9c
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-10-29 18:37:27+00:00
+  id: 653eb47789f7466f2cc0fd9c
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+      fullname: Jason Owens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Jdo300
+      type: user
+    createdAt: '2023-10-31T11:50:45.000Z'
+    data:
+      edited: true
+      editors:
+      - Jdo300
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6246322989463806
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+          fullname: Jason Owens
+          isHf: false
+          isPro: false
+          name: Jdo300
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;RonanMcGovern&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/RonanMcGovern\"\
+          >@<span class=\"underline\">RonanMcGovern</span></a></span>\n\n\t</span></span>\
+          \ Thank you for providing the feedback! After a bit more playing around,\
+          \ I was finally able to get it to work! For anyone interested, here's a\
+          \ simple test script I created based on the function calling example to\
+          \ show how it works:</p>\n<pre><code>import requests\nimport json\n\n# Define\
+          \ the roles and markers\nB_INST, E_INST = \"[INST]\", \"[/INST]\"\nB_FUNC,\
+          \ E_FUNC = \"&lt;FUNCTIONS&gt;\", \"&lt;/FUNCTIONS&gt;\\n\\n\"\n\n# Define\
+          \ the function metadata\nfunction_metadata = {\n    \"function\": \"search_bing\"\
+          ,\n    \"description\": \"Search the web for content on Bing. This allows\
+          \ users to search online/the internet/the web for content.\",\n    \"arguments\"\
+          : [\n        {\n            \"name\": \"query\",\n            \"type\":\
+          \ \"string\",\n            \"description\": \"The search query string\"\n\
+          \        }\n    ]\n}\n\n# Define the user prompt\nuser_prompt = 'Search\
+          \ for the latest news on AI.'\n\n# Format the function list and prompt\n\
+          function_list = json.dumps(function_metadata, indent=4)\nprompt = f\"{B_FUNC}{function_list.strip()}{E_FUNC}{B_INST}\
+          \ {user_prompt.strip()} {E_INST}\\n\\n\"\n\n# Define the API endpoint\n\
+          url = \"http:/localhost:8080/completion\"\n\n# Send the POST request to\
+          \ the API server\nresponse = requests.post(url, json={\"prompt\": prompt})\n\
+          \n# Print the response\nprint(response.json())\n</code></pre>\n"
+        raw: "@RonanMcGovern Thank you for providing the feedback! After a bit more\
+          \ playing around, I was finally able to get it to work! For anyone interested,\
+          \ here's a simple test script I created based on the function calling example\
+          \ to show how it works:\n\n```\nimport requests\nimport json\n\n# Define\
+          \ the roles and markers\nB_INST, E_INST = \"[INST]\", \"[/INST]\"\nB_FUNC,\
+          \ E_FUNC = \"<FUNCTIONS>\", \"</FUNCTIONS>\\n\\n\"\n\n# Define the function\
+          \ metadata\nfunction_metadata = {\n    \"function\": \"search_bing\",\n\
+          \    \"description\": \"Search the web for content on Bing. This allows\
+          \ users to search online/the internet/the web for content.\",\n    \"arguments\"\
+          : [\n        {\n            \"name\": \"query\",\n            \"type\":\
+          \ \"string\",\n            \"description\": \"The search query string\"\n\
+          \        }\n    ]\n}\n\n# Define the user prompt\nuser_prompt = 'Search\
+          \ for the latest news on AI.'\n\n# Format the function list and prompt\n\
+          function_list = json.dumps(function_metadata, indent=4)\nprompt = f\"{B_FUNC}{function_list.strip()}{E_FUNC}{B_INST}\
+          \ {user_prompt.strip()} {E_INST}\\n\\n\"\n\n# Define the API endpoint\n\
+          url = \"http:/localhost:8080/completion\"\n\n# Send the POST request to\
+          \ the API server\nresponse = requests.post(url, json={\"prompt\": prompt})\n\
+          \n# Print the response\nprint(response.json())\n```"
+        updatedAt: '2023-10-31T11:52:06.990Z'
+      numEdits: 2
+      reactions: []
+    id: 6540ea150a2101c338f079b2
+    type: comment
+  author: Jdo300
+  content: "@RonanMcGovern Thank you for providing the feedback! After a bit more\
+    \ playing around, I was finally able to get it to work! For anyone interested,\
+    \ here's a simple test script I created based on the function calling example\
+    \ to show how it works:\n\n```\nimport requests\nimport json\n\n# Define the roles\
+    \ and markers\nB_INST, E_INST = \"[INST]\", \"[/INST]\"\nB_FUNC, E_FUNC = \"<FUNCTIONS>\"\
+    , \"</FUNCTIONS>\\n\\n\"\n\n# Define the function metadata\nfunction_metadata\
+    \ = {\n    \"function\": \"search_bing\",\n    \"description\": \"Search the web\
+    \ for content on Bing. This allows users to search online/the internet/the web\
+    \ for content.\",\n    \"arguments\": [\n        {\n            \"name\": \"query\"\
+    ,\n            \"type\": \"string\",\n            \"description\": \"The search\
+    \ query string\"\n        }\n    ]\n}\n\n# Define the user prompt\nuser_prompt\
+    \ = 'Search for the latest news on AI.'\n\n# Format the function list and prompt\n\
+    function_list = json.dumps(function_metadata, indent=4)\nprompt = f\"{B_FUNC}{function_list.strip()}{E_FUNC}{B_INST}\
+    \ {user_prompt.strip()} {E_INST}\\n\\n\"\n\n# Define the API endpoint\nurl = \"\
+    http:/localhost:8080/completion\"\n\n# Send the POST request to the API server\n\
+    response = requests.post(url, json={\"prompt\": prompt})\n\n# Print the response\n\
+    print(response.json())\n```"
+  created_at: 2023-10-31 10:50:45+00:00
+  edited: true
+  hidden: false
+  id: 6540ea150a2101c338f079b2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/eff53237b1c45c79835165483841d587.svg
+      fullname: Jason Owens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Jdo300
+      type: user
+    createdAt: '2023-10-31T11:51:38.000Z'
+    data:
+      status: closed
+    id: 6540ea4a97949fd2306768d4
+    type: status-change
+  author: Jdo300
+  created_at: 2023-10-31 10:51:38+00:00
+  id: 6540ea4a97949fd2306768d4
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-10-31T12:07:59.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9616926312446594
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: '<p>Thanks! I''ll add this to the repo for reference for people.</p>
+
+          '
+        raw: Thanks! I'll add this to the repo for reference for people.
+        updatedAt: '2023-10-31T12:07:59.073Z'
+      numEdits: 0
+      reactions: []
+    id: 6540ee1f011bd8ac1c340cf8
+    type: comment
+  author: RonanMcGovern
+  content: Thanks! I'll add this to the repo for reference for people.
+  created_at: 2023-10-31 11:07:59+00:00
+  edited: false
+  hidden: false
+  id: 6540ee1f011bd8ac1c340cf8
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: Trelis/Mistral-7B-Instruct-v0.1-function-calling-v2
+repo_type: model
+status: closed
+target_branch: null
+title: Trouble getting function calling to work

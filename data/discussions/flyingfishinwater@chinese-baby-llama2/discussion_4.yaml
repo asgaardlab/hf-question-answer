@@ -1,0 +1,255 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: win10
+conflicting_files: null
+created_at: 2023-10-07 04:52:02+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678188568629-noauth.png?w=200&h=200&f=face
+      fullname: "\u8449\u4F50\u4FCA"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: win10
+      type: user
+    createdAt: '2023-10-07T05:52:02.000Z'
+    data:
+      edited: false
+      editors:
+      - win10
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8363557457923889
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678188568629-noauth.png?w=200&h=200&f=face
+          fullname: "\u8449\u4F50\u4FCA"
+          isHf: false
+          isPro: false
+          name: win10
+          type: user
+        html: '<p>How to convert the llama2.c model into huggingface model format?<br>Can
+          you provide a way?</p>
+
+          '
+        raw: "How to convert the llama2.c model into huggingface model format?\r\n\
+          Can you provide a way?"
+        updatedAt: '2023-10-07T05:52:02.222Z'
+      numEdits: 0
+      reactions: []
+    id: 6520f20234420556f4c6ef78
+    type: comment
+  author: win10
+  content: "How to convert the llama2.c model into huggingface model format?\r\nCan\
+    \ you provide a way?"
+  created_at: 2023-10-07 04:52:02+00:00
+  edited: false
+  hidden: false
+  id: 6520f20234420556f4c6ef78
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6439ec168e2145846439bd31/6A521n1sACt1jP4BlL-VT.jpeg?w=200&h=200&f=face
+      fullname: Flying Fish
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: flyingfishinwater
+      type: user
+    createdAt: '2023-10-09T13:10:39.000Z'
+    data:
+      edited: true
+      editors:
+      - flyingfishinwater
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44841188192367554
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6439ec168e2145846439bd31/6A521n1sACt1jP4BlL-VT.jpeg?w=200&h=200&f=face
+          fullname: Flying Fish
+          isHf: false
+          isPro: true
+          name: flyingfishinwater
+          type: user
+        html: "<pre><code class=\"language-python\">\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">save_hf_model</span>(<span\
+          \ class=\"hljs-params\">model: Transformer, model_args: ModelArguments,\
+          \ tokenizer: Tokenizer,</span>\n<span class=\"hljs-params\">           \
+          \       model_path: <span class=\"hljs-built_in\">str</span>, dtype=torch.float16</span>):\n\
+          \    logger.info(<span class=\"hljs-string\">\"convert the model to huggingface\
+          \ format\"</span>)\n    config = LlamaConfig(\n        vocab_size=model_args.vocab_size,\n\
+          \        hidden_size=model_args.dim,\n        bos_token_id=tokenizer.bos_token_id,\n\
+          \        eos_token_id=tokenizer.eos_token_id,\n        pad_token_id=tokenizer.pad_token_id,\n\
+          \        max_position_embeddings=model_args.max_seq_len,\n        num_attention_heads=model_args.n_heads,\n\
+          \        num_hidden_layers=model_args.n_layers,\n        model_type=<span\
+          \ class=\"hljs-string\">\"llama\"</span>,\n        torch_dtype=dtype,\n\
+          \        intermediate_size=model_args.hidden_dim,\n        hidden_act=<span\
+          \ class=\"hljs-string\">\"silu\"</span>\n    )\n    hf_state_dict = {}\n\
+          \    hf_state_dict[<span class=\"hljs-string\">\"model.embed_tokens.weight\"\
+          </span>] = model.tok_embeddings.weight.clone()\n    hf_state_dict[<span\
+          \ class=\"hljs-string\">\"model.norm.weight\"</span>] = model.norm.weight.clone()\n\
+          \n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >permute_forward</span>(<span class=\"hljs-params\">w, n_heads=model_args.n_heads,\
+          \ dim1=model_args.dim, dim2=model_args.dim</span>):\n        <span class=\"\
+          hljs-keyword\">return</span> w.view(n_heads, dim1 // n_heads // <span class=\"\
+          hljs-number\">2</span>, <span class=\"hljs-number\">2</span>, dim2).transpose(<span\
+          \ class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2</span>).reshape(dim1,\
+          \ dim2)\n\n    <span class=\"hljs-keyword\">for</span> layer <span class=\"\
+          hljs-keyword\">in</span> model.layers:\n        i = layer.layer_id\n   \
+          \     hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span class=\"\
+          hljs-subst\">{i}</span>.input_layernorm.weight'</span>] = layer.attention_norm.weight.clone()\n\
+          \        hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span\
+          \ class=\"hljs-subst\">{i}</span>.self_attn.q_proj.weight'</span>] = permute_forward(layer.attention.wq.weight).clone()\n\
+          \        hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span\
+          \ class=\"hljs-subst\">{i}</span>.self_attn.k_proj.weight'</span>] = permute_forward(layer.attention.wk.weight).clone()\n\
+          \        hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span\
+          \ class=\"hljs-subst\">{i}</span>.self_attn.v_proj.weight'</span>] = layer.attention.wv.weight.clone()\n\
+          \        hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span\
+          \ class=\"hljs-subst\">{i}</span>.self_attn.o_proj.weight'</span>] = layer.attention.wo.weight.clone()\n\
+          \        hf_state_dict[<span class=\"hljs-string\">f'model.layers.<span\
+          \ class=\"hljs-subst\">{i}</span>.post_attention_layernorm.weight'</span>]\
+          \ = layer.ffn_norm.weight.clone()\n        hf_state_dict[<span class=\"\
+          hljs-string\">f'model.layers.<span class=\"hljs-subst\">{i}</span>.mlp.gate_proj.weight'</span>]\
+          \ = layer.feed_forward.w1.weight.clone()\n        hf_state_dict[<span class=\"\
+          hljs-string\">f'model.layers.<span class=\"hljs-subst\">{i}</span>.mlp.down_proj.weight'</span>]\
+          \ = layer.feed_forward.w2.weight.clone()\n        hf_state_dict[<span class=\"\
+          hljs-string\">f'model.layers.<span class=\"hljs-subst\">{i}</span>.mlp.up_proj.weight'</span>]\
+          \ = layer.feed_forward.w3.weight.clone()\n    hf_state_dict[<span class=\"\
+          hljs-string\">\"lm_head.weight\"</span>] = model.output.weight.clone()\n\
+          \    hf_model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=<span\
+          \ class=\"hljs-literal\">None</span>, config=config,\n                 \
+          \                                   state_dict=hf_state_dict, torch_dtype=dtype)\n\
+          \    hf_model.save_pretrained(model_path)\n</code></pre>\n"
+        raw: "```python\n\ndef save_hf_model(model: Transformer, model_args: ModelArguments,\
+          \ tokenizer: Tokenizer,\n                  model_path: str, dtype=torch.float16):\n\
+          \    logger.info(\"convert the model to huggingface format\")\n    config\
+          \ = LlamaConfig(\n        vocab_size=model_args.vocab_size,\n        hidden_size=model_args.dim,\n\
+          \        bos_token_id=tokenizer.bos_token_id,\n        eos_token_id=tokenizer.eos_token_id,\n\
+          \        pad_token_id=tokenizer.pad_token_id,\n        max_position_embeddings=model_args.max_seq_len,\n\
+          \        num_attention_heads=model_args.n_heads,\n        num_hidden_layers=model_args.n_layers,\n\
+          \        model_type=\"llama\",\n        torch_dtype=dtype,\n        intermediate_size=model_args.hidden_dim,\n\
+          \        hidden_act=\"silu\"\n    )\n    hf_state_dict = {}\n    hf_state_dict[\"\
+          model.embed_tokens.weight\"] = model.tok_embeddings.weight.clone()\n   \
+          \ hf_state_dict[\"model.norm.weight\"] = model.norm.weight.clone()\n\n \
+          \   def permute_forward(w, n_heads=model_args.n_heads, dim1=model_args.dim,\
+          \ dim2=model_args.dim):\n        return w.view(n_heads, dim1 // n_heads\
+          \ // 2, 2, dim2).transpose(1, 2).reshape(dim1, dim2)\n\n    for layer in\
+          \ model.layers:\n        i = layer.layer_id\n        hf_state_dict[f'model.layers.{i}.input_layernorm.weight']\
+          \ = layer.attention_norm.weight.clone()\n        hf_state_dict[f'model.layers.{i}.self_attn.q_proj.weight']\
+          \ = permute_forward(layer.attention.wq.weight).clone()\n        hf_state_dict[f'model.layers.{i}.self_attn.k_proj.weight']\
+          \ = permute_forward(layer.attention.wk.weight).clone()\n        hf_state_dict[f'model.layers.{i}.self_attn.v_proj.weight']\
+          \ = layer.attention.wv.weight.clone()\n        hf_state_dict[f'model.layers.{i}.self_attn.o_proj.weight']\
+          \ = layer.attention.wo.weight.clone()\n        hf_state_dict[f'model.layers.{i}.post_attention_layernorm.weight']\
+          \ = layer.ffn_norm.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.gate_proj.weight']\
+          \ = layer.feed_forward.w1.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.down_proj.weight']\
+          \ = layer.feed_forward.w2.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.up_proj.weight']\
+          \ = layer.feed_forward.w3.weight.clone()\n    hf_state_dict[\"lm_head.weight\"\
+          ] = model.output.weight.clone()\n    hf_model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=None,\
+          \ config=config,\n                                                    state_dict=hf_state_dict,\
+          \ torch_dtype=dtype)\n    hf_model.save_pretrained(model_path)\n\n```"
+        updatedAt: '2023-10-09T13:12:47.995Z'
+      numEdits: 1
+      reactions: []
+    id: 6523fbcff1491fbf6a973cbb
+    type: comment
+  author: flyingfishinwater
+  content: "```python\n\ndef save_hf_model(model: Transformer, model_args: ModelArguments,\
+    \ tokenizer: Tokenizer,\n                  model_path: str, dtype=torch.float16):\n\
+    \    logger.info(\"convert the model to huggingface format\")\n    config = LlamaConfig(\n\
+    \        vocab_size=model_args.vocab_size,\n        hidden_size=model_args.dim,\n\
+    \        bos_token_id=tokenizer.bos_token_id,\n        eos_token_id=tokenizer.eos_token_id,\n\
+    \        pad_token_id=tokenizer.pad_token_id,\n        max_position_embeddings=model_args.max_seq_len,\n\
+    \        num_attention_heads=model_args.n_heads,\n        num_hidden_layers=model_args.n_layers,\n\
+    \        model_type=\"llama\",\n        torch_dtype=dtype,\n        intermediate_size=model_args.hidden_dim,\n\
+    \        hidden_act=\"silu\"\n    )\n    hf_state_dict = {}\n    hf_state_dict[\"\
+    model.embed_tokens.weight\"] = model.tok_embeddings.weight.clone()\n    hf_state_dict[\"\
+    model.norm.weight\"] = model.norm.weight.clone()\n\n    def permute_forward(w,\
+    \ n_heads=model_args.n_heads, dim1=model_args.dim, dim2=model_args.dim):\n   \
+    \     return w.view(n_heads, dim1 // n_heads // 2, 2, dim2).transpose(1, 2).reshape(dim1,\
+    \ dim2)\n\n    for layer in model.layers:\n        i = layer.layer_id\n      \
+    \  hf_state_dict[f'model.layers.{i}.input_layernorm.weight'] = layer.attention_norm.weight.clone()\n\
+    \        hf_state_dict[f'model.layers.{i}.self_attn.q_proj.weight'] = permute_forward(layer.attention.wq.weight).clone()\n\
+    \        hf_state_dict[f'model.layers.{i}.self_attn.k_proj.weight'] = permute_forward(layer.attention.wk.weight).clone()\n\
+    \        hf_state_dict[f'model.layers.{i}.self_attn.v_proj.weight'] = layer.attention.wv.weight.clone()\n\
+    \        hf_state_dict[f'model.layers.{i}.self_attn.o_proj.weight'] = layer.attention.wo.weight.clone()\n\
+    \        hf_state_dict[f'model.layers.{i}.post_attention_layernorm.weight'] =\
+    \ layer.ffn_norm.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.gate_proj.weight']\
+    \ = layer.feed_forward.w1.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.down_proj.weight']\
+    \ = layer.feed_forward.w2.weight.clone()\n        hf_state_dict[f'model.layers.{i}.mlp.up_proj.weight']\
+    \ = layer.feed_forward.w3.weight.clone()\n    hf_state_dict[\"lm_head.weight\"\
+    ] = model.output.weight.clone()\n    hf_model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=None,\
+    \ config=config,\n                                                    state_dict=hf_state_dict,\
+    \ torch_dtype=dtype)\n    hf_model.save_pretrained(model_path)\n\n```"
+  created_at: 2023-10-09 12:10:39+00:00
+  edited: true
+  hidden: false
+  id: 6523fbcff1491fbf6a973cbb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678188568629-noauth.png?w=200&h=200&f=face
+      fullname: "\u8449\u4F50\u4FCA"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: win10
+      type: user
+    createdAt: '2023-10-15T03:32:12.000Z'
+    data:
+      edited: false
+      editors:
+      - win10
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.984184980392456
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678188568629-noauth.png?w=200&h=200&f=face
+          fullname: "\u8449\u4F50\u4FCA"
+          isHf: false
+          isPro: false
+          name: win10
+          type: user
+        html: '<p>Can you provide the full script?<br>I don''t really understand.</p>
+
+          '
+        raw: 'Can you provide the full script?
+
+          I don''t really understand.'
+        updatedAt: '2023-10-15T03:32:12.932Z'
+      numEdits: 0
+      reactions: []
+    id: 652b5d3c30355beba6a4a7ab
+    type: comment
+  author: win10
+  content: 'Can you provide the full script?
+
+    I don''t really understand.'
+  created_at: 2023-10-15 02:32:12+00:00
+  edited: false
+  hidden: false
+  id: 652b5d3c30355beba6a4a7ab
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: flyingfishinwater/chinese-baby-llama2
+repo_type: model
+status: open
+target_branch: null
+title: How to convert the llama2.c model into huggingface model format?

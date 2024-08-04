@@ -1,0 +1,191 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Mousey
+conflicting_files: null
+created_at: 2023-08-06 11:14:13+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7f1d7284f3fda2d3d46d08061c0f9e15.svg
+      fullname: Residence
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Mousey
+      type: user
+    createdAt: '2023-08-06T12:14:13.000Z'
+    data:
+      edited: false
+      editors:
+      - Mousey
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9431610703468323
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7f1d7284f3fda2d3d46d08061c0f9e15.svg
+          fullname: Residence
+          isHf: false
+          isPro: false
+          name: Mousey
+          type: user
+        html: '<p>It is my understanding that the way to use the refiner is to first
+          run the base model pipeline with output_type="latent" and then run the refiner.
+          Before I run the refiner, I would like to do some modifications to the first
+          image. More precisely, I would need the image as a proper image and not
+          as a Tensor. After I make my computations, is there a way to still use the
+          refiner ?</p>
+
+          '
+        raw: It is my understanding that the way to use the refiner is to first run
+          the base model pipeline with output_type="latent" and then run the refiner.
+          Before I run the refiner, I would like to do some modifications to the first
+          image. More precisely, I would need the image as a proper image and not
+          as a Tensor. After I make my computations, is there a way to still use the
+          refiner ?
+        updatedAt: '2023-08-06T12:14:13.248Z'
+      numEdits: 0
+      reactions: []
+    id: 64cf8e952f1f9578a01b7c36
+    type: comment
+  author: Mousey
+  content: It is my understanding that the way to use the refiner is to first run
+    the base model pipeline with output_type="latent" and then run the refiner. Before
+    I run the refiner, I would like to do some modifications to the first image. More
+    precisely, I would need the image as a proper image and not as a Tensor. After
+    I make my computations, is there a way to still use the refiner ?
+  created_at: 2023-08-06 11:14:13+00:00
+  edited: false
+  hidden: false
+  id: 64cf8e952f1f9578a01b7c36
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d0b407e56ec2c8bdd945afcb349a61fe.svg
+      fullname: David Burnett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Vargol
+      type: user
+    createdAt: '2023-08-07T16:12:36.000Z'
+    data:
+      edited: true
+      editors:
+      - Vargol
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6909804344177246
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d0b407e56ec2c8bdd945afcb349a61fe.svg
+          fullname: David Burnett
+          isHf: false
+          isPro: false
+          name: Vargol
+          type: user
+        html: "<p>By the sounds of it to want to go base -&gt; image &gt; modifications\
+          \ -&gt; refiner, so you want to run the refiner on an image.<br>If so to\
+          \ need to encode the image into latents then run the refiner. The results\
+          \ of the refiners are fairly subtle but it can be done</p>\n<pre><code>from\
+          \ diffusers import DiffusionPipeline, AutoencoderKL\nfrom diffusers.image_processor\
+          \ import VaeImageProcessor\nfrom PIL import Image\n\nimage = Image.open('cat.png').convert('RGB');\n\
+          \nimage_processor = VaeImageProcessor();\nlatents = image_processor.preprocess(image)\n\
+          latents = latents.to(device=\"cuda\")\n\nvae =  AutoencoderKL.from_pretrained(\"\
+          stabilityai/stable-diffusion-xl-base-1.0\",\n                          \
+          \           subfolder=\"vae\",  use_safetensors=True,\n                \
+          \                     ).to(\"cuda\")\n\nwith torch.no_grad():\n    latents_dist\
+          \ = vae.encode(latents).latent_dist.sample() * vae.config.scaling_factor\n\
+          \nrefiner = DiffusionPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-refiner-1.0\"\
+          ,\n    torch_dtype=torch.float16, variant=\"fp16\",\n    use_safetensors=True,\n\
+          \    add_watermarker=False\n).to('cuda')\n\nprompt = \"tiger\"\nimage =\
+          \ refiner(prompt=prompt,\n               image=latents_dist).images[0]\n\
+          \nimage.save('e2c.png')\n</code></pre>\n<p>Notes.</p>\n<ol>\n<li><p>Despite\
+          \ running the refiner in fp16 I've run the Vae encode in 32 bit as it doesn't\
+          \ work in 16 bit<br>there's a fixed fp16 vae around but I've not tried it\
+          \ and encoding doesn't use a lot of memory anyway.</p>\n</li>\n<li><p>I\
+          \ actually ran this on a mac, I've just changed the device from 'mps' to\
+          \ 'cuda' and hacked out some torch changes to make fp16 work on MPS.</p>\n\
+          </li>\n</ol>\n<p>Before</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/db44loKuKSb46LsrhCCSH.png\"\
+          ><img alt=\"cat.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/db44loKuKSb46LsrhCCSH.png\"\
+          ></a></p>\n<p>After</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/aHfpjQD0PqW51hrb_Sujk.png\"\
+          ><img alt=\"e2c.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/aHfpjQD0PqW51hrb_Sujk.png\"\
+          ></a></p>\n"
+        raw: "By the sounds of it to want to go base -> image > modifications -> refiner,\
+          \ so you want to run the refiner on an image.\nIf so to need to encode the\
+          \ image into latents then run the refiner. The results of the refiners are\
+          \ fairly subtle but it can be done\n\n```\nfrom diffusers import DiffusionPipeline,\
+          \ AutoencoderKL\nfrom diffusers.image_processor import VaeImageProcessor\n\
+          from PIL import Image\n\nimage = Image.open('cat.png').convert('RGB');\n\
+          \nimage_processor = VaeImageProcessor();\nlatents = image_processor.preprocess(image)\n\
+          latents = latents.to(device=\"cuda\")\n\nvae =  AutoencoderKL.from_pretrained(\"\
+          stabilityai/stable-diffusion-xl-base-1.0\",\n                          \
+          \           subfolder=\"vae\",  use_safetensors=True,\n                \
+          \                     ).to(\"cuda\")\n\nwith torch.no_grad():\n    latents_dist\
+          \ = vae.encode(latents).latent_dist.sample() * vae.config.scaling_factor\n\
+          \nrefiner = DiffusionPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-refiner-1.0\"\
+          ,\n    torch_dtype=torch.float16, variant=\"fp16\",\n    use_safetensors=True,\n\
+          \    add_watermarker=False\n).to('cuda')\n\nprompt = \"tiger\"\nimage =\
+          \ refiner(prompt=prompt,\n               image=latents_dist).images[0]\n\
+          \nimage.save('e2c.png')\n```\n\nNotes.\n\n1. Despite running the refiner\
+          \ in fp16 I've run the Vae encode in 32 bit as it doesn't work in 16 bit\n\
+          there's a fixed fp16 vae around but I've not tried it and encoding doesn't\
+          \ use a lot of memory anyway.\n\n2. I actually ran this on a mac, I've just\
+          \ changed the device from 'mps' to 'cuda' and hacked out some torch changes\
+          \ to make fp16 work on MPS.\n \n\nBefore\n\n![cat.png](https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/db44loKuKSb46LsrhCCSH.png)\n\
+          \nAfter\n\n![e2c.png](https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/aHfpjQD0PqW51hrb_Sujk.png)\n\
+          \n"
+        updatedAt: '2023-08-07T16:54:00.521Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - WaveCut
+    id: 64d117f486e19d5db1a7b6fa
+    type: comment
+  author: Vargol
+  content: "By the sounds of it to want to go base -> image > modifications -> refiner,\
+    \ so you want to run the refiner on an image.\nIf so to need to encode the image\
+    \ into latents then run the refiner. The results of the refiners are fairly subtle\
+    \ but it can be done\n\n```\nfrom diffusers import DiffusionPipeline, AutoencoderKL\n\
+    from diffusers.image_processor import VaeImageProcessor\nfrom PIL import Image\n\
+    \nimage = Image.open('cat.png').convert('RGB');\n\nimage_processor = VaeImageProcessor();\n\
+    latents = image_processor.preprocess(image)\nlatents = latents.to(device=\"cuda\"\
+    )\n\nvae =  AutoencoderKL.from_pretrained(\"stabilityai/stable-diffusion-xl-base-1.0\"\
+    ,\n                                     subfolder=\"vae\",  use_safetensors=True,\n\
+    \                                     ).to(\"cuda\")\n\nwith torch.no_grad():\n\
+    \    latents_dist = vae.encode(latents).latent_dist.sample() * vae.config.scaling_factor\n\
+    \nrefiner = DiffusionPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-refiner-1.0\"\
+    ,\n    torch_dtype=torch.float16, variant=\"fp16\",\n    use_safetensors=True,\n\
+    \    add_watermarker=False\n).to('cuda')\n\nprompt = \"tiger\"\nimage = refiner(prompt=prompt,\n\
+    \               image=latents_dist).images[0]\n\nimage.save('e2c.png')\n```\n\n\
+    Notes.\n\n1. Despite running the refiner in fp16 I've run the Vae encode in 32\
+    \ bit as it doesn't work in 16 bit\nthere's a fixed fp16 vae around but I've not\
+    \ tried it and encoding doesn't use a lot of memory anyway.\n\n2. I actually ran\
+    \ this on a mac, I've just changed the device from 'mps' to 'cuda' and hacked\
+    \ out some torch changes to make fp16 work on MPS.\n \n\nBefore\n\n![cat.png](https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/db44loKuKSb46LsrhCCSH.png)\n\
+    \nAfter\n\n![e2c.png](https://cdn-uploads.huggingface.co/production/uploads/6307c27ff0dc38fb47bdf6bf/aHfpjQD0PqW51hrb_Sujk.png)\n\
+    \n"
+  created_at: 2023-08-07 15:12:36+00:00
+  edited: true
+  hidden: false
+  id: 64d117f486e19d5db1a7b6fa
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: stabilityai/stable-diffusion-xl-refiner-1.0
+repo_type: model
+status: open
+target_branch: null
+title: Is it possible to use the refiner separately from the base model?

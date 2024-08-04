@@ -1,0 +1,170 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: nps798
+conflicting_files: null
+created_at: 2023-10-08 07:37:25+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6550b60a4863272fef6c45c3602d9269.svg
+      fullname: YuJuLin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: nps798
+      type: user
+    createdAt: '2023-10-08T08:37:25.000Z'
+    data:
+      edited: true
+      editors:
+      - nps798
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6867683529853821
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6550b60a4863272fef6c45c3602d9269.svg
+          fullname: YuJuLin
+          isHf: false
+          isPro: false
+          name: nps798
+          type: user
+        html: "<p>Hey everyone, I know there are some google searchable articles talking\
+          \ about \"RuntimeError: CUDA error: device-side assert triggered\" may be\
+          \ linked to classification labels number mismatch with the layer of model.\
+          \ but that is classification BERT article not the case here ( decorder only\
+          \ transformer as Mistral)</p>\n<p>So, I encounter problem as title stated\
+          \ I am using Huggingface transformer library as well as bitsandbytes to\
+          \ do QLORA fine tuning</p>\n<h1 id=\"the-error\">The error</h1>\n<p>RuntimeError:\
+          \ CUDA error: device-side assert triggered<br>CUDA kernel errors might be\
+          \ asynchronously reported at some other API call, so the stacktrace below\
+          \ might be incorrect.<br>For debugging consider passing CUDA_LAUNCH_BLOCKING=1.<br>Compile\
+          \ with <code>TORCH_USE_CUDA_DSA</code> to enable device-side assertions.</p>\n\
+          <h1 id=\"some-test--that-ive-done\">some test  that I've done</h1>\n<h2\
+          \ id=\"when-using-training-data-of-longer-length-i-encounter-the-error\"\
+          >when using training data of longer length, I encounter the error</h2>\n\
+          <pre><code>tokenizer(max_length=2048, padding=True),  tokenizer initiation\
+          \ without setting model_max_length, padding_side cause this problem\nI have\
+          \ plot the sequence length of all the data, it has a distribution of data\
+          \ with different length\n</code></pre>\n<h2 id=\"when-using-training-data-of-smaller-length-no-error-and-i-was-able-to-do-further-qlora-fine-tuning-without-error-\"\
+          >when using training data of smaller length, No Error and I was able to\
+          \ do further qlora fine tuning without error !</h2>\n<pre><code>tokenizer(max_length=512,\
+          \ padding=True), tokenizer initiation with (model_max_length=512, padding_side=\"\
+          left\")\nmanually remove data that have length over 512\nas before, the\
+          \ length of tokenized data have different length..\n</code></pre>\n<p>What's\
+          \ happening under the hood ? </p>\n<h1 id=\"my-setting\">my setting</h1>\n\
+          <pre><code>config = LoraConfig(\n    r=16,\n    lora_alpha=16,\n    target_modules=[\n\
+          \        \"q_proj\",\n        \"k_proj\",\n        \"v_proj\",\n       \
+          \ \"o_proj\",\n        \"gate_proj\",\n        \"up_proj\",\n        \"\
+          down_proj\",\n        \"lm_head\",\n    ],\n    lora_dropout=0.05,\n   \
+          \ bias=\"none\",\n    task_type=\"CAUSAL_LM\"\n)\n\nmodel = get_peft_model(model,\
+          \ config)\nmodel.print_trainable_parameters()\n\nrun_name =  '1008-....XXXX'\n\
+          local_path = '/.../mistral-chinese-alpaca-qlora'\n\ntraining_arguments =\
+          \ TrainingArguments(\n        output_dir=f\"{local_path}/output_dir\",\n\
+          \        per_device_train_batch_size=1,\n        gradient_accumulation_steps=6,\n\
+          \        learning_rate=2e-5,\n        lr_scheduler_type=\"cosine\",\n  \
+          \      evaluation_strategy = \"steps\",\n        eval_steps=1000, \n   \
+          \     save_strategy=\"steps\",\n        save_steps= 2000,\n        logging_steps=100,\n\
+          \        num_train_epochs=1,\n        report_to = 'wandb',\n        run_name\
+          \ = run_name\n    )\n\ntrainer = Trainer(\n    model=model,\n    train_dataset=tokenized_training_data,\n\
+          \    eval_dataset = tokenized_testing_data,\n    args=training_arguments,\n\
+          \    data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False)\n\
+          \n)\n</code></pre>\n"
+        raw: "Hey everyone, I know there are some google searchable articles talking\
+          \ about \"RuntimeError: CUDA error: device-side assert triggered\" may be\
+          \ linked to classification labels number mismatch with the layer of model.\
+          \ but that is classification BERT article not the case here ( decorder only\
+          \ transformer as Mistral)\n\nSo, I encounter problem as title stated I am\
+          \ using Huggingface transformer library as well as bitsandbytes to do QLORA\
+          \ fine tuning\n\n# The error\nRuntimeError: CUDA error: device-side assert\
+          \ triggered\nCUDA kernel errors might be asynchronously reported at some\
+          \ other API call, so the stacktrace below might be incorrect.\nFor debugging\
+          \ consider passing CUDA_LAUNCH_BLOCKING=1.\nCompile with `TORCH_USE_CUDA_DSA`\
+          \ to enable device-side assertions.\n\n# some test  that I've done \n\n\
+          ## when using training data of longer length, I encounter the error\n  \
+          \  tokenizer(max_length=2048, padding=True),  tokenizer initiation without\
+          \ setting model_max_length, padding_side cause this problem\n    I have\
+          \ plot the sequence length of all the data, it has a distribution of data\
+          \ with different length\n\n## when using training data of smaller length,\
+          \ No Error and I was able to do further qlora fine tuning without error\
+          \ !\n    tokenizer(max_length=512, padding=True), tokenizer initiation with\
+          \ (model_max_length=512, padding_side=\"left\")\n    manually remove data\
+          \ that have length over 512\n    as before, the length of tokenized data\
+          \ have different length..\n\n\nWhat's happening under the hood ? \n\n\n\
+          # my setting\n```\nconfig = LoraConfig(\n    r=16,\n    lora_alpha=16,\n\
+          \    target_modules=[\n        \"q_proj\",\n        \"k_proj\",\n      \
+          \  \"v_proj\",\n        \"o_proj\",\n        \"gate_proj\",\n        \"\
+          up_proj\",\n        \"down_proj\",\n        \"lm_head\",\n    ],\n    lora_dropout=0.05,\n\
+          \    bias=\"none\",\n    task_type=\"CAUSAL_LM\"\n)\n\nmodel = get_peft_model(model,\
+          \ config)\nmodel.print_trainable_parameters()\n\nrun_name =  '1008-....XXXX'\n\
+          local_path = '/.../mistral-chinese-alpaca-qlora'\n\ntraining_arguments =\
+          \ TrainingArguments(\n        output_dir=f\"{local_path}/output_dir\",\n\
+          \        per_device_train_batch_size=1,\n        gradient_accumulation_steps=6,\n\
+          \        learning_rate=2e-5,\n        lr_scheduler_type=\"cosine\",\n  \
+          \      evaluation_strategy = \"steps\",\n        eval_steps=1000, \n   \
+          \     save_strategy=\"steps\",\n        save_steps= 2000,\n        logging_steps=100,\n\
+          \        num_train_epochs=1,\n        report_to = 'wandb',\n        run_name\
+          \ = run_name\n    )\n\ntrainer = Trainer(\n    model=model,\n    train_dataset=tokenized_training_data,\n\
+          \    eval_dataset = tokenized_testing_data,\n    args=training_arguments,\n\
+          \    data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False)\n\
+          \n)\n```\n\n\n     \n\n"
+        updatedAt: '2023-10-08T08:39:31.367Z'
+      numEdits: 3
+      reactions: []
+    id: 65226a45c0ceb75b49746430
+    type: comment
+  author: nps798
+  content: "Hey everyone, I know there are some google searchable articles talking\
+    \ about \"RuntimeError: CUDA error: device-side assert triggered\" may be linked\
+    \ to classification labels number mismatch with the layer of model. but that is\
+    \ classification BERT article not the case here ( decorder only transformer as\
+    \ Mistral)\n\nSo, I encounter problem as title stated I am using Huggingface transformer\
+    \ library as well as bitsandbytes to do QLORA fine tuning\n\n# The error\nRuntimeError:\
+    \ CUDA error: device-side assert triggered\nCUDA kernel errors might be asynchronously\
+    \ reported at some other API call, so the stacktrace below might be incorrect.\n\
+    For debugging consider passing CUDA_LAUNCH_BLOCKING=1.\nCompile with `TORCH_USE_CUDA_DSA`\
+    \ to enable device-side assertions.\n\n# some test  that I've done \n\n## when\
+    \ using training data of longer length, I encounter the error\n    tokenizer(max_length=2048,\
+    \ padding=True),  tokenizer initiation without setting model_max_length, padding_side\
+    \ cause this problem\n    I have plot the sequence length of all the data, it\
+    \ has a distribution of data with different length\n\n## when using training data\
+    \ of smaller length, No Error and I was able to do further qlora fine tuning without\
+    \ error !\n    tokenizer(max_length=512, padding=True), tokenizer initiation with\
+    \ (model_max_length=512, padding_side=\"left\")\n    manually remove data that\
+    \ have length over 512\n    as before, the length of tokenized data have different\
+    \ length..\n\n\nWhat's happening under the hood ? \n\n\n# my setting\n```\nconfig\
+    \ = LoraConfig(\n    r=16,\n    lora_alpha=16,\n    target_modules=[\n       \
+    \ \"q_proj\",\n        \"k_proj\",\n        \"v_proj\",\n        \"o_proj\",\n\
+    \        \"gate_proj\",\n        \"up_proj\",\n        \"down_proj\",\n      \
+    \  \"lm_head\",\n    ],\n    lora_dropout=0.05,\n    bias=\"none\",\n    task_type=\"\
+    CAUSAL_LM\"\n)\n\nmodel = get_peft_model(model, config)\nmodel.print_trainable_parameters()\n\
+    \nrun_name =  '1008-....XXXX'\nlocal_path = '/.../mistral-chinese-alpaca-qlora'\n\
+    \ntraining_arguments = TrainingArguments(\n        output_dir=f\"{local_path}/output_dir\"\
+    ,\n        per_device_train_batch_size=1,\n        gradient_accumulation_steps=6,\n\
+    \        learning_rate=2e-5,\n        lr_scheduler_type=\"cosine\",\n        evaluation_strategy\
+    \ = \"steps\",\n        eval_steps=1000, \n        save_strategy=\"steps\",\n\
+    \        save_steps= 2000,\n        logging_steps=100,\n        num_train_epochs=1,\n\
+    \        report_to = 'wandb',\n        run_name = run_name\n    )\n\ntrainer =\
+    \ Trainer(\n    model=model,\n    train_dataset=tokenized_training_data,\n   \
+    \ eval_dataset = tokenized_testing_data,\n    args=training_arguments,\n    data_collator=DataCollatorForLanguageModeling(tokenizer,\
+    \ mlm=False)\n\n)\n```\n\n\n     \n\n"
+  created_at: 2023-10-08 07:37:25+00:00
+  edited: true
+  hidden: false
+  id: 65226a45c0ceb75b49746430
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 46
+repo_id: mistralai/Mistral-7B-v0.1
+repo_type: model
+status: open
+target_branch: null
+title: 'QLORA fine tuning with longer length of sequence (max_length=2048, padding=True)
+  cause  RuntimeError: CUDA error: device-side assert triggered; shorten length to
+  512 works !'

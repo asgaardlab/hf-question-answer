@@ -1,0 +1,320 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: gu1show
+conflicting_files: null
+created_at: 2024-01-22 21:41:33+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/327e637a9d9a4c2895af9155d89eadc9.svg
+      fullname: gu1show
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gu1show
+      type: user
+    createdAt: '2024-01-22T21:41:33.000Z'
+    data:
+      edited: true
+      editors:
+      - gu1show
+      hidden: false
+      identifiedLanguage:
+        language: ru
+        probability: 0.16958492994308472
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/327e637a9d9a4c2895af9155d89eadc9.svg
+          fullname: gu1show
+          isHf: false
+          isPro: false
+          name: gu1show
+          type: user
+        html: "<p>I used the code from the description with 2 x T4 on Kaggle, but\
+          \ generation was approximately 3 tokens per second. Is it the way it should\
+          \ be?</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >import</span> torch\n<span class=\"hljs-keyword\">from</span> peft <span\
+          \ class=\"hljs-keyword\">import</span> PeftModel, PeftConfig\n<span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ AutoModelForCausalLM, AutoTokenizer, GenerationConfig\n\nMODEL_NAME =\
+          \ <span class=\"hljs-string\">\"IlyaGusev/saiga_mistral_7b\"</span>\nDEFAULT_MESSAGE_TEMPLATE\
+          \ = <span class=\"hljs-string\">\"&lt;s&gt;{role}\\n{content}&lt;/s&gt;\"\
+          </span>\nDEFAULT_RESPONSE_TEMPLATE = <span class=\"hljs-string\">\"&lt;s&gt;bot\\\
+          n\"</span>\nDEFAULT_SYSTEM_PROMPT = <span class=\"hljs-string\">\"\u0422\
+          \u044B \u2014 \u0421\u0430\u0439\u0433\u0430, \u0440\u0443\u0441\u0441\u043A\
+          \u043E\u044F\u0437\u044B\u0447\u043D\u044B\u0439 \u0430\u0432\u0442\u043E\
+          \u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0430\u0441\
+          \u0441\u0438\u0441\u0442\u0435\u043D\u0442. \u0422\u044B \u0440\u0430\u0437\
+          \u0433\u043E\u0432\u0430\u0440\u0438\u0432\u0430\u0435\u0448\u044C \u0441\
+          \ \u043B\u044E\u0434\u044C\u043C\u0438 \u0438 \u043F\u043E\u043C\u043E\u0433\
+          \u0430\u0435\u0448\u044C \u0438\u043C.\"</span>\n\n<span class=\"hljs-keyword\"\
+          >class</span> <span class=\"hljs-title class_\">Conversation</span>:\n \
+          \   <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >__init__</span>(<span class=\"hljs-params\"></span>\n<span class=\"hljs-params\"\
+          >        self,</span>\n<span class=\"hljs-params\">        message_template=DEFAULT_MESSAGE_TEMPLATE,</span>\n\
+          <span class=\"hljs-params\">        system_prompt=DEFAULT_SYSTEM_PROMPT,</span>\n\
+          <span class=\"hljs-params\">        response_template=DEFAULT_RESPONSE_TEMPLATE</span>\n\
+          <span class=\"hljs-params\">    </span>):\n        self.message_template\
+          \ = message_template\n        self.response_template = response_template\n\
+          \        self.messages = [{\n            <span class=\"hljs-string\">\"\
+          role\"</span>: <span class=\"hljs-string\">\"system\"</span>,\n        \
+          \    <span class=\"hljs-string\">\"content\"</span>: system_prompt\n   \
+          \     }]\n\n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">add_user_message</span>(<span class=\"hljs-params\">self,\
+          \ message</span>):\n        self.messages.append({\n            <span class=\"\
+          hljs-string\">\"role\"</span>: <span class=\"hljs-string\">\"user\"</span>,\n\
+          \            <span class=\"hljs-string\">\"content\"</span>: message\n \
+          \       })\n\n    <span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">add_bot_message</span>(<span class=\"hljs-params\"\
+          >self, message</span>):\n        self.messages.append({\n            <span\
+          \ class=\"hljs-string\">\"role\"</span>: <span class=\"hljs-string\">\"\
+          bot\"</span>,\n            <span class=\"hljs-string\">\"content\"</span>:\
+          \ message\n        })\n\n    <span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">get_prompt</span>(<span class=\"hljs-params\"\
+          >self, tokenizer</span>):\n        final_text = <span class=\"hljs-string\"\
+          >\"\"</span>\n        <span class=\"hljs-keyword\">for</span> message <span\
+          \ class=\"hljs-keyword\">in</span> self.messages:\n            message_text\
+          \ = self.message_template.<span class=\"hljs-built_in\">format</span>(**message)\n\
+          \            final_text += message_text\n        final_text += DEFAULT_RESPONSE_TEMPLATE\n\
+          \        <span class=\"hljs-keyword\">return</span> final_text.strip()\n\
+          \n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >generate</span>(<span class=\"hljs-params\">model, tokenizer, prompt, generation_config</span>):\n\
+          \    data = tokenizer(prompt, return_tensors=<span class=\"hljs-string\"\
+          >\"pt\"</span>, add_special_tokens=<span class=\"hljs-literal\">False</span>)\n\
+          \    data = {k: v.to(model.device) <span class=\"hljs-keyword\">for</span>\
+          \ k, v <span class=\"hljs-keyword\">in</span> data.items()}\n    output_ids\
+          \ = model.generate(\n        **data,\n        generation_config=generation_config\n\
+          \    )[<span class=\"hljs-number\">0</span>]\n    output_ids = output_ids[<span\
+          \ class=\"hljs-built_in\">len</span>(data[<span class=\"hljs-string\">\"\
+          input_ids\"</span>][<span class=\"hljs-number\">0</span>]):]\n    output\
+          \ = tokenizer.decode(output_ids, skip_special_tokens=<span class=\"hljs-literal\"\
+          >True</span>)\n    <span class=\"hljs-keyword\">return</span> output.strip()\n\
+          \nconfig = PeftConfig.from_pretrained(MODEL_NAME)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    config.base_model_name_or_path,\n    load_in_8bit=<span class=\"hljs-literal\"\
+          >True</span>,\n    torch_dtype=torch.float16,\n    device_map=<span class=\"\
+          hljs-string\">\"auto\"</span>\n)\nmodel = PeftModel.from_pretrained(\n \
+          \   model,\n    MODEL_NAME,\n    torch_dtype=torch.float16\n)\nmodel.<span\
+          \ class=\"hljs-built_in\">eval</span>()\n\ntokenizer = AutoTokenizer.from_pretrained(MODEL_NAME,\
+          \ use_fast=<span class=\"hljs-literal\">False</span>)\ngeneration_config\
+          \ = GenerationConfig.from_pretrained(MODEL_NAME)\n<span class=\"hljs-built_in\"\
+          >print</span>(generation_config)\n\ninputs = [<span class=\"hljs-string\"\
+          >\"\u041F\u043E\u0447\u0435\u043C\u0443 \u0442\u0440\u0430\u0432\u0430 \u0437\
+          \u0435\u043B\u0435\u043D\u0430\u044F?\"</span>, <span class=\"hljs-string\"\
+          >\"\u0421\u043E\u0447\u0438\u043D\u0438 \u0434\u043B\u0438\u043D\u043D\u044B\
+          \u0439 \u0440\u0430\u0441\u0441\u043A\u0430\u0437, \u043E\u0431\u044F\u0437\
+          \u0430\u0442\u0435\u043B\u044C\u043D\u043E \u0443\u043F\u043E\u043C\u0438\
+          \u043D\u0430\u044F \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0435\
+          \ \u043E\u0431\u044A\u0435\u043A\u0442\u044B. \u0414\u0430\u043D\u043E:\
+          \ \u0422\u0430\u043D\u044F, \u043C\u044F\u0447\"</span>]\n<span class=\"\
+          hljs-keyword\">for</span> inp <span class=\"hljs-keyword\">in</span> inputs:\n\
+          \    conversation = Conversation()\n    conversation.add_user_message(inp)\n\
+          \    prompt = conversation.get_prompt(tokenizer)\n\n    output = generate(model,\
+          \ tokenizer, prompt, generation_config)\n    <span class=\"hljs-built_in\"\
+          >print</span>(inp)\n    <span class=\"hljs-built_in\">print</span>(output)\n\
+          \    <span class=\"hljs-built_in\">print</span>()\n    <span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"==============================\"\
+          </span>)\n    <span class=\"hljs-built_in\">print</span>()\n</code></pre>\n"
+        raw: "I used the code from the description with 2 x T4 on Kaggle, but generation\
+          \ was approximately 3 tokens per second. Is it the way it should be?\n```\
+          \ python\nimport torch\nfrom peft import PeftModel, PeftConfig\nfrom transformers\
+          \ import AutoModelForCausalLM, AutoTokenizer, GenerationConfig\n\nMODEL_NAME\
+          \ = \"IlyaGusev/saiga_mistral_7b\"\nDEFAULT_MESSAGE_TEMPLATE = \"<s>{role}\\\
+          n{content}</s>\"\nDEFAULT_RESPONSE_TEMPLATE = \"<s>bot\\n\"\nDEFAULT_SYSTEM_PROMPT\
+          \ = \"\u0422\u044B \u2014 \u0421\u0430\u0439\u0433\u0430, \u0440\u0443\u0441\
+          \u0441\u043A\u043E\u044F\u0437\u044B\u0447\u043D\u044B\u0439 \u0430\u0432\
+          \u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0439\
+          \ \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043D\u0442. \u0422\u044B \u0440\
+          \u0430\u0437\u0433\u043E\u0432\u0430\u0440\u0438\u0432\u0430\u0435\u0448\
+          \u044C \u0441 \u043B\u044E\u0434\u044C\u043C\u0438 \u0438 \u043F\u043E\u043C\
+          \u043E\u0433\u0430\u0435\u0448\u044C \u0438\u043C.\"\n\nclass Conversation:\n\
+          \    def __init__(\n        self,\n        message_template=DEFAULT_MESSAGE_TEMPLATE,\n\
+          \        system_prompt=DEFAULT_SYSTEM_PROMPT,\n        response_template=DEFAULT_RESPONSE_TEMPLATE\n\
+          \    ):\n        self.message_template = message_template\n        self.response_template\
+          \ = response_template\n        self.messages = [{\n            \"role\"\
+          : \"system\",\n            \"content\": system_prompt\n        }]\n\n  \
+          \  def add_user_message(self, message):\n        self.messages.append({\n\
+          \            \"role\": \"user\",\n            \"content\": message\n   \
+          \     })\n\n    def add_bot_message(self, message):\n        self.messages.append({\n\
+          \            \"role\": \"bot\",\n            \"content\": message\n    \
+          \    })\n\n    def get_prompt(self, tokenizer):\n        final_text = \"\
+          \"\n        for message in self.messages:\n            message_text = self.message_template.format(**message)\n\
+          \            final_text += message_text\n        final_text += DEFAULT_RESPONSE_TEMPLATE\n\
+          \        return final_text.strip()\n\n\ndef generate(model, tokenizer, prompt,\
+          \ generation_config):\n    data = tokenizer(prompt, return_tensors=\"pt\"\
+          , add_special_tokens=False)\n    data = {k: v.to(model.device) for k, v\
+          \ in data.items()}\n    output_ids = model.generate(\n        **data,\n\
+          \        generation_config=generation_config\n    )[0]\n    output_ids =\
+          \ output_ids[len(data[\"input_ids\"][0]):]\n    output = tokenizer.decode(output_ids,\
+          \ skip_special_tokens=True)\n    return output.strip()\n\nconfig = PeftConfig.from_pretrained(MODEL_NAME)\n\
+          model = AutoModelForCausalLM.from_pretrained(\n    config.base_model_name_or_path,\n\
+          \    load_in_8bit=True,\n    torch_dtype=torch.float16,\n    device_map=\"\
+          auto\"\n)\nmodel = PeftModel.from_pretrained(\n    model,\n    MODEL_NAME,\n\
+          \    torch_dtype=torch.float16\n)\nmodel.eval()\n\ntokenizer = AutoTokenizer.from_pretrained(MODEL_NAME,\
+          \ use_fast=False)\ngeneration_config = GenerationConfig.from_pretrained(MODEL_NAME)\n\
+          print(generation_config)\n\ninputs = [\"\u041F\u043E\u0447\u0435\u043C\u0443\
+          \ \u0442\u0440\u0430\u0432\u0430 \u0437\u0435\u043B\u0435\u043D\u0430\u044F\
+          ?\", \"\u0421\u043E\u0447\u0438\u043D\u0438 \u0434\u043B\u0438\u043D\u043D\
+          \u044B\u0439 \u0440\u0430\u0441\u0441\u043A\u0430\u0437, \u043E\u0431\u044F\
+          \u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E \u0443\u043F\u043E\u043C\
+          \u0438\u043D\u0430\u044F \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\
+          \u0435 \u043E\u0431\u044A\u0435\u043A\u0442\u044B. \u0414\u0430\u043D\u043E\
+          : \u0422\u0430\u043D\u044F, \u043C\u044F\u0447\"]\nfor inp in inputs:\n\
+          \    conversation = Conversation()\n    conversation.add_user_message(inp)\n\
+          \    prompt = conversation.get_prompt(tokenizer)\n\n    output = generate(model,\
+          \ tokenizer, prompt, generation_config)\n    print(inp)\n    print(output)\n\
+          \    print()\n    print(\"==============================\")\n    print()\n\
+          ```"
+        updatedAt: '2024-01-24T11:37:08.055Z'
+      numEdits: 1
+      reactions: []
+    id: 65aee10dfd56b86c9c932d90
+    type: comment
+  author: gu1show
+  content: "I used the code from the description with 2 x T4 on Kaggle, but generation\
+    \ was approximately 3 tokens per second. Is it the way it should be?\n``` python\n\
+    import torch\nfrom peft import PeftModel, PeftConfig\nfrom transformers import\
+    \ AutoModelForCausalLM, AutoTokenizer, GenerationConfig\n\nMODEL_NAME = \"IlyaGusev/saiga_mistral_7b\"\
+    \nDEFAULT_MESSAGE_TEMPLATE = \"<s>{role}\\n{content}</s>\"\nDEFAULT_RESPONSE_TEMPLATE\
+    \ = \"<s>bot\\n\"\nDEFAULT_SYSTEM_PROMPT = \"\u0422\u044B \u2014 \u0421\u0430\u0439\
+    \u0433\u0430, \u0440\u0443\u0441\u0441\u043A\u043E\u044F\u0437\u044B\u0447\u043D\
+    \u044B\u0439 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\
+    \u043A\u0438\u0439 \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043D\u0442. \u0422\
+    \u044B \u0440\u0430\u0437\u0433\u043E\u0432\u0430\u0440\u0438\u0432\u0430\u0435\
+    \u0448\u044C \u0441 \u043B\u044E\u0434\u044C\u043C\u0438 \u0438 \u043F\u043E\u043C\
+    \u043E\u0433\u0430\u0435\u0448\u044C \u0438\u043C.\"\n\nclass Conversation:\n\
+    \    def __init__(\n        self,\n        message_template=DEFAULT_MESSAGE_TEMPLATE,\n\
+    \        system_prompt=DEFAULT_SYSTEM_PROMPT,\n        response_template=DEFAULT_RESPONSE_TEMPLATE\n\
+    \    ):\n        self.message_template = message_template\n        self.response_template\
+    \ = response_template\n        self.messages = [{\n            \"role\": \"system\"\
+    ,\n            \"content\": system_prompt\n        }]\n\n    def add_user_message(self,\
+    \ message):\n        self.messages.append({\n            \"role\": \"user\",\n\
+    \            \"content\": message\n        })\n\n    def add_bot_message(self,\
+    \ message):\n        self.messages.append({\n            \"role\": \"bot\",\n\
+    \            \"content\": message\n        })\n\n    def get_prompt(self, tokenizer):\n\
+    \        final_text = \"\"\n        for message in self.messages:\n          \
+    \  message_text = self.message_template.format(**message)\n            final_text\
+    \ += message_text\n        final_text += DEFAULT_RESPONSE_TEMPLATE\n        return\
+    \ final_text.strip()\n\n\ndef generate(model, tokenizer, prompt, generation_config):\n\
+    \    data = tokenizer(prompt, return_tensors=\"pt\", add_special_tokens=False)\n\
+    \    data = {k: v.to(model.device) for k, v in data.items()}\n    output_ids =\
+    \ model.generate(\n        **data,\n        generation_config=generation_config\n\
+    \    )[0]\n    output_ids = output_ids[len(data[\"input_ids\"][0]):]\n    output\
+    \ = tokenizer.decode(output_ids, skip_special_tokens=True)\n    return output.strip()\n\
+    \nconfig = PeftConfig.from_pretrained(MODEL_NAME)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    config.base_model_name_or_path,\n    load_in_8bit=True,\n    torch_dtype=torch.float16,\n\
+    \    device_map=\"auto\"\n)\nmodel = PeftModel.from_pretrained(\n    model,\n\
+    \    MODEL_NAME,\n    torch_dtype=torch.float16\n)\nmodel.eval()\n\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)\ngeneration_config\
+    \ = GenerationConfig.from_pretrained(MODEL_NAME)\nprint(generation_config)\n\n\
+    inputs = [\"\u041F\u043E\u0447\u0435\u043C\u0443 \u0442\u0440\u0430\u0432\u0430\
+    \ \u0437\u0435\u043B\u0435\u043D\u0430\u044F?\", \"\u0421\u043E\u0447\u0438\u043D\
+    \u0438 \u0434\u043B\u0438\u043D\u043D\u044B\u0439 \u0440\u0430\u0441\u0441\u043A\
+    \u0430\u0437, \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E\
+    \ \u0443\u043F\u043E\u043C\u0438\u043D\u0430\u044F \u0441\u043B\u0435\u0434\u0443\
+    \u044E\u0449\u0438\u0435 \u043E\u0431\u044A\u0435\u043A\u0442\u044B. \u0414\u0430\
+    \u043D\u043E: \u0422\u0430\u043D\u044F, \u043C\u044F\u0447\"]\nfor inp in inputs:\n\
+    \    conversation = Conversation()\n    conversation.add_user_message(inp)\n \
+    \   prompt = conversation.get_prompt(tokenizer)\n\n    output = generate(model,\
+    \ tokenizer, prompt, generation_config)\n    print(inp)\n    print(output)\n \
+    \   print()\n    print(\"==============================\")\n    print()\n```"
+  created_at: 2024-01-22 21:41:33+00:00
+  edited: true
+  hidden: false
+  id: 65aee10dfd56b86c9c932d90
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6d4c41710a343b37eb715cf80fc4b17e.svg
+      fullname: Sergey Ovchinnikov
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: SergeyOvchinnikov
+      type: user
+    createdAt: '2024-01-24T08:13:13.000Z'
+    data:
+      edited: false
+      editors:
+      - SergeyOvchinnikov
+      hidden: false
+      identifiedLanguage:
+        language: ru
+        probability: 0.997593104839325
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6d4c41710a343b37eb715cf80fc4b17e.svg
+          fullname: Sergey Ovchinnikov
+          isHf: false
+          isPro: false
+          name: SergeyOvchinnikov
+          type: user
+        html: "<p>\u042F \u0442\u0430\u043A\u0436\u0435 \u0441\u0442\u043E\u043B\u043A\
+          \u043D\u0443\u043B\u0441\u044F \u0441 \u043C\u0435\u0434\u043B\u0435\u043D\
+          \u043D\u043E\u0439 \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u0435\
+          \u0439 \u043F\u0440\u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\
+          \u0432\u0430\u043D\u0438\u0438 8-\u043C\u0438 \u0431\u0438\u0442\u043D\u043E\
+          \u0439 \u043A\u0432\u0430\u043D\u0442\u0438\u0437\u0430\u0446\u0438\u0438\
+          \ load_in_8bit=True.<br>\u0415\u0441\u043B\u0438 \u043F\u043E\u0441\u0442\
+          \u0430\u0432\u0438\u0442\u044C False, \u0442\u043E \u0435\u0441\u0442\u044C\
+          \ \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C\
+          \ 16-\u0431\u0438\u0442\u043D\u0443\u044E - \u043C\u043E\u0434\u0435\u043B\
+          \u044C \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0432 \u043D\u0435\
+          \u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437 \u0431\u044B\
+          \u0441\u0442\u0440\u0435\u0435.</p>\n<p>\u0421 \u0447\u0435\u043C \u044D\
+          \u0442\u043E \u0441\u0432\u044F\u0437\u0430\u043D\u043E?</p>\n"
+        raw: "\u042F \u0442\u0430\u043A\u0436\u0435 \u0441\u0442\u043E\u043B\u043A\
+          \u043D\u0443\u043B\u0441\u044F \u0441 \u043C\u0435\u0434\u043B\u0435\u043D\
+          \u043D\u043E\u0439 \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u0435\
+          \u0439 \u043F\u0440\u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\
+          \u0432\u0430\u043D\u0438\u0438 8-\u043C\u0438 \u0431\u0438\u0442\u043D\u043E\
+          \u0439 \u043A\u0432\u0430\u043D\u0442\u0438\u0437\u0430\u0446\u0438\u0438\
+          \ load_in_8bit=True.\n\u0415\u0441\u043B\u0438 \u043F\u043E\u0441\u0442\u0430\
+          \u0432\u0438\u0442\u044C False, \u0442\u043E \u0435\u0441\u0442\u044C \u0438\
+          \u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C 16-\u0431\
+          \u0438\u0442\u043D\u0443\u044E - \u043C\u043E\u0434\u0435\u043B\u044C \u0440\
+          \u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0432 \u043D\u0435\u0441\u043A\
+          \u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437 \u0431\u044B\u0441\u0442\
+          \u0440\u0435\u0435.\n\n\u0421 \u0447\u0435\u043C \u044D\u0442\u043E \u0441\
+          \u0432\u044F\u0437\u0430\u043D\u043E?"
+        updatedAt: '2024-01-24T08:13:13.430Z'
+      numEdits: 0
+      reactions: []
+    id: 65b0c699a4953b36be511e3b
+    type: comment
+  author: SergeyOvchinnikov
+  content: "\u042F \u0442\u0430\u043A\u0436\u0435 \u0441\u0442\u043E\u043B\u043A\u043D\
+    \u0443\u043B\u0441\u044F \u0441 \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E\
+    \u0439 \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u0435\u0439 \u043F\u0440\
+    \u0438 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\
+    \u0438 8-\u043C\u0438 \u0431\u0438\u0442\u043D\u043E\u0439 \u043A\u0432\u0430\u043D\
+    \u0442\u0438\u0437\u0430\u0446\u0438\u0438 load_in_8bit=True.\n\u0415\u0441\u043B\
+    \u0438 \u043F\u043E\u0441\u0442\u0430\u0432\u0438\u0442\u044C False, \u0442\u043E\
+    \ \u0435\u0441\u0442\u044C \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\
+    \u0430\u0442\u044C 16-\u0431\u0438\u0442\u043D\u0443\u044E - \u043C\u043E\u0434\
+    \u0435\u043B\u044C \u0440\u0430\u0431\u043E\u0442\u0430\u0435\u0442 \u0432 \u043D\
+    \u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437 \u0431\u044B\
+    \u0441\u0442\u0440\u0435\u0435.\n\n\u0421 \u0447\u0435\u043C \u044D\u0442\u043E\
+    \ \u0441\u0432\u044F\u0437\u0430\u043D\u043E?"
+  created_at: 2024-01-24 08:13:13+00:00
+  edited: false
+  hidden: false
+  id: 65b0c699a4953b36be511e3b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: IlyaGusev/saiga_mistral_7b_lora
+repo_type: model
+status: open
+target_branch: null
+title: "\u041C\u0435\u0434\u043B\u0435\u043D\u043D\u0430\u044F \u0433\u0435\u043D\u0435\
+  \u0440\u0430\u0446\u0438\u044F \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E\
+  \ \u043A\u043E\u0434\u0430 \u0438\u0437 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\
+  \u044F \u043C\u043E\u0434\u0435\u043B\u0438"

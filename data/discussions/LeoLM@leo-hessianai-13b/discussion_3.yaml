@@ -1,0 +1,387 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Sebbecking
+conflicting_files: null
+created_at: 2023-09-29 12:34:55+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+      fullname: Sebastian Becking
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sebbecking
+      type: user
+    createdAt: '2023-09-29T13:34:55.000Z'
+    data:
+      edited: true
+      editors:
+      - Sebbecking
+      hidden: false
+      identifiedLanguage:
+        language: de
+        probability: 0.2842686176300049
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+          fullname: Sebastian Becking
+          isHf: false
+          isPro: false
+          name: Sebbecking
+          type: user
+        html: "<p>Hi!</p>\n<p>Thanks for your work on improving german capabilities\
+          \ of open LLMs :)<br>I tried to use your model in a toy example, but I seem\
+          \ to only get repetitions on the input prompt.<br>I tried several temperatures\
+          \ and prompts. Any hints on what I'm doing wrong?</p>\n<p>This is my full\
+          \ code:</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoModelForCausalLM,\
+          \ AutoTokenizer\n<span class=\"hljs-keyword\">import</span> torch\n\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\n    pretrained_model_name_or_path=<span\
+          \ class=\"hljs-string\">\"LeoLM/leo-hessianai-13b\"</span>,\n    device_map=<span\
+          \ class=\"hljs-string\">\"auto\"</span>,\n    torch_dtype=torch.float16,\n\
+          \    trust_remote_code=<span class=\"hljs-literal\">True</span>\n)\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(<span class=\"hljs-string\">\"LeoLM/leo-hessianai-13b\"\
+          </span>)\n\n<span class=\"hljs-comment\"># taken from https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat/blob/main/model.py#L20</span>\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >get_prompt</span>(<span class=\"hljs-params\">message: <span class=\"hljs-built_in\"\
+          >str</span>, chat_history: <span class=\"hljs-built_in\">list</span>[<span\
+          \ class=\"hljs-built_in\">tuple</span>[<span class=\"hljs-built_in\">str</span>,\
+          \ <span class=\"hljs-built_in\">str</span>]],</span>\n<span class=\"hljs-params\"\
+          >               system_prompt: <span class=\"hljs-built_in\">str</span></span>)\
+          \ -&gt; <span class=\"hljs-built_in\">str</span>:\n    texts = [<span class=\"\
+          hljs-string\">f'&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\\n<span class=\"hljs-subst\"\
+          >{system_prompt}</span>\\n&lt;&lt;/SYS&gt;&gt;\\n\\n'</span>]\n    <span\
+          \ class=\"hljs-comment\"># The first user input is _not_ stripped</span>\n\
+          \    do_strip = <span class=\"hljs-literal\">False</span>\n    <span class=\"\
+          hljs-keyword\">for</span> user_input, response <span class=\"hljs-keyword\"\
+          >in</span> chat_history:\n        user_input = user_input.strip() <span\
+          \ class=\"hljs-keyword\">if</span> do_strip <span class=\"hljs-keyword\"\
+          >else</span> user_input\n        do_strip = <span class=\"hljs-literal\"\
+          >True</span>\n        texts.append(<span class=\"hljs-string\">f'<span class=\"\
+          hljs-subst\">{user_input}</span> [/INST] <span class=\"hljs-subst\">{response.strip()}</span>\
+          \ &lt;/s&gt;&lt;s&gt;[INST] '</span>)\n    message = message.strip() <span\
+          \ class=\"hljs-keyword\">if</span> do_strip <span class=\"hljs-keyword\"\
+          >else</span> message\n    texts.append(<span class=\"hljs-string\">f'<span\
+          \ class=\"hljs-subst\">{message}</span> [/INST]'</span>)\n    <span class=\"\
+          hljs-keyword\">return</span> <span class=\"hljs-string\">''</span>.join(texts)\n\
+          \nprompt = get_prompt(message=<span class=\"hljs-string\">\"Hi, kannst du\
+          \ mit mir reden?\"</span>, chat_history=[], system_prompt=<span class=\"\
+          hljs-string\">\"Du bist ein netter, hilfsbereiter Sprachassistent.\"</span>)\n\
+          inputs = tokenizer([prompt], return_tensors=<span class=\"hljs-string\"\
+          >'pt'</span>, add_special_tokens=<span class=\"hljs-literal\">False</span>)\n\
+          \n<span class=\"hljs-comment\"># Generate</span>\ngenerate_ids = model.generate(inputs.input_ids.to(<span\
+          \ class=\"hljs-string\">\"cuda\"</span>), \n                           \
+          \   max_length=<span class=\"hljs-number\">300</span>,\n               \
+          \               do_sample=<span class=\"hljs-literal\">True</span>,\n  \
+          \                            top_p=<span class=\"hljs-number\">0.95</span>,\n\
+          \                              top_k=<span class=\"hljs-number\">50</span>,\n\
+          \                              temperature=<span class=\"hljs-number\">0.8</span>,\n\
+          \                              num_beams=<span class=\"hljs-number\">1</span>\n\
+          \                             )\n<span class=\"hljs-built_in\">print</span>(tokenizer.batch_decode(generate_ids,\
+          \ skip_special_tokens=<span class=\"hljs-literal\">True</span>, clean_up_tokenization_spaces=<span\
+          \ class=\"hljs-literal\">False</span>)[<span class=\"hljs-number\">0</span>])\n\
+          </code></pre>\n<p>Output was</p>\n<pre><code>'[INST] &lt;&lt;SYS&gt;&gt;\\\
+          nDu bist ein netter, hilfsbereiter Sprachassistent.\\n&lt;&lt;/SYS&gt;&gt;\\\
+          n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] &lt;&lt;SYS&gt;&gt;\\\
+          nDu bist ein netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit\
+          \ mir reden? [/INST]\\n\\n[INST] &lt;&lt;SYS&gt;&gt;\\nDu bist ein netter,\
+          \ hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden? [/INST]\\\
+          n\\n[INST] &lt;&lt;SYS&gt;&gt;\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+          n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] &lt;&lt;SYS&gt;&gt;\\\
+          nDu bist ein netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit\
+          \ mir reden? [/INST]\\n\\n[INST] &lt;&lt;SYS&gt;&gt;\\nDu bist ein netter,\
+          \ hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden? [/INST]\\\
+          n\\n[INST] &lt;&lt;SYS&gt;&gt;\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+          n\\nHi'\n</code></pre>\n"
+        raw: "Hi!\n\nThanks for your work on improving german capabilities of open\
+          \ LLMs :)\nI tried to use your model in a toy example, but I seem to only\
+          \ get repetitions on the input prompt.\nI tried several temperatures and\
+          \ prompts. Any hints on what I'm doing wrong?\n\nThis is my full code:\n\
+          ```python\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\
+          import torch\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    pretrained_model_name_or_path=\"\
+          LeoLM/leo-hessianai-13b\",\n    device_map=\"auto\",\n    torch_dtype=torch.float16,\n\
+          \    trust_remote_code=True\n)\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          LeoLM/leo-hessianai-13b\")\n\n# taken from https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat/blob/main/model.py#L20\n\
+          def get_prompt(message: str, chat_history: list[tuple[str, str]],\n    \
+          \           system_prompt: str) -> str:\n    texts = [f'<s>[INST] <<SYS>>\\\
+          n{system_prompt}\\n<</SYS>>\\n\\n']\n    # The first user input is _not_\
+          \ stripped\n    do_strip = False\n    for user_input, response in chat_history:\n\
+          \        user_input = user_input.strip() if do_strip else user_input\n \
+          \       do_strip = True\n        texts.append(f'{user_input} [/INST] {response.strip()}\
+          \ </s><s>[INST] ')\n    message = message.strip() if do_strip else message\n\
+          \    texts.append(f'{message} [/INST]')\n    return ''.join(texts)\n\nprompt\
+          \ = get_prompt(message=\"Hi, kannst du mit mir reden?\", chat_history=[],\
+          \ system_prompt=\"Du bist ein netter, hilfsbereiter Sprachassistent.\")\n\
+          inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False)\n\
+          \n# Generate\ngenerate_ids = model.generate(inputs.input_ids.to(\"cuda\"\
+          ), \n                              max_length=300,\n                   \
+          \           do_sample=True,\n                              top_p=0.95,\n\
+          \                              top_k=50,\n                             \
+          \ temperature=0.8,\n                              num_beams=1\n        \
+          \                     )\nprint(tokenizer.batch_decode(generate_ids, skip_special_tokens=True,\
+          \ clean_up_tokenization_spaces=False)[0])\n```\n\nOutput was\n```\n'[INST]\
+          \ <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\n<</SYS>>\\\
+          n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein\
+          \ netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden?\
+          \ [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+          n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein\
+          \ netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden?\
+          \ [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+          n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein\
+          \ netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden?\
+          \ [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+          n\\nHi'\n```"
+        updatedAt: '2023-09-29T13:35:19.366Z'
+      numEdits: 1
+      reactions: []
+    id: 6516d27f0696c05078293714
+    type: comment
+  author: Sebbecking
+  content: "Hi!\n\nThanks for your work on improving german capabilities of open LLMs\
+    \ :)\nI tried to use your model in a toy example, but I seem to only get repetitions\
+    \ on the input prompt.\nI tried several temperatures and prompts. Any hints on\
+    \ what I'm doing wrong?\n\nThis is my full code:\n```python\nfrom transformers\
+    \ import AutoModelForCausalLM, AutoTokenizer\nimport torch\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    pretrained_model_name_or_path=\"LeoLM/leo-hessianai-13b\",\n    device_map=\"\
+    auto\",\n    torch_dtype=torch.float16,\n    trust_remote_code=True\n)\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(\"LeoLM/leo-hessianai-13b\")\n\n# taken from\
+    \ https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat/blob/main/model.py#L20\n\
+    def get_prompt(message: str, chat_history: list[tuple[str, str]],\n          \
+    \     system_prompt: str) -> str:\n    texts = [f'<s>[INST] <<SYS>>\\n{system_prompt}\\\
+    n<</SYS>>\\n\\n']\n    # The first user input is _not_ stripped\n    do_strip\
+    \ = False\n    for user_input, response in chat_history:\n        user_input =\
+    \ user_input.strip() if do_strip else user_input\n        do_strip = True\n  \
+    \      texts.append(f'{user_input} [/INST] {response.strip()} </s><s>[INST] ')\n\
+    \    message = message.strip() if do_strip else message\n    texts.append(f'{message}\
+    \ [/INST]')\n    return ''.join(texts)\n\nprompt = get_prompt(message=\"Hi, kannst\
+    \ du mit mir reden?\", chat_history=[], system_prompt=\"Du bist ein netter, hilfsbereiter\
+    \ Sprachassistent.\")\ninputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False)\n\
+    \n# Generate\ngenerate_ids = model.generate(inputs.input_ids.to(\"cuda\"), \n\
+    \                              max_length=300,\n                             \
+    \ do_sample=True,\n                              top_p=0.95,\n               \
+    \               top_k=50,\n                              temperature=0.8,\n  \
+    \                            num_beams=1\n                             )\nprint(tokenizer.batch_decode(generate_ids,\
+    \ skip_special_tokens=True, clean_up_tokenization_spaces=False)[0])\n```\n\nOutput\
+    \ was\n```\n'[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+    n<</SYS>>\\n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist\
+    \ ein netter, hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden?\
+    \ [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\\
+    n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter,\
+    \ hilfsbereiter Sprachassistent.\\n\\nHi, kannst du mit mir reden? [/INST]\\n\\\
+    n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter Sprachassistent.\\n\\nHi,\
+    \ kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\nDu bist ein netter, hilfsbereiter\
+    \ Sprachassistent.\\n\\nHi, kannst du mit mir reden? [/INST]\\n\\n[INST] <<SYS>>\\\
+    nDu bist ein netter, hilfsbereiter Sprachassistent.\\n\\nHi'\n```"
+  created_at: 2023-09-29 12:34:55+00:00
+  edited: true
+  hidden: false
+  id: 6516d27f0696c05078293714
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+      fullname: Sebastian Becking
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sebbecking
+      type: user
+    createdAt: '2023-09-29T13:35:09.000Z'
+    data:
+      from: 'Can''t get any '
+      to: Can't get any reasonable output
+    id: 6516d28db3f8a93bfe2b0874
+    type: title-change
+  author: Sebbecking
+  created_at: 2023-09-29 12:35:09+00:00
+  id: 6516d28db3f8a93bfe2b0874
+  new_title: Can't get any reasonable output
+  old_title: 'Can''t get any '
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4a0cff546914b0f094f4a33e376a2f16.svg
+      fullname: "Bj\xF6rn Pl\xFCster "
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: bjoernp
+      type: user
+    createdAt: '2023-09-29T13:38:28.000Z'
+    data:
+      edited: false
+      editors:
+      - bjoernp
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.620091438293457
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4a0cff546914b0f094f4a33e376a2f16.svg
+          fullname: "Bj\xF6rn Pl\xFCster "
+          isHf: false
+          isPro: false
+          name: bjoernp
+          type: user
+        html: '<p><code>LeoLM/leo-hessianai-13b</code> and <code>LeoLM/leo-hessianai-7b</code>
+          are our base models and are not intended for direct use in a chat format.
+          For chat models, check out  <code>LeoLM/leo-hessianai-13b-chat</code> and
+          <code>LeoLM/leo-hessianai-7b-chat</code>. Let me know if these work better
+          for you :)</p>
+
+          '
+        raw: '`LeoLM/leo-hessianai-13b` and `LeoLM/leo-hessianai-7b` are our base
+          models and are not intended for direct use in a chat format. For chat models,
+          check out  `LeoLM/leo-hessianai-13b-chat` and `LeoLM/leo-hessianai-7b-chat`.
+          Let me know if these work better for you :)'
+        updatedAt: '2023-09-29T13:38:28.673Z'
+      numEdits: 0
+      reactions: []
+    id: 6516d35480e09ab45ca2c367
+    type: comment
+  author: bjoernp
+  content: '`LeoLM/leo-hessianai-13b` and `LeoLM/leo-hessianai-7b` are our base models
+    and are not intended for direct use in a chat format. For chat models, check out  `LeoLM/leo-hessianai-13b-chat`
+    and `LeoLM/leo-hessianai-7b-chat`. Let me know if these work better for you :)'
+  created_at: 2023-09-29 12:38:28+00:00
+  edited: false
+  hidden: false
+  id: 6516d35480e09ab45ca2c367
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+      fullname: Sebastian Becking
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sebbecking
+      type: user
+    createdAt: '2023-09-29T13:52:28.000Z'
+    data:
+      edited: false
+      editors:
+      - Sebbecking
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8680851459503174
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+          fullname: Sebastian Becking
+          isHf: false
+          isPro: false
+          name: Sebbecking
+          type: user
+        html: '<p>Thanks! Works way better now.<br>Besides using the wrong model,
+          I also used the wrong prompt template...</p>
+
+          '
+        raw: "Thanks! Works way better now. \nBesides using the wrong model, I also\
+          \ used the wrong prompt template..."
+        updatedAt: '2023-09-29T13:52:28.876Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6516d69ceeb50168609e12ac
+    id: 6516d69ceeb50168609e12ab
+    type: comment
+  author: Sebbecking
+  content: "Thanks! Works way better now. \nBesides using the wrong model, I also\
+    \ used the wrong prompt template..."
+  created_at: 2023-09-29 12:52:28+00:00
+  edited: false
+  hidden: false
+  id: 6516d69ceeb50168609e12ab
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/f0e70f6241aa166e8c74a4a774b01ba4.svg
+      fullname: Sebastian Becking
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sebbecking
+      type: user
+    createdAt: '2023-09-29T13:52:28.000Z'
+    data:
+      status: closed
+    id: 6516d69ceeb50168609e12ac
+    type: status-change
+  author: Sebbecking
+  created_at: 2023-09-29 12:52:28+00:00
+  id: 6516d69ceeb50168609e12ac
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/dd9a8649ac09f1b183d669afe9758db5.svg
+      fullname: Jennifer Deborah Jayakaran
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jdjayakaran
+      type: user
+    createdAt: '2023-09-29T13:58:42.000Z'
+    data:
+      edited: false
+      editors:
+      - jdjayakaran
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7937204837799072
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/dd9a8649ac09f1b183d669afe9758db5.svg
+          fullname: Jennifer Deborah Jayakaran
+          isHf: false
+          isPro: false
+          name: jdjayakaran
+          type: user
+        html: '<p>If the chat model is used for better results, what would be the
+          general use case of LeoLM/leo-hessianai-13b and LeoLM/leo-hessianai-7b?</p>
+
+          '
+        raw: If the chat model is used for better results, what would be the general
+          use case of LeoLM/leo-hessianai-13b and LeoLM/leo-hessianai-7b?
+        updatedAt: '2023-09-29T13:58:42.337Z'
+      numEdits: 0
+      reactions: []
+    id: 6516d812eca054352983c730
+    type: comment
+  author: jdjayakaran
+  content: If the chat model is used for better results, what would be the general
+    use case of LeoLM/leo-hessianai-13b and LeoLM/leo-hessianai-7b?
+  created_at: 2023-09-29 12:58:42+00:00
+  edited: false
+  hidden: false
+  id: 6516d812eca054352983c730
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: LeoLM/leo-hessianai-13b
+repo_type: model
+status: closed
+target_branch: null
+title: Can't get any reasonable output

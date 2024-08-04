@@ -1,0 +1,187 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Dipti
+conflicting_files: null
+created_at: 2023-05-22 08:47:37+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e8ebbe34d6f2fa7ca04f1f53a7c9ea3a.svg
+      fullname: Sengupta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dipti
+      type: user
+    createdAt: '2023-05-22T09:47:37.000Z'
+    data:
+      edited: false
+      editors:
+      - Dipti
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e8ebbe34d6f2fa7ca04f1f53a7c9ea3a.svg
+          fullname: Sengupta
+          isHf: false
+          isPro: false
+          name: Dipti
+          type: user
+        html: '<p>Hello dvm1983,</p>
+
+          <p>I''m a student also trying to create a german version of the TinyBERT
+          but for 6L.<br>I used the english 6L version from huawei-noah/TinyBERT_General_6L_768D
+          and the german language model oliverguhr/german-sentiment-bert as the Teacher
+          model to distill from. I used the German Wikipedia Text Corpus.<br>Would
+          it be possible for you to share details about your training pipelines eg:  hyperparameters
+          and what models you used as your student and teacher? </p>
+
+          <p>Any advice would be very helpful. </p>
+
+          <p>Best,<br>Dipti</p>
+
+          '
+        raw: "Hello dvm1983,\r\n\r\nI'm a student also trying to create a german version\
+          \ of the TinyBERT but for 6L. \r\nI used the english 6L version from huawei-noah/TinyBERT_General_6L_768D\
+          \ and the german language model oliverguhr/german-sentiment-bert as the\
+          \ Teacher model to distill from. I used the German Wikipedia Text Corpus.\
+          \ \r\nWould it be possible for you to share details about your training\
+          \ pipelines eg:  hyperparameters and what models you used as your student\
+          \ and teacher? \r\n\r\nAny advice would be very helpful. \r\n\r\nBest, \r\
+          \nDipti"
+        updatedAt: '2023-05-22T09:47:37.198Z'
+      numEdits: 0
+      reactions: []
+    id: 646b3a39df2609a541c0225f
+    type: comment
+  author: Dipti
+  content: "Hello dvm1983,\r\n\r\nI'm a student also trying to create a german version\
+    \ of the TinyBERT but for 6L. \r\nI used the english 6L version from huawei-noah/TinyBERT_General_6L_768D\
+    \ and the german language model oliverguhr/german-sentiment-bert as the Teacher\
+    \ model to distill from. I used the German Wikipedia Text Corpus. \r\nWould it\
+    \ be possible for you to share details about your training pipelines eg:  hyperparameters\
+    \ and what models you used as your student and teacher? \r\n\r\nAny advice would\
+    \ be very helpful. \r\n\r\nBest, \r\nDipti"
+  created_at: 2023-05-22 08:47:37+00:00
+  edited: false
+  hidden: false
+  id: 646b3a39df2609a541c0225f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/aee98e0d2c84319d8049b9618382b78e.svg
+      fullname: dvm1983
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: dvm1983
+      type: user
+    createdAt: '2023-05-23T06:26:24.000Z'
+    data:
+      edited: true
+      editors:
+      - dvm1983
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/aee98e0d2c84319d8049b9618382b78e.svg
+          fullname: dvm1983
+          isHf: false
+          isPro: false
+          name: dvm1983
+          type: user
+        html: "<p>Hello, Dipti.</p>\n<p>I think It is not a good idea to use model\
+          \ pretrained on the sentiment classification task as a teacher.<br>Right\
+          \ way will be to take as a teacher the model pretrained to solve MLM task,\
+          \ and then after distillation on MLM task on large corpus( German Wikipedia\
+          \ Text Corpus) you can use students weights and finetune them for example\
+          \ on classification task(I used finetuning on classification task to check\
+          \ quality of distillation after distillation process, and used this dataset\
+          \ for this purposes: <a rel=\"nofollow\" href=\"https://github.com/uds-lsv/GermEval-2018-Data\"\
+          >https://github.com/uds-lsv/GermEval-2018-Data</a>).</p>\n<p>In this reason\
+          \ I choose dbmdz/bert-base-german-cased as a teacher.<br>Tokenizer for student\
+          \ was taken from teacher model (dbmdz/bert-base-german-cased).<br>Init weights\
+          \ for student was taken from this model: huawei-noah/TinyBERT_General_4L_312D.</p>\n\
+          <p>In training process I used 4 components of loss as in article(<a rel=\"\
+          nofollow\" href=\"https://arxiv.org/abs/1909.10351\">https://arxiv.org/abs/1909.10351</a>):<br>Embedding\
+          \ loss, hidden state loss, attention matrix loss, prediction loss.<br>Each\
+          \ component was taken with coefficient to put them into the same scale.\
+          \ In my case for prediction loss it was 3e1, for hidden state loss and embedding\
+          \ loss 1e-2, for attention matrix loss it was 1.<br>For prediction loss\
+          \ I used temperature 1 as recommended in article.<br>I took teachers layers\
+          \ with 2, 4, 6, 8 indexes to compute hidden state and attention matrix loss\
+          \ components.<br>Other parameters was:<br>Learning rate = 2e-5<br>Batch\
+          \ size = 16<br>Accumulation steps = 64<br>Clipping gradients with max norm\
+          \ = 1.,<br>Optimizer \u2013 AdamW with default parameters and Warm up Linear\
+          \ scheduler,<br>Warmup steps = 1e4,<br>500k training steps<br>Max sequence\
+          \ length = 256</p>\n<p>Best regards, Danil</p>\n"
+        raw: "Hello, Dipti.\n\nI think It is not a good idea to use model pretrained\
+          \ on the sentiment classification task as a teacher. \nRight way will be\
+          \ to take as a teacher the model pretrained to solve MLM task, and then\
+          \ after distillation on MLM task on large corpus( German Wikipedia Text\
+          \ Corpus) you can use students weights and finetune them for example on\
+          \ classification task(I used finetuning on classification task to check\
+          \ quality of distillation after distillation process, and used this dataset\
+          \ for this purposes: https://github.com/uds-lsv/GermEval-2018-Data).\n\n\
+          In this reason I choose dbmdz/bert-base-german-cased as a teacher.\nTokenizer\
+          \ for student was taken from teacher model (dbmdz/bert-base-german-cased).\n\
+          Init weights for student was taken from this model: huawei-noah/TinyBERT_General_4L_312D.\n\
+          \nIn training process I used 4 components of loss as in article(https://arxiv.org/abs/1909.10351):\n\
+          Embedding loss, hidden state loss, attention matrix loss, prediction loss.\n\
+          Each component was taken with coefficient to put them into the same scale.\
+          \ In my case for prediction loss it was 3e1, for hidden state loss and embedding\
+          \ loss 1e-2, for attention matrix loss it was 1.            \nFor prediction\
+          \ loss I used temperature 1 as recommended in article.\nI took teachers\
+          \ layers with 2, 4, 6, 8 indexes to compute hidden state and attention matrix\
+          \ loss components.\nOther parameters was:\nLearning rate = 2e-5\nBatch size\
+          \ = 16\nAccumulation steps = 64\nClipping gradients with max norm = 1.,\n\
+          Optimizer \u2013 AdamW with default parameters and Warm up Linear scheduler,\n\
+          Warmup steps = 1e4,\n500k training steps\nMax sequence length = 256\n\n\
+          Best regards, Danil"
+        updatedAt: '2023-05-23T14:47:15.735Z'
+      numEdits: 1
+      reactions: []
+    id: 646c5c90393c77ea4b779a87
+    type: comment
+  author: dvm1983
+  content: "Hello, Dipti.\n\nI think It is not a good idea to use model pretrained\
+    \ on the sentiment classification task as a teacher. \nRight way will be to take\
+    \ as a teacher the model pretrained to solve MLM task, and then after distillation\
+    \ on MLM task on large corpus( German Wikipedia Text Corpus) you can use students\
+    \ weights and finetune them for example on classification task(I used finetuning\
+    \ on classification task to check quality of distillation after distillation process,\
+    \ and used this dataset for this purposes: https://github.com/uds-lsv/GermEval-2018-Data).\n\
+    \nIn this reason I choose dbmdz/bert-base-german-cased as a teacher.\nTokenizer\
+    \ for student was taken from teacher model (dbmdz/bert-base-german-cased).\nInit\
+    \ weights for student was taken from this model: huawei-noah/TinyBERT_General_4L_312D.\n\
+    \nIn training process I used 4 components of loss as in article(https://arxiv.org/abs/1909.10351):\n\
+    Embedding loss, hidden state loss, attention matrix loss, prediction loss.\nEach\
+    \ component was taken with coefficient to put them into the same scale. In my\
+    \ case for prediction loss it was 3e1, for hidden state loss and embedding loss\
+    \ 1e-2, for attention matrix loss it was 1.            \nFor prediction loss I\
+    \ used temperature 1 as recommended in article.\nI took teachers layers with 2,\
+    \ 4, 6, 8 indexes to compute hidden state and attention matrix loss components.\n\
+    Other parameters was:\nLearning rate = 2e-5\nBatch size = 16\nAccumulation steps\
+    \ = 64\nClipping gradients with max norm = 1.,\nOptimizer \u2013 AdamW with default\
+    \ parameters and Warm up Linear scheduler,\nWarmup steps = 1e4,\n500k training\
+    \ steps\nMax sequence length = 256\n\nBest regards, Danil"
+  created_at: 2023-05-23 05:26:24+00:00
+  edited: true
+  hidden: false
+  id: 646c5c90393c77ea4b779a87
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: dvm1983/TinyBERT_General_4L_312D_de
+repo_type: model
+status: open
+target_branch: null
+title: Training the General Distilled TinyBERT

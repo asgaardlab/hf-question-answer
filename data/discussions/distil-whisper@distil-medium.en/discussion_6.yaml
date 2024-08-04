@@ -1,0 +1,1405 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: anuragrawal
+conflicting_files: null
+created_at: 2023-11-03 17:09:11+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+      fullname: Anurag Agrawal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anuragrawal
+      type: user
+    createdAt: '2023-11-03T18:09:11.000Z'
+    data:
+      edited: true
+      editors:
+      - Xenova
+      - anuragrawal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.579071581363678
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/61b253b7ac5ecaae3d1efe0c/hwiQ0uvz3t-L5a-NtBIO6.png?w=200&h=200&f=face
+          fullname: Joshua
+          isHf: true
+          isPro: false
+          name: Xenova
+          type: user
+        html: "<p>Hi,</p>\n<p>I have a transcription pipeline and I was using openai/whisper-medium.en\
+          \ until now. I am trying to replace it with distil-whisper/distil-medium.en\
+          \ (with speculative decoding) but before I do that, I want to verify the\
+          \ quality of transcription and processing time claims made on the model\
+          \ card page. I downloaded 5 videos from Youtube and ran the transcription\
+          \ via following 3 methods:</p>\n<ol>\n<li>Using openai-whisper locally</li>\n\
+          <li>Using huggingface pipeline with openai/whisper-medium.en</li>\n<li>Using\
+          \ distil-whisper/distil-medium.en (with speculative decoding)</li>\n</ol>\n\
+          <p>A couple of things I observed:</p>\n<ol>\n<li>distil-medium.en didn't\
+          \ take less time than openai's whisper, sometimes it took longer</li>\n\
+          <li>transcription ended abruptly (in middle of a sentence) when using distil-medium.en\
+          \ whereas this is never the case with openai's whisper</li>\n<li>distil-medium.en\
+          \ (with speculative decoding) doesn't produce the exact same output as openai's\
+          \ whisper</li>\n</ol>\n<p>Note that I ran this experiment on a single CPU\
+          \ for a fair comparison. The only thing that might be different between\
+          \ these 3 experiments is the chunk size. I used the recommended 30 secs\
+          \ for openai and 15 secs for distil-medium.en</p>\n<p>Can you please let\
+          \ me know what I am missing?</p>\n<p>Python scripts: </p>\n<p><em>main.py</em></p>\n\
+          <pre><code class=\"language-py\"><span class=\"hljs-keyword\">import</span>\
+          \ os\n<span class=\"hljs-keyword\">import</span> argparse\n<span class=\"\
+          hljs-keyword\">import</span> whisper\n<span class=\"hljs-keyword\">import</span>\
+          \ time\n<span class=\"hljs-keyword\">import</span> torch\n<span class=\"\
+          hljs-keyword\">from</span> writeToJSON <span class=\"hljs-keyword\">import</span>\
+          \ createJSON\n<span class=\"hljs-keyword\">from</span> transformers <span\
+          \ class=\"hljs-keyword\">import</span> pipeline, AutoModelForCausalLM, AutoModelForSpeechSeq2Seq,\
+          \ AutoProcessor\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">openai_transcript</span>(<span class=\"hljs-params\"\
+          >vid_path</span>):\n    model = whisper.load_model(<span class=\"hljs-string\"\
+          >'medium.en'</span>, device = <span class=\"hljs-string\">\"cpu\"</span>)\n\
+          \    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"Transcribing <span class=\"hljs-subst\">{vid_path}</span> using openai\
+          \ whisper...\"</span>)\n    start_time = time.time()\n    result = model.transcribe(vid_path)\n\
+          \    end_time = time.time()\n    <span class=\"hljs-keyword\">return</span>\
+          \ result[<span class=\"hljs-string\">\"text\"</span>], <span class=\"hljs-string\"\
+          >f\"<span class=\"hljs-subst\">{end_time - start_time:<span class=\"hljs-number\"\
+          >.2</span>f}</span> seconds\"</span>\n    <span class=\"hljs-comment\">#\
+          \ print(f\"{vid_path} using openai whisper took =&gt; {end_time - start_time:.2f}\
+          \ seconds\")</span>\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">hf_whisper</span>(<span class=\"hljs-params\">vid_path</span>):\n\
+          \    device = <span class=\"hljs-string\">\"cpu\"</span>\n    torch_dtype\
+          \ = torch.float32\n\n    pipe = pipeline(\n    <span class=\"hljs-string\"\
+          >\"automatic-speech-recognition\"</span>,\n    model=<span class=\"hljs-string\"\
+          >\"openai/whisper-medium.en\"</span>,\n    chunk_length_s=<span class=\"\
+          hljs-number\">30</span>,\n    device=device,\n    torch_dtype=torch_dtype,\n\
+          \    )\n    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"Transcribing <span class=\"hljs-subst\">{vid_path}</span> using hf-whisper...\"\
+          </span>)\n    start_time = time.time()\n    result = pipe(vid_path)\n  \
+          \  end_time = time.time()\n    <span class=\"hljs-keyword\">return</span>\
+          \ result[<span class=\"hljs-string\">\"text\"</span>], <span class=\"hljs-string\"\
+          >f\"<span class=\"hljs-subst\">{end_time - start_time:<span class=\"hljs-number\"\
+          >.2</span>f}</span> seconds\"</span>\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">distil_whisper_transcript</span>(<span\
+          \ class=\"hljs-params\">vid_path</span>):\n    device = <span class=\"hljs-string\"\
+          >\"cpu\"</span>\n    torch_dtype = torch.float32\n    assistant_model_id\
+          \ = <span class=\"hljs-string\">\"distil-whisper/distil-medium.en\"</span>\n\
+          \n    assistant_model = AutoModelForCausalLM.from_pretrained(\n        assistant_model_id,\
+          \ torch_dtype=torch_dtype, use_safetensors=<span class=\"hljs-literal\"\
+          >True</span> <span class=\"hljs-comment\">#low_cpu_mem_usage=True,</span>\n\
+          \    )\n    assistant_model.to(device)\n\n    model_id = <span class=\"\
+          hljs-string\">\"openai/whisper-medium.en\"</span>\n\n    model = AutoModelForSpeechSeq2Seq.from_pretrained(\n\
+          \        model_id, torch_dtype=torch_dtype, use_safetensors=<span class=\"\
+          hljs-literal\">True</span>\n    )\n    model.to(device)\n\n    processor\
+          \ = AutoProcessor.from_pretrained(model_id)\n    pipe = pipeline(\n    \
+          \    <span class=\"hljs-string\">\"automatic-speech-recognition\"</span>,\n\
+          \        model=model,\n        tokenizer=processor.tokenizer,\n        feature_extractor=processor.feature_extractor,\n\
+          \        max_new_tokens=<span class=\"hljs-number\">128</span>,\n      \
+          \  chunk_length_s = <span class=\"hljs-number\">15</span>,\n        torch_dtype=torch_dtype,\n\
+          \        device=device,\n        generate_kwargs={<span class=\"hljs-string\"\
+          >\"assistant_model\"</span>: assistant_model},\n    )\n    <span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"Transcribing\
+          \ <span class=\"hljs-subst\">{vid_path}</span> using distil-whisper...\"\
+          </span>)\n    start_time = time.time()\n    result = pipe(vid_path)\n  \
+          \  end_time = time.time()\n    <span class=\"hljs-keyword\">return</span>\
+          \ result[<span class=\"hljs-string\">\"text\"</span>], <span class=\"hljs-string\"\
+          >f\"<span class=\"hljs-subst\">{end_time - start_time:<span class=\"hljs-number\"\
+          >.2</span>f}</span> seconds\"</span>\n    <span class=\"hljs-comment\">#\
+          \ print(f\"{vid_path} using distil-whisper took =&gt; {end_time - start_time:.2f}\
+          \ seconds\")</span>\n\n<span class=\"hljs-keyword\">if</span> __name__ ==\
+          \ <span class=\"hljs-string\">\"__main__\"</span>:\n    <span class=\"hljs-comment\"\
+          ># Create an argument parser</span>\n    parser = argparse.ArgumentParser(description=<span\
+          \ class=\"hljs-string\">\"Transcription-summarization pipeline\"</span>)\n\
+          \n    <span class=\"hljs-comment\"># Define expected command-line arguments</span>\n\
+          \    parser.add_argument(<span class=\"hljs-string\">'--vid_folder'</span>,\
+          \ <span class=\"hljs-built_in\">type</span>=<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-built_in\">help</span>=<span class=\"hljs-string\"\
+          >'Enter the video file path'</span>)\n    <span class=\"hljs-comment\">#\
+          \ Parse the command-line arguments</span>\n    args = parser.parse_args()\n\
+          \    vid_folder = args.vid_folder\n\n    <span class=\"hljs-keyword\">for</span>\
+          \ vid <span class=\"hljs-keyword\">in</span> os.listdir(vid_folder):\n \
+          \       vid_path = os.path.join(vid_folder, vid)\n        <span class=\"\
+          hljs-comment\"># Transcribe using openai whisper medium.en</span>\n    \
+          \    transcript_openai, time_openai = openai_transcript(vid_path)\n    \
+          \    <span class=\"hljs-comment\"># Transcribe using distil-whisper medium.en</span>\n\
+          \        transcript_distil, time_distil = distil_whisper_transcript(vid_path)\n\
+          \        <span class=\"hljs-comment\">#Transcribe using hf-openai-whisper-medium.en</span>\n\
+          \        transcript_hf, time_hf = hf_whisper(vid_path)\n        createJSON(vid_path,\
+          \ transcript_openai, time_openai, transcript_distil, \\\n              \
+          \     time_distil, transcript_hf, time_hf, <span class=\"hljs-string\">\"\
+          output.json\"</span>)\n</code></pre>\n<p>writeToJSON.py</p>\n<pre><code\
+          \ class=\"language-py\">\n<span class=\"hljs-keyword\">import</span> json\n\
+          \n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >createJSON</span>(<span class=\"hljs-params\">vid_path, transcript_openai,\
+          \ time_openai, transcript_distil, time_distil, transcript_hf, time_hf, output_json_path</span>):\n\
+          \    <span class=\"hljs-comment\"># Create a dictionary to hold the outputs</span>\n\
+          \    new_data = {\n        vid_path:{\n        <span class=\"hljs-string\"\
+          >\"Transcript_openai\"</span>: transcript_openai,\n        <span class=\"\
+          hljs-string\">\"Time_openai\"</span>: time_openai,\n        <span class=\"\
+          hljs-string\">\"Transcript_distil\"</span>: transcript_distil,\n       \
+          \ <span class=\"hljs-string\">\"Time_distil\"</span>: time_distil,\n   \
+          \     <span class=\"hljs-string\">\"Transcript_hf_whisper\"</span>: transcript_hf,\n\
+          \        <span class=\"hljs-string\">\"Time_hf_whisper\"</span>: time_hf}\n\
+          \    }\n\n    <span class=\"hljs-comment\"># Read the existing JSON data\
+          \ (if any)</span>\n    <span class=\"hljs-keyword\">try</span>:\n      \
+          \  <span class=\"hljs-keyword\">with</span> <span class=\"hljs-built_in\"\
+          >open</span>(output_json_path, <span class=\"hljs-string\">'r'</span>) <span\
+          \ class=\"hljs-keyword\">as</span> file:\n            existing_data = json.load(file)\n\
+          \    <span class=\"hljs-keyword\">except</span> FileNotFoundError:\n   \
+          \     existing_data = {}\n\n    <span class=\"hljs-comment\"># Update the\
+          \ existing data with the new data</span>\n    existing_data.update(new_data)\n\
+          \n    <span class=\"hljs-comment\"># Serialize the dictionary to a JSON\
+          \ string</span>\n    json_string = json.dumps(existing_data, indent=<span\
+          \ class=\"hljs-number\">4</span>)\n\n    <span class=\"hljs-comment\">#\
+          \ Write the JSON string to a file</span>\n    <span class=\"hljs-keyword\"\
+          >with</span> <span class=\"hljs-built_in\">open</span>(output_json_path,\
+          \ <span class=\"hljs-string\">\"w\"</span>) <span class=\"hljs-keyword\"\
+          >as</span> json_file:\n        json_file.write(json_string)\n\n    <span\
+          \ class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"Outputs\
+          \ have been written for <span class=\"hljs-subst\">{vid_path}</span>.\"\
+          </span>)\n</code></pre>\n<p>Input videos:</p>\n<p><video class=\"!max-w-full\"\
+          \ controls=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/PERoAtisO780aI7_BI4ga.mp4\"\
+          ></video></p>\n<p><video class=\"!max-w-full\" controls=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/bq6S8xlJVvkZl6KvvbCCI.mp4\"\
+          ></video></p>\n<p><video class=\"!max-w-full\" controls=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/NJ5khpmvOGtpo00wXXLHa.mp4\"\
+          ></video></p>\n\n<p>Thank you!</p>\n"
+        raw: "Hi,\n\nI have a transcription pipeline and I was using openai/whisper-medium.en\
+          \ until now. I am trying to replace it with distil-whisper/distil-medium.en\
+          \ (with speculative decoding) but before I do that, I want to verify the\
+          \ quality of transcription and processing time claims made on the model\
+          \ card page. I downloaded 5 videos from Youtube and ran the transcription\
+          \ via following 3 methods:\n\n1) Using openai-whisper locally\n2) Using\
+          \ huggingface pipeline with openai/whisper-medium.en\n3) Using distil-whisper/distil-medium.en\
+          \ (with speculative decoding)\n\nA couple of things I observed:\n1) distil-medium.en\
+          \ didn't take less time than openai's whisper, sometimes it took longer\n\
+          2) transcription ended abruptly (in middle of a sentence) when using distil-medium.en\
+          \ whereas this is never the case with openai's whisper\n3) distil-medium.en\
+          \ (with speculative decoding) doesn't produce the exact same output as openai's\
+          \ whisper\n\nNote that I ran this experiment on a single CPU for a fair\
+          \ comparison. The only thing that might be different between these 3 experiments\
+          \ is the chunk size. I used the recommended 30 secs for openai and 15 secs\
+          \ for distil-medium.en\n\nCan you please let me know what I am missing?\n\
+          \nPython scripts: \n\n*main.py*\n```py\nimport os\nimport argparse\nimport\
+          \ whisper\nimport time\nimport torch\nfrom writeToJSON import createJSON\n\
+          from transformers import pipeline, AutoModelForCausalLM, AutoModelForSpeechSeq2Seq,\
+          \ AutoProcessor\n\ndef openai_transcript(vid_path):\n    model = whisper.load_model('medium.en',\
+          \ device = \"cpu\")\n    print(f\"Transcribing {vid_path} using openai whisper...\"\
+          )\n    start_time = time.time()\n    result = model.transcribe(vid_path)\n\
+          \    end_time = time.time()\n    return result[\"text\"], f\"{end_time -\
+          \ start_time:.2f} seconds\"\n    # print(f\"{vid_path} using openai whisper\
+          \ took => {end_time - start_time:.2f} seconds\")\n\ndef hf_whisper(vid_path):\n\
+          \    device = \"cpu\"\n    torch_dtype = torch.float32\n\n    pipe = pipeline(\n\
+          \    \"automatic-speech-recognition\",\n    model=\"openai/whisper-medium.en\"\
+          ,\n    chunk_length_s=30,\n    device=device,\n    torch_dtype=torch_dtype,\n\
+          \    )\n    print(f\"Transcribing {vid_path} using hf-whisper...\")\n  \
+          \  start_time = time.time()\n    result = pipe(vid_path)\n    end_time =\
+          \ time.time()\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+          \ seconds\"\n\ndef distil_whisper_transcript(vid_path):\n    device = \"\
+          cpu\"\n    torch_dtype = torch.float32\n    assistant_model_id = \"distil-whisper/distil-medium.en\"\
+          \n\n    assistant_model = AutoModelForCausalLM.from_pretrained(\n      \
+          \  assistant_model_id, torch_dtype=torch_dtype, use_safetensors=True #low_cpu_mem_usage=True,\n\
+          \    )\n    assistant_model.to(device)\n\n    model_id = \"openai/whisper-medium.en\"\
+          \n\n    model = AutoModelForSpeechSeq2Seq.from_pretrained(\n        model_id,\
+          \ torch_dtype=torch_dtype, use_safetensors=True\n    )\n    model.to(device)\n\
+          \n    processor = AutoProcessor.from_pretrained(model_id)\n    pipe = pipeline(\n\
+          \        \"automatic-speech-recognition\",\n        model=model,\n     \
+          \   tokenizer=processor.tokenizer,\n        feature_extractor=processor.feature_extractor,\n\
+          \        max_new_tokens=128,\n        chunk_length_s = 15,\n        torch_dtype=torch_dtype,\n\
+          \        device=device,\n        generate_kwargs={\"assistant_model\": assistant_model},\n\
+          \    )\n    print(f\"Transcribing {vid_path} using distil-whisper...\")\n\
+          \    start_time = time.time()\n    result = pipe(vid_path)\n    end_time\
+          \ = time.time()\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+          \ seconds\"\n    # print(f\"{vid_path} using distil-whisper took => {end_time\
+          \ - start_time:.2f} seconds\")\n\nif __name__ == \"__main__\":\n    # Create\
+          \ an argument parser\n    parser = argparse.ArgumentParser(description=\"\
+          Transcription-summarization pipeline\")\n\n    # Define expected command-line\
+          \ arguments\n    parser.add_argument('--vid_folder', type=str, help='Enter\
+          \ the video file path')\n    # Parse the command-line arguments\n    args\
+          \ = parser.parse_args()\n    vid_folder = args.vid_folder\n\n    for vid\
+          \ in os.listdir(vid_folder):\n        vid_path = os.path.join(vid_folder,\
+          \ vid)\n        # Transcribe using openai whisper medium.en\n        transcript_openai,\
+          \ time_openai = openai_transcript(vid_path)\n        # Transcribe using\
+          \ distil-whisper medium.en\n        transcript_distil, time_distil = distil_whisper_transcript(vid_path)\n\
+          \        #Transcribe using hf-openai-whisper-medium.en\n        transcript_hf,\
+          \ time_hf = hf_whisper(vid_path)\n        createJSON(vid_path, transcript_openai,\
+          \ time_openai, transcript_distil, \\\n                   time_distil, transcript_hf,\
+          \ time_hf, \"output.json\")\n```\n\nwriteToJSON.py\n```py\n\nimport json\n\
+          \ndef createJSON(vid_path, transcript_openai, time_openai, transcript_distil,\
+          \ time_distil, transcript_hf, time_hf, output_json_path):\n    # Create\
+          \ a dictionary to hold the outputs\n    new_data = {\n        vid_path:{\n\
+          \        \"Transcript_openai\": transcript_openai,\n        \"Time_openai\"\
+          : time_openai,\n        \"Transcript_distil\": transcript_distil,\n    \
+          \    \"Time_distil\": time_distil,\n        \"Transcript_hf_whisper\": transcript_hf,\n\
+          \        \"Time_hf_whisper\": time_hf}\n    }\n\n    # Read the existing\
+          \ JSON data (if any)\n    try:\n        with open(output_json_path, 'r')\
+          \ as file:\n            existing_data = json.load(file)\n    except FileNotFoundError:\n\
+          \        existing_data = {}\n\n    # Update the existing data with the new\
+          \ data\n    existing_data.update(new_data)\n\n    # Serialize the dictionary\
+          \ to a JSON string\n    json_string = json.dumps(existing_data, indent=4)\n\
+          \n    # Write the JSON string to a file\n    with open(output_json_path,\
+          \ \"w\") as json_file:\n        json_file.write(json_string)\n\n    print(f\"\
+          Outputs have been written for {vid_path}.\")\n```\n\nInput videos:\n\nhttps://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/PERoAtisO780aI7_BI4ga.mp4\n\
+          https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/bq6S8xlJVvkZl6KvvbCCI.mp4\n\
+          https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/NJ5khpmvOGtpo00wXXLHa.mp4\n\
+          \nThank you!\n"
+        updatedAt: '2023-11-03T21:41:05.057Z'
+      numEdits: 2
+      reactions: []
+    id: 6545374796c46859c29f648b
+    type: comment
+  author: anuragrawal
+  content: "Hi,\n\nI have a transcription pipeline and I was using openai/whisper-medium.en\
+    \ until now. I am trying to replace it with distil-whisper/distil-medium.en (with\
+    \ speculative decoding) but before I do that, I want to verify the quality of\
+    \ transcription and processing time claims made on the model card page. I downloaded\
+    \ 5 videos from Youtube and ran the transcription via following 3 methods:\n\n\
+    1) Using openai-whisper locally\n2) Using huggingface pipeline with openai/whisper-medium.en\n\
+    3) Using distil-whisper/distil-medium.en (with speculative decoding)\n\nA couple\
+    \ of things I observed:\n1) distil-medium.en didn't take less time than openai's\
+    \ whisper, sometimes it took longer\n2) transcription ended abruptly (in middle\
+    \ of a sentence) when using distil-medium.en whereas this is never the case with\
+    \ openai's whisper\n3) distil-medium.en (with speculative decoding) doesn't produce\
+    \ the exact same output as openai's whisper\n\nNote that I ran this experiment\
+    \ on a single CPU for a fair comparison. The only thing that might be different\
+    \ between these 3 experiments is the chunk size. I used the recommended 30 secs\
+    \ for openai and 15 secs for distil-medium.en\n\nCan you please let me know what\
+    \ I am missing?\n\nPython scripts: \n\n*main.py*\n```py\nimport os\nimport argparse\n\
+    import whisper\nimport time\nimport torch\nfrom writeToJSON import createJSON\n\
+    from transformers import pipeline, AutoModelForCausalLM, AutoModelForSpeechSeq2Seq,\
+    \ AutoProcessor\n\ndef openai_transcript(vid_path):\n    model = whisper.load_model('medium.en',\
+    \ device = \"cpu\")\n    print(f\"Transcribing {vid_path} using openai whisper...\"\
+    )\n    start_time = time.time()\n    result = model.transcribe(vid_path)\n   \
+    \ end_time = time.time()\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+    \ seconds\"\n    # print(f\"{vid_path} using openai whisper took => {end_time\
+    \ - start_time:.2f} seconds\")\n\ndef hf_whisper(vid_path):\n    device = \"cpu\"\
+    \n    torch_dtype = torch.float32\n\n    pipe = pipeline(\n    \"automatic-speech-recognition\"\
+    ,\n    model=\"openai/whisper-medium.en\",\n    chunk_length_s=30,\n    device=device,\n\
+    \    torch_dtype=torch_dtype,\n    )\n    print(f\"Transcribing {vid_path} using\
+    \ hf-whisper...\")\n    start_time = time.time()\n    result = pipe(vid_path)\n\
+    \    end_time = time.time()\n    return result[\"text\"], f\"{end_time - start_time:.2f}\
+    \ seconds\"\n\ndef distil_whisper_transcript(vid_path):\n    device = \"cpu\"\n\
+    \    torch_dtype = torch.float32\n    assistant_model_id = \"distil-whisper/distil-medium.en\"\
+    \n\n    assistant_model = AutoModelForCausalLM.from_pretrained(\n        assistant_model_id,\
+    \ torch_dtype=torch_dtype, use_safetensors=True #low_cpu_mem_usage=True,\n   \
+    \ )\n    assistant_model.to(device)\n\n    model_id = \"openai/whisper-medium.en\"\
+    \n\n    model = AutoModelForSpeechSeq2Seq.from_pretrained(\n        model_id,\
+    \ torch_dtype=torch_dtype, use_safetensors=True\n    )\n    model.to(device)\n\
+    \n    processor = AutoProcessor.from_pretrained(model_id)\n    pipe = pipeline(\n\
+    \        \"automatic-speech-recognition\",\n        model=model,\n        tokenizer=processor.tokenizer,\n\
+    \        feature_extractor=processor.feature_extractor,\n        max_new_tokens=128,\n\
+    \        chunk_length_s = 15,\n        torch_dtype=torch_dtype,\n        device=device,\n\
+    \        generate_kwargs={\"assistant_model\": assistant_model},\n    )\n    print(f\"\
+    Transcribing {vid_path} using distil-whisper...\")\n    start_time = time.time()\n\
+    \    result = pipe(vid_path)\n    end_time = time.time()\n    return result[\"\
+    text\"], f\"{end_time - start_time:.2f} seconds\"\n    # print(f\"{vid_path} using\
+    \ distil-whisper took => {end_time - start_time:.2f} seconds\")\n\nif __name__\
+    \ == \"__main__\":\n    # Create an argument parser\n    parser = argparse.ArgumentParser(description=\"\
+    Transcription-summarization pipeline\")\n\n    # Define expected command-line\
+    \ arguments\n    parser.add_argument('--vid_folder', type=str, help='Enter the\
+    \ video file path')\n    # Parse the command-line arguments\n    args = parser.parse_args()\n\
+    \    vid_folder = args.vid_folder\n\n    for vid in os.listdir(vid_folder):\n\
+    \        vid_path = os.path.join(vid_folder, vid)\n        # Transcribe using\
+    \ openai whisper medium.en\n        transcript_openai, time_openai = openai_transcript(vid_path)\n\
+    \        # Transcribe using distil-whisper medium.en\n        transcript_distil,\
+    \ time_distil = distil_whisper_transcript(vid_path)\n        #Transcribe using\
+    \ hf-openai-whisper-medium.en\n        transcript_hf, time_hf = hf_whisper(vid_path)\n\
+    \        createJSON(vid_path, transcript_openai, time_openai, transcript_distil,\
+    \ \\\n                   time_distil, transcript_hf, time_hf, \"output.json\"\
+    )\n```\n\nwriteToJSON.py\n```py\n\nimport json\n\ndef createJSON(vid_path, transcript_openai,\
+    \ time_openai, transcript_distil, time_distil, transcript_hf, time_hf, output_json_path):\n\
+    \    # Create a dictionary to hold the outputs\n    new_data = {\n        vid_path:{\n\
+    \        \"Transcript_openai\": transcript_openai,\n        \"Time_openai\": time_openai,\n\
+    \        \"Transcript_distil\": transcript_distil,\n        \"Time_distil\": time_distil,\n\
+    \        \"Transcript_hf_whisper\": transcript_hf,\n        \"Time_hf_whisper\"\
+    : time_hf}\n    }\n\n    # Read the existing JSON data (if any)\n    try:\n  \
+    \      with open(output_json_path, 'r') as file:\n            existing_data =\
+    \ json.load(file)\n    except FileNotFoundError:\n        existing_data = {}\n\
+    \n    # Update the existing data with the new data\n    existing_data.update(new_data)\n\
+    \n    # Serialize the dictionary to a JSON string\n    json_string = json.dumps(existing_data,\
+    \ indent=4)\n\n    # Write the JSON string to a file\n    with open(output_json_path,\
+    \ \"w\") as json_file:\n        json_file.write(json_string)\n\n    print(f\"\
+    Outputs have been written for {vid_path}.\")\n```\n\nInput videos:\n\nhttps://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/PERoAtisO780aI7_BI4ga.mp4\n\
+    https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/bq6S8xlJVvkZl6KvvbCCI.mp4\n\
+    https://cdn-uploads.huggingface.co/production/uploads/64e5100057d6d38e12568c6f/NJ5khpmvOGtpo00wXXLHa.mp4\n\
+    \nThank you!\n"
+  created_at: 2023-11-03 17:09:11+00:00
+  edited: true
+  hidden: false
+  id: 6545374796c46859c29f648b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+      fullname: Anurag Agrawal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anuragrawal
+      type: user
+    createdAt: '2023-11-03T18:12:36.000Z'
+    data:
+      edited: false
+      editors:
+      - anuragrawal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9879328012466431
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+          fullname: Anurag Agrawal
+          isHf: false
+          isPro: false
+          name: anuragrawal
+          type: user
+        html: '<p>Here''s the output JSON file:</p>
+
+          <p>{<br>    "test_videos/Download.mp4": {<br>        "Transcript_openai":
+          " little better than me. I''m a trained police officer, gone through the
+          academy, you know? This lawyer was pulled over by police and they had a
+          pretty tense encounter. Hi there, can you turn your engine off for me please?
+          Keep your hands on the steering wheel as well. Do you know why I pulled
+          you over today? Well actually I don''t because I wasn''t speeding and my
+          car''s in perfect condition. You know when you take off from being in a
+          standstill, if you go too fast, that''s accelerating too fast which is what
+          you''ve just done. Right, yeah, sorry, yes, that was my mistake. Okay, so
+          are we okay then? Am I okay to go? Because I was barely over the speed limit.
+          I would like your license and registration. Yeah, uh, okay, not a problem,
+          um, fine. Thank you. Can you step out of the vehicle for me? Rolling down
+          the window to talk to you is all I''m actually legally required to do, there''s
+          no reason for me to leave the vehicle. Are you sure about that little miss
+          know-it-all? Because, uh, you think you know the little better than me,
+          I''m a trained police officer, gone through the academy, you know? Okay,
+          well, that''s good, I''m a solicitor, so yeah, I do know the law. Are you
+          sure about that, this car you''re driving, you''re a solicitor? Yes, I am
+          sure about that, I''ve done several years of training in London, have my
+          LPC. Is that right? Yes, I know. Is there anything else you would like to
+          add to that list? Would there be any point? You''re an assistant at best,
+          come on, we both know it. You''re just using big words and you''re making
+          up that you''re a lawyer. Read up on the law, I have rolled down the window,
+          I have spoken with you, that''s all I''m legally required to do. So is this
+          what you learned at your big fancy law firm? I learned a lot of things at
+          my big fancy law firm. Of course, like not knowing how to accelerate quickly.
+          I''m sorry, I apologize, I accelerated a little too swiftly, yes, but come
+          on, I was barely over the speed limit, I think we can... So, no, no, no,
+          I''m going to ask you again, can you get out of your vehicle, please? I''m
+          sorry, I''m not prepared to get out of the vehicle because there''s no need
+          for me to get out of the vehicle. Don''t get your neckers in a twist, have
+          you got your MOT certificate? It''s actually not in the car at the moment,
+          I had it serviced last week and I haven''t yet put the updated certificate
+          in the glove compartment. So you''re telling me again that you''re a lawyer
+          and you don''t understand the rules of the law? Like you don''t understand
+          the basics of being pulled over? I do and I think you''ll find the road
+          traffic law of 1988 will show that law about giving MOT certificates not
+          changed in 34 years. 34 years? Then you as this big fancy lawyer must know
+          all the rules of the road, correct? Well, I do try to keep up with changes
+          in legislation, yes. Right, you know what, I''m not happy with this tone
+          of voice that you''re giving me. I''m an officer of the law. Yes, I think
+          we''ve established that. If you continue to be disrespectful towards me,
+          I''ll bring you into the station. No, you won''t actually because I think
+          you''ll find that section D of that particular Act, well it protects motorists
+          by giving them seven days in which to produce their MOT certificates. I
+          don''t have to give it to you now, if it''s not in the car, I have seven
+          days with which to find it. I do know where it is and bring it into the
+          police station. Can we leave it there? Well, no because I''ve asked you
+          to get out of your vehicle multiple times and you''re refusing. That''s
+          right, I am refusing as is my right, my legal right. Would you like me to
+          arrest you? Well, you''re very welcome to arrest me. What is your big boss
+          at your law firm going to do?",<br>        "Time_openai": "80.36 seconds",<br>        "Transcript_distil":
+          " This lawyer was pulled over by police and my car''s in perfect condition.
+          So, you know when you take off from being in a standstill, if you go too
+          fast, that''s accelerating too fast, which is what you''ve just done. Right,
+          yeah, sorry, yes, that was my mistake okay so are we okay then I''m okay
+          to go because I was I was barely over the speed limit I would like your
+          license and registration yeah okay not a problem rolling down the window
+          to talk to you is all I''m actually legally required to do. There''s no
+          reason for me to leave the vehicle. Are you sure about that little miss
+          know-it-all? Because you think you know the law better than me. I''m a trained
+          police officer. Gone through the academy, you know? Okay, well, that''s
+          good. I''m a solicitor, so yeah, I do know the law. Are you sure about that?
+          This car you''re driving, you''re car you''re driving yes I am sure about
+          that I''ve done several years of training in London I have my LPC I''m right
+          yes I know she would like to add to that list? You''re an assistant at best.
+          Come on, we both know it. You''re just using big words and you''re making
+          up that you''re a lawyer. Read up on the law. I have rolled down the window,
+          I have spoken with you. That''s all I''m legally required to do. So is this
+          what you learnt at your big fancy law firm? I learnt a lot of things at
+          my big fancy law firm. Of course, like not knowing how to accelerate quickly.
+          I''m sorry, I apologise, I accelerated a little too swiftly because there''s
+          no need for me to get out of the vehicle. Don''t get your neckers in as
+          well. Have you got your MOT certificate? It''s actually not in the car at
+          the moment. I had it serviced last week and I haven''t yet put the updated
+          certificate in the glove compartment. So you''re telling me again that you''re
+          a lawyer and you don''t understand the rules of the law. You don''t understand
+          the basics of being a pullover. I do and I think you''ll find the road traffic
+          law of 1988 will show that law about giving MOT certificates not changed
+          in 34 years Then you as this big fancy lawyer must know all the rules of
+          the road correctly well I do try to keep up with changes in legislation
+          yes right you know what I''m not happy with this tone of voice you''re giving
+          them I''m an officer of the law yes I think we''ve established that. No,
+          you won''t actually because I think you''ll find that section D of that
+          particular Act, well it protects motorists by giving them seven days in
+          which to produce their MOT certificates. I don''t have to give it to you
+          now. If it''s not in the car, I have seven days with which to find it. I
+          do know where it is. And bring it in to the police station. Can we leave
+          it there? Well no because I''ve asked you to get out of your vehicle multiple
+          times and you''re refusing. That''s right I am refusing as is my right,
+          my legal right. Then would you like me to arrest you? Well you''re very
+          welcome to arrest me, but I..",<br>        "Time_distil": "95.16 seconds",<br>        "Transcript_hf_whisper":
+          " This lawyer was pulled over by police and my car''s in perfect condition.
+          So, you know when you take off from being in a standstill, if you go too
+          fast, that''s accelerating too fast, which is what you''ve just done. Right,
+          yeah, sorry, yes, that was my mistake. Okay, so, are we okay then? Am I
+          okay to go because I was barely over the speed limit? I would like your
+          license and registration. Yeah, I''m okay. Hurry up. Not a problem and fine
+          rolling down the window to talk to you is all I''m actually legally required
+          to do there''s no reason for me to leave the vehicle are you sure about
+          that little miss know at all because uh you think you know the law better
+          than me I''m a trained police police officer. Gone through the academy,
+          you know? Okay, well, that''s good. I''m a solicitor, so yeah, I do know
+          the law. Are you sure about that? This car you''re driving, you''re a solicitor?
+          Yes, I am sure about that. I''ve done several years of training in London,
+          have my LPC. Is that right? Yes, I know. Anything else you would like to
+          add to that list? Would there be any point? You''re an assistant at best.
+          Come on, we both know it. You''re just using big words and you''re making
+          up that you''re a lawyer. So is this what you learnt at your big fancy law
+          firm? I learnt a lot of things at my big fancy law firm. Oh, of course,
+          like not knowing how to accelerate quickly. I''m sorry, I apologise, I accelerated
+          a little too swiftly, yes, but come on, I was barely over the speed limit.
+          I think we can... So, no, no, no, I''m going to ask you again, can you get
+          out of your vehicle please? I''m sorry, I''m not prepared to get out of
+          the vehicle because there''s no need for me to get out of the vehicle. Don''t
+          get your neckers in as West. Have you got your MOT certificate? It''s actually
+          not in the car at the moment. I had it serviced last week and I haven''t
+          yet put the updated certificate in the glove compartment. So, you''re telling
+          me again that you''re a lawyer and you don''t understand the rules of the
+          law? Like you don''t understand the basics of being pulled over. I do, and
+          I think you''ll find the road traffic law of 1988 will show that law about
+          giving MOT certificates not changed in 34 years. 34 years? Mm. Then you
+          as this big fancy lawyer must know all the rules of the road, correct? Well,
+          I do try to keep up with changes in legislation, yes. Yes, I think you''ll
+          find that section D of that particular act Well, it protects motorists by
+          giving them seven days in which to produce their MOT certificates I don''t
+          have to give it to you now if it''s not in the car I have seven days with
+          which to find it. I do know where it is and bring it into the police station
+          Can we leave it there? Well no because I''ve asked you to get out of your
+          vehicle multiple times and you''re refusing. That''s right I am refusing
+          as is my right. My legal right. Then would you like me to arrest you? Well
+          you''re very welcome to arrest me. What is your big boss at your law firm
+          gonna do?",<br>        "Time_hf_whisper": "81.00 seconds"<br>    },<br>    "test_videos/Download-5.mp4":
+          {<br>        "Transcript_openai": " Hello, Eric with the police department.
+          Just so you know, I''m recording with the body camera. Sure. Hey I don''t
+          think so. No, okay the reason I was like, I don''t know if I''ve told you
+          about your car, but you look familiar Sorry, it''s all good. Anyways, the
+          reason for the stop is because your tabs are expired and oh no Yeah, they''re
+          expired barely like three months, but I wasn''t sure if you were aware of
+          it. You know what? It probably slipped my mind. Hey, no problem. Okay Yeah,
+          every license registration I do yeah, oh that''s a cool little neat I always
+          lose my wallet Hey fair enough. I''m the same way. That''s why I always
+          have it on me at all times Yeah with the kids and everything else it probably
+          just slipped my mind hey like I said, no worries not You know, I just wanted
+          to make sure that you were aware Because like this one that one''s expired.
+          Yeah, that was 20 21 And then this one is This is the one that''s just yeah,
+          here''s that do you have your proof of insurance? Well, you get that just
+          go back so we can make this fast as possible so you get out here, okay Okay,
+          Brian Yeah, here''s this now. I remember where where I recognize you from
+          what''s up call bank. Oh Your car was Right. Okay. So it''s the glasses
+          man. Yeah, I wasn''t worrying him the last time we know it''s always like
+          wait Why do I so I have a bit of an update for you as well? Okay, I was
+          actually gonna call you and it''s crazy convenient right? so you''re the
+          people who send over the video to me said that there was no video surveillance
+          on that day, but The reports already done. Everything''s been done. I was
+          waiting on And I remember you told me as much too, I don''t know how well
+          you can see that this is yeah All right, but yeah, unfortunately, they didn''t
+          find anything. So Yeah, I remember the last time we talked that was essentially
+          that and I was like But I knew I was like, I remember where did and then
+          I saw it the back and I was like So, um, but yeah, sorry, sorry to you know
+          inform you of that but that''s okay I''ll put that in all I''ll put in the
+          new tabs tonight when I get home. Awesome. Yeah. Thanks, man Oh and I checked
+          and it seems like your registration is expired. So, I don''t know if you
+          just got it go I think I just got to go online. Yeah So I''m just gonna
+          give a verbal warning on the registration I get it you get busy and stuff
+          So yeah, but it''s verbal warning just get that done as soon as possible.
+          All right, okay I''m gonna see you now. I will",<br>        "Time_openai":
+          "54.83 seconds",<br>        "Transcript_distil": " Hello, Eric with the
+          police department. Just so you know, I''m recording with the body camera.
+          Sure. Hey, have I put you over before? I don''t think so. No? Okay. I was
+          like, I don''t know if I''ve told you about your car, but you look familiar.
+          Sorry. It''s all good. Anyways, the reason for the stop is because your
+          tabs are expired. Oh no. Yeah, they''re expired barely like three months,
+          but I wasn''t sure if you were aware of it. You know what? It probably slipped
+          my mind. Hey, no problem. Okay. Do you have your license, registration proof?
+          I do, yeah. Oh, that''s a cool little neat trip. I always lose my wallet.
+          Fair enough, I''m the same way. That''s why I always have it on me at all
+          times. Yeah, with the kids and everything else it probably just slipped
+          my mind. Hey, like I said, no worries, not being in the world. You know,
+          I just wanted to make sure that you were aware because like this this one
+          that one''s expired yeah that was 2021 and then this one is is that this
+          is the one that just expired, here''s that do you have your proof of insurance?
+          Well you get that just go back so we can make this fast as possible so you
+          can get out of here. Okay Brian, here''s this. Now I remember where I recognize
+          you from. Up up, Paul Bank? Oh your car was in there. That''s right. Okay,
+          so it''s the glasses man So you''re the people who send over the video to
+          me said that there was no video surveillance on that day, but the report''s
+          already done, everything''s been done. I was waiting on that. No, and I
+          assumed as much. Yeah, and I remember you told me as much too. I don''t
+          know how well you can see that. But yeah, unfortunately they didn''t find
+          anything. I didn''t expect them to the way the cameras were oriented. Yeah,
+          I remember the last time we talked there was essentially that and I was
+          like, ah, but I knew I was like, I remember where did and then I saw the
+          back and I was like, there''s something familiar so um but yeah sorry sorry
+          to you know inform you of that but that''s okay I''ll put that in all I''ll
+          put in the new tabs tonight when I get home awesome Awesome. Thanks man.
+          Oh and I checked and it seems like your registration is expired so I don''t
+          know if you just got to go. I think I just got to go online. Yeah. So I''m
+          just going on the registrat get that done as soon as",<br>        "Time_distil":
+          "71.43 seconds",<br>        "Transcript_hf_whisper": " Hello, Eric with
+          the police department. Just so you know, I''m recording with the body camera.
+          Sure. Hey, have I put you over before? I don''t think so. No? Okay. The
+          reason I was like, I don''t know if I''ve told you about your car, but you
+          look familiar. Sorry. It''s all good. Anyways, the reason for the stop is
+          because your tabs are expired. Oh no. Uh, yeah, they''re expired barely
+          like three months, but I wasn''t sure if you were aware of it. know what
+          it probably slipped my mind hey no problem okay yeah you have your license
+          registration I do yeah oh that''s a cool little neat trip I always lose
+          my wallet hey fair enough I''m the same way that''s why I always have it
+          on me at all times yeah with the kids and everything else it probably just
+          slipped my mind hey like I said no worries not you know I just wanted to
+          make sure that I is that Where I recognize you from what''s up, Paul Bank?
+          Oh your car was in there. That''s right. Okay, so it''s the glasses man
+          Yeah, I wasn''t wearing them the last time we know so I was like wait, where
+          do I so that makes I have a bit of an update for you as well. Okay, I was
+          actually gonna call you and it''s crazy convenient, right? so you''re the
+          people who send over the video to me said that there was no video surveillance
+          on that day, but The reports already done. Everything''s been funny thing
+          put in the new tabs tonight when I get home. Awesome. Thanks man. Oh and
+          I checked and it seems like your registration is expired so I don''t know
+          if you just got to go. I think I just got to go online. Yeah. So I''m just
+          going to give you a verbal warning on the registration. I get it. You get
+          busy and stuff. So yeah. For sure man. But verbal warning just get that
+          done as soon as possible. Okay. I will. Have a great rest of your night.
+          I will.",<br>        "Time_hf_whisper": "45.86 seconds"<br>    },<br>    "test_videos/Download-11.mp4":
+          {<br>        "Transcript_openai": " I''m gonna move. It''s ridiculous. Fucking
+          hellos. Is she gonna just sit there? I hate him so much. God, I hate this
+          world. I fucking hate him.",<br>        "Time_openai": "4.82 seconds",<br>        "Transcript_distil":
+          " I''m gonna move. It''s ridiculous. Is she gonna just sit there? I hate
+          him so much. I hate this world. I hate him.",<br>        "Time_distil":
+          "3.97 seconds",<br>        "Transcript_hf_whisper": " I''m gonna move. It''s
+          ridiculous. Is she gonna just sit there? I hate him so much. I hate this
+          world. I hate him.",<br>        "Time_hf_whisper": "4.08 seconds"<br>    }<br>}</p>
+
+          '
+        raw: "Here's the output JSON file:\n\n{\n    \"test_videos/Download.mp4\"\
+          : {\n        \"Transcript_openai\": \" little better than me. I'm a trained\
+          \ police officer, gone through the academy, you know? This lawyer was pulled\
+          \ over by police and they had a pretty tense encounter. Hi there, can you\
+          \ turn your engine off for me please? Keep your hands on the steering wheel\
+          \ as well. Do you know why I pulled you over today? Well actually I don't\
+          \ because I wasn't speeding and my car's in perfect condition. You know\
+          \ when you take off from being in a standstill, if you go too fast, that's\
+          \ accelerating too fast which is what you've just done. Right, yeah, sorry,\
+          \ yes, that was my mistake. Okay, so are we okay then? Am I okay to go?\
+          \ Because I was barely over the speed limit. I would like your license and\
+          \ registration. Yeah, uh, okay, not a problem, um, fine. Thank you. Can\
+          \ you step out of the vehicle for me? Rolling down the window to talk to\
+          \ you is all I'm actually legally required to do, there's no reason for\
+          \ me to leave the vehicle. Are you sure about that little miss know-it-all?\
+          \ Because, uh, you think you know the little better than me, I'm a trained\
+          \ police officer, gone through the academy, you know? Okay, well, that's\
+          \ good, I'm a solicitor, so yeah, I do know the law. Are you sure about\
+          \ that, this car you're driving, you're a solicitor? Yes, I am sure about\
+          \ that, I've done several years of training in London, have my LPC. Is that\
+          \ right? Yes, I know. Is there anything else you would like to add to that\
+          \ list? Would there be any point? You're an assistant at best, come on,\
+          \ we both know it. You're just using big words and you're making up that\
+          \ you're a lawyer. Read up on the law, I have rolled down the window, I\
+          \ have spoken with you, that's all I'm legally required to do. So is this\
+          \ what you learned at your big fancy law firm? I learned a lot of things\
+          \ at my big fancy law firm. Of course, like not knowing how to accelerate\
+          \ quickly. I'm sorry, I apologize, I accelerated a little too swiftly, yes,\
+          \ but come on, I was barely over the speed limit, I think we can... So,\
+          \ no, no, no, I'm going to ask you again, can you get out of your vehicle,\
+          \ please? I'm sorry, I'm not prepared to get out of the vehicle because\
+          \ there's no need for me to get out of the vehicle. Don't get your neckers\
+          \ in a twist, have you got your MOT certificate? It's actually not in the\
+          \ car at the moment, I had it serviced last week and I haven't yet put the\
+          \ updated certificate in the glove compartment. So you're telling me again\
+          \ that you're a lawyer and you don't understand the rules of the law? Like\
+          \ you don't understand the basics of being pulled over? I do and I think\
+          \ you'll find the road traffic law of 1988 will show that law about giving\
+          \ MOT certificates not changed in 34 years. 34 years? Then you as this big\
+          \ fancy lawyer must know all the rules of the road, correct? Well, I do\
+          \ try to keep up with changes in legislation, yes. Right, you know what,\
+          \ I'm not happy with this tone of voice that you're giving me. I'm an officer\
+          \ of the law. Yes, I think we've established that. If you continue to be\
+          \ disrespectful towards me, I'll bring you into the station. No, you won't\
+          \ actually because I think you'll find that section D of that particular\
+          \ Act, well it protects motorists by giving them seven days in which to\
+          \ produce their MOT certificates. I don't have to give it to you now, if\
+          \ it's not in the car, I have seven days with which to find it. I do know\
+          \ where it is and bring it into the police station. Can we leave it there?\
+          \ Well, no because I've asked you to get out of your vehicle multiple times\
+          \ and you're refusing. That's right, I am refusing as is my right, my legal\
+          \ right. Would you like me to arrest you? Well, you're very welcome to arrest\
+          \ me. What is your big boss at your law firm going to do?\",\n        \"\
+          Time_openai\": \"80.36 seconds\",\n        \"Transcript_distil\": \" This\
+          \ lawyer was pulled over by police and my car's in perfect condition. So,\
+          \ you know when you take off from being in a standstill, if you go too fast,\
+          \ that's accelerating too fast, which is what you've just done. Right, yeah,\
+          \ sorry, yes, that was my mistake okay so are we okay then I'm okay to go\
+          \ because I was I was barely over the speed limit I would like your license\
+          \ and registration yeah okay not a problem rolling down the window to talk\
+          \ to you is all I'm actually legally required to do. There's no reason for\
+          \ me to leave the vehicle. Are you sure about that little miss know-it-all?\
+          \ Because you think you know the law better than me. I'm a trained police\
+          \ officer. Gone through the academy, you know? Okay, well, that's good.\
+          \ I'm a solicitor, so yeah, I do know the law. Are you sure about that?\
+          \ This car you're driving, you're car you're driving yes I am sure about\
+          \ that I've done several years of training in London I have my LPC I'm right\
+          \ yes I know she would like to add to that list? You're an assistant at\
+          \ best. Come on, we both know it. You're just using big words and you're\
+          \ making up that you're a lawyer. Read up on the law. I have rolled down\
+          \ the window, I have spoken with you. That's all I'm legally required to\
+          \ do. So is this what you learnt at your big fancy law firm? I learnt a\
+          \ lot of things at my big fancy law firm. Of course, like not knowing how\
+          \ to accelerate quickly. I'm sorry, I apologise, I accelerated a little\
+          \ too swiftly because there's no need for me to get out of the vehicle.\
+          \ Don't get your neckers in as well. Have you got your MOT certificate?\
+          \ It's actually not in the car at the moment. I had it serviced last week\
+          \ and I haven't yet put the updated certificate in the glove compartment.\
+          \ So you're telling me again that you're a lawyer and you don't understand\
+          \ the rules of the law. You don't understand the basics of being a pullover.\
+          \ I do and I think you'll find the road traffic law of 1988 will show that\
+          \ law about giving MOT certificates not changed in 34 years Then you as\
+          \ this big fancy lawyer must know all the rules of the road correctly well\
+          \ I do try to keep up with changes in legislation yes right you know what\
+          \ I'm not happy with this tone of voice you're giving them I'm an officer\
+          \ of the law yes I think we've established that. No, you won't actually\
+          \ because I think you'll find that section D of that particular Act, well\
+          \ it protects motorists by giving them seven days in which to produce their\
+          \ MOT certificates. I don't have to give it to you now. If it's not in the\
+          \ car, I have seven days with which to find it. I do know where it is. And\
+          \ bring it in to the police station. Can we leave it there? Well no because\
+          \ I've asked you to get out of your vehicle multiple times and you're refusing.\
+          \ That's right I am refusing as is my right, my legal right. Then would\
+          \ you like me to arrest you? Well you're very welcome to arrest me, but\
+          \ I..\",\n        \"Time_distil\": \"95.16 seconds\",\n        \"Transcript_hf_whisper\"\
+          : \" This lawyer was pulled over by police and my car's in perfect condition.\
+          \ So, you know when you take off from being in a standstill, if you go too\
+          \ fast, that's accelerating too fast, which is what you've just done. Right,\
+          \ yeah, sorry, yes, that was my mistake. Okay, so, are we okay then? Am\
+          \ I okay to go because I was barely over the speed limit? I would like your\
+          \ license and registration. Yeah, I'm okay. Hurry up. Not a problem and\
+          \ fine rolling down the window to talk to you is all I'm actually legally\
+          \ required to do there's no reason for me to leave the vehicle are you sure\
+          \ about that little miss know at all because uh you think you know the law\
+          \ better than me I'm a trained police police officer. Gone through the academy,\
+          \ you know? Okay, well, that's good. I'm a solicitor, so yeah, I do know\
+          \ the law. Are you sure about that? This car you're driving, you're a solicitor?\
+          \ Yes, I am sure about that. I've done several years of training in London,\
+          \ have my LPC. Is that right? Yes, I know. Anything else you would like\
+          \ to add to that list? Would there be any point? You're an assistant at\
+          \ best. Come on, we both know it. You're just using big words and you're\
+          \ making up that you're a lawyer. So is this what you learnt at your big\
+          \ fancy law firm? I learnt a lot of things at my big fancy law firm. Oh,\
+          \ of course, like not knowing how to accelerate quickly. I'm sorry, I apologise,\
+          \ I accelerated a little too swiftly, yes, but come on, I was barely over\
+          \ the speed limit. I think we can... So, no, no, no, I'm going to ask you\
+          \ again, can you get out of your vehicle please? I'm sorry, I'm not prepared\
+          \ to get out of the vehicle because there's no need for me to get out of\
+          \ the vehicle. Don't get your neckers in as West. Have you got your MOT\
+          \ certificate? It's actually not in the car at the moment. I had it serviced\
+          \ last week and I haven't yet put the updated certificate in the glove compartment.\
+          \ So, you're telling me again that you're a lawyer and you don't understand\
+          \ the rules of the law? Like you don't understand the basics of being pulled\
+          \ over. I do, and I think you'll find the road traffic law of 1988 will\
+          \ show that law about giving MOT certificates not changed in 34 years. 34\
+          \ years? Mm. Then you as this big fancy lawyer must know all the rules of\
+          \ the road, correct? Well, I do try to keep up with changes in legislation,\
+          \ yes. Yes, I think you'll find that section D of that particular act Well,\
+          \ it protects motorists by giving them seven days in which to produce their\
+          \ MOT certificates I don't have to give it to you now if it's not in the\
+          \ car I have seven days with which to find it. I do know where it is and\
+          \ bring it into the police station Can we leave it there? Well no because\
+          \ I've asked you to get out of your vehicle multiple times and you're refusing.\
+          \ That's right I am refusing as is my right. My legal right. Then would\
+          \ you like me to arrest you? Well you're very welcome to arrest me. What\
+          \ is your big boss at your law firm gonna do?\",\n        \"Time_hf_whisper\"\
+          : \"81.00 seconds\"\n    },\n    \"test_videos/Download-5.mp4\": {\n   \
+          \     \"Transcript_openai\": \" Hello, Eric with the police department.\
+          \ Just so you know, I'm recording with the body camera. Sure. Hey I don't\
+          \ think so. No, okay the reason I was like, I don't know if I've told you\
+          \ about your car, but you look familiar Sorry, it's all good. Anyways, the\
+          \ reason for the stop is because your tabs are expired and oh no Yeah, they're\
+          \ expired barely like three months, but I wasn't sure if you were aware\
+          \ of it. You know what? It probably slipped my mind. Hey, no problem. Okay\
+          \ Yeah, every license registration I do yeah, oh that's a cool little neat\
+          \ I always lose my wallet Hey fair enough. I'm the same way. That's why\
+          \ I always have it on me at all times Yeah with the kids and everything\
+          \ else it probably just slipped my mind hey like I said, no worries not\
+          \ You know, I just wanted to make sure that you were aware Because like\
+          \ this one that one's expired. Yeah, that was 20 21 And then this one is\
+          \ This is the one that's just yeah, here's that do you have your proof of\
+          \ insurance? Well, you get that just go back so we can make this fast as\
+          \ possible so you get out here, okay Okay, Brian Yeah, here's this now.\
+          \ I remember where where I recognize you from what's up call bank. Oh Your\
+          \ car was Right. Okay. So it's the glasses man. Yeah, I wasn't worrying\
+          \ him the last time we know it's always like wait Why do I so I have a bit\
+          \ of an update for you as well? Okay, I was actually gonna call you and\
+          \ it's crazy convenient right? so you're the people who send over the video\
+          \ to me said that there was no video surveillance on that day, but The reports\
+          \ already done. Everything's been done. I was waiting on And I remember\
+          \ you told me as much too, I don't know how well you can see that this is\
+          \ yeah All right, but yeah, unfortunately, they didn't find anything. So\
+          \ Yeah, I remember the last time we talked that was essentially that and\
+          \ I was like But I knew I was like, I remember where did and then I saw\
+          \ it the back and I was like So, um, but yeah, sorry, sorry to you know\
+          \ inform you of that but that's okay I'll put that in all I'll put in the\
+          \ new tabs tonight when I get home. Awesome. Yeah. Thanks, man Oh and I\
+          \ checked and it seems like your registration is expired. So, I don't know\
+          \ if you just got it go I think I just got to go online. Yeah So I'm just\
+          \ gonna give a verbal warning on the registration I get it you get busy\
+          \ and stuff So yeah, but it's verbal warning just get that done as soon\
+          \ as possible. All right, okay I'm gonna see you now. I will\",\n      \
+          \  \"Time_openai\": \"54.83 seconds\",\n        \"Transcript_distil\": \"\
+          \ Hello, Eric with the police department. Just so you know, I'm recording\
+          \ with the body camera. Sure. Hey, have I put you over before? I don't think\
+          \ so. No? Okay. I was like, I don't know if I've told you about your car,\
+          \ but you look familiar. Sorry. It's all good. Anyways, the reason for the\
+          \ stop is because your tabs are expired. Oh no. Yeah, they're expired barely\
+          \ like three months, but I wasn't sure if you were aware of it. You know\
+          \ what? It probably slipped my mind. Hey, no problem. Okay. Do you have\
+          \ your license, registration proof? I do, yeah. Oh, that's a cool little\
+          \ neat trip. I always lose my wallet. Fair enough, I'm the same way. That's\
+          \ why I always have it on me at all times. Yeah, with the kids and everything\
+          \ else it probably just slipped my mind. Hey, like I said, no worries, not\
+          \ being in the world. You know, I just wanted to make sure that you were\
+          \ aware because like this this one that one's expired yeah that was 2021\
+          \ and then this one is is that this is the one that just expired, here's\
+          \ that do you have your proof of insurance? Well you get that just go back\
+          \ so we can make this fast as possible so you can get out of here. Okay\
+          \ Brian, here's this. Now I remember where I recognize you from. Up up,\
+          \ Paul Bank? Oh your car was in there. That's right. Okay, so it's the glasses\
+          \ man So you're the people who send over the video to me said that there\
+          \ was no video surveillance on that day, but the report's already done,\
+          \ everything's been done. I was waiting on that. No, and I assumed as much.\
+          \ Yeah, and I remember you told me as much too. I don't know how well you\
+          \ can see that. But yeah, unfortunately they didn't find anything. I didn't\
+          \ expect them to the way the cameras were oriented. Yeah, I remember the\
+          \ last time we talked there was essentially that and I was like, ah, but\
+          \ I knew I was like, I remember where did and then I saw the back and I\
+          \ was like, there's something familiar so um but yeah sorry sorry to you\
+          \ know inform you of that but that's okay I'll put that in all I'll put\
+          \ in the new tabs tonight when I get home awesome Awesome. Thanks man. Oh\
+          \ and I checked and it seems like your registration is expired so I don't\
+          \ know if you just got to go. I think I just got to go online. Yeah. So\
+          \ I'm just going on the registrat get that done as soon as\",\n        \"\
+          Time_distil\": \"71.43 seconds\",\n        \"Transcript_hf_whisper\": \"\
+          \ Hello, Eric with the police department. Just so you know, I'm recording\
+          \ with the body camera. Sure. Hey, have I put you over before? I don't think\
+          \ so. No? Okay. The reason I was like, I don't know if I've told you about\
+          \ your car, but you look familiar. Sorry. It's all good. Anyways, the reason\
+          \ for the stop is because your tabs are expired. Oh no. Uh, yeah, they're\
+          \ expired barely like three months, but I wasn't sure if you were aware\
+          \ of it. know what it probably slipped my mind hey no problem okay yeah\
+          \ you have your license registration I do yeah oh that's a cool little neat\
+          \ trip I always lose my wallet hey fair enough I'm the same way that's why\
+          \ I always have it on me at all times yeah with the kids and everything\
+          \ else it probably just slipped my mind hey like I said no worries not you\
+          \ know I just wanted to make sure that I is that Where I recognize you from\
+          \ what's up, Paul Bank? Oh your car was in there. That's right. Okay, so\
+          \ it's the glasses man Yeah, I wasn't wearing them the last time we know\
+          \ so I was like wait, where do I so that makes I have a bit of an update\
+          \ for you as well. Okay, I was actually gonna call you and it's crazy convenient,\
+          \ right? so you're the people who send over the video to me said that there\
+          \ was no video surveillance on that day, but The reports already done. Everything's\
+          \ been funny thing put in the new tabs tonight when I get home. Awesome.\
+          \ Thanks man. Oh and I checked and it seems like your registration is expired\
+          \ so I don't know if you just got to go. I think I just got to go online.\
+          \ Yeah. So I'm just going to give you a verbal warning on the registration.\
+          \ I get it. You get busy and stuff. So yeah. For sure man. But verbal warning\
+          \ just get that done as soon as possible. Okay. I will. Have a great rest\
+          \ of your night. I will.\",\n        \"Time_hf_whisper\": \"45.86 seconds\"\
+          \n    },\n    \"test_videos/Download-11.mp4\": {\n        \"Transcript_openai\"\
+          : \" I'm gonna move. It's ridiculous. Fucking hellos. Is she gonna just\
+          \ sit there? I hate him so much. God, I hate this world. I fucking hate\
+          \ him.\",\n        \"Time_openai\": \"4.82 seconds\",\n        \"Transcript_distil\"\
+          : \" I'm gonna move. It's ridiculous. Is she gonna just sit there? I hate\
+          \ him so much. I hate this world. I hate him.\",\n        \"Time_distil\"\
+          : \"3.97 seconds\",\n        \"Transcript_hf_whisper\": \" I'm gonna move.\
+          \ It's ridiculous. Is she gonna just sit there? I hate him so much. I hate\
+          \ this world. I hate him.\",\n        \"Time_hf_whisper\": \"4.08 seconds\"\
+          \n    }\n}"
+        updatedAt: '2023-11-03T18:12:36.442Z'
+      numEdits: 0
+      reactions: []
+    id: 654538146070dd5df7150289
+    type: comment
+  author: anuragrawal
+  content: "Here's the output JSON file:\n\n{\n    \"test_videos/Download.mp4\": {\n\
+    \        \"Transcript_openai\": \" little better than me. I'm a trained police\
+    \ officer, gone through the academy, you know? This lawyer was pulled over by\
+    \ police and they had a pretty tense encounter. Hi there, can you turn your engine\
+    \ off for me please? Keep your hands on the steering wheel as well. Do you know\
+    \ why I pulled you over today? Well actually I don't because I wasn't speeding\
+    \ and my car's in perfect condition. You know when you take off from being in\
+    \ a standstill, if you go too fast, that's accelerating too fast which is what\
+    \ you've just done. Right, yeah, sorry, yes, that was my mistake. Okay, so are\
+    \ we okay then? Am I okay to go? Because I was barely over the speed limit. I\
+    \ would like your license and registration. Yeah, uh, okay, not a problem, um,\
+    \ fine. Thank you. Can you step out of the vehicle for me? Rolling down the window\
+    \ to talk to you is all I'm actually legally required to do, there's no reason\
+    \ for me to leave the vehicle. Are you sure about that little miss know-it-all?\
+    \ Because, uh, you think you know the little better than me, I'm a trained police\
+    \ officer, gone through the academy, you know? Okay, well, that's good, I'm a\
+    \ solicitor, so yeah, I do know the law. Are you sure about that, this car you're\
+    \ driving, you're a solicitor? Yes, I am sure about that, I've done several years\
+    \ of training in London, have my LPC. Is that right? Yes, I know. Is there anything\
+    \ else you would like to add to that list? Would there be any point? You're an\
+    \ assistant at best, come on, we both know it. You're just using big words and\
+    \ you're making up that you're a lawyer. Read up on the law, I have rolled down\
+    \ the window, I have spoken with you, that's all I'm legally required to do. So\
+    \ is this what you learned at your big fancy law firm? I learned a lot of things\
+    \ at my big fancy law firm. Of course, like not knowing how to accelerate quickly.\
+    \ I'm sorry, I apologize, I accelerated a little too swiftly, yes, but come on,\
+    \ I was barely over the speed limit, I think we can... So, no, no, no, I'm going\
+    \ to ask you again, can you get out of your vehicle, please? I'm sorry, I'm not\
+    \ prepared to get out of the vehicle because there's no need for me to get out\
+    \ of the vehicle. Don't get your neckers in a twist, have you got your MOT certificate?\
+    \ It's actually not in the car at the moment, I had it serviced last week and\
+    \ I haven't yet put the updated certificate in the glove compartment. So you're\
+    \ telling me again that you're a lawyer and you don't understand the rules of\
+    \ the law? Like you don't understand the basics of being pulled over? I do and\
+    \ I think you'll find the road traffic law of 1988 will show that law about giving\
+    \ MOT certificates not changed in 34 years. 34 years? Then you as this big fancy\
+    \ lawyer must know all the rules of the road, correct? Well, I do try to keep\
+    \ up with changes in legislation, yes. Right, you know what, I'm not happy with\
+    \ this tone of voice that you're giving me. I'm an officer of the law. Yes, I\
+    \ think we've established that. If you continue to be disrespectful towards me,\
+    \ I'll bring you into the station. No, you won't actually because I think you'll\
+    \ find that section D of that particular Act, well it protects motorists by giving\
+    \ them seven days in which to produce their MOT certificates. I don't have to\
+    \ give it to you now, if it's not in the car, I have seven days with which to\
+    \ find it. I do know where it is and bring it into the police station. Can we\
+    \ leave it there? Well, no because I've asked you to get out of your vehicle multiple\
+    \ times and you're refusing. That's right, I am refusing as is my right, my legal\
+    \ right. Would you like me to arrest you? Well, you're very welcome to arrest\
+    \ me. What is your big boss at your law firm going to do?\",\n        \"Time_openai\"\
+    : \"80.36 seconds\",\n        \"Transcript_distil\": \" This lawyer was pulled\
+    \ over by police and my car's in perfect condition. So, you know when you take\
+    \ off from being in a standstill, if you go too fast, that's accelerating too\
+    \ fast, which is what you've just done. Right, yeah, sorry, yes, that was my mistake\
+    \ okay so are we okay then I'm okay to go because I was I was barely over the\
+    \ speed limit I would like your license and registration yeah okay not a problem\
+    \ rolling down the window to talk to you is all I'm actually legally required\
+    \ to do. There's no reason for me to leave the vehicle. Are you sure about that\
+    \ little miss know-it-all? Because you think you know the law better than me.\
+    \ I'm a trained police officer. Gone through the academy, you know? Okay, well,\
+    \ that's good. I'm a solicitor, so yeah, I do know the law. Are you sure about\
+    \ that? This car you're driving, you're car you're driving yes I am sure about\
+    \ that I've done several years of training in London I have my LPC I'm right yes\
+    \ I know she would like to add to that list? You're an assistant at best. Come\
+    \ on, we both know it. You're just using big words and you're making up that you're\
+    \ a lawyer. Read up on the law. I have rolled down the window, I have spoken with\
+    \ you. That's all I'm legally required to do. So is this what you learnt at your\
+    \ big fancy law firm? I learnt a lot of things at my big fancy law firm. Of course,\
+    \ like not knowing how to accelerate quickly. I'm sorry, I apologise, I accelerated\
+    \ a little too swiftly because there's no need for me to get out of the vehicle.\
+    \ Don't get your neckers in as well. Have you got your MOT certificate? It's actually\
+    \ not in the car at the moment. I had it serviced last week and I haven't yet\
+    \ put the updated certificate in the glove compartment. So you're telling me again\
+    \ that you're a lawyer and you don't understand the rules of the law. You don't\
+    \ understand the basics of being a pullover. I do and I think you'll find the\
+    \ road traffic law of 1988 will show that law about giving MOT certificates not\
+    \ changed in 34 years Then you as this big fancy lawyer must know all the rules\
+    \ of the road correctly well I do try to keep up with changes in legislation yes\
+    \ right you know what I'm not happy with this tone of voice you're giving them\
+    \ I'm an officer of the law yes I think we've established that. No, you won't\
+    \ actually because I think you'll find that section D of that particular Act,\
+    \ well it protects motorists by giving them seven days in which to produce their\
+    \ MOT certificates. I don't have to give it to you now. If it's not in the car,\
+    \ I have seven days with which to find it. I do know where it is. And bring it\
+    \ in to the police station. Can we leave it there? Well no because I've asked\
+    \ you to get out of your vehicle multiple times and you're refusing. That's right\
+    \ I am refusing as is my right, my legal right. Then would you like me to arrest\
+    \ you? Well you're very welcome to arrest me, but I..\",\n        \"Time_distil\"\
+    : \"95.16 seconds\",\n        \"Transcript_hf_whisper\": \" This lawyer was pulled\
+    \ over by police and my car's in perfect condition. So, you know when you take\
+    \ off from being in a standstill, if you go too fast, that's accelerating too\
+    \ fast, which is what you've just done. Right, yeah, sorry, yes, that was my mistake.\
+    \ Okay, so, are we okay then? Am I okay to go because I was barely over the speed\
+    \ limit? I would like your license and registration. Yeah, I'm okay. Hurry up.\
+    \ Not a problem and fine rolling down the window to talk to you is all I'm actually\
+    \ legally required to do there's no reason for me to leave the vehicle are you\
+    \ sure about that little miss know at all because uh you think you know the law\
+    \ better than me I'm a trained police police officer. Gone through the academy,\
+    \ you know? Okay, well, that's good. I'm a solicitor, so yeah, I do know the law.\
+    \ Are you sure about that? This car you're driving, you're a solicitor? Yes, I\
+    \ am sure about that. I've done several years of training in London, have my LPC.\
+    \ Is that right? Yes, I know. Anything else you would like to add to that list?\
+    \ Would there be any point? You're an assistant at best. Come on, we both know\
+    \ it. You're just using big words and you're making up that you're a lawyer. So\
+    \ is this what you learnt at your big fancy law firm? I learnt a lot of things\
+    \ at my big fancy law firm. Oh, of course, like not knowing how to accelerate\
+    \ quickly. I'm sorry, I apologise, I accelerated a little too swiftly, yes, but\
+    \ come on, I was barely over the speed limit. I think we can... So, no, no, no,\
+    \ I'm going to ask you again, can you get out of your vehicle please? I'm sorry,\
+    \ I'm not prepared to get out of the vehicle because there's no need for me to\
+    \ get out of the vehicle. Don't get your neckers in as West. Have you got your\
+    \ MOT certificate? It's actually not in the car at the moment. I had it serviced\
+    \ last week and I haven't yet put the updated certificate in the glove compartment.\
+    \ So, you're telling me again that you're a lawyer and you don't understand the\
+    \ rules of the law? Like you don't understand the basics of being pulled over.\
+    \ I do, and I think you'll find the road traffic law of 1988 will show that law\
+    \ about giving MOT certificates not changed in 34 years. 34 years? Mm. Then you\
+    \ as this big fancy lawyer must know all the rules of the road, correct? Well,\
+    \ I do try to keep up with changes in legislation, yes. Yes, I think you'll find\
+    \ that section D of that particular act Well, it protects motorists by giving\
+    \ them seven days in which to produce their MOT certificates I don't have to give\
+    \ it to you now if it's not in the car I have seven days with which to find it.\
+    \ I do know where it is and bring it into the police station Can we leave it there?\
+    \ Well no because I've asked you to get out of your vehicle multiple times and\
+    \ you're refusing. That's right I am refusing as is my right. My legal right.\
+    \ Then would you like me to arrest you? Well you're very welcome to arrest me.\
+    \ What is your big boss at your law firm gonna do?\",\n        \"Time_hf_whisper\"\
+    : \"81.00 seconds\"\n    },\n    \"test_videos/Download-5.mp4\": {\n        \"\
+    Transcript_openai\": \" Hello, Eric with the police department. Just so you know,\
+    \ I'm recording with the body camera. Sure. Hey I don't think so. No, okay the\
+    \ reason I was like, I don't know if I've told you about your car, but you look\
+    \ familiar Sorry, it's all good. Anyways, the reason for the stop is because your\
+    \ tabs are expired and oh no Yeah, they're expired barely like three months, but\
+    \ I wasn't sure if you were aware of it. You know what? It probably slipped my\
+    \ mind. Hey, no problem. Okay Yeah, every license registration I do yeah, oh that's\
+    \ a cool little neat I always lose my wallet Hey fair enough. I'm the same way.\
+    \ That's why I always have it on me at all times Yeah with the kids and everything\
+    \ else it probably just slipped my mind hey like I said, no worries not You know,\
+    \ I just wanted to make sure that you were aware Because like this one that one's\
+    \ expired. Yeah, that was 20 21 And then this one is This is the one that's just\
+    \ yeah, here's that do you have your proof of insurance? Well, you get that just\
+    \ go back so we can make this fast as possible so you get out here, okay Okay,\
+    \ Brian Yeah, here's this now. I remember where where I recognize you from what's\
+    \ up call bank. Oh Your car was Right. Okay. So it's the glasses man. Yeah, I\
+    \ wasn't worrying him the last time we know it's always like wait Why do I so\
+    \ I have a bit of an update for you as well? Okay, I was actually gonna call you\
+    \ and it's crazy convenient right? so you're the people who send over the video\
+    \ to me said that there was no video surveillance on that day, but The reports\
+    \ already done. Everything's been done. I was waiting on And I remember you told\
+    \ me as much too, I don't know how well you can see that this is yeah All right,\
+    \ but yeah, unfortunately, they didn't find anything. So Yeah, I remember the\
+    \ last time we talked that was essentially that and I was like But I knew I was\
+    \ like, I remember where did and then I saw it the back and I was like So, um,\
+    \ but yeah, sorry, sorry to you know inform you of that but that's okay I'll put\
+    \ that in all I'll put in the new tabs tonight when I get home. Awesome. Yeah.\
+    \ Thanks, man Oh and I checked and it seems like your registration is expired.\
+    \ So, I don't know if you just got it go I think I just got to go online. Yeah\
+    \ So I'm just gonna give a verbal warning on the registration I get it you get\
+    \ busy and stuff So yeah, but it's verbal warning just get that done as soon as\
+    \ possible. All right, okay I'm gonna see you now. I will\",\n        \"Time_openai\"\
+    : \"54.83 seconds\",\n        \"Transcript_distil\": \" Hello, Eric with the police\
+    \ department. Just so you know, I'm recording with the body camera. Sure. Hey,\
+    \ have I put you over before? I don't think so. No? Okay. I was like, I don't\
+    \ know if I've told you about your car, but you look familiar. Sorry. It's all\
+    \ good. Anyways, the reason for the stop is because your tabs are expired. Oh\
+    \ no. Yeah, they're expired barely like three months, but I wasn't sure if you\
+    \ were aware of it. You know what? It probably slipped my mind. Hey, no problem.\
+    \ Okay. Do you have your license, registration proof? I do, yeah. Oh, that's a\
+    \ cool little neat trip. I always lose my wallet. Fair enough, I'm the same way.\
+    \ That's why I always have it on me at all times. Yeah, with the kids and everything\
+    \ else it probably just slipped my mind. Hey, like I said, no worries, not being\
+    \ in the world. You know, I just wanted to make sure that you were aware because\
+    \ like this this one that one's expired yeah that was 2021 and then this one is\
+    \ is that this is the one that just expired, here's that do you have your proof\
+    \ of insurance? Well you get that just go back so we can make this fast as possible\
+    \ so you can get out of here. Okay Brian, here's this. Now I remember where I\
+    \ recognize you from. Up up, Paul Bank? Oh your car was in there. That's right.\
+    \ Okay, so it's the glasses man So you're the people who send over the video to\
+    \ me said that there was no video surveillance on that day, but the report's already\
+    \ done, everything's been done. I was waiting on that. No, and I assumed as much.\
+    \ Yeah, and I remember you told me as much too. I don't know how well you can\
+    \ see that. But yeah, unfortunately they didn't find anything. I didn't expect\
+    \ them to the way the cameras were oriented. Yeah, I remember the last time we\
+    \ talked there was essentially that and I was like, ah, but I knew I was like,\
+    \ I remember where did and then I saw the back and I was like, there's something\
+    \ familiar so um but yeah sorry sorry to you know inform you of that but that's\
+    \ okay I'll put that in all I'll put in the new tabs tonight when I get home awesome\
+    \ Awesome. Thanks man. Oh and I checked and it seems like your registration is\
+    \ expired so I don't know if you just got to go. I think I just got to go online.\
+    \ Yeah. So I'm just going on the registrat get that done as soon as\",\n     \
+    \   \"Time_distil\": \"71.43 seconds\",\n        \"Transcript_hf_whisper\": \"\
+    \ Hello, Eric with the police department. Just so you know, I'm recording with\
+    \ the body camera. Sure. Hey, have I put you over before? I don't think so. No?\
+    \ Okay. The reason I was like, I don't know if I've told you about your car, but\
+    \ you look familiar. Sorry. It's all good. Anyways, the reason for the stop is\
+    \ because your tabs are expired. Oh no. Uh, yeah, they're expired barely like\
+    \ three months, but I wasn't sure if you were aware of it. know what it probably\
+    \ slipped my mind hey no problem okay yeah you have your license registration\
+    \ I do yeah oh that's a cool little neat trip I always lose my wallet hey fair\
+    \ enough I'm the same way that's why I always have it on me at all times yeah\
+    \ with the kids and everything else it probably just slipped my mind hey like\
+    \ I said no worries not you know I just wanted to make sure that I is that Where\
+    \ I recognize you from what's up, Paul Bank? Oh your car was in there. That's\
+    \ right. Okay, so it's the glasses man Yeah, I wasn't wearing them the last time\
+    \ we know so I was like wait, where do I so that makes I have a bit of an update\
+    \ for you as well. Okay, I was actually gonna call you and it's crazy convenient,\
+    \ right? so you're the people who send over the video to me said that there was\
+    \ no video surveillance on that day, but The reports already done. Everything's\
+    \ been funny thing put in the new tabs tonight when I get home. Awesome. Thanks\
+    \ man. Oh and I checked and it seems like your registration is expired so I don't\
+    \ know if you just got to go. I think I just got to go online. Yeah. So I'm just\
+    \ going to give you a verbal warning on the registration. I get it. You get busy\
+    \ and stuff. So yeah. For sure man. But verbal warning just get that done as soon\
+    \ as possible. Okay. I will. Have a great rest of your night. I will.\",\n   \
+    \     \"Time_hf_whisper\": \"45.86 seconds\"\n    },\n    \"test_videos/Download-11.mp4\"\
+    : {\n        \"Transcript_openai\": \" I'm gonna move. It's ridiculous. Fucking\
+    \ hellos. Is she gonna just sit there? I hate him so much. God, I hate this world.\
+    \ I fucking hate him.\",\n        \"Time_openai\": \"4.82 seconds\",\n       \
+    \ \"Transcript_distil\": \" I'm gonna move. It's ridiculous. Is she gonna just\
+    \ sit there? I hate him so much. I hate this world. I hate him.\",\n        \"\
+    Time_distil\": \"3.97 seconds\",\n        \"Transcript_hf_whisper\": \" I'm gonna\
+    \ move. It's ridiculous. Is she gonna just sit there? I hate him so much. I hate\
+    \ this world. I hate him.\",\n        \"Time_hf_whisper\": \"4.08 seconds\"\n\
+    \    }\n}"
+  created_at: 2023-11-03 17:12:36+00:00
+  edited: false
+  hidden: false
+  id: 654538146070dd5df7150289
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+      fullname: Anurag Agrawal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anuragrawal
+      type: user
+    createdAt: '2023-11-03T18:14:59.000Z'
+    data:
+      edited: true
+      editors:
+      - anuragrawal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7614114880561829
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+          fullname: Anurag Agrawal
+          isHf: false
+          isPro: false
+          name: anuragrawal
+          type: user
+        html: '<p>Here''s the readme file in case you want to mimic these results:</p>
+
+          <ol>
+
+          <li><p>Create a python virtual environment and activate it</p>
+
+          </li>
+
+          <li><p>Upgrade pip and install transformers<br>pip install --upgrade pip<br>pip
+          install --upgrade transformers</p>
+
+          </li>
+
+          <li><p>Install openai-whisper<br>pip install -U openai-whisper</p>
+
+          </li>
+
+          <li><p>cd to directory that has python scripts</p>
+
+          </li>
+
+          <li><p>Run the python script from command line using:<br> python main.py
+          --vid_folder "enter video folder path here"</p>
+
+          </li>
+
+          </ol>
+
+          '
+        raw: "Here's the readme file in case you want to mimic these results:\n\n\
+          1) Create a python virtual environment and activate it\n2) Upgrade pip and\
+          \ install transformers\npip install --upgrade pip\npip install --upgrade\
+          \ transformers\n\n3) Install openai-whisper\npip install -U openai-whisper\n\
+          \n4) cd to directory that has python scripts\n5) Run the python script from\
+          \ command line using:\n\tpython main.py --vid_folder \"enter video folder\
+          \ path here\"\n"
+        updatedAt: '2023-11-03T18:33:25.961Z'
+      numEdits: 2
+      reactions: []
+    id: 654538a336332b0eed4ca7ef
+    type: comment
+  author: anuragrawal
+  content: "Here's the readme file in case you want to mimic these results:\n\n1)\
+    \ Create a python virtual environment and activate it\n2) Upgrade pip and install\
+    \ transformers\npip install --upgrade pip\npip install --upgrade transformers\n\
+    \n3) Install openai-whisper\npip install -U openai-whisper\n\n4) cd to directory\
+    \ that has python scripts\n5) Run the python script from command line using:\n\
+    \tpython main.py --vid_folder \"enter video folder path here\"\n"
+  created_at: 2023-11-03 17:14:59+00:00
+  edited: true
+  hidden: false
+  id: 654538a336332b0eed4ca7ef
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/61b253b7ac5ecaae3d1efe0c/hwiQ0uvz3t-L5a-NtBIO6.png?w=200&h=200&f=face
+      fullname: Joshua
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Xenova
+      type: user
+    createdAt: '2023-11-03T21:54:12.000Z'
+    data:
+      edited: false
+      editors:
+      - Xenova
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9295004606246948
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/61b253b7ac5ecaae3d1efe0c/hwiQ0uvz3t-L5a-NtBIO6.png?w=200&h=200&f=face
+          fullname: Joshua
+          isHf: true
+          isPro: false
+          name: Xenova
+          type: user
+        html: "<p>Hi there! So, I think this is due to the following two things you\
+          \ mention:</p>\n<ol>\n<li><p>CPU inference</p>\n<blockquote>\n<p>I ran this\
+          \ experiment on a single CPU for a fair comparison.</p>\n</blockquote>\n\
+          </li>\n<li><p>More batches due to smaller sliding window</p>\n<blockquote>\n\
+          <p>I used the recommended 30 secs for openai and 15 secs for distil-medium.en</p>\n\
+          </blockquote>\n</li>\n</ol>\n<p>When running these models on CPU, the encoding\
+          \ phase is typically the biggest bottleneck (on the other hand, using a\
+          \ GPU would be able to parallelize these operations). So, using a smaller\
+          \ sliding window results in more batches, and so, the encoding phase is\
+          \ run more times.</p>\n<p>If you have access to a GPU, I would highly recommend\
+          \ using it for these models. See <span data-props=\"{&quot;user&quot;:&quot;reach-vb&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/reach-vb\"\
+          >@<span class=\"underline\">reach-vb</span></a></span>\n\n\t</span></span>'s\
+          \ analysis and benchmarks <a rel=\"nofollow\" href=\"https://github.com/Vaibhavs10/insanely-fast-whisper\"\
+          >here</a>. If this is not a possibility, could you try increase the sliding\
+          \ window to 20, 25, or 30 seconds? I know the README suggests using 15 seconds,\
+          \ but <span data-props=\"{&quot;user&quot;:&quot;sanchit-gandhi&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/sanchit-gandhi\"\
+          >@<span class=\"underline\">sanchit-gandhi</span></a></span>\n\n\t</span></span>\
+          \ has mentioned you can try increase the window for the medium model.</p>\n"
+        raw: 'Hi there! So, I think this is due to the following two things you mention:
+
+          1. CPU inference
+
+          > I ran this experiment on a single CPU for a fair comparison.
+
+
+          2. More batches due to smaller sliding window
+
+          > I used the recommended 30 secs for openai and 15 secs for distil-medium.en
+
+
+          When running these models on CPU, the encoding phase is typically the biggest
+          bottleneck (on the other hand, using a GPU would be able to parallelize
+          these operations). So, using a smaller sliding window results in more batches,
+          and so, the encoding phase is run more times.
+
+
+          If you have access to a GPU, I would highly recommend using it for these
+          models. See @reach-vb''s analysis and benchmarks [here](https://github.com/Vaibhavs10/insanely-fast-whisper).
+          If this is not a possibility, could you try increase the sliding window
+          to 20, 25, or 30 seconds? I know the README suggests using 15 seconds, but
+          @sanchit-gandhi has mentioned you can try increase the window for the medium
+          model.
+
+          '
+        updatedAt: '2023-11-03T21:54:12.175Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - anuragrawal
+        - sanchit-gandhi
+    id: 65456c047f43165b3db11b1c
+    type: comment
+  author: Xenova
+  content: 'Hi there! So, I think this is due to the following two things you mention:
+
+    1. CPU inference
+
+    > I ran this experiment on a single CPU for a fair comparison.
+
+
+    2. More batches due to smaller sliding window
+
+    > I used the recommended 30 secs for openai and 15 secs for distil-medium.en
+
+
+    When running these models on CPU, the encoding phase is typically the biggest
+    bottleneck (on the other hand, using a GPU would be able to parallelize these
+    operations). So, using a smaller sliding window results in more batches, and so,
+    the encoding phase is run more times.
+
+
+    If you have access to a GPU, I would highly recommend using it for these models.
+    See @reach-vb''s analysis and benchmarks [here](https://github.com/Vaibhavs10/insanely-fast-whisper).
+    If this is not a possibility, could you try increase the sliding window to 20,
+    25, or 30 seconds? I know the README suggests using 15 seconds, but @sanchit-gandhi
+    has mentioned you can try increase the window for the medium model.
+
+    '
+  created_at: 2023-11-03 20:54:12+00:00
+  edited: false
+  hidden: false
+  id: 65456c047f43165b3db11b1c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+      fullname: Anurag Agrawal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anuragrawal
+      type: user
+    createdAt: '2023-11-03T21:58:25.000Z'
+    data:
+      edited: false
+      editors:
+      - anuragrawal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.939753532409668
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1960eb0b8106871d06d4bd48d988a31c.svg
+          fullname: Anurag Agrawal
+          isHf: false
+          isPro: false
+          name: anuragrawal
+          type: user
+        html: "<p>Thank you <span data-props=\"{&quot;user&quot;:&quot;Xenova&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Xenova\"\
+          >@<span class=\"underline\">Xenova</span></a></span>\n\n\t</span></span>\
+          \ ! I'll try your recommendations and shall post my findings here shortly.</p>\n"
+        raw: Thank you @Xenova ! I'll try your recommendations and shall post my findings
+          here shortly.
+        updatedAt: '2023-11-03T21:58:25.417Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - Xenova
+    id: 65456d012fe2a1e6863915b3
+    type: comment
+  author: anuragrawal
+  content: Thank you @Xenova ! I'll try your recommendations and shall post my findings
+    here shortly.
+  created_at: 2023-11-03 20:58:25+00:00
+  edited: false
+  hidden: false
+  id: 65456d012fe2a1e6863915b3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+      fullname: Sanchit Gandhi
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sanchit-gandhi
+      type: user
+    createdAt: '2023-11-06T18:20:00.000Z'
+    data:
+      edited: false
+      editors:
+      - sanchit-gandhi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8705719709396362
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+          fullname: Sanchit Gandhi
+          isHf: true
+          isPro: false
+          name: sanchit-gandhi
+          type: user
+        html: "<p>You can read a full description of our benchmark set-up in Appendix\
+          \ B2 of the paper (page 23): <a rel=\"nofollow\" href=\"https://arxiv.org/abs/2311.00430\"\
+          >https://arxiv.org/abs/2311.00430</a></p>\n<p>As <span data-props=\"{&quot;user&quot;:&quot;Xenova&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Xenova\"\
+          >@<span class=\"underline\">Xenova</span></a></span>\n\n\t</span></span>\
+          \ has rightly pointed out, we ran the benchmarks on GPU hardware (A100 and\
+          \ T4) with bs={1, 4, 16}. Full results are shown on page 30.</p>\n"
+        raw: 'You can read a full description of our benchmark set-up in Appendix
+          B2 of the paper (page 23): https://arxiv.org/abs/2311.00430
+
+
+          As @Xenova has rightly pointed out, we ran the benchmarks on GPU hardware
+          (A100 and T4) with bs={1, 4, 16}. Full results are shown on page 30.
+
+          '
+        updatedAt: '2023-11-06T18:20:00.661Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - anuragrawal
+        - Xenova
+    id: 65492e505018913069e0d479
+    type: comment
+  author: sanchit-gandhi
+  content: 'You can read a full description of our benchmark set-up in Appendix B2
+    of the paper (page 23): https://arxiv.org/abs/2311.00430
+
+
+    As @Xenova has rightly pointed out, we ran the benchmarks on GPU hardware (A100
+    and T4) with bs={1, 4, 16}. Full results are shown on page 30.
+
+    '
+  created_at: 2023-11-06 18:20:00+00:00
+  edited: false
+  hidden: false
+  id: 65492e505018913069e0d479
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: distil-whisper/distil-medium.en
+repo_type: model
+status: open
+target_branch: null
+title: Steps for a fair comparison of distil-whisper with openai whisper?

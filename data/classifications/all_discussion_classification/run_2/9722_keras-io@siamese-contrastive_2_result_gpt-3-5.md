@@ -1,0 +1,4 @@
+## https://huggingface.co/keras-io/siamese-contrastive/discussions/2
+
+contains_question: yes
+question_part: Hi, thank you for the interesting application. However I have some questions regarding the way keras-io do the labelling and the eqn of contrastive loss. In the original pair, similar pairs are assigned as 0 and dissimilar pairs are assigned as 1, and the equation used are as follows: However in the example given by Keras (https://keras.io/examples/vision/siamese_contrastive/), the labelling method are reversed, and the same equation of contrastive loss are still used. Any reason why keras did so? Thank you.

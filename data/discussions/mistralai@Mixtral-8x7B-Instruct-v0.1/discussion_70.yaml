@@ -1,0 +1,588 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Pradeep1995
+conflicting_files: null
+created_at: 2023-12-29 09:41:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+      fullname: Pradeep T
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Pradeep1995
+      type: user
+    createdAt: '2023-12-29T09:41:03.000Z'
+    data:
+      edited: false
+      editors:
+      - Pradeep1995
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5331130623817444
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+          fullname: Pradeep T
+          isHf: false
+          isPro: false
+          name: Pradeep1995
+          type: user
+        html: "<p>Here is the SFTtrainer method i used for finetuning mistral</p>\n\
+          <pre><code>trainer = SFTTrainer(\n    model=peft_model,\n    train_dataset=data,\n\
+          \    peft_config=peft_config,\n    dataset_text_field=\" column name\",\n\
+          \    max_seq_length=3000,\n    tokenizer=tokenizer,\n    args=training_arguments,\n\
+          \    packing=packing,\n)\ntrainer.train()\n</code></pre>\n<p>I found different\
+          \ mechanisms for the finetuned model inference after PEFT based LORA finetuning</p>\n\
+          <p>Method - 1</p>\n<p>save adapter after completing training and then merge\
+          \ with base model then use for inference</p>\n<pre><code>trainer.model.save_pretrained(\"\
+          new_adapter_path\")\nfrom peft import PeftModel\nfinetuned_model = PeftModel.from_pretrained(base_model,\n\
+          \                                  new_adapter_path,\n                 \
+          \                 torch_dtype=torch.float16,\n                         \
+          \         is_trainable=False,\n                                  device_map=\"\
+          auto\"\n                                  )\nfinetuned_model = finetuned_model.merge_and_unload()\n\
+          </code></pre>\n<p>Method - 2</p>\n<p>save checkpoints during training and\
+          \ then use the checkpoint with the least loss</p>\n<pre><code>from peft\
+          \ import PeftModel\nfinetuned_model = PeftModel.from_pretrained(base_model,\n\
+          \                                  \"least loss checkpoint path\",\n   \
+          \                               torch_dtype=torch.float16,\n           \
+          \                       is_trainable=False,\n                          \
+          \        device_map=\"auto\"\n                                  )\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\n</code></pre>\n<p>Method - 3</p>\n\
+          <p>same method with AutoPeftModelForCausalLM class </p>\n<pre><code>model\
+          \ = AutoPeftModelForCausalLM.from_pretrained(\n    \"output directory checkpoint\
+          \ path\",\n    low_cpu_mem_usage=True,\n    return_dict=True,\n    torch_dtype=torch.float16,\n\
+          \    device_map=\"cuda\")\nfinetuned_model = finetuned_model.merge_and_unload()\n\
+          </code></pre>\n<p>Method-4</p>\n<p>AutoPeftModelForCausalLM class specifies\
+          \ the output folder without specifying a specific checkpoint</p>\n<pre><code>instruction_tuned_model\
+          \ = AutoPeftModelForCausalLM.from_pretrained(\n    training_args.output_dir,\n\
+          \    torch_dtype=torch.bfloat16,\n    device_map = 'auto',\n    trust_remote_code=True,\n\
+          )\nfinetuned_model = finetuned_model.merge_and_unload()\n</code></pre>\n\
+          <p>Method-5<br>All the above methods without merging</p>\n<pre><code>#finetuned_model\
+          \ = finetuned_model.merge_and_unload()\n</code></pre>\n<p>Which is the actual\
+          \ method I should follow for inference?<br>and when to use which method\
+          \ over another?</p>\n"
+        raw: "Here is the SFTtrainer method i used for finetuning mistral\r\n```\r\
+          \ntrainer = SFTTrainer(\r\n    model=peft_model,\r\n    train_dataset=data,\r\
+          \n    peft_config=peft_config,\r\n    dataset_text_field=\" column name\"\
+          ,\r\n    max_seq_length=3000,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+          \n    packing=packing,\r\n)\r\ntrainer.train()\r\n```\r\nI found different\
+          \ mechanisms for the finetuned model inference after PEFT based LORA finetuning\r\
+          \n\r\nMethod - 1\r\n\r\nsave adapter after completing training and then\
+          \ merge with base model then use for inference\r\n```\r\ntrainer.model.save_pretrained(\"\
+          new_adapter_path\")\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+          \n                                  new_adapter_path,\r\n              \
+          \                    torch_dtype=torch.float16,\r\n                    \
+          \              is_trainable=False,\r\n                                 \
+          \ device_map=\"auto\"\r\n                                  )\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n``` \r\n\r\nMethod - 2\r\n\r\n\
+          save checkpoints during training and then use the checkpoint with the least\
+          \ loss\r\n```\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+          \n                                  \"least loss checkpoint path\",\r\n\
+          \                                  torch_dtype=torch.float16,\r\n      \
+          \                            is_trainable=False,\r\n                   \
+          \               device_map=\"auto\"\r\n                                \
+          \  )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\n``` \r\n\
+          Method - 3\r\n\r\nsame method with AutoPeftModelForCausalLM class \r\n```\r\
+          \nmodel = AutoPeftModelForCausalLM.from_pretrained(\r\n    \"output directory\
+          \ checkpoint path\",\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\
+          \n    torch_dtype=torch.float16,\r\n    device_map=\"cuda\")\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-4\r\n\r\nAutoPeftModelForCausalLM\
+          \ class specifies the output folder without specifying a specific checkpoint\r\
+          \n```\r\ninstruction_tuned_model = AutoPeftModelForCausalLM.from_pretrained(\r\
+          \n    training_args.output_dir,\r\n    torch_dtype=torch.bfloat16,\r\n \
+          \   device_map = 'auto',\r\n    trust_remote_code=True,\r\n)\r\nfinetuned_model\
+          \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-5\r\nAll the above\
+          \ methods without merging\r\n```\r\n#finetuned_model = finetuned_model.merge_and_unload()\r\
+          \n```\r\n\r\nWhich is the actual method I should follow for inference?\r\
+          \nand when to use which method over another?"
+        updatedAt: '2023-12-29T09:41:03.546Z'
+      numEdits: 0
+      reactions: []
+    id: 658e942f87944e494ee8e89b
+    type: comment
+  author: Pradeep1995
+  content: "Here is the SFTtrainer method i used for finetuning mistral\r\n```\r\n\
+    trainer = SFTTrainer(\r\n    model=peft_model,\r\n    train_dataset=data,\r\n\
+    \    peft_config=peft_config,\r\n    dataset_text_field=\" column name\",\r\n\
+    \    max_seq_length=3000,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+    \n    packing=packing,\r\n)\r\ntrainer.train()\r\n```\r\nI found different mechanisms\
+    \ for the finetuned model inference after PEFT based LORA finetuning\r\n\r\nMethod\
+    \ - 1\r\n\r\nsave adapter after completing training and then merge with base model\
+    \ then use for inference\r\n```\r\ntrainer.model.save_pretrained(\"new_adapter_path\"\
+    )\r\nfrom peft import PeftModel\r\nfinetuned_model = PeftModel.from_pretrained(base_model,\r\
+    \n                                  new_adapter_path,\r\n                    \
+    \              torch_dtype=torch.float16,\r\n                                \
+    \  is_trainable=False,\r\n                                  device_map=\"auto\"\
+    \r\n                                  )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\
+    \n``` \r\n\r\nMethod - 2\r\n\r\nsave checkpoints during training and then use\
+    \ the checkpoint with the least loss\r\n```\r\nfrom peft import PeftModel\r\n\
+    finetuned_model = PeftModel.from_pretrained(base_model,\r\n                  \
+    \                \"least loss checkpoint path\",\r\n                         \
+    \         torch_dtype=torch.float16,\r\n                                  is_trainable=False,\r\
+    \n                                  device_map=\"auto\"\r\n                  \
+    \                )\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\n\
+    ``` \r\nMethod - 3\r\n\r\nsame method with AutoPeftModelForCausalLM class \r\n\
+    ```\r\nmodel = AutoPeftModelForCausalLM.from_pretrained(\r\n    \"output directory\
+    \ checkpoint path\",\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\
+    \n    torch_dtype=torch.float16,\r\n    device_map=\"cuda\")\r\nfinetuned_model\
+    \ = finetuned_model.merge_and_unload()\r\n```\r\nMethod-4\r\n\r\nAutoPeftModelForCausalLM\
+    \ class specifies the output folder without specifying a specific checkpoint\r\
+    \n```\r\ninstruction_tuned_model = AutoPeftModelForCausalLM.from_pretrained(\r\
+    \n    training_args.output_dir,\r\n    torch_dtype=torch.bfloat16,\r\n    device_map\
+    \ = 'auto',\r\n    trust_remote_code=True,\r\n)\r\nfinetuned_model = finetuned_model.merge_and_unload()\r\
+    \n```\r\nMethod-5\r\nAll the above methods without merging\r\n```\r\n#finetuned_model\
+    \ = finetuned_model.merge_and_unload()\r\n```\r\n\r\nWhich is the actual method\
+    \ I should follow for inference?\r\nand when to use which method over another?"
+  created_at: 2023-12-29 09:41:03+00:00
+  edited: false
+  hidden: false
+  id: 658e942f87944e494ee8e89b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+      fullname: Sumegh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sumegh
+      type: user
+    createdAt: '2024-01-06T14:13:21.000Z'
+    data:
+      edited: false
+      editors:
+      - sumegh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.906614363193512
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+          fullname: Sumegh
+          isHf: false
+          isPro: false
+          name: sumegh
+          type: user
+        html: '<p>I use "Method 1" and it works fine always. Better to save adapter
+          checkpoints which are smaller in size and merge for once with base model
+          rather than saving entire base model checkpoints everytime.</p>
+
+          <p>Btw can you share a sample notebook for finetuning ? I was using this
+          - <a rel="nofollow" href="https://colab.research.google.com/drive/1VDa0lIfqiwm16hBlIlEaabGVTNB3dN1A?usp=sharing">https://colab.research.google.com/drive/1VDa0lIfqiwm16hBlIlEaabGVTNB3dN1A?usp=sharing</a></p>
+
+          <p>But my training loss starts to increase after 1000 steps for some reason.
+          Any ideas ? Running on custom dataset. Tried using both Alpaca &amp; Mistral
+          templates although that shouldn''t matter much for finetuning i guess.</p>
+
+          '
+        raw: 'I use "Method 1" and it works fine always. Better to save adapter checkpoints
+          which are smaller in size and merge for once with base model rather than
+          saving entire base model checkpoints everytime.
+
+
+          Btw can you share a sample notebook for finetuning ? I was using this -
+          https://colab.research.google.com/drive/1VDa0lIfqiwm16hBlIlEaabGVTNB3dN1A?usp=sharing
+
+
+          But my training loss starts to increase after 1000 steps for some reason.
+          Any ideas ? Running on custom dataset. Tried using both Alpaca & Mistral
+          templates although that shouldn''t matter much for finetuning i guess.'
+        updatedAt: '2024-01-06T14:13:21.904Z'
+      numEdits: 0
+      reactions: []
+    id: 659960016d20ab21b013808f
+    type: comment
+  author: sumegh
+  content: 'I use "Method 1" and it works fine always. Better to save adapter checkpoints
+    which are smaller in size and merge for once with base model rather than saving
+    entire base model checkpoints everytime.
+
+
+    Btw can you share a sample notebook for finetuning ? I was using this - https://colab.research.google.com/drive/1VDa0lIfqiwm16hBlIlEaabGVTNB3dN1A?usp=sharing
+
+
+    But my training loss starts to increase after 1000 steps for some reason. Any
+    ideas ? Running on custom dataset. Tried using both Alpaca & Mistral templates
+    although that shouldn''t matter much for finetuning i guess.'
+  created_at: 2024-01-06 14:13:21+00:00
+  edited: false
+  hidden: false
+  id: 659960016d20ab21b013808f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+      fullname: Pradeep T
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Pradeep1995
+      type: user
+    createdAt: '2024-01-06T15:06:14.000Z'
+    data:
+      edited: true
+      editors:
+      - Pradeep1995
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9637235999107361
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+          fullname: Pradeep T
+          isHf: false
+          isPro: false
+          name: Pradeep1995
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;sumegh&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/sumegh\">@<span class=\"\
+          underline\">sumegh</span></a></span>\n\n\t</span></span> try with a lower\
+          \ learning rate which will reduce the loss. Do you have any idea on to select\
+          \ the max_steps parameter?</p>\n"
+        raw: '@sumegh try with a lower learning rate which will reduce the loss. Do
+          you have any idea on to select the max_steps parameter?'
+        updatedAt: '2024-01-06T15:07:40.688Z'
+      numEdits: 1
+      reactions: []
+    id: 65996c66c6457161ca9e0011
+    type: comment
+  author: Pradeep1995
+  content: '@sumegh try with a lower learning rate which will reduce the loss. Do
+    you have any idea on to select the max_steps parameter?'
+  created_at: 2024-01-06 15:06:14+00:00
+  edited: true
+  hidden: false
+  id: 65996c66c6457161ca9e0011
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+      fullname: Sumegh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sumegh
+      type: user
+    createdAt: '2024-01-06T15:41:12.000Z'
+    data:
+      edited: false
+      editors:
+      - sumegh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8751553893089294
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+          fullname: Sumegh
+          isHf: false
+          isPro: false
+          name: sumegh
+          type: user
+        html: '<p>That is if training a full epoch is not feasible for you. Else set
+          num_train_epochs = 1. Otherwise, see total number of steps for single epoch
+          based on batch size and then set max_steps &lt; total steps for epoch.</p>
+
+          <p>Can you share your finetuning notebook for reference ? </p>
+
+          '
+        raw: 'That is if training a full epoch is not feasible for you. Else set num_train_epochs
+          = 1. Otherwise, see total number of steps for single epoch based on batch
+          size and then set max_steps < total steps for epoch.
+
+
+          Can you share your finetuning notebook for reference ? '
+        updatedAt: '2024-01-06T15:41:12.211Z'
+      numEdits: 0
+      reactions: []
+    id: 659974988c5c668886808dac
+    type: comment
+  author: sumegh
+  content: 'That is if training a full epoch is not feasible for you. Else set num_train_epochs
+    = 1. Otherwise, see total number of steps for single epoch based on batch size
+    and then set max_steps < total steps for epoch.
+
+
+    Can you share your finetuning notebook for reference ? '
+  created_at: 2024-01-06 15:41:12+00:00
+  edited: false
+  hidden: false
+  id: 659974988c5c668886808dac
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+      fullname: Pradeep T
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Pradeep1995
+      type: user
+    createdAt: '2024-01-06T15:44:32.000Z'
+    data:
+      edited: false
+      editors:
+      - Pradeep1995
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9542662501335144
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+          fullname: Pradeep T
+          isHf: false
+          isPro: false
+          name: Pradeep1995
+          type: user
+        html: '<p>Notebook sharing is not possible due to security reasons. It is
+          confidential in my organization level</p>
+
+          '
+        raw: Notebook sharing is not possible due to security reasons. It is confidential
+          in my organization level
+        updatedAt: '2024-01-06T15:44:32.965Z'
+      numEdits: 0
+      reactions: []
+    id: 65997560d3f2137415c9f7c6
+    type: comment
+  author: Pradeep1995
+  content: Notebook sharing is not possible due to security reasons. It is confidential
+    in my organization level
+  created_at: 2024-01-06 15:44:32+00:00
+  edited: false
+  hidden: false
+  id: 65997560d3f2137415c9f7c6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+      fullname: Sumegh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sumegh
+      type: user
+    createdAt: '2024-01-06T15:45:05.000Z'
+    data:
+      edited: true
+      editors:
+      - sumegh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9729203581809998
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+          fullname: Sumegh
+          isHf: false
+          isPro: false
+          name: sumegh
+          type: user
+        html: '<p>okay no issues. Also what optimizer are you using ? I was doing
+          4-bit LoRA finetuning. Using the paged_adamw_8bit optimizer from huggingface
+          training config.</p>
+
+          '
+        raw: okay no issues. Also what optimizer are you using ? I was doing 4-bit
+          LoRA finetuning. Using the paged_adamw_8bit optimizer from huggingface training
+          config.
+        updatedAt: '2024-01-06T15:45:36.013Z'
+      numEdits: 1
+      reactions: []
+    id: 65997581eff07dcf1f57337f
+    type: comment
+  author: sumegh
+  content: okay no issues. Also what optimizer are you using ? I was doing 4-bit LoRA
+    finetuning. Using the paged_adamw_8bit optimizer from huggingface training config.
+  created_at: 2024-01-06 15:45:05+00:00
+  edited: true
+  hidden: false
+  id: 65997581eff07dcf1f57337f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+      fullname: Pradeep T
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Pradeep1995
+      type: user
+    createdAt: '2024-01-06T15:49:56.000Z'
+    data:
+      edited: false
+      editors:
+      - Pradeep1995
+      hidden: false
+      identifiedLanguage:
+        language: zh
+        probability: 0.14213111996650696
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599822346546-noauth.jpeg?w=200&h=200&f=face
+          fullname: Pradeep T
+          isHf: false
+          isPro: false
+          name: Pradeep1995
+          type: user
+        html: '<p>i am using - paged_adamw_32bit</p>
+
+          '
+        raw: i am using - paged_adamw_32bit
+        updatedAt: '2024-01-06T15:49:56.235Z'
+      numEdits: 0
+      reactions: []
+    id: 659976a48c5c6688868102b3
+    type: comment
+  author: Pradeep1995
+  content: i am using - paged_adamw_32bit
+  created_at: 2024-01-06 15:49:56+00:00
+  edited: false
+  hidden: false
+  id: 659976a48c5c6688868102b3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625302367766-60891fec1e36b13a64497db5.jpeg?w=200&h=200&f=face
+      fullname: mlkorra
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mlkorra
+      type: user
+    createdAt: '2024-01-25T04:42:17.000Z'
+    data:
+      edited: false
+      editors:
+      - mlkorra
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9907145500183105
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1625302367766-60891fec1e36b13a64497db5.jpeg?w=200&h=200&f=face
+          fullname: mlkorra
+          isHf: false
+          isPro: false
+          name: mlkorra
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;sumegh&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/sumegh\">@<span class=\"\
+          underline\">sumegh</span></a></span>\n\n\t</span></span> facing similar\
+          \ increasing loss issue during fine-tuning,  were you able to resolve that\
+          \ using lower learning rate?</p>\n"
+        raw: '@sumegh facing similar increasing loss issue during fine-tuning,  were
+          you able to resolve that using lower learning rate?'
+        updatedAt: '2024-01-25T04:42:17.495Z'
+      numEdits: 0
+      reactions: []
+    id: 65b1e6a9fcead433ff1ff6a3
+    type: comment
+  author: mlkorra
+  content: '@sumegh facing similar increasing loss issue during fine-tuning,  were
+    you able to resolve that using lower learning rate?'
+  created_at: 2024-01-25 04:42:17+00:00
+  edited: false
+  hidden: false
+  id: 65b1e6a9fcead433ff1ff6a3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+      fullname: Sumegh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sumegh
+      type: user
+    createdAt: '2024-01-25T06:55:18.000Z'
+    data:
+      edited: false
+      editors:
+      - sumegh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9462626576423645
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ff9452783ffd8b268e17bc102ad8cf97.svg
+          fullname: Sumegh
+          isHf: false
+          isPro: false
+          name: sumegh
+          type: user
+        html: "<p>no <span data-props=\"{&quot;user&quot;:&quot;mlkorra&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/mlkorra\">@<span class=\"\
+          underline\">mlkorra</span></a></span>\n\n\t</span></span> lowering the learning\
+          \ rate made the model converge to a sub-optimal minima. It doesn't diverge\
+          \ anymore but the model doesn't learn much.<br>Let me know if you figure\
+          \ out something.</p>\n"
+        raw: 'no @mlkorra lowering the learning rate made the model converge to a
+          sub-optimal minima. It doesn''t diverge anymore but the model doesn''t learn
+          much.
+
+          Let me know if you figure out something.'
+        updatedAt: '2024-01-25T06:55:18.728Z'
+      numEdits: 0
+      reactions: []
+    id: 65b205d63a32309ad7641853
+    type: comment
+  author: sumegh
+  content: 'no @mlkorra lowering the learning rate made the model converge to a sub-optimal
+    minima. It doesn''t diverge anymore but the model doesn''t learn much.
+
+    Let me know if you figure out something.'
+  created_at: 2024-01-25 06:55:18+00:00
+  edited: false
+  hidden: false
+  id: 65b205d63a32309ad7641853
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 70
+repo_id: mistralai/Mixtral-8x7B-Instruct-v0.1
+repo_type: model
+status: open
+target_branch: null
+title: What is the best way for the inference process in LORA in PEFT approach

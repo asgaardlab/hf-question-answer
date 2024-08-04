@@ -1,0 +1,5 @@
+## https://huggingface.co/chargoddard/mixtralnt-4x7b-test/discussions/5
+
+contains_question: yes
+
+question_part: I wondered if it might be possible to have a hybrid approach combining his approach and yours? For example extract 2 of the experts from the original model, using the original gating they have, and mix that with one new MoE expert with synthetic gating for a 3x7b with pretty decent gating off the bat? Obviously all this is experimental and crazy, and maybe this wouldn't work at all. But if you could somehow encorporate some the original experts and gating the resulting MoE might be more effective (and possibly a better point to fine tune from)? Oh, and perhaps you could merge models with the original 8 models too (merge 4 mistral fine tunes with each mistral expert and merge the gating between the original and new synthetic based ones) Just rambling 🤷‍♂️🤣

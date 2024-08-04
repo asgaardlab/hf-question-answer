@@ -1,0 +1,235 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ricomnl
+conflicting_files: null
+created_at: 2023-06-27 02:46:11+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e4be47b76e1d02bf20a381b92ed677f0.svg
+      fullname: Rico Meinl
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ricomnl
+      type: user
+    createdAt: '2023-06-27T03:46:11.000Z'
+    data:
+      edited: false
+      editors:
+      - ricomnl
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8278642296791077
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e4be47b76e1d02bf20a381b92ed677f0.svg
+          fullname: Rico Meinl
+          isHf: false
+          isPro: false
+          name: ricomnl
+          type: user
+        html: '<p>The BertModel takes the first token in the sequence for classification
+          and usually this is a special  token, see here: <a href="https://huggingface.co/learn/nlp-course/chapter7/3?fw=tf#fine-tuning-distilbert-with-the-trainer-api">https://huggingface.co/learn/nlp-course/chapter7/3?fw=tf#fine-tuning-distilbert-with-the-trainer-api</a><br>As
+          far as I can tell, the dataset for classification finetuning does not add
+          a special  token to the beginning of the sequence and therefore uses the
+          highest ranked gene. This might be suboptimal in practice</p>
+
+          '
+        raw: "The BertModel takes the first token in the sequence for classification\
+          \ and usually this is a special <CLS> token, see here: https://huggingface.co/learn/nlp-course/chapter7/3?fw=tf#fine-tuning-distilbert-with-the-trainer-api\r\
+          \nAs far as I can tell, the dataset for classification finetuning does not\
+          \ add a special <CLS> token to the beginning of the sequence and therefore\
+          \ uses the highest ranked gene. This might be suboptimal in practice"
+        updatedAt: '2023-06-27T03:46:11.243Z'
+      numEdits: 0
+      reactions: []
+    id: 649a5b8357d49b8969ca1bda
+    type: comment
+  author: ricomnl
+  content: "The BertModel takes the first token in the sequence for classification\
+    \ and usually this is a special <CLS> token, see here: https://huggingface.co/learn/nlp-course/chapter7/3?fw=tf#fine-tuning-distilbert-with-the-trainer-api\r\
+    \nAs far as I can tell, the dataset for classification finetuning does not add\
+    \ a special <CLS> token to the beginning of the sequence and therefore uses the\
+    \ highest ranked gene. This might be suboptimal in practice"
+  created_at: 2023-06-27 02:46:11+00:00
+  edited: false
+  hidden: false
+  id: 649a5b8357d49b8969ca1bda
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-27T07:24:07.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9384950995445251
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: "<p>Thank you for your question. In NLP, examples (sentences) are usually\
+          \ presented to the model contiguously, with a separator token between them\
+          \ and a CLS token often used as a consistent token with each sequence so\
+          \ that the sequence embedding can be drawn from that token rather than mean\
+          \ pooling the token embeddings. NLP training can then use the full maximum\
+          \ input size of the model for every example by taking a large block of text\
+          \ and breaking it up into, for example, 512 length chunks, with fragments\
+          \ of sentences at the end wherever it gets cut off. Usually sentences are\
+          \ much smaller than 512 words so there are plenty of full sentences within\
+          \ the input.</p>\n<p>For our application, the input size of each cell is\
+          \ much larger (generally there are more genes detected in each cell than\
+          \ there are words in each sentence) so there is usually only going to be\
+          \ one cell fitting within the input. Additionally, presenting the model\
+          \ with fragments of cells at the edges of the input would distort the meaning\
+          \ of that cell, especially given the fact we are using a rank value encoding\
+          \ where the context of the genes distant in rank are just as informative\
+          \ as those close by (as opposed to sentences where words nearby a given\
+          \ word may be more informative than distant ones, though of course distant\
+          \ words can also be informative). </p>\n<p>Because we are only presenting\
+          \ one cell at a time to the model, there is less need for a special token\
+          \ to distinguish the given example. We use mean pooling of the gene embeddings\
+          \ to represent the cell as opposed to a special token embedding. We also\
+          \ use dynamic padding and length grouped training to speed up the training\
+          \ given we aren\u2019t filling the input size with fragments of cells the\
+          \ way you can in NLP with fragments of sentences.</p>\n<p>While the CLS\
+          \ token could have been used for cell embeddings for cell classification,\
+          \ summarizing the embedding in a single token presents an issue for the\
+          \ in silico perturbation strategy. In this application, we derive the cell\
+          \ embedding shift in response to perturbation by comparing the embedding\
+          \ of all genes aside from the perturbed gene so that we are quantifying\
+          \ the perturbation\u2019s effect on context. Therefore, we would not be\
+          \ able to use a CLS token to accomplish this since the genes would be inseparable.</p>\n\
+          <p>You can always train the model with a CLS token added to each cell and\
+          \ the model will learn the meaning of that special token so that you can\
+          \ use it as a cell embedding.</p>\n"
+        raw: "Thank you for your question. In NLP, examples (sentences) are usually\
+          \ presented to the model contiguously, with a separator token between them\
+          \ and a CLS token often used as a consistent token with each sequence so\
+          \ that the sequence embedding can be drawn from that token rather than mean\
+          \ pooling the token embeddings. NLP training can then use the full maximum\
+          \ input size of the model for every example by taking a large block of text\
+          \ and breaking it up into, for example, 512 length chunks, with fragments\
+          \ of sentences at the end wherever it gets cut off. Usually sentences are\
+          \ much smaller than 512 words so there are plenty of full sentences within\
+          \ the input.\n\nFor our application, the input size of each cell is much\
+          \ larger (generally there are more genes detected in each cell than there\
+          \ are words in each sentence) so there is usually only going to be one cell\
+          \ fitting within the input. Additionally, presenting the model with fragments\
+          \ of cells at the edges of the input would distort the meaning of that cell,\
+          \ especially given the fact we are using a rank value encoding where the\
+          \ context of the genes distant in rank are just as informative as those\
+          \ close by (as opposed to sentences where words nearby a given word may\
+          \ be more informative than distant ones, though of course distant words\
+          \ can also be informative). \n\nBecause we are only presenting one cell\
+          \ at a time to the model, there is less need for a special token to distinguish\
+          \ the given example. We use mean pooling of the gene embeddings to represent\
+          \ the cell as opposed to a special token embedding. We also use dynamic\
+          \ padding and length grouped training to speed up the training given we\
+          \ aren\u2019t filling the input size with fragments of cells the way you\
+          \ can in NLP with fragments of sentences.\n\nWhile the CLS token could have\
+          \ been used for cell embeddings for cell classification, summarizing the\
+          \ embedding in a single token presents an issue for the in silico perturbation\
+          \ strategy. In this application, we derive the cell embedding shift in response\
+          \ to perturbation by comparing the embedding of all genes aside from the\
+          \ perturbed gene so that we are quantifying the perturbation\u2019s effect\
+          \ on context. Therefore, we would not be able to use a CLS token to accomplish\
+          \ this since the genes would be inseparable.\n\nYou can always train the\
+          \ model with a CLS token added to each cell and the model will learn the\
+          \ meaning of that special token so that you can use it as a cell embedding."
+        updatedAt: '2023-06-27T07:24:07.052Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 649a8e97de0fb7f3f49e73a3
+    id: 649a8e97de0fb7f3f49e739f
+    type: comment
+  author: ctheodoris
+  content: "Thank you for your question. In NLP, examples (sentences) are usually\
+    \ presented to the model contiguously, with a separator token between them and\
+    \ a CLS token often used as a consistent token with each sequence so that the\
+    \ sequence embedding can be drawn from that token rather than mean pooling the\
+    \ token embeddings. NLP training can then use the full maximum input size of the\
+    \ model for every example by taking a large block of text and breaking it up into,\
+    \ for example, 512 length chunks, with fragments of sentences at the end wherever\
+    \ it gets cut off. Usually sentences are much smaller than 512 words so there\
+    \ are plenty of full sentences within the input.\n\nFor our application, the input\
+    \ size of each cell is much larger (generally there are more genes detected in\
+    \ each cell than there are words in each sentence) so there is usually only going\
+    \ to be one cell fitting within the input. Additionally, presenting the model\
+    \ with fragments of cells at the edges of the input would distort the meaning\
+    \ of that cell, especially given the fact we are using a rank value encoding where\
+    \ the context of the genes distant in rank are just as informative as those close\
+    \ by (as opposed to sentences where words nearby a given word may be more informative\
+    \ than distant ones, though of course distant words can also be informative).\
+    \ \n\nBecause we are only presenting one cell at a time to the model, there is\
+    \ less need for a special token to distinguish the given example. We use mean\
+    \ pooling of the gene embeddings to represent the cell as opposed to a special\
+    \ token embedding. We also use dynamic padding and length grouped training to\
+    \ speed up the training given we aren\u2019t filling the input size with fragments\
+    \ of cells the way you can in NLP with fragments of sentences.\n\nWhile the CLS\
+    \ token could have been used for cell embeddings for cell classification, summarizing\
+    \ the embedding in a single token presents an issue for the in silico perturbation\
+    \ strategy. In this application, we derive the cell embedding shift in response\
+    \ to perturbation by comparing the embedding of all genes aside from the perturbed\
+    \ gene so that we are quantifying the perturbation\u2019s effect on context. Therefore,\
+    \ we would not be able to use a CLS token to accomplish this since the genes would\
+    \ be inseparable.\n\nYou can always train the model with a CLS token added to\
+    \ each cell and the model will learn the meaning of that special token so that\
+    \ you can use it as a cell embedding."
+  created_at: 2023-06-27 06:24:07+00:00
+  edited: false
+  hidden: false
+  id: 649a8e97de0fb7f3f49e739f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-27T07:24:07.000Z'
+    data:
+      status: closed
+    id: 649a8e97de0fb7f3f49e73a3
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-06-27 06:24:07+00:00
+  id: 649a8e97de0fb7f3f49e73a3
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 69
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Adding a <CLS> token for classification finetuning

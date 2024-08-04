@@ -1,0 +1,330 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: souvik0306
+conflicting_files: null
+created_at: 2023-05-27 14:26:02+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ba46aa0a9866b28cb19a14/5LilSOacmZeRRIIfimi7s.png?w=200&h=200&f=face
+      fullname: Souvik Datta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: souvik0306
+      type: user
+    createdAt: '2023-05-27T15:26:02.000Z'
+    data:
+      edited: false
+      editors:
+      - souvik0306
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ba46aa0a9866b28cb19a14/5LilSOacmZeRRIIfimi7s.png?w=200&h=200&f=face
+          fullname: Souvik Datta
+          isHf: false
+          isPro: false
+          name: souvik0306
+          type: user
+        html: "<p>I am interested in exploring techniques to enhance the model's ability\
+          \ to remember and maintain context during text generation. I would like\
+          \ to generate responses that exhibit a more conversational or memory-driven\
+          \ nature, allowing the model to recall and reference previously mentioned\
+          \ information within the generated text.</p>\n<p>If any of you have experience\
+          \ or knowledge in this area, I would greatly appreciate your insights. </p>\n\
+          <pre><code>from typing import Any, Dict, Tuple\nimport warnings\n\nimport\
+          \ torch\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\n\
+          from transformers import (\n    StoppingCriteria,\n    StoppingCriteriaList,\n\
+          \    TextIteratorStreamer,\n)\n\n\nINSTRUCTION_KEY = \"### Instruction:\"\
+          \nRESPONSE_KEY = \"### Response:\"\nEND_KEY = \"### End\"\nINTRO_BLURB =\
+          \ \"Below is an instruction that describes a task. Write a response that\
+          \ appropriately completes the request.\"\nPROMPT_FOR_GENERATION_FORMAT =\
+          \ \"\"\"{intro}\n{instruction_key}\n{instruction}\n{response_key}\n\"\"\"\
+          .format(\n    intro=INTRO_BLURB,\n    instruction_key=INSTRUCTION_KEY,\n\
+          \    instruction=\"{instruction}\",\n    response_key=RESPONSE_KEY,\n)\n\
+          \n\nclass InstructionTextGenerationPipeline:\n    def __init__(\n      \
+          \  self,\n        model_name,\n        torch_dtype=torch.bfloat16,\n   \
+          \     trust_remote_code=True,\n        use_auth_token=None,\n    ) -&gt;\
+          \ None:\n        self.model = AutoModelForCausalLM.from_pretrained(\n  \
+          \          model_name,\n            torch_dtype=torch_dtype,\n         \
+          \   trust_remote_code=trust_remote_code,\n            use_auth_token=use_auth_token,\n\
+          \        )\n\n        tokenizer = AutoTokenizer.from_pretrained(\n     \
+          \       model_name,\n            trust_remote_code=trust_remote_code,\n\
+          \            use_auth_token=use_auth_token,\n        )\n        if tokenizer.pad_token_id\
+          \ is None:\n            warnings.warn(\n                \"pad_token_id is\
+          \ not set for the tokenizer. Using eos_token_id as pad_token_id.\"\n   \
+          \         )\n            tokenizer.pad_token = tokenizer.eos_token\n   \
+          \     tokenizer.padding_side = \"left\"\n        self.tokenizer = tokenizer\n\
+          \n        device = torch.device(\"cuda\" if torch.cuda.is_available() else\
+          \ \"cpu\")\n        self.model.eval()\n        self.model.to(device=device,\
+          \ dtype=torch_dtype)\n\n        self.generate_kwargs = {\n            \"\
+          temperature\": 0.1,\n            \"top_p\": 0.92,\n            \"top_k\"\
+          : 0,\n            \"max_new_tokens\": 1024,\n            \"use_cache\":\
+          \ True,\n            \"do_sample\": True,\n            \"eos_token_id\"\
+          : self.tokenizer.eos_token_id,\n            \"pad_token_id\": self.tokenizer.pad_token_id,\n\
+          \            \"repetition_penalty\": 1.1,  # 1.0 means no penalty, &gt;\
+          \ 1.0 means penalty, 1.2 from CTRL paper\n        }\n\n    def format_instruction(self,\
+          \ instruction):\n        return PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\n\
+          \n    def __call__(\n        self, instruction: str, **generate_kwargs:\
+          \ Dict[str, Any]\n    ) -&gt; Tuple[str, str, float]:\n        s = PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\n\
+          \        input_ids = self.tokenizer(s, return_tensors=\"pt\").input_ids\n\
+          \        input_ids = input_ids.to(self.model.device)\n        gkw = {**self.generate_kwargs,\
+          \ **generate_kwargs}\n        with torch.no_grad():\n            output_ids\
+          \ = self.model.generate(input_ids, **gkw)\n        # Slice the output_ids\
+          \ tensor to get only new tokens\n        new_tokens = output_ids[0, len(input_ids[0])\
+          \ :]\n        output_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)\n\
+          \        return output_text\n</code></pre>\n"
+        raw: "I am interested in exploring techniques to enhance the model's ability\
+          \ to remember and maintain context during text generation. I would like\
+          \ to generate responses that exhibit a more conversational or memory-driven\
+          \ nature, allowing the model to recall and reference previously mentioned\
+          \ information within the generated text.\r\n\r\nIf any of you have experience\
+          \ or knowledge in this area, I would greatly appreciate your insights. \r\
+          \n```\r\nfrom typing import Any, Dict, Tuple\r\nimport warnings\r\n\r\n\
+          import torch\r\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\r\
+          \nfrom transformers import (\r\n    StoppingCriteria,\r\n    StoppingCriteriaList,\r\
+          \n    TextIteratorStreamer,\r\n)\r\n\r\n\r\nINSTRUCTION_KEY = \"### Instruction:\"\
+          \r\nRESPONSE_KEY = \"### Response:\"\r\nEND_KEY = \"### End\"\r\nINTRO_BLURB\
+          \ = \"Below is an instruction that describes a task. Write a response that\
+          \ appropriately completes the request.\"\r\nPROMPT_FOR_GENERATION_FORMAT\
+          \ = \"\"\"{intro}\r\n{instruction_key}\r\n{instruction}\r\n{response_key}\r\
+          \n\"\"\".format(\r\n    intro=INTRO_BLURB,\r\n    instruction_key=INSTRUCTION_KEY,\r\
+          \n    instruction=\"{instruction}\",\r\n    response_key=RESPONSE_KEY,\r\
+          \n)\r\n\r\n\r\nclass InstructionTextGenerationPipeline:\r\n    def __init__(\r\
+          \n        self,\r\n        model_name,\r\n        torch_dtype=torch.bfloat16,\r\
+          \n        trust_remote_code=True,\r\n        use_auth_token=None,\r\n  \
+          \  ) -> None:\r\n        self.model = AutoModelForCausalLM.from_pretrained(\r\
+          \n            model_name,\r\n            torch_dtype=torch_dtype,\r\n  \
+          \          trust_remote_code=trust_remote_code,\r\n            use_auth_token=use_auth_token,\r\
+          \n        )\r\n\r\n        tokenizer = AutoTokenizer.from_pretrained(\r\n\
+          \            model_name,\r\n            trust_remote_code=trust_remote_code,\r\
+          \n            use_auth_token=use_auth_token,\r\n        )\r\n        if\
+          \ tokenizer.pad_token_id is None:\r\n            warnings.warn(\r\n    \
+          \            \"pad_token_id is not set for the tokenizer. Using eos_token_id\
+          \ as pad_token_id.\"\r\n            )\r\n            tokenizer.pad_token\
+          \ = tokenizer.eos_token\r\n        tokenizer.padding_side = \"left\"\r\n\
+          \        self.tokenizer = tokenizer\r\n\r\n        device = torch.device(\"\
+          cuda\" if torch.cuda.is_available() else \"cpu\")\r\n        self.model.eval()\r\
+          \n        self.model.to(device=device, dtype=torch_dtype)\r\n\r\n      \
+          \  self.generate_kwargs = {\r\n            \"temperature\": 0.1,\r\n   \
+          \         \"top_p\": 0.92,\r\n            \"top_k\": 0,\r\n            \"\
+          max_new_tokens\": 1024,\r\n            \"use_cache\": True,\r\n        \
+          \    \"do_sample\": True,\r\n            \"eos_token_id\": self.tokenizer.eos_token_id,\r\
+          \n            \"pad_token_id\": self.tokenizer.pad_token_id,\r\n       \
+          \     \"repetition_penalty\": 1.1,  # 1.0 means no penalty, > 1.0 means\
+          \ penalty, 1.2 from CTRL paper\r\n        }\r\n\r\n    def format_instruction(self,\
+          \ instruction):\r\n        return PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\r\
+          \n\r\n    def __call__(\r\n        self, instruction: str, **generate_kwargs:\
+          \ Dict[str, Any]\r\n    ) -> Tuple[str, str, float]:\r\n        s = PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\r\
+          \n        input_ids = self.tokenizer(s, return_tensors=\"pt\").input_ids\r\
+          \n        input_ids = input_ids.to(self.model.device)\r\n        gkw = {**self.generate_kwargs,\
+          \ **generate_kwargs}\r\n        with torch.no_grad():\r\n            output_ids\
+          \ = self.model.generate(input_ids, **gkw)\r\n        # Slice the output_ids\
+          \ tensor to get only new tokens\r\n        new_tokens = output_ids[0, len(input_ids[0])\
+          \ :]\r\n        output_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)\r\
+          \n        return output_text\r\n```"
+        updatedAt: '2023-05-27T15:26:02.954Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - souvik0306
+    id: 6472210aba726cc401bdfb17
+    type: comment
+  author: souvik0306
+  content: "I am interested in exploring techniques to enhance the model's ability\
+    \ to remember and maintain context during text generation. I would like to generate\
+    \ responses that exhibit a more conversational or memory-driven nature, allowing\
+    \ the model to recall and reference previously mentioned information within the\
+    \ generated text.\r\n\r\nIf any of you have experience or knowledge in this area,\
+    \ I would greatly appreciate your insights. \r\n```\r\nfrom typing import Any,\
+    \ Dict, Tuple\r\nimport warnings\r\n\r\nimport torch\r\nfrom transformers import\
+    \ AutoModelForCausalLM, AutoTokenizer\r\nfrom transformers import (\r\n    StoppingCriteria,\r\
+    \n    StoppingCriteriaList,\r\n    TextIteratorStreamer,\r\n)\r\n\r\n\r\nINSTRUCTION_KEY\
+    \ = \"### Instruction:\"\r\nRESPONSE_KEY = \"### Response:\"\r\nEND_KEY = \"###\
+    \ End\"\r\nINTRO_BLURB = \"Below is an instruction that describes a task. Write\
+    \ a response that appropriately completes the request.\"\r\nPROMPT_FOR_GENERATION_FORMAT\
+    \ = \"\"\"{intro}\r\n{instruction_key}\r\n{instruction}\r\n{response_key}\r\n\"\
+    \"\".format(\r\n    intro=INTRO_BLURB,\r\n    instruction_key=INSTRUCTION_KEY,\r\
+    \n    instruction=\"{instruction}\",\r\n    response_key=RESPONSE_KEY,\r\n)\r\n\
+    \r\n\r\nclass InstructionTextGenerationPipeline:\r\n    def __init__(\r\n    \
+    \    self,\r\n        model_name,\r\n        torch_dtype=torch.bfloat16,\r\n \
+    \       trust_remote_code=True,\r\n        use_auth_token=None,\r\n    ) -> None:\r\
+    \n        self.model = AutoModelForCausalLM.from_pretrained(\r\n            model_name,\r\
+    \n            torch_dtype=torch_dtype,\r\n            trust_remote_code=trust_remote_code,\r\
+    \n            use_auth_token=use_auth_token,\r\n        )\r\n\r\n        tokenizer\
+    \ = AutoTokenizer.from_pretrained(\r\n            model_name,\r\n            trust_remote_code=trust_remote_code,\r\
+    \n            use_auth_token=use_auth_token,\r\n        )\r\n        if tokenizer.pad_token_id\
+    \ is None:\r\n            warnings.warn(\r\n                \"pad_token_id is\
+    \ not set for the tokenizer. Using eos_token_id as pad_token_id.\"\r\n       \
+    \     )\r\n            tokenizer.pad_token = tokenizer.eos_token\r\n        tokenizer.padding_side\
+    \ = \"left\"\r\n        self.tokenizer = tokenizer\r\n\r\n        device = torch.device(\"\
+    cuda\" if torch.cuda.is_available() else \"cpu\")\r\n        self.model.eval()\r\
+    \n        self.model.to(device=device, dtype=torch_dtype)\r\n\r\n        self.generate_kwargs\
+    \ = {\r\n            \"temperature\": 0.1,\r\n            \"top_p\": 0.92,\r\n\
+    \            \"top_k\": 0,\r\n            \"max_new_tokens\": 1024,\r\n      \
+    \      \"use_cache\": True,\r\n            \"do_sample\": True,\r\n          \
+    \  \"eos_token_id\": self.tokenizer.eos_token_id,\r\n            \"pad_token_id\"\
+    : self.tokenizer.pad_token_id,\r\n            \"repetition_penalty\": 1.1,  #\
+    \ 1.0 means no penalty, > 1.0 means penalty, 1.2 from CTRL paper\r\n        }\r\
+    \n\r\n    def format_instruction(self, instruction):\r\n        return PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\r\
+    \n\r\n    def __call__(\r\n        self, instruction: str, **generate_kwargs:\
+    \ Dict[str, Any]\r\n    ) -> Tuple[str, str, float]:\r\n        s = PROMPT_FOR_GENERATION_FORMAT.format(instruction=instruction)\r\
+    \n        input_ids = self.tokenizer(s, return_tensors=\"pt\").input_ids\r\n \
+    \       input_ids = input_ids.to(self.model.device)\r\n        gkw = {**self.generate_kwargs,\
+    \ **generate_kwargs}\r\n        with torch.no_grad():\r\n            output_ids\
+    \ = self.model.generate(input_ids, **gkw)\r\n        # Slice the output_ids tensor\
+    \ to get only new tokens\r\n        new_tokens = output_ids[0, len(input_ids[0])\
+    \ :]\r\n        output_text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)\r\
+    \n        return output_text\r\n```"
+  created_at: 2023-05-27 14:26:02+00:00
+  edited: false
+  hidden: false
+  id: 6472210aba726cc401bdfb17
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a36afadc530a6936e9e336a729f7ecf3.svg
+      fullname: Jon Watte
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jwatte
+      type: user
+    createdAt: '2023-05-31T13:29:37.000Z'
+    data:
+      edited: false
+      editors:
+      - jwatte
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a36afadc530a6936e9e336a729f7ecf3.svg
+          fullname: Jon Watte
+          isHf: false
+          isPro: false
+          name: jwatte
+          type: user
+        html: '<p>These models don''t work like that. You have to remember the previous
+          context outside the model, and provide it back in at time of inference.<br>The
+          good news is that with ALiBi, you may be able to get away with more/longer
+          context than the limited prompt context size.</p>
+
+          '
+        raw: 'These models don''t work like that. You have to remember the previous
+          context outside the model, and provide it back in at time of inference.
+
+          The good news is that with ALiBi, you may be able to get away with more/longer
+          context than the limited prompt context size.'
+        updatedAt: '2023-05-31T13:29:37.736Z'
+      numEdits: 0
+      reactions: []
+    id: 64774bc133a888101f73dd2d
+    type: comment
+  author: jwatte
+  content: 'These models don''t work like that. You have to remember the previous
+    context outside the model, and provide it back in at time of inference.
+
+    The good news is that with ALiBi, you may be able to get away with more/longer
+    context than the limited prompt context size.'
+  created_at: 2023-05-31 12:29:37+00:00
+  edited: false
+  hidden: false
+  id: 64774bc133a888101f73dd2d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-14T06:41:28.000Z'
+    data:
+      edited: false
+      editors:
+      - sam-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8810502886772156
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+          fullname: Sam Havens
+          isHf: false
+          isPro: false
+          name: sam-mosaic
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;souvik0306&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/souvik0306\">@<span class=\"\
+          underline\">souvik0306</span></a></span>\n\n\t</span></span> , <span data-props=\"\
+          {&quot;user&quot;:&quot;jwatte&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/jwatte\">@<span class=\"underline\">jwatte</span></a></span>\n\
+          \n\t</span></span> is correct. If you'd like to see an example of maintaining\
+          \ state in python to send to the model, we have one in the llm-foundry,\
+          \ <a rel=\"nofollow\" href=\"https://github.com/mosaicml/llm-foundry/blob/main/scripts/inference/hf_chat.py\"\
+          >https://github.com/mosaicml/llm-foundry/blob/main/scripts/inference/hf_chat.py</a></p>\n"
+        raw: '@souvik0306 , @jwatte is correct. If you''d like to see an example of
+          maintaining state in python to send to the model, we have one in the llm-foundry,
+          https://github.com/mosaicml/llm-foundry/blob/main/scripts/inference/hf_chat.py'
+        updatedAt: '2023-06-14T06:41:28.243Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64896118a1ade8c1efb656b7
+    id: 64896118a1ade8c1efb656b3
+    type: comment
+  author: sam-mosaic
+  content: '@souvik0306 , @jwatte is correct. If you''d like to see an example of
+    maintaining state in python to send to the model, we have one in the llm-foundry,
+    https://github.com/mosaicml/llm-foundry/blob/main/scripts/inference/hf_chat.py'
+  created_at: 2023-06-14 05:41:28+00:00
+  edited: false
+  hidden: false
+  id: 64896118a1ade8c1efb656b3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668560930781-noauth.png?w=200&h=200&f=face
+      fullname: Sam Havens
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sam-mosaic
+      type: user
+    createdAt: '2023-06-14T06:41:28.000Z'
+    data:
+      status: closed
+    id: 64896118a1ade8c1efb656b7
+    type: status-change
+  author: sam-mosaic
+  created_at: 2023-06-14 05:41:28+00:00
+  id: 64896118a1ade8c1efb656b7
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 36
+repo_id: mosaicml/mpt-7b-instruct
+repo_type: model
+status: closed
+target_branch: null
+title: How to enable MPT to remember data (or chat based requirement)?

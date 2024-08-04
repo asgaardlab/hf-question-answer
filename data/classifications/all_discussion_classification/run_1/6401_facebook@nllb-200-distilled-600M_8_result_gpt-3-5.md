@@ -1,0 +1,4 @@
+## https://huggingface.co/facebook/nllb-200-distilled-600M/discussions/8
+
+contains_question: yes
+question_part: [Question] How to keep the model from translating unknown tokens ? For example I have a text, in which I want to preserve person names, sometimes the model will translate John as João for Portuguese/Spanish, and I would rather keep it as John. Using Google Translate/Bing/IBM Watson I'm able to change known names to absurd tokens such as itaquabucetuba555 and they are usually preserved during translation. However, when I tried this with the Facebook model, it still tries to change the absurd tokens to something else. Is there a way to prevent the model from changing specific words ?

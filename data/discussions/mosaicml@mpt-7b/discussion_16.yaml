@@ -1,0 +1,911 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: saber7ooth
+conflicting_files: null
+created_at: 2023-05-10 14:57:20+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1661118445899-noauth.png?w=200&h=200&f=face
+      fullname: Robert Michael Smith
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saber7ooth
+      type: user
+    createdAt: '2023-05-10T15:57:20.000Z'
+    data:
+      edited: true
+      editors:
+      - saber7ooth
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1661118445899-noauth.png?w=200&h=200&f=face
+          fullname: Robert Michael Smith
+          isHf: false
+          isPro: false
+          name: saber7ooth
+          type: user
+        html: "<p>So, there's good news and bad news after this experiment full disclosure\
+          \ incoming:</p>\n<ul>\n<li><strong>Yes</strong>, you can run this on a personal\
+          \ computer.</li>\n<li><strong>No</strong>, it isn't fast, at all.   200\
+          \ tokens took 3m 16.9s a prompt on my machine, and its only because I've\
+          \ got 32GB RAM thanks to studio work that I do.  Ok maaaybe I cheated, this\
+          \ machine's built to run Unity, buuut...</li>\n</ul>\n<p>My graphics card\
+          \ is barely sufficient (GTX1080 TI with 8GB VRAM).  But thanks to <code>llm_foundary</code>\
+          \ GitHub repository, I was able to discern which blocks needed split-locking\
+          \ on the accelerator, and expand all that out manually and tie the weights\
+          \ so it works on a home PC with a crappy graphics card via:  <a href=\"\
+          https://huggingface.co/docs/accelerate/usage_guides/big_modeling\">https://huggingface.co/docs/accelerate/usage_guides/big_modeling</a>\
+          \ .  It runs at about 1.09 it/s (a token a second on a home computer \U0001F605\
+          \U0001F525) -- My brave little toaster did it so yours can, too.</p>\n<p>Be\
+          \ aware of these constraints when doing this indie.  If you want the full\
+          \ 60000 <code>max_new_tokens</code>, prepare to come back in an hour if\
+          \ you're poor like me....</p>\n<p><strong>I hacked this together in a night</strong>,\
+          \ and I managed to get StoryWriter working in WSL on LangChain with the\
+          \ hf api on huggingface_hub with some (rudimentary) cache management for\
+          \ disk offloading in accelerators.  <strong>Not all of the parameters from\
+          \ transformers are supported</strong>, only a few during my lab testing.\
+          \  You'll have to add that in yourself.  <strong>Have fun adding em!</strong>\
+          \ -- I just didn't feel like stuffing in all the pydantic boiler plate for\
+          \ them, without calling upon HuggingFacePipeline from LangChain, which I'm\
+          \ trying to avoid because accelerators and weight tying (you could probably\
+          \ go as far as unwrapping these, too, if ya want for marginal performance\
+          \ gains)</p>\n<p>This includes support for TextIteratorStreamer and will\
+          \ call the LLM runner call back every time a token is added (LangChain API\
+          \ stuff was a lot of pydantic boilerplate), I'm not going to guarantee thread\
+          \ safety.  This is an experiment, like everything else in the ML world.</p>\n\
+          <p>I had to run the code in my local jupyter notebook and restart the kernel\
+          \ often.  It took a long time to get working correctly on LangChain LLMs.</p>\n\
+          <p>Here's the code (for a custom LangChain LLM) that works on a home PC\
+          \ in WSL Ubuntu 22.04 with accelerators in a venv  \U0001F917</p>\n<pre><code\
+          \ class=\"language-py\"><span class=\"hljs-keyword\">from</span> functools\
+          \ <span class=\"hljs-keyword\">import</span> partial\n<span class=\"hljs-keyword\"\
+          >from</span> typing <span class=\"hljs-keyword\">import</span> <span class=\"\
+          hljs-type\">Any</span>, <span class=\"hljs-type\">Dict</span>, <span class=\"\
+          hljs-type\">List</span>, Mapping, <span class=\"hljs-type\">Optional</span>,\
+          \ <span class=\"hljs-type\">Set</span>\n<span class=\"hljs-keyword\">from</span>\
+          \ pydantic <span class=\"hljs-keyword\">import</span> Extra, Field, root_validator\n\
+          <span class=\"hljs-keyword\">from</span> langchain.callbacks.manager <span\
+          \ class=\"hljs-keyword\">import</span> CallbackManagerForLLMRun\n<span class=\"\
+          hljs-keyword\">from</span> langchain.llms.base <span class=\"hljs-keyword\"\
+          >import</span> LLM\n<span class=\"hljs-keyword\">from</span> langchain.llms.utils\
+          \ <span class=\"hljs-keyword\">import</span> enforce_stop_tokens\n<span\
+          \ class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer\n\
+          <span class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >from</span> accelerate <span class=\"hljs-keyword\">import</span> Accelerator,\
+          \ load_checkpoint_and_dispatch, init_empty_weights\n<span class=\"hljs-keyword\"\
+          >from</span> tqdm.auto <span class=\"hljs-keyword\">import</span> tqdm\n\
+          <span class=\"hljs-keyword\">from</span> threading <span class=\"hljs-keyword\"\
+          >import</span> Thread\n<span class=\"hljs-keyword\">from</span> huggingface_hub\
+          \ <span class=\"hljs-keyword\">import</span> snapshot_download, cached_assets_path\n\
+          \n<span class=\"hljs-string\">\"\"\"Wrapper for the MosaicML MPT models.\"\
+          \"\"</span>\n<span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\
+          \ class_\">MosaicML</span>(<span class=\"hljs-title class_ inherited__\"\
+          >LLM</span>):\n    model_name: <span class=\"hljs-built_in\">str</span>\
+          \ = Field(<span class=\"hljs-string\">\"mosaicml/mpt-7b-storywriter\"</span>,\
+          \ alias=<span class=\"hljs-string\">'model_name'</span>)\n    <span class=\"\
+          hljs-string\">\"\"\"The name of the model to use.\"\"\"</span>\n\n    tokenizer_name:\
+          \ <span class=\"hljs-built_in\">str</span> = Field(<span class=\"hljs-string\"\
+          >\"EleutherAI/gpt-neox-20b\"</span>, alias=<span class=\"hljs-string\">'tokenizer_name'</span>)\n\
+          \    <span class=\"hljs-string\">\"\"\"The name of the sentence tokenizer\
+          \ to use.\"\"\"</span>\n\n    config: <span class=\"hljs-type\">Any</span>\
+          \ = <span class=\"hljs-literal\">None</span> <span class=\"hljs-comment\"\
+          >#: :meta private:</span>\n    <span class=\"hljs-string\">\"\"\"The reference\
+          \ to the loaded configuration.\"\"\"</span>\n\n    tokenizer: <span class=\"\
+          hljs-type\">Any</span> = <span class=\"hljs-literal\">None</span> <span\
+          \ class=\"hljs-comment\">#: :meta private:</span>\n    <span class=\"hljs-string\"\
+          >\"\"\"The reference to the loaded tokenizer.\"\"\"</span>\n\n    model:\
+          \ <span class=\"hljs-type\">Any</span> = <span class=\"hljs-literal\">None</span>\
+          \ <span class=\"hljs-comment\">#: :meta private:</span>\n    <span class=\"\
+          hljs-string\">\"\"\"The reference to the loaded model.\"\"\"</span>\n\n\
+          \    accelerator: <span class=\"hljs-type\">Any</span> = <span class=\"\
+          hljs-literal\">None</span> <span class=\"hljs-comment\">#: :meta private:</span>\n\
+          \    <span class=\"hljs-string\">\"\"\"The reference to the loaded hf device\
+          \ accelerator.\"\"\"</span>\n\n    attn_impl: <span class=\"hljs-built_in\"\
+          >str</span> = Field(<span class=\"hljs-string\">\"torch\"</span>, alias=<span\
+          \ class=\"hljs-string\">'attn_impl'</span>)\n    <span class=\"hljs-string\"\
+          >\"\"\"The attention implementation to use.\"\"\"</span>\n\n    torch_dtype:\
+          \ <span class=\"hljs-type\">Any</span> = Field(torch.bfloat16, alias=<span\
+          \ class=\"hljs-string\">'torch_dtype'</span>)\n    <span class=\"hljs-string\"\
+          >\"\"\"The torch data type to use.\"\"\"</span>\n\n    max_new_tokens: <span\
+          \ class=\"hljs-type\">Optional</span>[<span class=\"hljs-built_in\">int</span>]\
+          \ = Field(<span class=\"hljs-number\">10000</span>, alias=<span class=\"\
+          hljs-string\">'max_new_tokens'</span>)\n    <span class=\"hljs-string\"\
+          >\"\"\"The maximum number of tokens to generate.\"\"\"</span>\n\n    do_sample:\
+          \ <span class=\"hljs-type\">Optional</span>[<span class=\"hljs-built_in\"\
+          >bool</span>] = Field(<span class=\"hljs-literal\">True</span>, alias=<span\
+          \ class=\"hljs-string\">'do_sample'</span>)\n    <span class=\"hljs-string\"\
+          >\"\"\"Whether to sample or not.\"\"\"</span>\n\n    temperature: <span\
+          \ class=\"hljs-type\">Optional</span>[<span class=\"hljs-built_in\">float</span>]\
+          \ = Field(<span class=\"hljs-number\">0.8</span>, alias=<span class=\"hljs-string\"\
+          >'temperature'</span>)\n    <span class=\"hljs-string\">\"\"\"The temperature\
+          \ to use for sampling.\"\"\"</span>\n\n    echo: <span class=\"hljs-type\"\
+          >Optional</span>[<span class=\"hljs-built_in\">bool</span>] = Field(<span\
+          \ class=\"hljs-literal\">False</span>, alias=<span class=\"hljs-string\"\
+          >'echo'</span>)\n    <span class=\"hljs-string\">\"\"\"Whether to echo the\
+          \ prompt.\"\"\"</span>\n    \n    stop: <span class=\"hljs-type\">Optional</span>[<span\
+          \ class=\"hljs-type\">List</span>[<span class=\"hljs-built_in\">str</span>]]\
+          \ = []\n    <span class=\"hljs-string\">\"\"\"A list of strings to stop\
+          \ generation when encountered.\"\"\"</span>\n\n\n    <span class=\"hljs-keyword\"\
+          >class</span> <span class=\"hljs-title class_\">Config</span>:\n       \
+          \ <span class=\"hljs-string\">\"\"\"Configuration for this pydantic object.\"\
+          \"\"</span>\n\n        extra = Extra.forbid\n\n\n    <span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">_mpt_default_params</span>(<span\
+          \ class=\"hljs-params\">self</span>) -&gt; <span class=\"hljs-type\">Dict</span>[<span\
+          \ class=\"hljs-built_in\">str</span>, <span class=\"hljs-type\">Any</span>]:\n\
+          \        <span class=\"hljs-string\">\"\"\"Get the default parameters.\"\
+          \"\"</span>\n        <span class=\"hljs-keyword\">return</span> {\n    \
+          \        <span class=\"hljs-string\">\"max_new_tokens\"</span>: self.max_new_tokens,\n\
+          \            <span class=\"hljs-string\">\"temperature\"</span>: self.temperature,\n\
+          \            <span class=\"hljs-string\">\"do_sample\"</span>: self.do_sample,\n\
+          \        }\n    \n<span class=\"hljs-meta\">    @staticmethod</span>\n \
+          \   <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >_mpt_param_names</span>() -&gt; <span class=\"hljs-type\">Set</span>[<span\
+          \ class=\"hljs-built_in\">str</span>]:\n        <span class=\"hljs-string\"\
+          >\"\"\"Get the identifying parameters.\"\"\"</span>\n        <span class=\"\
+          hljs-keyword\">return</span> {\n            <span class=\"hljs-string\"\
+          >\"max_new_tokens\"</span>,\n            <span class=\"hljs-string\">\"\
+          temperature\"</span>,\n            <span class=\"hljs-string\">\"do_sample\"\
+          </span>,\n        }\n\n<span class=\"hljs-meta\">    @staticmethod</span>\n\
+          \    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >_model_param_names</span>(<span class=\"hljs-params\">model_name: <span\
+          \ class=\"hljs-built_in\">str</span></span>) -&gt; <span class=\"hljs-type\"\
+          >Set</span>[<span class=\"hljs-built_in\">str</span>]:\n        <span class=\"\
+          hljs-string\">\"\"\"Get the identifying parameters.\"\"\"</span>\n     \
+          \   <span class=\"hljs-comment\"># <span class=\"hljs-doctag\">TODO:</span>\
+          \ fork for different parameters for different model variants.</span>\n \
+          \       <span class=\"hljs-keyword\">return</span> MosaicML._mpt_param_names()\n\
+          \    \n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">_default_params</span>(<span class=\"hljs-params\">self</span>)\
+          \ -&gt; <span class=\"hljs-type\">Dict</span>[<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-type\">Any</span>]:\n        <span class=\"\
+          hljs-string\">\"\"\"Get the default parameters.\"\"\"</span>\n        <span\
+          \ class=\"hljs-keyword\">return</span> self._mpt_default_params()\n    \n\
+          <span class=\"hljs-meta\">    @root_validator()</span>\n    <span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">validate_environment</span>(<span\
+          \ class=\"hljs-params\">cls, values: <span class=\"hljs-type\">Dict</span></span>)\
+          \ -&gt; <span class=\"hljs-type\">Dict</span>:\n        <span class=\"hljs-string\"\
+          >\"\"\"Validate the environment.\"\"\"</span>\n        <span class=\"hljs-keyword\"\
+          >try</span>:\n            <span class=\"hljs-comment\"># This module is\
+          \ supermassive so we use the transformers accelerator to load it.</span>\n\
+          \            values[<span class=\"hljs-string\">'accelerator'</span>] =\
+          \ Accelerator()\n            <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"[\"</span> + values[<span class=\"hljs-string\"\
+          >\"model_name\"</span>] + <span class=\"hljs-string\">\"] Downloading model\
+          \ (or fetching from cache)...\"</span>)\n            download_location =\
+          \ snapshot_download(repo_id=values[<span class=\"hljs-string\">\"model_name\"\
+          </span>], use_auth_token=<span class=\"hljs-literal\">True</span>, local_files_only=<span\
+          \ class=\"hljs-literal\">True</span>)\n            <span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"[\"</span> + values[<span class=\"\
+          hljs-string\">\"model_name\"</span>] + <span class=\"hljs-string\">\"] Model\
+          \ location: \"</span> + <span class=\"hljs-built_in\">str</span>(download_location))\n\
+          \            offload_cache_location = cached_assets_path(library_name=<span\
+          \ class=\"hljs-string\">\"langchain\"</span>, namespace=values[<span class=\"\
+          hljs-string\">\"model_name\"</span>], subfolder=<span class=\"hljs-string\"\
+          >\"offload\"</span>)\n            <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"[\"</span> + values[<span class=\"hljs-string\"\
+          >\"model_name\"</span>] + <span class=\"hljs-string\">\"] Offload cache\
+          \ location: \"</span> + <span class=\"hljs-built_in\">str</span>(offload_cache_location))\n\
+          \            <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >\"[\"</span> + values[<span class=\"hljs-string\">\"model_name\"</span>]\
+          \ + <span class=\"hljs-string\">\"] AutoConfiguring...\"</span>)\n     \
+          \       values[<span class=\"hljs-string\">\"config\"</span>] = AutoConfig.from_pretrained(values[<span\
+          \ class=\"hljs-string\">\"model_name\"</span>], trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>)\n            values[<span class=\"\
+          hljs-string\">\"config\"</span>].attn_config[<span class=\"hljs-string\"\
+          >'attn_impl'</span>] = values[<span class=\"hljs-string\">\"attn_impl\"\
+          </span>]\n            values[<span class=\"hljs-string\">\"tokenizer\"</span>]\
+          \ = AutoTokenizer.from_pretrained(values[<span class=\"hljs-string\">\"\
+          tokenizer_name\"</span>])\n            <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"[\"</span> + values[<span class=\"hljs-string\"\
+          >\"model_name\"</span>] + <span class=\"hljs-string\">\"] Initializing empty\
+          \ weights for model...\"</span>)\n            <span class=\"hljs-keyword\"\
+          >with</span> init_empty_weights():\n                values[<span class=\"\
+          hljs-string\">\"model\"</span>] = AutoModelForCausalLM.from_pretrained(\n\
+          \                    values[<span class=\"hljs-string\">\"model_name\"</span>],\n\
+          \                    config=values[<span class=\"hljs-string\">\"config\"\
+          </span>],\n                    torch_dtype=values[<span class=\"hljs-string\"\
+          >\"torch_dtype\"</span>],\n                    trust_remote_code=<span class=\"\
+          hljs-literal\">True</span>\n                )\n            <span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"[\"</span> +\
+          \ values[<span class=\"hljs-string\">\"model_name\"</span>] + <span class=\"\
+          hljs-string\">\"] Tying weights...\"</span>)\n            values[<span class=\"\
+          hljs-string\">\"model\"</span>].tie_weights()\n            <span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"[\"</span> +\
+          \ values[<span class=\"hljs-string\">\"model_name\"</span>] + <span class=\"\
+          hljs-string\">\"] Dispatching checkpoint...\"</span>)\n            values[<span\
+          \ class=\"hljs-string\">\"model\"</span>] = load_checkpoint_and_dispatch(\n\
+          \                values[<span class=\"hljs-string\">\"model\"</span>], \n\
+          \                download_location, \n                device_map=<span class=\"\
+          hljs-string\">\"auto\"</span>, \n                no_split_module_classes=[<span\
+          \ class=\"hljs-string\">\"MPTBlock\"</span>],\n                offload_folder=offload_cache_location\n\
+          \            )\n            <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"[\"</span> + values[<span class=\"hljs-string\"\
+          >\"model_name\"</span>] + <span class=\"hljs-string\">\"] Loaded successfully!\"\
+          </span>)\n        <span class=\"hljs-keyword\">except</span> Exception <span\
+          \ class=\"hljs-keyword\">as</span> e:\n            <span class=\"hljs-keyword\"\
+          >raise</span> Exception(<span class=\"hljs-string\">f\"MosaicML failed to\
+          \ load with error: <span class=\"hljs-subst\">{e}</span>\"</span>)\n   \
+          \     <span class=\"hljs-keyword\">return</span> values\n    \n<span class=\"\
+          hljs-meta\">    @property</span>\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">_identifying_params</span>(<span\
+          \ class=\"hljs-params\">self</span>) -&gt; Mapping[<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-type\">Any</span>]:\n        <span class=\"\
+          hljs-string\">\"\"\"Get the identifying parameters.\"\"\"</span>\n     \
+          \   <span class=\"hljs-keyword\">return</span> {\n            <span class=\"\
+          hljs-string\">\"model\"</span>: self.model_name,\n            **self._default_params(),\n\
+          \            **{\n                k: v\n                <span class=\"hljs-keyword\"\
+          >for</span> k, v <span class=\"hljs-keyword\">in</span> self.__dict__.items()\n\
+          \                <span class=\"hljs-keyword\">if</span> k <span class=\"\
+          hljs-keyword\">in</span> self._model_param_names(self.model_name)\n    \
+          \        },\n        }\n    \n<span class=\"hljs-meta\">    @property</span>\n\
+          \    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >_llm_type</span>(<span class=\"hljs-params\">self</span>) -&gt; <span class=\"\
+          hljs-built_in\">str</span>:\n        <span class=\"hljs-string\">\"\"\"\
+          Return the type of llm.\"\"\"</span>\n        <span class=\"hljs-keyword\"\
+          >return</span> <span class=\"hljs-string\">\"mosaicml\"</span>\n\n    <span\
+          \ class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >_call</span>(<span class=\"hljs-params\"></span>\n<span class=\"hljs-params\"\
+          >        self,</span>\n<span class=\"hljs-params\">        prompt: <span\
+          \ class=\"hljs-built_in\">str</span>,</span>\n<span class=\"hljs-params\"\
+          >        stop: <span class=\"hljs-type\">Optional</span>[<span class=\"\
+          hljs-type\">List</span>[<span class=\"hljs-built_in\">str</span>]] = <span\
+          \ class=\"hljs-literal\">None</span>,</span>\n<span class=\"hljs-params\"\
+          >        run_manager: <span class=\"hljs-type\">Optional</span>[CallbackManagerForLLMRun]\
+          \ = <span class=\"hljs-literal\">None</span>,</span>\n<span class=\"hljs-params\"\
+          >    </span>) -&gt; <span class=\"hljs-built_in\">str</span>:\n        <span\
+          \ class=\"hljs-string\">r\"\"\"Call out to MosiacML's generate method via\
+          \ transformers.</span>\n<span class=\"hljs-string\"></span>\n<span class=\"\
+          hljs-string\">        Args:</span>\n<span class=\"hljs-string\">       \
+          \     prompt: The prompt to pass into the model.</span>\n<span class=\"\
+          hljs-string\">            stop: A list of strings to stop generation when\
+          \ encountered.</span>\n<span class=\"hljs-string\"></span>\n<span class=\"\
+          hljs-string\">        Returns:</span>\n<span class=\"hljs-string\">    \
+          \        The string generated by the model.</span>\n<span class=\"hljs-string\"\
+          ></span>\n<span class=\"hljs-string\">        Example:</span>\n<span class=\"\
+          hljs-string\">            .. code-block:: python</span>\n<span class=\"\
+          hljs-string\"></span>\n<span class=\"hljs-string\">                prompt\
+          \ = \"This is a story about a big sabre tooth tiger: \"</span>\n<span class=\"\
+          hljs-string\">                response = model(prompt)</span>\n<span class=\"\
+          hljs-string\">        \"\"\"</span>\n        text_callback = <span class=\"\
+          hljs-literal\">None</span>\n        <span class=\"hljs-keyword\">if</span>\
+          \ run_manager:\n            text_callback = partial(run_manager.on_llm_new_token,\
+          \ verbose=self.verbose)\n        text = <span class=\"hljs-string\">\"\"\
+          </span>\n        inputs = self.tokenizer([prompt], return_tensors=<span\
+          \ class=\"hljs-string\">'pt'</span>)\n        inputs = inputs.to(self.accelerator.device)\n\
+          \        streamer = TextIteratorStreamer(tokenizer=self.tokenizer, skip_prompt=<span\
+          \ class=\"hljs-literal\">True</span>)\n        generation_kwargs = <span\
+          \ class=\"hljs-built_in\">dict</span>(inputs, streamer=streamer, **self._mpt_default_params())\n\
+          \        thread = Thread(target=self.model.generate, kwargs=generation_kwargs)\n\
+          \        thread.start()\n        text = <span class=\"hljs-string\">\"\"\
+          </span>\n        pbar = tqdm(total=self.max_new_tokens, desc=<span class=\"\
+          hljs-string\">\"Thinking\"</span>, leave=<span class=\"hljs-literal\">False</span>)\n\
+          \        <span class=\"hljs-keyword\">for</span> new_text <span class=\"\
+          hljs-keyword\">in</span> streamer:\n            <span class=\"hljs-keyword\"\
+          >if</span> text_callback:\n                text_callback(new_text)\n   \
+          \         text += new_text\n            pbar.update(<span class=\"hljs-number\"\
+          >1</span>)\n        pbar.close()\n        <span class=\"hljs-keyword\">if</span>\
+          \ stop <span class=\"hljs-keyword\">is</span> <span class=\"hljs-keyword\"\
+          >not</span> <span class=\"hljs-literal\">None</span>:\n            text\
+          \ = enforce_stop_tokens(text, stop)\n        <span class=\"hljs-keyword\"\
+          >return</span> text\n</code></pre>\n<p>You can initialize it (StoryWriter\
+          \ 7B F16 takes anywhere from 6m 45s to 10m 15s to load on a slow HDD from\
+          \ 4 years ago, so its probably much faster on your new SSD)</p>\n<pre><code\
+          \ class=\"language-py\">llm = MosaicML(model_name=<span class=\"hljs-string\"\
+          >'mosaicml/mpt-7b-storywriter'</span>, attn_impl=<span class=\"hljs-string\"\
+          >'torch'</span>, torch_dtype=torch.bfloat16, max_new_tokens=<span class=\"\
+          hljs-number\">200</span>, echo=<span class=\"hljs-literal\">True</span>)\n\
+          </code></pre>\n<pre><code>/home/saber7ooth/llama-index/venv/lib/python3.11/site-packages/tqdm/auto.py:21:\
+          \ TqdmWarning: IProgress not found. Please update jupyter and ipywidgets.\
+          \ See https://ipywidgets.readthedocs.io/en/stable/user_install.html\n  from\
+          \ .autonotebook import tqdm as notebook_tqdm\n[mosaicml/mpt-7b-storywriter]\
+          \ Downloading model (or fetching from cache)...\n[mosaicml/mpt-7b-storywriter]\
+          \ Model location: /home/saber7ooth/.cache/huggingface/hub/models--mosaicml--mpt-7b-storywriter/snapshots/6ba8d09107c76220faae00653ed11bcde44b3152\n\
+          [mosaicml/mpt-7b-storywriter] Offload cache location: /home/saber7ooth/.cache/huggingface/assets/langchain/mosaicml--mpt-7b-storywriter/offload\n\
+          [mosaicml/mpt-7b-storywriter] AutoConfiguring...\nExplicitly passing a `revision`\
+          \ is encouraged when loading a configuration with custom code to ensure\
+          \ no malicious code has been contributed in a newer revision.\nExplicitly\
+          \ passing a `revision` is encouraged when loading a model with custom code\
+          \ to ensure no malicious code has been contributed in a newer revision.\n\
+          [mosaicml/mpt-7b-storywriter] Initializing empty weights for model...\n\
+          /home/saber7ooth/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-storywriter/6ba8d09107c76220faae00653ed11bcde44b3152/attention.py:148:\
+          \ UserWarning: Using `attn_impl: torch`. If your model does not use `alibi`\
+          \ or `prefix_lm` we recommend using `attn_impl: flash` otherwise we recommend\
+          \ using `attn_impl: triton`.\n  warnings.warn('Using `attn_impl: torch`.\
+          \ If your model does not use `alibi` or ' + '`prefix_lm` we recommend using\
+          \ `attn_impl: flash` otherwise ' + 'we recommend using `attn_impl: triton`.')\n\
+          Loading checkpoint shards: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588| 2/2 [02:55&lt;00:00, 87.57s/it] \n[mosaicml/mpt-7b-storywriter]\
+          \ Tying weights...\n[mosaicml/mpt-7b-storywriter] Dispatching checkpoint...\n\
+          [mosaicml/mpt-7b-storywriter] Loaded successfully!\n</code></pre>\n<p>And\
+          \ you can text complete with it (what this model was designed to do is assist\
+          \ in writing stories):</p>\n<pre><code class=\"language-py\">llm(<span class=\"\
+          hljs-string\">\"Tell me a short story about sabretooth tigers.\"</span>)\n\
+          </code></pre>\n<pre><code>' Or about the mummy who can\\'t move.\"\\n\\\
+          n\"Sabretooth tigers are extinct,\" I said. I knew that. I\\'d read about\
+          \ them in school. \"And I don\\'t know any short stories about mummies.\
+          \ Let\\'s talk about something else, okay?\"\\n\\n\"Fine,\" he said. \"\
+          I\\'ve got a little story about my Uncle Pike. He\\'s a doctor. And he doesn\\\
+          't believe in ghosts.\"\\n\\n\"No?\" I said. \"I thought you said he was\
+          \ a doctor.\"\\n\\n\"He is,\" he said. \"He\\'s a doctor of medicine. And\
+          \ a doctor of philosophy, too. He\\'s a doctor of everything. But he doesn\\\
+          't believe in ghosts. And anyway, he doesn\\'t believe in ghosts because\
+          \ he\\'s a doctor, not because he\\'s a doctor of medicine.\"\\n\\n\"Oh,\"\
+          \ I said. I don\\'t like to argue with anyone. \"I guess ghosts would'\n\
+          </code></pre>\n<p>The model does as it says.  It takes a little blub that\
+          \ you give it, and it makes a story by continuing.  If you'd like to see\
+          \ your original prompt, you can change this line:</p>\n<pre><code class=\"\
+          language-py\">        streamer = TextIteratorStreamer(tokenizer=self.tokenizer,\
+          \ skip_prompt=<span class=\"hljs-literal\">True</span>)\n</code></pre>\n\
+          <p>And set <code>skip_prompt</code> to <code>False</code>.</p>\n<p><strong>Final\
+          \ notes:</strong></p>\n<p>Have fun playing around with this and of course\
+          \ if you want to do the full transformers implementation, with all the properties,\
+          \ have at (that's torture writing that much pydantic boilerplate...)</p>\n\
+          <p>I also recommend making the Model loader itself a Singleton class so\
+          \ that if someone decides to call the constructor on this more than once,\
+          \ it won't load twice...</p>\n<p>I have not tried llamacpp LangChain wrapper\
+          \ and because of the new changes I doubt it works.  This is a very modern\
+          \ model.</p>\n<p>I like it and the little story that it came up with was\
+          \ funny to me.  \U0001F44D The fact I was able to hack it enough to work\
+          \ on a dodgy home computer was enough of an achievement.</p>\n<p>P. S.:\
+          \ because I know people will yell here's my pip freeze:</p>\n<pre><code>transformers==4.28.1\n\
+          huggingface-hub==0.14.1\nlangchain==0.0.162\nasyncio==3.4.3\ncolorama==0.4.6\n\
+          torch==2.0.1\neinops==0.6.1\naccelerate==0.19.0\naiohttp==3.8.4\naiosignal==1.3.1\n\
+          asttokens==2.2.1\nasync-timeout==4.0.2\nattrs==23.1.0\nbackcall==0.2.0\n\
+          certifi==2023.5.7\ncharset-normalizer==3.1.0\ncmake==3.26.3\ncomm==0.1.3\n\
+          dataclasses-json==0.5.7\ndebugpy==1.6.7\ndecorator==5.1.1\nexecuting==1.2.0\n\
+          filelock==3.12.0\nfrozenlist==1.3.3\nfsspec==2023.5.0\ngreenlet==2.0.2\n\
+          idna==3.4\nipykernel==6.23.0\nipython==8.13.2\njedi==0.18.2\nJinja2==3.1.2\n\
+          jupyter_client==8.2.0\njupyter_core==5.3.0\nlit==16.0.3\nMarkupSafe==2.1.2\n\
+          marshmallow==3.19.0\nmarshmallow-enum==1.5.1\nmatplotlib-inline==0.1.6\n\
+          mpmath==1.3.0\nmultidict==6.0.4\nmypy-extensions==1.0.0\nnest-asyncio==1.5.6\n\
+          networkx==3.1\nnumexpr==2.8.4\nnumpy==1.24.3\nnvidia-cublas-cu11==11.10.3.66\n\
+          nvidia-cuda-cupti-cu11==11.7.101\nnvidia-cuda-nvrtc-cu11==11.7.99\nnvidia-cuda-runtime-cu11==11.7.99\n\
+          nvidia-cudnn-cu11==8.5.0.96\nnvidia-cufft-cu11==10.9.0.58\nnvidia-curand-cu11==10.2.10.91\n\
+          nvidia-cusolver-cu11==11.4.0.1\nnvidia-cusparse-cu11==11.7.4.91\nnvidia-nccl-cu11==2.14.3\n\
+          nvidia-nvtx-cu11==11.7.91\nopenapi-schema-pydantic==1.2.4\npackaging==23.1\n\
+          parso==0.8.3\npexpect==4.8.0\npickleshare==0.7.5\nplatformdirs==3.5.0\n\
+          prompt-toolkit==3.0.38\npsutil==5.9.5\nptyprocess==0.7.0\npure-eval==0.2.2\n\
+          pydantic==1.10.7\nPygments==2.15.1\npython-dateutil==2.8.2\nPyYAML==6.0\n\
+          pyzmq==25.0.2\nregex==2023.5.5\nrequests==2.30.0\nsix==1.16.0\nSQLAlchemy==2.0.12\n\
+          stack-data==0.6.2\nsympy==1.11.1\ntenacity==8.2.2\ntokenizers==0.13.3\n\
+          tornado==6.3.1\ntqdm==4.65.0\ntraitlets==5.9.0\ntriton==2.0.0\ntyping-inspect==0.8.0\n\
+          typing_extensions==4.5.0\nurllib3==2.0.2\nwcwidth==0.2.6\nyarl==1.9.2\n\
+          </code></pre>\n<p>And my WSL instance has CUDA 12.1 from here -&gt; <a rel=\"\
+          nofollow\" href=\"https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;Distribution=WSL-Ubuntu&amp;target_version=2.0&amp;target_type=deb_local\"\
+          >https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;Distribution=WSL-Ubuntu&amp;target_version=2.0&amp;target_type=deb_local</a></p>\n\
+          <p>My LangChain loader isn't using the Github repo at all (but it helped\
+          \ a ton!)) and just barebones grabbing the weights and stuffing them in\
+          \ transformers.  Enjoy this backyard shenanigans.</p>\n<p>Because I'm using\
+          \ hf transformer accelerators and split-block locking, you can expect better\
+          \ performance with multiple GPUs, a better CPU, faster storage, and more\
+          \ RAM.  But this should make the model somewhat more accessible to \"hobbyists\"\
+          \ through LangChain, at the very least.</p>\n<p>You can even load big models\
+          \ with this voodoo magic, if you don't mind being patient and waiting on\
+          \ your prompt at home...</p>\n<p>Luv,</p>\n<p>~ 7oothy</p>\n"
+        raw: "So, there's good news and bad news after this experiment full disclosure\
+          \ incoming:\n\n- **Yes**, you can run this on a personal computer.\n- **No**,\
+          \ it isn't fast, at all.   200 tokens took 3m 16.9s a prompt on my machine,\
+          \ and its only because I've got 32GB RAM thanks to studio work that I do.\
+          \  Ok maaaybe I cheated, this machine's built to run Unity, buuut...\n\n\
+          My graphics card is barely sufficient (GTX1080 TI with 8GB VRAM).  But thanks\
+          \ to ``llm_foundary`` GitHub repository, I was able to discern which blocks\
+          \ needed split-locking on the accelerator, and expand all that out manually\
+          \ and tie the weights so it works on a home PC with a crappy graphics card\
+          \ via:  https://huggingface.co/docs/accelerate/usage_guides/big_modeling\
+          \ .  It runs at about 1.09 it/s (a token a second on a home computer \U0001F605\
+          \U0001F525) -- My brave little toaster did it so yours can, too.\n\nBe aware\
+          \ of these constraints when doing this indie.  If you want the full 60000\
+          \ ``max_new_tokens``, prepare to come back in an hour if you're poor like\
+          \ me....\n\n**I hacked this together in a night**, and I managed to get\
+          \ StoryWriter working in WSL on LangChain with the hf api on huggingface_hub\
+          \ with some (rudimentary) cache management for disk offloading in accelerators.\
+          \  __Not all of the parameters from transformers are supported__, only a\
+          \ few during my lab testing.  You'll have to add that in yourself.  **Have\
+          \ fun adding em!** -- I just didn't feel like stuffing in all the pydantic\
+          \ boiler plate for them, without calling upon HuggingFacePipeline from LangChain,\
+          \ which I'm trying to avoid because accelerators and weight tying (you could\
+          \ probably go as far as unwrapping these, too, if ya want for marginal performance\
+          \ gains)\n\nThis includes support for TextIteratorStreamer and will call\
+          \ the LLM runner call back every time a token is added (LangChain API stuff\
+          \ was a lot of pydantic boilerplate), I'm not going to guarantee thread\
+          \ safety.  This is an experiment, like everything else in the ML world.\n\
+          \nI had to run the code in my local jupyter notebook and restart the kernel\
+          \ often.  It took a long time to get working correctly on LangChain LLMs.\n\
+          \nHere's the code (for a custom LangChain LLM) that works on a home PC in\
+          \ WSL Ubuntu 22.04 with accelerators in a venv  \U0001F917\n```py\nfrom\
+          \ functools import partial\nfrom typing import Any, Dict, List, Mapping,\
+          \ Optional, Set\nfrom pydantic import Extra, Field, root_validator\nfrom\
+          \ langchain.callbacks.manager import CallbackManagerForLLMRun\nfrom langchain.llms.base\
+          \ import LLM\nfrom langchain.llms.utils import enforce_stop_tokens\nfrom\
+          \ transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer\n\
+          import torch\nfrom accelerate import Accelerator, load_checkpoint_and_dispatch,\
+          \ init_empty_weights\nfrom tqdm.auto import tqdm\nfrom threading import\
+          \ Thread\nfrom huggingface_hub import snapshot_download, cached_assets_path\n\
+          \n\"\"\"Wrapper for the MosaicML MPT models.\"\"\"\nclass MosaicML(LLM):\n\
+          \    model_name: str = Field(\"mosaicml/mpt-7b-storywriter\", alias='model_name')\n\
+          \    \"\"\"The name of the model to use.\"\"\"\n\n    tokenizer_name: str\
+          \ = Field(\"EleutherAI/gpt-neox-20b\", alias='tokenizer_name')\n    \"\"\
+          \"The name of the sentence tokenizer to use.\"\"\"\n\n    config: Any =\
+          \ None #: :meta private:\n    \"\"\"The reference to the loaded configuration.\"\
+          \"\"\n\n    tokenizer: Any = None #: :meta private:\n    \"\"\"The reference\
+          \ to the loaded tokenizer.\"\"\"\n\n    model: Any = None #: :meta private:\n\
+          \    \"\"\"The reference to the loaded model.\"\"\"\n\n    accelerator:\
+          \ Any = None #: :meta private:\n    \"\"\"The reference to the loaded hf\
+          \ device accelerator.\"\"\"\n\n    attn_impl: str = Field(\"torch\", alias='attn_impl')\n\
+          \    \"\"\"The attention implementation to use.\"\"\"\n\n    torch_dtype:\
+          \ Any = Field(torch.bfloat16, alias='torch_dtype')\n    \"\"\"The torch\
+          \ data type to use.\"\"\"\n\n    max_new_tokens: Optional[int] = Field(10000,\
+          \ alias='max_new_tokens')\n    \"\"\"The maximum number of tokens to generate.\"\
+          \"\"\n\n    do_sample: Optional[bool] = Field(True, alias='do_sample')\n\
+          \    \"\"\"Whether to sample or not.\"\"\"\n\n    temperature: Optional[float]\
+          \ = Field(0.8, alias='temperature')\n    \"\"\"The temperature to use for\
+          \ sampling.\"\"\"\n\n    echo: Optional[bool] = Field(False, alias='echo')\n\
+          \    \"\"\"Whether to echo the prompt.\"\"\"\n    \n    stop: Optional[List[str]]\
+          \ = []\n    \"\"\"A list of strings to stop generation when encountered.\"\
+          \"\"\n\n\n    class Config:\n        \"\"\"Configuration for this pydantic\
+          \ object.\"\"\"\n\n        extra = Extra.forbid\n\n\n    def _mpt_default_params(self)\
+          \ -> Dict[str, Any]:\n        \"\"\"Get the default parameters.\"\"\"\n\
+          \        return {\n            \"max_new_tokens\": self.max_new_tokens,\n\
+          \            \"temperature\": self.temperature,\n            \"do_sample\"\
+          : self.do_sample,\n        }\n    \n    @staticmethod\n    def _mpt_param_names()\
+          \ -> Set[str]:\n        \"\"\"Get the identifying parameters.\"\"\"\n  \
+          \      return {\n            \"max_new_tokens\",\n            \"temperature\"\
+          ,\n            \"do_sample\",\n        }\n\n    @staticmethod\n    def _model_param_names(model_name:\
+          \ str) -> Set[str]:\n        \"\"\"Get the identifying parameters.\"\"\"\
+          \n        # TODO: fork for different parameters for different model variants.\n\
+          \        return MosaicML._mpt_param_names()\n    \n    def _default_params(self)\
+          \ -> Dict[str, Any]:\n        \"\"\"Get the default parameters.\"\"\"\n\
+          \        return self._mpt_default_params()\n    \n    @root_validator()\n\
+          \    def validate_environment(cls, values: Dict) -> Dict:\n        \"\"\"\
+          Validate the environment.\"\"\"\n        try:\n            # This module\
+          \ is supermassive so we use the transformers accelerator to load it.\n \
+          \           values['accelerator'] = Accelerator()\n            print(\"\
+          [\" + values[\"model_name\"] + \"] Downloading model (or fetching from cache)...\"\
+          )\n            download_location = snapshot_download(repo_id=values[\"model_name\"\
+          ], use_auth_token=True, local_files_only=True)\n            print(\"[\"\
+          \ + values[\"model_name\"] + \"] Model location: \" + str(download_location))\n\
+          \            offload_cache_location = cached_assets_path(library_name=\"\
+          langchain\", namespace=values[\"model_name\"], subfolder=\"offload\")\n\
+          \            print(\"[\" + values[\"model_name\"] + \"] Offload cache location:\
+          \ \" + str(offload_cache_location))\n            print(\"[\" + values[\"\
+          model_name\"] + \"] AutoConfiguring...\")\n            values[\"config\"\
+          ] = AutoConfig.from_pretrained(values[\"model_name\"], trust_remote_code=True)\n\
+          \            values[\"config\"].attn_config['attn_impl'] = values[\"attn_impl\"\
+          ]\n            values[\"tokenizer\"] = AutoTokenizer.from_pretrained(values[\"\
+          tokenizer_name\"])\n            print(\"[\" + values[\"model_name\"] + \"\
+          ] Initializing empty weights for model...\")\n            with init_empty_weights():\n\
+          \                values[\"model\"] = AutoModelForCausalLM.from_pretrained(\n\
+          \                    values[\"model_name\"],\n                    config=values[\"\
+          config\"],\n                    torch_dtype=values[\"torch_dtype\"],\n \
+          \                   trust_remote_code=True\n                )\n        \
+          \    print(\"[\" + values[\"model_name\"] + \"] Tying weights...\")\n  \
+          \          values[\"model\"].tie_weights()\n            print(\"[\" + values[\"\
+          model_name\"] + \"] Dispatching checkpoint...\")\n            values[\"\
+          model\"] = load_checkpoint_and_dispatch(\n                values[\"model\"\
+          ], \n                download_location, \n                device_map=\"\
+          auto\", \n                no_split_module_classes=[\"MPTBlock\"],\n    \
+          \            offload_folder=offload_cache_location\n            )\n    \
+          \        print(\"[\" + values[\"model_name\"] + \"] Loaded successfully!\"\
+          )\n        except Exception as e:\n            raise Exception(f\"MosaicML\
+          \ failed to load with error: {e}\")\n        return values\n    \n    @property\n\
+          \    def _identifying_params(self) -> Mapping[str, Any]:\n        \"\"\"\
+          Get the identifying parameters.\"\"\"\n        return {\n            \"\
+          model\": self.model_name,\n            **self._default_params(),\n     \
+          \       **{\n                k: v\n                for k, v in self.__dict__.items()\n\
+          \                if k in self._model_param_names(self.model_name)\n    \
+          \        },\n        }\n    \n    @property\n    def _llm_type(self) ->\
+          \ str:\n        \"\"\"Return the type of llm.\"\"\"\n        return \"mosaicml\"\
+          \n\n    def _call(\n        self,\n        prompt: str,\n        stop: Optional[List[str]]\
+          \ = None,\n        run_manager: Optional[CallbackManagerForLLMRun] = None,\n\
+          \    ) -> str:\n        r\"\"\"Call out to MosiacML's generate method via\
+          \ transformers.\n\n        Args:\n            prompt: The prompt to pass\
+          \ into the model.\n            stop: A list of strings to stop generation\
+          \ when encountered.\n\n        Returns:\n            The string generated\
+          \ by the model.\n\n        Example:\n            .. code-block:: python\n\
+          \n                prompt = \"This is a story about a big sabre tooth tiger:\
+          \ \"\n                response = model(prompt)\n        \"\"\"\n       \
+          \ text_callback = None\n        if run_manager:\n            text_callback\
+          \ = partial(run_manager.on_llm_new_token, verbose=self.verbose)\n      \
+          \  text = \"\"\n        inputs = self.tokenizer([prompt], return_tensors='pt')\n\
+          \        inputs = inputs.to(self.accelerator.device)\n        streamer =\
+          \ TextIteratorStreamer(tokenizer=self.tokenizer, skip_prompt=True)\n   \
+          \     generation_kwargs = dict(inputs, streamer=streamer, **self._mpt_default_params())\n\
+          \        thread = Thread(target=self.model.generate, kwargs=generation_kwargs)\n\
+          \        thread.start()\n        text = \"\"\n        pbar = tqdm(total=self.max_new_tokens,\
+          \ desc=\"Thinking\", leave=False)\n        for new_text in streamer:\n \
+          \           if text_callback:\n                text_callback(new_text)\n\
+          \            text += new_text\n            pbar.update(1)\n        pbar.close()\n\
+          \        if stop is not None:\n            text = enforce_stop_tokens(text,\
+          \ stop)\n        return text\n```\n\nYou can initialize it (StoryWriter\
+          \ 7B F16 takes anywhere from 6m 45s to 10m 15s to load on a slow HDD from\
+          \ 4 years ago, so its probably much faster on your new SSD)\n\n```py\nllm\
+          \ = MosaicML(model_name='mosaicml/mpt-7b-storywriter', attn_impl='torch',\
+          \ torch_dtype=torch.bfloat16, max_new_tokens=200, echo=True)\n```\n```\n\
+          /home/saber7ooth/llama-index/venv/lib/python3.11/site-packages/tqdm/auto.py:21:\
+          \ TqdmWarning: IProgress not found. Please update jupyter and ipywidgets.\
+          \ See https://ipywidgets.readthedocs.io/en/stable/user_install.html\n  from\
+          \ .autonotebook import tqdm as notebook_tqdm\n[mosaicml/mpt-7b-storywriter]\
+          \ Downloading model (or fetching from cache)...\n[mosaicml/mpt-7b-storywriter]\
+          \ Model location: /home/saber7ooth/.cache/huggingface/hub/models--mosaicml--mpt-7b-storywriter/snapshots/6ba8d09107c76220faae00653ed11bcde44b3152\n\
+          [mosaicml/mpt-7b-storywriter] Offload cache location: /home/saber7ooth/.cache/huggingface/assets/langchain/mosaicml--mpt-7b-storywriter/offload\n\
+          [mosaicml/mpt-7b-storywriter] AutoConfiguring...\nExplicitly passing a `revision`\
+          \ is encouraged when loading a configuration with custom code to ensure\
+          \ no malicious code has been contributed in a newer revision.\nExplicitly\
+          \ passing a `revision` is encouraged when loading a model with custom code\
+          \ to ensure no malicious code has been contributed in a newer revision.\n\
+          [mosaicml/mpt-7b-storywriter] Initializing empty weights for model...\n\
+          /home/saber7ooth/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-storywriter/6ba8d09107c76220faae00653ed11bcde44b3152/attention.py:148:\
+          \ UserWarning: Using `attn_impl: torch`. If your model does not use `alibi`\
+          \ or `prefix_lm` we recommend using `attn_impl: flash` otherwise we recommend\
+          \ using `attn_impl: triton`.\n  warnings.warn('Using `attn_impl: torch`.\
+          \ If your model does not use `alibi` or ' + '`prefix_lm` we recommend using\
+          \ `attn_impl: flash` otherwise ' + 'we recommend using `attn_impl: triton`.')\n\
+          Loading checkpoint shards: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588| 2/2 [02:55<00:00, 87.57s/it] \n[mosaicml/mpt-7b-storywriter]\
+          \ Tying weights...\n[mosaicml/mpt-7b-storywriter] Dispatching checkpoint...\n\
+          [mosaicml/mpt-7b-storywriter] Loaded successfully!\n```\n\nAnd you can text\
+          \ complete with it (what this model was designed to do is assist in writing\
+          \ stories):\n\n```py\nllm(\"Tell me a short story about sabretooth tigers.\"\
+          )\n```\n\n```\n' Or about the mummy who can\\'t move.\"\\n\\n\"Sabretooth\
+          \ tigers are extinct,\" I said. I knew that. I\\'d read about them in school.\
+          \ \"And I don\\'t know any short stories about mummies. Let\\'s talk about\
+          \ something else, okay?\"\\n\\n\"Fine,\" he said. \"I\\'ve got a little\
+          \ story about my Uncle Pike. He\\'s a doctor. And he doesn\\'t believe in\
+          \ ghosts.\"\\n\\n\"No?\" I said. \"I thought you said he was a doctor.\"\
+          \\n\\n\"He is,\" he said. \"He\\'s a doctor of medicine. And a doctor of\
+          \ philosophy, too. He\\'s a doctor of everything. But he doesn\\'t believe\
+          \ in ghosts. And anyway, he doesn\\'t believe in ghosts because he\\'s a\
+          \ doctor, not because he\\'s a doctor of medicine.\"\\n\\n\"Oh,\" I said.\
+          \ I don\\'t like to argue with anyone. \"I guess ghosts would'\n```\n\n\
+          The model does as it says.  It takes a little blub that you give it, and\
+          \ it makes a story by continuing.  If you'd like to see your original prompt,\
+          \ you can change this line:\n\n```py\n        streamer = TextIteratorStreamer(tokenizer=self.tokenizer,\
+          \ skip_prompt=True)\n```\n\nAnd set ``skip_prompt`` to ``False``.\n\n**Final\
+          \ notes:**\n\nHave fun playing around with this and of course if you want\
+          \ to do the full transformers implementation, with all the properties, have\
+          \ at (that's torture writing that much pydantic boilerplate...)\n\nI also\
+          \ recommend making the Model loader itself a Singleton class so that if\
+          \ someone decides to call the constructor on this more than once, it won't\
+          \ load twice...\n\nI have not tried llamacpp LangChain wrapper and because\
+          \ of the new changes I doubt it works.  This is a very modern model.\n\n\
+          I like it and the little story that it came up with was funny to me.  \U0001F44D\
+          \ The fact I was able to hack it enough to work on a dodgy home computer\
+          \ was enough of an achievement.\n\nP. S.: because I know people will yell\
+          \ here's my pip freeze:\n```\ntransformers==4.28.1\nhuggingface-hub==0.14.1\n\
+          langchain==0.0.162\nasyncio==3.4.3\ncolorama==0.4.6\ntorch==2.0.1\neinops==0.6.1\n\
+          accelerate==0.19.0\naiohttp==3.8.4\naiosignal==1.3.1\nasttokens==2.2.1\n\
+          async-timeout==4.0.2\nattrs==23.1.0\nbackcall==0.2.0\ncertifi==2023.5.7\n\
+          charset-normalizer==3.1.0\ncmake==3.26.3\ncomm==0.1.3\ndataclasses-json==0.5.7\n\
+          debugpy==1.6.7\ndecorator==5.1.1\nexecuting==1.2.0\nfilelock==3.12.0\nfrozenlist==1.3.3\n\
+          fsspec==2023.5.0\ngreenlet==2.0.2\nidna==3.4\nipykernel==6.23.0\nipython==8.13.2\n\
+          jedi==0.18.2\nJinja2==3.1.2\njupyter_client==8.2.0\njupyter_core==5.3.0\n\
+          lit==16.0.3\nMarkupSafe==2.1.2\nmarshmallow==3.19.0\nmarshmallow-enum==1.5.1\n\
+          matplotlib-inline==0.1.6\nmpmath==1.3.0\nmultidict==6.0.4\nmypy-extensions==1.0.0\n\
+          nest-asyncio==1.5.6\nnetworkx==3.1\nnumexpr==2.8.4\nnumpy==1.24.3\nnvidia-cublas-cu11==11.10.3.66\n\
+          nvidia-cuda-cupti-cu11==11.7.101\nnvidia-cuda-nvrtc-cu11==11.7.99\nnvidia-cuda-runtime-cu11==11.7.99\n\
+          nvidia-cudnn-cu11==8.5.0.96\nnvidia-cufft-cu11==10.9.0.58\nnvidia-curand-cu11==10.2.10.91\n\
+          nvidia-cusolver-cu11==11.4.0.1\nnvidia-cusparse-cu11==11.7.4.91\nnvidia-nccl-cu11==2.14.3\n\
+          nvidia-nvtx-cu11==11.7.91\nopenapi-schema-pydantic==1.2.4\npackaging==23.1\n\
+          parso==0.8.3\npexpect==4.8.0\npickleshare==0.7.5\nplatformdirs==3.5.0\n\
+          prompt-toolkit==3.0.38\npsutil==5.9.5\nptyprocess==0.7.0\npure-eval==0.2.2\n\
+          pydantic==1.10.7\nPygments==2.15.1\npython-dateutil==2.8.2\nPyYAML==6.0\n\
+          pyzmq==25.0.2\nregex==2023.5.5\nrequests==2.30.0\nsix==1.16.0\nSQLAlchemy==2.0.12\n\
+          stack-data==0.6.2\nsympy==1.11.1\ntenacity==8.2.2\ntokenizers==0.13.3\n\
+          tornado==6.3.1\ntqdm==4.65.0\ntraitlets==5.9.0\ntriton==2.0.0\ntyping-inspect==0.8.0\n\
+          typing_extensions==4.5.0\nurllib3==2.0.2\nwcwidth==0.2.6\nyarl==1.9.2\n\
+          ```\n\nAnd my WSL instance has CUDA 12.1 from here -> https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local\n\
+          \nMy LangChain loader isn't using the Github repo at all (but it helped\
+          \ a ton!)) and just barebones grabbing the weights and stuffing them in\
+          \ transformers.  Enjoy this backyard shenanigans.\n\nBecause I'm using hf\
+          \ transformer accelerators and split-block locking, you can expect better\
+          \ performance with multiple GPUs, a better CPU, faster storage, and more\
+          \ RAM.  But this should make the model somewhat more accessible to \"hobbyists\"\
+          \ through LangChain, at the very least.\n\nYou can even load big models\
+          \ with this voodoo magic, if you don't mind being patient and waiting on\
+          \ your prompt at home...\n\nLuv,\n\n~ 7oothy"
+        updatedAt: '2023-05-10T16:16:33.567Z'
+      numEdits: 3
+      reactions:
+      - count: 12
+        reaction: "\u2764\uFE0F"
+        users:
+        - dvlamis
+        - kil3r
+        - masterfury
+        - guimou
+        - alexanderfrey
+        - loag
+        - zcking
+        - vavent
+        - ybm11
+        - AlirezaAkhondi
+        - Elagoz
+        - fishinkiko
+      - count: 2
+        reaction: "\U0001F917"
+        users:
+        - kil3r
+        - lulukumm
+      - count: 1
+        reaction: "\U0001F92F"
+        users:
+        - kil3r
+    id: 645bbee0bccccb946f828c0e
+    type: comment
+  author: saber7ooth
+  content: "So, there's good news and bad news after this experiment full disclosure\
+    \ incoming:\n\n- **Yes**, you can run this on a personal computer.\n- **No**,\
+    \ it isn't fast, at all.   200 tokens took 3m 16.9s a prompt on my machine, and\
+    \ its only because I've got 32GB RAM thanks to studio work that I do.  Ok maaaybe\
+    \ I cheated, this machine's built to run Unity, buuut...\n\nMy graphics card is\
+    \ barely sufficient (GTX1080 TI with 8GB VRAM).  But thanks to ``llm_foundary``\
+    \ GitHub repository, I was able to discern which blocks needed split-locking on\
+    \ the accelerator, and expand all that out manually and tie the weights so it\
+    \ works on a home PC with a crappy graphics card via:  https://huggingface.co/docs/accelerate/usage_guides/big_modeling\
+    \ .  It runs at about 1.09 it/s (a token a second on a home computer \U0001F605\
+    \U0001F525) -- My brave little toaster did it so yours can, too.\n\nBe aware of\
+    \ these constraints when doing this indie.  If you want the full 60000 ``max_new_tokens``,\
+    \ prepare to come back in an hour if you're poor like me....\n\n**I hacked this\
+    \ together in a night**, and I managed to get StoryWriter working in WSL on LangChain\
+    \ with the hf api on huggingface_hub with some (rudimentary) cache management\
+    \ for disk offloading in accelerators.  __Not all of the parameters from transformers\
+    \ are supported__, only a few during my lab testing.  You'll have to add that\
+    \ in yourself.  **Have fun adding em!** -- I just didn't feel like stuffing in\
+    \ all the pydantic boiler plate for them, without calling upon HuggingFacePipeline\
+    \ from LangChain, which I'm trying to avoid because accelerators and weight tying\
+    \ (you could probably go as far as unwrapping these, too, if ya want for marginal\
+    \ performance gains)\n\nThis includes support for TextIteratorStreamer and will\
+    \ call the LLM runner call back every time a token is added (LangChain API stuff\
+    \ was a lot of pydantic boilerplate), I'm not going to guarantee thread safety.\
+    \  This is an experiment, like everything else in the ML world.\n\nI had to run\
+    \ the code in my local jupyter notebook and restart the kernel often.  It took\
+    \ a long time to get working correctly on LangChain LLMs.\n\nHere's the code (for\
+    \ a custom LangChain LLM) that works on a home PC in WSL Ubuntu 22.04 with accelerators\
+    \ in a venv  \U0001F917\n```py\nfrom functools import partial\nfrom typing import\
+    \ Any, Dict, List, Mapping, Optional, Set\nfrom pydantic import Extra, Field,\
+    \ root_validator\nfrom langchain.callbacks.manager import CallbackManagerForLLMRun\n\
+    from langchain.llms.base import LLM\nfrom langchain.llms.utils import enforce_stop_tokens\n\
+    from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer\n\
+    import torch\nfrom accelerate import Accelerator, load_checkpoint_and_dispatch,\
+    \ init_empty_weights\nfrom tqdm.auto import tqdm\nfrom threading import Thread\n\
+    from huggingface_hub import snapshot_download, cached_assets_path\n\n\"\"\"Wrapper\
+    \ for the MosaicML MPT models.\"\"\"\nclass MosaicML(LLM):\n    model_name: str\
+    \ = Field(\"mosaicml/mpt-7b-storywriter\", alias='model_name')\n    \"\"\"The\
+    \ name of the model to use.\"\"\"\n\n    tokenizer_name: str = Field(\"EleutherAI/gpt-neox-20b\"\
+    , alias='tokenizer_name')\n    \"\"\"The name of the sentence tokenizer to use.\"\
+    \"\"\n\n    config: Any = None #: :meta private:\n    \"\"\"The reference to the\
+    \ loaded configuration.\"\"\"\n\n    tokenizer: Any = None #: :meta private:\n\
+    \    \"\"\"The reference to the loaded tokenizer.\"\"\"\n\n    model: Any = None\
+    \ #: :meta private:\n    \"\"\"The reference to the loaded model.\"\"\"\n\n  \
+    \  accelerator: Any = None #: :meta private:\n    \"\"\"The reference to the loaded\
+    \ hf device accelerator.\"\"\"\n\n    attn_impl: str = Field(\"torch\", alias='attn_impl')\n\
+    \    \"\"\"The attention implementation to use.\"\"\"\n\n    torch_dtype: Any\
+    \ = Field(torch.bfloat16, alias='torch_dtype')\n    \"\"\"The torch data type\
+    \ to use.\"\"\"\n\n    max_new_tokens: Optional[int] = Field(10000, alias='max_new_tokens')\n\
+    \    \"\"\"The maximum number of tokens to generate.\"\"\"\n\n    do_sample: Optional[bool]\
+    \ = Field(True, alias='do_sample')\n    \"\"\"Whether to sample or not.\"\"\"\n\
+    \n    temperature: Optional[float] = Field(0.8, alias='temperature')\n    \"\"\
+    \"The temperature to use for sampling.\"\"\"\n\n    echo: Optional[bool] = Field(False,\
+    \ alias='echo')\n    \"\"\"Whether to echo the prompt.\"\"\"\n    \n    stop:\
+    \ Optional[List[str]] = []\n    \"\"\"A list of strings to stop generation when\
+    \ encountered.\"\"\"\n\n\n    class Config:\n        \"\"\"Configuration for this\
+    \ pydantic object.\"\"\"\n\n        extra = Extra.forbid\n\n\n    def _mpt_default_params(self)\
+    \ -> Dict[str, Any]:\n        \"\"\"Get the default parameters.\"\"\"\n      \
+    \  return {\n            \"max_new_tokens\": self.max_new_tokens,\n          \
+    \  \"temperature\": self.temperature,\n            \"do_sample\": self.do_sample,\n\
+    \        }\n    \n    @staticmethod\n    def _mpt_param_names() -> Set[str]:\n\
+    \        \"\"\"Get the identifying parameters.\"\"\"\n        return {\n     \
+    \       \"max_new_tokens\",\n            \"temperature\",\n            \"do_sample\"\
+    ,\n        }\n\n    @staticmethod\n    def _model_param_names(model_name: str)\
+    \ -> Set[str]:\n        \"\"\"Get the identifying parameters.\"\"\"\n        #\
+    \ TODO: fork for different parameters for different model variants.\n        return\
+    \ MosaicML._mpt_param_names()\n    \n    def _default_params(self) -> Dict[str,\
+    \ Any]:\n        \"\"\"Get the default parameters.\"\"\"\n        return self._mpt_default_params()\n\
+    \    \n    @root_validator()\n    def validate_environment(cls, values: Dict)\
+    \ -> Dict:\n        \"\"\"Validate the environment.\"\"\"\n        try:\n    \
+    \        # This module is supermassive so we use the transformers accelerator\
+    \ to load it.\n            values['accelerator'] = Accelerator()\n           \
+    \ print(\"[\" + values[\"model_name\"] + \"] Downloading model (or fetching from\
+    \ cache)...\")\n            download_location = snapshot_download(repo_id=values[\"\
+    model_name\"], use_auth_token=True, local_files_only=True)\n            print(\"\
+    [\" + values[\"model_name\"] + \"] Model location: \" + str(download_location))\n\
+    \            offload_cache_location = cached_assets_path(library_name=\"langchain\"\
+    , namespace=values[\"model_name\"], subfolder=\"offload\")\n            print(\"\
+    [\" + values[\"model_name\"] + \"] Offload cache location: \" + str(offload_cache_location))\n\
+    \            print(\"[\" + values[\"model_name\"] + \"] AutoConfiguring...\")\n\
+    \            values[\"config\"] = AutoConfig.from_pretrained(values[\"model_name\"\
+    ], trust_remote_code=True)\n            values[\"config\"].attn_config['attn_impl']\
+    \ = values[\"attn_impl\"]\n            values[\"tokenizer\"] = AutoTokenizer.from_pretrained(values[\"\
+    tokenizer_name\"])\n            print(\"[\" + values[\"model_name\"] + \"] Initializing\
+    \ empty weights for model...\")\n            with init_empty_weights():\n    \
+    \            values[\"model\"] = AutoModelForCausalLM.from_pretrained(\n     \
+    \               values[\"model_name\"],\n                    config=values[\"\
+    config\"],\n                    torch_dtype=values[\"torch_dtype\"],\n       \
+    \             trust_remote_code=True\n                )\n            print(\"\
+    [\" + values[\"model_name\"] + \"] Tying weights...\")\n            values[\"\
+    model\"].tie_weights()\n            print(\"[\" + values[\"model_name\"] + \"\
+    ] Dispatching checkpoint...\")\n            values[\"model\"] = load_checkpoint_and_dispatch(\n\
+    \                values[\"model\"], \n                download_location, \n  \
+    \              device_map=\"auto\", \n                no_split_module_classes=[\"\
+    MPTBlock\"],\n                offload_folder=offload_cache_location\n        \
+    \    )\n            print(\"[\" + values[\"model_name\"] + \"] Loaded successfully!\"\
+    )\n        except Exception as e:\n            raise Exception(f\"MosaicML failed\
+    \ to load with error: {e}\")\n        return values\n    \n    @property\n   \
+    \ def _identifying_params(self) -> Mapping[str, Any]:\n        \"\"\"Get the identifying\
+    \ parameters.\"\"\"\n        return {\n            \"model\": self.model_name,\n\
+    \            **self._default_params(),\n            **{\n                k: v\n\
+    \                for k, v in self.__dict__.items()\n                if k in self._model_param_names(self.model_name)\n\
+    \            },\n        }\n    \n    @property\n    def _llm_type(self) -> str:\n\
+    \        \"\"\"Return the type of llm.\"\"\"\n        return \"mosaicml\"\n\n\
+    \    def _call(\n        self,\n        prompt: str,\n        stop: Optional[List[str]]\
+    \ = None,\n        run_manager: Optional[CallbackManagerForLLMRun] = None,\n \
+    \   ) -> str:\n        r\"\"\"Call out to MosiacML's generate method via transformers.\n\
+    \n        Args:\n            prompt: The prompt to pass into the model.\n    \
+    \        stop: A list of strings to stop generation when encountered.\n\n    \
+    \    Returns:\n            The string generated by the model.\n\n        Example:\n\
+    \            .. code-block:: python\n\n                prompt = \"This is a story\
+    \ about a big sabre tooth tiger: \"\n                response = model(prompt)\n\
+    \        \"\"\"\n        text_callback = None\n        if run_manager:\n     \
+    \       text_callback = partial(run_manager.on_llm_new_token, verbose=self.verbose)\n\
+    \        text = \"\"\n        inputs = self.tokenizer([prompt], return_tensors='pt')\n\
+    \        inputs = inputs.to(self.accelerator.device)\n        streamer = TextIteratorStreamer(tokenizer=self.tokenizer,\
+    \ skip_prompt=True)\n        generation_kwargs = dict(inputs, streamer=streamer,\
+    \ **self._mpt_default_params())\n        thread = Thread(target=self.model.generate,\
+    \ kwargs=generation_kwargs)\n        thread.start()\n        text = \"\"\n   \
+    \     pbar = tqdm(total=self.max_new_tokens, desc=\"Thinking\", leave=False)\n\
+    \        for new_text in streamer:\n            if text_callback:\n          \
+    \      text_callback(new_text)\n            text += new_text\n            pbar.update(1)\n\
+    \        pbar.close()\n        if stop is not None:\n            text = enforce_stop_tokens(text,\
+    \ stop)\n        return text\n```\n\nYou can initialize it (StoryWriter 7B F16\
+    \ takes anywhere from 6m 45s to 10m 15s to load on a slow HDD from 4 years ago,\
+    \ so its probably much faster on your new SSD)\n\n```py\nllm = MosaicML(model_name='mosaicml/mpt-7b-storywriter',\
+    \ attn_impl='torch', torch_dtype=torch.bfloat16, max_new_tokens=200, echo=True)\n\
+    ```\n```\n/home/saber7ooth/llama-index/venv/lib/python3.11/site-packages/tqdm/auto.py:21:\
+    \ TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See\
+    \ https://ipywidgets.readthedocs.io/en/stable/user_install.html\n  from .autonotebook\
+    \ import tqdm as notebook_tqdm\n[mosaicml/mpt-7b-storywriter] Downloading model\
+    \ (or fetching from cache)...\n[mosaicml/mpt-7b-storywriter] Model location: /home/saber7ooth/.cache/huggingface/hub/models--mosaicml--mpt-7b-storywriter/snapshots/6ba8d09107c76220faae00653ed11bcde44b3152\n\
+    [mosaicml/mpt-7b-storywriter] Offload cache location: /home/saber7ooth/.cache/huggingface/assets/langchain/mosaicml--mpt-7b-storywriter/offload\n\
+    [mosaicml/mpt-7b-storywriter] AutoConfiguring...\nExplicitly passing a `revision`\
+    \ is encouraged when loading a configuration with custom code to ensure no malicious\
+    \ code has been contributed in a newer revision.\nExplicitly passing a `revision`\
+    \ is encouraged when loading a model with custom code to ensure no malicious code\
+    \ has been contributed in a newer revision.\n[mosaicml/mpt-7b-storywriter] Initializing\
+    \ empty weights for model...\n/home/saber7ooth/.cache/huggingface/modules/transformers_modules/mosaicml/mpt-7b-storywriter/6ba8d09107c76220faae00653ed11bcde44b3152/attention.py:148:\
+    \ UserWarning: Using `attn_impl: torch`. If your model does not use `alibi` or\
+    \ `prefix_lm` we recommend using `attn_impl: flash` otherwise we recommend using\
+    \ `attn_impl: triton`.\n  warnings.warn('Using `attn_impl: torch`. If your model\
+    \ does not use `alibi` or ' + '`prefix_lm` we recommend using `attn_impl: flash`\
+    \ otherwise ' + 'we recommend using `attn_impl: triton`.')\nLoading checkpoint\
+    \ shards: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2\
+    \ [02:55<00:00, 87.57s/it] \n[mosaicml/mpt-7b-storywriter] Tying weights...\n\
+    [mosaicml/mpt-7b-storywriter] Dispatching checkpoint...\n[mosaicml/mpt-7b-storywriter]\
+    \ Loaded successfully!\n```\n\nAnd you can text complete with it (what this model\
+    \ was designed to do is assist in writing stories):\n\n```py\nllm(\"Tell me a\
+    \ short story about sabretooth tigers.\")\n```\n\n```\n' Or about the mummy who\
+    \ can\\'t move.\"\\n\\n\"Sabretooth tigers are extinct,\" I said. I knew that.\
+    \ I\\'d read about them in school. \"And I don\\'t know any short stories about\
+    \ mummies. Let\\'s talk about something else, okay?\"\\n\\n\"Fine,\" he said.\
+    \ \"I\\'ve got a little story about my Uncle Pike. He\\'s a doctor. And he doesn\\\
+    't believe in ghosts.\"\\n\\n\"No?\" I said. \"I thought you said he was a doctor.\"\
+    \\n\\n\"He is,\" he said. \"He\\'s a doctor of medicine. And a doctor of philosophy,\
+    \ too. He\\'s a doctor of everything. But he doesn\\'t believe in ghosts. And\
+    \ anyway, he doesn\\'t believe in ghosts because he\\'s a doctor, not because\
+    \ he\\'s a doctor of medicine.\"\\n\\n\"Oh,\" I said. I don\\'t like to argue\
+    \ with anyone. \"I guess ghosts would'\n```\n\nThe model does as it says.  It\
+    \ takes a little blub that you give it, and it makes a story by continuing.  If\
+    \ you'd like to see your original prompt, you can change this line:\n\n```py\n\
+    \        streamer = TextIteratorStreamer(tokenizer=self.tokenizer, skip_prompt=True)\n\
+    ```\n\nAnd set ``skip_prompt`` to ``False``.\n\n**Final notes:**\n\nHave fun playing\
+    \ around with this and of course if you want to do the full transformers implementation,\
+    \ with all the properties, have at (that's torture writing that much pydantic\
+    \ boilerplate...)\n\nI also recommend making the Model loader itself a Singleton\
+    \ class so that if someone decides to call the constructor on this more than once,\
+    \ it won't load twice...\n\nI have not tried llamacpp LangChain wrapper and because\
+    \ of the new changes I doubt it works.  This is a very modern model.\n\nI like\
+    \ it and the little story that it came up with was funny to me.  \U0001F44D The\
+    \ fact I was able to hack it enough to work on a dodgy home computer was enough\
+    \ of an achievement.\n\nP. S.: because I know people will yell here's my pip freeze:\n\
+    ```\ntransformers==4.28.1\nhuggingface-hub==0.14.1\nlangchain==0.0.162\nasyncio==3.4.3\n\
+    colorama==0.4.6\ntorch==2.0.1\neinops==0.6.1\naccelerate==0.19.0\naiohttp==3.8.4\n\
+    aiosignal==1.3.1\nasttokens==2.2.1\nasync-timeout==4.0.2\nattrs==23.1.0\nbackcall==0.2.0\n\
+    certifi==2023.5.7\ncharset-normalizer==3.1.0\ncmake==3.26.3\ncomm==0.1.3\ndataclasses-json==0.5.7\n\
+    debugpy==1.6.7\ndecorator==5.1.1\nexecuting==1.2.0\nfilelock==3.12.0\nfrozenlist==1.3.3\n\
+    fsspec==2023.5.0\ngreenlet==2.0.2\nidna==3.4\nipykernel==6.23.0\nipython==8.13.2\n\
+    jedi==0.18.2\nJinja2==3.1.2\njupyter_client==8.2.0\njupyter_core==5.3.0\nlit==16.0.3\n\
+    MarkupSafe==2.1.2\nmarshmallow==3.19.0\nmarshmallow-enum==1.5.1\nmatplotlib-inline==0.1.6\n\
+    mpmath==1.3.0\nmultidict==6.0.4\nmypy-extensions==1.0.0\nnest-asyncio==1.5.6\n\
+    networkx==3.1\nnumexpr==2.8.4\nnumpy==1.24.3\nnvidia-cublas-cu11==11.10.3.66\n\
+    nvidia-cuda-cupti-cu11==11.7.101\nnvidia-cuda-nvrtc-cu11==11.7.99\nnvidia-cuda-runtime-cu11==11.7.99\n\
+    nvidia-cudnn-cu11==8.5.0.96\nnvidia-cufft-cu11==10.9.0.58\nnvidia-curand-cu11==10.2.10.91\n\
+    nvidia-cusolver-cu11==11.4.0.1\nnvidia-cusparse-cu11==11.7.4.91\nnvidia-nccl-cu11==2.14.3\n\
+    nvidia-nvtx-cu11==11.7.91\nopenapi-schema-pydantic==1.2.4\npackaging==23.1\nparso==0.8.3\n\
+    pexpect==4.8.0\npickleshare==0.7.5\nplatformdirs==3.5.0\nprompt-toolkit==3.0.38\n\
+    psutil==5.9.5\nptyprocess==0.7.0\npure-eval==0.2.2\npydantic==1.10.7\nPygments==2.15.1\n\
+    python-dateutil==2.8.2\nPyYAML==6.0\npyzmq==25.0.2\nregex==2023.5.5\nrequests==2.30.0\n\
+    six==1.16.0\nSQLAlchemy==2.0.12\nstack-data==0.6.2\nsympy==1.11.1\ntenacity==8.2.2\n\
+    tokenizers==0.13.3\ntornado==6.3.1\ntqdm==4.65.0\ntraitlets==5.9.0\ntriton==2.0.0\n\
+    typing-inspect==0.8.0\ntyping_extensions==4.5.0\nurllib3==2.0.2\nwcwidth==0.2.6\n\
+    yarl==1.9.2\n```\n\nAnd my WSL instance has CUDA 12.1 from here -> https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local\n\
+    \nMy LangChain loader isn't using the Github repo at all (but it helped a ton!))\
+    \ and just barebones grabbing the weights and stuffing them in transformers. \
+    \ Enjoy this backyard shenanigans.\n\nBecause I'm using hf transformer accelerators\
+    \ and split-block locking, you can expect better performance with multiple GPUs,\
+    \ a better CPU, faster storage, and more RAM.  But this should make the model\
+    \ somewhat more accessible to \"hobbyists\" through LangChain, at the very least.\n\
+    \nYou can even load big models with this voodoo magic, if you don't mind being\
+    \ patient and waiting on your prompt at home...\n\nLuv,\n\n~ 7oothy"
+  created_at: 2023-05-10 14:57:20+00:00
+  edited: true
+  hidden: false
+  id: 645bbee0bccccb946f828c0e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1661118445899-noauth.png?w=200&h=200&f=face
+      fullname: Robert Michael Smith
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saber7ooth
+      type: user
+    createdAt: '2023-05-10T16:13:16.000Z'
+    data:
+      from: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a HOME
+        COMPUTER'
+      to: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a POTATO'
+    id: 645bc29c337b2ccf07fbd397
+    type: title-change
+  author: saber7ooth
+  created_at: 2023-05-10 15:13:16+00:00
+  id: 645bc29c337b2ccf07fbd397
+  new_title: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a
+    POTATO'
+  old_title: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a
+    HOME COMPUTER'
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1661118445899-noauth.png?w=200&h=200&f=face
+      fullname: Robert Michael Smith
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saber7ooth
+      type: user
+    createdAt: '2023-05-10T16:13:58.000Z'
+    data:
+      from: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a POTATO'
+      to: '[Experiment] MPT 7B + LangChain Custom LLM + transformers.accelerator,
+        on a POTATO'
+    id: 645bc2c68ac8cdceb38b7619
+    type: title-change
+  author: saber7ooth
+  created_at: 2023-05-10 15:13:58+00:00
+  id: 645bc2c68ac8cdceb38b7619
+  new_title: '[Experiment] MPT 7B + LangChain Custom LLM + transformers.accelerator,
+    on a POTATO'
+  old_title: '[Experiment] MPT 7B + LangChain LM + transformers.accelerator, on a
+    POTATO'
+  type: title-change
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: mosaicml/mpt-7b
+repo_type: model
+status: open
+target_branch: null
+title: '[Experiment] MPT 7B + LangChain Custom LLM + transformers.accelerator, on
+  a POTATO'

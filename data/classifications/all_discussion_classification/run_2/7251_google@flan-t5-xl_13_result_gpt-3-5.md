@@ -1,0 +1,4 @@
+## https://huggingface.co/google/flan-t5-xl/discussions/13
+
+contains_question: yes
+question_part: "404 when fetching model from Hub"

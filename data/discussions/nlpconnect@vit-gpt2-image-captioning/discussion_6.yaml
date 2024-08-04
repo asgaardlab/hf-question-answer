@@ -1,0 +1,181 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Caridorc
+conflicting_files: null
+created_at: 2022-10-31 15:35:22+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c27d2ac7bbd78959bdf36909aaca6e0f.svg
+      fullname: Caridorc Tergilti
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Caridorc
+      type: user
+    createdAt: '2022-10-31T16:35:22.000Z'
+    data:
+      edited: false
+      editors:
+      - Caridorc
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c27d2ac7bbd78959bdf36909aaca6e0f.svg
+          fullname: Caridorc Tergilti
+          isHf: false
+          isPro: false
+          name: Caridorc
+          type: user
+        html: '<p>I would like to ask if there is a way to get both the caption for
+          the image and the confidence level in the predicted caption as a float from
+          0 to 1 (0 means completely uncertain, 1 means completely certain).</p>
+
+          '
+        raw: I would like to ask if there is a way to get both the caption for the
+          image and the confidence level in the predicted caption as a float from
+          0 to 1 (0 means completely uncertain, 1 means completely certain).
+        updatedAt: '2022-10-31T16:35:22.190Z'
+      numEdits: 0
+      reactions: []
+    id: 635ff94a773df6f83daca1e8
+    type: comment
+  author: Caridorc
+  content: I would like to ask if there is a way to get both the caption for the image
+    and the confidence level in the predicted caption as a float from 0 to 1 (0 means
+    completely uncertain, 1 means completely certain).
+  created_at: 2022-10-31 15:35:22+00:00
+  edited: false
+  hidden: false
+  id: 635ff94a773df6f83daca1e8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599133184264-noauth.jpeg?w=200&h=200&f=face
+      fullname: Ankur Singh
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ankur310794
+      type: user
+    createdAt: '2022-11-02T04:12:53.000Z'
+    data:
+      edited: false
+      editors:
+      - ankur310794
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599133184264-noauth.jpeg?w=200&h=200&f=face
+          fullname: Ankur Singh
+          isHf: false
+          isPro: false
+          name: ankur310794
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Caridorc&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Caridorc\"\
+          >@<span class=\"underline\">Caridorc</span></a></span>\n\n\t</span></span><br>Yes\
+          \ you can do it. There are flags in generate function i.e. <code>return_dict_in_generate</code>\
+          \ and <code>output_scores</code>, you have to enable that. </p>\n<p>Try\
+          \ this</p>\n<pre><code class=\"language-python\">max_length = <span class=\"\
+          hljs-number\">16</span>\nnum_beams = <span class=\"hljs-number\">4</span>\n\
+          gen_kwargs = {<span class=\"hljs-string\">\"max_length\"</span>: max_length,\
+          \ \n              <span class=\"hljs-string\">\"num_beams\"</span>: num_beams,\n\
+          \              <span class=\"hljs-string\">\"output_scores\"</span>: <span\
+          \ class=\"hljs-literal\">True</span>,\n              <span class=\"hljs-string\"\
+          >\"return_dict_in_generate\"</span>: <span class=\"hljs-literal\">True</span>}\n\
+          \n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >predict_step</span>(<span class=\"hljs-params\">image_paths</span>):\n\
+          \  images = []\n  <span class=\"hljs-keyword\">for</span> image_path <span\
+          \ class=\"hljs-keyword\">in</span> image_paths:\n    i_image = Image.<span\
+          \ class=\"hljs-built_in\">open</span>(image_path)\n    <span class=\"hljs-keyword\"\
+          >if</span> i_image.mode != <span class=\"hljs-string\">\"RGB\"</span>:\n\
+          \      i_image = i_image.convert(mode=<span class=\"hljs-string\">\"RGB\"\
+          </span>)\n\n    images.append(i_image)\n\n  pixel_values = feature_extractor(images=images,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>).pixel_values\n\
+          \  pixel_values = pixel_values.to(device)\n\n  output_ids = model.generate(pixel_values,\
+          \ **gen_kwargs)\n  probs = output_ids.sequences_scores\n  preds = tokenizer.batch_decode(output_ids.sequences,\
+          \ skip_special_tokens=<span class=\"hljs-literal\">True</span>)\n  preds\
+          \ = [pred.strip() <span class=\"hljs-keyword\">for</span> pred <span class=\"\
+          hljs-keyword\">in</span> preds]\n  <span class=\"hljs-keyword\">return</span>\
+          \ preds, probs\n</code></pre>\n<p>Please refer to these resources for more:</p>\n\
+          <p><a href=\"https://huggingface.co/blog/how-to-generate\">https://huggingface.co/blog/how-to-generate</a><br><a\
+          \ href=\"https://huggingface.co/docs/transformers/v4.24.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate\"\
+          >https://huggingface.co/docs/transformers/v4.24.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate</a></p>\n"
+        raw: "Hi @Caridorc\nYes you can do it. There are flags in generate function\
+          \ i.e. `return_dict_in_generate` and `output_scores`, you have to enable\
+          \ that. \n\nTry this\n\n```python\nmax_length = 16\nnum_beams = 4\ngen_kwargs\
+          \ = {\"max_length\": max_length, \n              \"num_beams\": num_beams,\n\
+          \              \"output_scores\": True,\n              \"return_dict_in_generate\"\
+          : True}\n\n\ndef predict_step(image_paths):\n  images = []\n  for image_path\
+          \ in image_paths:\n    i_image = Image.open(image_path)\n    if i_image.mode\
+          \ != \"RGB\":\n      i_image = i_image.convert(mode=\"RGB\")\n\n    images.append(i_image)\n\
+          \n  pixel_values = feature_extractor(images=images, return_tensors=\"pt\"\
+          ).pixel_values\n  pixel_values = pixel_values.to(device)\n\n  output_ids\
+          \ = model.generate(pixel_values, **gen_kwargs)\n  probs = output_ids.sequences_scores\n\
+          \  preds = tokenizer.batch_decode(output_ids.sequences, skip_special_tokens=True)\n\
+          \  preds = [pred.strip() for pred in preds]\n  return preds, probs\n```\n\
+          \nPlease refer to these resources for more:\n\nhttps://huggingface.co/blog/how-to-generate\n\
+          https://huggingface.co/docs/transformers/v4.24.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate"
+        updatedAt: '2022-11-02T04:12:53.697Z'
+      numEdits: 0
+      reactions: []
+    id: 6361ee45eee0d27f043dd21d
+    type: comment
+  author: ankur310794
+  content: "Hi @Caridorc\nYes you can do it. There are flags in generate function\
+    \ i.e. `return_dict_in_generate` and `output_scores`, you have to enable that.\
+    \ \n\nTry this\n\n```python\nmax_length = 16\nnum_beams = 4\ngen_kwargs = {\"\
+    max_length\": max_length, \n              \"num_beams\": num_beams,\n        \
+    \      \"output_scores\": True,\n              \"return_dict_in_generate\": True}\n\
+    \n\ndef predict_step(image_paths):\n  images = []\n  for image_path in image_paths:\n\
+    \    i_image = Image.open(image_path)\n    if i_image.mode != \"RGB\":\n     \
+    \ i_image = i_image.convert(mode=\"RGB\")\n\n    images.append(i_image)\n\n  pixel_values\
+    \ = feature_extractor(images=images, return_tensors=\"pt\").pixel_values\n  pixel_values\
+    \ = pixel_values.to(device)\n\n  output_ids = model.generate(pixel_values, **gen_kwargs)\n\
+    \  probs = output_ids.sequences_scores\n  preds = tokenizer.batch_decode(output_ids.sequences,\
+    \ skip_special_tokens=True)\n  preds = [pred.strip() for pred in preds]\n  return\
+    \ preds, probs\n```\n\nPlease refer to these resources for more:\n\nhttps://huggingface.co/blog/how-to-generate\n\
+    https://huggingface.co/docs/transformers/v4.24.0/en/main_classes/text_generation#transformers.generation_utils.GenerationMixin.generate"
+  created_at: 2022-11-02 03:12:53+00:00
+  edited: false
+  hidden: false
+  id: 6361ee45eee0d27f043dd21d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1599133184264-noauth.jpeg?w=200&h=200&f=face
+      fullname: Ankur Singh
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ankur310794
+      type: user
+    createdAt: '2022-11-03T16:26:49.000Z'
+    data:
+      status: closed
+    id: 6363ebc9ff4b318d1b7a0bff
+    type: status-change
+  author: ankur310794
+  created_at: 2022-11-03 15:26:49+00:00
+  id: 6363ebc9ff4b318d1b7a0bff
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: nlpconnect/vit-gpt2-image-captioning
+repo_type: model
+status: closed
+target_branch: null
+title: How to get confidence level for the classification

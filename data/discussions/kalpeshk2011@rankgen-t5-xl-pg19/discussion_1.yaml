@@ -1,0 +1,175 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: iohadrubin
+conflicting_files: null
+created_at: 2022-11-13 16:02:48+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7ae0cbe5abbfc056de47640f1592595e.svg
+      fullname: Ohad Rubin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: iohadrubin
+      type: user
+    createdAt: '2022-11-13T16:02:48.000Z'
+    data:
+      edited: false
+      editors:
+      - iohadrubin
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7ae0cbe5abbfc056de47640f1592595e.svg
+          fullname: Ohad Rubin
+          isHf: false
+          isPro: false
+          name: iohadrubin
+          type: user
+        html: "<pre><code>from transformers import AutoTokenizer\nfrom transformers\
+          \ import FlaxT5PreTrainedModel, FlaxT5EncoderModel,FlaxT5EncoderModel\n\
+          from transformers.models.t5.modeling_flax_t5 import FlaxT5EncoderModule\n\
+          from transformers import T5Config\n\nimport flax.linen as nn \nfrom typing\
+          \ import Callable, Optional, Tuple\n\nimport numpy as np\n\nimport flax.linen\
+          \ as nn\nimport jax\nimport jax.numpy as jnp\nfrom jax.random import PRNGKey\n\
+          \n\nclass ModuleT5EncoderWithProjection(nn.Module):\n    config: T5Config\n\
+          \    dtype: jnp.dtype = jnp.float32  # the dtype of the computation\n  \
+          \  # input_shape: Tuple[int] = (1, 1),\n    gradient_checkpointing: bool\
+          \ = False\n    def setup(self):\n    #   print(input_args)\n      self.t5_encoder\
+          \ = FlaxT5EncoderModule(self.config)\n      self.projection = nn.Dense(self.config.d_model,use_bias=False)\n\
+          \    def __call__(self,\n        input_ids=None,\n        attention_mask=None,\
+          \ output_attentions=None,\n        output_hidden_states=None,return_dict:\
+          \ bool = False,deterministic: bool = True,rngs=None):\n      last_hidden_state\
+          \ = self.t5_encoder(input_ids,attention_mask=attention_mask)[0]\n      last_hidden_state\
+          \ = last_hidden_state[:, 0, :]\n      return self.projection(last_hidden_state)\n\
+          class T5EncoderWithProjection(FlaxT5EncoderModel):\n    module_class: nn.Module\
+          \ = ModuleT5EncoderWithProjection\n    def __init__(self, config,_do_init,dtype):\n\
+          \        super().__init__(config,_do_init=_do_init,dtype=dtype)\n    def\
+          \ __call__(\n            self,\n            input_ids: jnp.ndarray,\n  \
+          \          attention_mask: Optional[jnp.ndarray] = None,\n            output_attentions:\
+          \ Optional[bool] = None,\n            output_hidden_states: Optional[bool]\
+          \ = None,\n            return_dict: Optional[bool] = None,\n           \
+          \ train: bool = False,\n            params: dict = None,\n            dropout_rng:\
+          \ PRNGKey = None,\n        ):\n            output_attentions = output_attentions\
+          \ if output_attentions is not None else self.config.output_attentions\n\
+          \            output_hidden_states = (\n                output_hidden_states\
+          \ if output_hidden_states is not None else self.config.output_hidden_states\n\
+          \            )\n            return_dict = return_dict if return_dict is\
+          \ not None else self.config.return_dict\n\n            # prepare encoder\
+          \ inputs\n            if attention_mask is None:\n                attention_mask\
+          \ = jnp.ones_like(input_ids)\n\n            # Handle any PRNG if needed\n\
+          \            rngs = {\"dropout\": dropout_rng} if dropout_rng is not None\
+          \ else {}\n\n            return self.module.apply(\n                {\"\
+          params\": params or self.params},\n                input_ids=jnp.array(input_ids,\
+          \ dtype=\"i4\"),\n                attention_mask=jnp.array(attention_mask,\
+          \ dtype=\"i4\"),\n                output_attentions=output_attentions,\n\
+          \                output_hidden_states=output_hidden_states,\n          \
+          \      return_dict=return_dict,\n                deterministic=not train,\n\
+          \                rngs=rngs,\n            )\nencoder =T5EncoderWithProjection.from_pretrained(\"\
+          kalpeshk2011/rankgen-t5-base-all\",from_pt=True)\n</code></pre>\n"
+        raw: "\r\n```\r\nfrom transformers import AutoTokenizer\r\nfrom transformers\
+          \ import FlaxT5PreTrainedModel, FlaxT5EncoderModel,FlaxT5EncoderModel\r\n\
+          from transformers.models.t5.modeling_flax_t5 import FlaxT5EncoderModule\r\
+          \nfrom transformers import T5Config\r\n\r\nimport flax.linen as nn \r\n\
+          from typing import Callable, Optional, Tuple\r\n\r\nimport numpy as np\r\
+          \n\r\nimport flax.linen as nn\r\nimport jax\r\nimport jax.numpy as jnp\r\
+          \nfrom jax.random import PRNGKey\r\n\r\n\r\nclass ModuleT5EncoderWithProjection(nn.Module):\r\
+          \n    config: T5Config\r\n    dtype: jnp.dtype = jnp.float32  # the dtype\
+          \ of the computation\r\n    # input_shape: Tuple[int] = (1, 1),\r\n    gradient_checkpointing:\
+          \ bool = False\r\n    def setup(self):\r\n    #   print(input_args)\r\n\
+          \      self.t5_encoder = FlaxT5EncoderModule(self.config)\r\n      self.projection\
+          \ = nn.Dense(self.config.d_model,use_bias=False)\r\n    def __call__(self,\r\
+          \n        input_ids=None,\r\n        attention_mask=None, output_attentions=None,\r\
+          \n        output_hidden_states=None,return_dict: bool = False,deterministic:\
+          \ bool = True,rngs=None):\r\n      last_hidden_state = self.t5_encoder(input_ids,attention_mask=attention_mask)[0]\r\
+          \n      last_hidden_state = last_hidden_state[:, 0, :]\r\n      return self.projection(last_hidden_state)\r\
+          \nclass T5EncoderWithProjection(FlaxT5EncoderModel):\r\n    module_class:\
+          \ nn.Module = ModuleT5EncoderWithProjection\r\n    def __init__(self, config,_do_init,dtype):\r\
+          \n        super().__init__(config,_do_init=_do_init,dtype=dtype)\r\n   \
+          \ def __call__(\r\n            self,\r\n            input_ids: jnp.ndarray,\r\
+          \n            attention_mask: Optional[jnp.ndarray] = None,\r\n        \
+          \    output_attentions: Optional[bool] = None,\r\n            output_hidden_states:\
+          \ Optional[bool] = None,\r\n            return_dict: Optional[bool] = None,\r\
+          \n            train: bool = False,\r\n            params: dict = None,\r\
+          \n            dropout_rng: PRNGKey = None,\r\n        ):\r\n           \
+          \ output_attentions = output_attentions if output_attentions is not None\
+          \ else self.config.output_attentions\r\n            output_hidden_states\
+          \ = (\r\n                output_hidden_states if output_hidden_states is\
+          \ not None else self.config.output_hidden_states\r\n            )\r\n  \
+          \          return_dict = return_dict if return_dict is not None else self.config.return_dict\r\
+          \n\r\n            # prepare encoder inputs\r\n            if attention_mask\
+          \ is None:\r\n                attention_mask = jnp.ones_like(input_ids)\r\
+          \n\r\n            # Handle any PRNG if needed\r\n            rngs = {\"\
+          dropout\": dropout_rng} if dropout_rng is not None else {}\r\n\r\n     \
+          \       return self.module.apply(\r\n                {\"params\": params\
+          \ or self.params},\r\n                input_ids=jnp.array(input_ids, dtype=\"\
+          i4\"),\r\n                attention_mask=jnp.array(attention_mask, dtype=\"\
+          i4\"),\r\n                output_attentions=output_attentions,\r\n     \
+          \           output_hidden_states=output_hidden_states,\r\n             \
+          \   return_dict=return_dict,\r\n                deterministic=not train,\r\
+          \n                rngs=rngs,\r\n            )\r\nencoder =T5EncoderWithProjection.from_pretrained(\"\
+          kalpeshk2011/rankgen-t5-base-all\",from_pt=True)\r\n\r\n```"
+        updatedAt: '2022-11-13T16:02:48.295Z'
+      numEdits: 0
+      reactions: []
+    id: 63711528345f97d07b278f89
+    type: comment
+  author: iohadrubin
+  content: "\r\n```\r\nfrom transformers import AutoTokenizer\r\nfrom transformers\
+    \ import FlaxT5PreTrainedModel, FlaxT5EncoderModel,FlaxT5EncoderModel\r\nfrom\
+    \ transformers.models.t5.modeling_flax_t5 import FlaxT5EncoderModule\r\nfrom transformers\
+    \ import T5Config\r\n\r\nimport flax.linen as nn \r\nfrom typing import Callable,\
+    \ Optional, Tuple\r\n\r\nimport numpy as np\r\n\r\nimport flax.linen as nn\r\n\
+    import jax\r\nimport jax.numpy as jnp\r\nfrom jax.random import PRNGKey\r\n\r\n\
+    \r\nclass ModuleT5EncoderWithProjection(nn.Module):\r\n    config: T5Config\r\n\
+    \    dtype: jnp.dtype = jnp.float32  # the dtype of the computation\r\n    # input_shape:\
+    \ Tuple[int] = (1, 1),\r\n    gradient_checkpointing: bool = False\r\n    def\
+    \ setup(self):\r\n    #   print(input_args)\r\n      self.t5_encoder = FlaxT5EncoderModule(self.config)\r\
+    \n      self.projection = nn.Dense(self.config.d_model,use_bias=False)\r\n   \
+    \ def __call__(self,\r\n        input_ids=None,\r\n        attention_mask=None,\
+    \ output_attentions=None,\r\n        output_hidden_states=None,return_dict: bool\
+    \ = False,deterministic: bool = True,rngs=None):\r\n      last_hidden_state =\
+    \ self.t5_encoder(input_ids,attention_mask=attention_mask)[0]\r\n      last_hidden_state\
+    \ = last_hidden_state[:, 0, :]\r\n      return self.projection(last_hidden_state)\r\
+    \nclass T5EncoderWithProjection(FlaxT5EncoderModel):\r\n    module_class: nn.Module\
+    \ = ModuleT5EncoderWithProjection\r\n    def __init__(self, config,_do_init,dtype):\r\
+    \n        super().__init__(config,_do_init=_do_init,dtype=dtype)\r\n    def __call__(\r\
+    \n            self,\r\n            input_ids: jnp.ndarray,\r\n            attention_mask:\
+    \ Optional[jnp.ndarray] = None,\r\n            output_attentions: Optional[bool]\
+    \ = None,\r\n            output_hidden_states: Optional[bool] = None,\r\n    \
+    \        return_dict: Optional[bool] = None,\r\n            train: bool = False,\r\
+    \n            params: dict = None,\r\n            dropout_rng: PRNGKey = None,\r\
+    \n        ):\r\n            output_attentions = output_attentions if output_attentions\
+    \ is not None else self.config.output_attentions\r\n            output_hidden_states\
+    \ = (\r\n                output_hidden_states if output_hidden_states is not None\
+    \ else self.config.output_hidden_states\r\n            )\r\n            return_dict\
+    \ = return_dict if return_dict is not None else self.config.return_dict\r\n\r\n\
+    \            # prepare encoder inputs\r\n            if attention_mask is None:\r\
+    \n                attention_mask = jnp.ones_like(input_ids)\r\n\r\n          \
+    \  # Handle any PRNG if needed\r\n            rngs = {\"dropout\": dropout_rng}\
+    \ if dropout_rng is not None else {}\r\n\r\n            return self.module.apply(\r\
+    \n                {\"params\": params or self.params},\r\n                input_ids=jnp.array(input_ids,\
+    \ dtype=\"i4\"),\r\n                attention_mask=jnp.array(attention_mask, dtype=\"\
+    i4\"),\r\n                output_attentions=output_attentions,\r\n           \
+    \     output_hidden_states=output_hidden_states,\r\n                return_dict=return_dict,\r\
+    \n                deterministic=not train,\r\n                rngs=rngs,\r\n \
+    \           )\r\nencoder =T5EncoderWithProjection.from_pretrained(\"kalpeshk2011/rankgen-t5-base-all\"\
+    ,from_pt=True)\r\n\r\n```"
+  created_at: 2022-11-13 16:02:48+00:00
+  edited: false
+  hidden: false
+  id: 63711528345f97d07b278f89
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: kalpeshk2011/rankgen-t5-xl-pg19
+repo_type: model
+status: open
+target_branch: null
+title: Flax version

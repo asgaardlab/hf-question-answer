@@ -1,0 +1,457 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: jerfie
+conflicting_files: null
+created_at: 2023-12-15 06:36:20+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f5f742cb26dc884210bfc10db03835aa.svg
+      fullname: jaewoo park
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jerfie
+      type: user
+    createdAt: '2023-12-15T06:36:20.000Z'
+    data:
+      edited: true
+      editors:
+      - jerfie
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.37749940156936646
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f5f742cb26dc884210bfc10db03835aa.svg
+          fullname: jaewoo park
+          isHf: false
+          isPro: false
+          name: jerfie
+          type: user
+        html: "<p>Hello! I want to train phi2 with AutoModelForSequenceClassification.\
+          \ But there is error like following code.</p>\n<pre><code class=\"language-python\"\
+          >base_model = AutoModelForSequenceClassification.from_pretrained(\n    <span\
+          \ class=\"hljs-string\">\"microsoft/phi-2\"</span>, \n    num_labels=<span\
+          \ class=\"hljs-number\">2</span>,\n    device_map={<span class=\"hljs-string\"\
+          >\"\"</span>:<span class=\"hljs-number\">0</span>},\n    trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>,\n)\nbase_model.config.pretraining_tp\
+          \ = <span class=\"hljs-number\">1</span> <span class=\"hljs-comment\">#\
+          \ 1 is 7b</span>\nbase_model.config.pad_token_id = tokenizer.pad_token_id\n\
+          </code></pre>\n<pre><code># Output\nValueError: Unrecognized configuration\
+          \ class &lt;class 'transformers_modules.phi-2.configuration_phi.PhiConfig'&gt;\
+          \ for this kind of AutoModel: AutoModelForSequenceClassification.\nModel\
+          \ type should be one of AlbertConfig, BartConfig, BertConfig, BigBirdConfig,\
+          \ BigBirdPegasusConfig, BioGptConfig, BloomConfig, CamembertConfig, CanineConfig,\
+          \ LlamaConfig, ConvBertConfig, CTRLConfig, Data2VecTextConfig, DebertaConfig,\
+          \ DebertaV2Config, DistilBertConfig, ElectraConfig, ErnieConfig, ErnieMConfig,\
+          \ EsmConfig, FalconConfig, FlaubertConfig, FNetConfig, FunnelConfig, GPT2Config,\
+          \ GPT2Config, GPTBigCodeConfig, GPTNeoConfig, GPTNeoXConfig, GPTJConfig,\
+          \ IBertConfig, LayoutLMConfig, LayoutLMv2Config, LayoutLMv3Config, LEDConfig,\
+          \ LiltConfig, LlamaConfig, LongformerConfig, LukeConfig, MarkupLMConfig,\
+          \ MBartConfig, MegaConfig, MegatronBertConfig, MistralConfig, MixtralConfig,\
+          \ MobileBertConfig, MPNetConfig, MptConfig, MraConfig, MT5Config, MvpConfig,\
+          \ NezhaConfig, NystromformerConfig, OpenLlamaConfig, OpenAIGPTConfig, OPTConfig,\
+          \ PerceiverConfig, PersimmonConfig, PhiConfig, PLBartConfig, QDQBertConfig,\
+          \ ReformerConfig, RemBertConfig, RobertaConfig, RobertaPreLayerNormConfig,\
+          \ RoCBertConfig, RoFormerConfig, SqueezeBertConfig, T5Config, TapasConfig,\
+          \ TransfoXLConfig, UMT5Config, XLMConfig, XLMRobertaConfig, XLMRobertaXLConfig,\
+          \ XLNetConfig, XmodConfig, YosoConfig.\n</code></pre>\n<p>So i tried train\
+          \ phi2 with PhiForSequenceClassification. Use with following code.</p>\n\
+          <pre><code class=\"language-python\">base_model = PhiForSequenceClassification.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"microsoft/phi-2\"</span>, \n    num_labels=<span\
+          \ class=\"hljs-number\">2</span>,\n    device_map={<span class=\"hljs-string\"\
+          >\"\"</span>:<span class=\"hljs-number\">0</span>},\n    trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>,\n)\nbase_model.config.pretraining_tp\
+          \ = <span class=\"hljs-number\">1</span> <span class=\"hljs-comment\">#\
+          \ 1 is 7b</span>\nbase_model.config.pad_token_id = tokenizer.pad_token_id\n\
+          </code></pre>\n<p>But  the model output is nan. and then eval loss na too.</p>\n\
+          <pre><code># Output\n{'eval_loss': nan, 'eval_accuracy': 0.3618421052631579,\
+          \ 'eval_roc_auc': 0.5, 'eval_runtime': 19.2035, 'eval_samples_per_second':\
+          \ 39.576, 'eval_steps_per_second': 19.788, 'epoch': 0.03}              \
+          \                                          \n{'eval_loss': nan, 'eval_accuracy':\
+          \ 0.3618421052631579, 'eval_roc_auc': 0.5, 'eval_runtime': 19.2699, 'eval_samples_per_second':\
+          \ 39.44, 'eval_steps_per_second': 19.72, 'epoch': 0.04}       \n</code></pre>\n\
+          <p>I tried change TrainingArguments about fp16 argument and model arguments\
+          \ about torch_dtype. But It still same problem.<br>Can you give me some\
+          \ advice for training PhiForSequenceClassification?<br>Thank you :)</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-comment\"># Trial\
+          \ 1</span>\ntraining_args = TrainingArguments(\n    output_dir=OUTPUT_DIR,\n\
+          \    learning_rate=<span class=\"hljs-number\">1e-6</span>,\n    ...\n \
+          \   fp16=<span class=\"hljs-literal\">True</span>\n    <span class=\"hljs-comment\"\
+          ># bf16=True,</span>\n)\n</code></pre>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-comment\"># Trial 2</span>\nbase_model = PhiForSequenceClassification.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"microsoft/phi-2\"</span>, \n    num_labels=<span\
+          \ class=\"hljs-number\">2</span>,\n    device_map={<span class=\"hljs-string\"\
+          >\"\"</span>:<span class=\"hljs-number\">0</span>},\n    trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>,\n    torch_dtype=torch.float16\n)\n\
+          </code></pre>\n"
+        raw: "Hello! I want to train phi2 with AutoModelForSequenceClassification.\
+          \ But there is error like following code.\n```python\nbase_model = AutoModelForSequenceClassification.from_pretrained(\n\
+          \    \"microsoft/phi-2\", \n    num_labels=2,\n    device_map={\"\":0},\n\
+          \    trust_remote_code=True,\n)\nbase_model.config.pretraining_tp = 1 #\
+          \ 1 is 7b\nbase_model.config.pad_token_id = tokenizer.pad_token_id\n```\n\
+          ```\n# Output\nValueError: Unrecognized configuration class <class 'transformers_modules.phi-2.configuration_phi.PhiConfig'>\
+          \ for this kind of AutoModel: AutoModelForSequenceClassification.\nModel\
+          \ type should be one of AlbertConfig, BartConfig, BertConfig, BigBirdConfig,\
+          \ BigBirdPegasusConfig, BioGptConfig, BloomConfig, CamembertConfig, CanineConfig,\
+          \ LlamaConfig, ConvBertConfig, CTRLConfig, Data2VecTextConfig, DebertaConfig,\
+          \ DebertaV2Config, DistilBertConfig, ElectraConfig, ErnieConfig, ErnieMConfig,\
+          \ EsmConfig, FalconConfig, FlaubertConfig, FNetConfig, FunnelConfig, GPT2Config,\
+          \ GPT2Config, GPTBigCodeConfig, GPTNeoConfig, GPTNeoXConfig, GPTJConfig,\
+          \ IBertConfig, LayoutLMConfig, LayoutLMv2Config, LayoutLMv3Config, LEDConfig,\
+          \ LiltConfig, LlamaConfig, LongformerConfig, LukeConfig, MarkupLMConfig,\
+          \ MBartConfig, MegaConfig, MegatronBertConfig, MistralConfig, MixtralConfig,\
+          \ MobileBertConfig, MPNetConfig, MptConfig, MraConfig, MT5Config, MvpConfig,\
+          \ NezhaConfig, NystromformerConfig, OpenLlamaConfig, OpenAIGPTConfig, OPTConfig,\
+          \ PerceiverConfig, PersimmonConfig, PhiConfig, PLBartConfig, QDQBertConfig,\
+          \ ReformerConfig, RemBertConfig, RobertaConfig, RobertaPreLayerNormConfig,\
+          \ RoCBertConfig, RoFormerConfig, SqueezeBertConfig, T5Config, TapasConfig,\
+          \ TransfoXLConfig, UMT5Config, XLMConfig, XLMRobertaConfig, XLMRobertaXLConfig,\
+          \ XLNetConfig, XmodConfig, YosoConfig.\n```\n\nSo i tried train phi2 with\
+          \ PhiForSequenceClassification. Use with following code.\n\n```python\n\
+          base_model = PhiForSequenceClassification.from_pretrained(\n    \"microsoft/phi-2\"\
+          , \n    num_labels=2,\n    device_map={\"\":0},\n    trust_remote_code=True,\n\
+          )\nbase_model.config.pretraining_tp = 1 # 1 is 7b\nbase_model.config.pad_token_id\
+          \ = tokenizer.pad_token_id\n```\n\nBut  the model output is nan. and then\
+          \ eval loss na too.\n```\n# Output\n{'eval_loss': nan, 'eval_accuracy':\
+          \ 0.3618421052631579, 'eval_roc_auc': 0.5, 'eval_runtime': 19.2035, 'eval_samples_per_second':\
+          \ 39.576, 'eval_steps_per_second': 19.788, 'epoch': 0.03}              \
+          \                                          \n{'eval_loss': nan, 'eval_accuracy':\
+          \ 0.3618421052631579, 'eval_roc_auc': 0.5, 'eval_runtime': 19.2699, 'eval_samples_per_second':\
+          \ 39.44, 'eval_steps_per_second': 19.72, 'epoch': 0.04}       \n```\n\n\
+          I tried change TrainingArguments about fp16 argument and model arguments\
+          \ about torch_dtype. But It still same problem.\nCan you give me some advice\
+          \ for training PhiForSequenceClassification?\nThank you :)\n\n```python\n\
+          # Trial 1\ntraining_args = TrainingArguments(\n    output_dir=OUTPUT_DIR,\n\
+          \    learning_rate=1e-6,\n    ...\n    fp16=True\n    # bf16=True,\n)\n\
+          ```\n```python\n# Trial 2\nbase_model = PhiForSequenceClassification.from_pretrained(\n\
+          \    \"microsoft/phi-2\", \n    num_labels=2,\n    device_map={\"\":0},\n\
+          \    trust_remote_code=True,\n    torch_dtype=torch.float16\n)\n```"
+        updatedAt: '2023-12-15T11:27:45.517Z'
+      numEdits: 1
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - jerfie
+        - Imcf1Y3FSatM
+    id: 657bf3e43bc822bb71aedbed
+    type: comment
+  author: jerfie
+  content: "Hello! I want to train phi2 with AutoModelForSequenceClassification. But\
+    \ there is error like following code.\n```python\nbase_model = AutoModelForSequenceClassification.from_pretrained(\n\
+    \    \"microsoft/phi-2\", \n    num_labels=2,\n    device_map={\"\":0},\n    trust_remote_code=True,\n\
+    )\nbase_model.config.pretraining_tp = 1 # 1 is 7b\nbase_model.config.pad_token_id\
+    \ = tokenizer.pad_token_id\n```\n```\n# Output\nValueError: Unrecognized configuration\
+    \ class <class 'transformers_modules.phi-2.configuration_phi.PhiConfig'> for this\
+    \ kind of AutoModel: AutoModelForSequenceClassification.\nModel type should be\
+    \ one of AlbertConfig, BartConfig, BertConfig, BigBirdConfig, BigBirdPegasusConfig,\
+    \ BioGptConfig, BloomConfig, CamembertConfig, CanineConfig, LlamaConfig, ConvBertConfig,\
+    \ CTRLConfig, Data2VecTextConfig, DebertaConfig, DebertaV2Config, DistilBertConfig,\
+    \ ElectraConfig, ErnieConfig, ErnieMConfig, EsmConfig, FalconConfig, FlaubertConfig,\
+    \ FNetConfig, FunnelConfig, GPT2Config, GPT2Config, GPTBigCodeConfig, GPTNeoConfig,\
+    \ GPTNeoXConfig, GPTJConfig, IBertConfig, LayoutLMConfig, LayoutLMv2Config, LayoutLMv3Config,\
+    \ LEDConfig, LiltConfig, LlamaConfig, LongformerConfig, LukeConfig, MarkupLMConfig,\
+    \ MBartConfig, MegaConfig, MegatronBertConfig, MistralConfig, MixtralConfig, MobileBertConfig,\
+    \ MPNetConfig, MptConfig, MraConfig, MT5Config, MvpConfig, NezhaConfig, NystromformerConfig,\
+    \ OpenLlamaConfig, OpenAIGPTConfig, OPTConfig, PerceiverConfig, PersimmonConfig,\
+    \ PhiConfig, PLBartConfig, QDQBertConfig, ReformerConfig, RemBertConfig, RobertaConfig,\
+    \ RobertaPreLayerNormConfig, RoCBertConfig, RoFormerConfig, SqueezeBertConfig,\
+    \ T5Config, TapasConfig, TransfoXLConfig, UMT5Config, XLMConfig, XLMRobertaConfig,\
+    \ XLMRobertaXLConfig, XLNetConfig, XmodConfig, YosoConfig.\n```\n\nSo i tried\
+    \ train phi2 with PhiForSequenceClassification. Use with following code.\n\n```python\n\
+    base_model = PhiForSequenceClassification.from_pretrained(\n    \"microsoft/phi-2\"\
+    , \n    num_labels=2,\n    device_map={\"\":0},\n    trust_remote_code=True,\n\
+    )\nbase_model.config.pretraining_tp = 1 # 1 is 7b\nbase_model.config.pad_token_id\
+    \ = tokenizer.pad_token_id\n```\n\nBut  the model output is nan. and then eval\
+    \ loss na too.\n```\n# Output\n{'eval_loss': nan, 'eval_accuracy': 0.3618421052631579,\
+    \ 'eval_roc_auc': 0.5, 'eval_runtime': 19.2035, 'eval_samples_per_second': 39.576,\
+    \ 'eval_steps_per_second': 19.788, 'epoch': 0.03}                            \
+    \                            \n{'eval_loss': nan, 'eval_accuracy': 0.3618421052631579,\
+    \ 'eval_roc_auc': 0.5, 'eval_runtime': 19.2699, 'eval_samples_per_second': 39.44,\
+    \ 'eval_steps_per_second': 19.72, 'epoch': 0.04}       \n```\n\nI tried change\
+    \ TrainingArguments about fp16 argument and model arguments about torch_dtype.\
+    \ But It still same problem.\nCan you give me some advice for training PhiForSequenceClassification?\n\
+    Thank you :)\n\n```python\n# Trial 1\ntraining_args = TrainingArguments(\n   \
+    \ output_dir=OUTPUT_DIR,\n    learning_rate=1e-6,\n    ...\n    fp16=True\n  \
+    \  # bf16=True,\n)\n```\n```python\n# Trial 2\nbase_model = PhiForSequenceClassification.from_pretrained(\n\
+    \    \"microsoft/phi-2\", \n    num_labels=2,\n    device_map={\"\":0},\n    trust_remote_code=True,\n\
+    \    torch_dtype=torch.float16\n)\n```"
+  created_at: 2023-12-15 06:36:20+00:00
+  edited: true
+  hidden: false
+  id: 657bf3e43bc822bb71aedbed
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/907a39a9b44fc8b7f3fad35858b01fb7.svg
+      fullname: Asaf Yehudai
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Asaf-Yehudai
+      type: user
+    createdAt: '2023-12-15T09:21:08.000Z'
+    data:
+      edited: false
+      editors:
+      - Asaf-Yehudai
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9210105538368225
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/907a39a9b44fc8b7f3fad35858b01fb7.svg
+          fullname: Asaf Yehudai
+          isHf: false
+          isPro: false
+          name: Asaf-Yehudai
+          type: user
+        html: '<p>I also hope that you will add support for AutoModelForSequenceClassification
+          with phi2.</p>
+
+          '
+        raw: I also hope that you will add support for AutoModelForSequenceClassification
+          with phi2.
+        updatedAt: '2023-12-15T09:21:08.336Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - kvsnoufal
+        - Imcf1Y3FSatM
+    id: 657c1a848c3aee70547e4fc9
+    type: comment
+  author: Asaf-Yehudai
+  content: I also hope that you will add support for AutoModelForSequenceClassification
+    with phi2.
+  created_at: 2023-12-15 09:21:08+00:00
+  edited: false
+  hidden: false
+  id: 657c1a848c3aee70547e4fc9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/69227c4bce01d33747c1377b6f9672db.svg
+      fullname: Hanze Dong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: hendrydong
+      type: user
+    createdAt: '2023-12-15T13:31:57.000Z'
+    data:
+      edited: false
+      editors:
+      - hendrydong
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9009532928466797
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/69227c4bce01d33747c1377b6f9672db.svg
+          fullname: Hanze Dong
+          isHf: false
+          isPro: false
+          name: hendrydong
+          type: user
+        html: '<p>Great! Is there a PR in transformers to fix this?</p>
+
+          '
+        raw: Great! Is there a PR in transformers to fix this?
+        updatedAt: '2023-12-15T13:31:57.089Z'
+      numEdits: 0
+      reactions: []
+    id: 657c554d5e3f656ed4b7dd6d
+    type: comment
+  author: hendrydong
+  content: Great! Is there a PR in transformers to fix this?
+  created_at: 2023-12-15 13:31:57+00:00
+  edited: false
+  hidden: false
+  id: 657c554d5e3f656ed4b7dd6d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/80412a38a4a166e79452bc6f81202629.svg
+      fullname: Noufal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kvsnoufal
+      type: user
+    createdAt: '2023-12-19T15:00:37.000Z'
+    data:
+      edited: true
+      editors:
+      - kvsnoufal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7896372079849243
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/80412a38a4a166e79452bc6f81202629.svg
+          fullname: Noufal
+          isHf: false
+          isPro: false
+          name: kvsnoufal
+          type: user
+        html: "<p>I have refactored some code from SequenceClassification model for\
+          \ Phi 1.5 to work for Phi 2 :</p>\n<p><a rel=\"nofollow\" href=\"https://colab.research.google.com/drive/1y_CFog1i97Ctwre41kUnKuTGFWgzGWte?usp=sharing\"\
+          >https://colab.research.google.com/drive/1y_CFog1i97Ctwre41kUnKuTGFWgzGWte?usp=sharing</a></p>\n\
+          <p><span data-props=\"{&quot;user&quot;:&quot;jerfie&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/jerfie\">@<span class=\"\
+          underline\">jerfie</span></a></span>\n\n\t</span></span> <span data-props=\"\
+          {&quot;user&quot;:&quot;Asaf-Yehudai&quot;}\" data-target=\"UserMention\"\
+          \ class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"\
+          ><span class=\"contents\"><a href=\"/Asaf-Yehudai\">@<span class=\"underline\"\
+          >Asaf-Yehudai</span></a></span>\n\n\t</span></span>  <span data-props=\"\
+          {&quot;user&quot;:&quot;hendrydong&quot;}\" data-target=\"UserMention\"\
+          \ class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"\
+          ><span class=\"contents\"><a href=\"/hendrydong\">@<span class=\"underline\"\
+          >hendrydong</span></a></span>\n\n\t</span></span> </p>\n"
+        raw: 'I have refactored some code from SequenceClassification model for Phi
+          1.5 to work for Phi 2 :
+
+
+          https://colab.research.google.com/drive/1y_CFog1i97Ctwre41kUnKuTGFWgzGWte?usp=sharing
+
+
+          @jerfie @Asaf-Yehudai  @hendrydong '
+        updatedAt: '2023-12-19T15:02:02.089Z'
+      numEdits: 2
+      reactions: []
+    id: 6581b015154063aff82e770a
+    type: comment
+  author: kvsnoufal
+  content: 'I have refactored some code from SequenceClassification model for Phi
+    1.5 to work for Phi 2 :
+
+
+    https://colab.research.google.com/drive/1y_CFog1i97Ctwre41kUnKuTGFWgzGWte?usp=sharing
+
+
+    @jerfie @Asaf-Yehudai  @hendrydong '
+  created_at: 2023-12-19 15:00:37+00:00
+  edited: true
+  hidden: false
+  id: 6581b015154063aff82e770a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2023-12-20T12:53:39.000Z'
+    data:
+      edited: false
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8291663527488708
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>Hello everyone!</p>
+
+          <p>This will be fixed once we integrate Phi-based repositories with HF codebase.
+          It will have support for PhiForSequenceClassification.</p>
+
+          <p>Best regards,<br>Gustavo.</p>
+
+          '
+        raw: 'Hello everyone!
+
+
+          This will be fixed once we integrate Phi-based repositories with HF codebase.
+          It will have support for PhiForSequenceClassification.
+
+
+          Best regards,
+
+          Gustavo.'
+        updatedAt: '2023-12-20T12:53:39.774Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6582e3d38fb810eaad73b6fe
+    id: 6582e3d38fb810eaad73b6fc
+    type: comment
+  author: gugarosa
+  content: 'Hello everyone!
+
+
+    This will be fixed once we integrate Phi-based repositories with HF codebase.
+    It will have support for PhiForSequenceClassification.
+
+
+    Best regards,
+
+    Gustavo.'
+  created_at: 2023-12-20 12:53:39+00:00
+  edited: false
+  hidden: false
+  id: 6582e3d38fb810eaad73b6fc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2023-12-20T12:53:39.000Z'
+    data:
+      status: closed
+    id: 6582e3d38fb810eaad73b6fe
+    type: status-change
+  author: gugarosa
+  created_at: 2023-12-20 12:53:39+00:00
+  id: 6582e3d38fb810eaad73b6fe
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 20
+repo_id: microsoft/phi-2
+repo_type: model
+status: closed
+target_branch: null
+title: How to Train model with AutoModelForSequenceClassification?

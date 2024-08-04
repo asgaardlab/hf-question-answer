@@ -1,0 +1,172 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: puru22
+conflicting_files:
+- modelling_RW.py
+created_at: 2023-07-12 09:57:22+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1356f54cb44e8ab6c51ca553c742db7e.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: puru22
+      type: user
+    createdAt: '2023-07-12T10:57:22.000Z'
+    data:
+      edited: false
+      editors:
+      - puru22
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8621559739112854
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1356f54cb44e8ab6c51ca553c742db7e.svg
+          fullname: Purushottam Sinha
+          isHf: false
+          isPro: false
+          name: puru22
+          type: user
+        html: '<p>The current code has missed out passing past_key_values in every
+          forward pass for fast generation of tokens. This results in lot of recompute.
+          This "modelling_RW.py" I am uploading deals with this in the way pytorch
+          huggingface transformers package generation/utils.py wants. All the changes
+          are basically around including past_key_values everywhere. I think this
+          will apply on all falcon models These are the changes specifically</p>
+
+          <p>Class RotaryEmbedding forward method<br>Include past_seq_length in forward
+          pass and apply rotary embedding according to the position of the query token
+          ---- if else condition added </p>
+
+          <p>_make_causal_mask function<br>to give masking according to the way F.scaled
+          dot product attention behaves. F.scaled_dot_product attention treats the
+          attention_mask matrix as receiving attentions. For example if attention_mask
+          is<br>[[True, False], [True, True]]. It would mean the first token is "receiving"
+          attentions from first token and not second token. This is unlike what we
+          generally end up thinking which is first token is giving attention to itself
+          and not to the second one. Due to reason the past_key_values attentions
+          are all True in make_causal mask function. Also I have reversed the inequality
+          above that due to the same reason. </p>
+
+          <p>Class Attention forward method<br>a) past_key_value length is passed
+          in rotary function ---- if,else loop added<br>b) concatenation of past key
+          and current key is done after permuting the past key shape to match the
+          current key shape<br>c) to keep key_layer shape consistent with the output
+          expectation which is (batch_size, head_dim, seq_length), another permutation
+          done before creating "present" to return in the output </p>
+
+          <p>Class RWModel prepare_attn_mask method<br>Have removed src_length &gt;
+          1 criteria for making causal mask </p>
+
+          <p>RW causal LM prepare inputs for generation<br>Read pastkey values from
+          the input coming from huggingface generate method and dont call convert_to_rw_cache
+          method</p>
+
+          '
+        raw: "The current code has missed out passing past_key_values in every forward\
+          \ pass for fast generation of tokens. This results in lot of recompute.\
+          \ This \"modelling_RW.py\" I am uploading deals with this in the way pytorch\
+          \ huggingface transformers package generation/utils.py wants. All the changes\
+          \ are basically around including past_key_values everywhere. I think this\
+          \ will apply on all falcon models These are the changes specifically\n\n\
+          Class RotaryEmbedding forward method\nInclude past_seq_length in forward\
+          \ pass and apply rotary embedding according to the position of the query\
+          \ token ---- if else condition added \n\n_make_causal_mask function\nto\
+          \ give masking according to the way F.scaled dot product attention behaves.\
+          \ F.scaled_dot_product attention treats the attention_mask matrix as receiving\
+          \ attentions. For example if attention_mask is\n[[True, False], [True, True]].\
+          \ It would mean the first token is \"receiving\" attentions from first token\
+          \ and not second token. This is unlike what we generally end up thinking\
+          \ which is first token is giving attention to itself and not to the second\
+          \ one. Due to reason the past_key_values attentions are all True in make_causal\
+          \ mask function. Also I have reversed the inequality above that due to the\
+          \ same reason. \n\nClass Attention forward method\na) past_key_value length\
+          \ is passed in rotary function ---- if,else loop added \nb) concatenation\
+          \ of past key and current key is done after permuting the past key shape\
+          \ to match the current key shape \nc) to keep key_layer shape consistent\
+          \ with the output expectation which is (batch_size, head_dim, seq_length),\
+          \ another permutation done before creating \"present\" to return in the\
+          \ output \n\nClass RWModel prepare_attn_mask method\nHave removed src_length\
+          \ > 1 criteria for making causal mask \n\nRW causal LM prepare inputs for\
+          \ generation\nRead pastkey values from the input coming from huggingface\
+          \ generate method and dont call convert_to_rw_cache method"
+        updatedAt: '2023-07-12T10:57:22.368Z'
+      numEdits: 0
+      reactions: []
+    id: 64ae871230eb6081647f6e33
+    type: comment
+  author: puru22
+  content: "The current code has missed out passing past_key_values in every forward\
+    \ pass for fast generation of tokens. This results in lot of recompute. This \"\
+    modelling_RW.py\" I am uploading deals with this in the way pytorch huggingface\
+    \ transformers package generation/utils.py wants. All the changes are basically\
+    \ around including past_key_values everywhere. I think this will apply on all\
+    \ falcon models These are the changes specifically\n\nClass RotaryEmbedding forward\
+    \ method\nInclude past_seq_length in forward pass and apply rotary embedding according\
+    \ to the position of the query token ---- if else condition added \n\n_make_causal_mask\
+    \ function\nto give masking according to the way F.scaled dot product attention\
+    \ behaves. F.scaled_dot_product attention treats the attention_mask matrix as\
+    \ receiving attentions. For example if attention_mask is\n[[True, False], [True,\
+    \ True]]. It would mean the first token is \"receiving\" attentions from first\
+    \ token and not second token. This is unlike what we generally end up thinking\
+    \ which is first token is giving attention to itself and not to the second one.\
+    \ Due to reason the past_key_values attentions are all True in make_causal mask\
+    \ function. Also I have reversed the inequality above that due to the same reason.\
+    \ \n\nClass Attention forward method\na) past_key_value length is passed in rotary\
+    \ function ---- if,else loop added \nb) concatenation of past key and current\
+    \ key is done after permuting the past key shape to match the current key shape\
+    \ \nc) to keep key_layer shape consistent with the output expectation which is\
+    \ (batch_size, head_dim, seq_length), another permutation done before creating\
+    \ \"present\" to return in the output \n\nClass RWModel prepare_attn_mask method\n\
+    Have removed src_length > 1 criteria for making causal mask \n\nRW causal LM prepare\
+    \ inputs for generation\nRead pastkey values from the input coming from huggingface\
+    \ generate method and dont call convert_to_rw_cache method"
+  created_at: 2023-07-12 09:57:22+00:00
+  edited: false
+  hidden: false
+  id: 64ae871230eb6081647f6e33
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/1356f54cb44e8ab6c51ca553c742db7e.svg
+      fullname: Purushottam Sinha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: puru22
+      type: user
+    createdAt: '2023-07-12T10:57:23.000Z'
+    data:
+      oid: 1e9ac665ea54a4774236b8f48de2d59f39a77fef
+      parents:
+      - 1e7fdcc9f45d13704f3826e99937917e007cd975
+      subject: Changes in modelling_RW.py to be able to handle past_key_values for
+        faster model generations
+    id: 64ae87130000000000000000
+    type: commit
+  author: puru22
+  created_at: 2023-07-12 09:57:23+00:00
+  id: 64ae87130000000000000000
+  oid: 1e9ac665ea54a4774236b8f48de2d59f39a77fef
+  summary: Changes in modelling_RW.py to be able to handle past_key_values for faster
+    model generations
+  type: commit
+is_pull_request: true
+merge_commit_oid: null
+num: 64
+repo_id: tiiuae/falcon-40b-instruct
+repo_type: model
+status: open
+target_branch: refs/heads/main
+title: Changes in modelling_RW.py to be able to handle past_key_values for faster
+  model generations

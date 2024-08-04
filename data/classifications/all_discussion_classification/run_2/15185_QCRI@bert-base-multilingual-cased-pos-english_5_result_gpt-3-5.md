@@ -1,0 +1,4 @@
+## https://huggingface.co/QCRI/bert-base-multilingual-cased-pos-english/discussions/5
+
+contains_question: yes
+question_part: The problem is that when i input a sentence into the model the result I receive is not for the same words I had in the sentence. Often the words are split into two words and there is an extra "##" in front of the second half of the word. for example ## Input: Modi increased the education budget by 20 ## Output: ![image.png](https://cdn-uploads.huggingface.co/production/uploads/63e8a1d746574e63a2bf3d00/C2wZWWXqusdtKkm7bJF9j.png)  For the First word itself "Modi" The word was split into "Mod" and "##i" with those unnecessary "##". I am entering the sentence I have given above but I can not understand the reason why I am receiving the result like this. My guess is that it is most likely not an issue from my end but I am open to the suggestions if I am doing something wrong.

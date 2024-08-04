@@ -1,0 +1,396 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: davidliwei
+conflicting_files: null
+created_at: 2023-12-28 06:27:52+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9cc1f9048ed9e437d36915feecd38c5.svg
+      fullname: Wei Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidliwei
+      type: user
+    createdAt: '2023-12-28T06:27:52.000Z'
+    data:
+      edited: false
+      editors:
+      - davidliwei
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.46403437852859497
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9cc1f9048ed9e437d36915feecd38c5.svg
+          fullname: Wei Li
+          isHf: false
+          isPro: false
+          name: davidliwei
+          type: user
+        html: '<p>Hi, I encountered an error when running the examples provided (in
+          silico perturbation), during the "isp_perturb_all". The error message is
+          pasted below. When I look into this error, it seems that the problem comes
+          from the different tensor shapes at cos_sim_shift function (Line 581, 592).
+          </p>
+
+          <p>I changed  Line 584 from<br>      state_embs_dict[state].to("cuda"),  #
+          required to move to cuda here<br>to<br>     state_embs_dict[state].to("cuda").unsqueeze(0),  #
+          required to move to cuda here</p>
+
+          <p>And it seems to solve the problem (btw, I have to change cuda to cpu
+          in source code as I tested in a CPU environment). However I don''t know
+          if the same error happens to others, so I didn''t send a push request. </p>
+
+          <hr>
+
+          <p>IndexError                                Traceback (most recent call
+          last)<br>Cell In[20], line 1<br>----&gt; 1 isp.isp_perturb_all(<br>      2                 wl_model,
+          filtered_input_data, zlayer_to_quant, "insilico_out/out_perturbed_wl"<br>      3             )</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:785,
+          in InSilicoPerturber.isp_perturb_all(self, model, filtered_input_data, layer_to_quant,
+          output_path_prefix)<br>    778     original_cell_emb = pu.compute_nonpadded_cell_embedding(<br>    779         full_original_emb,
+          "mean_pool"<br>    780     )<br>    781     perturbation_cell_emb = pu.compute_nonpadded_cell_embedding(<br>    782         full_perturbation_emb,
+          "mean_pool"<br>    783     )<br>--&gt; 785     cell_cos_sims = pu.quant_cos_sims(<br>    786         perturbation_cell_emb,<br>    787         original_cell_emb,<br>    788         self.cell_states_to_model,<br>    789         self.state_embs_dict,<br>    790         emb_mode="cell",<br>    791     )<br>    793
+          if self.emb_mode == "cell_and_gene":<br>    794     # remove perturbed index
+          for gene list<br>    795     perturbed_gene_dict = {<br>    796         gene:
+          gene_list[:i] + gene_list[i + 1 :]<br>    797         for i, gene in enumerate(gene_list)<br>    798     }</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:584,
+          in quant_cos_sims(perturbation_emb, original_emb, cell_states_to_model,
+          state_embs_dict, emb_mode)<br>    582     cos_sims = dict(zip(possible_states,
+          [[] for _ in range(len(possible_states))]))<br>    583     for state in
+          possible_states:<br>--&gt; 584         cos_sims[state] = cos_sim_shift(<br>    585             original_emb,<br>    586             perturbation_emb,<br>    587             #state_embs_dict[state].to("cuda"),  #
+          required to move to cuda here<br>    588             state_embs_dict[state].to("cpu"),  #
+          required to move to cuda here<br>    589             cos,<br>    590         )<br>    592
+          return cos_sims</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:597,
+          in cos_sim_shift(original_emb, perturbed_emb, end_emb, cos)<br>    596 def
+          cos_sim_shift(original_emb, perturbed_emb, end_emb, cos):<br>--&gt; 597     origin_v_end
+          = cos(original_emb, end_emb)<br>    598     perturb_v_end = cos(perturbed_emb,
+          end_emb)<br>    600     return perturb_v_end - origin_v_end</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1518,
+          in Module._wrapped_call_impl(self, *args, **kwargs)<br>   1516     return
+          self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]<br>   1517
+          else:<br>-&gt; 1518     return self._call_impl(*args, **kwargs)</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1527,
+          in Module._call_impl(self, *args, **kwargs)<br>   1522 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1523 # this function,
+          and just call forward.<br>   1524 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1525         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1526         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1527     return
+          forward_call(*args, **kwargs)<br>   1529 try:<br>   1530     result = None</p>
+
+          <p>File ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/distance.py:87,
+          in CosineSimilarity.forward(self, x1, x2)<br>     86 def forward(self, x1:
+          Tensor, x2: Tensor) -&gt; Tensor:<br>---&gt; 87     return F.cosine_similarity(x1,
+          x2, self.dim, self.eps)</p>
+
+          <p>IndexError: Dimension out of range (expected to be in range of [-1, 0],
+          but got 1)</p>
+
+          '
+        raw: "Hi, I encountered an error when running the examples provided (in silico\
+          \ perturbation), during the \"isp_perturb_all\". The error message is pasted\
+          \ below. When I look into this error, it seems that the problem comes from\
+          \ the different tensor shapes at cos_sim_shift function (Line 581, 592).\
+          \ \r\n\r\nI changed  Line 584 from  \r\n      state_embs_dict[state].to(\"\
+          cuda\"),  # required to move to cuda here\r\nto\r\n     state_embs_dict[state].to(\"\
+          cuda\").unsqueeze(0),  # required to move to cuda here\r\n \r\nAnd it seems\
+          \ to solve the problem (btw, I have to change cuda to cpu in source code\
+          \ as I tested in a CPU environment). However I don't know if the same error\
+          \ happens to others, so I didn't send a push request. \r\n\r\n\r\n---------------------------------------------------------------------------\r\
+          \nIndexError                                Traceback (most recent call\
+          \ last)\r\nCell In[20], line 1\r\n----> 1 isp.isp_perturb_all(\r\n     \
+          \ 2                 wl_model, filtered_input_data, zlayer_to_quant, \"insilico_out/out_perturbed_wl\"\
+          \r\n      3             )\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:785,\
+          \ in InSilicoPerturber.isp_perturb_all(self, model, filtered_input_data,\
+          \ layer_to_quant, output_path_prefix)\r\n    778     original_cell_emb =\
+          \ pu.compute_nonpadded_cell_embedding(\r\n    779         full_original_emb,\
+          \ \"mean_pool\"\r\n    780     )\r\n    781     perturbation_cell_emb =\
+          \ pu.compute_nonpadded_cell_embedding(\r\n    782         full_perturbation_emb,\
+          \ \"mean_pool\"\r\n    783     )\r\n--> 785     cell_cos_sims = pu.quant_cos_sims(\r\
+          \n    786         perturbation_cell_emb,\r\n    787         original_cell_emb,\r\
+          \n    788         self.cell_states_to_model,\r\n    789         self.state_embs_dict,\r\
+          \n    790         emb_mode=\"cell\",\r\n    791     )\r\n    793 if self.emb_mode\
+          \ == \"cell_and_gene\":\r\n    794     # remove perturbed index for gene\
+          \ list\r\n    795     perturbed_gene_dict = {\r\n    796         gene: gene_list[:i]\
+          \ + gene_list[i + 1 :]\r\n    797         for i, gene in enumerate(gene_list)\r\
+          \n    798     }\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:584,\
+          \ in quant_cos_sims(perturbation_emb, original_emb, cell_states_to_model,\
+          \ state_embs_dict, emb_mode)\r\n    582     cos_sims = dict(zip(possible_states,\
+          \ [[] for _ in range(len(possible_states))]))\r\n    583     for state in\
+          \ possible_states:\r\n--> 584         cos_sims[state] = cos_sim_shift(\r\
+          \n    585             original_emb,\r\n    586             perturbation_emb,\r\
+          \n    587             #state_embs_dict[state].to(\"cuda\"),  # required\
+          \ to move to cuda here\r\n    588             state_embs_dict[state].to(\"\
+          cpu\"),  # required to move to cuda here\r\n    589             cos,\r\n\
+          \    590         )\r\n    592 return cos_sims\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:597,\
+          \ in cos_sim_shift(original_emb, perturbed_emb, end_emb, cos)\r\n    596\
+          \ def cos_sim_shift(original_emb, perturbed_emb, end_emb, cos):\r\n--> 597\
+          \     origin_v_end = cos(original_emb, end_emb)\r\n    598     perturb_v_end\
+          \ = cos(perturbed_emb, end_emb)\r\n    600     return perturb_v_end - origin_v_end\r\
+          \n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\r\n  \
+          \ 1517 else:\r\n-> 1518     return self._call_impl(*args, **kwargs)\r\n\r\
+          \nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1523 # this\
+          \ function, and just call forward.\r\n   1524 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1525         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n \
+          \  1530     result = None\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/distance.py:87,\
+          \ in CosineSimilarity.forward(self, x1, x2)\r\n     86 def forward(self,\
+          \ x1: Tensor, x2: Tensor) -> Tensor:\r\n---> 87     return F.cosine_similarity(x1,\
+          \ x2, self.dim, self.eps)\r\n\r\nIndexError: Dimension out of range (expected\
+          \ to be in range of [-1, 0], but got 1)"
+        updatedAt: '2023-12-28T06:27:52.091Z'
+      numEdits: 0
+      reactions: []
+    id: 658d15688cff48d3a462a940
+    type: comment
+  author: davidliwei
+  content: "Hi, I encountered an error when running the examples provided (in silico\
+    \ perturbation), during the \"isp_perturb_all\". The error message is pasted below.\
+    \ When I look into this error, it seems that the problem comes from the different\
+    \ tensor shapes at cos_sim_shift function (Line 581, 592). \r\n\r\nI changed \
+    \ Line 584 from  \r\n      state_embs_dict[state].to(\"cuda\"),  # required to\
+    \ move to cuda here\r\nto\r\n     state_embs_dict[state].to(\"cuda\").unsqueeze(0),\
+    \  # required to move to cuda here\r\n \r\nAnd it seems to solve the problem (btw,\
+    \ I have to change cuda to cpu in source code as I tested in a CPU environment).\
+    \ However I don't know if the same error happens to others, so I didn't send a\
+    \ push request. \r\n\r\n\r\n---------------------------------------------------------------------------\r\
+    \nIndexError                                Traceback (most recent call last)\r\
+    \nCell In[20], line 1\r\n----> 1 isp.isp_perturb_all(\r\n      2             \
+    \    wl_model, filtered_input_data, zlayer_to_quant, \"insilico_out/out_perturbed_wl\"\
+    \r\n      3             )\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:785,\
+    \ in InSilicoPerturber.isp_perturb_all(self, model, filtered_input_data, layer_to_quant,\
+    \ output_path_prefix)\r\n    778     original_cell_emb = pu.compute_nonpadded_cell_embedding(\r\
+    \n    779         full_original_emb, \"mean_pool\"\r\n    780     )\r\n    781\
+    \     perturbation_cell_emb = pu.compute_nonpadded_cell_embedding(\r\n    782\
+    \         full_perturbation_emb, \"mean_pool\"\r\n    783     )\r\n--> 785   \
+    \  cell_cos_sims = pu.quant_cos_sims(\r\n    786         perturbation_cell_emb,\r\
+    \n    787         original_cell_emb,\r\n    788         self.cell_states_to_model,\r\
+    \n    789         self.state_embs_dict,\r\n    790         emb_mode=\"cell\",\r\
+    \n    791     )\r\n    793 if self.emb_mode == \"cell_and_gene\":\r\n    794 \
+    \    # remove perturbed index for gene list\r\n    795     perturbed_gene_dict\
+    \ = {\r\n    796         gene: gene_list[:i] + gene_list[i + 1 :]\r\n    797 \
+    \        for i, gene in enumerate(gene_list)\r\n    798     }\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:584,\
+    \ in quant_cos_sims(perturbation_emb, original_emb, cell_states_to_model, state_embs_dict,\
+    \ emb_mode)\r\n    582     cos_sims = dict(zip(possible_states, [[] for _ in range(len(possible_states))]))\r\
+    \n    583     for state in possible_states:\r\n--> 584         cos_sims[state]\
+    \ = cos_sim_shift(\r\n    585             original_emb,\r\n    586           \
+    \  perturbation_emb,\r\n    587             #state_embs_dict[state].to(\"cuda\"\
+    ),  # required to move to cuda here\r\n    588             state_embs_dict[state].to(\"\
+    cpu\"),  # required to move to cuda here\r\n    589             cos,\r\n    590\
+    \         )\r\n    592 return cos_sims\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/geneformer/perturber_utils.py:597,\
+    \ in cos_sim_shift(original_emb, perturbed_emb, end_emb, cos)\r\n    596 def cos_sim_shift(original_emb,\
+    \ perturbed_emb, end_emb, cos):\r\n--> 597     origin_v_end = cos(original_emb,\
+    \ end_emb)\r\n    598     perturb_v_end = cos(perturbed_emb, end_emb)\r\n    600\
+    \     return perturb_v_end - origin_v_end\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\r\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\r\n   1517 else:\r\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1523 # this function,\
+    \ and just call forward.\r\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1527     return forward_call(*args, **kwargs)\r\n   1529 try:\r\n   1530\
+    \     result = None\r\n\r\nFile ~/miniconda3/envs/pytorch/lib/python3.11/site-packages/torch/nn/modules/distance.py:87,\
+    \ in CosineSimilarity.forward(self, x1, x2)\r\n     86 def forward(self, x1: Tensor,\
+    \ x2: Tensor) -> Tensor:\r\n---> 87     return F.cosine_similarity(x1, x2, self.dim,\
+    \ self.eps)\r\n\r\nIndexError: Dimension out of range (expected to be in range\
+    \ of [-1, 0], but got 1)"
+  created_at: 2023-12-28 06:27:52+00:00
+  edited: false
+  hidden: false
+  id: 658d15688cff48d3a462a940
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-12-28T07:26:03.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8284895420074463
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for letting us know! Could you confirm the exact arguments
+          you used so that we can reproduce the error to test the solution? Is line
+          588 the only one you changed in the source code?</p>
+
+          '
+        raw: Thank you for letting us know! Could you confirm the exact arguments
+          you used so that we can reproduce the error to test the solution? Is line
+          588 the only one you changed in the source code?
+        updatedAt: '2023-12-28T07:26:03.709Z'
+      numEdits: 0
+      reactions: []
+    id: 658d230b3823e3d1e5f9e462
+    type: comment
+  author: ctheodoris
+  content: Thank you for letting us know! Could you confirm the exact arguments you
+    used so that we can reproduce the error to test the solution? Is line 588 the
+    only one you changed in the source code?
+  created_at: 2023-12-28 07:26:03+00:00
+  edited: false
+  hidden: false
+  id: 658d230b3823e3d1e5f9e462
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9cc1f9048ed9e437d36915feecd38c5.svg
+      fullname: Wei Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidliwei
+      type: user
+    createdAt: '2023-12-31T20:12:16.000Z'
+    data:
+      edited: false
+      editors:
+      - davidliwei
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9454880356788635
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9cc1f9048ed9e437d36915feecd38c5.svg
+          fullname: Wei Li
+          isHf: false
+          isPro: false
+          name: davidliwei
+          type: user
+        html: '<p>Hi, I just tested it in the GPU environment and the code runs without
+          error. Therefore it may be related to the CPU environment, or changes that
+          I made (I have to change cuda to cpu in many places of the source code).  Thanks
+          again!</p>
+
+          '
+        raw: Hi, I just tested it in the GPU environment and the code runs without
+          error. Therefore it may be related to the CPU environment, or changes that
+          I made (I have to change cuda to cpu in many places of the source code).  Thanks
+          again!
+        updatedAt: '2023-12-31T20:12:16.125Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 6591cb20ccbc1e2cc714f20e
+    id: 6591cb20ccbc1e2cc714f209
+    type: comment
+  author: davidliwei
+  content: Hi, I just tested it in the GPU environment and the code runs without error.
+    Therefore it may be related to the CPU environment, or changes that I made (I
+    have to change cuda to cpu in many places of the source code).  Thanks again!
+  created_at: 2023-12-31 20:12:16+00:00
+  edited: false
+  hidden: false
+  id: 6591cb20ccbc1e2cc714f209
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/b9cc1f9048ed9e437d36915feecd38c5.svg
+      fullname: Wei Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: davidliwei
+      type: user
+    createdAt: '2023-12-31T20:12:16.000Z'
+    data:
+      status: closed
+    id: 6591cb20ccbc1e2cc714f20e
+    type: status-change
+  author: davidliwei
+  created_at: 2023-12-31 20:12:16+00:00
+  id: 6591cb20ccbc1e2cc714f20e
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2e1a5c910264dd8cb6bcb673e6bcc9f3.svg
+      fullname: jialei
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jialei233
+      type: user
+    createdAt: '2024-01-17T00:38:45.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/2e1a5c910264dd8cb6bcb673e6bcc9f3.svg
+          fullname: jialei
+          isHf: false
+          isPro: false
+          name: jialei233
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2024-01-17T00:45:03.162Z'
+      numEdits: 0
+      reactions: []
+    id: 65a721953cfab964eee5c73f
+    type: comment
+  author: jialei233
+  content: This comment has been hidden
+  created_at: 2024-01-17 00:38:45+00:00
+  edited: true
+  hidden: true
+  id: 65a721953cfab964eee5c73f
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 287
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Error in calculating cosine similarity in perturber_utils and solutions

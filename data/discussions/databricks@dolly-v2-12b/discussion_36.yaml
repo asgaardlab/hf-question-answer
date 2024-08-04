@@ -1,0 +1,1815 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: michael-newsrx-com
+conflicting_files: null
+created_at: 2023-04-17 19:51:48+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-04-17T20:51:48.000Z'
+    data:
+      edited: true
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: "<p>Does anyone have an example handler.py and requirements.txt?</p>\n\
+          <p>We keep getting:</p>\n<pre><code class=\"language-python\">RuntimeError:\
+          \ The size of tensor a (<span class=\"hljs-number\">2048</span>) must <span\
+          \ class=\"hljs-keyword\">match</span> the size of tensor b (<span class=\"\
+          hljs-number\">2049</span>) at non-singleton dimension <span class=\"hljs-number\"\
+          >3</span>\n</code></pre>\n<p>This is the current <code>handler.py</code>\
+          \ we are testing that is failing:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\"\
+          >EndpointHandler</span>:\n    <span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">__init__</span>(<span class=\"hljs-params\"\
+          >self, path=<span class=\"hljs-string\">\"\"</span>, force_cpu: <span class=\"\
+          hljs-built_in\">bool</span> = <span class=\"hljs-literal\">False</span></span>):\n\
+          \        <span class=\"hljs-keyword\">import</span> torch\n        <span\
+          \ class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> pipeline\n        <span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer\n\
+          \        <span class=\"hljs-keyword\">from</span> transformers <span class=\"\
+          hljs-keyword\">import</span> AutoModelForCausalLM\n        <span class=\"\
+          hljs-keyword\">if</span> force_cpu:\n            torch.cuda.is_available\
+          \ = _force_not_available\n            self.generate_text = pipeline(model=path,\
+          \  <span class=\"hljs-comment\">#</span>\n                             \
+          \             torch_dtype=torch.bfloat16,  <span class=\"hljs-comment\"\
+          >#</span>\n                                          trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \                                          <span class=\"hljs-comment\"\
+          ># low_cpu_mem_usage=True,  #</span>\n                                 \
+          \         )\n        <span class=\"hljs-keyword\">else</span>:\n       \
+          \     self.tokenizer = AutoTokenizer.from_pretrained(  <span class=\"hljs-comment\"\
+          >#</span>\n                    path, padding_side=<span class=\"hljs-string\"\
+          >\"left\"</span>)\n            self.model = AutoModelForCausalLM.from_pretrained(\
+          \  <span class=\"hljs-comment\">#</span>\n                    path,  <span\
+          \ class=\"hljs-comment\">#</span>\n                    torch_dtype=torch.float16,\
+          \  <span class=\"hljs-comment\">#</span>\n                    trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \                    load_in_8bit=<span class=\"hljs-literal\">True</span>,\
+          \  <span class=\"hljs-comment\">#</span>\n                    device_map=<span\
+          \ class=\"hljs-string\">\"auto\"</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \                    low_cpu_mem_usage=<span class=\"hljs-literal\">True</span>,\
+          \  <span class=\"hljs-comment\">#</span>\n            )\n            <span\
+          \ class=\"hljs-keyword\">from</span> instruct_pipeline <span class=\"hljs-keyword\"\
+          >import</span> InstructionTextGenerationPipeline\n            self.generate_text\
+          \ = InstructionTextGenerationPipeline(  <span class=\"hljs-comment\">#</span>\n\
+          \                    model=self.model,  <span class=\"hljs-comment\">#</span>\n\
+          \                    tokenizer=self.tokenizer,  <span class=\"hljs-comment\"\
+          >#</span>\n            )\n\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">__call__</span>(<span class=\"hljs-params\"\
+          >self, data: <span class=\"hljs-type\">Dict</span>[<span class=\"hljs-built_in\"\
+          >str</span>, <span class=\"hljs-type\">Any</span>]</span>) -&gt; <span class=\"\
+          hljs-type\">List</span>[<span class=\"hljs-type\">Dict</span>[<span class=\"\
+          hljs-built_in\">str</span>, <span class=\"hljs-built_in\">any</span>]]:\n\
+          \        <span class=\"hljs-comment\"># process input</span>\n        inputs\
+          \ = data.pop(<span class=\"hljs-string\">\"inputs\"</span>, data)\n    \
+          \    parameters = data.pop(<span class=\"hljs-string\">\"parameters\"</span>,\
+          \ <span class=\"hljs-literal\">None</span>)\n\n        <span class=\"hljs-comment\"\
+          ># pass inputs with all kwargs in data</span>\n        <span class=\"hljs-keyword\"\
+          >if</span> parameters <span class=\"hljs-keyword\">is</span> <span class=\"\
+          hljs-keyword\">not</span> <span class=\"hljs-literal\">None</span>:\n  \
+          \          output = self.generate_text(inputs, **parameters)\n        <span\
+          \ class=\"hljs-keyword\">else</span>:\n            output = self.generate_text(inputs)\n\
+          \n        <span class=\"hljs-comment\"># return_value: List[Dict[str, any]]\
+          \ = list()</span>\n        <span class=\"hljs-comment\"># postprocess the\
+          \ prediction</span>\n        gpu_info = report_gpu_usage()\n        output[<span\
+          \ class=\"hljs-string\">\"gpu_info\"</span>] = gpu_info\n        <span class=\"\
+          hljs-comment\"># return_value.append({\"generated_text\": prediction, \"\
+          gpu_info\": gpu_info})</span>\n\n        <span class=\"hljs-comment\">#\
+          \ return return_value</span>\n        <span class=\"hljs-keyword\">return</span>\
+          \ output\n\n<span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\
+          \ class_\">BlockTimer</span>(<span class=\"hljs-title class_ inherited__\"\
+          >object</span>):\n    <span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">__enter__</span>(<span class=\"hljs-params\">self</span>):\n\
+          \        <span class=\"hljs-keyword\">import</span> time\n        self.start\
+          \ = time.perf_counter()\n        <span class=\"hljs-keyword\">return</span>\
+          \ self\n\n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">__exit__</span>(<span class=\"hljs-params\">self, typ, value,\
+          \ traceback</span>):\n        <span class=\"hljs-keyword\">import</span>\
+          \ time\n        self.duration = time.perf_counter() - self.start\n\n\n<span\
+          \ class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >_force_not_available</span>() -&gt; <span class=\"hljs-built_in\">bool</span>:\n\
+          \    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-literal\"\
+          >False</span>\n\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">test</span>() -&gt; <span class=\"hljs-literal\"\
+          >None</span>:\n    <span class=\"hljs-keyword\">import</span> textwrap\n\
+          \    <span class=\"hljs-keyword\">with</span> BlockTimer() <span class=\"\
+          hljs-keyword\">as</span> timer:\n        <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Model load\"</span>)\n        handler = EndpointHandler(path=<span\
+          \ class=\"hljs-string\">\"databricks/dolly-v2-7b\"</span>, force_cpu=<span\
+          \ class=\"hljs-literal\">False</span>)\n    <span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">f\"Elapsed: <span class=\"hljs-subst\"\
+          >{<span class=\"hljs-built_in\">round</span>(timer.duration, <span class=\"\
+          hljs-number\">2</span>)}</span>\"</span>)\n    <span class=\"hljs-built_in\"\
+          >print</span>()\n    parameters: <span class=\"hljs-built_in\">dict</span>[<span\
+          \ class=\"hljs-built_in\">str</span>, <span class=\"hljs-built_in\">any</span>]\
+          \ = {<span class=\"hljs-string\">\"max_new_tokens\"</span>: <span class=\"\
+          hljs-number\">256</span>,  <span class=\"hljs-comment\">#</span>\n     \
+          \                             <span class=\"hljs-string\">\"min_length\"\
+          </span>: <span class=\"hljs-number\">16</span>,  <span class=\"hljs-comment\"\
+          >#</span>\n                                  }  <span class=\"hljs-comment\"\
+          ># parameters for text generation</span>\n    payload = {<span class=\"\
+          hljs-string\">\"inputs\"</span>: <span class=\"hljs-string\">f\"<span class=\"\
+          hljs-subst\">{wall_of_text()}</span>\"</span>, <span class=\"hljs-string\"\
+          >\"parameters\"</span>: parameters}\n    <span class=\"hljs-keyword\">with</span>\
+          \ BlockTimer() <span class=\"hljs-keyword\">as</span> timer:\n        <span\
+          \ class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">\"Inference\"\
+          </span>)\n        results = handler.__call__(payload)\n    <span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"Elapsed: <span\
+          \ class=\"hljs-subst\">{<span class=\"hljs-built_in\">round</span>(timer.duration,\
+          \ <span class=\"hljs-number\">2</span>)}</span>\"</span>)\n    <span class=\"\
+          hljs-built_in\">print</span>()\n    <span class=\"hljs-keyword\">for</span>\
+          \ entry <span class=\"hljs-keyword\">in</span> results[<span class=\"hljs-number\"\
+          >0</span>].items():\n        <span class=\"hljs-built_in\">print</span>()\n\
+          \        <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"=== <span class=\"hljs-subst\">{entry[<span class=\"hljs-number\">0</span>]}</span>\"\
+          </span>)\n        <span class=\"hljs-keyword\">if</span> entry[<span class=\"\
+          hljs-number\">0</span>] == <span class=\"hljs-string\">\"gpu_info\"</span>:\n\
+          \            gpu_info_lines = entry[<span class=\"hljs-number\">1</span>].split(<span\
+          \ class=\"hljs-string\">\"\\n\"</span>)\n            <span class=\"hljs-keyword\"\
+          >for</span> line <span class=\"hljs-keyword\">in</span> gpu_info_lines:\n\
+          \                <span class=\"hljs-keyword\">if</span> <span class=\"hljs-string\"\
+          >\"Default |\"</span> <span class=\"hljs-keyword\">in</span> line:\n   \
+          \                 <span class=\"hljs-built_in\">print</span>(line)\n   \
+          \     <span class=\"hljs-keyword\">else</span>:\n            <span class=\"\
+          hljs-built_in\">print</span>(textwrap.fill(<span class=\"hljs-built_in\"\
+          >str</span>(\n                    entry[<span class=\"hljs-number\">1</span>]),\
+          \ <span class=\"hljs-number\">140</span>, drop_whitespace=<span class=\"\
+          hljs-literal\">False</span>, replace_whitespace=<span class=\"hljs-literal\"\
+          >False</span>))\n\n\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">wall_of_text</span>() -&gt; <span class=\"hljs-built_in\"\
+          >str</span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"\
+          hljs-string\">\"\"\"</span>\n<span class=\"hljs-string\">The present invention\
+          \ relates to compositions and methods for the treatment of the </span>\n\
+          <span class=\"hljs-string\">    Charcot-Marie-Tooth disease and related\
+          \ disorders. Charcot-Marie-Tooth disease (\u201CCMT </span>\n<span class=\"\
+          hljs-string\">    Mining </span>\n<span class=\"hljs-string\">    of publicly\
+          \ available data, describing molecular mechanisms and pathological </span>\n\
+          <span class=\"hljs-string\">    manifestations </span>\n<span class=\"hljs-string\"\
+          >    of the CMT1A disease, allowed us to prioritize a few functional cellular\
+          \ </span>\n<span class=\"hljs-string\">    modules-transcriptional regulation\
+          \ of PMP22 gene, PMP22 protein folding/degradation, </span>\n<span class=\"\
+          hljs-string\">    Schwann cell proliferation and apoptosis, death of neurons,\
+          \ extra-cellular matrix </span>\n<span class=\"hljs-string\">    deposition\
+          \ </span>\n<span class=\"hljs-string\">    and remodelling, immune response-as\
+          \ potential legitimate targets for CMT-relevant </span>\n<span class=\"\
+          hljs-string\">    therapeutic interventions.</span>\n<span class=\"hljs-string\"\
+          >\"\"\"</span>.replace(<span class=\"hljs-string\">\"\\n\"</span>, <span\
+          \ class=\"hljs-string\">\" \"</span>)\n\n\n<span class=\"hljs-keyword\"\
+          >if</span> __name__ == <span class=\"hljs-string\">'__main__'</span>:\n\
+          \    test()\n</code></pre>\n"
+        raw: "Does anyone have an example handler.py and requirements.txt?\n\nWe keep\
+          \ getting:\n\n```python\nRuntimeError: The size of tensor a (2048) must\
+          \ match the size of tensor b (2049) at non-singleton dimension 3\n```\n\n\
+          This is the current `handler.py` we are testing that is failing:\n\n```python\n\
+          class EndpointHandler:\n    def __init__(self, path=\"\", force_cpu: bool\
+          \ = False):\n        import torch\n        from transformers import pipeline\n\
+          \        from transformers import AutoTokenizer\n        from transformers\
+          \ import AutoModelForCausalLM\n        if force_cpu:\n            torch.cuda.is_available\
+          \ = _force_not_available\n            self.generate_text = pipeline(model=path,\
+          \  #\n                                          torch_dtype=torch.bfloat16,\
+          \  #\n                                          trust_remote_code=True,\
+          \  #\n                                          # low_cpu_mem_usage=True,\
+          \  #\n                                          )\n        else:\n     \
+          \       self.tokenizer = AutoTokenizer.from_pretrained(  #\n           \
+          \         path, padding_side=\"left\")\n            self.model = AutoModelForCausalLM.from_pretrained(\
+          \  #\n                    path,  #\n                    torch_dtype=torch.float16,\
+          \  #\n                    trust_remote_code=True,  #\n                 \
+          \   load_in_8bit=True,  #\n                    device_map=\"auto\",  #\n\
+          \                    low_cpu_mem_usage=True,  #\n            )\n       \
+          \     from instruct_pipeline import InstructionTextGenerationPipeline\n\
+          \            self.generate_text = InstructionTextGenerationPipeline(  #\n\
+          \                    model=self.model,  #\n                    tokenizer=self.tokenizer,\
+          \  #\n            )\n\n    def __call__(self, data: Dict[str, Any]) -> List[Dict[str,\
+          \ any]]:\n        # process input\n        inputs = data.pop(\"inputs\"\
+          , data)\n        parameters = data.pop(\"parameters\", None)\n\n       \
+          \ # pass inputs with all kwargs in data\n        if parameters is not None:\n\
+          \            output = self.generate_text(inputs, **parameters)\n       \
+          \ else:\n            output = self.generate_text(inputs)\n\n        # return_value:\
+          \ List[Dict[str, any]] = list()\n        # postprocess the prediction\n\
+          \        gpu_info = report_gpu_usage()\n        output[\"gpu_info\"] = gpu_info\n\
+          \        # return_value.append({\"generated_text\": prediction, \"gpu_info\"\
+          : gpu_info})\n\n        # return return_value\n        return output\n\n\
+          class BlockTimer(object):\n    def __enter__(self):\n        import time\n\
+          \        self.start = time.perf_counter()\n        return self\n\n    def\
+          \ __exit__(self, typ, value, traceback):\n        import time\n        self.duration\
+          \ = time.perf_counter() - self.start\n\n\ndef _force_not_available() ->\
+          \ bool:\n    return False\n\n\ndef test() -> None:\n    import textwrap\n\
+          \    with BlockTimer() as timer:\n        print(\"Model load\")\n      \
+          \  handler = EndpointHandler(path=\"databricks/dolly-v2-7b\", force_cpu=False)\n\
+          \    print(f\"Elapsed: {round(timer.duration, 2)}\")\n    print()\n    parameters:\
+          \ dict[str, any] = {\"max_new_tokens\": 256,  #\n                      \
+          \            \"min_length\": 16,  #\n                                  }\
+          \  # parameters for text generation\n    payload = {\"inputs\": f\"{wall_of_text()}\"\
+          , \"parameters\": parameters}\n    with BlockTimer() as timer:\n       \
+          \ print(\"Inference\")\n        results = handler.__call__(payload)\n  \
+          \  print(f\"Elapsed: {round(timer.duration, 2)}\")\n    print()\n    for\
+          \ entry in results[0].items():\n        print()\n        print(f\"=== {entry[0]}\"\
+          )\n        if entry[0] == \"gpu_info\":\n            gpu_info_lines = entry[1].split(\"\
+          \\n\")\n            for line in gpu_info_lines:\n                if \"Default\
+          \ |\" in line:\n                    print(line)\n        else:\n       \
+          \     print(textwrap.fill(str(\n                    entry[1]), 140, drop_whitespace=False,\
+          \ replace_whitespace=False))\n\n\ndef wall_of_text() -> str:\n    return\
+          \ \"\"\"\nThe present invention relates to compositions and methods for\
+          \ the treatment of the \n    Charcot-Marie-Tooth disease and related disorders.\
+          \ Charcot-Marie-Tooth disease (\u201CCMT \n    Mining \n    of publicly\
+          \ available data, describing molecular mechanisms and pathological \n  \
+          \  manifestations \n    of the CMT1A disease, allowed us to prioritize a\
+          \ few functional cellular \n    modules-transcriptional regulation of PMP22\
+          \ gene, PMP22 protein folding/degradation, \n    Schwann cell proliferation\
+          \ and apoptosis, death of neurons, extra-cellular matrix \n    deposition\
+          \ \n    and remodelling, immune response-as potential legitimate targets\
+          \ for CMT-relevant \n    therapeutic interventions.\n\"\"\".replace(\"\\\
+          n\", \" \")\n\n\nif __name__ == '__main__':\n    test()\n\n```"
+        updatedAt: '2023-04-17T20:55:41.172Z'
+      numEdits: 2
+      reactions: []
+    id: 643db1640efe9e9de09969dd
+    type: comment
+  author: michael-newsrx-com
+  content: "Does anyone have an example handler.py and requirements.txt?\n\nWe keep\
+    \ getting:\n\n```python\nRuntimeError: The size of tensor a (2048) must match\
+    \ the size of tensor b (2049) at non-singleton dimension 3\n```\n\nThis is the\
+    \ current `handler.py` we are testing that is failing:\n\n```python\nclass EndpointHandler:\n\
+    \    def __init__(self, path=\"\", force_cpu: bool = False):\n        import torch\n\
+    \        from transformers import pipeline\n        from transformers import AutoTokenizer\n\
+    \        from transformers import AutoModelForCausalLM\n        if force_cpu:\n\
+    \            torch.cuda.is_available = _force_not_available\n            self.generate_text\
+    \ = pipeline(model=path,  #\n                                          torch_dtype=torch.bfloat16,\
+    \  #\n                                          trust_remote_code=True,  #\n \
+    \                                         # low_cpu_mem_usage=True,  #\n     \
+    \                                     )\n        else:\n            self.tokenizer\
+    \ = AutoTokenizer.from_pretrained(  #\n                    path, padding_side=\"\
+    left\")\n            self.model = AutoModelForCausalLM.from_pretrained(  #\n \
+    \                   path,  #\n                    torch_dtype=torch.float16, \
+    \ #\n                    trust_remote_code=True,  #\n                    load_in_8bit=True,\
+    \  #\n                    device_map=\"auto\",  #\n                    low_cpu_mem_usage=True,\
+    \  #\n            )\n            from instruct_pipeline import InstructionTextGenerationPipeline\n\
+    \            self.generate_text = InstructionTextGenerationPipeline(  #\n    \
+    \                model=self.model,  #\n                    tokenizer=self.tokenizer,\
+    \  #\n            )\n\n    def __call__(self, data: Dict[str, Any]) -> List[Dict[str,\
+    \ any]]:\n        # process input\n        inputs = data.pop(\"inputs\", data)\n\
+    \        parameters = data.pop(\"parameters\", None)\n\n        # pass inputs\
+    \ with all kwargs in data\n        if parameters is not None:\n            output\
+    \ = self.generate_text(inputs, **parameters)\n        else:\n            output\
+    \ = self.generate_text(inputs)\n\n        # return_value: List[Dict[str, any]]\
+    \ = list()\n        # postprocess the prediction\n        gpu_info = report_gpu_usage()\n\
+    \        output[\"gpu_info\"] = gpu_info\n        # return_value.append({\"generated_text\"\
+    : prediction, \"gpu_info\": gpu_info})\n\n        # return return_value\n    \
+    \    return output\n\nclass BlockTimer(object):\n    def __enter__(self):\n  \
+    \      import time\n        self.start = time.perf_counter()\n        return self\n\
+    \n    def __exit__(self, typ, value, traceback):\n        import time\n      \
+    \  self.duration = time.perf_counter() - self.start\n\n\ndef _force_not_available()\
+    \ -> bool:\n    return False\n\n\ndef test() -> None:\n    import textwrap\n \
+    \   with BlockTimer() as timer:\n        print(\"Model load\")\n        handler\
+    \ = EndpointHandler(path=\"databricks/dolly-v2-7b\", force_cpu=False)\n    print(f\"\
+    Elapsed: {round(timer.duration, 2)}\")\n    print()\n    parameters: dict[str,\
+    \ any] = {\"max_new_tokens\": 256,  #\n                                  \"min_length\"\
+    : 16,  #\n                                  }  # parameters for text generation\n\
+    \    payload = {\"inputs\": f\"{wall_of_text()}\", \"parameters\": parameters}\n\
+    \    with BlockTimer() as timer:\n        print(\"Inference\")\n        results\
+    \ = handler.__call__(payload)\n    print(f\"Elapsed: {round(timer.duration, 2)}\"\
+    )\n    print()\n    for entry in results[0].items():\n        print()\n      \
+    \  print(f\"=== {entry[0]}\")\n        if entry[0] == \"gpu_info\":\n        \
+    \    gpu_info_lines = entry[1].split(\"\\n\")\n            for line in gpu_info_lines:\n\
+    \                if \"Default |\" in line:\n                    print(line)\n\
+    \        else:\n            print(textwrap.fill(str(\n                    entry[1]),\
+    \ 140, drop_whitespace=False, replace_whitespace=False))\n\n\ndef wall_of_text()\
+    \ -> str:\n    return \"\"\"\nThe present invention relates to compositions and\
+    \ methods for the treatment of the \n    Charcot-Marie-Tooth disease and related\
+    \ disorders. Charcot-Marie-Tooth disease (\u201CCMT \n    Mining \n    of publicly\
+    \ available data, describing molecular mechanisms and pathological \n    manifestations\
+    \ \n    of the CMT1A disease, allowed us to prioritize a few functional cellular\
+    \ \n    modules-transcriptional regulation of PMP22 gene, PMP22 protein folding/degradation,\
+    \ \n    Schwann cell proliferation and apoptosis, death of neurons, extra-cellular\
+    \ matrix \n    deposition \n    and remodelling, immune response-as potential\
+    \ legitimate targets for CMT-relevant \n    therapeutic interventions.\n\"\"\"\
+    .replace(\"\\n\", \" \")\n\n\nif __name__ == '__main__':\n    test()\n\n```"
+  created_at: 2023-04-17 19:51:48+00:00
+  edited: true
+  hidden: false
+  id: 643db1640efe9e9de09969dd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+      fullname: Thomas Chaigneau
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chainyo
+      type: user
+    createdAt: '2023-04-20T13:30:56.000Z'
+    data:
+      edited: false
+      editors:
+      - chainyo
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+          fullname: Thomas Chaigneau
+          isHf: false
+          isPro: false
+          name: chainyo
+          type: user
+        html: "<p>I'm facing the same error on really long input texts.</p>\n<p>Even\
+          \ when I specify <code>max_length=2048</code> and <code>truncation=True</code>\
+          \ for the tokenizer:</p>\n<pre><code>inputs = tokenizer(\n    prompt,\n\
+          \    return_tensors=\"pt\",\n    max_length=2048,\n    truncation=True,\n\
+          )\n</code></pre>\n<p>It's weird because the base model accepts <code>5120</code>\
+          \ tokens if you look at the <code>config.json</code> file.</p>\n"
+        raw: "I'm facing the same error on really long input texts.\n\nEven when I\
+          \ specify `max_length=2048` and `truncation=True` for the tokenizer:\n\n\
+          ```\ninputs = tokenizer(\n    prompt,\n    return_tensors=\"pt\",\n    max_length=2048,\n\
+          \    truncation=True,\n)\n```\n\nIt's weird because the base model accepts\
+          \ `5120` tokens if you look at the `config.json` file."
+        updatedAt: '2023-04-20T13:30:56.039Z'
+      numEdits: 0
+      reactions: []
+    id: 64413e907f13a7b5a2618c66
+    type: comment
+  author: chainyo
+  content: "I'm facing the same error on really long input texts.\n\nEven when I specify\
+    \ `max_length=2048` and `truncation=True` for the tokenizer:\n\n```\ninputs =\
+    \ tokenizer(\n    prompt,\n    return_tensors=\"pt\",\n    max_length=2048,\n\
+    \    truncation=True,\n)\n```\n\nIt's weird because the base model accepts `5120`\
+    \ tokens if you look at the `config.json` file."
+  created_at: 2023-04-20 12:30:56+00:00
+  edited: false
+  hidden: false
+  id: 64413e907f13a7b5a2618c66
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-20T13:34:08.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>It''s 2048 actually, see <a href="https://huggingface.co/databricks/dolly-v2-12b/discussions/10">https://huggingface.co/databricks/dolly-v2-12b/discussions/10</a>
+          for discussion of the issue though</p>
+
+          '
+        raw: It's 2048 actually, see https://huggingface.co/databricks/dolly-v2-12b/discussions/10
+          for discussion of the issue though
+        updatedAt: '2023-04-20T13:34:08.244Z'
+      numEdits: 0
+      reactions: []
+    id: 64413f50006550f1ed6ccd0c
+    type: comment
+  author: srowen
+  content: It's 2048 actually, see https://huggingface.co/databricks/dolly-v2-12b/discussions/10
+    for discussion of the issue though
+  created_at: 2023-04-20 12:34:08+00:00
+  edited: false
+  hidden: false
+  id: 64413f50006550f1ed6ccd0c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+      fullname: Thomas Chaigneau
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chainyo
+      type: user
+    createdAt: '2023-04-20T13:46:07.000Z'
+    data:
+      edited: false
+      editors:
+      - chainyo
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+          fullname: Thomas Chaigneau
+          isHf: false
+          isPro: false
+          name: chainyo
+          type: user
+        html: '<p>Sorry if I wasn''t clear, I talked about the model config.json file:
+          <a href="https://huggingface.co/databricks/dolly-v2-12b/blob/6d35f0d536712a5fd765b028b1a61af924d3d94b/config.json#L16">https://huggingface.co/databricks/dolly-v2-12b/blob/6d35f0d536712a5fd765b028b1a61af924d3d94b/config.json#L16</a></p>
+
+          <p>It''s similar to the one used by the <code>EleutherAI/pythia-12b</code>
+          model which accepts 5120 tokens in input.</p>
+
+          '
+        raw: 'Sorry if I wasn''t clear, I talked about the model config.json file:
+          https://huggingface.co/databricks/dolly-v2-12b/blob/6d35f0d536712a5fd765b028b1a61af924d3d94b/config.json#L16
+
+
+          It''s similar to the one used by the `EleutherAI/pythia-12b` model which
+          accepts 5120 tokens in input.'
+        updatedAt: '2023-04-20T13:46:07.137Z'
+      numEdits: 0
+      reactions: []
+    id: 6441421fe46e14ed558cf110
+    type: comment
+  author: chainyo
+  content: 'Sorry if I wasn''t clear, I talked about the model config.json file: https://huggingface.co/databricks/dolly-v2-12b/blob/6d35f0d536712a5fd765b028b1a61af924d3d94b/config.json#L16
+
+
+    It''s similar to the one used by the `EleutherAI/pythia-12b` model which accepts
+    5120 tokens in input.'
+  created_at: 2023-04-20 12:46:07+00:00
+  edited: false
+  hidden: false
+  id: 6441421fe46e14ed558cf110
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-20T13:48:45.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Hm, wouldn''t it be <a href="https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5">https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5</a>
+          that matters? I''m not sure</p>
+
+          '
+        raw: Hm, wouldn't it be https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5
+          that matters? I'm not sure
+        updatedAt: '2023-04-20T13:48:45.710Z'
+      numEdits: 0
+      reactions: []
+    id: 644142bd7f13a7b5a2620c7b
+    type: comment
+  author: srowen
+  content: Hm, wouldn't it be https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5
+    that matters? I'm not sure
+  created_at: 2023-04-20 12:48:45+00:00
+  edited: false
+  hidden: false
+  id: 644142bd7f13a7b5a2620c7b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+      fullname: Thomas Chaigneau
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chainyo
+      type: user
+    createdAt: '2023-04-20T13:53:44.000Z'
+    data:
+      edited: true
+      editors:
+      - chainyo
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+          fullname: Thomas Chaigneau
+          isHf: false
+          isPro: false
+          name: chainyo
+          type: user
+        html: "<p>I saw this tokenizer parameter, but it is useless. Keeping this\
+          \ number during tokenization means there is no <code>max_length</code>,\
+          \ which is false because you will get an error if you try to feed the EleutherAI\
+          \ base model with an input that is more than <code>5120</code> tokens.</p>\n\
+          <p>Dolly v2 12B seems to be fine-tuned on 2048 tokens inputs, so now the\
+          \ model accepts a maximum of 2048 tokens even if the <code>hidden_size</code>\
+          \ layer is still 5120.</p>\n<p>The problem I'm trying to understand is why\
+          \ I keep getting an input tensor of 2049 when I specify a max_length of\
+          \ 2048 to my tokenizer. \U0001F917</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/6162dbe0d928851b47350ae2/dGJVZWZHJq8wMODqnTH3B.png\"\
+          ><img alt=\"CleanShot 2023-04-20 at 15.56.20.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/6162dbe0d928851b47350ae2/dGJVZWZHJq8wMODqnTH3B.png\"\
+          ></a></p>\n"
+        raw: "I saw this tokenizer parameter, but it is useless. Keeping this number\
+          \ during tokenization means there is no `max_length`, which is false because\
+          \ you will get an error if you try to feed the EleutherAI base model with\
+          \ an input that is more than `5120` tokens.\n\nDolly v2 12B seems to be\
+          \ fine-tuned on 2048 tokens inputs, so now the model accepts a maximum of\
+          \ 2048 tokens even if the `hidden_size` layer is still 5120.\n\nThe problem\
+          \ I'm trying to understand is why I keep getting an input tensor of 2049\
+          \ when I specify a max_length of 2048 to my tokenizer. \U0001F917\n\n\n\
+          ![CleanShot 2023-04-20 at 15.56.20.png](https://cdn-uploads.huggingface.co/production/uploads/6162dbe0d928851b47350ae2/dGJVZWZHJq8wMODqnTH3B.png)"
+        updatedAt: '2023-04-21T09:00:51.551Z'
+      numEdits: 4
+      reactions: []
+    id: 644143e84c2acf3398a2f843
+    type: comment
+  author: chainyo
+  content: "I saw this tokenizer parameter, but it is useless. Keeping this number\
+    \ during tokenization means there is no `max_length`, which is false because you\
+    \ will get an error if you try to feed the EleutherAI base model with an input\
+    \ that is more than `5120` tokens.\n\nDolly v2 12B seems to be fine-tuned on 2048\
+    \ tokens inputs, so now the model accepts a maximum of 2048 tokens even if the\
+    \ `hidden_size` layer is still 5120.\n\nThe problem I'm trying to understand is\
+    \ why I keep getting an input tensor of 2049 when I specify a max_length of 2048\
+    \ to my tokenizer. \U0001F917\n\n\n![CleanShot 2023-04-20 at 15.56.20.png](https://cdn-uploads.huggingface.co/production/uploads/6162dbe0d928851b47350ae2/dGJVZWZHJq8wMODqnTH3B.png)"
+  created_at: 2023-04-20 12:53:44+00:00
+  edited: true
+  hidden: false
+  id: 644143e84c2acf3398a2f843
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-28T13:58:55.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Isn''t hidden_size just the dimension of the encoding layers? I
+          don''t think that''s the same thing.<br>I think we can fold this into <a
+          href="https://huggingface.co/databricks/dolly-v2-12b/discussions/10">https://huggingface.co/databricks/dolly-v2-12b/discussions/10</a></p>
+
+          '
+        raw: 'Isn''t hidden_size just the dimension of the encoding layers? I don''t
+          think that''s the same thing.
+
+          I think we can fold this into https://huggingface.co/databricks/dolly-v2-12b/discussions/10'
+        updatedAt: '2023-04-28T13:58:55.454Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 644bd11fed08a4fdf4d5fe87
+    id: 644bd11fed08a4fdf4d5fe86
+    type: comment
+  author: srowen
+  content: 'Isn''t hidden_size just the dimension of the encoding layers? I don''t
+    think that''s the same thing.
+
+    I think we can fold this into https://huggingface.co/databricks/dolly-v2-12b/discussions/10'
+  created_at: 2023-04-28 12:58:55+00:00
+  edited: false
+  hidden: false
+  id: 644bd11fed08a4fdf4d5fe86
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-28T13:58:55.000Z'
+    data:
+      status: closed
+    id: 644bd11fed08a4fdf4d5fe87
+    type: status-change
+  author: srowen
+  created_at: 2023-04-28 12:58:55+00:00
+  id: 644bd11fed08a4fdf4d5fe87
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-04-28T14:09:46.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: '<p>So exactly what is the actual fix that I can implement in a <code>handler.py</code>
+          then? I''ve never gotten this to work, even setting truncation to 1024 tokens
+          in the tokenizer configuration.</p>
+
+          '
+        raw: So exactly what is the actual fix that I can implement in a `handler.py`
+          then? I've never gotten this to work, even setting truncation to 1024 tokens
+          in the tokenizer configuration.
+        updatedAt: '2023-04-28T14:09:46.376Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 644bd3aaed08a4fdf4d63cea
+    id: 644bd3aaed08a4fdf4d63ce9
+    type: comment
+  author: michael-newsrx-com
+  content: So exactly what is the actual fix that I can implement in a `handler.py`
+    then? I've never gotten this to work, even setting truncation to 1024 tokens in
+    the tokenizer configuration.
+  created_at: 2023-04-28 13:09:46+00:00
+  edited: false
+  hidden: false
+  id: 644bd3aaed08a4fdf4d63ce9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-04-28T14:09:46.000Z'
+    data:
+      status: open
+    id: 644bd3aaed08a4fdf4d63cea
+    type: status-change
+  author: michael-newsrx-com
+  created_at: 2023-04-28 13:09:46+00:00
+  id: 644bd3aaed08a4fdf4d63cea
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-28T14:24:58.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Did you see the discussion in the other thread? Not sure how to
+          change your current code, but it explains why you''re getting this. You
+          can''t use 2048 tokens even, due to prompting and generation needs too.</p>
+
+          '
+        raw: Did you see the discussion in the other thread? Not sure how to change
+          your current code, but it explains why you're getting this. You can't use
+          2048 tokens even, due to prompting and generation needs too.
+        updatedAt: '2023-04-28T14:24:58.183Z'
+      numEdits: 0
+      reactions: []
+    id: 644bd73a45e79023c7d5f91f
+    type: comment
+  author: srowen
+  content: Did you see the discussion in the other thread? Not sure how to change
+    your current code, but it explains why you're getting this. You can't use 2048
+    tokens even, due to prompting and generation needs too.
+  created_at: 2023-04-28 13:24:58+00:00
+  edited: false
+  hidden: false
+  id: 644bd73a45e79023c7d5f91f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+      fullname: Thomas Chaigneau
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chainyo
+      type: user
+    createdAt: '2023-04-30T09:14:02.000Z'
+    data:
+      edited: false
+      editors:
+      - chainyo
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1675273618630-6162dbe0d928851b47350ae2.jpeg?w=200&h=200&f=face
+          fullname: Thomas Chaigneau
+          isHf: false
+          isPro: false
+          name: chainyo
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;srowen&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/srowen\">@<span class=\"\
+          underline\">srowen</span></a></span>\n\n\t</span></span> Sorry for the confusion\
+          \ here. I mixed the <code>hidden_size</code> parameter and the <code>max_position_embeddings</code>\
+          \ parameter!</p>\n"
+        raw: '@srowen Sorry for the confusion here. I mixed the `hidden_size` parameter
+          and the `max_position_embeddings` parameter!'
+        updatedAt: '2023-04-30T09:14:02.781Z'
+      numEdits: 0
+      reactions: []
+    id: 644e315acf72e60a5b73e4cb
+    type: comment
+  author: chainyo
+  content: '@srowen Sorry for the confusion here. I mixed the `hidden_size` parameter
+    and the `max_position_embeddings` parameter!'
+  created_at: 2023-04-30 08:14:02+00:00
+  edited: false
+  hidden: false
+  id: 644e315acf72e60a5b73e4cb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-01T12:53:36.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: '<blockquote>
+
+          <p>Did you see the discussion in the other thread? Not sure how to change
+          your current code, but it explains why you''re getting this. You can''t
+          use 2048 tokens even, due to prompting and generation needs too.</p>
+
+          </blockquote>
+
+          <p>Can this be set in the tokenizer for truncation or something? Or how
+          do I go about figuring out the actual tokenized length the model is getting
+          so that I can test things?</p>
+
+          '
+        raw: '> Did you see the discussion in the other thread? Not sure how to change
+          your current code, but it explains why you''re getting this. You can''t
+          use 2048 tokens even, due to prompting and generation needs too.
+
+
+          Can this be set in the tokenizer for truncation or something? Or how do
+          I go about figuring out the actual tokenized length the model is getting
+          so that I can test things?'
+        updatedAt: '2023-05-01T12:53:36.182Z'
+      numEdits: 0
+      reactions: []
+    id: 644fb650d5f7dafcfa5e69e6
+    type: comment
+  author: michael-newsrx-com
+  content: '> Did you see the discussion in the other thread? Not sure how to change
+    your current code, but it explains why you''re getting this. You can''t use 2048
+    tokens even, due to prompting and generation needs too.
+
+
+    Can this be set in the tokenizer for truncation or something? Or how do I go about
+    figuring out the actual tokenized length the model is getting so that I can test
+    things?'
+  created_at: 2023-05-01 11:53:36+00:00
+  edited: false
+  hidden: false
+  id: 644fb650d5f7dafcfa5e69e6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-05-01T13:21:58.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>You can set the pipeline to truncate or truncate yourself. The context
+          window is a fixed property of the model though</p>
+
+          '
+        raw: You can set the pipeline to truncate or truncate yourself. The context
+          window is a fixed property of the model though
+        updatedAt: '2023-05-01T13:21:58.074Z'
+      numEdits: 0
+      reactions: []
+    id: 644fbcf620ba3e3e4be7f418
+    type: comment
+  author: srowen
+  content: You can set the pipeline to truncate or truncate yourself. The context
+    window is a fixed property of the model though
+  created_at: 2023-05-01 12:21:58+00:00
+  edited: false
+  hidden: false
+  id: 644fbcf620ba3e3e4be7f418
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-01T13:31:06.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: "<p>I have this in my current code and I'm still getting the 2049 vs\
+          \ 2048 issue?</p>\n<pre><code class=\"language-python\">            self.tokenizer\
+          \ = AutoTokenizer.from_pretrained(  <span class=\"hljs-comment\">#</span>\n\
+          \                    path,  <span class=\"hljs-comment\">#</span>\n    \
+          \                padding_side=<span class=\"hljs-string\">\"left\"</span>,\
+          \  <span class=\"hljs-comment\">#</span>\n                    truncation=<span\
+          \ class=\"hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \                    max_length=<span class=\"hljs-number\">1024</span>)\n\
+          \            self.model = AutoModelForCausalLM.from_pretrained(  <span class=\"\
+          hljs-comment\">#</span>\n                    path,  <span class=\"hljs-comment\"\
+          >#</span>\n                    torch_dtype=torch.float16,  <span class=\"\
+          hljs-comment\">#</span>\n                    trust_remote_code=<span class=\"\
+          hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n   \
+          \                 <span class=\"hljs-comment\"># load_in_8bit=True,  #</span>\n\
+          \                    device_map=<span class=\"hljs-string\">\"auto\"</span>,\
+          \  <span class=\"hljs-comment\">#</span>\n                    low_cpu_mem_usage=<span\
+          \ class=\"hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \            )\n            <span class=\"hljs-keyword\">from</span> instruct_pipeline\
+          \ <span class=\"hljs-keyword\">import</span> InstructionTextGenerationPipeline\n\
+          \            self.generate_text = InstructionTextGenerationPipeline(  <span\
+          \ class=\"hljs-comment\">#</span>\n                    model=self.model,\
+          \  <span class=\"hljs-comment\">#</span>\n                    tokenizer=self.tokenizer,\
+          \  <span class=\"hljs-comment\">#</span>\n            )\n</code></pre>\n"
+        raw: "I have this in my current code and I'm still getting the 2049 vs 2048\
+          \ issue?\n\n```python\n            self.tokenizer = AutoTokenizer.from_pretrained(\
+          \  #\n                    path,  #\n                    padding_side=\"\
+          left\",  #\n                    truncation=True,  #\n                  \
+          \  max_length=1024)\n            self.model = AutoModelForCausalLM.from_pretrained(\
+          \  #\n                    path,  #\n                    torch_dtype=torch.float16,\
+          \  #\n                    trust_remote_code=True,  #\n                 \
+          \   # load_in_8bit=True,  #\n                    device_map=\"auto\",  #\n\
+          \                    low_cpu_mem_usage=True,  #\n            )\n       \
+          \     from instruct_pipeline import InstructionTextGenerationPipeline\n\
+          \            self.generate_text = InstructionTextGenerationPipeline(  #\n\
+          \                    model=self.model,  #\n                    tokenizer=self.tokenizer,\
+          \  #\n            )\n```"
+        updatedAt: '2023-05-01T13:31:06.434Z'
+      numEdits: 0
+      reactions: []
+    id: 644fbf1ad5f7dafcfa5f5042
+    type: comment
+  author: michael-newsrx-com
+  content: "I have this in my current code and I'm still getting the 2049 vs 2048\
+    \ issue?\n\n```python\n            self.tokenizer = AutoTokenizer.from_pretrained(\
+    \  #\n                    path,  #\n                    padding_side=\"left\"\
+    ,  #\n                    truncation=True,  #\n                    max_length=1024)\n\
+    \            self.model = AutoModelForCausalLM.from_pretrained(  #\n         \
+    \           path,  #\n                    torch_dtype=torch.float16,  #\n    \
+    \                trust_remote_code=True,  #\n                    # load_in_8bit=True,\
+    \  #\n                    device_map=\"auto\",  #\n                    low_cpu_mem_usage=True,\
+    \  #\n            )\n            from instruct_pipeline import InstructionTextGenerationPipeline\n\
+    \            self.generate_text = InstructionTextGenerationPipeline(  #\n    \
+    \                model=self.model,  #\n                    tokenizer=self.tokenizer,\
+    \  #\n            )\n```"
+  created_at: 2023-05-01 12:31:06+00:00
+  edited: false
+  hidden: false
+  id: 644fbf1ad5f7dafcfa5f5042
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-05-01T14:24:59.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>What''s your input like when this fails and how long is the output?
+          I wouldn''t really expect you''d bump up against the context window limit
+          with these settings.</p>
+
+          '
+        raw: What's your input like when this fails and how long is the output? I
+          wouldn't really expect you'd bump up against the context window limit with
+          these settings.
+        updatedAt: '2023-05-01T14:24:59.745Z'
+      numEdits: 0
+      reactions: []
+    id: 644fcbbb28774bd665d78893
+    type: comment
+  author: srowen
+  content: What's your input like when this fails and how long is the output? I wouldn't
+    really expect you'd bump up against the context window limit with these settings.
+  created_at: 2023-05-01 13:24:59+00:00
+  edited: false
+  hidden: false
+  id: 644fcbbb28774bd665d78893
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-01T20:09:29.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: "<p>It seems the tokenizer is ignoring the max_length parameter and\
+          \ isn't truncating? The following is generating an <code>input_ids</code>\
+          \ size of 1998 for the below text.</p>\n<pre><code class=\"language-python\"\
+          >self.tokenizer = AutoTokenizer.from_pretrained(  <span class=\"hljs-comment\"\
+          >#</span>\n                    path,  <span class=\"hljs-comment\">#</span>\n\
+          \                    padding_side=<span class=\"hljs-string\">\"left\"</span>,\
+          \  <span class=\"hljs-comment\">#</span>\n                    truncation=<span\
+          \ class=\"hljs-literal\">True</span>,  <span class=\"hljs-comment\">#</span>\n\
+          \                    max_length=<span class=\"hljs-number\">1024</span>)\n\
+          </code></pre>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">wall_of_text</span>() -&gt;\
+          \ <span class=\"hljs-built_in\">str</span>:\n    <span class=\"hljs-keyword\"\
+          >return</span> <span class=\"hljs-string\">\"\"\"</span>\n<span class=\"\
+          hljs-string\">    Create a ten to fifteen word intriguing headline for the\
+          \ following article.</span>\n<span class=\"hljs-string\">    </span>\n<span\
+          \ class=\"hljs-string\">    The present invention relates to compositions\
+          \ and methods for the treatment of the </span>\n<span class=\"hljs-string\"\
+          >    Charcot-Marie-Tooth disease and related disorders. Charcot-Marie-Tooth\
+          \ disease (\u201CCMT </span>\n<span class=\"hljs-string\">    Mining </span>\n\
+          <span class=\"hljs-string\">    of publicly available data, describing molecular\
+          \ mechanisms and pathological </span>\n<span class=\"hljs-string\">    manifestations\
+          \ </span>\n<span class=\"hljs-string\">    of the CMT1A disease, allowed\
+          \ us to prioritize a few functional cellular </span>\n<span class=\"hljs-string\"\
+          >    modules-transcriptional regulation of PMP22 gene, PMP22 protein folding/degradation,\
+          \ </span>\n<span class=\"hljs-string\">    Schwann cell proliferation and\
+          \ apoptosis, death of neurons, extra-cellular matrix </span>\n<span class=\"\
+          hljs-string\">    deposition </span>\n<span class=\"hljs-string\">    and\
+          \ remodelling, immune response-as potential legitimate targets for CMT-relevant\
+          \ </span>\n<span class=\"hljs-string\">    therapeutic interventions. The\
+          \ combined impact of these deregulated functional modules on </span>\n<span\
+          \ class=\"hljs-string\">    onset and progression of pathological manifestations\
+          \ of Charcot-Marie-Tooth justifies a </span>\n<span class=\"hljs-string\"\
+          >    potential efficacy of combinatorial CMT treatment. International patent\
+          \ application No. </span>\n<span class=\"hljs-string\">    PCT/EP2008/066457\
+          \ describes a method of identifying drug candidates for the treatment of\
+          \ </span>\n<span class=\"hljs-string\">    the </span>\n<span class=\"hljs-string\"\
+          >    Charcot-Marie-Tooth disease by building a dynamic model of the pathology\
+          \ and targeting </span>\n<span class=\"hljs-string\">    functional cellular\
+          \ pathways which are relevant in the regulation of CMT disease. </span>\n\
+          <span class=\"hljs-string\">    International patent application No. PCT/EP2008/066468\
+          \ describes compositions for the </span>\n<span class=\"hljs-string\"> \
+          \   treatment of the Charcot-Marie-Tooth disease which comprise at least\
+          \ two compounds </span>\n<span class=\"hljs-string\">    selected </span>\n\
+          <span class=\"hljs-string\">    from the group of multiple drug candidates.\
+          \ The purpose of the present invention is to </span>\n<span class=\"hljs-string\"\
+          >    provide new therapeutic combinations for treating CMT and related disorders.\
+          \ The invention </span>\n<span class=\"hljs-string\">    thus relates to\
+          \ compositions and methods for treating CMT and related disorders, </span>\n\
+          <span class=\"hljs-string\">    in particular toxic or traumatic neuropathy\
+          \ and amyotrophic lateral sclerosis, </span>\n<span class=\"hljs-string\"\
+          >    using particular drug combinations. An object of this invention more\
+          \ specifically </span>\n<span class=\"hljs-string\">    relates to </span>\n\
+          <span class=\"hljs-string\">    a composition comprising baclofen, sorbitol\
+          \ and a compound selected from pilocarpine, </span>\n<span class=\"hljs-string\"\
+          >    methimazole, mifepristone, naltrexone, rapamycin, flurbiprofen and\
+          \ ketoprofen, salts or </span>\n<span class=\"hljs-string\">    prodrugs\
+          \ thereof, for simultaneous, separate or sequential administration to a\
+          \ mammalian </span>\n<span class=\"hljs-string\">    subject. A particular\
+          \ object of the present invention relates to a composition comprising </span>\n\
+          <span class=\"hljs-string\">    baclofen, sorbitol and naltrexone, for simultaneous,\
+          \ separate or sequential administration </span>\n<span class=\"hljs-string\"\
+          >    to a mammalian subject. Another object of the invention relates to\
+          \ a composition </span>\n<span class=\"hljs-string\">    comprising </span>\n\
+          <span class=\"hljs-string\">    (a) rapamycin, (b) mifepristone or naltrexone,\
+          \ and \xA9 a PMP22 modulator, for simultaneous, </span>\n<span class=\"\
+          hljs-string\">    separate or sequential administration to a mammalian subject.\
+          \ In a particular embodiment, </span>\n<span class=\"hljs-string\">    the\
+          \ PMP22 modulator is selected from acetazolamide, albuterol, amiloride,\
+          \ </span>\n<span class=\"hljs-string\">    aminoglutethimide, </span>\n\
+          <span class=\"hljs-string\">    amiodarone, aztreonam, baclofen, balsalazide,\
+          \ betaine, bethanechol, bicalutamide, </span>\n<span class=\"hljs-string\"\
+          >    bromocriptine, bumetanide, buspirone, carbachol, carbamazepine, carbimazole,\
+          \ cevimeline, </span>\n<span class=\"hljs-string\">    ciprofloxacin, clonidine,\
+          \ curcumin, cyclosporine A, diazepam, diclofenac, dinoprostone, </span>\n\
+          <span class=\"hljs-string\">    disulfiram, D-sorbitol, dutasteride, estradiol,\
+          \ exemestane, felbamate, fenofibrate, </span>\n<span class=\"hljs-string\"\
+          >    finasteride, flumazenil, flunitrazepam, flurbiprofen, furosemide, gabapentingabapentin,\
+          \ </span>\n<span class=\"hljs-string\">    galantamine, haloperidol, ibuprofen,\
+          \ isoproterenol, ketoconazole, ketoprofen, L-carnitine, </span>\n<span class=\"\
+          hljs-string\">    liothyronine (T3), lithium, losartan, loxapine, meloxicam,\
+          \ metaproterenol, metaraminol, </span>\n<span class=\"hljs-string\">   \
+          \ metformin, methacholine, methimazole, methylergonovine, metoprolol, metyrapone,\
+          \ </span>\n<span class=\"hljs-string\">    miconazole, </span>\n<span class=\"\
+          hljs-string\">    mifepristone, nadolol, naloxone, naltrexone; norfloxacin,\
+          \ pentazocine, phenoxybenzamine, </span>\n<span class=\"hljs-string\"> \
+          \   phenylbutyrate, pilocarpine, pioglitazone, prazosin, propylthiouracil,\
+          \ raloxifene, </span>\n<span class=\"hljs-string\">    rapamycin, rifampin,\
+          \ simvastatin, spironolactone, tacrolimus, tamoxifen, trehalose, </span>\n\
+          <span class=\"hljs-string\">    trilostane, valproic acid, salts or prodrugs\
+          \ thereof. 1. A method of improving nerve </span>\n<span class=\"hljs-string\"\
+          >    regeneration in a human subject suffering from amyotrophic lateral\
+          \ sclerosis, </span>\n<span class=\"hljs-string\">    or a neuropathy selected\
+          \ from an idiopathic neuropathy, diabetic neuropathy, </span>\n<span class=\"\
+          hljs-string\">    a toxic neuropathy, a neuropathy induced by a drug treatment,\
+          \ a neuropathy provoked by </span>\n<span class=\"hljs-string\">    HIV,\
+          \ </span>\n<span class=\"hljs-string\">    a neuropathy provoked by radiation,\
+          \ a neuropathy provoked by heavy metals, a neuropathy </span>\n<span class=\"\
+          hljs-string\">    provoked by vitamin deficiency states, or a traumatic\
+          \ neuropathy, comprising administering </span>\n<span class=\"hljs-string\"\
+          >    to the human subject an amount of a composition effective to improve\
+          \ nerve regeneration; </span>\n<span class=\"hljs-string\">    and </span>\n\
+          <span class=\"hljs-string\">    wherein the composition comprises baclofen\
+          \ or a pharmaceutically acceptable salt thereof </span>\n<span class=\"\
+          hljs-string\">    in </span>\n<span class=\"hljs-string\">    an amount\
+          \ from 1 to 300 mg/kg of the human subject per day; D-sorbitol or a </span>\n\
+          <span class=\"hljs-string\">    pharmaceutically </span>\n<span class=\"\
+          hljs-string\">    acceptable salt thereof; and naltrexone or a pharmaceutically\
+          \ acceptable salt thereof in </span>\n<span class=\"hljs-string\">    an\
+          \ </span>\n<span class=\"hljs-string\">    amount from 1 to 100 mg/kg of\
+          \ the human subject per day. 2. The method of claim 1, </span>\n<span class=\"\
+          hljs-string\">    wherein the composition further comprises a pharmaceutically\
+          \ suitable excipient or </span>\n<span class=\"hljs-string\">    carrier.\
+          \ </span>\n<span class=\"hljs-string\">    3. The method of claim 2, wherein\
+          \ the composition is formulated with a drug eluting </span>\n<span class=\"\
+          hljs-string\">    polymer, </span>\n<span class=\"hljs-string\">    a biomolecule,\
+          \ a micelle or liposome-forming lipids or oil in water emulsions, </span>\n\
+          <span class=\"hljs-string\">    or pegylated </span>\n<span class=\"hljs-string\"\
+          >    or solid nanoparticles or microparticles for oral or parenteral or\
+          \ intrathecal </span>\n<span class=\"hljs-string\">    administration. 4.\
+          \ The method of claim 1, wherein the subject suffers from a traumatic </span>\n\
+          <span class=\"hljs-string\">    neuropathy arising from brain injury, spinal\
+          \ cord injury, or an injury to peripheral </span>\n<span class=\"hljs-string\"\
+          >    nerves. </span>\n<span class=\"hljs-string\">    5. The method of claim\
+          \ 1, wherein the D-sorbitol or a pharmaceutically acceptable salt </span>\n\
+          <span class=\"hljs-string\">    thereof is D-sorbitol. 6. The method of\
+          \ claim 1, wherein the composition is formulated for </span>\n<span class=\"\
+          hljs-string\">    oral administration. 7. The method of claim 6, wherein\
+          \ the composition is a liquid </span>\n<span class=\"hljs-string\">    formulation.\
+          \ 8. The method of claim 1, wherein baclofen or a pharmaceutically acceptable\
+          \ </span>\n<span class=\"hljs-string\">    salt thereof, D-sorbitol or a\
+          \ pharmaceutically acceptable salt thereof, and naltrexone </span>\n<span\
+          \ class=\"hljs-string\">    or a </span>\n<span class=\"hljs-string\"> \
+          \   pharmaceutically acceptable salt thereof are the sole active ingredients.\
+          \ 9. The method of </span>\n<span class=\"hljs-string\">    claim 1, comprising\
+          \ administering to the human subject baclofen or a pharmaceutically </span>\n\
+          <span class=\"hljs-string\">    acceptable salt thereof in an amount from\
+          \ 10 to 200 mg/kg of the human subject per day and </span>\n<span class=\"\
+          hljs-string\">    naltrexone or a pharmaceutically acceptable salt thereof\
+          \ in an amount from 1 to 50 mg/kg </span>\n<span class=\"hljs-string\">\
+          \    of </span>\n<span class=\"hljs-string\">    the human subject per day.\
+          \ 10. The method of claim 1, comprising administering to the </span>\n<span\
+          \ class=\"hljs-string\">    human </span>\n<span class=\"hljs-string\">\
+          \    subject baclofen or a pharmaceutically acceptable salt thereof in an\
+          \ amount from 10 to 200 </span>\n<span class=\"hljs-string\">    mg/kg of\
+          \ the human subject per day and naltrexone or a pharmaceutically acceptable\
+          \ salt </span>\n<span class=\"hljs-string\">    thereof in an amount from\
+          \ 1 to 50 mg/kg of the human subject per day. 11. The method of </span>\n\
+          <span class=\"hljs-string\">    claim 1, comprising administering to the\
+          \ human subject baclofen or a pharmaceutically </span>\n<span class=\"hljs-string\"\
+          >    acceptable salt thereof in an amount from 60 mg to 18 mg per day and\
+          \ naltrexone or a </span>\n<span class=\"hljs-string\">    pharmaceutically\
+          \ acceptable salt thereof in an amount from 60 mg to 6 mg per day. 12. The\
+          \ </span>\n<span class=\"hljs-string\">    method of claim 1, comprising\
+          \ administering to the human subject baclofen or a </span>\n<span class=\"\
+          hljs-string\">    pharmaceutically acceptable salt thereof in an amount\
+          \ from 60 mg to 12 mg per day and </span>\n<span class=\"hljs-string\">\
+          \    naltrexone or a pharmaceutically acceptable salt thereof in an amount\
+          \ from 60 mg to 3 mg </span>\n<span class=\"hljs-string\">    per </span>\n\
+          <span class=\"hljs-string\">    day. 13. The method of claim 10, wherein\
+          \ baclofen or a pharmaceutically acceptable salt </span>\n<span class=\"\
+          hljs-string\">    thereof, D-sorbitol or a pharmaceutically acceptable salt\
+          \ thereof, and naltrexone or a </span>\n<span class=\"hljs-string\">   \
+          \ pharmaceutically acceptable salt thereof are administered orally to the\
+          \ human subject. 14. </span>\n<span class=\"hljs-string\">    The method\
+          \ of claim 10, wherein baclofen or a pharmaceutically acceptable salt thereof,\
+          \ </span>\n<span class=\"hljs-string\">    D-sorbitol or a pharmaceutically\
+          \ acceptable salt thereof, and naltrexone or a </span>\n<span class=\"hljs-string\"\
+          >    pharmaceutically acceptable salt thereof are administered separately\
+          \ to the human subject. </span>\n<span class=\"hljs-string\">    15. The\
+          \ method of claim 13, wherein baclofen or a pharmaceutically acceptable\
+          \ salt </span>\n<span class=\"hljs-string\">    thereof, </span>\n<span\
+          \ class=\"hljs-string\">    D-sorbitol or a pharmaceutically acceptable\
+          \ salt thereof, and naltrexone or a </span>\n<span class=\"hljs-string\"\
+          >    pharmaceutically acceptable salt thereof are formulated in a liquid\
+          \ formulation. 16. The </span>\n<span class=\"hljs-string\">    method of\
+          \ claim 15, wherein baclofen or a pharmaceutically acceptable salt thereof,\
+          \ </span>\n<span class=\"hljs-string\">    D-sorbitol or a pharmaceutically\
+          \ acceptable salt thereof, and naltrexone or a </span>\n<span class=\"hljs-string\"\
+          >    pharmaceutically acceptable salt thereof are administered to the human\
+          \ subject in divided </span>\n<span class=\"hljs-string\">    doses. 17.\
+          \ The method of claim 15, wherein baclofen or a pharmaceutically acceptable\
+          \ salt </span>\n<span class=\"hljs-string\">    thereof, D-sorbitol or a\
+          \ pharmaceutically acceptable salt thereof, and naltrexone or a </span>\n\
+          <span class=\"hljs-string\">    pharmaceutically acceptable salt thereof\
+          \ are administered to the human subject in divided </span>\n<span class=\"\
+          hljs-string\">    doses two times daily.</span>\n<span class=\"hljs-string\"\
+          >\"\"\"</span>.replace(<span class=\"hljs-string\">\"\\n\"</span>, <span\
+          \ class=\"hljs-string\">\" \"</span>)\n</code></pre>\n"
+        raw: "It seems the tokenizer is ignoring the max_length parameter and isn't\
+          \ truncating? The following is generating an `input_ids` size of 1998 for\
+          \ the below text.\n\n```python\nself.tokenizer = AutoTokenizer.from_pretrained(\
+          \  #\n                    path,  #\n                    padding_side=\"\
+          left\",  #\n                    truncation=True,  #\n                  \
+          \  max_length=1024)\n```\n\n```python\ndef wall_of_text() -> str:\n    return\
+          \ \"\"\"\n    Create a ten to fifteen word intriguing headline for the following\
+          \ article.\n    \n    The present invention relates to compositions and\
+          \ methods for the treatment of the \n    Charcot-Marie-Tooth disease and\
+          \ related disorders. Charcot-Marie-Tooth disease (\u201CCMT \n    Mining\
+          \ \n    of publicly available data, describing molecular mechanisms and\
+          \ pathological \n    manifestations \n    of the CMT1A disease, allowed\
+          \ us to prioritize a few functional cellular \n    modules-transcriptional\
+          \ regulation of PMP22 gene, PMP22 protein folding/degradation, \n    Schwann\
+          \ cell proliferation and apoptosis, death of neurons, extra-cellular matrix\
+          \ \n    deposition \n    and remodelling, immune response-as potential legitimate\
+          \ targets for CMT-relevant \n    therapeutic interventions. The combined\
+          \ impact of these deregulated functional modules on \n    onset and progression\
+          \ of pathological manifestations of Charcot-Marie-Tooth justifies a \n \
+          \   potential efficacy of combinatorial CMT treatment. International patent\
+          \ application No. \n    PCT/EP2008/066457 describes a method of identifying\
+          \ drug candidates for the treatment of \n    the \n    Charcot-Marie-Tooth\
+          \ disease by building a dynamic model of the pathology and targeting \n\
+          \    functional cellular pathways which are relevant in the regulation of\
+          \ CMT disease. \n    International patent application No. PCT/EP2008/066468\
+          \ describes compositions for the \n    treatment of the Charcot-Marie-Tooth\
+          \ disease which comprise at least two compounds \n    selected \n    from\
+          \ the group of multiple drug candidates. The purpose of the present invention\
+          \ is to \n    provide new therapeutic combinations for treating CMT and\
+          \ related disorders. The invention \n    thus relates to compositions and\
+          \ methods for treating CMT and related disorders, \n    in particular toxic\
+          \ or traumatic neuropathy and amyotrophic lateral sclerosis, \n    using\
+          \ particular drug combinations. An object of this invention more specifically\
+          \ \n    relates to \n    a composition comprising baclofen, sorbitol and\
+          \ a compound selected from pilocarpine, \n    methimazole, mifepristone,\
+          \ naltrexone, rapamycin, flurbiprofen and ketoprofen, salts or \n    prodrugs\
+          \ thereof, for simultaneous, separate or sequential administration to a\
+          \ mammalian \n    subject. A particular object of the present invention\
+          \ relates to a composition comprising \n    baclofen, sorbitol and naltrexone,\
+          \ for simultaneous, separate or sequential administration \n    to a mammalian\
+          \ subject. Another object of the invention relates to a composition \n \
+          \   comprising \n    (a) rapamycin, (b) mifepristone or naltrexone, and\
+          \ \xA9 a PMP22 modulator, for simultaneous, \n    separate or sequential\
+          \ administration to a mammalian subject. In a particular embodiment, \n\
+          \    the PMP22 modulator is selected from acetazolamide, albuterol, amiloride,\
+          \ \n    aminoglutethimide, \n    amiodarone, aztreonam, baclofen, balsalazide,\
+          \ betaine, bethanechol, bicalutamide, \n    bromocriptine, bumetanide, buspirone,\
+          \ carbachol, carbamazepine, carbimazole, cevimeline, \n    ciprofloxacin,\
+          \ clonidine, curcumin, cyclosporine A, diazepam, diclofenac, dinoprostone,\
+          \ \n    disulfiram, D-sorbitol, dutasteride, estradiol, exemestane, felbamate,\
+          \ fenofibrate, \n    finasteride, flumazenil, flunitrazepam, flurbiprofen,\
+          \ furosemide, gabapentingabapentin, \n    galantamine, haloperidol, ibuprofen,\
+          \ isoproterenol, ketoconazole, ketoprofen, L-carnitine, \n    liothyronine\
+          \ (T3), lithium, losartan, loxapine, meloxicam, metaproterenol, metaraminol,\
+          \ \n    metformin, methacholine, methimazole, methylergonovine, metoprolol,\
+          \ metyrapone, \n    miconazole, \n    mifepristone, nadolol, naloxone, naltrexone;\
+          \ norfloxacin, pentazocine, phenoxybenzamine, \n    phenylbutyrate, pilocarpine,\
+          \ pioglitazone, prazosin, propylthiouracil, raloxifene, \n    rapamycin,\
+          \ rifampin, simvastatin, spironolactone, tacrolimus, tamoxifen, trehalose,\
+          \ \n    trilostane, valproic acid, salts or prodrugs thereof. 1. A method\
+          \ of improving nerve \n    regeneration in a human subject suffering from\
+          \ amyotrophic lateral sclerosis, \n    or a neuropathy selected from an\
+          \ idiopathic neuropathy, diabetic neuropathy, \n    a toxic neuropathy,\
+          \ a neuropathy induced by a drug treatment, a neuropathy provoked by \n\
+          \    HIV, \n    a neuropathy provoked by radiation, a neuropathy provoked\
+          \ by heavy metals, a neuropathy \n    provoked by vitamin deficiency states,\
+          \ or a traumatic neuropathy, comprising administering \n    to the human\
+          \ subject an amount of a composition effective to improve nerve regeneration;\
+          \ \n    and \n    wherein the composition comprises baclofen or a pharmaceutically\
+          \ acceptable salt thereof \n    in \n    an amount from 1 to 300 mg/kg of\
+          \ the human subject per day; D-sorbitol or a \n    pharmaceutically \n \
+          \   acceptable salt thereof; and naltrexone or a pharmaceutically acceptable\
+          \ salt thereof in \n    an \n    amount from 1 to 100 mg/kg of the human\
+          \ subject per day. 2. The method of claim 1, \n    wherein the composition\
+          \ further comprises a pharmaceutically suitable excipient or \n    carrier.\
+          \ \n    3. The method of claim 2, wherein the composition is formulated\
+          \ with a drug eluting \n    polymer, \n    a biomolecule, a micelle or liposome-forming\
+          \ lipids or oil in water emulsions, \n    or pegylated \n    or solid nanoparticles\
+          \ or microparticles for oral or parenteral or intrathecal \n    administration.\
+          \ 4. The method of claim 1, wherein the subject suffers from a traumatic\
+          \ \n    neuropathy arising from brain injury, spinal cord injury, or an\
+          \ injury to peripheral \n    nerves. \n    5. The method of claim 1, wherein\
+          \ the D-sorbitol or a pharmaceutically acceptable salt \n    thereof is\
+          \ D-sorbitol. 6. The method of claim 1, wherein the composition is formulated\
+          \ for \n    oral administration. 7. The method of claim 6, wherein the composition\
+          \ is a liquid \n    formulation. 8. The method of claim 1, wherein baclofen\
+          \ or a pharmaceutically acceptable \n    salt thereof, D-sorbitol or a pharmaceutically\
+          \ acceptable salt thereof, and naltrexone \n    or a \n    pharmaceutically\
+          \ acceptable salt thereof are the sole active ingredients. 9. The method\
+          \ of \n    claim 1, comprising administering to the human subject baclofen\
+          \ or a pharmaceutically \n    acceptable salt thereof in an amount from\
+          \ 10 to 200 mg/kg of the human subject per day and \n    naltrexone or a\
+          \ pharmaceutically acceptable salt thereof in an amount from 1 to 50 mg/kg\
+          \ \n    of \n    the human subject per day. 10. The method of claim 1, comprising\
+          \ administering to the \n    human \n    subject baclofen or a pharmaceutically\
+          \ acceptable salt thereof in an amount from 10 to 200 \n    mg/kg of the\
+          \ human subject per day and naltrexone or a pharmaceutically acceptable\
+          \ salt \n    thereof in an amount from 1 to 50 mg/kg of the human subject\
+          \ per day. 11. The method of \n    claim 1, comprising administering to\
+          \ the human subject baclofen or a pharmaceutically \n    acceptable salt\
+          \ thereof in an amount from 60 mg to 18 mg per day and naltrexone or a \n\
+          \    pharmaceutically acceptable salt thereof in an amount from 60 mg to\
+          \ 6 mg per day. 12. The \n    method of claim 1, comprising administering\
+          \ to the human subject baclofen or a \n    pharmaceutically acceptable salt\
+          \ thereof in an amount from 60 mg to 12 mg per day and \n    naltrexone\
+          \ or a pharmaceutically acceptable salt thereof in an amount from 60 mg\
+          \ to 3 mg \n    per \n    day. 13. The method of claim 10, wherein baclofen\
+          \ or a pharmaceutically acceptable salt \n    thereof, D-sorbitol or a pharmaceutically\
+          \ acceptable salt thereof, and naltrexone or a \n    pharmaceutically acceptable\
+          \ salt thereof are administered orally to the human subject. 14. \n    The\
+          \ method of claim 10, wherein baclofen or a pharmaceutically acceptable\
+          \ salt thereof, \n    D-sorbitol or a pharmaceutically acceptable salt thereof,\
+          \ and naltrexone or a \n    pharmaceutically acceptable salt thereof are\
+          \ administered separately to the human subject. \n    15. The method of\
+          \ claim 13, wherein baclofen or a pharmaceutically acceptable salt \n  \
+          \  thereof, \n    D-sorbitol or a pharmaceutically acceptable salt thereof,\
+          \ and naltrexone or a \n    pharmaceutically acceptable salt thereof are\
+          \ formulated in a liquid formulation. 16. The \n    method of claim 15,\
+          \ wherein baclofen or a pharmaceutically acceptable salt thereof, \n   \
+          \ D-sorbitol or a pharmaceutically acceptable salt thereof, and naltrexone\
+          \ or a \n    pharmaceutically acceptable salt thereof are administered to\
+          \ the human subject in divided \n    doses. 17. The method of claim 15,\
+          \ wherein baclofen or a pharmaceutically acceptable salt \n    thereof,\
+          \ D-sorbitol or a pharmaceutically acceptable salt thereof, and naltrexone\
+          \ or a \n    pharmaceutically acceptable salt thereof are administered to\
+          \ the human subject in divided \n    doses two times daily.\n\"\"\".replace(\"\
+          \\n\", \" \")\n```"
+        updatedAt: '2023-05-01T20:09:29.340Z'
+      numEdits: 0
+      reactions: []
+    id: 64501c7920ba3e3e4bf09459
+    type: comment
+  author: michael-newsrx-com
+  content: "It seems the tokenizer is ignoring the max_length parameter and isn't\
+    \ truncating? The following is generating an `input_ids` size of 1998 for the\
+    \ below text.\n\n```python\nself.tokenizer = AutoTokenizer.from_pretrained(  #\n\
+    \                    path,  #\n                    padding_side=\"left\",  #\n\
+    \                    truncation=True,  #\n                    max_length=1024)\n\
+    ```\n\n```python\ndef wall_of_text() -> str:\n    return \"\"\"\n    Create a\
+    \ ten to fifteen word intriguing headline for the following article.\n    \n \
+    \   The present invention relates to compositions and methods for the treatment\
+    \ of the \n    Charcot-Marie-Tooth disease and related disorders. Charcot-Marie-Tooth\
+    \ disease (\u201CCMT \n    Mining \n    of publicly available data, describing\
+    \ molecular mechanisms and pathological \n    manifestations \n    of the CMT1A\
+    \ disease, allowed us to prioritize a few functional cellular \n    modules-transcriptional\
+    \ regulation of PMP22 gene, PMP22 protein folding/degradation, \n    Schwann cell\
+    \ proliferation and apoptosis, death of neurons, extra-cellular matrix \n    deposition\
+    \ \n    and remodelling, immune response-as potential legitimate targets for CMT-relevant\
+    \ \n    therapeutic interventions. The combined impact of these deregulated functional\
+    \ modules on \n    onset and progression of pathological manifestations of Charcot-Marie-Tooth\
+    \ justifies a \n    potential efficacy of combinatorial CMT treatment. International\
+    \ patent application No. \n    PCT/EP2008/066457 describes a method of identifying\
+    \ drug candidates for the treatment of \n    the \n    Charcot-Marie-Tooth disease\
+    \ by building a dynamic model of the pathology and targeting \n    functional\
+    \ cellular pathways which are relevant in the regulation of CMT disease. \n  \
+    \  International patent application No. PCT/EP2008/066468 describes compositions\
+    \ for the \n    treatment of the Charcot-Marie-Tooth disease which comprise at\
+    \ least two compounds \n    selected \n    from the group of multiple drug candidates.\
+    \ The purpose of the present invention is to \n    provide new therapeutic combinations\
+    \ for treating CMT and related disorders. The invention \n    thus relates to\
+    \ compositions and methods for treating CMT and related disorders, \n    in particular\
+    \ toxic or traumatic neuropathy and amyotrophic lateral sclerosis, \n    using\
+    \ particular drug combinations. An object of this invention more specifically\
+    \ \n    relates to \n    a composition comprising baclofen, sorbitol and a compound\
+    \ selected from pilocarpine, \n    methimazole, mifepristone, naltrexone, rapamycin,\
+    \ flurbiprofen and ketoprofen, salts or \n    prodrugs thereof, for simultaneous,\
+    \ separate or sequential administration to a mammalian \n    subject. A particular\
+    \ object of the present invention relates to a composition comprising \n    baclofen,\
+    \ sorbitol and naltrexone, for simultaneous, separate or sequential administration\
+    \ \n    to a mammalian subject. Another object of the invention relates to a composition\
+    \ \n    comprising \n    (a) rapamycin, (b) mifepristone or naltrexone, and \xA9\
+    \ a PMP22 modulator, for simultaneous, \n    separate or sequential administration\
+    \ to a mammalian subject. In a particular embodiment, \n    the PMP22 modulator\
+    \ is selected from acetazolamide, albuterol, amiloride, \n    aminoglutethimide,\
+    \ \n    amiodarone, aztreonam, baclofen, balsalazide, betaine, bethanechol, bicalutamide,\
+    \ \n    bromocriptine, bumetanide, buspirone, carbachol, carbamazepine, carbimazole,\
+    \ cevimeline, \n    ciprofloxacin, clonidine, curcumin, cyclosporine A, diazepam,\
+    \ diclofenac, dinoprostone, \n    disulfiram, D-sorbitol, dutasteride, estradiol,\
+    \ exemestane, felbamate, fenofibrate, \n    finasteride, flumazenil, flunitrazepam,\
+    \ flurbiprofen, furosemide, gabapentingabapentin, \n    galantamine, haloperidol,\
+    \ ibuprofen, isoproterenol, ketoconazole, ketoprofen, L-carnitine, \n    liothyronine\
+    \ (T3), lithium, losartan, loxapine, meloxicam, metaproterenol, metaraminol, \n\
+    \    metformin, methacholine, methimazole, methylergonovine, metoprolol, metyrapone,\
+    \ \n    miconazole, \n    mifepristone, nadolol, naloxone, naltrexone; norfloxacin,\
+    \ pentazocine, phenoxybenzamine, \n    phenylbutyrate, pilocarpine, pioglitazone,\
+    \ prazosin, propylthiouracil, raloxifene, \n    rapamycin, rifampin, simvastatin,\
+    \ spironolactone, tacrolimus, tamoxifen, trehalose, \n    trilostane, valproic\
+    \ acid, salts or prodrugs thereof. 1. A method of improving nerve \n    regeneration\
+    \ in a human subject suffering from amyotrophic lateral sclerosis, \n    or a\
+    \ neuropathy selected from an idiopathic neuropathy, diabetic neuropathy, \n \
+    \   a toxic neuropathy, a neuropathy induced by a drug treatment, a neuropathy\
+    \ provoked by \n    HIV, \n    a neuropathy provoked by radiation, a neuropathy\
+    \ provoked by heavy metals, a neuropathy \n    provoked by vitamin deficiency\
+    \ states, or a traumatic neuropathy, comprising administering \n    to the human\
+    \ subject an amount of a composition effective to improve nerve regeneration;\
+    \ \n    and \n    wherein the composition comprises baclofen or a pharmaceutically\
+    \ acceptable salt thereof \n    in \n    an amount from 1 to 300 mg/kg of the\
+    \ human subject per day; D-sorbitol or a \n    pharmaceutically \n    acceptable\
+    \ salt thereof; and naltrexone or a pharmaceutically acceptable salt thereof in\
+    \ \n    an \n    amount from 1 to 100 mg/kg of the human subject per day. 2. The\
+    \ method of claim 1, \n    wherein the composition further comprises a pharmaceutically\
+    \ suitable excipient or \n    carrier. \n    3. The method of claim 2, wherein\
+    \ the composition is formulated with a drug eluting \n    polymer, \n    a biomolecule,\
+    \ a micelle or liposome-forming lipids or oil in water emulsions, \n    or pegylated\
+    \ \n    or solid nanoparticles or microparticles for oral or parenteral or intrathecal\
+    \ \n    administration. 4. The method of claim 1, wherein the subject suffers\
+    \ from a traumatic \n    neuropathy arising from brain injury, spinal cord injury,\
+    \ or an injury to peripheral \n    nerves. \n    5. The method of claim 1, wherein\
+    \ the D-sorbitol or a pharmaceutically acceptable salt \n    thereof is D-sorbitol.\
+    \ 6. The method of claim 1, wherein the composition is formulated for \n    oral\
+    \ administration. 7. The method of claim 6, wherein the composition is a liquid\
+    \ \n    formulation. 8. The method of claim 1, wherein baclofen or a pharmaceutically\
+    \ acceptable \n    salt thereof, D-sorbitol or a pharmaceutically acceptable salt\
+    \ thereof, and naltrexone \n    or a \n    pharmaceutically acceptable salt thereof\
+    \ are the sole active ingredients. 9. The method of \n    claim 1, comprising\
+    \ administering to the human subject baclofen or a pharmaceutically \n    acceptable\
+    \ salt thereof in an amount from 10 to 200 mg/kg of the human subject per day\
+    \ and \n    naltrexone or a pharmaceutically acceptable salt thereof in an amount\
+    \ from 1 to 50 mg/kg \n    of \n    the human subject per day. 10. The method\
+    \ of claim 1, comprising administering to the \n    human \n    subject baclofen\
+    \ or a pharmaceutically acceptable salt thereof in an amount from 10 to 200 \n\
+    \    mg/kg of the human subject per day and naltrexone or a pharmaceutically acceptable\
+    \ salt \n    thereof in an amount from 1 to 50 mg/kg of the human subject per\
+    \ day. 11. The method of \n    claim 1, comprising administering to the human\
+    \ subject baclofen or a pharmaceutically \n    acceptable salt thereof in an amount\
+    \ from 60 mg to 18 mg per day and naltrexone or a \n    pharmaceutically acceptable\
+    \ salt thereof in an amount from 60 mg to 6 mg per day. 12. The \n    method of\
+    \ claim 1, comprising administering to the human subject baclofen or a \n    pharmaceutically\
+    \ acceptable salt thereof in an amount from 60 mg to 12 mg per day and \n    naltrexone\
+    \ or a pharmaceutically acceptable salt thereof in an amount from 60 mg to 3 mg\
+    \ \n    per \n    day. 13. The method of claim 10, wherein baclofen or a pharmaceutically\
+    \ acceptable salt \n    thereof, D-sorbitol or a pharmaceutically acceptable salt\
+    \ thereof, and naltrexone or a \n    pharmaceutically acceptable salt thereof\
+    \ are administered orally to the human subject. 14. \n    The method of claim\
+    \ 10, wherein baclofen or a pharmaceutically acceptable salt thereof, \n    D-sorbitol\
+    \ or a pharmaceutically acceptable salt thereof, and naltrexone or a \n    pharmaceutically\
+    \ acceptable salt thereof are administered separately to the human subject. \n\
+    \    15. The method of claim 13, wherein baclofen or a pharmaceutically acceptable\
+    \ salt \n    thereof, \n    D-sorbitol or a pharmaceutically acceptable salt thereof,\
+    \ and naltrexone or a \n    pharmaceutically acceptable salt thereof are formulated\
+    \ in a liquid formulation. 16. The \n    method of claim 15, wherein baclofen\
+    \ or a pharmaceutically acceptable salt thereof, \n    D-sorbitol or a pharmaceutically\
+    \ acceptable salt thereof, and naltrexone or a \n    pharmaceutically acceptable\
+    \ salt thereof are administered to the human subject in divided \n    doses. 17.\
+    \ The method of claim 15, wherein baclofen or a pharmaceutically acceptable salt\
+    \ \n    thereof, D-sorbitol or a pharmaceutically acceptable salt thereof, and\
+    \ naltrexone or a \n    pharmaceutically acceptable salt thereof are administered\
+    \ to the human subject in divided \n    doses two times daily.\n\"\"\".replace(\"\
+    \\n\", \" \")\n```"
+  created_at: 2023-05-01 19:09:29+00:00
+  edited: false
+  hidden: false
+  id: 64501c7920ba3e3e4bf09459
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-05-01T20:14:39.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Yeah, what comes out of the tokenizer in this case, its length?</p>
+
+          '
+        raw: Yeah, what comes out of the tokenizer in this case, its length?
+        updatedAt: '2023-05-01T20:14:39.514Z'
+      numEdits: 0
+      reactions: []
+    id: 64501daf577838187e019b59
+    type: comment
+  author: srowen
+  content: Yeah, what comes out of the tokenizer in this case, its length?
+  created_at: 2023-05-01 19:14:39+00:00
+  edited: false
+  hidden: false
+  id: 64501daf577838187e019b59
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-01T20:16:11.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: '<p>1998 for <code>input_ids</code></p>
+
+          '
+        raw: 1998 for `input_ids`
+        updatedAt: '2023-05-01T20:16:11.409Z'
+      numEdits: 0
+      reactions: []
+    id: 64501e0b577838187e01a20a
+    type: comment
+  author: michael-newsrx-com
+  content: 1998 for `input_ids`
+  created_at: 2023-05-01 19:16:11+00:00
+  edited: false
+  hidden: false
+  id: 64501e0b577838187e01a20a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-05-01T20:36:24.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>And I haven''t counted but your input is longer than that in tokens
+          right? it''s not limiting to 1024 tokens though, clearly. This I honestly
+          don''t quite know, but I''m aware that this setting has caused some questions:
+          <a href="https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5">https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5</a>
+          Seems like it should be lower, and we''ve discussed this elsewhere. But
+          I wonder if you somehow need to set <code>model_max_length</code> instead
+          to 1024? this is new territory for me but it''s a decent next guess</p>
+
+          '
+        raw: 'And I haven''t counted but your input is longer than that in tokens
+          right? it''s not limiting to 1024 tokens though, clearly. This I honestly
+          don''t quite know, but I''m aware that this setting has caused some questions:
+          https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5
+          Seems like it should be lower, and we''ve discussed this elsewhere. But
+          I wonder if you somehow need to set `model_max_length` instead to 1024?
+          this is new territory for me but it''s a decent next guess'
+        updatedAt: '2023-05-01T20:36:24.020Z'
+      numEdits: 0
+      reactions: []
+    id: 645022c8577838187e0202e1
+    type: comment
+  author: srowen
+  content: 'And I haven''t counted but your input is longer than that in tokens right?
+    it''s not limiting to 1024 tokens though, clearly. This I honestly don''t quite
+    know, but I''m aware that this setting has caused some questions: https://huggingface.co/databricks/dolly-v2-12b/blob/main/tokenizer_config.json#L5
+    Seems like it should be lower, and we''ve discussed this elsewhere. But I wonder
+    if you somehow need to set `model_max_length` instead to 1024? this is new territory
+    for me but it''s a decent next guess'
+  created_at: 2023-05-01 19:36:24+00:00
+  edited: false
+  hidden: false
+  id: 645022c8577838187e0202e1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-02T13:22:55.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: '<p>Yes, the tokens I''m submitting are 1998 in size, when combined
+          with the built-in prompt and chained output exceed the 2048 limit.</p>
+
+          <p>I tried that, after creating the object, it seems to ignore that as well.
+          I''m a bit perplexed trying to figure out to configure the tokenizer to
+          actually do this.</p>
+
+          <p>I''m trying to decipher the InstructPipeline this morning to see if I
+          can find a way to properly trim the instruction and context to a length
+          that takes into account the pipeline injected prompt and the max new tokens
+          output count.</p>
+
+          '
+        raw: 'Yes, the tokens I''m submitting are 1998 in size, when combined with
+          the built-in prompt and chained output exceed the 2048 limit.
+
+
+          I tried that, after creating the object, it seems to ignore that as well.
+          I''m a bit perplexed trying to figure out to configure the tokenizer to
+          actually do this.
+
+
+          I''m trying to decipher the InstructPipeline this morning to see if I can
+          find a way to properly trim the instruction and context to a length that
+          takes into account the pipeline injected prompt and the max new tokens output
+          count.'
+        updatedAt: '2023-05-02T13:22:55.294Z'
+      numEdits: 0
+      reactions: []
+    id: 64510eaf41f3c769b909ea8f
+    type: comment
+  author: michael-newsrx-com
+  content: 'Yes, the tokens I''m submitting are 1998 in size, when combined with the
+    built-in prompt and chained output exceed the 2048 limit.
+
+
+    I tried that, after creating the object, it seems to ignore that as well. I''m
+    a bit perplexed trying to figure out to configure the tokenizer to actually do
+    this.
+
+
+    I''m trying to decipher the InstructPipeline this morning to see if I can find
+    a way to properly trim the instruction and context to a length that takes into
+    account the pipeline injected prompt and the max new tokens output count.'
+  created_at: 2023-05-02 12:22:55+00:00
+  edited: false
+  hidden: false
+  id: 64510eaf41f3c769b909ea8f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+      fullname: Michael Conrad
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: michael-newsrx-com
+      type: user
+    createdAt: '2023-05-02T13:55:28.000Z'
+    data:
+      edited: false
+      editors:
+      - michael-newsrx-com
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2fd7bd23254678f7f46ecff823fff1ce.svg
+          fullname: Michael Conrad
+          isHf: false
+          isPro: false
+          name: michael-newsrx-com
+          type: user
+        html: '<p>So, based on my lack of progress, I''m guessing I''ll need to truncate
+          manually to some max value &lt; 2048 based on my max output desired.</p>
+
+          '
+        raw: So, based on my lack of progress, I'm guessing I'll need to truncate
+          manually to some max value < 2048 based on my max output desired.
+        updatedAt: '2023-05-02T13:55:28.751Z'
+      numEdits: 0
+      reactions: []
+    id: 6451165041f3c769b90aae8b
+    type: comment
+  author: michael-newsrx-com
+  content: So, based on my lack of progress, I'm guessing I'll need to truncate manually
+    to some max value < 2048 based on my max output desired.
+  created_at: 2023-05-02 12:55:28+00:00
+  edited: false
+  hidden: false
+  id: 6451165041f3c769b90aae8b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-05-10T13:24:59.000Z'
+    data:
+      status: closed
+    id: 645b9b2b8bbb8592d91721ef
+    type: status-change
+  author: srowen
+  created_at: 2023-05-10 12:24:59+00:00
+  id: 645b9b2b8bbb8592d91721ef
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 36
+repo_id: databricks/dolly-v2-12b
+repo_type: model
+status: closed
+target_branch: null
+title: Custom handler.py and requirements.txt

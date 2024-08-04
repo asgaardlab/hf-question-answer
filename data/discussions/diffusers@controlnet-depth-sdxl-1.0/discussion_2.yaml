@@ -1,0 +1,379 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: MaxJob
+conflicting_files: null
+created_at: 2023-08-15 15:15:31+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647334107ff32a81ac6bc1d1/WtDgP0n4rlJT-Y8UGESNW.jpeg?w=200&h=200&f=face
+      fullname: Max Job
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: MaxJob
+      type: user
+    createdAt: '2023-08-15T16:15:31.000Z'
+    data:
+      edited: true
+      editors:
+      - MaxJob
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.41972631216049194
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647334107ff32a81ac6bc1d1/WtDgP0n4rlJT-Y8UGESNW.jpeg?w=200&h=200&f=face
+          fullname: Max Job
+          isHf: false
+          isPro: false
+          name: MaxJob
+          type: user
+        html: "<p>The below code (that includes minor adjustments from the code suggested\
+          \ on the Model card) runs successfully on Apple Silicon with a sufficient\
+          \ amount of RAM (64 GB appear necessary to run SDXL 1.0, TBC)</p>\n<p>NOTE:\
+          \ Additionally, you will need  to set the environment variable <code>PYTORCH_ENABLE_MPS_FALLBACK=1</code>\
+          \ to use the CPU as a fallback.</p>\n<p>Enjoy!</p>\n<p>Make sure to first\
+          \ install the libraries: <code>pip install accelerate transformers safetensors\
+          \ diffusers</code></p>\n<hr>\n<p>import torch<br>import numpy as np<br>from\
+          \ PIL import Image</p>\n<p>from transformers import DPTFeatureExtractor,\
+          \ DPTForDepthEstimation<br>from diffusers import ControlNetModel, StableDiffusionXLControlNetPipeline,\
+          \ AutoencoderKL<br>from diffusers.utils import load_image</p>\n<p>depth_estimator\
+          \ = DPTForDepthEstimation.from_pretrained(\"Intel/dpt-hybrid-midas\").to(\"\
+          mps\")<br>feature_extractor = DPTFeatureExtractor.from_pretrained(\"Intel/dpt-hybrid-midas\"\
+          )<br>controlnet = ControlNetModel.from_pretrained(<br>    \"diffusers/controlnet-depth-sdxl-1.0\"\
+          ,<br>    use_safetensors=True<br>).to(\"mps\")</p>\n<p>vae = AutoencoderKL.from_pretrained(\"\
+          madebyollin/sdxl-vae-fp16-fix\").to(\"mps\")<br>pipe = StableDiffusionXLControlNetPipeline.from_pretrained(<br>\
+          \    \"stabilityai/stable-diffusion-xl-base-1.0\",<br>    controlnet=controlnet,<br>\
+          \    vae=vae,<br>    use_safetensors=True,<br>).to(\"mps\")</p>\n<p>def\
+          \ get_depth_map(image):<br>    image = feature_extractor(images=image, return_tensors=\"\
+          pt\").pixel_values.to(\"mps\")<br>    with torch.no_grad(), torch.autocast(\"\
+          cpu\"):<br>        depth_map = depth_estimator(image).predicted_depth</p>\n\
+          <pre><code>depth_map = torch.nn.functional.interpolate(\n    depth_map.unsqueeze(1),\n\
+          \    size=(1024, 1024),\n    mode=\"bicubic\",\n    align_corners=False,\n\
+          )\ndepth_min = torch.amin(depth_map, dim=[1, 2, 3], keepdim=True)\ndepth_max\
+          \ = torch.amax(depth_map, dim=[1, 2, 3], keepdim=True)\ndepth_map = (depth_map\
+          \ - depth_min) / (depth_max - depth_min)\nimage = torch.cat([depth_map]\
+          \ * 3, dim=1)\n\nimage = image.permute(0, 2, 3, 1).cpu().numpy()[0]\nimage\
+          \ = Image.fromarray((image * 255.0).clip(0, 255).astype(np.uint8))\nreturn\
+          \ image\n</code></pre>\n<p>prompt = \"stormtrooper lecture, photorealistic\"\
+          <br>image = load_image(\"<a href=\"https://huggingface.co/lllyasviel/sd-controlnet-depth/resolve/main/images/stormtrooper.png&quot;\"\
+          >https://huggingface.co/lllyasviel/sd-controlnet-depth/resolve/main/images/stormtrooper.png\"\
+          </a>)<br>controlnet_conditioning_scale = 0.5  # recommended for good generalization</p>\n\
+          <p>depth_image = get_depth_map(image)</p>\n<p>images = pipe(<br>    prompt,<br>\
+          \    image=depth_image,<br>    num_inference_steps=30,<br>    controlnet_conditioning_scale=controlnet_conditioning_scale,<br>).images<br>images[0]</p>\n\
+          <p>images[0].save(f\"stormtrooper.png\")</p>\n<hr>\n"
+        raw: "The below code (that includes minor adjustments from the code suggested\
+          \ on the Model card) runs successfully on Apple Silicon with a sufficient\
+          \ amount of RAM (64 GB appear necessary to run SDXL 1.0, TBC)\n\nNOTE: Additionally,\
+          \ you will need  to set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1`\
+          \ to use the CPU as a fallback.\n\nEnjoy!\n\nMake sure to first install\
+          \ the libraries: `pip install accelerate transformers safetensors diffusers`\n\
+          \n-----\nimport torch\nimport numpy as np\nfrom PIL import Image\n\nfrom\
+          \ transformers import DPTFeatureExtractor, DPTForDepthEstimation\nfrom diffusers\
+          \ import ControlNetModel, StableDiffusionXLControlNetPipeline, AutoencoderKL\n\
+          from diffusers.utils import load_image\n\n\ndepth_estimator = DPTForDepthEstimation.from_pretrained(\"\
+          Intel/dpt-hybrid-midas\").to(\"mps\")\nfeature_extractor = DPTFeatureExtractor.from_pretrained(\"\
+          Intel/dpt-hybrid-midas\")\ncontrolnet = ControlNetModel.from_pretrained(\n\
+          \    \"diffusers/controlnet-depth-sdxl-1.0\",\n    use_safetensors=True\n\
+          ).to(\"mps\")\n\nvae = AutoencoderKL.from_pretrained(\"madebyollin/sdxl-vae-fp16-fix\"\
+          ).to(\"mps\")\npipe = StableDiffusionXLControlNetPipeline.from_pretrained(\n\
+          \    \"stabilityai/stable-diffusion-xl-base-1.0\",\n    controlnet=controlnet,\n\
+          \    vae=vae,\n    use_safetensors=True,\n).to(\"mps\")\n\ndef get_depth_map(image):\n\
+          \    image = feature_extractor(images=image, return_tensors=\"pt\").pixel_values.to(\"\
+          mps\")\n    with torch.no_grad(), torch.autocast(\"cpu\"):\n        depth_map\
+          \ = depth_estimator(image).predicted_depth\n\n    depth_map = torch.nn.functional.interpolate(\n\
+          \        depth_map.unsqueeze(1),\n        size=(1024, 1024),\n        mode=\"\
+          bicubic\",\n        align_corners=False,\n    )\n    depth_min = torch.amin(depth_map,\
+          \ dim=[1, 2, 3], keepdim=True)\n    depth_max = torch.amax(depth_map, dim=[1,\
+          \ 2, 3], keepdim=True)\n    depth_map = (depth_map - depth_min) / (depth_max\
+          \ - depth_min)\n    image = torch.cat([depth_map] * 3, dim=1)\n\n    image\
+          \ = image.permute(0, 2, 3, 1).cpu().numpy()[0]\n    image = Image.fromarray((image\
+          \ * 255.0).clip(0, 255).astype(np.uint8))\n    return image\n\nprompt =\
+          \ \"stormtrooper lecture, photorealistic\"\nimage = load_image(\"https://huggingface.co/lllyasviel/sd-controlnet-depth/resolve/main/images/stormtrooper.png\"\
+          )\ncontrolnet_conditioning_scale = 0.5  # recommended for good generalization\n\
+          \ndepth_image = get_depth_map(image)\n\nimages = pipe(\n    prompt,\n  \
+          \  image=depth_image,\n    num_inference_steps=30,\n    controlnet_conditioning_scale=controlnet_conditioning_scale,\n\
+          ).images\nimages[0]\n\nimages[0].save(f\"stormtrooper.png\")\n\n-----"
+        updatedAt: '2023-08-15T16:56:46.960Z'
+      numEdits: 5
+      reactions: []
+    id: 64dba4a323557cdce316c7c2
+    type: comment
+  author: MaxJob
+  content: "The below code (that includes minor adjustments from the code suggested\
+    \ on the Model card) runs successfully on Apple Silicon with a sufficient amount\
+    \ of RAM (64 GB appear necessary to run SDXL 1.0, TBC)\n\nNOTE: Additionally,\
+    \ you will need  to set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1`\
+    \ to use the CPU as a fallback.\n\nEnjoy!\n\nMake sure to first install the libraries:\
+    \ `pip install accelerate transformers safetensors diffusers`\n\n-----\nimport\
+    \ torch\nimport numpy as np\nfrom PIL import Image\n\nfrom transformers import\
+    \ DPTFeatureExtractor, DPTForDepthEstimation\nfrom diffusers import ControlNetModel,\
+    \ StableDiffusionXLControlNetPipeline, AutoencoderKL\nfrom diffusers.utils import\
+    \ load_image\n\n\ndepth_estimator = DPTForDepthEstimation.from_pretrained(\"Intel/dpt-hybrid-midas\"\
+    ).to(\"mps\")\nfeature_extractor = DPTFeatureExtractor.from_pretrained(\"Intel/dpt-hybrid-midas\"\
+    )\ncontrolnet = ControlNetModel.from_pretrained(\n    \"diffusers/controlnet-depth-sdxl-1.0\"\
+    ,\n    use_safetensors=True\n).to(\"mps\")\n\nvae = AutoencoderKL.from_pretrained(\"\
+    madebyollin/sdxl-vae-fp16-fix\").to(\"mps\")\npipe = StableDiffusionXLControlNetPipeline.from_pretrained(\n\
+    \    \"stabilityai/stable-diffusion-xl-base-1.0\",\n    controlnet=controlnet,\n\
+    \    vae=vae,\n    use_safetensors=True,\n).to(\"mps\")\n\ndef get_depth_map(image):\n\
+    \    image = feature_extractor(images=image, return_tensors=\"pt\").pixel_values.to(\"\
+    mps\")\n    with torch.no_grad(), torch.autocast(\"cpu\"):\n        depth_map\
+    \ = depth_estimator(image).predicted_depth\n\n    depth_map = torch.nn.functional.interpolate(\n\
+    \        depth_map.unsqueeze(1),\n        size=(1024, 1024),\n        mode=\"\
+    bicubic\",\n        align_corners=False,\n    )\n    depth_min = torch.amin(depth_map,\
+    \ dim=[1, 2, 3], keepdim=True)\n    depth_max = torch.amax(depth_map, dim=[1,\
+    \ 2, 3], keepdim=True)\n    depth_map = (depth_map - depth_min) / (depth_max -\
+    \ depth_min)\n    image = torch.cat([depth_map] * 3, dim=1)\n\n    image = image.permute(0,\
+    \ 2, 3, 1).cpu().numpy()[0]\n    image = Image.fromarray((image * 255.0).clip(0,\
+    \ 255).astype(np.uint8))\n    return image\n\nprompt = \"stormtrooper lecture,\
+    \ photorealistic\"\nimage = load_image(\"https://huggingface.co/lllyasviel/sd-controlnet-depth/resolve/main/images/stormtrooper.png\"\
+    )\ncontrolnet_conditioning_scale = 0.5  # recommended for good generalization\n\
+    \ndepth_image = get_depth_map(image)\n\nimages = pipe(\n    prompt,\n    image=depth_image,\n\
+    \    num_inference_steps=30,\n    controlnet_conditioning_scale=controlnet_conditioning_scale,\n\
+    ).images\nimages[0]\n\nimages[0].save(f\"stormtrooper.png\")\n\n-----"
+  created_at: 2023-08-15 15:15:31+00:00
+  edited: true
+  hidden: false
+  id: 64dba4a323557cdce316c7c2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647334107ff32a81ac6bc1d1/WtDgP0n4rlJT-Y8UGESNW.jpeg?w=200&h=200&f=face
+      fullname: Max Job
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: MaxJob
+      type: user
+    createdAt: '2023-08-15T16:20:36.000Z'
+    data:
+      from: 'FYI: Python code that runs locally on Apple Silicon (tested successfully
+        on M1 Max with 64 GB RAM)'
+      to: 'FYI: Python code that runs locally on Apple Silicon Macs (tested successfully
+        on M1 Max with 64 GB RAM)'
+    id: 64dba5d4d4d94f50272c5109
+    type: title-change
+  author: MaxJob
+  created_at: 2023-08-15 15:20:36+00:00
+  id: 64dba5d4d4d94f50272c5109
+  new_title: 'FYI: Python code that runs locally on Apple Silicon Macs (tested successfully
+    on M1 Max with 64 GB RAM)'
+  old_title: 'FYI: Python code that runs locally on Apple Silicon (tested successfully
+    on M1 Max with 64 GB RAM)'
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg?w=200&h=200&f=face
+      fullname: Sayak Paul
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sayakpaul
+      type: user
+    createdAt: '2023-08-16T03:11:34.000Z'
+    data:
+      edited: false
+      editors:
+      - sayakpaul
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9786726236343384
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1649681653581-5f7fbd813e94f16a85448745.jpeg?w=200&h=200&f=face
+          fullname: Sayak Paul
+          isHf: true
+          isPro: false
+          name: sayakpaul
+          type: user
+        html: '<p>Thanks for this!</p>
+
+          <p>Would you like to open a PR to the repository to include your suggestions?
+          </p>
+
+          '
+        raw: 'Thanks for this!
+
+
+          Would you like to open a PR to the repository to include your suggestions? '
+        updatedAt: '2023-08-16T03:11:34.590Z'
+      numEdits: 0
+      reactions: []
+    id: 64dc3e66d4d94f5027425733
+    type: comment
+  author: sayakpaul
+  content: 'Thanks for this!
+
+
+    Would you like to open a PR to the repository to include your suggestions? '
+  created_at: 2023-08-16 02:11:34+00:00
+  edited: false
+  hidden: false
+  id: 64dc3e66d4d94f5027425733
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d0b407e56ec2c8bdd945afcb349a61fe.svg
+      fullname: David Burnett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Vargol
+      type: user
+    createdAt: '2023-08-16T12:54:26.000Z'
+    data:
+      edited: false
+      editors:
+      - Vargol
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5567613840103149
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d0b407e56ec2c8bdd945afcb349a61fe.svg
+          fullname: David Burnett
+          isHf: false
+          isPro: false
+          name: Vargol
+          type: user
+        html: "<p>Although this doesn't include a depth map pre-processer so uses\
+          \ a predefined depth map,<br>It will run on a 8Gb M1 (but very slowly, \
+          \ 50ish seconds per iter and using a fair bit of swap)<br>16 Gb would be\
+          \ better</p>\n<pre><code>from diffusers import ControlNetModel, StableDiffusionXLControlNetPipeline,\
+          \ AutoencoderKL, StableDiffusionControlNetPipeline\nfrom PIL import Image\n\
+          \nfrom torch import mps\nimport torch\n\nimport fp16fixes\n\nfp16fixes.fp16_fixes()\n\
+          torch.mps.set_per_process_memory_fraction(0.0)\n\nprompt = \"Photograph,\
+          \ scary looking willowy person at night under a full moon\"\nnegative_prompt\
+          \ = 'low quality, bad quality, sketches'\n\nimage = Image.open(\"inferno_from_midas.png\"\
+          )\n\ncontrolnet_conditioning_scale = 0.5  # recommended for good generalization\n\
+          \ncontrolnet = ControlNetModel.from_pretrained(\n    \"diffusers/controlnet-depth-sdxl-1.0\"\
+          ,\n    torch_dtype=torch.float16,\n    variant='fp16',\n).to('mps')\n\n\n\
+          vae = AutoencoderKL.from_pretrained(\"madebyollin/sdxl-vae-fp16-fix\", torch_dtype=torch.float16).to('mps')\n\
+          pipe = StableDiffusionXLControlNetPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-base-1.0\"\
+          ,\n    controlnet=controlnet,\n    vae=vae,\n    variant='fp16',\n    torch_dtype=torch.float16,\n\
+          ).to('mps')\n\npipe.enable_attention_slicing()\npipe.enable_vae_slicing()\n\
+          pipe.enable_vae_tiling()\n\nimages = pipe(\n    prompt, image=image, controlnet_conditioning_scale=controlnet_conditioning_scale,\
+          \ num_inference_steps=30\n    ).images\n\nimages[0].save(f\"hug_depth.png\"\
+          )\n</code></pre>\n<p>fp16fixes.fp16_fixes() depends with the version of\
+          \ torch but for general use its</p>\n<pre><code>import torch\n\ndef fp16_fixes():\n\
+          \  if torch.backends.mps.is_available():\n      torch.empty = torch.zeros\n\
+          \n  _torch_layer_norm = torch.nn.functional.layer_norm\n  def new_layer_norm(input,\
+          \ normalized_shape, weight=None, bias=None, eps=1e-05):\n      if input.device.type\
+          \ == \"mps\" and input.dtype == torch.float16:\n          input = input.float()\n\
+          \          if weight is not None:\n              weight = weight.float()\n\
+          \          if bias is not None:\n              bias = bias.float()\n   \
+          \       return _torch_layer_norm(input, normalized_shape, weight, bias,\
+          \ eps).half()\n      else:\n          return _torch_layer_norm(input, normalized_shape,\
+          \ weight, bias, eps)\n\n  torch.nn.functional.layer_norm = new_layer_norm\n\
+          \n\n  def new_torch_tensor_permute(input, *dims):\n      result = torch.permute(input,\
+          \ tuple(dims))\n      if input.device == \"mps\" and input.dtype == torch.float16:\n\
+          \          result = result.contiguous()\n      return result\n\n  torch.Tensor.permute\
+          \ = new_torch_tensor_permute\n</code></pre>\n<p>The last time I tried using\
+          \ a torch nightly only the torch.empty fix was required for a straight SDXL\
+          \ text2image, but I've also heard<br>the fp16 in torch is broken in Sonoma\
+          \ :-(</p>\n"
+        raw: "Although this doesn't include a depth map pre-processer so uses a predefined\
+          \ depth map,\nIt will run on a 8Gb M1 (but very slowly,  50ish seconds per\
+          \ iter and using a fair bit of swap) \n16 Gb would be better\n\n\n```\n\
+          from diffusers import ControlNetModel, StableDiffusionXLControlNetPipeline,\
+          \ AutoencoderKL, StableDiffusionControlNetPipeline\nfrom PIL import Image\n\
+          \nfrom torch import mps\nimport torch\n\nimport fp16fixes\n\nfp16fixes.fp16_fixes()\n\
+          torch.mps.set_per_process_memory_fraction(0.0)\n\nprompt = \"Photograph,\
+          \ scary looking willowy person at night under a full moon\"\nnegative_prompt\
+          \ = 'low quality, bad quality, sketches'\n\nimage = Image.open(\"inferno_from_midas.png\"\
+          )\n\ncontrolnet_conditioning_scale = 0.5  # recommended for good generalization\n\
+          \ncontrolnet = ControlNetModel.from_pretrained(\n    \"diffusers/controlnet-depth-sdxl-1.0\"\
+          ,\n    torch_dtype=torch.float16,\n    variant='fp16',\n).to('mps')\n\n\n\
+          vae = AutoencoderKL.from_pretrained(\"madebyollin/sdxl-vae-fp16-fix\", torch_dtype=torch.float16).to('mps')\n\
+          pipe = StableDiffusionXLControlNetPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-base-1.0\"\
+          ,\n    controlnet=controlnet,\n    vae=vae,\n    variant='fp16',\n    torch_dtype=torch.float16,\n\
+          ).to('mps')\n\npipe.enable_attention_slicing()\npipe.enable_vae_slicing()\n\
+          pipe.enable_vae_tiling()\n\nimages = pipe(\n    prompt, image=image, controlnet_conditioning_scale=controlnet_conditioning_scale,\
+          \ num_inference_steps=30\n    ).images\n\nimages[0].save(f\"hug_depth.png\"\
+          )\n```\n\nfp16fixes.fp16_fixes() depends with the version of torch but for\
+          \ general use its\n\n```\nimport torch\n\ndef fp16_fixes():\n  if torch.backends.mps.is_available():\n\
+          \      torch.empty = torch.zeros\n\n  _torch_layer_norm = torch.nn.functional.layer_norm\n\
+          \  def new_layer_norm(input, normalized_shape, weight=None, bias=None, eps=1e-05):\n\
+          \      if input.device.type == \"mps\" and input.dtype == torch.float16:\n\
+          \          input = input.float()\n          if weight is not None:\n   \
+          \           weight = weight.float()\n          if bias is not None:\n  \
+          \            bias = bias.float()\n          return _torch_layer_norm(input,\
+          \ normalized_shape, weight, bias, eps).half()\n      else:\n          return\
+          \ _torch_layer_norm(input, normalized_shape, weight, bias, eps)\n\n  torch.nn.functional.layer_norm\
+          \ = new_layer_norm\n\n\n  def new_torch_tensor_permute(input, *dims):\n\
+          \      result = torch.permute(input, tuple(dims))\n      if input.device\
+          \ == \"mps\" and input.dtype == torch.float16:\n          result = result.contiguous()\n\
+          \      return result\n\n  torch.Tensor.permute = new_torch_tensor_permute\n\
+          ```\n\nThe last time I tried using a torch nightly only the torch.empty\
+          \ fix was required for a straight SDXL text2image, but I've also heard \n\
+          the fp16 in torch is broken in Sonoma :-("
+        updatedAt: '2023-08-16T12:54:26.755Z'
+      numEdits: 0
+      reactions: []
+    id: 64dcc702cfc569da229cff67
+    type: comment
+  author: Vargol
+  content: "Although this doesn't include a depth map pre-processer so uses a predefined\
+    \ depth map,\nIt will run on a 8Gb M1 (but very slowly,  50ish seconds per iter\
+    \ and using a fair bit of swap) \n16 Gb would be better\n\n\n```\nfrom diffusers\
+    \ import ControlNetModel, StableDiffusionXLControlNetPipeline, AutoencoderKL,\
+    \ StableDiffusionControlNetPipeline\nfrom PIL import Image\n\nfrom torch import\
+    \ mps\nimport torch\n\nimport fp16fixes\n\nfp16fixes.fp16_fixes()\ntorch.mps.set_per_process_memory_fraction(0.0)\n\
+    \nprompt = \"Photograph, scary looking willowy person at night under a full moon\"\
+    \nnegative_prompt = 'low quality, bad quality, sketches'\n\nimage = Image.open(\"\
+    inferno_from_midas.png\")\n\ncontrolnet_conditioning_scale = 0.5  # recommended\
+    \ for good generalization\n\ncontrolnet = ControlNetModel.from_pretrained(\n \
+    \   \"diffusers/controlnet-depth-sdxl-1.0\",\n    torch_dtype=torch.float16,\n\
+    \    variant='fp16',\n).to('mps')\n\n\nvae = AutoencoderKL.from_pretrained(\"\
+    madebyollin/sdxl-vae-fp16-fix\", torch_dtype=torch.float16).to('mps')\npipe =\
+    \ StableDiffusionXLControlNetPipeline.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-base-1.0\"\
+    ,\n    controlnet=controlnet,\n    vae=vae,\n    variant='fp16',\n    torch_dtype=torch.float16,\n\
+    ).to('mps')\n\npipe.enable_attention_slicing()\npipe.enable_vae_slicing()\npipe.enable_vae_tiling()\n\
+    \nimages = pipe(\n    prompt, image=image, controlnet_conditioning_scale=controlnet_conditioning_scale,\
+    \ num_inference_steps=30\n    ).images\n\nimages[0].save(f\"hug_depth.png\")\n\
+    ```\n\nfp16fixes.fp16_fixes() depends with the version of torch but for general\
+    \ use its\n\n```\nimport torch\n\ndef fp16_fixes():\n  if torch.backends.mps.is_available():\n\
+    \      torch.empty = torch.zeros\n\n  _torch_layer_norm = torch.nn.functional.layer_norm\n\
+    \  def new_layer_norm(input, normalized_shape, weight=None, bias=None, eps=1e-05):\n\
+    \      if input.device.type == \"mps\" and input.dtype == torch.float16:\n   \
+    \       input = input.float()\n          if weight is not None:\n            \
+    \  weight = weight.float()\n          if bias is not None:\n              bias\
+    \ = bias.float()\n          return _torch_layer_norm(input, normalized_shape,\
+    \ weight, bias, eps).half()\n      else:\n          return _torch_layer_norm(input,\
+    \ normalized_shape, weight, bias, eps)\n\n  torch.nn.functional.layer_norm = new_layer_norm\n\
+    \n\n  def new_torch_tensor_permute(input, *dims):\n      result = torch.permute(input,\
+    \ tuple(dims))\n      if input.device == \"mps\" and input.dtype == torch.float16:\n\
+    \          result = result.contiguous()\n      return result\n\n  torch.Tensor.permute\
+    \ = new_torch_tensor_permute\n```\n\nThe last time I tried using a torch nightly\
+    \ only the torch.empty fix was required for a straight SDXL text2image, but I've\
+    \ also heard \nthe fp16 in torch is broken in Sonoma :-("
+  created_at: 2023-08-16 11:54:26+00:00
+  edited: false
+  hidden: false
+  id: 64dcc702cfc569da229cff67
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: diffusers/controlnet-depth-sdxl-1.0
+repo_type: model
+status: open
+target_branch: null
+title: 'FYI: Python code that runs locally on Apple Silicon Macs (tested successfully
+  on M1 Max with 64 GB RAM)'

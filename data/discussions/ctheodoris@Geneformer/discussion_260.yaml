@@ -1,0 +1,1087 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: AMCalejandro
+conflicting_files: null
+created_at: 2023-10-13 13:19:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c9e531894ec4f570222edccc6fcce478.svg
+      fullname: Martinez Carrasco
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AMCalejandro
+      type: user
+    createdAt: '2023-10-13T14:19:06.000Z'
+    data:
+      edited: false
+      editors:
+      - AMCalejandro
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.36533045768737793
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c9e531894ec4f570222edccc6fcce478.svg
+          fullname: Martinez Carrasco
+          isHf: false
+          isPro: false
+          name: AMCalejandro
+          type: user
+        html: "<p>Hi,</p>\n<p>As always, thank you so much for this amazing work.</p>\n\
+          <p>I have found two errors when I was trying to add <strong>deletions</strong>\
+          \ to inSilicoPerturber</p>\n<p><strong>1. Error 1 related to the case when\
+          \ I only pass one gene to perturb ( I am using latest version of Geneformer\
+          \ after last pushes working on single gene issues)</strong></p>\n<p><strong>Data\
+          \ and model</strong></p>\n<pre><code># Data and models\nmodel_cellclassifier\
+          \ = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224/'\n\
+          #model_cellclassifier = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/'\n\
+          \n#cardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/CELL_CLAS_DATA.dataset/'\n\
+          cardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/DISEASE_CLASSIFIER.dataset'\n\
+          \noutput_dir = '/home/jupyter/AMC_WD/INS_PERTURB/OUTPUT/'\n\noutput_prefix\
+          \ = 'out'\n</code></pre>\n<p><strong>Params</strong></p>\n<pre><code># Model\
+          \ params\n#ensembleList = [\"ENSG00000145335\"]\nensembleList = [\"ENSG00000173175\"\
+          ]\n\n#maxCell = 2000\n#maxCell = None\nmaxCell = 100\nbSize = 40\nnproc\
+          \ = 8\n\n#toFilter = None\n#toFilter['cell_type'] = [cellType]\ntoFilter={\"\
+          cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"]}\n\
+          \n# States to model\nstates_toModel = {'state_key': 'disease', \n      \
+          \        'start_state': 'dcm', \n              'goal_state': 'nf', \n  \
+          \            'alt_states': ['hcm']}\n\n\nperturbType = \"delete\" # Deletion\
+          \ does not work\n#perturbType = \"overexpress\" # It works, we will need\
+          \ to interpret results\n</code></pre>\n<p><strong>Run in silico perturber</strong></p>\n\
+          <pre><code>isp = InSilicoPerturber(perturb_type=perturbType,\n         \
+          \               genes_to_perturb=ensembleList,\n                       \
+          \ combos=0,\n                        anchor_gene=None,\n               \
+          \         model_type=\"CellClassifier\", \n                        emb_mode=\"\
+          cell\",\n                        num_classes=3,\n                      \
+          \  cell_emb_style=\"mean_pool\",\n                        filter_data=toFilter,\n\
+          \                        cell_states_to_model=states_toModel,\n        \
+          \                max_ncells= maxCell,\n                        emb_layer=0,\n\
+          \                        forward_batch_size=bSize,\n                   \
+          \     nproc=nproc)\n\n# outputs intermediate files from in silico perturbation\n\
+          isp.perturb_data(model_cellclassifier,\n                 cardio_data,\n\
+          \                 output_dir,\n                 output_prefix)\n</code></pre>\n\
+          <p><strong>ERROR</strong></p>\n<pre><code>Embeddings are not the same dimensions.\
+          \ original_emb is torch.Size([40, 2046, 256]). minibatch_emb is torch.Size([40,\
+          \ 2047, 256]). \n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In[15], line 2\n      1 # outputs intermediate files from in silico\
+          \ perturbation\n----&gt; 2 isp.perturb_data(model_cellclassifier,\n    \
+          \  3                  cardio_data,\n      4                  output_dir,\n\
+          \      5                  output_prefix)\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)\n    977         return example[state_name]\
+          \ in [start_state]\n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)\n--&gt; 981 self.in_silico_perturb(model,\n    982\
+          \                       filtered_input_data,\n    983                  \
+          \     layer_to_quant,\n    984                       state_embs_dict,\n\
+          \    985                       output_directory,\n    986              \
+          \         output_prefix)\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)\n  \
+          \ 1056 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)\n   1057 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]\n-&gt; 1059 cos_sims_data = quant_cos_sims(model, \n  \
+          \ 1060                                self.perturb_type,\n   1061      \
+          \                          perturbation_batch, \n   1062               \
+          \                 self.forward_batch_size, \n   1063                   \
+          \             layer_to_quant, \n   1064                                filtered_input_data,\n\
+          \   1065                                self.tokens_to_perturb,\n   1066\
+          \                                indices_to_perturb,\n   1067          \
+          \                      self.perturb_group,\n   1068                    \
+          \            self.cell_states_to_model,\n   1069                       \
+          \         state_embs_dict,\n   1070                                self.pad_token_id,\n\
+          \   1071                                model_input_size,\n   1072     \
+          \                           self.nproc)\n   1074 perturbed_genes = tuple(self.tokens_to_perturb)\n\
+          \   1075 original_lengths = filtered_input_data[\"length\"]\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:459,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)\n    454             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,\
+          \ \n    455                                                         minibatch_emb,\
+          \ \n    456                                                         state_embs_dict[state],\n\
+          \    457                                                         perturb_group)\n\
+          \    458         elif perturb_group == True:\n--&gt; 459             cos_sims_vs_alt_dict[state]\
+          \ += cos_sim_shift(original_minibatch_emb, \n    460                   \
+          \                                      minibatch_emb, \n    461        \
+          \                                                 state_embs_dict[state],\n\
+          \    462                                                         perturb_group,\n\
+          \    463                                                         original_minibatch_lengths,\n\
+          \    464                                                         minibatch_lengths)\
+          \  \n    465 del outputs\n    466 del minibatch_emb\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:495,\
+          \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group,\
+          \ original_minibatch_lengths, minibatch_lengths)\n    489 if original_emb.size()\
+          \ != minibatch_emb.size():\n    490     logger.error(\n    491         f\"\
+          Embeddings are not the same dimensions. \" \\\n    492         f\"original_emb\
+          \ is {original_emb.size()}. \" \\\n    493         f\"minibatch_emb is {minibatch_emb.size()}.\
+          \ \"\n    494     )\n--&gt; 495     raise\n    496 if not perturb_group:\n\
+          \    497     original_emb = torch.mean(original_emb,dim=1,keepdim=True)\
+          \        \n\nRuntimeError: No active exception to reraise\n</code></pre>\n\
+          <p><strong>2. Also, if I pass two genes to the models, I am falling somehwere\
+          \ else</strong></p>\n<p><strong>PARAMS</strong></p>\n<pre><code>ensembleList\
+          \ = [\"ENSG00000173175\",\"ENSG00000145335\"]\n\n#maxCell = 2000\n#maxCell\
+          \ = None\nmaxCell = 100\nbSize = 40\nnproc = 8\n\n#toFilter = None\n#toFilter['cell_type']\
+          \ = [cellType]\ntoFilter={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+          ,\"Cardiomyocyte3\"]}\n\n# States to model\nstates_toModel = {'state_key':\
+          \ 'disease', \n              'start_state': 'dcm', \n              'goal_state':\
+          \ 'nf', \n              'alt_states': ['hcm']}\n\n\nperturbType = \"delete\"\
+          \ # Deletion does not work\n#perturbType = \"overexpress\" # It works, we\
+          \ will need to interpret results\n</code></pre>\n<p><strong>ERROR</strong></p>\n\
+          <pre><code>---------------------------------------------------------------------------\n\
+          TypeError                                 Traceback (most recent call last)\n\
+          Cell In[18], line 2\n      1 # outputs intermediate files from in silico\
+          \ perturbation\n----&gt; 2 isp.perturb_data(model_cellclassifier,\n    \
+          \  3                  cardio_data,\n      4                  output_dir,\n\
+          \      5                  output_prefix)\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)\n    977         return example[state_name]\
+          \ in [start_state]\n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)\n--&gt; 981 self.in_silico_perturb(model,\n    982\
+          \                       filtered_input_data,\n    983                  \
+          \     layer_to_quant,\n    984                       state_embs_dict,\n\
+          \    985                       output_directory,\n    986              \
+          \         output_prefix)\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)\n  \
+          \ 1056 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)\n   1057 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]\n-&gt; 1059 cos_sims_data = quant_cos_sims(model, \n  \
+          \ 1060                                self.perturb_type,\n   1061      \
+          \                          perturbation_batch, \n   1062               \
+          \                 self.forward_batch_size, \n   1063                   \
+          \             layer_to_quant, \n   1064                                filtered_input_data,\n\
+          \   1065                                self.tokens_to_perturb,\n   1066\
+          \                                indices_to_perturb,\n   1067          \
+          \                      self.perturb_group,\n   1068                    \
+          \            self.cell_states_to_model,\n   1069                       \
+          \         state_embs_dict,\n   1070                                self.pad_token_id,\n\
+          \   1071                                model_input_size,\n   1072     \
+          \                           self.nproc)\n   1074 perturbed_genes = tuple(self.tokens_to_perturb)\n\
+          \   1075 original_lengths = filtered_input_data[\"length\"]\n\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:426,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)\n    424 num_perturbed = len(tokens_to_perturb)\n    425 indices_to_perturb_minibatch\
+          \ = []\n--&gt; 426 end_range = [i for i in range(orig_max_len - tokens_to_perturb,\
+          \ orig_max_len)]\n    427 for idx in indices_to_perturb[i:i+max_range]:\n\
+          \    428     if idx == [-100]:\n\nTypeError: unsupported operand type(s)\
+          \ for -: 'int' and 'list'\n</code></pre>\n"
+        raw: "Hi,\r\n\r\n\r\nAs always, thank you so much for this amazing work.\r\
+          \n\r\nI have found two errors when I was trying to add **deletions** to\
+          \ inSilicoPerturber\r\n\r\n\r\n**1. Error 1 related to the case when I only\
+          \ pass one gene to perturb ( I am using latest version of Geneformer after\
+          \ last pushes working on single gene issues)**\r\n\r\n**Data and model**\r\
+          \n```\r\n# Data and models\r\nmodel_cellclassifier = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224/'\r\
+          \n#model_cellclassifier = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/'\r\
+          \n\r\n#cardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/CELL_CLAS_DATA.dataset/'\r\
+          \ncardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/DISEASE_CLASSIFIER.dataset'\r\
+          \n\r\noutput_dir = '/home/jupyter/AMC_WD/INS_PERTURB/OUTPUT/'\r\n\r\noutput_prefix\
+          \ = 'out'\r\n```\r\n\r\n**Params**\r\n```\r\n# Model params\r\n#ensembleList\
+          \ = [\"ENSG00000145335\"]\r\nensembleList = [\"ENSG00000173175\"]\r\n\r\n\
+          #maxCell = 2000\r\n#maxCell = None\r\nmaxCell = 100\r\nbSize = 40\r\nnproc\
+          \ = 8\r\n\r\n#toFilter = None\r\n#toFilter['cell_type'] = [cellType]\r\n\
+          toFilter={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"\
+          ]}\r\n\r\n# States to model\r\nstates_toModel = {'state_key': 'disease',\
+          \ \r\n              'start_state': 'dcm', \r\n              'goal_state':\
+          \ 'nf', \r\n              'alt_states': ['hcm']}\r\n\r\n\r\nperturbType\
+          \ = \"delete\" # Deletion does not work\r\n#perturbType = \"overexpress\"\
+          \ # It works, we will need to interpret results\r\n```\r\n\r\n**Run in silico\
+          \ perturber**\r\n```\r\nisp = InSilicoPerturber(perturb_type=perturbType,\r\
+          \n                        genes_to_perturb=ensembleList,\r\n           \
+          \             combos=0,\r\n                        anchor_gene=None,\r\n\
+          \                        model_type=\"CellClassifier\", \r\n           \
+          \             emb_mode=\"cell\",\r\n                        num_classes=3,\r\
+          \n                        cell_emb_style=\"mean_pool\",\r\n            \
+          \            filter_data=toFilter,\r\n                        cell_states_to_model=states_toModel,\r\
+          \n                        max_ncells= maxCell,\r\n                     \
+          \   emb_layer=0,\r\n                        forward_batch_size=bSize,\r\n\
+          \                        nproc=nproc)\r\n\r\n# outputs intermediate files\
+          \ from in silico perturbation\r\nisp.perturb_data(model_cellclassifier,\r\
+          \n                 cardio_data,\r\n                 output_dir,\r\n    \
+          \             output_prefix)\r\n\r\n```\r\n\r\n\r\n**ERROR**\r\n```\r\n\
+          Embeddings are not the same dimensions. original_emb is torch.Size([40,\
+          \ 2046, 256]). minibatch_emb is torch.Size([40, 2047, 256]). \r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\nCell In[15], line 2\r\n      1 # outputs intermediate files from\
+          \ in silico perturbation\r\n----> 2 isp.perturb_data(model_cellclassifier,\r\
+          \n      3                  cardio_data,\r\n      4                  output_dir,\r\
+          \n      5                  output_prefix)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)\r\n    977         return example[state_name]\
+          \ in [start_state]\r\n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)\r\n--> 981 self.in_silico_perturb(model,\r\n    982\
+          \                       filtered_input_data,\r\n    983                \
+          \       layer_to_quant,\r\n    984                       state_embs_dict,\r\
+          \n    985                       output_directory,\r\n    986           \
+          \            output_prefix)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)\r\n\
+          \   1056 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)\r\n   1057 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]\r\n-> 1059 cos_sims_data = quant_cos_sims(model, \r\n \
+          \  1060                                self.perturb_type,\r\n   1061   \
+          \                             perturbation_batch, \r\n   1062          \
+          \                      self.forward_batch_size, \r\n   1063            \
+          \                    layer_to_quant, \r\n   1064                       \
+          \         filtered_input_data,\r\n   1065                              \
+          \  self.tokens_to_perturb,\r\n   1066                                indices_to_perturb,\r\
+          \n   1067                                self.perturb_group,\r\n   1068\
+          \                                self.cell_states_to_model,\r\n   1069 \
+          \                               state_embs_dict,\r\n   1070            \
+          \                    self.pad_token_id,\r\n   1071                     \
+          \           model_input_size,\r\n   1072                               \
+          \ self.nproc)\r\n   1074 perturbed_genes = tuple(self.tokens_to_perturb)\r\
+          \n   1075 original_lengths = filtered_input_data[\"length\"]\r\n\r\nFile\
+          \ ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:459,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)\r\n    454             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,\
+          \ \r\n    455                                                         minibatch_emb,\
+          \ \r\n    456                                                         state_embs_dict[state],\r\
+          \n    457                                                         perturb_group)\r\
+          \n    458         elif perturb_group == True:\r\n--> 459             cos_sims_vs_alt_dict[state]\
+          \ += cos_sim_shift(original_minibatch_emb, \r\n    460                 \
+          \                                        minibatch_emb, \r\n    461    \
+          \                                                     state_embs_dict[state],\r\
+          \n    462                                                         perturb_group,\r\
+          \n    463                                                         original_minibatch_lengths,\r\
+          \n    464                                                         minibatch_lengths)\
+          \  \r\n    465 del outputs\r\n    466 del minibatch_emb\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:495,\
+          \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group,\
+          \ original_minibatch_lengths, minibatch_lengths)\r\n    489 if original_emb.size()\
+          \ != minibatch_emb.size():\r\n    490     logger.error(\r\n    491     \
+          \    f\"Embeddings are not the same dimensions. \" \\\r\n    492       \
+          \  f\"original_emb is {original_emb.size()}. \" \\\r\n    493         f\"\
+          minibatch_emb is {minibatch_emb.size()}. \"\r\n    494     )\r\n--> 495\
+          \     raise\r\n    496 if not perturb_group:\r\n    497     original_emb\
+          \ = torch.mean(original_emb,dim=1,keepdim=True)        \r\n\r\nRuntimeError:\
+          \ No active exception to reraise\r\n```\r\n\r\n\r\n**2. Also, if I pass\
+          \ two genes to the models, I am falling somehwere else**\r\n\r\n**PARAMS**\r\
+          \n```\r\nensembleList = [\"ENSG00000173175\",\"ENSG00000145335\"]\r\n\r\n\
+          #maxCell = 2000\r\n#maxCell = None\r\nmaxCell = 100\r\nbSize = 40\r\nnproc\
+          \ = 8\r\n\r\n#toFilter = None\r\n#toFilter['cell_type'] = [cellType]\r\n\
+          toFilter={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"\
+          ]}\r\n\r\n# States to model\r\nstates_toModel = {'state_key': 'disease',\
+          \ \r\n              'start_state': 'dcm', \r\n              'goal_state':\
+          \ 'nf', \r\n              'alt_states': ['hcm']}\r\n\r\n\r\nperturbType\
+          \ = \"delete\" # Deletion does not work\r\n#perturbType = \"overexpress\"\
+          \ # It works, we will need to interpret results\r\n```\r\n\r\n**ERROR**\r\
+          \n```\r\n---------------------------------------------------------------------------\r\
+          \nTypeError                                 Traceback (most recent call\
+          \ last)\r\nCell In[18], line 2\r\n      1 # outputs intermediate files from\
+          \ in silico perturbation\r\n----> 2 isp.perturb_data(model_cellclassifier,\r\
+          \n      3                  cardio_data,\r\n      4                  output_dir,\r\
+          \n      5                  output_prefix)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)\r\n    977         return example[state_name]\
+          \ in [start_state]\r\n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)\r\n--> 981 self.in_silico_perturb(model,\r\n    982\
+          \                       filtered_input_data,\r\n    983                \
+          \       layer_to_quant,\r\n    984                       state_embs_dict,\r\
+          \n    985                       output_directory,\r\n    986           \
+          \            output_prefix)\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)\r\n\
+          \   1056 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)\r\n   1057 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]\r\n-> 1059 cos_sims_data = quant_cos_sims(model, \r\n \
+          \  1060                                self.perturb_type,\r\n   1061   \
+          \                             perturbation_batch, \r\n   1062          \
+          \                      self.forward_batch_size, \r\n   1063            \
+          \                    layer_to_quant, \r\n   1064                       \
+          \         filtered_input_data,\r\n   1065                              \
+          \  self.tokens_to_perturb,\r\n   1066                                indices_to_perturb,\r\
+          \n   1067                                self.perturb_group,\r\n   1068\
+          \                                self.cell_states_to_model,\r\n   1069 \
+          \                               state_embs_dict,\r\n   1070            \
+          \                    self.pad_token_id,\r\n   1071                     \
+          \           model_input_size,\r\n   1072                               \
+          \ self.nproc)\r\n   1074 perturbed_genes = tuple(self.tokens_to_perturb)\r\
+          \n   1075 original_lengths = filtered_input_data[\"length\"]\r\n\r\nFile\
+          \ ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:426,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)\r\n    424 num_perturbed = len(tokens_to_perturb)\r\n    425 indices_to_perturb_minibatch\
+          \ = []\r\n--> 426 end_range = [i for i in range(orig_max_len - tokens_to_perturb,\
+          \ orig_max_len)]\r\n    427 for idx in indices_to_perturb[i:i+max_range]:\r\
+          \n    428     if idx == [-100]:\r\n\r\nTypeError: unsupported operand type(s)\
+          \ for -: 'int' and 'list'\r\n```\r\n"
+        updatedAt: '2023-10-13T14:19:06.401Z'
+      numEdits: 0
+      reactions: []
+    id: 652951da2aa5b27c779a375e
+    type: comment
+  author: AMCalejandro
+  content: "Hi,\r\n\r\n\r\nAs always, thank you so much for this amazing work.\r\n\
+    \r\nI have found two errors when I was trying to add **deletions** to inSilicoPerturber\r\
+    \n\r\n\r\n**1. Error 1 related to the case when I only pass one gene to perturb\
+    \ ( I am using latest version of Geneformer after last pushes working on single\
+    \ gene issues)**\r\n\r\n**Data and model**\r\n```\r\n# Data and models\r\nmodel_cellclassifier\
+    \ = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224/'\r\
+    \n#model_cellclassifier = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/Geneformer/'\r\
+    \n\r\n#cardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/CELL_CLAS_DATA.dataset/'\r\
+    \ncardio_data = '/home/jupyter/AMC_WD/HACKATHON_DATA_DIR/data/datasets_examples_finetuning/DISEASE_CLASSIFIER.dataset'\r\
+    \n\r\noutput_dir = '/home/jupyter/AMC_WD/INS_PERTURB/OUTPUT/'\r\n\r\noutput_prefix\
+    \ = 'out'\r\n```\r\n\r\n**Params**\r\n```\r\n# Model params\r\n#ensembleList =\
+    \ [\"ENSG00000145335\"]\r\nensembleList = [\"ENSG00000173175\"]\r\n\r\n#maxCell\
+    \ = 2000\r\n#maxCell = None\r\nmaxCell = 100\r\nbSize = 40\r\nnproc = 8\r\n\r\n\
+    #toFilter = None\r\n#toFilter['cell_type'] = [cellType]\r\ntoFilter={\"cell_type\"\
+    :[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"]}\r\n\r\n# States to\
+    \ model\r\nstates_toModel = {'state_key': 'disease', \r\n              'start_state':\
+    \ 'dcm', \r\n              'goal_state': 'nf', \r\n              'alt_states':\
+    \ ['hcm']}\r\n\r\n\r\nperturbType = \"delete\" # Deletion does not work\r\n#perturbType\
+    \ = \"overexpress\" # It works, we will need to interpret results\r\n```\r\n\r\
+    \n**Run in silico perturber**\r\n```\r\nisp = InSilicoPerturber(perturb_type=perturbType,\r\
+    \n                        genes_to_perturb=ensembleList,\r\n                 \
+    \       combos=0,\r\n                        anchor_gene=None,\r\n           \
+    \             model_type=\"CellClassifier\", \r\n                        emb_mode=\"\
+    cell\",\r\n                        num_classes=3,\r\n                        cell_emb_style=\"\
+    mean_pool\",\r\n                        filter_data=toFilter,\r\n            \
+    \            cell_states_to_model=states_toModel,\r\n                        max_ncells=\
+    \ maxCell,\r\n                        emb_layer=0,\r\n                       \
+    \ forward_batch_size=bSize,\r\n                        nproc=nproc)\r\n\r\n# outputs\
+    \ intermediate files from in silico perturbation\r\nisp.perturb_data(model_cellclassifier,\r\
+    \n                 cardio_data,\r\n                 output_dir,\r\n          \
+    \       output_prefix)\r\n\r\n```\r\n\r\n\r\n**ERROR**\r\n```\r\nEmbeddings are\
+    \ not the same dimensions. original_emb is torch.Size([40, 2046, 256]). minibatch_emb\
+    \ is torch.Size([40, 2047, 256]). \r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \nCell In[15], line 2\r\n      1 # outputs intermediate files from in silico perturbation\r\
+    \n----> 2 isp.perturb_data(model_cellclassifier,\r\n      3                  cardio_data,\r\
+    \n      4                  output_dir,\r\n      5                  output_prefix)\r\
+    \n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+    \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file, output_directory,\
+    \ output_prefix)\r\n    977         return example[state_name] in [start_state]\r\
+    \n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+    \ num_proc=self.nproc)\r\n--> 981 self.in_silico_perturb(model,\r\n    982   \
+    \                    filtered_input_data,\r\n    983                       layer_to_quant,\r\
+    \n    984                       state_embs_dict,\r\n    985                  \
+    \     output_directory,\r\n    986                       output_prefix)\r\n\r\n\
+    File ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+    \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data, layer_to_quant,\
+    \ state_embs_dict, output_directory, output_prefix)\r\n   1056 perturbation_batch\
+    \ = filtered_input_data.map(make_group_perturbation_batch, num_proc=self.nproc)\r\
+    \n   1057 indices_to_perturb = perturbation_batch[\"perturb_index\"]\r\n-> 1059\
+    \ cos_sims_data = quant_cos_sims(model, \r\n   1060                          \
+    \      self.perturb_type,\r\n   1061                                perturbation_batch,\
+    \ \r\n   1062                                self.forward_batch_size, \r\n   1063\
+    \                                layer_to_quant, \r\n   1064                 \
+    \               filtered_input_data,\r\n   1065                              \
+    \  self.tokens_to_perturb,\r\n   1066                                indices_to_perturb,\r\
+    \n   1067                                self.perturb_group,\r\n   1068      \
+    \                          self.cell_states_to_model,\r\n   1069             \
+    \                   state_embs_dict,\r\n   1070                              \
+    \  self.pad_token_id,\r\n   1071                                model_input_size,\r\
+    \n   1072                                self.nproc)\r\n   1074 perturbed_genes\
+    \ = tuple(self.tokens_to_perturb)\r\n   1075 original_lengths = filtered_input_data[\"\
+    length\"]\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:459,\
+    \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+    \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+    \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size, nproc)\r\
+    \n    454             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,\
+    \ \r\n    455                                                         minibatch_emb,\
+    \ \r\n    456                                                         state_embs_dict[state],\r\
+    \n    457                                                         perturb_group)\r\
+    \n    458         elif perturb_group == True:\r\n--> 459             cos_sims_vs_alt_dict[state]\
+    \ += cos_sim_shift(original_minibatch_emb, \r\n    460                       \
+    \                                  minibatch_emb, \r\n    461                \
+    \                                         state_embs_dict[state],\r\n    462 \
+    \                                                        perturb_group,\r\n  \
+    \  463                                                         original_minibatch_lengths,\r\
+    \n    464                                                         minibatch_lengths)\
+    \  \r\n    465 del outputs\r\n    466 del minibatch_emb\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:495,\
+    \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group, original_minibatch_lengths,\
+    \ minibatch_lengths)\r\n    489 if original_emb.size() != minibatch_emb.size():\r\
+    \n    490     logger.error(\r\n    491         f\"Embeddings are not the same\
+    \ dimensions. \" \\\r\n    492         f\"original_emb is {original_emb.size()}.\
+    \ \" \\\r\n    493         f\"minibatch_emb is {minibatch_emb.size()}. \"\r\n\
+    \    494     )\r\n--> 495     raise\r\n    496 if not perturb_group:\r\n    497\
+    \     original_emb = torch.mean(original_emb,dim=1,keepdim=True)        \r\n\r\
+    \nRuntimeError: No active exception to reraise\r\n```\r\n\r\n\r\n**2. Also, if\
+    \ I pass two genes to the models, I am falling somehwere else**\r\n\r\n**PARAMS**\r\
+    \n```\r\nensembleList = [\"ENSG00000173175\",\"ENSG00000145335\"]\r\n\r\n#maxCell\
+    \ = 2000\r\n#maxCell = None\r\nmaxCell = 100\r\nbSize = 40\r\nnproc = 8\r\n\r\n\
+    #toFilter = None\r\n#toFilter['cell_type'] = [cellType]\r\ntoFilter={\"cell_type\"\
+    :[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"]}\r\n\r\n# States to\
+    \ model\r\nstates_toModel = {'state_key': 'disease', \r\n              'start_state':\
+    \ 'dcm', \r\n              'goal_state': 'nf', \r\n              'alt_states':\
+    \ ['hcm']}\r\n\r\n\r\nperturbType = \"delete\" # Deletion does not work\r\n#perturbType\
+    \ = \"overexpress\" # It works, we will need to interpret results\r\n```\r\n\r\
+    \n**ERROR**\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nTypeError                                 Traceback (most recent call last)\r\
+    \nCell In[18], line 2\r\n      1 # outputs intermediate files from in silico perturbation\r\
+    \n----> 2 isp.perturb_data(model_cellclassifier,\r\n      3                  cardio_data,\r\
+    \n      4                  output_dir,\r\n      5                  output_prefix)\r\
+    \n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:981,\
+    \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file, output_directory,\
+    \ output_prefix)\r\n    977         return example[state_name] in [start_state]\r\
+    \n    979     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+    \ num_proc=self.nproc)\r\n--> 981 self.in_silico_perturb(model,\r\n    982   \
+    \                    filtered_input_data,\r\n    983                       layer_to_quant,\r\
+    \n    984                       state_embs_dict,\r\n    985                  \
+    \     output_directory,\r\n    986                       output_prefix)\r\n\r\n\
+    File ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:1059,\
+    \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data, layer_to_quant,\
+    \ state_embs_dict, output_directory, output_prefix)\r\n   1056 perturbation_batch\
+    \ = filtered_input_data.map(make_group_perturbation_batch, num_proc=self.nproc)\r\
+    \n   1057 indices_to_perturb = perturbation_batch[\"perturb_index\"]\r\n-> 1059\
+    \ cos_sims_data = quant_cos_sims(model, \r\n   1060                          \
+    \      self.perturb_type,\r\n   1061                                perturbation_batch,\
+    \ \r\n   1062                                self.forward_batch_size, \r\n   1063\
+    \                                layer_to_quant, \r\n   1064                 \
+    \               filtered_input_data,\r\n   1065                              \
+    \  self.tokens_to_perturb,\r\n   1066                                indices_to_perturb,\r\
+    \n   1067                                self.perturb_group,\r\n   1068      \
+    \                          self.cell_states_to_model,\r\n   1069             \
+    \                   state_embs_dict,\r\n   1070                              \
+    \  self.pad_token_id,\r\n   1071                                model_input_size,\r\
+    \n   1072                                self.nproc)\r\n   1074 perturbed_genes\
+    \ = tuple(self.tokens_to_perturb)\r\n   1075 original_lengths = filtered_input_data[\"\
+    length\"]\r\n\r\nFile ~/.local/lib/python3.10/site-packages/geneformer/in_silico_perturber.py:426,\
+    \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+    \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+    \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size, nproc)\r\
+    \n    424 num_perturbed = len(tokens_to_perturb)\r\n    425 indices_to_perturb_minibatch\
+    \ = []\r\n--> 426 end_range = [i for i in range(orig_max_len - tokens_to_perturb,\
+    \ orig_max_len)]\r\n    427 for idx in indices_to_perturb[i:i+max_range]:\r\n\
+    \    428     if idx == [-100]:\r\n\r\nTypeError: unsupported operand type(s) for\
+    \ -: 'int' and 'list'\r\n```\r\n"
+  created_at: 2023-10-13 13:19:06+00:00
+  edited: false
+  hidden: false
+  id: 652951da2aa5b27c779a375e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0a4422c08eab1b32dd30922fc0fb7666.svg
+      fullname: Journey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Jonyyqn
+      type: user
+    createdAt: '2023-10-17T05:54:50.000Z'
+    data:
+      edited: false
+      editors:
+      - Jonyyqn
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3929075002670288
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0a4422c08eab1b32dd30922fc0fb7666.svg
+          fullname: Journey
+          isHf: false
+          isPro: false
+          name: Jonyyqn
+          type: user
+        html: "<p>When I used the latest version of the code to perturb a single gene\
+          \ with the fine-tuned model and dataset of the example, I also encountered\
+          \ the same error as as point 1 mentioned by <span data-props=\"{&quot;user&quot;:&quot;AMCalejandro&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/AMCalejandro\"\
+          >@<span class=\"underline\">AMCalejandro</span></a></span>\n\n\t</span></span>.\
+          \ Can anyone help solve it?<br>The code is as below:</p>\n<p>ensems = ['ENSG00000183878']<br>isp\
+          \ = InSilicoPerturber(perturb_type=\"delete\",<br>                     \
+          \   perturb_rank_shift=None,<br>                        genes_to_perturb=ensems,<br>\
+          \                        combos=0,<br>                        anchor_gene=None,<br>\
+          \                        model_type=\"CellClassifier\",<br>            \
+          \            num_classes=3,<br>                        emb_mode=\"cell\"\
+          ,<br>                        cell_emb_style=\"mean_pool\",<br>         \
+          \               filter_data={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+          ,\"Cardiomyocyte3\"]},<br>                        cell_states_to_model={'state_key':\
+          \ 'disease',<br>                                              'start_state':\
+          \ 'dcm',<br>                                              'goal_state':\
+          \ 'nf',<br>                                              'alt_states': ['hcm']},<br>\
+          \                        max_ncells=2000,<br>                        emb_layer=0,<br>\
+          \                        forward_batch_size=100,<br>                   \
+          \     nproc=16)</p>\n<p>isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,<br>                 \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+          ,<br>                 \"./output/\",<br>                 \"output_prefix\"\
+          )</p>\n<p>Embeddings are not the same dimensions. original_emb is torch.Size([100,\
+          \ 2046, 256]). minibatch_emb is torch.Size([100, 2047, 256]).<br>RuntimeError\
+          \                              Traceback (most recent call last)<br>Cell\
+          \ In[8], line 2<br>      1 # outputs intermediate files from in silico perturbation<br>----&gt;\
+          \ 2 isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,<br>      3                  \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+          ,<br>      4                  \"./output/in_silico_perturbation/human_dcm_hcm_nf/\"\
+          ,<br>      5                  \"cardiomyopathies_220224\")</p>\n<p>File\
+          \ ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:983,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)<br>    979         return example[state_name]\
+          \ in [start_state]<br>    981     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)<br>--&gt; 983 self.in_silico_perturb(model,<br> \
+          \   984                       filtered_input_data,<br>    985          \
+          \             layer_to_quant,<br>    986                       state_embs_dict,<br>\
+          \    987                       output_directory,<br>    988            \
+          \           output_prefix)</p>\n<p>File ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:1061,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)<br>\
+          \   1058 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)<br>   1059 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]<br>-&gt; 1061 cos_sims_data = quant_cos_sims(model,<br>\
+          \   1062                                self.perturb_type,<br>   1063  \
+          \                              perturbation_batch,<br>   1064          \
+          \                      self.forward_batch_size,<br>   1065             \
+          \                   layer_to_quant,<br>   1066                         \
+          \       filtered_input_data,<br>   1067                                self.tokens_to_perturb,<br>\
+          \   1068                                indices_to_perturb,<br>   1069 \
+          \                               self.perturb_group,<br>   1070         \
+          \                       self.cell_states_to_model,<br>   1071          \
+          \                      state_embs_dict,<br>   1072                     \
+          \           self.pad_token_id,<br>   1073                              \
+          \  model_input_size,<br>   1074                                self.nproc)<br>\
+          \   1076 perturbed_genes = tuple(self.tokens_to_perturb)<br>   1077 original_lengths\
+          \ = filtered_input_data[\"length\"]</p>\n<p>File ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:461,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)<br>    456             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,<br>\
+          \    457                                                         minibatch_emb,<br>\
+          \    458                                                         state_embs_dict[state],<br>\
+          \    459                                                         perturb_group)<br>\
+          \    460         elif perturb_group == True:<br>--&gt; 461             cos_sims_vs_alt_dict[state]\
+          \ += cos_sim_shift(original_minibatch_emb,<br>    462                  \
+          \                                       minibatch_emb,<br>    463      \
+          \                                                   state_embs_dict[state],<br>\
+          \    464                                                         perturb_group,<br>\
+          \    465                                                         original_minibatch_lengths,<br>\
+          \    466                                                         minibatch_lengths)<br>\
+          \    467 del outputs<br>    468 del minibatch_emb</p>\n<p>File ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:497,\
+          \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group,\
+          \ original_minibatch_lengths, minibatch_lengths)<br>    491 if original_emb.size()\
+          \ != minibatch_emb.size():<br>    492     logger.error(<br>    493     \
+          \    f\"Embeddings are not the same dimensions. \" <br>    494         f\"\
+          original_emb is {original_emb.size()}. \" <br>    495         f\"minibatch_emb\
+          \ is {minibatch_emb.size()}. \"<br>    496     )<br>--&gt; 497     raise<br>\
+          \    498 if not perturb_group:<br>    499     original_emb = torch.mean(original_emb,dim=1,keepdim=True)\
+          \        </p>\n<p>RuntimeError: No active exception to reraise</p>\n<p>When\
+          \ I check the sizes of original_emb and minibatch_emb and print them out,\
+          \ the results are as follows (first output the size of original_emb, and\
+          \ then output the size of minibatch_emb.):<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047,\
+          \ 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047,\
+          \ 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047,\
+          \ 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047,\
+          \ 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047,\
+          \ 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100, 2047, 256])<br>torch.Size([100,\
+          \ 2046, 256])<br>torch.Size([100, 2047, 256])</p>\n<p>When I used batch\
+          \ size of 400, it will show the same error.</p>\n"
+        raw: "When I used the latest version of the code to perturb a single gene\
+          \ with the fine-tuned model and dataset of the example, I also encountered\
+          \ the same error as as point 1 mentioned by @AMCalejandro. Can anyone help\
+          \ solve it?\nThe code is as below:\n\nensems = ['ENSG00000183878']\nisp\
+          \ = InSilicoPerturber(perturb_type=\"delete\",\n                       \
+          \ perturb_rank_shift=None,\n                        genes_to_perturb=ensems,\n\
+          \                        combos=0,\n                        anchor_gene=None,\n\
+          \                        model_type=\"CellClassifier\",\n              \
+          \          num_classes=3,\n                        emb_mode=\"cell\",\n\
+          \                        cell_emb_style=\"mean_pool\",\n               \
+          \         filter_data={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+          ,\"Cardiomyocyte3\"]},\n                        cell_states_to_model={'state_key':\
+          \ 'disease', \n                                              'start_state':\
+          \ 'dcm', \n                                              'goal_state': 'nf',\
+          \ \n                                              'alt_states': ['hcm']},\n\
+          \                        max_ncells=2000,\n                        emb_layer=0,\n\
+          \                        forward_batch_size=100,\n                     \
+          \   nproc=16)\n\nisp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\n                 \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+          ,\n                 \"./output/\",\n                 \"output_prefix\")\n\
+          \n\nEmbeddings are not the same dimensions. original_emb is torch.Size([100,\
+          \ 2046, 256]). minibatch_emb is torch.Size([100, 2047, 256]). \nRuntimeError\
+          \                              Traceback (most recent call last)\nCell In[8],\
+          \ line 2\n      1 # outputs intermediate files from in silico perturbation\n\
+          ----> 2 isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\n      3                  \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+          ,\n      4                  \"./output/in_silico_perturbation/human_dcm_hcm_nf/\"\
+          ,\n      5                  \"cardiomyopathies_220224\")\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:983,\
+          \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file,\
+          \ output_directory, output_prefix)\n    979         return example[state_name]\
+          \ in [start_state]\n    981     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+          \ num_proc=self.nproc)\n--> 983 self.in_silico_perturb(model,\n    984 \
+          \                      filtered_input_data,\n    985                   \
+          \    layer_to_quant,\n    986                       state_embs_dict,\n \
+          \   987                       output_directory,\n    988               \
+          \        output_prefix)\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:1061,\
+          \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data,\
+          \ layer_to_quant, state_embs_dict, output_directory, output_prefix)\n  \
+          \ 1058 perturbation_batch = filtered_input_data.map(make_group_perturbation_batch,\
+          \ num_proc=self.nproc)\n   1059 indices_to_perturb = perturbation_batch[\"\
+          perturb_index\"]\n-> 1061 cos_sims_data = quant_cos_sims(model, \n   1062\
+          \                                self.perturb_type,\n   1063           \
+          \                     perturbation_batch, \n   1064                    \
+          \            self.forward_batch_size, \n   1065                        \
+          \        layer_to_quant, \n   1066                                filtered_input_data,\n\
+          \   1067                                self.tokens_to_perturb,\n   1068\
+          \                                indices_to_perturb,\n   1069          \
+          \                      self.perturb_group,\n   1070                    \
+          \            self.cell_states_to_model,\n   1071                       \
+          \         state_embs_dict,\n   1072                                self.pad_token_id,\n\
+          \   1073                                model_input_size,\n   1074     \
+          \                           self.nproc)\n   1076 perturbed_genes = tuple(self.tokens_to_perturb)\n\
+          \   1077 original_lengths = filtered_input_data[\"length\"]\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:461,\
+          \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+          \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+          \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size,\
+          \ nproc)\n    456             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,\
+          \ \n    457                                                         minibatch_emb,\
+          \ \n    458                                                         state_embs_dict[state],\n\
+          \    459                                                         perturb_group)\n\
+          \    460         elif perturb_group == True:\n--> 461             cos_sims_vs_alt_dict[state]\
+          \ += cos_sim_shift(original_minibatch_emb, \n    462                   \
+          \                                      minibatch_emb, \n    463        \
+          \                                                 state_embs_dict[state],\n\
+          \    464                                                         perturb_group,\n\
+          \    465                                                         original_minibatch_lengths,\n\
+          \    466                                                         minibatch_lengths)\
+          \  \n    467 del outputs\n    468 del minibatch_emb\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:497,\
+          \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group,\
+          \ original_minibatch_lengths, minibatch_lengths)\n    491 if original_emb.size()\
+          \ != minibatch_emb.size():\n    492     logger.error(\n    493         f\"\
+          Embeddings are not the same dimensions. \" \\\n    494         f\"original_emb\
+          \ is {original_emb.size()}. \" \\\n    495         f\"minibatch_emb is {minibatch_emb.size()}.\
+          \ \"\n    496     )\n--> 497     raise\n    498 if not perturb_group:\n\
+          \    499     original_emb = torch.mean(original_emb,dim=1,keepdim=True)\
+          \        \n\nRuntimeError: No active exception to reraise\n\nWhen I check\
+          \ the sizes of original_emb and minibatch_emb and print them out, the results\
+          \ are as follows (first output the size of original_emb, and then output\
+          \ the size of minibatch_emb.):\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+          torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+          torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+          torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+          torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+          torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+          \ 2046, 256])\ntorch.Size([100, 2047, 256])\n\n\nWhen I used batch size\
+          \ of 400, it will show the same error."
+        updatedAt: '2023-10-17T05:54:50.768Z'
+      numEdits: 0
+      reactions: []
+    id: 652e21aae312c061d4034c19
+    type: comment
+  author: Jonyyqn
+  content: "When I used the latest version of the code to perturb a single gene with\
+    \ the fine-tuned model and dataset of the example, I also encountered the same\
+    \ error as as point 1 mentioned by @AMCalejandro. Can anyone help solve it?\n\
+    The code is as below:\n\nensems = ['ENSG00000183878']\nisp = InSilicoPerturber(perturb_type=\"\
+    delete\",\n                        perturb_rank_shift=None,\n                \
+    \        genes_to_perturb=ensems,\n                        combos=0,\n       \
+    \                 anchor_gene=None,\n                        model_type=\"CellClassifier\"\
+    ,\n                        num_classes=3,\n                        emb_mode=\"\
+    cell\",\n                        cell_emb_style=\"mean_pool\",\n             \
+    \           filter_data={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+    ,\"Cardiomyocyte3\"]},\n                        cell_states_to_model={'state_key':\
+    \ 'disease', \n                                              'start_state': 'dcm',\
+    \ \n                                              'goal_state': 'nf', \n     \
+    \                                         'alt_states': ['hcm']},\n          \
+    \              max_ncells=2000,\n                        emb_layer=0,\n      \
+    \                  forward_batch_size=100,\n                        nproc=16)\n\
+    \nisp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+    ,\n                 \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+    ,\n                 \"./output/\",\n                 \"output_prefix\")\n\n\n\
+    Embeddings are not the same dimensions. original_emb is torch.Size([100, 2046,\
+    \ 256]). minibatch_emb is torch.Size([100, 2047, 256]). \nRuntimeError       \
+    \                       Traceback (most recent call last)\nCell In[8], line 2\n\
+    \      1 # outputs intermediate files from in silico perturbation\n----> 2 isp.perturb_data(\"\
+    ./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+    ,\n      3                  \"./Genecorpus-30M/example_input_files/cell_classification/disease_classification/human_dcm_hcm_nf.dataset\"\
+    ,\n      4                  \"./output/in_silico_perturbation/human_dcm_hcm_nf/\"\
+    ,\n      5                  \"cardiomyopathies_220224\")\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:983,\
+    \ in InSilicoPerturber.perturb_data(self, model_directory, input_data_file, output_directory,\
+    \ output_prefix)\n    979         return example[state_name] in [start_state]\n\
+    \    981     filtered_input_data = filtered_input_data.filter(filter_for_origin,\
+    \ num_proc=self.nproc)\n--> 983 self.in_silico_perturb(model,\n    984       \
+    \                filtered_input_data,\n    985                       layer_to_quant,\n\
+    \    986                       state_embs_dict,\n    987                     \
+    \  output_directory,\n    988                       output_prefix)\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:1061,\
+    \ in InSilicoPerturber.in_silico_perturb(self, model, filtered_input_data, layer_to_quant,\
+    \ state_embs_dict, output_directory, output_prefix)\n   1058 perturbation_batch\
+    \ = filtered_input_data.map(make_group_perturbation_batch, num_proc=self.nproc)\n\
+    \   1059 indices_to_perturb = perturbation_batch[\"perturb_index\"]\n-> 1061 cos_sims_data\
+    \ = quant_cos_sims(model, \n   1062                                self.perturb_type,\n\
+    \   1063                                perturbation_batch, \n   1064        \
+    \                        self.forward_batch_size, \n   1065                  \
+    \              layer_to_quant, \n   1066                                filtered_input_data,\n\
+    \   1067                                self.tokens_to_perturb,\n   1068     \
+    \                           indices_to_perturb,\n   1069                     \
+    \           self.perturb_group,\n   1070                                self.cell_states_to_model,\n\
+    \   1071                                state_embs_dict,\n   1072            \
+    \                    self.pad_token_id,\n   1073                             \
+    \   model_input_size,\n   1074                                self.nproc)\n  \
+    \ 1076 perturbed_genes = tuple(self.tokens_to_perturb)\n   1077 original_lengths\
+    \ = filtered_input_data[\"length\"]\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:461,\
+    \ in quant_cos_sims(model, perturb_type, perturbation_batch, forward_batch_size,\
+    \ layer_to_quant, original_emb, tokens_to_perturb, indices_to_perturb, perturb_group,\
+    \ cell_states_to_model, state_embs_dict, pad_token_id, model_input_size, nproc)\n\
+    \    456             cos_sims_vs_alt_dict[state] += cos_sim_shift(original_emb,\
+    \ \n    457                                                         minibatch_emb,\
+    \ \n    458                                                         state_embs_dict[state],\n\
+    \    459                                                         perturb_group)\n\
+    \    460         elif perturb_group == True:\n--> 461             cos_sims_vs_alt_dict[state]\
+    \ += cos_sim_shift(original_minibatch_emb, \n    462                         \
+    \                                minibatch_emb, \n    463                    \
+    \                                     state_embs_dict[state],\n    464       \
+    \                                                  perturb_group,\n    465   \
+    \                                                      original_minibatch_lengths,\n\
+    \    466                                                         minibatch_lengths)\
+    \  \n    467 del outputs\n    468 del minibatch_emb\n\nFile ~/miniconda3/envs/ai/lib/python3.11/site-packages/geneformer/in_silico_perturber.py:497,\
+    \ in cos_sim_shift(original_emb, minibatch_emb, end_emb, perturb_group, original_minibatch_lengths,\
+    \ minibatch_lengths)\n    491 if original_emb.size() != minibatch_emb.size():\n\
+    \    492     logger.error(\n    493         f\"Embeddings are not the same dimensions.\
+    \ \" \\\n    494         f\"original_emb is {original_emb.size()}. \" \\\n   \
+    \ 495         f\"minibatch_emb is {minibatch_emb.size()}. \"\n    496     )\n\
+    --> 497     raise\n    498 if not perturb_group:\n    499     original_emb = torch.mean(original_emb,dim=1,keepdim=True)\
+    \        \n\nRuntimeError: No active exception to reraise\n\nWhen I check the\
+    \ sizes of original_emb and minibatch_emb and print them out, the results are\
+    \ as follows (first output the size of original_emb, and then output the size\
+    \ of minibatch_emb.):\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\n\
+    torch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047,\
+    \ 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100, 2047, 256])\ntorch.Size([100,\
+    \ 2047, 256])\ntorch.Size([100, 2046, 256])\ntorch.Size([100, 2047, 256])\n\n\n\
+    When I used batch size of 400, it will show the same error."
+  created_at: 2023-10-17 04:54:50+00:00
+  edited: false
+  hidden: false
+  id: 652e21aae312c061d4034c19
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9fc287d99d8f4d56d292104f4d2b9415.svg
+      fullname: Toby Clark
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tobyclark
+      type: user
+    createdAt: '2023-11-14T12:29:22.000Z'
+    data:
+      edited: false
+      editors:
+      - tobyclark
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9071094989776611
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9fc287d99d8f4d56d292104f4d2b9415.svg
+          fullname: Toby Clark
+          isHf: false
+          isPro: false
+          name: tobyclark
+          type: user
+        html: "<p>I'm not sure if you both are still having these issues but I've\
+          \ recently started working with the in silico perturber and I think I've\
+          \ solved both of the issues <span data-props=\"{&quot;user&quot;:&quot;AMCalejandro&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/AMCalejandro\"\
+          >@<span class=\"underline\">AMCalejandro</span></a></span>\n\n\t</span></span>\
+          \ was having.</p>\n<p>1: I don't think removal of indices from the embedding\
+          \ batch should be occurring when perturbing in delete mode, only in overexpress\
+          \ mode - removing this line of code allowed running of delete but not overexpress,\
+          \ so I added a condition that it should only be run when overexpressing\
+          \ - code is below.</p>\n<p>Line 435 in in_silico_perturber.py:<br>if perturb_type\
+          \ == 'overexpress': #added this line of code as the indices should only\
+          \ be removed in overexpression<br>                original_minibatch_emb\
+          \ = remove_indices_from_emb_batch(original_minibatch_emb,<br>          \
+          \                                                         indices_to_perturb_minibatch,<br>\
+          \                                                                   gene_dim=1)</p>\n\
+          <ol start=\"2\">\n<li>I think this was just an error in the code? As mentioned\
+          \ in the error message tokens_to_perturb is a list, and the length of this\
+          \ list has already been assigned to num_perturbed, so subtracting this from\
+          \ orig_max_len allows the code to run:</li>\n</ol>\n<p>Line 427 in in_silico_perturber.py:<br>end_range\
+          \ = [i for i in range(orig_max_len - num_perturbed, orig_max_len)]##Made\
+          \ a change which fixed an error - tokens_to_perturb replaced with num_perturbed.</p>\n\
+          <p>Let me know if these help - I think these enable the intended function\
+          \ of the code but please let me know if there are any unexpected consequences\
+          \ for you. \n </p>\n"
+        raw: "I'm not sure if you both are still having these issues but I've recently\
+          \ started working with the in silico perturber and I think I've solved both\
+          \ of the issues @AMCalejandro was having.\n\n1: I don't think removal of\
+          \ indices from the embedding batch should be occurring when perturbing in\
+          \ delete mode, only in overexpress mode - removing this line of code allowed\
+          \ running of delete but not overexpress, so I added a condition that it\
+          \ should only be run when overexpressing - code is below.\n\nLine 435 in\
+          \ in_silico_perturber.py:\nif perturb_type == 'overexpress': #added this\
+          \ line of code as the indices should only be removed in overexpression\n\
+          \                original_minibatch_emb = remove_indices_from_emb_batch(original_minibatch_emb,\
+          \ \n                                                                   indices_to_perturb_minibatch,\
+          \ \n                                                                   gene_dim=1)\n\
+          \n2. I think this was just an error in the code? As mentioned in the error\
+          \ message tokens_to_perturb is a list, and the length of this list has already\
+          \ been assigned to num_perturbed, so subtracting this from orig_max_len\
+          \ allows the code to run:\n\nLine 427 in in_silico_perturber.py:\nend_range\
+          \ = [i for i in range(orig_max_len - num_perturbed, orig_max_len)]##Made\
+          \ a change which fixed an error - tokens_to_perturb replaced with num_perturbed.\n\
+          \nLet me know if these help - I think these enable the intended function\
+          \ of the code but please let me know if there are any unexpected consequences\
+          \ for you. \n "
+        updatedAt: '2023-11-14T12:29:22.771Z'
+      numEdits: 0
+      reactions: []
+    id: 65536822711b1e1e111d31b0
+    type: comment
+  author: tobyclark
+  content: "I'm not sure if you both are still having these issues but I've recently\
+    \ started working with the in silico perturber and I think I've solved both of\
+    \ the issues @AMCalejandro was having.\n\n1: I don't think removal of indices\
+    \ from the embedding batch should be occurring when perturbing in delete mode,\
+    \ only in overexpress mode - removing this line of code allowed running of delete\
+    \ but not overexpress, so I added a condition that it should only be run when\
+    \ overexpressing - code is below.\n\nLine 435 in in_silico_perturber.py:\nif perturb_type\
+    \ == 'overexpress': #added this line of code as the indices should only be removed\
+    \ in overexpression\n                original_minibatch_emb = remove_indices_from_emb_batch(original_minibatch_emb,\
+    \ \n                                                                   indices_to_perturb_minibatch,\
+    \ \n                                                                   gene_dim=1)\n\
+    \n2. I think this was just an error in the code? As mentioned in the error message\
+    \ tokens_to_perturb is a list, and the length of this list has already been assigned\
+    \ to num_perturbed, so subtracting this from orig_max_len allows the code to run:\n\
+    \nLine 427 in in_silico_perturber.py:\nend_range = [i for i in range(orig_max_len\
+    \ - num_perturbed, orig_max_len)]##Made a change which fixed an error - tokens_to_perturb\
+    \ replaced with num_perturbed.\n\nLet me know if these help - I think these enable\
+    \ the intended function of the code but please let me know if there are any unexpected\
+    \ consequences for you. \n "
+  created_at: 2023-11-14 12:29:22+00:00
+  edited: false
+  hidden: false
+  id: 65536822711b1e1e111d31b0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6862c8ff250868a6938c71fe8ae2094a.svg
+      fullname: AL
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: itsAnnieeeeee
+      type: user
+    createdAt: '2023-12-11T06:12:06.000Z'
+    data:
+      edited: true
+      editors:
+      - itsAnnieeeeee
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8997943997383118
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6862c8ff250868a6938c71fe8ae2094a.svg
+          fullname: AL
+          isHf: false
+          isPro: false
+          name: itsAnnieeeeee
+          type: user
+        html: "<blockquote>\n<p>I'm not sure if you both are still having these issues\
+          \ but I've recently started working with the in silico perturber and I think\
+          \ I've solved both of the issues <span data-props=\"{&quot;user&quot;:&quot;AMCalejandro&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/AMCalejandro\"\
+          >@<span class=\"underline\">AMCalejandro</span></a></span>\n\n\t</span></span>\
+          \ was having.</p>\n<p>1: I don't think removal of indices from the embedding\
+          \ batch should be occurring when perturbing in delete mode, only in overexpress\
+          \ mode - removing this line of code allowed running of delete but not overexpress,\
+          \ so I added a condition that it should only be run when overexpressing\
+          \ - code is below.</p>\n<p>Line 435 in in_silico_perturber.py:<br>if perturb_type\
+          \ == 'overexpress': #added this line of code as the indices should only\
+          \ be removed in overexpression<br>                original_minibatch_emb\
+          \ = remove_indices_from_emb_batch(original_minibatch_emb,<br>          \
+          \                                                         indices_to_perturb_minibatch,<br>\
+          \                                                                   gene_dim=1)</p>\n\
+          <ol start=\"2\">\n<li>I think this was just an error in the code? As mentioned\
+          \ in the error message tokens_to_perturb is a list, and the length of this\
+          \ list has already been assigned to num_perturbed, so subtracting this from\
+          \ orig_max_len allows the code to run:</li>\n</ol>\n<p>Line 427 in in_silico_perturber.py:<br>end_range\
+          \ = [i for i in range(orig_max_len - num_perturbed, orig_max_len)]##Made\
+          \ a change which fixed an error - tokens_to_perturb replaced with num_perturbed.</p>\n\
+          <p>Let me know if these help - I think these enable the intended function\
+          \ of the code but please let me know if there are any unexpected consequences\
+          \ for you.</p>\n</blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;tobyclark&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/tobyclark\"\
+          >@<span class=\"underline\">tobyclark</span></a></span>\n\n\t</span></span>\
+          \ Thank you very much for your code. But after I tried this modification,\
+          \ my  error message became:</p>\n<p>\"RuntimeError: The size of tensor a\
+          \ (2048) must match the size of tensor b (2047) at non-singleton dimension\
+          \ 1\".</p>\n<p>(Looks like not fix my issue.)</p>\n<p>But many thanks for\
+          \ your advice.</p>\n"
+        raw: "> I'm not sure if you both are still having these issues but I've recently\
+          \ started working with the in silico perturber and I think I've solved both\
+          \ of the issues @AMCalejandro was having.\n> \n> 1: I don't think removal\
+          \ of indices from the embedding batch should be occurring when perturbing\
+          \ in delete mode, only in overexpress mode - removing this line of code\
+          \ allowed running of delete but not overexpress, so I added a condition\
+          \ that it should only be run when overexpressing - code is below.\n> \n\
+          > Line 435 in in_silico_perturber.py:\n> if perturb_type == 'overexpress':\
+          \ #added this line of code as the indices should only be removed in overexpression\n\
+          >                 original_minibatch_emb = remove_indices_from_emb_batch(original_minibatch_emb,\
+          \ \n>                                                                  \
+          \  indices_to_perturb_minibatch, \n>                                   \
+          \                                 gene_dim=1)\n> \n> 2. I think this was\
+          \ just an error in the code? As mentioned in the error message tokens_to_perturb\
+          \ is a list, and the length of this list has already been assigned to num_perturbed,\
+          \ so subtracting this from orig_max_len allows the code to run:\n> \n> Line\
+          \ 427 in in_silico_perturber.py:\n> end_range = [i for i in range(orig_max_len\
+          \ - num_perturbed, orig_max_len)]##Made a change which fixed an error -\
+          \ tokens_to_perturb replaced with num_perturbed.\n> \n> Let me know if these\
+          \ help - I think these enable the intended function of the code but please\
+          \ let me know if there are any unexpected consequences for you.\n\n@tobyclark\
+          \ Thank you very much for your code. But after I tried this modification,\
+          \ my  error message became:\n\n\"RuntimeError: The size of tensor a (2048)\
+          \ must match the size of tensor b (2047) at non-singleton dimension 1\"\
+          .\n\n(Looks like not fix my issue.)\n\nBut many thanks for your advice."
+        updatedAt: '2023-12-11T06:36:45.587Z'
+      numEdits: 1
+      reactions: []
+    id: 6576a836a5621a3232e8bd2d
+    type: comment
+  author: itsAnnieeeeee
+  content: "> I'm not sure if you both are still having these issues but I've recently\
+    \ started working with the in silico perturber and I think I've solved both of\
+    \ the issues @AMCalejandro was having.\n> \n> 1: I don't think removal of indices\
+    \ from the embedding batch should be occurring when perturbing in delete mode,\
+    \ only in overexpress mode - removing this line of code allowed running of delete\
+    \ but not overexpress, so I added a condition that it should only be run when\
+    \ overexpressing - code is below.\n> \n> Line 435 in in_silico_perturber.py:\n\
+    > if perturb_type == 'overexpress': #added this line of code as the indices should\
+    \ only be removed in overexpression\n>                 original_minibatch_emb\
+    \ = remove_indices_from_emb_batch(original_minibatch_emb, \n>                \
+    \                                                    indices_to_perturb_minibatch,\
+    \ \n>                                                                    gene_dim=1)\n\
+    > \n> 2. I think this was just an error in the code? As mentioned in the error\
+    \ message tokens_to_perturb is a list, and the length of this list has already\
+    \ been assigned to num_perturbed, so subtracting this from orig_max_len allows\
+    \ the code to run:\n> \n> Line 427 in in_silico_perturber.py:\n> end_range = [i\
+    \ for i in range(orig_max_len - num_perturbed, orig_max_len)]##Made a change which\
+    \ fixed an error - tokens_to_perturb replaced with num_perturbed.\n> \n> Let me\
+    \ know if these help - I think these enable the intended function of the code\
+    \ but please let me know if there are any unexpected consequences for you.\n\n\
+    @tobyclark Thank you very much for your code. But after I tried this modification,\
+    \ my  error message became:\n\n\"RuntimeError: The size of tensor a (2048) must\
+    \ match the size of tensor b (2047) at non-singleton dimension 1\".\n\n(Looks\
+    \ like not fix my issue.)\n\nBut many thanks for your advice."
+  created_at: 2023-12-11 06:12:06+00:00
+  edited: true
+  hidden: false
+  id: 6576a836a5621a3232e8bd2d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-12-15T09:01:49.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9056812524795532
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer and for your patience!
+          We pushed an update that should resolve this issue. If you continue to face
+          errors after pulling the updated code, please let us know by either reopening
+          this discussion if it''s the same error or opening a new discussion if it''s
+          a new error. Thank you!</p>
+
+          '
+        raw: Thank you for your interest in Geneformer and for your patience! We pushed
+          an update that should resolve this issue. If you continue to face errors
+          after pulling the updated code, please let us know by either reopening this
+          discussion if it's the same error or opening a new discussion if it's a
+          new error. Thank you!
+        updatedAt: '2023-12-15T09:01:49.675Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 657c15fd69a46ce96bfe7c61
+    id: 657c15fd69a46ce96bfe7c5d
+    type: comment
+  author: ctheodoris
+  content: Thank you for your interest in Geneformer and for your patience! We pushed
+    an update that should resolve this issue. If you continue to face errors after
+    pulling the updated code, please let us know by either reopening this discussion
+    if it's the same error or opening a new discussion if it's a new error. Thank
+    you!
+  created_at: 2023-12-15 09:01:49+00:00
+  edited: false
+  hidden: false
+  id: 657c15fd69a46ce96bfe7c5d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-12-15T09:01:49.000Z'
+    data:
+      status: closed
+    id: 657c15fd69a46ce96bfe7c61
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-12-15 09:01:49+00:00
+  id: 657c15fd69a46ce96bfe7c61
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 260
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Error adding deletions through inSilicoPerturber

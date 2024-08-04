@@ -1,0 +1,423 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kchen360
+conflicting_files: null
+created_at: 2023-10-18 00:23:56+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/947ad2da1f7a9a2466ab90e75e86ab07.svg
+      fullname: Kai Chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kchen360
+      type: user
+    createdAt: '2023-10-18T01:23:56.000Z'
+    data:
+      edited: false
+      editors:
+      - kchen360
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5990073680877686
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/947ad2da1f7a9a2466ab90e75e86ab07.svg
+          fullname: Kai Chen
+          isHf: false
+          isPro: false
+          name: kchen360
+          type: user
+        html: "<p>HI,</p>\n<p>I tried to reproduce exact in silico analysis result\
+          \ as manuscript and follow suggested approach in <a href=\"/ctheodoris/Geneformer/discussions/246\"\
+          >#246</a>, which subsetting of cardiomyocytes with the same shuffle seed\
+          \ was the key, but I encountered \"RuntimeError: No active exception to\
+          \ reraise\" when running the suggested code:</p>\n<pre><code>from geneformer\
+          \ import InSilicoPerturber\nfrom geneformer import InSilicoPerturberStats\n\
+          import pandas as pd\nimport pyarrow as pa\nfrom datasets import load_from_disk\n\
+          \n\ndataset = load_from_disk(\"/home/Geneformer/disease_classification/human_dcm_hcm_nf.dataset\"\
+          )\n\ndef if_cell_type(example):\n    return example[\"cell_type\"].startswith(\"\
+          Cardiomyocyte\")\n\ndataset = dataset.filter(if_cell_type, num_proc=16)\n\
+          \n# subset the cells to the non-held-out individuals for which analysis\
+          \ was performed in the manuscript\nindiv_subset = [\"1610\", \"1371\", \"\
+          1515\", \"1678\", \"1630\", \"1726\", \"1504\", \"1430\", \"1558\", \"1447\"\
+          , \"1472\", \"1622\", \"1304\", \"1707\", \"1582\", \"1617\", \"1479\",\
+          \ \"1549\", \"1425\", \"1561\", \"1722\", \"1600\", \"1631\", \"1358\",\
+          \ \"1290\", \"1300\", \"1508\", \"1735\", \"1462\"]\n\ndef if_indiv(example):\n\
+          \    return example[\"individual\"] in indiv_subset\n\ndataset = dataset.filter(if_indiv,\
+          \ num_proc=16).shuffle(seed=42)\n\ndataset = dataset.shuffle(seed=42)  #\
+          \ do not omit this step, while unnecessary, if you'd like to use the same\
+          \ set of cells as the original analysis\n\n# after deriving the goal positions,\
+          \ subset to the start state of \"dcm\" to replicate Table 12 tab \"DCM_del_tx\"\
+          \ndef if_disease(example):\n    return example[\"disease\"] == \"dcm\"\n\
+          \ndataset = dataset.filter(if_disease, num_proc=16)\n\n# subset the cells\
+          \ as was needed for resource limitations of max runtime for original analysis\
+          \ to replicate Table 12 tab \"DCM_del_tx\"\ndataset = dataset.select([i\
+          \ for i in range(9701)])\n\n# save the subsetted dataset to use for in silico\
+          \ deletion analysis\ndataset.save_to_disk(\"/home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\"\
+          )\n\nisp = InSilicoPerturber(perturb_type=\"delete\",\n                \
+          \        perturb_rank_shift=None,\n                        genes_to_perturb=\"\
+          all\",\n                        combos=0,\n                        anchor_gene=None,\n\
+          \                        model_type=\"CellClassifier\",\n              \
+          \          num_classes=3,\n                        emb_mode=\"cell\",\n\
+          \                        cell_emb_style=\"mean_pool\",\n               \
+          \         filter_data={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+          ,\"Cardiomyocyte3\"]},\n                        cell_states_to_model={'state_key':\
+          \ 'disease', \n                                              'start_state':\
+          \ 'dcm', \n                                              'goal_state': 'nf',\
+          \ \n                                              'alt_states': ['hcm']},\n\
+          \                        max_ncells=None,\n                        emb_layer=0,\n\
+          \                        forward_batch_size=50,\n                      \
+          \  nproc=16)\n\nisp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\n                 \"/home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\"\
+          ,\n                 \"./perturb_out/\",\n                 \"treat_DCM2nf\"\
+          )\n\nispstats = InSilicoPerturberStats(mode=\"goal_state_shift\",\n    \
+          \                              genes_perturbed=\"all\",\n              \
+          \                    combos=0,\n                                  anchor_gene=None,\n\
+          \                                  #cell_states_to_model={\"disease\":([\"\
+          dcm\"],[\"nf\"],[\"hcm\"])})\n                                  cell_states_to_model={'state_key':\
+          \ 'disease', \n                                              'start_state':\
+          \ 'dcm', \n                                              'goal_state': 'nf',\
+          \ \n                                              'alt_states': ['hcm']})\n\
+          \nispstats.get_stats(\"./perturb_out/\",\n                   None,\n   \
+          \                \"./perturb_stats_out/\",\n                   \"treat_DCM2nf\"\
+          )\n</code></pre>\n<p>The error I got looks like:</p>\n<pre><code>Saving\
+          \ the dataset (1/1 shards): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588| 9701/9701 [00:00&lt;00:00, 18428.62 examples/s]\nnf is not present\
+          \ in the dataset's disease attribute.\nTraceback (most recent call last):\n\
+          \  File \"/home/Geneformer/in_silico_perturbation.py\", line 66, in &lt;module&gt;\n\
+          \    isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\n  File \"/home/Geneformer/geneformer/in_silico_perturber.py\", line 965,\
+          \ in perturb_data\n    raise\nRuntimeError: No active exception to reraise\n\
+          </code></pre>\n<p>Any tip will be helpful, thanks!</p>\n"
+        raw: "HI,\r\n\r\nI tried to reproduce exact in silico analysis result as manuscript\
+          \ and follow suggested approach in #246, which subsetting of cardiomyocytes\
+          \ with the same shuffle seed was the key, but I encountered \"RuntimeError:\
+          \ No active exception to reraise\" when running the suggested code:\r\n\
+          ```\r\nfrom geneformer import InSilicoPerturber\r\nfrom geneformer import\
+          \ InSilicoPerturberStats\r\nimport pandas as pd\r\nimport pyarrow as pa\r\
+          \nfrom datasets import load_from_disk\r\n\r\n\r\ndataset = load_from_disk(\"\
+          /home/Geneformer/disease_classification/human_dcm_hcm_nf.dataset\")\r\n\r\
+          \ndef if_cell_type(example):\r\n    return example[\"cell_type\"].startswith(\"\
+          Cardiomyocyte\")\r\n\r\ndataset = dataset.filter(if_cell_type, num_proc=16)\r\
+          \n\r\n# subset the cells to the non-held-out individuals for which analysis\
+          \ was performed in the manuscript\r\nindiv_subset = [\"1610\", \"1371\"\
+          , \"1515\", \"1678\", \"1630\", \"1726\", \"1504\", \"1430\", \"1558\",\
+          \ \"1447\", \"1472\", \"1622\", \"1304\", \"1707\", \"1582\", \"1617\",\
+          \ \"1479\", \"1549\", \"1425\", \"1561\", \"1722\", \"1600\", \"1631\",\
+          \ \"1358\", \"1290\", \"1300\", \"1508\", \"1735\", \"1462\"]\r\n\r\ndef\
+          \ if_indiv(example):\r\n    return example[\"individual\"] in indiv_subset\r\
+          \n\r\ndataset = dataset.filter(if_indiv, num_proc=16).shuffle(seed=42)\r\
+          \n\r\ndataset = dataset.shuffle(seed=42)  # do not omit this step, while\
+          \ unnecessary, if you'd like to use the same set of cells as the original\
+          \ analysis\r\n\r\n# after deriving the goal positions, subset to the start\
+          \ state of \"dcm\" to replicate Table 12 tab \"DCM_del_tx\"\r\ndef if_disease(example):\r\
+          \n    return example[\"disease\"] == \"dcm\"\r\n\r\ndataset = dataset.filter(if_disease,\
+          \ num_proc=16)\r\n\r\n# subset the cells as was needed for resource limitations\
+          \ of max runtime for original analysis to replicate Table 12 tab \"DCM_del_tx\"\
+          \r\ndataset = dataset.select([i for i in range(9701)])\r\n\r\n# save the\
+          \ subsetted dataset to use for in silico deletion analysis\r\ndataset.save_to_disk(\"\
+          /home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\")\r\n\r\
+          \nisp = InSilicoPerturber(perturb_type=\"delete\",\r\n                 \
+          \       perturb_rank_shift=None,\r\n                        genes_to_perturb=\"\
+          all\",\r\n                        combos=0,\r\n                        anchor_gene=None,\r\
+          \n                        model_type=\"CellClassifier\",\r\n           \
+          \             num_classes=3,\r\n                        emb_mode=\"cell\"\
+          ,\r\n                        cell_emb_style=\"mean_pool\",\r\n         \
+          \               filter_data={\"cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\"\
+          ,\"Cardiomyocyte3\"]},\r\n                        cell_states_to_model={'state_key':\
+          \ 'disease', \r\n                                              'start_state':\
+          \ 'dcm', \r\n                                              'goal_state':\
+          \ 'nf', \r\n                                              'alt_states':\
+          \ ['hcm']},\r\n                        max_ncells=None,\r\n            \
+          \            emb_layer=0,\r\n                        forward_batch_size=50,\r\
+          \n                        nproc=16)\r\n\r\nisp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\r\n                 \"/home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\"\
+          ,\r\n                 \"./perturb_out/\",\r\n                 \"treat_DCM2nf\"\
+          )\r\n\r\nispstats = InSilicoPerturberStats(mode=\"goal_state_shift\",\r\n\
+          \                                  genes_perturbed=\"all\",\r\n        \
+          \                          combos=0,\r\n                               \
+          \   anchor_gene=None,\r\n                                  #cell_states_to_model={\"\
+          disease\":([\"dcm\"],[\"nf\"],[\"hcm\"])})\r\n                         \
+          \         cell_states_to_model={'state_key': 'disease', \r\n           \
+          \                                   'start_state': 'dcm', \r\n         \
+          \                                     'goal_state': 'nf', \r\n         \
+          \                                     'alt_states': ['hcm']})\r\n\r\nispstats.get_stats(\"\
+          ./perturb_out/\",\r\n                   None,\r\n                   \"./perturb_stats_out/\"\
+          ,\r\n                   \"treat_DCM2nf\")\r\n```\r\n\r\nThe error I got\
+          \ looks like:\r\n```\r\nSaving the dataset (1/1 shards): 100%|\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588| 9701/9701 [00:00<00:00, 18428.62 examples/s]\r\
+          \nnf is not present in the dataset's disease attribute.\r\nTraceback (most\
+          \ recent call last):\r\n  File \"/home/Geneformer/in_silico_perturbation.py\"\
+          , line 66, in <module>\r\n    isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+          ,\r\n  File \"/home/Geneformer/geneformer/in_silico_perturber.py\", line\
+          \ 965, in perturb_data\r\n    raise\r\nRuntimeError: No active exception\
+          \ to reraise\r\n```\r\n\r\nAny tip will be helpful, thanks!"
+        updatedAt: '2023-10-18T01:23:56.888Z'
+      numEdits: 0
+      reactions: []
+    id: 652f33ac329f988fe2e617ce
+    type: comment
+  author: kchen360
+  content: "HI,\r\n\r\nI tried to reproduce exact in silico analysis result as manuscript\
+    \ and follow suggested approach in #246, which subsetting of cardiomyocytes with\
+    \ the same shuffle seed was the key, but I encountered \"RuntimeError: No active\
+    \ exception to reraise\" when running the suggested code:\r\n```\r\nfrom geneformer\
+    \ import InSilicoPerturber\r\nfrom geneformer import InSilicoPerturberStats\r\n\
+    import pandas as pd\r\nimport pyarrow as pa\r\nfrom datasets import load_from_disk\r\
+    \n\r\n\r\ndataset = load_from_disk(\"/home/Geneformer/disease_classification/human_dcm_hcm_nf.dataset\"\
+    )\r\n\r\ndef if_cell_type(example):\r\n    return example[\"cell_type\"].startswith(\"\
+    Cardiomyocyte\")\r\n\r\ndataset = dataset.filter(if_cell_type, num_proc=16)\r\n\
+    \r\n# subset the cells to the non-held-out individuals for which analysis was\
+    \ performed in the manuscript\r\nindiv_subset = [\"1610\", \"1371\", \"1515\"\
+    , \"1678\", \"1630\", \"1726\", \"1504\", \"1430\", \"1558\", \"1447\", \"1472\"\
+    , \"1622\", \"1304\", \"1707\", \"1582\", \"1617\", \"1479\", \"1549\", \"1425\"\
+    , \"1561\", \"1722\", \"1600\", \"1631\", \"1358\", \"1290\", \"1300\", \"1508\"\
+    , \"1735\", \"1462\"]\r\n\r\ndef if_indiv(example):\r\n    return example[\"individual\"\
+    ] in indiv_subset\r\n\r\ndataset = dataset.filter(if_indiv, num_proc=16).shuffle(seed=42)\r\
+    \n\r\ndataset = dataset.shuffle(seed=42)  # do not omit this step, while unnecessary,\
+    \ if you'd like to use the same set of cells as the original analysis\r\n\r\n\
+    # after deriving the goal positions, subset to the start state of \"dcm\" to replicate\
+    \ Table 12 tab \"DCM_del_tx\"\r\ndef if_disease(example):\r\n    return example[\"\
+    disease\"] == \"dcm\"\r\n\r\ndataset = dataset.filter(if_disease, num_proc=16)\r\
+    \n\r\n# subset the cells as was needed for resource limitations of max runtime\
+    \ for original analysis to replicate Table 12 tab \"DCM_del_tx\"\r\ndataset =\
+    \ dataset.select([i for i in range(9701)])\r\n\r\n# save the subsetted dataset\
+    \ to use for in silico deletion analysis\r\ndataset.save_to_disk(\"/home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\"\
+    )\r\n\r\nisp = InSilicoPerturber(perturb_type=\"delete\",\r\n                \
+    \        perturb_rank_shift=None,\r\n                        genes_to_perturb=\"\
+    all\",\r\n                        combos=0,\r\n                        anchor_gene=None,\r\
+    \n                        model_type=\"CellClassifier\",\r\n                 \
+    \       num_classes=3,\r\n                        emb_mode=\"cell\",\r\n     \
+    \                   cell_emb_style=\"mean_pool\",\r\n                        filter_data={\"\
+    cell_type\":[\"Cardiomyocyte1\",\"Cardiomyocyte2\",\"Cardiomyocyte3\"]},\r\n \
+    \                       cell_states_to_model={'state_key': 'disease', \r\n   \
+    \                                           'start_state': 'dcm', \r\n       \
+    \                                       'goal_state': 'nf', \r\n             \
+    \                                 'alt_states': ['hcm']},\r\n                \
+    \        max_ncells=None,\r\n                        emb_layer=0,\r\n        \
+    \                forward_batch_size=50,\r\n                        nproc=16)\r\
+    \n\r\nisp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+    ,\r\n                 \"/home/Geneformer/disease_classification/human_dcm_hcm_nf_subset\"\
+    ,\r\n                 \"./perturb_out/\",\r\n                 \"treat_DCM2nf\"\
+    )\r\n\r\nispstats = InSilicoPerturberStats(mode=\"goal_state_shift\",\r\n    \
+    \                              genes_perturbed=\"all\",\r\n                  \
+    \                combos=0,\r\n                                  anchor_gene=None,\r\
+    \n                                  #cell_states_to_model={\"disease\":([\"dcm\"\
+    ],[\"nf\"],[\"hcm\"])})\r\n                                  cell_states_to_model={'state_key':\
+    \ 'disease', \r\n                                              'start_state':\
+    \ 'dcm', \r\n                                              'goal_state': 'nf',\
+    \ \r\n                                              'alt_states': ['hcm']})\r\n\
+    \r\nispstats.get_stats(\"./perturb_out/\",\r\n                   None,\r\n   \
+    \                \"./perturb_stats_out/\",\r\n                   \"treat_DCM2nf\"\
+    )\r\n```\r\n\r\nThe error I got looks like:\r\n```\r\nSaving the dataset (1/1\
+    \ shards): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 9701/9701 [00:00<00:00, 18428.62 examples/s]\r\
+    \nnf is not present in the dataset's disease attribute.\r\nTraceback (most recent\
+    \ call last):\r\n  File \"/home/Geneformer/in_silico_perturbation.py\", line 66,\
+    \ in <module>\r\n    isp.perturb_data(\"./fine_tuned_models/geneformer-6L-30M_CellClassifier_cardiomyopathies_220224\"\
+    ,\r\n  File \"/home/Geneformer/geneformer/in_silico_perturber.py\", line 965,\
+    \ in perturb_data\r\n    raise\r\nRuntimeError: No active exception to reraise\r\
+    \n```\r\n\r\nAny tip will be helpful, thanks!"
+  created_at: 2023-10-18 00:23:56+00:00
+  edited: false
+  hidden: false
+  id: 652f33ac329f988fe2e617ce
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-10-18T06:13:01.000Z'
+    data:
+      edited: true
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9260447025299072
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your question and for providing the code that resulted
+          in your error so we can help you troubleshoot! Please see the discussion
+          you referenced, <a href="/ctheodoris/Geneformer/discussions/246">#246</a>,
+          and ensure you follow the steps noted there (see below). The in silico perturber
+          defines the goal positions based on the input data, so you will have to
+          modify the code if you''d like to use different subsets of data for this,
+          which normally is not needed but is if you are just trying to repeat the
+          analysis we did exactly the same way and not perform a new analysis. If
+          you appropriately modify the code, it shouldn''t be looking for "nf" in
+          the disease attribute of the dataset, because it already has the goal positions
+          so this is no longer relevant and therefore you will not get the error you
+          posted.</p>
+
+          <pre><code># generate embeddings for each individual using the emb_extractor,
+          then average the embeddings by disease state to derive the 3 goal positions
+
+          # of note, the goal state embeddings used for the analysis in the manuscript
+          did not include an attention mask for padding
+
+          # the embeddings with or without attention mask are correlated with coefficient
+          &gt;0.999 so this should have minimal impact on results
+
+          # if you prefer, you can modify the emb_extractor to not include an attention
+          mask to exactly derive the same goal positions
+
+          # however, attention masks are recommended in general for your own analysis
+          to fully minimize impact of padding
+
+
+          # you will have to modify the code of in_silico_perturber.py on line 967
+          to take your average embeddings generated as above as the state_embs_dict
+
+          # rather than using the ones that would be generated just from a subset
+          of the data with get_cell_state_avg_embs
+
+          </code></pre>
+
+          '
+        raw: 'Thank you for your question and for providing the code that resulted
+          in your error so we can help you troubleshoot! Please see the discussion
+          you referenced, #246, and ensure you follow the steps noted there (see below).
+          The in silico perturber defines the goal positions based on the input data,
+          so you will have to modify the code if you''d like to use different subsets
+          of data for this, which normally is not needed but is if you are just trying
+          to repeat the analysis we did exactly the same way and not perform a new
+          analysis. If you appropriately modify the code, it shouldn''t be looking
+          for "nf" in the disease attribute of the dataset, because it already has
+          the goal positions so this is no longer relevant and therefore you will
+          not get the error you posted.
+
+
+          ```
+
+          # generate embeddings for each individual using the emb_extractor, then
+          average the embeddings by disease state to derive the 3 goal positions
+
+          # of note, the goal state embeddings used for the analysis in the manuscript
+          did not include an attention mask for padding
+
+          # the embeddings with or without attention mask are correlated with coefficient
+          >0.999 so this should have minimal impact on results
+
+          # if you prefer, you can modify the emb_extractor to not include an attention
+          mask to exactly derive the same goal positions
+
+          # however, attention masks are recommended in general for your own analysis
+          to fully minimize impact of padding
+
+
+          # you will have to modify the code of in_silico_perturber.py on line 967
+          to take your average embeddings generated as above as the state_embs_dict
+
+          # rather than using the ones that would be generated just from a subset
+          of the data with get_cell_state_avg_embs
+
+          ```'
+        updatedAt: '2023-10-18T06:13:51.400Z'
+      numEdits: 1
+      reactions: []
+      relatedEventId: 652f776d821e30c4c04d8b64
+    id: 652f776d821e30c4c04d8b61
+    type: comment
+  author: ctheodoris
+  content: 'Thank you for your question and for providing the code that resulted in
+    your error so we can help you troubleshoot! Please see the discussion you referenced,
+    #246, and ensure you follow the steps noted there (see below). The in silico perturber
+    defines the goal positions based on the input data, so you will have to modify
+    the code if you''d like to use different subsets of data for this, which normally
+    is not needed but is if you are just trying to repeat the analysis we did exactly
+    the same way and not perform a new analysis. If you appropriately modify the code,
+    it shouldn''t be looking for "nf" in the disease attribute of the dataset, because
+    it already has the goal positions so this is no longer relevant and therefore
+    you will not get the error you posted.
+
+
+    ```
+
+    # generate embeddings for each individual using the emb_extractor, then average
+    the embeddings by disease state to derive the 3 goal positions
+
+    # of note, the goal state embeddings used for the analysis in the manuscript did
+    not include an attention mask for padding
+
+    # the embeddings with or without attention mask are correlated with coefficient
+    >0.999 so this should have minimal impact on results
+
+    # if you prefer, you can modify the emb_extractor to not include an attention
+    mask to exactly derive the same goal positions
+
+    # however, attention masks are recommended in general for your own analysis to
+    fully minimize impact of padding
+
+
+    # you will have to modify the code of in_silico_perturber.py on line 967 to take
+    your average embeddings generated as above as the state_embs_dict
+
+    # rather than using the ones that would be generated just from a subset of the
+    data with get_cell_state_avg_embs
+
+    ```'
+  created_at: 2023-10-18 05:13:01+00:00
+  edited: true
+  hidden: false
+  id: 652f776d821e30c4c04d8b61
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-10-18T06:13:01.000Z'
+    data:
+      status: closed
+    id: 652f776d821e30c4c04d8b64
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-10-18 05:13:01+00:00
+  id: 652f776d821e30c4c04d8b64
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 264
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: 'RuntimeError: No active exception to reraise  from in silico analysis'

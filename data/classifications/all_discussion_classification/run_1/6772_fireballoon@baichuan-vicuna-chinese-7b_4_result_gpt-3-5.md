@@ -1,0 +1,4 @@
+## https://huggingface.co/fireballoon/baichuan-vicuna-chinese-7b/discussions/4
+
+contains_question: yes
+question_part: /usr/local/lib/python3.10/dist-packages/fastchat/model/model_adapter.py:321: UserWarning: You are probably using the old Vicuna-v0 model, which will generate unexpected results with the current fastchat. You can try one of the following methods: 1. Upgrade your weights to the new Vicuna-v1.3: https://github.com/lm-sys/FastChat#vicuna-weights. 2. Use the old conversation template by `python3 -m fastchat.serve.cli --model-path /path/to/vicuna-v0 --conv-template conv_one_shot` 3. Downgrade fschat to fschat==0.1.10 (Not recommended).

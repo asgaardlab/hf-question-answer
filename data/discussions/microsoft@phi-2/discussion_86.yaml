@@ -1,0 +1,926 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: h4rz3rk4s3
+conflicting_files: null
+created_at: 2024-01-16 14:53:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+      fullname: Giuliano Wietig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: h4rz3rk4s3
+      type: user
+    createdAt: '2024-01-16T14:53:44.000Z'
+    data:
+      edited: false
+      editors:
+      - h4rz3rk4s3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.24422456324100494
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+          fullname: Giuliano Wietig
+          isHf: false
+          isPro: false
+          name: h4rz3rk4s3
+          type: user
+        html: "<p>Hi folks,</p>\n<p>when fine-tuning Phi-2 with SFTTrainer using QLoRA\
+          \ and Flash Attention 2, the model does not converge and starts with quite\
+          \ a high initial loss at around 4.3. The loss fluctuates, but stays between\
+          \ 4.2 and 4.3 after 42 training steps.</p>\n<p>I'm running this code in\
+          \ Google Colab on an A100 and installed the following libraries:</p>\n<p>!pip\
+          \ uninstall -y transformers<br>!pip install git+<a rel=\"nofollow\" href=\"\
+          https://github.com/huggingface/transformers\">https://github.com/huggingface/transformers</a><br>!pip\
+          \ install trl[peft]<br>!pip install bitsandbytes loralib<br>!pip install\
+          \ wandb<br>!pip install datasets<br>!pip install accelerate<br>#!pip install\
+          \ deepspeed<br>#!pip install -U optimum<br>!pip install -U flash-attn</p>\n\
+          <p>These are my Training Arguments:</p>\n<p>def get_args():<br>    parser\
+          \ = argparse.ArgumentParser()<br>    parser.add_argument(\"--model_path\"\
+          , type=str, default=\"/path/to/Phi-2\")<br>    parser.add_argument(\"--dataset_name\"\
+          , type=str, default=\"/path/to/training_data\")<br>    #parser.add_argument(\"\
+          --subset\", type=str, default=\"data/finetune\")<br>    parser.add_argument(\"\
+          --split\", type=str, default=\"train\")<br>    #parser.add_argument(\"--size_valid_set\"\
+          , type=int, default=4000)<br>    parser.add_argument(\"--streaming\", action=\"\
+          store_true\")<br>    #parser.add_argument(\"--shuffle_buffer\", type=int,\
+          \ default=5000)<br>    parser.add_argument(\"--seq_length\", type=int, default=1024)<br>\
+          \    parser.add_argument(\"--max_steps\", type=int, default=1000)<br>  \
+          \  parser.add_argument(\"--batch_size\", type=int, default=32)<br>    parser.add_argument(\"\
+          --gradient_accumulation_steps\", type=int, default=8)<br>    parser.add_argument(\"\
+          --eos_token_id\", type=int, default=2)<br>    parser.add_argument(\"--learning_rate\"\
+          , type=float, default=1e-4)<br>    parser.add_argument(\"--lr_scheduler_type\"\
+          , type=str, default=\"linear\") # For Llama-2 model use cosine<br>    parser.add_argument(\"\
+          --num_warmup_steps\", type=int, default=100)<br>    parser.add_argument(\"\
+          --weight_decay\", type=float, default=0.1)<br>    parser.add_argument(\"\
+          --local_rank\", type=int, default=0)<br>    parser.add_argument(\"--neftune_noise_alpha\"\
+          , type=int, default=5)<br>    parser.add_argument(\"--fp16\", action=\"\
+          store_true\", default=False)<br>    parser.add_argument(\"--bf16\", action=\"\
+          store_true\", default=True)<br>    parser.add_argument(\"--gradient_checkpointing\"\
+          , action=\"store_true\", default=True)<br>    #parser.add_argument(\"--use_reentrant\"\
+          , default=False)<br>    parser.add_argument(\"--seed\", type=int, default=0)<br>\
+          \    parser.add_argument(\"--num_workers\", type=int, default=4)<br>   \
+          \ parser.add_argument(\"--output_dir\", type=str, default=\"/path/to/checkpoints\"\
+          )<br>    parser.add_argument(\"--log_freq\", default=1, type=int)<br>  \
+          \  parser.add_argument(\"--eval_freq\", default=300, type=int)<br>    parser.add_argument(\"\
+          --save_freq\", default=300, type=int)</p>\n<pre><code>args, unknown = parser.parse_known_args()\n\
+          \nreturn args\n</code></pre>\n<p>This is my Training Function, where I'm\
+          \ also initializing QLoRA and Phi-2:</p>\n<p>def run_training(args, train_data,\
+          \ val_data):<br>    print(\"Loading the model\")</p>\n<pre><code>lora_config\
+          \ = LoraConfig(\n    r=64,\n    lora_alpha=128,\n    lora_dropout=0.05,\n\
+          \    bias=\"none\",\n    task_type=\"CAUSAL_LM\",\n    target_modules=[\n\
+          \        \"q_proj\",\n        \"k_proj\",\n        \"v_proj\",\n       \
+          \ \"dense\"\n        ]\n)\n\ntrain_data.start_iteration = 0\n\nprint(\"\
+          Starting main loop\")\n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n\
+          \    bnb_4bit_quant_type='nf4',\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          \    bnb_4bit_use_double_quant=False,\n)\n\ntraining_args = TrainingArguments(\n\
+          \    output_dir=args.output_dir,\n    dataloader_drop_last=True,\n    evaluation_strategy=\"\
+          steps\",\n    #torch_compile=True,\n    max_steps=args.max_steps,\n    eval_steps=args.eval_freq,\n\
+          \    save_steps=args.save_freq,\n    logging_steps=args.log_freq,\n    per_device_train_batch_size=args.batch_size,\n\
+          \    per_device_eval_batch_size=args.batch_size,\n    learning_rate=args.learning_rate,\n\
+          \    lr_scheduler_type=args.lr_scheduler_type,\n    warmup_steps=args.num_warmup_steps,\n\
+          \    gradient_accumulation_steps=args.gradient_accumulation_steps,\n   \
+          \ gradient_checkpointing=args.gradient_checkpointing,\n    fp16=args.fp16,\n\
+          \    bf16=args.bf16,\n    optim=\"paged_adamw_32bit\",\n    weight_decay=args.weight_decay,\n\
+          \    neftune_noise_alpha=args.neftune_noise_alpha,\n    #deepspeed=\"ds_config_zero3.json\"\
+          ,\n    run_name=\"Phi-2-ParlaMint-reduced-QLoRA\",\n    report_to=\"wandb\"\
+          ,\n    ddp_find_unused_parameters=False,\n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    args.model_path, quantization_config=bnb_config, trust_remote_code=True,\
+          \ use_flash_attention_2=True, device_map={\"\":\n</code></pre>\n<p>Accelerator().process_index}<br>\
+          \    )</p>\n<pre><code>trainer = SFTTrainer(\n    model=model,\n    args=training_args,\n\
+          \    train_dataset=train_data,\n    eval_dataset=val_data,\n    peft_config=lora_config,\n\
+          \    packing=True\n)\n\nprint_trainable_parameters(trainer.model)\n\nprint(\"\
+          Training...\")\ntrainer.train()\n\nprint(\"Saving last checkpoint of the\
+          \ model\")\ntrainer.model.save_pretrained(os.path.join(args.output_dir,\
+          \ \"final_checkpoint/\"))\n</code></pre>\n<p>Could you guys help me along?\
+          \ Am I doing something wrong? Am I missing something?</p>\n<p>The Dataset\
+          \ that I'm using is a reduced version of the ParlaMint Corpus, as this is\
+          \ all part of my Master\u2019s Thesis. I haven't uploaded the dataset to\
+          \ the Hub yet. I did run it on a Llama-2 fine-tuning run, where it did converge\
+          \ quite nicely.</p>\n"
+        raw: "Hi folks,\r\n\r\nwhen fine-tuning Phi-2 with SFTTrainer using QLoRA\
+          \ and Flash Attention 2, the model does not converge and starts with quite\
+          \ a high initial loss at around 4.3. The loss fluctuates, but stays between\
+          \ 4.2 and 4.3 after 42 training steps.\r\n\r\nI'm running this code in Google\
+          \ Colab on an A100 and installed the following libraries:\r\n\r\n!pip uninstall\
+          \ -y transformers\r\n!pip install git+https://github.com/huggingface/transformers\r\
+          \n!pip install trl[peft]\r\n!pip install bitsandbytes loralib\r\n!pip install\
+          \ wandb\r\n!pip install datasets\r\n!pip install accelerate\r\n#!pip install\
+          \ deepspeed\r\n#!pip install -U optimum\r\n!pip install -U flash-attn\r\n\
+          \r\nThese are my Training Arguments:\r\n\r\ndef get_args():\r\n    parser\
+          \ = argparse.ArgumentParser()\r\n    parser.add_argument(\"--model_path\"\
+          , type=str, default=\"/path/to/Phi-2\")\r\n    parser.add_argument(\"--dataset_name\"\
+          , type=str, default=\"/path/to/training_data\")\r\n    #parser.add_argument(\"\
+          --subset\", type=str, default=\"data/finetune\")\r\n    parser.add_argument(\"\
+          --split\", type=str, default=\"train\")\r\n    #parser.add_argument(\"--size_valid_set\"\
+          , type=int, default=4000)\r\n    parser.add_argument(\"--streaming\", action=\"\
+          store_true\")\r\n    #parser.add_argument(\"--shuffle_buffer\", type=int,\
+          \ default=5000)\r\n    parser.add_argument(\"--seq_length\", type=int, default=1024)\r\
+          \n    parser.add_argument(\"--max_steps\", type=int, default=1000)\r\n \
+          \   parser.add_argument(\"--batch_size\", type=int, default=32)\r\n    parser.add_argument(\"\
+          --gradient_accumulation_steps\", type=int, default=8)\r\n    parser.add_argument(\"\
+          --eos_token_id\", type=int, default=2)\r\n    parser.add_argument(\"--learning_rate\"\
+          , type=float, default=1e-4)\r\n    parser.add_argument(\"--lr_scheduler_type\"\
+          , type=str, default=\"linear\") # For Llama-2 model use cosine\r\n    parser.add_argument(\"\
+          --num_warmup_steps\", type=int, default=100)\r\n    parser.add_argument(\"\
+          --weight_decay\", type=float, default=0.1)\r\n    parser.add_argument(\"\
+          --local_rank\", type=int, default=0)\r\n    parser.add_argument(\"--neftune_noise_alpha\"\
+          , type=int, default=5)\r\n    parser.add_argument(\"--fp16\", action=\"\
+          store_true\", default=False)\r\n    parser.add_argument(\"--bf16\", action=\"\
+          store_true\", default=True)\r\n    parser.add_argument(\"--gradient_checkpointing\"\
+          , action=\"store_true\", default=True)\r\n    #parser.add_argument(\"--use_reentrant\"\
+          , default=False)\r\n    parser.add_argument(\"--seed\", type=int, default=0)\r\
+          \n    parser.add_argument(\"--num_workers\", type=int, default=4)\r\n  \
+          \  parser.add_argument(\"--output_dir\", type=str, default=\"/path/to/checkpoints\"\
+          )\r\n    parser.add_argument(\"--log_freq\", default=1, type=int)\r\n  \
+          \  parser.add_argument(\"--eval_freq\", default=300, type=int)\r\n    parser.add_argument(\"\
+          --save_freq\", default=300, type=int)\r\n\r\n    args, unknown = parser.parse_known_args()\r\
+          \n\r\n    return args\r\n\r\nThis is my Training Function, where I'm also\
+          \ initializing QLoRA and Phi-2:\r\n\r\ndef run_training(args, train_data,\
+          \ val_data):\r\n    print(\"Loading the model\")\r\n\r\n    lora_config\
+          \ = LoraConfig(\r\n        r=64,\r\n        lora_alpha=128,\r\n        lora_dropout=0.05,\r\
+          \n        bias=\"none\",\r\n        task_type=\"CAUSAL_LM\",\r\n       \
+          \ target_modules=[\r\n            \"q_proj\",\r\n            \"k_proj\"\
+          ,\r\n            \"v_proj\",\r\n            \"dense\"\r\n            ]\r\
+          \n    )\r\n\r\n    train_data.start_iteration = 0\r\n\r\n    print(\"Starting\
+          \ main loop\")\r\n\r\n    bnb_config = BitsAndBytesConfig(\r\n        load_in_4bit=True,\r\
+          \n        bnb_4bit_quant_type='nf4',\r\n        bnb_4bit_compute_dtype=torch.bfloat16,\r\
+          \n        bnb_4bit_use_double_quant=False,\r\n    )\r\n\r\n    training_args\
+          \ = TrainingArguments(\r\n        output_dir=args.output_dir,\r\n      \
+          \  dataloader_drop_last=True,\r\n        evaluation_strategy=\"steps\",\r\
+          \n        #torch_compile=True,\r\n        max_steps=args.max_steps,\r\n\
+          \        eval_steps=args.eval_freq,\r\n        save_steps=args.save_freq,\r\
+          \n        logging_steps=args.log_freq,\r\n        per_device_train_batch_size=args.batch_size,\r\
+          \n        per_device_eval_batch_size=args.batch_size,\r\n        learning_rate=args.learning_rate,\r\
+          \n        lr_scheduler_type=args.lr_scheduler_type,\r\n        warmup_steps=args.num_warmup_steps,\r\
+          \n        gradient_accumulation_steps=args.gradient_accumulation_steps,\r\
+          \n        gradient_checkpointing=args.gradient_checkpointing,\r\n      \
+          \  fp16=args.fp16,\r\n        bf16=args.bf16,\r\n        optim=\"paged_adamw_32bit\"\
+          ,\r\n        weight_decay=args.weight_decay,\r\n        neftune_noise_alpha=args.neftune_noise_alpha,\r\
+          \n        #deepspeed=\"ds_config_zero3.json\",\r\n        run_name=\"Phi-2-ParlaMint-reduced-QLoRA\"\
+          ,\r\n        report_to=\"wandb\",\r\n        ddp_find_unused_parameters=False,\r\
+          \n    )\r\n\r\n    model = AutoModelForCausalLM.from_pretrained(\r\n   \
+          \     args.model_path, quantization_config=bnb_config, trust_remote_code=True,\
+          \ use_flash_attention_2=True, device_map={\"\":\r\nAccelerator().process_index}\r\
+          \n    )\r\n\r\n\r\n\r\n    trainer = SFTTrainer(\r\n        model=model,\r\
+          \n        args=training_args,\r\n        train_dataset=train_data,\r\n \
+          \       eval_dataset=val_data,\r\n        peft_config=lora_config,\r\n \
+          \       packing=True\r\n    )\r\n\r\n    print_trainable_parameters(trainer.model)\r\
+          \n\r\n    print(\"Training...\")\r\n    trainer.train()\r\n\r\n    print(\"\
+          Saving last checkpoint of the model\")\r\n    trainer.model.save_pretrained(os.path.join(args.output_dir,\
+          \ \"final_checkpoint/\"))\r\n\r\nCould you guys help me along? Am I doing\
+          \ something wrong? Am I missing something?\r\n\r\nThe Dataset that I'm using\
+          \ is a reduced version of the ParlaMint Corpus, as this is all part of my\
+          \ Master\u2019s Thesis. I haven't uploaded the dataset to the Hub yet. I\
+          \ did run it on a Llama-2 fine-tuning run, where it did converge quite nicely."
+        updatedAt: '2024-01-16T14:53:44.209Z'
+      numEdits: 0
+      reactions: []
+    id: 65a69878a71dec4c79f2090f
+    type: comment
+  author: h4rz3rk4s3
+  content: "Hi folks,\r\n\r\nwhen fine-tuning Phi-2 with SFTTrainer using QLoRA and\
+    \ Flash Attention 2, the model does not converge and starts with quite a high\
+    \ initial loss at around 4.3. The loss fluctuates, but stays between 4.2 and 4.3\
+    \ after 42 training steps.\r\n\r\nI'm running this code in Google Colab on an\
+    \ A100 and installed the following libraries:\r\n\r\n!pip uninstall -y transformers\r\
+    \n!pip install git+https://github.com/huggingface/transformers\r\n!pip install\
+    \ trl[peft]\r\n!pip install bitsandbytes loralib\r\n!pip install wandb\r\n!pip\
+    \ install datasets\r\n!pip install accelerate\r\n#!pip install deepspeed\r\n#!pip\
+    \ install -U optimum\r\n!pip install -U flash-attn\r\n\r\nThese are my Training\
+    \ Arguments:\r\n\r\ndef get_args():\r\n    parser = argparse.ArgumentParser()\r\
+    \n    parser.add_argument(\"--model_path\", type=str, default=\"/path/to/Phi-2\"\
+    )\r\n    parser.add_argument(\"--dataset_name\", type=str, default=\"/path/to/training_data\"\
+    )\r\n    #parser.add_argument(\"--subset\", type=str, default=\"data/finetune\"\
+    )\r\n    parser.add_argument(\"--split\", type=str, default=\"train\")\r\n   \
+    \ #parser.add_argument(\"--size_valid_set\", type=int, default=4000)\r\n    parser.add_argument(\"\
+    --streaming\", action=\"store_true\")\r\n    #parser.add_argument(\"--shuffle_buffer\"\
+    , type=int, default=5000)\r\n    parser.add_argument(\"--seq_length\", type=int,\
+    \ default=1024)\r\n    parser.add_argument(\"--max_steps\", type=int, default=1000)\r\
+    \n    parser.add_argument(\"--batch_size\", type=int, default=32)\r\n    parser.add_argument(\"\
+    --gradient_accumulation_steps\", type=int, default=8)\r\n    parser.add_argument(\"\
+    --eos_token_id\", type=int, default=2)\r\n    parser.add_argument(\"--learning_rate\"\
+    , type=float, default=1e-4)\r\n    parser.add_argument(\"--lr_scheduler_type\"\
+    , type=str, default=\"linear\") # For Llama-2 model use cosine\r\n    parser.add_argument(\"\
+    --num_warmup_steps\", type=int, default=100)\r\n    parser.add_argument(\"--weight_decay\"\
+    , type=float, default=0.1)\r\n    parser.add_argument(\"--local_rank\", type=int,\
+    \ default=0)\r\n    parser.add_argument(\"--neftune_noise_alpha\", type=int, default=5)\r\
+    \n    parser.add_argument(\"--fp16\", action=\"store_true\", default=False)\r\n\
+    \    parser.add_argument(\"--bf16\", action=\"store_true\", default=True)\r\n\
+    \    parser.add_argument(\"--gradient_checkpointing\", action=\"store_true\",\
+    \ default=True)\r\n    #parser.add_argument(\"--use_reentrant\", default=False)\r\
+    \n    parser.add_argument(\"--seed\", type=int, default=0)\r\n    parser.add_argument(\"\
+    --num_workers\", type=int, default=4)\r\n    parser.add_argument(\"--output_dir\"\
+    , type=str, default=\"/path/to/checkpoints\")\r\n    parser.add_argument(\"--log_freq\"\
+    , default=1, type=int)\r\n    parser.add_argument(\"--eval_freq\", default=300,\
+    \ type=int)\r\n    parser.add_argument(\"--save_freq\", default=300, type=int)\r\
+    \n\r\n    args, unknown = parser.parse_known_args()\r\n\r\n    return args\r\n\
+    \r\nThis is my Training Function, where I'm also initializing QLoRA and Phi-2:\r\
+    \n\r\ndef run_training(args, train_data, val_data):\r\n    print(\"Loading the\
+    \ model\")\r\n\r\n    lora_config = LoraConfig(\r\n        r=64,\r\n        lora_alpha=128,\r\
+    \n        lora_dropout=0.05,\r\n        bias=\"none\",\r\n        task_type=\"\
+    CAUSAL_LM\",\r\n        target_modules=[\r\n            \"q_proj\",\r\n      \
+    \      \"k_proj\",\r\n            \"v_proj\",\r\n            \"dense\"\r\n   \
+    \         ]\r\n    )\r\n\r\n    train_data.start_iteration = 0\r\n\r\n    print(\"\
+    Starting main loop\")\r\n\r\n    bnb_config = BitsAndBytesConfig(\r\n        load_in_4bit=True,\r\
+    \n        bnb_4bit_quant_type='nf4',\r\n        bnb_4bit_compute_dtype=torch.bfloat16,\r\
+    \n        bnb_4bit_use_double_quant=False,\r\n    )\r\n\r\n    training_args =\
+    \ TrainingArguments(\r\n        output_dir=args.output_dir,\r\n        dataloader_drop_last=True,\r\
+    \n        evaluation_strategy=\"steps\",\r\n        #torch_compile=True,\r\n \
+    \       max_steps=args.max_steps,\r\n        eval_steps=args.eval_freq,\r\n  \
+    \      save_steps=args.save_freq,\r\n        logging_steps=args.log_freq,\r\n\
+    \        per_device_train_batch_size=args.batch_size,\r\n        per_device_eval_batch_size=args.batch_size,\r\
+    \n        learning_rate=args.learning_rate,\r\n        lr_scheduler_type=args.lr_scheduler_type,\r\
+    \n        warmup_steps=args.num_warmup_steps,\r\n        gradient_accumulation_steps=args.gradient_accumulation_steps,\r\
+    \n        gradient_checkpointing=args.gradient_checkpointing,\r\n        fp16=args.fp16,\r\
+    \n        bf16=args.bf16,\r\n        optim=\"paged_adamw_32bit\",\r\n        weight_decay=args.weight_decay,\r\
+    \n        neftune_noise_alpha=args.neftune_noise_alpha,\r\n        #deepspeed=\"\
+    ds_config_zero3.json\",\r\n        run_name=\"Phi-2-ParlaMint-reduced-QLoRA\"\
+    ,\r\n        report_to=\"wandb\",\r\n        ddp_find_unused_parameters=False,\r\
+    \n    )\r\n\r\n    model = AutoModelForCausalLM.from_pretrained(\r\n        args.model_path,\
+    \ quantization_config=bnb_config, trust_remote_code=True, use_flash_attention_2=True,\
+    \ device_map={\"\":\r\nAccelerator().process_index}\r\n    )\r\n\r\n\r\n\r\n \
+    \   trainer = SFTTrainer(\r\n        model=model,\r\n        args=training_args,\r\
+    \n        train_dataset=train_data,\r\n        eval_dataset=val_data,\r\n    \
+    \    peft_config=lora_config,\r\n        packing=True\r\n    )\r\n\r\n    print_trainable_parameters(trainer.model)\r\
+    \n\r\n    print(\"Training...\")\r\n    trainer.train()\r\n\r\n    print(\"Saving\
+    \ last checkpoint of the model\")\r\n    trainer.model.save_pretrained(os.path.join(args.output_dir,\
+    \ \"final_checkpoint/\"))\r\n\r\nCould you guys help me along? Am I doing something\
+    \ wrong? Am I missing something?\r\n\r\nThe Dataset that I'm using is a reduced\
+    \ version of the ParlaMint Corpus, as this is all part of my Master\u2019s Thesis.\
+    \ I haven't uploaded the dataset to the Hub yet. I did run it on a Llama-2 fine-tuning\
+    \ run, where it did converge quite nicely."
+  created_at: 2024-01-16 14:53:44+00:00
+  edited: false
+  hidden: false
+  id: 65a69878a71dec4c79f2090f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-16T16:07:35.000Z'
+    data:
+      edited: false
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9550022482872009
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: "<p>Hello <span data-props=\"{&quot;user&quot;:&quot;h4rz3rk4s3&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/h4rz3rk4s3\"\
+          >@<span class=\"underline\">h4rz3rk4s3</span></a></span>\n\n\t</span></span>!</p>\n\
+          <p>Could you please try again the very same script you are using, but with\
+          \ the latest revision?</p>\n<p>We might have found the problem source. Phi\
+          \ has never used <code>softmax_scale</code> when it was trained with Flash-Attention.\
+          \ Enabling it to <code>1.0</code> seems to corrupt the outputs when using\
+          \ Flash-Attention.</p>\n<p>Regards,<br>Gustavo.</p>\n"
+        raw: 'Hello @h4rz3rk4s3!
+
+
+          Could you please try again the very same script you are using, but with
+          the latest revision?
+
+
+          We might have found the problem source. Phi has never used `softmax_scale`
+          when it was trained with Flash-Attention. Enabling it to `1.0` seems to
+          corrupt the outputs when using Flash-Attention.
+
+
+          Regards,
+
+          Gustavo.'
+        updatedAt: '2024-01-16T16:07:35.860Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6a9c7c26011a4a791e281
+    type: comment
+  author: gugarosa
+  content: 'Hello @h4rz3rk4s3!
+
+
+    Could you please try again the very same script you are using, but with the latest
+    revision?
+
+
+    We might have found the problem source. Phi has never used `softmax_scale` when
+    it was trained with Flash-Attention. Enabling it to `1.0` seems to corrupt the
+    outputs when using Flash-Attention.
+
+
+    Regards,
+
+    Gustavo.'
+  created_at: 2024-01-16 16:07:35+00:00
+  edited: false
+  hidden: false
+  id: 65a6a9c7c26011a4a791e281
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+      fullname: Giuliano Wietig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: h4rz3rk4s3
+      type: user
+    createdAt: '2024-01-16T16:21:26.000Z'
+    data:
+      edited: false
+      editors:
+      - h4rz3rk4s3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8336278200149536
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+          fullname: Giuliano Wietig
+          isHf: false
+          isPro: false
+          name: h4rz3rk4s3
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;gugarosa&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/gugarosa\">@<span class=\"\
+          underline\">gugarosa</span></a></span>\n\n\t</span></span> Yes, one moment.\
+          \ I will let the script run again.</p>\n"
+        raw: '@gugarosa Yes, one moment. I will let the script run again.
+
+          '
+        updatedAt: '2024-01-16T16:21:26.620Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - gugarosa
+    id: 65a6ad0621943858bd8c8631
+    type: comment
+  author: h4rz3rk4s3
+  content: '@gugarosa Yes, one moment. I will let the script run again.
+
+    '
+  created_at: 2024-01-16 16:21:26+00:00
+  edited: false
+  hidden: false
+  id: 65a6ad0621943858bd8c8631
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+      fullname: Giuliano Wietig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: h4rz3rk4s3
+      type: user
+    createdAt: '2024-01-16T16:37:21.000Z'
+    data:
+      edited: false
+      editors:
+      - h4rz3rk4s3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9715514779090881
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+          fullname: Giuliano Wietig
+          isHf: false
+          isPro: false
+          name: h4rz3rk4s3
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;gugarosa&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/gugarosa\">@<span class=\"\
+          underline\">gugarosa</span></a></span>\n\n\t</span></span> It started with\
+          \ a loss of 3.25 and after 10 steps it is still fluctuating. I will keep\
+          \ it running for a bit and update you.</p>\n<p>Thanks for the help so far!</p>\n"
+        raw: '@gugarosa It started with a loss of 3.25 and after 10 steps it is still
+          fluctuating. I will keep it running for a bit and update you.
+
+
+          Thanks for the help so far!'
+        updatedAt: '2024-01-16T16:37:21.798Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6b0c103548d61dbeb244c
+    type: comment
+  author: h4rz3rk4s3
+  content: '@gugarosa It started with a loss of 3.25 and after 10 steps it is still
+    fluctuating. I will keep it running for a bit and update you.
+
+
+    Thanks for the help so far!'
+  created_at: 2024-01-16 16:37:21+00:00
+  edited: false
+  hidden: false
+  id: 65a6b0c103548d61dbeb244c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+      fullname: Giuliano Wietig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: h4rz3rk4s3
+      type: user
+    createdAt: '2024-01-16T16:56:31.000Z'
+    data:
+      edited: false
+      editors:
+      - h4rz3rk4s3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9834172129631042
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+          fullname: Giuliano Wietig
+          isHf: false
+          isPro: false
+          name: h4rz3rk4s3
+          type: user
+        html: '<p>Wait a second, I think I misunderstood you. I just saw that you
+          updated modeling_phi.py. I first thought you were referring to an update
+          in transformers. I''ll download it again, run the script and update you.</p>
+
+          '
+        raw: Wait a second, I think I misunderstood you. I just saw that you updated
+          modeling_phi.py. I first thought you were referring to an update in transformers.
+          I'll download it again, run the script and update you.
+        updatedAt: '2024-01-16T16:56:31.119Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - gugarosa
+    id: 65a6b53fe94d40886a485bec
+    type: comment
+  author: h4rz3rk4s3
+  content: Wait a second, I think I misunderstood you. I just saw that you updated
+    modeling_phi.py. I first thought you were referring to an update in transformers.
+    I'll download it again, run the script and update you.
+  created_at: 2024-01-16 16:56:31+00:00
+  edited: false
+  hidden: false
+  id: 65a6b53fe94d40886a485bec
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-16T17:00:16.000Z'
+    data:
+      edited: true
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9391509890556335
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>No worries! The idea is to merge into <code>transformers</code>,
+          but we can do it here for a more quick debug.</p>
+
+          '
+        raw: No worries! The idea is to merge into `transformers`, but we can do it
+          here for a more quick debug.
+        updatedAt: '2024-01-16T17:00:27.097Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - h4rz3rk4s3
+    id: 65a6b62081cc301764fdf039
+    type: comment
+  author: gugarosa
+  content: No worries! The idea is to merge into `transformers`, but we can do it
+    here for a more quick debug.
+  created_at: 2024-01-16 17:00:16+00:00
+  edited: true
+  hidden: false
+  id: 65a6b62081cc301764fdf039
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+      fullname: Giuliano Wietig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: h4rz3rk4s3
+      type: user
+    createdAt: '2024-01-16T17:35:30.000Z'
+    data:
+      edited: false
+      editors:
+      - h4rz3rk4s3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9642913937568665
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f03ed83cf9579f88d009b40424f1e4ae.svg
+          fullname: Giuliano Wietig
+          isHf: false
+          isPro: false
+          name: h4rz3rk4s3
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;gugarosa&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/gugarosa\">@<span class=\"\
+          underline\">gugarosa</span></a></span>\n\n\t</span></span> No improvement.\
+          \ The loss still starts and idles around 3.25. I will try to run it with\
+          \ refs/pr/23, as suggested in a different discussion, later and see if that\
+          \ works for me.</p>\n<p>Thanks again for the help!</p>\n"
+        raw: '@gugarosa No improvement. The loss still starts and idles around 3.25.
+          I will try to run it with refs/pr/23, as suggested in a different discussion,
+          later and see if that works for me.
+
+
+          Thanks again for the help!'
+        updatedAt: '2024-01-16T17:35:30.686Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6be62d9c4c62f766c9548
+    type: comment
+  author: h4rz3rk4s3
+  content: '@gugarosa No improvement. The loss still starts and idles around 3.25.
+    I will try to run it with refs/pr/23, as suggested in a different discussion,
+    later and see if that works for me.
+
+
+    Thanks again for the help!'
+  created_at: 2024-01-16 17:35:30+00:00
+  edited: false
+  hidden: false
+  id: 65a6be62d9c4c62f766c9548
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-16T17:46:23.000Z'
+    data:
+      edited: false
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9474491477012634
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>No problems! Thanks for the update!! We will continue investigating
+          as well.</p>
+
+          '
+        raw: No problems! Thanks for the update!! We will continue investigating as
+          well.
+        updatedAt: '2024-01-16T17:46:23.937Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - h4rz3rk4s3
+    id: 65a6c0ef81cc30176401b986
+    type: comment
+  author: gugarosa
+  content: No problems! Thanks for the update!! We will continue investigating as
+    well.
+  created_at: 2024-01-16 17:46:23+00:00
+  edited: false
+  hidden: false
+  id: 65a6c0ef81cc30176401b986
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6937154ebea15ca3681bd99ffa6d366a.svg
+      fullname: Mart Bakler
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mbakler581c
+      type: user
+    createdAt: '2024-01-16T21:37:54.000Z'
+    data:
+      edited: false
+      editors:
+      - mbakler581c
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9634872674942017
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6937154ebea15ca3681bd99ffa6d366a.svg
+          fullname: Mart Bakler
+          isHf: false
+          isPro: false
+          name: mbakler581c
+          type: user
+        html: '<p>I have a similar issue, where finetuned models (on some math problems)
+          after the update have deteriorated. Before the update using fp16 mixed precision
+          training (with HF accelerate) finetuned models got an avg of 63% accuracy,
+          after the update fp16 training doesn''t work anymore (loss give nans) and
+          bf16 training results in a model with average acc of 55%. Is this because
+          the original model is trained with fp16 and bf16 is expected to perform
+          worse (and currently there''s some issue with fp16 mixed precision training)?</p>
+
+          '
+        raw: I have a similar issue, where finetuned models (on some math problems)
+          after the update have deteriorated. Before the update using fp16 mixed precision
+          training (with HF accelerate) finetuned models got an avg of 63% accuracy,
+          after the update fp16 training doesn't work anymore (loss give nans) and
+          bf16 training results in a model with average acc of 55%. Is this because
+          the original model is trained with fp16 and bf16 is expected to perform
+          worse (and currently there's some issue with fp16 mixed precision training)?
+        updatedAt: '2024-01-16T21:37:54.073Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6f7323bb0e70b41931825
+    type: comment
+  author: mbakler581c
+  content: I have a similar issue, where finetuned models (on some math problems)
+    after the update have deteriorated. Before the update using fp16 mixed precision
+    training (with HF accelerate) finetuned models got an avg of 63% accuracy, after
+    the update fp16 training doesn't work anymore (loss give nans) and bf16 training
+    results in a model with average acc of 55%. Is this because the original model
+    is trained with fp16 and bf16 is expected to perform worse (and currently there's
+    some issue with fp16 mixed precision training)?
+  created_at: 2024-01-16 21:37:54+00:00
+  edited: false
+  hidden: false
+  id: 65a6f7323bb0e70b41931825
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-17T17:57:30.000Z'
+    data:
+      edited: false
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.952299952507019
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>Could you please re-run with the latest update (FP16)? We updated
+          the <code>modeling_phi.py</code> file and disabled the auto-casting on the
+          Attention layer. This is the same fix as the previous code had.</p>
+
+          <p>For the BF16, I think it is acceptable since the pre-trained model was
+          trained with FP16.</p>
+
+          '
+        raw: 'Could you please re-run with the latest update (FP16)? We updated the
+          `modeling_phi.py` file and disabled the auto-casting on the Attention layer.
+          This is the same fix as the previous code had.
+
+
+          For the BF16, I think it is acceptable since the pre-trained model was trained
+          with FP16.'
+        updatedAt: '2024-01-17T17:57:30.842Z'
+      numEdits: 0
+      reactions: []
+    id: 65a8150a65e4f1a5eb1d1f79
+    type: comment
+  author: gugarosa
+  content: 'Could you please re-run with the latest update (FP16)? We updated the
+    `modeling_phi.py` file and disabled the auto-casting on the Attention layer. This
+    is the same fix as the previous code had.
+
+
+    For the BF16, I think it is acceptable since the pre-trained model was trained
+    with FP16.'
+  created_at: 2024-01-17 17:57:30+00:00
+  edited: false
+  hidden: false
+  id: 65a8150a65e4f1a5eb1d1f79
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6937154ebea15ca3681bd99ffa6d366a.svg
+      fullname: Mart Bakler
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mbakler581c
+      type: user
+    createdAt: '2024-01-18T21:37:30.000Z'
+    data:
+      edited: true
+      editors:
+      - mbakler581c
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9593575596809387
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6937154ebea15ca3681bd99ffa6d366a.svg
+          fullname: Mart Bakler
+          isHf: false
+          isPro: false
+          name: mbakler581c
+          type: user
+        html: '<p>It indeed now is training with fp16 as pre-update, thanks for the
+          quick fix!</p>
+
+          '
+        raw: It indeed now is training with fp16 as pre-update, thanks for the quick
+          fix!
+        updatedAt: '2024-01-18T21:37:42.199Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - gugarosa
+    id: 65a99a1aa1da92581e8887fe
+    type: comment
+  author: mbakler581c
+  content: It indeed now is training with fp16 as pre-update, thanks for the quick
+    fix!
+  created_at: 2024-01-18 21:37:30+00:00
+  edited: true
+  hidden: false
+  id: 65a99a1aa1da92581e8887fe
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-19T13:56:31.000Z'
+    data:
+      edited: false
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9142137765884399
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>No problems! Please let me know if you see anything else.</p>
+
+          '
+        raw: No problems! Please let me know if you see anything else.
+        updatedAt: '2024-01-19T13:56:31.567Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65aa7f8f2ed95c799f21939c
+    id: 65aa7f8f2ed95c799f219399
+    type: comment
+  author: gugarosa
+  content: No problems! Please let me know if you see anything else.
+  created_at: 2024-01-19 13:56:31+00:00
+  edited: false
+  hidden: false
+  id: 65aa7f8f2ed95c799f219399
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-19T13:56:31.000Z'
+    data:
+      status: closed
+    id: 65aa7f8f2ed95c799f21939c
+    type: status-change
+  author: gugarosa
+  created_at: 2024-01-19 13:56:31+00:00
+  id: 65aa7f8f2ed95c799f21939c
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 86
+repo_id: microsoft/phi-2
+repo_type: model
+status: closed
+target_branch: null
+title: Fine-Tuning Phi-2 using QLoRA and Flash Attention 2 does not converge after
+  recent updates

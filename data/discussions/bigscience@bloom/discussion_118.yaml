@@ -1,0 +1,565 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: bver
+conflicting_files: null
+created_at: 2022-09-28 17:19:00+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+      fullname: Pavel Suchmann
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bver
+      type: user
+    createdAt: '2022-09-28T18:19:00.000Z'
+    data:
+      edited: true
+      editors:
+      - bver
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+          fullname: Pavel Suchmann
+          isHf: false
+          isPro: false
+          name: bver
+          type: user
+        html: "<p>Hello,</p>\n<p>I have tested the 176B bloom model on the 8*A100\
+          \ GPUs setup. It should be possible to run it as fp16, without the <code>load_in_8bit</code>\
+          \ quantization feature.<br>Although the model was initialized successfully\
+          \ there were inference issues.</p>\n<p>Code:</p>\n<pre><code>model = BloomForCausalLM.from_pretrained(\n\
+          \   '.',  # the model path (downloaded locally)\n   device_map='balanced_low_0',\n\
+          \   offload_folder='/mnt/bloom/cache'\n)\ntokenizer = BloomTokenizerFast.from_pretrained('.')\
+          \ # (downloaded locally)\ninputs = tokenizer(prompt, return_tensors=\"pt\"\
+          ).to(\u201Ccuda:0\u201D)\noutput = model.generate(inputs[\"input_ids\"],\
+          \ ...  )\ntext = tokenizer.decode(output[0])\n</code></pre>\n<p>Observations:</p>\n\
+          <ol>\n<li>Model initialization took 10-20 mins.</li>\n<li>After the initialization\
+          \ with <code>device_map='balanced_low_0'</code> the GPU memory allocated\
+          \ was 313898MiB (i.e. 47.9% of total 81920MiB *8 = 655360MiB); No model\
+          \ modules offloaded to disk.</li>\n<li>The <a href=\"https://huggingface.co/docs/accelerate/v0.12.0/en/usage_guides/big_modeling#designing-a-device-map\"\
+          >max_memory</a> map recommended by the accelerate doc for BLOOM-176B on\
+          \ 8x80 A100 setup resulted in tensors offloaded to disk.</li>\n<li>The inference\
+          \ is very slow (several minutes for ~100 tokens). Only the single GPU (cuda:1)\
+          \ has the utilization 15-41%, other 7 GPUs have 0% all the time.</li>\n\
+          </ol>\n<p>Suspicions:</p>\n<ol>\n<li>Some operations are done by CPUs with\
+          \ ineffective RAM/GPU communication.</li>\n<li>The missing <code>preload_module_classes=['BloomBlock']</code>\
+          \ argument is crucial.</li>\n<li><code>inputs</code> should be moved to\
+          \ a different device or the tokenizer itself should be moved to some device\
+          \ (which one?).</li>\n<li>GPU driver or CUDA versions are not sufficient\
+          \ for 8*A100.</li>\n</ol>\n<p>Questions: </p>\n<ol>\n<li>What is the expected\
+          \ speed of inference on 8*A100 GPUs if everything works normally?</li>\n\
+          <li>Is there any important detail missing?</li>\n</ol>\n<p>I would appreciate\
+          \ comments from those who have experience with this huge model.</p>\n<p>Thank\
+          \ you in advance!</p>\n<p>PS:<br>There are related discussions, e.g. :</p>\n\
+          <ul>\n<li><a href=\"https://huggingface.co/bigscience/bloom/discussions/109\"\
+          >How much GPU memory needed?</a> or </li>\n<li><a href=\"https://huggingface.co/bigscience/bloom/discussions/87\"\
+          >Can Bloom-176B really be evaluated on normal hardware...</a>.</li>\n</ul>\n\
+          <p>Versions: </p>\n<ul>\n<li>transformers 4.22.2</li>\n<li>accelerate 0.12.0</li>\n\
+          <li>tensorboard 2.10.1</li>\n<li>pytorch 1.12.1</li>\n<li>GPU Driver Version:\
+          \ 510.73.08    </li>\n<li>CUDA Version: 11.6</li>\n</ul>\n"
+        raw: "Hello,\n\nI have tested the 176B bloom model on the 8*A100 GPUs setup.\
+          \ It should be possible to run it as fp16, without the `load_in_8bit` quantization\
+          \ feature. \nAlthough the model was initialized successfully there were\
+          \ inference issues.\n\nCode:\n```\nmodel = BloomForCausalLM.from_pretrained(\n\
+          \   '.',  # the model path (downloaded locally)\n   device_map='balanced_low_0',\n\
+          \   offload_folder='/mnt/bloom/cache'\n)\ntokenizer = BloomTokenizerFast.from_pretrained('.')\
+          \ # (downloaded locally)\ninputs = tokenizer(prompt, return_tensors=\"pt\"\
+          ).to(\u201Ccuda:0\u201D)\noutput = model.generate(inputs[\"input_ids\"],\
+          \ ...  )\ntext = tokenizer.decode(output[0])\n```\n\nObservations:\n1. Model\
+          \ initialization took 10-20 mins.\n2. After the initialization with `device_map='balanced_low_0'`\
+          \ the GPU memory allocated was 313898MiB (i.e. 47.9% of total 81920MiB *8\
+          \ = 655360MiB); No model modules offloaded to disk.\n3. The [max_memory](https://huggingface.co/docs/accelerate/v0.12.0/en/usage_guides/big_modeling#designing-a-device-map)\
+          \ map recommended by the accelerate doc for BLOOM-176B on 8x80 A100 setup\
+          \ resulted in tensors offloaded to disk.\n4. The inference is very slow\
+          \ (several minutes for ~100 tokens). Only the single GPU (cuda:1) has the\
+          \ utilization 15-41%, other 7 GPUs have 0% all the time.\n\nSuspicions:\n\
+          1. Some operations are done by CPUs with ineffective RAM/GPU communication.\n\
+          2. The missing `preload_module_classes=['BloomBlock']` argument is crucial.\n\
+          3. `inputs` should be moved to a different device or the tokenizer itself\
+          \ should be moved to some device (which one?).\n4. GPU driver or CUDA versions\
+          \ are not sufficient for 8*A100.\n\nQuestions: \n1. What is the expected\
+          \ speed of inference on 8*A100 GPUs if everything works normally?\n2. Is\
+          \ there any important detail missing?\n\nI would appreciate comments from\
+          \ those who have experience with this huge model.\n\nThank you in advance!\n\
+          \nPS:\nThere are related discussions, e.g. :\n- [How much GPU memory needed?](https://huggingface.co/bigscience/bloom/discussions/109)\
+          \ or \n- [Can Bloom-176B really be evaluated on normal hardware...](https://huggingface.co/bigscience/bloom/discussions/87).\n\
+          \nVersions: \n- transformers 4.22.2\n- accelerate 0.12.0\n- tensorboard\
+          \ 2.10.1\n- pytorch 1.12.1\n- GPU Driver Version: 510.73.08    \n- CUDA\
+          \ Version: 11.6"
+        updatedAt: '2022-09-29T06:42:06.892Z'
+      numEdits: 3
+      reactions: []
+    id: 63349014c3cb9eda9329e63d
+    type: comment
+  author: bver
+  content: "Hello,\n\nI have tested the 176B bloom model on the 8*A100 GPUs setup.\
+    \ It should be possible to run it as fp16, without the `load_in_8bit` quantization\
+    \ feature. \nAlthough the model was initialized successfully there were inference\
+    \ issues.\n\nCode:\n```\nmodel = BloomForCausalLM.from_pretrained(\n   '.',  #\
+    \ the model path (downloaded locally)\n   device_map='balanced_low_0',\n   offload_folder='/mnt/bloom/cache'\n\
+    )\ntokenizer = BloomTokenizerFast.from_pretrained('.') # (downloaded locally)\n\
+    inputs = tokenizer(prompt, return_tensors=\"pt\").to(\u201Ccuda:0\u201D)\noutput\
+    \ = model.generate(inputs[\"input_ids\"], ...  )\ntext = tokenizer.decode(output[0])\n\
+    ```\n\nObservations:\n1. Model initialization took 10-20 mins.\n2. After the initialization\
+    \ with `device_map='balanced_low_0'` the GPU memory allocated was 313898MiB (i.e.\
+    \ 47.9% of total 81920MiB *8 = 655360MiB); No model modules offloaded to disk.\n\
+    3. The [max_memory](https://huggingface.co/docs/accelerate/v0.12.0/en/usage_guides/big_modeling#designing-a-device-map)\
+    \ map recommended by the accelerate doc for BLOOM-176B on 8x80 A100 setup resulted\
+    \ in tensors offloaded to disk.\n4. The inference is very slow (several minutes\
+    \ for ~100 tokens). Only the single GPU (cuda:1) has the utilization 15-41%, other\
+    \ 7 GPUs have 0% all the time.\n\nSuspicions:\n1. Some operations are done by\
+    \ CPUs with ineffective RAM/GPU communication.\n2. The missing `preload_module_classes=['BloomBlock']`\
+    \ argument is crucial.\n3. `inputs` should be moved to a different device or the\
+    \ tokenizer itself should be moved to some device (which one?).\n4. GPU driver\
+    \ or CUDA versions are not sufficient for 8*A100.\n\nQuestions: \n1. What is the\
+    \ expected speed of inference on 8*A100 GPUs if everything works normally?\n2.\
+    \ Is there any important detail missing?\n\nI would appreciate comments from those\
+    \ who have experience with this huge model.\n\nThank you in advance!\n\nPS:\n\
+    There are related discussions, e.g. :\n- [How much GPU memory needed?](https://huggingface.co/bigscience/bloom/discussions/109)\
+    \ or \n- [Can Bloom-176B really be evaluated on normal hardware...](https://huggingface.co/bigscience/bloom/discussions/87).\n\
+    \nVersions: \n- transformers 4.22.2\n- accelerate 0.12.0\n- tensorboard 2.10.1\n\
+    - pytorch 1.12.1\n- GPU Driver Version: 510.73.08    \n- CUDA Version: 11.6"
+  created_at: 2022-09-28 17:19:00+00:00
+  edited: true
+  hidden: false
+  id: 63349014c3cb9eda9329e63d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2022-09-29T09:04:09.000Z'
+    data:
+      edited: true
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: "<p>hi <span data-props=\"{&quot;user&quot;:&quot;bver&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/bver\">@<span class=\"\
+          underline\">bver</span></a></span>\n\n\t</span></span>!<br>Thanks for the\
+          \ great summary! Indeed, I suspect that some weights are offloaded to the\
+          \ disk / cpu, which could explain the inference speed that you are observing.<br>One\
+          \ thing I am curious about is if you can try:</p>\n<pre><code>model = BloomForCausalLM.from_pretrained(\n\
+          \   '.',  # the model path (downloaded locally)\n   device_map='auto',\n\
+          )\n</code></pre>\n<p>This should work fine I guess, since it is what we\
+          \ are using, but most importantly the script should not yield you an error\
+          \ as it did I guess when you tried</p>\n<pre><code>model = BloomForCausalLM.from_pretrained(\n\
+          \   '.',  # the model path (downloaded locally)\n   device_map='balanced_low_0',\n\
+          )\n</code></pre>\n<p>(The command above should yield you an error <code>Please\
+          \ specify an offload folder...</code>)</p>\n<p>If this is the case then\
+          \ I guess we can dig further ;)</p>\n<p>PS:<br>Also another thing that I\
+          \ suspect is that the model might be loaded in fp32, therefore the device\
+          \ maps that are created by <code>accelerate</code> takes into account <code>fp32</code>\
+          \ weights! In this case make sure you load it in <code>bf16</code> by doing:</p>\n\
+          <pre><code>model = BloomForCausalLM.from_pretrained(\n   '.',  # the model\
+          \ path (downloaded locally)\n   device_map='auto',\n   torch_dtype=\"auto\"\
+          ,\n)\n</code></pre>\n<p>or</p>\n<pre><code>model = BloomForCausalLM.from_pretrained(\n\
+          \   '.',  # the model path (downloaded locally)\n   device_map='auto',\n\
+          \   torch_dtype=torch.bfloat16,\n)\n</code></pre>\n"
+        raw: "hi @bver!\nThanks for the great summary! Indeed, I suspect that some\
+          \ weights are offloaded to the disk / cpu, which could explain the inference\
+          \ speed that you are observing.\nOne thing I am curious about is if you\
+          \ can try:\n```\nmodel = BloomForCausalLM.from_pretrained(\n   '.',  # the\
+          \ model path (downloaded locally)\n   device_map='auto',\n)\n```\nThis should\
+          \ work fine I guess, since it is what we are using, but most importantly\
+          \ the script should not yield you an error as it did I guess when you tried\n\
+          ```\nmodel = BloomForCausalLM.from_pretrained(\n   '.',  # the model path\
+          \ (downloaded locally)\n   device_map='balanced_low_0',\n)\n```\n(The command\
+          \ above should yield you an error `Please specify an offload folder...`)\n\
+          \nIf this is the case then I guess we can dig further ;)\n\nPS: \nAlso another\
+          \ thing that I suspect is that the model might be loaded in fp32, therefore\
+          \ the device maps that are created by `accelerate` takes into account `fp32`\
+          \ weights! In this case make sure you load it in `bf16` by doing:\n```\n\
+          model = BloomForCausalLM.from_pretrained(\n   '.',  # the model path (downloaded\
+          \ locally)\n   device_map='auto',\n   torch_dtype=\"auto\",\n)\n```\nor\n\
+          ```\nmodel = BloomForCausalLM.from_pretrained(\n   '.',  # the model path\
+          \ (downloaded locally)\n   device_map='auto',\n   torch_dtype=torch.bfloat16,\n\
+          )\n```"
+        updatedAt: '2022-09-29T09:06:53.120Z'
+      numEdits: 2
+      reactions: []
+    id: 63355f896ee22307763aae93
+    type: comment
+  author: ybelkada
+  content: "hi @bver!\nThanks for the great summary! Indeed, I suspect that some weights\
+    \ are offloaded to the disk / cpu, which could explain the inference speed that\
+    \ you are observing.\nOne thing I am curious about is if you can try:\n```\nmodel\
+    \ = BloomForCausalLM.from_pretrained(\n   '.',  # the model path (downloaded locally)\n\
+    \   device_map='auto',\n)\n```\nThis should work fine I guess, since it is what\
+    \ we are using, but most importantly the script should not yield you an error\
+    \ as it did I guess when you tried\n```\nmodel = BloomForCausalLM.from_pretrained(\n\
+    \   '.',  # the model path (downloaded locally)\n   device_map='balanced_low_0',\n\
+    )\n```\n(The command above should yield you an error `Please specify an offload\
+    \ folder...`)\n\nIf this is the case then I guess we can dig further ;)\n\nPS:\
+    \ \nAlso another thing that I suspect is that the model might be loaded in fp32,\
+    \ therefore the device maps that are created by `accelerate` takes into account\
+    \ `fp32` weights! In this case make sure you load it in `bf16` by doing:\n```\n\
+    model = BloomForCausalLM.from_pretrained(\n   '.',  # the model path (downloaded\
+    \ locally)\n   device_map='auto',\n   torch_dtype=\"auto\",\n)\n```\nor\n```\n\
+    model = BloomForCausalLM.from_pretrained(\n   '.',  # the model path (downloaded\
+    \ locally)\n   device_map='auto',\n   torch_dtype=torch.bfloat16,\n)\n```"
+  created_at: 2022-09-29 08:04:09+00:00
+  edited: true
+  hidden: false
+  id: 63355f896ee22307763aae93
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+      fullname: Pavel Suchmann
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bver
+      type: user
+    createdAt: '2022-09-30T12:12:13.000Z'
+    data:
+      edited: false
+      editors:
+      - bver
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+          fullname: Pavel Suchmann
+          isHf: false
+          isPro: false
+          name: bver
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ybelkada&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ybelkada\">@<span class=\"\
+          underline\">ybelkada</span></a></span>\n\n\t</span></span>,<br>thank you\
+          \ very much for your help!</p>\n<p>I have tried: </p>\n<pre><code>model\
+          \ = BloomForCausalLM.from_pretrained(\n    '.',\n    device_map='auto',\n\
+          \    torch_dtype='auto'\n)\n</code></pre>\n<p>and it fixed model initialization\
+          \ issues (i.e. modules offloading to CPU). My guess is that the <code>torch_dtype</code>\
+          \ was the missing piece. The  <a href=\"https://huggingface.co/docs/transformers/v4.21.3/en/main_classes/model#transformers.PreTrainedModel.from_pretrained.torch_dtype\"\
+          >documentation</a> says that the <code>torch_dtype</code> default uses the\
+          \ pytorch default type and not the model's implicit type, doubling device\
+          \ memory requirements in this case.</p>\n<p>The total GPUs memory allocated\
+          \ during inference was ~53% of the total available device memory. The first\
+          \ device was 93% full, the last one 24% (this was my motivation for using\
+          \ <code>balanced_low_0</code> originally).</p>\n<p>A typical inference took\
+          \ ~15 secs for small hundreds of tokens which is great. However, the entire\
+          \ model initialization took ~45 mins, which is less than great. I suspect\
+          \ shards unpacking is ineffective.</p>\n<p>Additional questions remain:</p>\n\
+          <ol>\n<li>What is the recommended GPU device number for sending input tokens\
+          \ to? I guess this is the device where the transformer input (first <code>BloomBlock</code>s?)\
+          \ is allocated but it is probably controlled by the device map modes such\
+          \ as \u2018auto\u2019 or \u2018balanced_low_0\u2019.  (I did not try to\
+          \ <code>infer_auto_device_map(model)</code> yet.)</li>\n<li>Is there any\
+          \ way to make the model initialization faster?</li>\n</ol>\n<p>However,\
+          \ generally I am glad to write that my issue was solved. Thanks again!</p>\n"
+        raw: "@ybelkada, \nthank you very much for your help!\n\nI have tried: \n\
+          ```\nmodel = BloomForCausalLM.from_pretrained(\n    '.',\n    device_map='auto',\n\
+          \    torch_dtype='auto'\n)\n```\nand it fixed model initialization issues\
+          \ (i.e. modules offloading to CPU). My guess is that the `torch_dtype` was\
+          \ the missing piece. The  [documentation](https://huggingface.co/docs/transformers/v4.21.3/en/main_classes/model#transformers.PreTrainedModel.from_pretrained.torch_dtype)\
+          \ says that the `torch_dtype` default uses the pytorch default type and\
+          \ not the model's implicit type, doubling device memory requirements in\
+          \ this case.\n\nThe total GPUs memory allocated during inference was ~53%\
+          \ of the total available device memory. The first device was 93% full, the\
+          \ last one 24% (this was my motivation for using `balanced_low_0` originally).\n\
+          \nA typical inference took ~15 secs for small hundreds of tokens which is\
+          \ great. However, the entire model initialization took ~45 mins, which is\
+          \ less than great. I suspect shards unpacking is ineffective.\n\nAdditional\
+          \ questions remain:\n1. What is the recommended GPU device number for sending\
+          \ input tokens to? I guess this is the device where the transformer input\
+          \ (first `BloomBlock`s?) is allocated but it is probably controlled by the\
+          \ device map modes such as \u2018auto\u2019 or \u2018balanced_low_0\u2019\
+          .  (I did not try to `infer_auto_device_map(model)` yet.)\n2. Is there any\
+          \ way to make the model initialization faster?\n\nHowever, generally I am\
+          \ glad to write that my issue was solved. Thanks again!"
+        updatedAt: '2022-09-30T12:12:13.127Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - ybelkada
+    id: 6336dd1de3ac69e6a9068d09
+    type: comment
+  author: bver
+  content: "@ybelkada, \nthank you very much for your help!\n\nI have tried: \n```\n\
+    model = BloomForCausalLM.from_pretrained(\n    '.',\n    device_map='auto',\n\
+    \    torch_dtype='auto'\n)\n```\nand it fixed model initialization issues (i.e.\
+    \ modules offloading to CPU). My guess is that the `torch_dtype` was the missing\
+    \ piece. The  [documentation](https://huggingface.co/docs/transformers/v4.21.3/en/main_classes/model#transformers.PreTrainedModel.from_pretrained.torch_dtype)\
+    \ says that the `torch_dtype` default uses the pytorch default type and not the\
+    \ model's implicit type, doubling device memory requirements in this case.\n\n\
+    The total GPUs memory allocated during inference was ~53% of the total available\
+    \ device memory. The first device was 93% full, the last one 24% (this was my\
+    \ motivation for using `balanced_low_0` originally).\n\nA typical inference took\
+    \ ~15 secs for small hundreds of tokens which is great. However, the entire model\
+    \ initialization took ~45 mins, which is less than great. I suspect shards unpacking\
+    \ is ineffective.\n\nAdditional questions remain:\n1. What is the recommended\
+    \ GPU device number for sending input tokens to? I guess this is the device where\
+    \ the transformer input (first `BloomBlock`s?) is allocated but it is probably\
+    \ controlled by the device map modes such as \u2018auto\u2019 or \u2018balanced_low_0\u2019\
+    .  (I did not try to `infer_auto_device_map(model)` yet.)\n2. Is there any way\
+    \ to make the model initialization faster?\n\nHowever, generally I am glad to\
+    \ write that my issue was solved. Thanks again!"
+  created_at: 2022-09-30 11:12:13+00:00
+  edited: false
+  hidden: false
+  id: 6336dd1de3ac69e6a9068d09
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2022-10-03T19:32:06.000Z'
+    data:
+      edited: false
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: "<p>Thanks a lot <span data-props=\"{&quot;user&quot;:&quot;bver&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/bver\"\
+          >@<span class=\"underline\">bver</span></a></span>\n\n\t</span></span> !\
+          \ Glad to hear that it worked on your side!</p>\n<p>1- I think that you\
+          \ are right here, you should double check the device map and send the input\
+          \ tokens on the first device as you suggested!<br>2- From our experience\
+          \ the initialization took in average ~2-3 minutes MAX, are the weights still\
+          \ offloaded on the disk?</p>\n"
+        raw: 'Thanks a lot @bver ! Glad to hear that it worked on your side!
+
+
+          1- I think that you are right here, you should double check the device map
+          and send the input tokens on the first device as you suggested!
+
+          2- From our experience the initialization took in average ~2-3 minutes MAX,
+          are the weights still offloaded on the disk?'
+        updatedAt: '2022-10-03T19:32:06.821Z'
+      numEdits: 0
+      reactions: []
+    id: 633b38b62eb4ac1a0de1beb3
+    type: comment
+  author: ybelkada
+  content: 'Thanks a lot @bver ! Glad to hear that it worked on your side!
+
+
+    1- I think that you are right here, you should double check the device map and
+    send the input tokens on the first device as you suggested!
+
+    2- From our experience the initialization took in average ~2-3 minutes MAX, are
+    the weights still offloaded on the disk?'
+  created_at: 2022-10-03 18:32:06+00:00
+  edited: false
+  hidden: false
+  id: 633b38b62eb4ac1a0de1beb3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+      fullname: Pavel Suchmann
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bver
+      type: user
+    createdAt: '2022-10-04T16:10:29.000Z'
+    data:
+      edited: false
+      editors:
+      - bver
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+          fullname: Pavel Suchmann
+          isHf: false
+          isPro: false
+          name: bver
+          type: user
+        html: '<blockquote>
+
+          <p>are the weights still offloaded on the disk?</p>
+
+          </blockquote>
+
+          <p>I do not think so, the <code>offload_folder</code> argument was not present
+          and also no disk nor RAM excessive allocation was seen during the experiment.
+          I need to check possible bottlenecks (io?) later.</p>
+
+          '
+        raw: '> are the weights still offloaded on the disk?
+
+
+          I do not think so, the `offload_folder` argument was not present and also
+          no disk nor RAM excessive allocation was seen during the experiment. I need
+          to check possible bottlenecks (io?) later.'
+        updatedAt: '2022-10-04T16:10:29.260Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F91D"
+        users:
+        - ybelkada
+    id: 633c5af5ccce04161f830e69
+    type: comment
+  author: bver
+  content: '> are the weights still offloaded on the disk?
+
+
+    I do not think so, the `offload_folder` argument was not present and also no disk
+    nor RAM excessive allocation was seen during the experiment. I need to check possible
+    bottlenecks (io?) later.'
+  created_at: 2022-10-04 15:10:29+00:00
+  edited: false
+  hidden: false
+  id: 633c5af5ccce04161f830e69
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+      fullname: Pavel Suchmann
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bver
+      type: user
+    createdAt: '2022-11-04T12:38:01.000Z'
+    data:
+      edited: true
+      editors:
+      - bver
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+          fullname: Pavel Suchmann
+          isHf: false
+          isPro: false
+          name: bver
+          type: user
+        html: '<p>Hi,<br>after a while, I was able to run more experiments and found
+          that:</p>
+
+          <ol>
+
+          <li>the device map (<code>model.hf_device_map</code>) confirms all model
+          modules are on GPUs (no "cpu" values, just device numbers),</li>
+
+          <li>model initialization is likely IO-bound -- if the model is on a <code>tmpfs</code>
+          the loading is faster (~4 minutes).  There''s probably a way to pre-extract
+          tensors from pytorch .bin files and save them to disk (if that''s the reason
+          for inefficiency).</li>
+
+          </ol>
+
+          '
+        raw: 'Hi,
+
+          after a while, I was able to run more experiments and found that:
+
+
+          1. the device map (`model.hf_device_map`) confirms all model modules are
+          on GPUs (no "cpu" values, just device numbers),
+
+          2. model initialization is likely IO-bound -- if the model is on a `tmpfs`
+          the loading is faster (~4 minutes).  There''s probably a way to pre-extract
+          tensors from pytorch .bin files and save them to disk (if that''s the reason
+          for inefficiency).'
+        updatedAt: '2022-11-08T08:57:34.376Z'
+      numEdits: 1
+      reactions: []
+    id: 636507a9daa65e06f9098cd5
+    type: comment
+  author: bver
+  content: 'Hi,
+
+    after a while, I was able to run more experiments and found that:
+
+
+    1. the device map (`model.hf_device_map`) confirms all model modules are on GPUs
+    (no "cpu" values, just device numbers),
+
+    2. model initialization is likely IO-bound -- if the model is on a `tmpfs` the
+    loading is faster (~4 minutes).  There''s probably a way to pre-extract tensors
+    from pytorch .bin files and save them to disk (if that''s the reason for inefficiency).'
+  created_at: 2022-11-04 11:38:01+00:00
+  edited: true
+  hidden: false
+  id: 636507a9daa65e06f9098cd5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1664449133824-6305f2cf435ec751b725663e.png?w=200&h=200&f=face
+      fullname: Pavel Suchmann
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bver
+      type: user
+    createdAt: '2022-11-08T11:56:25.000Z'
+    data:
+      status: closed
+    id: 636a43e9dc2801a6958d2c1d
+    type: status-change
+  author: bver
+  created_at: 2022-11-08 11:56:25+00:00
+  id: 636a43e9dc2801a6958d2c1d
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 118
+repo_id: bigscience/bloom
+repo_type: model
+status: closed
+target_branch: null
+title: Ineffective bloom 176B inference on 8*A100

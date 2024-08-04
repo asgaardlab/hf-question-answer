@@ -1,0 +1,428 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mirix
+conflicting_files: null
+created_at: 2023-06-05 05:05:18+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7c58ab35bd375105c497e2818881c130.svg
+      fullname: Ed Moman
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mirix
+      type: user
+    createdAt: '2023-06-05T06:05:18.000Z'
+    data:
+      edited: true
+      editors:
+      - mirix
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.35110557079315186
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7c58ab35bd375105c497e2818881c130.svg
+          fullname: Ed Moman
+          isHf: false
+          isPro: false
+          name: mirix
+          type: user
+        html: "<p>Hello,</p>\n<p>I have been unable to reproduce the results from\
+          \ the paper. </p>\n<p>These are the results of the best epoch (out of 10):</p>\n\
+          <pre><code>             precision    recall  f1-score   support\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588| 16/16 [02:00&lt;00:00,  6.33s/it]\n\n           0       0.79   \
+          \   0.82      0.81        61\n           1       0.89      0.85      0.87\
+          \       288\n           2       0.76      0.82      0.79       136\n\n \
+          \   accuracy                           0.84       485\n   macro avg    \
+          \   0.82      0.83      0.82       485\nweighted avg       0.84      0.84\
+          \      0.84       485\n\n[[ 50   7   4]\n [ 12 245  31]\n [  1  23 112]]\n\
+          {'eval_loss': 0.5206248760223389, 'eval_accuracy': 0.8391752577319588, 'eval_runtime':\
+          \ 128.6691, 'eval_samples_per_second': 3.769, 'eval_steps_per_second': 0.124,\
+          \ 'epoch': 3.0} \n</code></pre>\n<p>As you can see, far from those reported.</p>\n\
+          <p>And this is my code:</p>\n<pre><code>import os\nos.environ['TOKENIZERS_PARALLELISM']\
+          \ = 'false'\n\nimport torch\nimport evaluate\n\nfrom transformers import\
+          \ Trainer, TrainingArguments\nfrom transformers import AutoModelForSequenceClassification,\
+          \ AutoTokenizer\n#from transformers import RobertaTokenizer, RobertaForSequenceClassification\n\
+          \nfrom sklearn.model_selection import train_test_split\nfrom sklearn import\
+          \ metrics\n\nimport numpy as np\nimport pandas as pd\n\n### Variables ###\n\
+          \nmax_seq_length=512\n#pre_model = '/home/emoman/Work/exploration/ipex/deberta-v3-base'\n\
+          pre_model = 'ahmedrachid/FinancialBERT'\n\n### Prepare the database ###\n\
+          \ndf = pd.read_csv('/home/emoman/Work/exploration/ipex/datasets/varia/FinancialPhraseBank-v1.0/Sentences_50Agree.txt',\
+          \ \n                    header=None, sep='@', encoding='iso-8859-1', names=['Sentence',\
+          \ 'Sentiment'])\n\nlabel_encode = {'negative': 0, 'neutral': 1, 'positive':\
+          \ 2}\n\ndf['Sentiment'] = df['Sentiment'].map(label_encode)\ndf['Sentiment']\
+          \ = df['Sentiment'].astype('int')\n\nX = df['Sentence']\ny = df['Sentiment']\n\
+          \ntrain_texts, test_texts, train_labels, test_labels = train_test_split(X,\
+          \ y, test_size=0.2, random_state=31416, stratify=y)\n#, stratify=y\ntest_texts,\
+          \ val_texts, test_labels, val_labels = train_test_split(test_texts, test_labels,\
+          \ test_size=0.5, random_state=31416, stratify=test_labels)\n#, stratify=test_labels\n\
+          \ntrain_texts = train_texts.to_list()\ntest_texts = test_texts.to_list()\n\
+          val_texts = val_texts.to_list()\n\ntrain_labels = train_labels.to_list()\n\
+          test_labels = test_labels.to_list()\nval_labels = val_labels.to_list()\n\
+          \n### Tokenize ###\n\ntokenizer =  AutoTokenizer.from_pretrained(pre_model)\n\
+          \ntrain_encodings = tokenizer(train_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\nval_encodings\
+          \ = tokenizer(val_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\ntest_encodings\
+          \ = tokenizer(test_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\n\n\
+          ### Created dataset object from encodings ###\n# To copy construct from\
+          \ a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),\
+          \ rather than torch.tensor(sourceTensor).\n\nclass kaggleFinSA(torch.utils.data.Dataset):\n\
+          \    def __init__(self, encodings, labels):\n        self.encodings = encodings\n\
+          \        self.labels = labels\n    def __getitem__(self, idx):\n       \
+          \ #item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}\n\
+          \        #item['labels'] = torch.tensor(self.labels[idx])\n        item\
+          \ = {key: val[idx].clone().detach() for key, val in self.encodings.items()}\n\
+          \        item['labels'] = self.labels[idx]\n        return item\n    def\
+          \ __len__(self):\n        return len(self.labels)\n\ntrain_dataset = kaggleFinSA(train_encodings,\
+          \ train_labels)\nval_dataset = kaggleFinSA(val_encodings, val_labels)\n\
+          test_dataset = kaggleFinSA(test_encodings, test_labels)\n\n### Fine-tune\
+          \ with trainer ###\n\nmetric = evaluate.load('accuracy')\n\ndef compute_metrics(eval_pred):\n\
+          \    logits, labels = eval_pred\n    predictions = np.argmax(logits, axis=-1)\n\
+          \    print(metrics.classification_report(labels, predictions))\n    print(metrics.confusion_matrix(labels,\
+          \ predictions))\n    return metric.compute(predictions=predictions, references=labels)\n\
+          \ntraining_args = TrainingArguments(\n    output_dir='./results',      \
+          \    # output directory\n    num_train_epochs=10,              # total number\
+          \ of training epochs\n    per_device_train_batch_size=32,  # batch size\
+          \ per device during training\n    per_device_eval_batch_size=32,\n    evaluation_strategy='epoch',\n\
+          \    #eval_steps=100,\n    learning_rate=2e-5,\n    #weight_decay=0.01,\n\
+          \    load_best_model_at_end=True,\n    metric_for_best_model='accuracy',\n\
+          \    greater_is_better=True,\n    overwrite_output_dir=True,\n    optim='adamw_torch',\n\
+          \    #use_ipex=True,\n    no_cuda=True,\n    #bf16=True,\n    #weights_prepack=False,\n\
+          \    #jit_mode_eval=True,\n    do_train=True,\n    do_eval=True,\n    do_predict=True,\n\
+          \    #save_total_limit=2,\n    save_strategy='epoch'\n)\n\nmodel = AutoModelForSequenceClassification.from_pretrained(pre_model,\
+          \ num_labels=3)\n#problem_type='multi_label_classification'\n\ntrainer =\
+          \ Trainer(\n    model=model,                         # the instantiated\
+          \ Transformers model to be trained\n    args=training_args,            \
+          \      # training arguments, defined above\n    train_dataset=train_dataset,\
+          \         # training dataset\n    eval_dataset=val_dataset,            #\
+          \ evaluation dataset\n    compute_metrics=compute_metrics,\n)\n\ntrainer.train()\n\
+          #metrics=trainer.evaluate()\n#print(metrics)\n\ntrainer.save_model('./model')\n\
+          </code></pre>\n<p>Any ideas on what the cause for this discrepancy may be?</p>\n\
+          <p>Best,</p>\n<p>Ed</p>\n"
+        raw: "Hello,\n\nI have been unable to reproduce the results from the paper.\
+          \ \n\nThese are the results of the best epoch (out of 10):\n\n```\n    \
+          \         precision    recall  f1-score   support\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 16/16\
+          \ [02:00<00:00,  6.33s/it]\n\n           0       0.79      0.82      0.81\
+          \        61\n           1       0.89      0.85      0.87       288\n   \
+          \        2       0.76      0.82      0.79       136\n\n    accuracy    \
+          \                       0.84       485\n   macro avg       0.82      0.83\
+          \      0.82       485\nweighted avg       0.84      0.84      0.84     \
+          \  485\n\n[[ 50   7   4]\n [ 12 245  31]\n [  1  23 112]]\n{'eval_loss':\
+          \ 0.5206248760223389, 'eval_accuracy': 0.8391752577319588, 'eval_runtime':\
+          \ 128.6691, 'eval_samples_per_second': 3.769, 'eval_steps_per_second': 0.124,\
+          \ 'epoch': 3.0} \n```\n\nAs you can see, far from those reported.\n\nAnd\
+          \ this is my code:\n\n```\nimport os\nos.environ['TOKENIZERS_PARALLELISM']\
+          \ = 'false'\n\nimport torch\nimport evaluate\n\nfrom transformers import\
+          \ Trainer, TrainingArguments\nfrom transformers import AutoModelForSequenceClassification,\
+          \ AutoTokenizer\n#from transformers import RobertaTokenizer, RobertaForSequenceClassification\n\
+          \nfrom sklearn.model_selection import train_test_split\nfrom sklearn import\
+          \ metrics\n\nimport numpy as np\nimport pandas as pd\n\n### Variables ###\n\
+          \nmax_seq_length=512\n#pre_model = '/home/emoman/Work/exploration/ipex/deberta-v3-base'\n\
+          pre_model = 'ahmedrachid/FinancialBERT'\n\n### Prepare the database ###\n\
+          \ndf = pd.read_csv('/home/emoman/Work/exploration/ipex/datasets/varia/FinancialPhraseBank-v1.0/Sentences_50Agree.txt',\
+          \ \n\t\t\t\t\theader=None, sep='@', encoding='iso-8859-1', names=['Sentence',\
+          \ 'Sentiment'])\n\nlabel_encode = {'negative': 0, 'neutral': 1, 'positive':\
+          \ 2}\n\ndf['Sentiment'] = df['Sentiment'].map(label_encode)\ndf['Sentiment']\
+          \ = df['Sentiment'].astype('int')\n\nX = df['Sentence']\ny = df['Sentiment']\n\
+          \ntrain_texts, test_texts, train_labels, test_labels = train_test_split(X,\
+          \ y, test_size=0.2, random_state=31416, stratify=y)\n#, stratify=y\ntest_texts,\
+          \ val_texts, test_labels, val_labels = train_test_split(test_texts, test_labels,\
+          \ test_size=0.5, random_state=31416, stratify=test_labels)\n#, stratify=test_labels\n\
+          \ntrain_texts = train_texts.to_list()\ntest_texts = test_texts.to_list()\n\
+          val_texts = val_texts.to_list()\n\ntrain_labels = train_labels.to_list()\n\
+          test_labels = test_labels.to_list()\nval_labels = val_labels.to_list()\n\
+          \n### Tokenize ###\n\ntokenizer =  AutoTokenizer.from_pretrained(pre_model)\n\
+          \ntrain_encodings = tokenizer(train_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\nval_encodings\
+          \ = tokenizer(val_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\ntest_encodings\
+          \ = tokenizer(test_texts, max_length=max_seq_length, padding='max_length',\
+          \ truncation=True, return_attention_mask=True, return_tensors='pt')\n\n\
+          ### Created dataset object from encodings ###\n# To copy construct from\
+          \ a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),\
+          \ rather than torch.tensor(sourceTensor).\n\nclass kaggleFinSA(torch.utils.data.Dataset):\n\
+          \tdef __init__(self, encodings, labels):\n\t\tself.encodings = encodings\n\
+          \t\tself.labels = labels\n\tdef __getitem__(self, idx):\n\t\t#item = {key:\
+          \ torch.tensor(val[idx]) for key, val in self.encodings.items()}\n\t\t#item['labels']\
+          \ = torch.tensor(self.labels[idx])\n\t\titem = {key: val[idx].clone().detach()\
+          \ for key, val in self.encodings.items()}\n\t\titem['labels'] = self.labels[idx]\n\
+          \t\treturn item\n\tdef __len__(self):\n\t\treturn len(self.labels)\n\ntrain_dataset\
+          \ = kaggleFinSA(train_encodings, train_labels)\nval_dataset = kaggleFinSA(val_encodings,\
+          \ val_labels)\ntest_dataset = kaggleFinSA(test_encodings, test_labels)\n\
+          \n### Fine-tune with trainer ###\n\nmetric = evaluate.load('accuracy')\n\
+          \ndef compute_metrics(eval_pred):\n\tlogits, labels = eval_pred\n\tpredictions\
+          \ = np.argmax(logits, axis=-1)\n\tprint(metrics.classification_report(labels,\
+          \ predictions))\n\tprint(metrics.confusion_matrix(labels, predictions))\n\
+          \treturn metric.compute(predictions=predictions, references=labels)\n\n\
+          training_args = TrainingArguments(\n\toutput_dir='./results',          #\
+          \ output directory\n\tnum_train_epochs=10,              # total number of\
+          \ training epochs\n\tper_device_train_batch_size=32,  # batch size per device\
+          \ during training\n\tper_device_eval_batch_size=32,\n\tevaluation_strategy='epoch',\n\
+          \t#eval_steps=100,\n\tlearning_rate=2e-5,\n\t#weight_decay=0.01,\n\tload_best_model_at_end=True,\n\
+          \tmetric_for_best_model='accuracy',\n\tgreater_is_better=True,\n\toverwrite_output_dir=True,\n\
+          \toptim='adamw_torch',\n\t#use_ipex=True,\n\tno_cuda=True,\n\t#bf16=True,\n\
+          \t#weights_prepack=False,\n\t#jit_mode_eval=True,\n\tdo_train=True,\n\t\
+          do_eval=True,\n\tdo_predict=True,\n\t#save_total_limit=2,\n\tsave_strategy='epoch'\n\
+          )\n\nmodel = AutoModelForSequenceClassification.from_pretrained(pre_model,\
+          \ num_labels=3)\n#problem_type='multi_label_classification'\n\ntrainer =\
+          \ Trainer(\n\tmodel=model,                         # the instantiated Transformers\
+          \ model to be trained\n\targs=training_args,                  # training\
+          \ arguments, defined above\n\ttrain_dataset=train_dataset,         # training\
+          \ dataset\n\teval_dataset=val_dataset,            # evaluation dataset\n\
+          \tcompute_metrics=compute_metrics,\n)\n\ntrainer.train()\n#metrics=trainer.evaluate()\n\
+          #print(metrics)\n\ntrainer.save_model('./model')\n```\n\nAny ideas on what\
+          \ the cause for this discrepancy may be?\n\nBest,\n\nEd"
+        updatedAt: '2023-06-05T06:07:59.021Z'
+      numEdits: 1
+      reactions: []
+    id: 647d7b1e33493e1c43368797
+    type: comment
+  author: mirix
+  content: "Hello,\n\nI have been unable to reproduce the results from the paper.\
+    \ \n\nThese are the results of the best epoch (out of 10):\n\n```\n          \
+    \   precision    recall  f1-score   support\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588| 16/16 [02:00<00:00,  6.33s/it]\n\n           0     \
+    \  0.79      0.82      0.81        61\n           1       0.89      0.85     \
+    \ 0.87       288\n           2       0.76      0.82      0.79       136\n\n  \
+    \  accuracy                           0.84       485\n   macro avg       0.82\
+    \      0.83      0.82       485\nweighted avg       0.84      0.84      0.84 \
+    \      485\n\n[[ 50   7   4]\n [ 12 245  31]\n [  1  23 112]]\n{'eval_loss': 0.5206248760223389,\
+    \ 'eval_accuracy': 0.8391752577319588, 'eval_runtime': 128.6691, 'eval_samples_per_second':\
+    \ 3.769, 'eval_steps_per_second': 0.124, 'epoch': 3.0} \n```\n\nAs you can see,\
+    \ far from those reported.\n\nAnd this is my code:\n\n```\nimport os\nos.environ['TOKENIZERS_PARALLELISM']\
+    \ = 'false'\n\nimport torch\nimport evaluate\n\nfrom transformers import Trainer,\
+    \ TrainingArguments\nfrom transformers import AutoModelForSequenceClassification,\
+    \ AutoTokenizer\n#from transformers import RobertaTokenizer, RobertaForSequenceClassification\n\
+    \nfrom sklearn.model_selection import train_test_split\nfrom sklearn import metrics\n\
+    \nimport numpy as np\nimport pandas as pd\n\n### Variables ###\n\nmax_seq_length=512\n\
+    #pre_model = '/home/emoman/Work/exploration/ipex/deberta-v3-base'\npre_model =\
+    \ 'ahmedrachid/FinancialBERT'\n\n### Prepare the database ###\n\ndf = pd.read_csv('/home/emoman/Work/exploration/ipex/datasets/varia/FinancialPhraseBank-v1.0/Sentences_50Agree.txt',\
+    \ \n\t\t\t\t\theader=None, sep='@', encoding='iso-8859-1', names=['Sentence',\
+    \ 'Sentiment'])\n\nlabel_encode = {'negative': 0, 'neutral': 1, 'positive': 2}\n\
+    \ndf['Sentiment'] = df['Sentiment'].map(label_encode)\ndf['Sentiment'] = df['Sentiment'].astype('int')\n\
+    \nX = df['Sentence']\ny = df['Sentiment']\n\ntrain_texts, test_texts, train_labels,\
+    \ test_labels = train_test_split(X, y, test_size=0.2, random_state=31416, stratify=y)\n\
+    #, stratify=y\ntest_texts, val_texts, test_labels, val_labels = train_test_split(test_texts,\
+    \ test_labels, test_size=0.5, random_state=31416, stratify=test_labels)\n#, stratify=test_labels\n\
+    \ntrain_texts = train_texts.to_list()\ntest_texts = test_texts.to_list()\nval_texts\
+    \ = val_texts.to_list()\n\ntrain_labels = train_labels.to_list()\ntest_labels\
+    \ = test_labels.to_list()\nval_labels = val_labels.to_list()\n\n### Tokenize ###\n\
+    \ntokenizer =  AutoTokenizer.from_pretrained(pre_model)\n\ntrain_encodings = tokenizer(train_texts,\
+    \ max_length=max_seq_length, padding='max_length', truncation=True, return_attention_mask=True,\
+    \ return_tensors='pt')\nval_encodings = tokenizer(val_texts, max_length=max_seq_length,\
+    \ padding='max_length', truncation=True, return_attention_mask=True, return_tensors='pt')\n\
+    test_encodings = tokenizer(test_texts, max_length=max_seq_length, padding='max_length',\
+    \ truncation=True, return_attention_mask=True, return_tensors='pt')\n\n### Created\
+    \ dataset object from encodings ###\n# To copy construct from a tensor, it is\
+    \ recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True),\
+    \ rather than torch.tensor(sourceTensor).\n\nclass kaggleFinSA(torch.utils.data.Dataset):\n\
+    \tdef __init__(self, encodings, labels):\n\t\tself.encodings = encodings\n\t\t\
+    self.labels = labels\n\tdef __getitem__(self, idx):\n\t\t#item = {key: torch.tensor(val[idx])\
+    \ for key, val in self.encodings.items()}\n\t\t#item['labels'] = torch.tensor(self.labels[idx])\n\
+    \t\titem = {key: val[idx].clone().detach() for key, val in self.encodings.items()}\n\
+    \t\titem['labels'] = self.labels[idx]\n\t\treturn item\n\tdef __len__(self):\n\
+    \t\treturn len(self.labels)\n\ntrain_dataset = kaggleFinSA(train_encodings, train_labels)\n\
+    val_dataset = kaggleFinSA(val_encodings, val_labels)\ntest_dataset = kaggleFinSA(test_encodings,\
+    \ test_labels)\n\n### Fine-tune with trainer ###\n\nmetric = evaluate.load('accuracy')\n\
+    \ndef compute_metrics(eval_pred):\n\tlogits, labels = eval_pred\n\tpredictions\
+    \ = np.argmax(logits, axis=-1)\n\tprint(metrics.classification_report(labels,\
+    \ predictions))\n\tprint(metrics.confusion_matrix(labels, predictions))\n\treturn\
+    \ metric.compute(predictions=predictions, references=labels)\n\ntraining_args\
+    \ = TrainingArguments(\n\toutput_dir='./results',          # output directory\n\
+    \tnum_train_epochs=10,              # total number of training epochs\n\tper_device_train_batch_size=32,\
+    \  # batch size per device during training\n\tper_device_eval_batch_size=32,\n\
+    \tevaluation_strategy='epoch',\n\t#eval_steps=100,\n\tlearning_rate=2e-5,\n\t\
+    #weight_decay=0.01,\n\tload_best_model_at_end=True,\n\tmetric_for_best_model='accuracy',\n\
+    \tgreater_is_better=True,\n\toverwrite_output_dir=True,\n\toptim='adamw_torch',\n\
+    \t#use_ipex=True,\n\tno_cuda=True,\n\t#bf16=True,\n\t#weights_prepack=False,\n\
+    \t#jit_mode_eval=True,\n\tdo_train=True,\n\tdo_eval=True,\n\tdo_predict=True,\n\
+    \t#save_total_limit=2,\n\tsave_strategy='epoch'\n)\n\nmodel = AutoModelForSequenceClassification.from_pretrained(pre_model,\
+    \ num_labels=3)\n#problem_type='multi_label_classification'\n\ntrainer = Trainer(\n\
+    \tmodel=model,                         # the instantiated Transformers model to\
+    \ be trained\n\targs=training_args,                  # training arguments, defined\
+    \ above\n\ttrain_dataset=train_dataset,         # training dataset\n\teval_dataset=val_dataset,\
+    \            # evaluation dataset\n\tcompute_metrics=compute_metrics,\n)\n\ntrainer.train()\n\
+    #metrics=trainer.evaluate()\n#print(metrics)\n\ntrainer.save_model('./model')\n\
+    ```\n\nAny ideas on what the cause for this discrepancy may be?\n\nBest,\n\nEd"
+  created_at: 2023-06-05 05:05:18+00:00
+  edited: true
+  hidden: false
+  id: 647d7b1e33493e1c43368797
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7c58ab35bd375105c497e2818881c130.svg
+      fullname: Ed Moman
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mirix
+      type: user
+    createdAt: '2023-06-05T12:15:32.000Z'
+    data:
+      edited: false
+      editors:
+      - mirix
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.16238994896411896
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7c58ab35bd375105c497e2818881c130.svg
+          fullname: Ed Moman
+          isHf: false
+          isPro: false
+          name: mirix
+          type: user
+        html: "<p>Still running, but FinBERT produces better results with exactly\
+          \ the same code:</p>\n<pre><code>             precision    recall  f1-score\
+          \   support\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588| 16/16 [02:00&lt;00:00,  6.37s/it]\n\n        \
+          \   0       0.79      0.87      0.83        61\n           1       0.94\
+          \      0.86      0.90       288\n           2       0.81      0.92     \
+          \ 0.86       136\n\n    accuracy                           0.88       485\n\
+          \   macro avg       0.85      0.88      0.86       485\nweighted avg   \
+          \    0.89      0.88      0.88       485\n\n[[ 53   5   3]\n [ 13 249  26]\n\
+          \ [  1  10 125]]\n{'eval_loss': 0.5141590237617493, 'eval_accuracy': 0.8804123711340206,\
+          \ 'eval_runtime': 129.502, 'eval_samples_per_second': 3.745, 'eval_steps_per_second':\
+          \ 0.124, 'epoch': 4.0} \n</code></pre>\n"
+        raw: "Still running, but FinBERT produces better results with exactly the\
+          \ same code:\n\n```\n             precision    recall  f1-score   support\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588| 16/16 [02:00<00:00,  6.37s/it]\n\n           0       0.79\
+          \      0.87      0.83        61\n           1       0.94      0.86     \
+          \ 0.90       288\n           2       0.81      0.92      0.86       136\n\
+          \n    accuracy                           0.88       485\n   macro avg  \
+          \     0.85      0.88      0.86       485\nweighted avg       0.89      0.88\
+          \      0.88       485\n\n[[ 53   5   3]\n [ 13 249  26]\n [  1  10 125]]\n\
+          {'eval_loss': 0.5141590237617493, 'eval_accuracy': 0.8804123711340206, 'eval_runtime':\
+          \ 129.502, 'eval_samples_per_second': 3.745, 'eval_steps_per_second': 0.124,\
+          \ 'epoch': 4.0} \n```"
+        updatedAt: '2023-06-05T12:15:32.314Z'
+      numEdits: 0
+      reactions: []
+    id: 647dd1e410b7a3b1570196fc
+    type: comment
+  author: mirix
+  content: "Still running, but FinBERT produces better results with exactly the same\
+    \ code:\n\n```\n             precision    recall  f1-score   support\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 16/16 [02:00<00:00,  6.37s/it]\n\
+    \n           0       0.79      0.87      0.83        61\n           1       0.94\
+    \      0.86      0.90       288\n           2       0.81      0.92      0.86 \
+    \      136\n\n    accuracy                           0.88       485\n   macro\
+    \ avg       0.85      0.88      0.86       485\nweighted avg       0.89      0.88\
+    \      0.88       485\n\n[[ 53   5   3]\n [ 13 249  26]\n [  1  10 125]]\n{'eval_loss':\
+    \ 0.5141590237617493, 'eval_accuracy': 0.8804123711340206, 'eval_runtime': 129.502,\
+    \ 'eval_samples_per_second': 3.745, 'eval_steps_per_second': 0.124, 'epoch': 4.0}\
+    \ \n```"
+  created_at: 2023-06-05 11:15:32+00:00
+  edited: false
+  hidden: false
+  id: 647dd1e410b7a3b1570196fc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1639485063650-noauth.jpeg?w=200&h=200&f=face
+      fullname: Ahmed Rachid Hazourli
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ahmedrachid
+      type: user
+    createdAt: '2023-11-17T13:09:40.000Z'
+    data:
+      edited: false
+      editors:
+      - ahmedrachid
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8868299722671509
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1639485063650-noauth.jpeg?w=200&h=200&f=face
+          fullname: Ahmed Rachid Hazourli
+          isHf: false
+          isPro: false
+          name: ahmedrachid
+          type: user
+        html: "<p>Hello <span data-props=\"{&quot;user&quot;:&quot;mirix&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/mirix\"\
+          >@<span class=\"underline\">mirix</span></a></span>\n\n\t</span></span>\
+          \ , soorry for the late response. Not sure if you could reproduce same results\
+          \ as datasets are different .. I've used many data sources (financial reports,\
+          \ news...) </p>\n"
+        raw: "Hello @mirix , soorry for the late response. Not sure if you could reproduce\
+          \ same results as datasets are different .. I've used many data sources\
+          \ (financial reports, news...) \n"
+        updatedAt: '2023-11-17T13:09:40.481Z'
+      numEdits: 0
+      reactions: []
+    id: 6557661476fe5cfa6a37859a
+    type: comment
+  author: ahmedrachid
+  content: "Hello @mirix , soorry for the late response. Not sure if you could reproduce\
+    \ same results as datasets are different .. I've used many data sources (financial\
+    \ reports, news...) \n"
+  created_at: 2023-11-17 13:09:40+00:00
+  edited: false
+  hidden: false
+  id: 6557661476fe5cfa6a37859a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: ahmedrachid/FinancialBERT
+repo_type: model
+status: open
+target_branch: null
+title: Unable to reproduce the results from the paper

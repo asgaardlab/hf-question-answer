@@ -1,0 +1,158 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: alexspasov
+conflicting_files: null
+created_at: 2023-10-02 21:48:09+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4448b521e8962cc81b36bec0478b570e.svg
+      fullname: Aleksandar Spasov
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: alexspasov
+      type: user
+    createdAt: '2023-10-02T22:48:09.000Z'
+    data:
+      edited: false
+      editors:
+      - alexspasov
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6277939081192017
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4448b521e8962cc81b36bec0478b570e.svg
+          fullname: Aleksandar Spasov
+          isHf: false
+          isPro: false
+          name: alexspasov
+          type: user
+        html: '<p>Hi,<br>I am trying to deploy this model on the recommended instance
+          by using the following modified script since the one provided was not working
+          at all resulting in errors like: RuntimeError: weight transformer.h.0.self_attention.query_key_value.weight
+          does not exist</p>
+
+          <p>Here is the modified script that I managed to reach "somewhere" with,
+          after trying to resolve the errors via google:</p>
+
+          <p>!pip3 install transformers&gt;=4.33.0 optimum&gt;=1.12.0<br>!pip3 install
+          auto-gptq --extra-index-url <a rel="nofollow" href="https://huggingface.github.io/autogptq-index/whl/cu118/">https://huggingface.github.io/autogptq-index/whl/cu118/</a>  #
+          Use cu117 if on CUDA 11.7<br>!pip3 install -U sagemaker</p>
+
+          <p>import json<br>import sagemaker<br>import boto3<br>import torch<br>from
+          sagemaker.huggingface import HuggingFaceModel, get_huggingface_llm_image_uri</p>
+
+          <p>try:<br>    role = sagemaker.get_execution_role()<br>except ValueError:<br>    iam
+          = boto3.client(''iam'')<br>    role = iam.get_role(RoleName=''sagemaker_execution_role'')[''Role''][''Arn'']</p>
+
+          <h1 id="hub-model-configuration-httpshuggingfacecomodels">Hub Model configuration.
+          <a href="https://huggingface.co/models">https://huggingface.co/models</a></h1>
+
+          <p>hub = {<br>    ''HF_MODEL_ID'':''TheBloke/Falcon-180B-GPTQ'',<br>    ''SM_NUM_GPUS'':
+          json.dumps(1),<br>    ''HF_HOME'': ''/tmp'',<br>    ''HF_MODEL_QUANTIZE''
+          : ''gptq'',<br>    ''CUDA_LAUNCH_BLOCKING'': ''1''<br>}</p>
+
+          <h1 id="create-hugging-face-model-class">create Hugging Face Model Class</h1>
+
+          <p>huggingface_model = HuggingFaceModel(<br>    image_uri=get_huggingface_llm_image_uri("huggingface",version="1.0.3"),<br>    env=hub,<br>    role=role<br>)</p>
+
+          <h1 id="clear-gpu-memory-after-prediction">Clear GPU memory after prediction</h1>
+
+          <h1 id="torchcudaempty_cache">torch.cuda.empty_cache()</h1>
+
+          <h1 id="deploy-model-to-sagemaker-inference">deploy model to SageMaker Inference</h1>
+
+          <p>predictor = huggingface_model.deploy(<br>    initial_instance_count=1,<br>    instance_type="ml.g5.2xlarge",<br>    container_startup_health_check_timeout=1000,<br>  )</p>
+
+          <h1 id="send-request">send request</h1>
+
+          <p>predictor.predict({<br>    "inputs": "My name is Julien and I like to",<br>})</p>
+
+          <p>I am now receiving this error: RuntimeError: CUDA error: an illegal memory
+          access was encountered<br>Compile with <code>TORCH_USE_CUDA_DSA</code> to
+          enable device-side assertions.</p>
+
+          <p>This is the point where I go into circles and cannot get out. Any advice
+          or help will be welcomed! Thank you everyone up-front!</p>
+
+          '
+        raw: "Hi,\r\nI am trying to deploy this model on the recommended instance\
+          \ by using the following modified script since the one provided was not\
+          \ working at all resulting in errors like: RuntimeError: weight transformer.h.0.self_attention.query_key_value.weight\
+          \ does not exist\r\n\r\nHere is the modified script that I managed to reach\
+          \ \"somewhere\" with, after trying to resolve the errors via google:\r\n\
+          \r\n!pip3 install transformers>=4.33.0 optimum>=1.12.0\r\n!pip3 install\
+          \ auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/\
+          \  # Use cu117 if on CUDA 11.7\r\n!pip3 install -U sagemaker\r\n\r\nimport\
+          \ json\r\nimport sagemaker\r\nimport boto3\r\nimport torch\r\nfrom sagemaker.huggingface\
+          \ import HuggingFaceModel, get_huggingface_llm_image_uri\r\n\r\ntry:\r\n\
+          \trole = sagemaker.get_execution_role()\r\nexcept ValueError:\r\n\tiam =\
+          \ boto3.client('iam')\r\n\trole = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+          \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub =\
+          \ {\r\n\t'HF_MODEL_ID':'TheBloke/Falcon-180B-GPTQ',\r\n\t'SM_NUM_GPUS':\
+          \ json.dumps(1),\r\n\t'HF_HOME': '/tmp',\r\n\t'HF_MODEL_QUANTIZE' : 'gptq',\r\
+          \n\t'CUDA_LAUNCH_BLOCKING': '1'\r\n}\r\n\r\n# create Hugging Face Model\
+          \ Class\r\nhuggingface_model = HuggingFaceModel(\r\n\timage_uri=get_huggingface_llm_image_uri(\"\
+          huggingface\",version=\"1.0.3\"),\r\n\tenv=hub,\r\n\trole=role\r\n)\r\n\r\
+          \n\r\n# Clear GPU memory after prediction\r\n# torch.cuda.empty_cache()\r\
+          \n\r\n# deploy model to SageMaker Inference\r\npredictor = huggingface_model.deploy(\r\
+          \n\tinitial_instance_count=1,\r\n\tinstance_type=\"ml.g5.2xlarge\",\r\n\t\
+          container_startup_health_check_timeout=1000,\r\n  )\r\n  \r\n# send request\r\
+          \npredictor.predict({\r\n\t\"inputs\": \"My name is Julien and I like to\"\
+          ,\r\n})\r\n\r\nI am now receiving this error: RuntimeError: CUDA error:\
+          \ an illegal memory access was encountered\r\nCompile with `TORCH_USE_CUDA_DSA`\
+          \ to enable device-side assertions.\r\n\r\nThis is the point where I go\
+          \ into circles and cannot get out. Any advice or help will be welcomed!\
+          \ Thank you everyone up-front!"
+        updatedAt: '2023-10-02T22:48:09.261Z'
+      numEdits: 0
+      reactions: []
+    id: 651b48a982a4a1807911ed64
+    type: comment
+  author: alexspasov
+  content: "Hi,\r\nI am trying to deploy this model on the recommended instance by\
+    \ using the following modified script since the one provided was not working at\
+    \ all resulting in errors like: RuntimeError: weight transformer.h.0.self_attention.query_key_value.weight\
+    \ does not exist\r\n\r\nHere is the modified script that I managed to reach \"\
+    somewhere\" with, after trying to resolve the errors via google:\r\n\r\n!pip3\
+    \ install transformers>=4.33.0 optimum>=1.12.0\r\n!pip3 install auto-gptq --extra-index-url\
+    \ https://huggingface.github.io/autogptq-index/whl/cu118/  # Use cu117 if on CUDA\
+    \ 11.7\r\n!pip3 install -U sagemaker\r\n\r\nimport json\r\nimport sagemaker\r\n\
+    import boto3\r\nimport torch\r\nfrom sagemaker.huggingface import HuggingFaceModel,\
+    \ get_huggingface_llm_image_uri\r\n\r\ntry:\r\n\trole = sagemaker.get_execution_role()\r\
+    \nexcept ValueError:\r\n\tiam = boto3.client('iam')\r\n\trole = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+    \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub = {\r\n\t\
+    'HF_MODEL_ID':'TheBloke/Falcon-180B-GPTQ',\r\n\t'SM_NUM_GPUS': json.dumps(1),\r\
+    \n\t'HF_HOME': '/tmp',\r\n\t'HF_MODEL_QUANTIZE' : 'gptq',\r\n\t'CUDA_LAUNCH_BLOCKING':\
+    \ '1'\r\n}\r\n\r\n# create Hugging Face Model Class\r\nhuggingface_model = HuggingFaceModel(\r\
+    \n\timage_uri=get_huggingface_llm_image_uri(\"huggingface\",version=\"1.0.3\"\
+    ),\r\n\tenv=hub,\r\n\trole=role\r\n)\r\n\r\n\r\n# Clear GPU memory after prediction\r\
+    \n# torch.cuda.empty_cache()\r\n\r\n# deploy model to SageMaker Inference\r\n\
+    predictor = huggingface_model.deploy(\r\n\tinitial_instance_count=1,\r\n\tinstance_type=\"\
+    ml.g5.2xlarge\",\r\n\tcontainer_startup_health_check_timeout=1000,\r\n  )\r\n\
+    \  \r\n# send request\r\npredictor.predict({\r\n\t\"inputs\": \"My name is Julien\
+    \ and I like to\",\r\n})\r\n\r\nI am now receiving this error: RuntimeError: CUDA\
+    \ error: an illegal memory access was encountered\r\nCompile with `TORCH_USE_CUDA_DSA`\
+    \ to enable device-side assertions.\r\n\r\nThis is the point where I go into circles\
+    \ and cannot get out. Any advice or help will be welcomed! Thank you everyone\
+    \ up-front!"
+  created_at: 2023-10-02 21:48:09+00:00
+  edited: false
+  hidden: false
+  id: 651b48a982a4a1807911ed64
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: TheBloke/Falcon-180B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: Issues with deployment from SageMaker script

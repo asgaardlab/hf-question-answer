@@ -1,0 +1,194 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: LeeRui
+conflicting_files: null
+created_at: 2023-12-27 10:56:52+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d5cf10f04671ae8ec23a3358f1d50ae1.svg
+      fullname: Lee
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LeeRui
+      type: user
+    createdAt: '2023-12-27T10:56:52.000Z'
+    data:
+      edited: false
+      editors:
+      - LeeRui
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5692673921585083
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d5cf10f04671ae8ec23a3358f1d50ae1.svg
+          fullname: Lee
+          isHf: false
+          isPro: false
+          name: LeeRui
+          type: user
+        html: "<pre><code class=\"language-python\"><span class=\"hljs-keyword\">from</span>\
+          \ PIL <span class=\"hljs-keyword\">import</span> Image\n<span class=\"hljs-keyword\"\
+          >import</span> torch\n<span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoProcessor, AutoModelForZeroShotObjectDetection\n\
+          <span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> Owlv2Processor, Owlv2ForObjectDetection\n\n\ntorch.cuda.set_device(<span\
+          \ class=\"hljs-number\">1</span>)\n\nprocessor = AutoProcessor.from_pretrained(<span\
+          \ class=\"hljs-string\">\"/projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\"\
+          </span>)\n\nmodel = AutoModelForZeroShotObjectDetection.from_pretrained(<span\
+          \ class=\"hljs-string\">\"/projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\"\
+          </span>)\nmodel.cuda()\nmodel.<span class=\"hljs-built_in\">eval</span>()\n\
+          \nimage = Image.<span class=\"hljs-built_in\">open</span>(<span class=\"\
+          hljs-string\">'/projects/TianchiCup/scenic/000000039769.jpg'</span>)\n\n\
+          texts = [[<span class=\"hljs-string\">\"a photo of a cat\"</span>, <span\
+          \ class=\"hljs-string\">\"a photo of a dog\"</span>]]\ninputs = processor(text=texts,\
+          \ images=image, return_tensors=<span class=\"hljs-string\">\"pt\"</span>)\n\
+          inputs = {key: value.cuda() <span class=\"hljs-keyword\">for</span> key,\
+          \ value <span class=\"hljs-keyword\">in</span> inputs.items()}\n\noutputs\
+          \ = model(**inputs)\n\n<span class=\"hljs-comment\"># Target image sizes\
+          \ (height, width) to rescale box predictions [batch_size, 2]</span>\ntarget_sizes\
+          \ = torch.Tensor([image.size[::-<span class=\"hljs-number\">1</span>]])\n\
+          <span class=\"hljs-comment\"># Convert outputs (bounding boxes and class\
+          \ logits) to COCO API</span>\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Model Outputs:\"</span>, outputs)\nresults = processor.post_process_object_detection(outputs=outputs,\
+          \ threshold=<span class=\"hljs-number\">0.1</span>, target_sizes=target_sizes)\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">\"\
+          Post-processing Results:\"</span>, results)\n\n\ni = <span class=\"hljs-number\"\
+          >0</span>  <span class=\"hljs-comment\"># Retrieve predictions for the first\
+          \ image for the corresponding text queries</span>\ntext = texts[i]\nboxes,\
+          \ scores, labels = results[i][<span class=\"hljs-string\">\"boxes\"</span>],\
+          \ results[i][<span class=\"hljs-string\">\"scores\"</span>], results[i][<span\
+          \ class=\"hljs-string\">\"labels\"</span>]\n<span class=\"hljs-built_in\"\
+          >print</span>(boxes)\n<span class=\"hljs-built_in\">print</span>(scores)\n\
+          <span class=\"hljs-built_in\">print</span>(labels)\n<span class=\"hljs-comment\"\
+          ># Print detected objects and rescaled box coordinates</span>\n<span class=\"\
+          hljs-keyword\">for</span> box, score, label <span class=\"hljs-keyword\"\
+          >in</span> <span class=\"hljs-built_in\">zip</span>(boxes, scores, labels):\n\
+          \n    box = [<span class=\"hljs-built_in\">round</span>(i, <span class=\"\
+          hljs-number\">2</span>) <span class=\"hljs-keyword\">for</span> i <span\
+          \ class=\"hljs-keyword\">in</span> box.tolist()]\n\n    <span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">f\"Detected <span class=\"hljs-subst\"\
+          >{text[label]}</span> with confidence <span class=\"hljs-subst\">{<span\
+          \ class=\"hljs-built_in\">round</span>(score.item(), <span class=\"hljs-number\"\
+          >3</span>)}</span> at location <span class=\"hljs-subst\">{box}</span>\"\
+          </span>)\n</code></pre>\n<ul>\n<li>the output is:</li>\n</ul>\n<p><a rel=\"\
+          nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/65655934f24d3bb7bf9f3cf5/iROwEYqIcZRCssI0q0Nw1.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/65655934f24d3bb7bf9f3cf5/iROwEYqIcZRCssI0q0Nw1.png\"\
+          ></a></p>\n<p><strong>what's went wrong?</strong></p>\n"
+        raw: "```python\r\nfrom PIL import Image\r\nimport torch\r\nfrom transformers\
+          \ import AutoProcessor, AutoModelForZeroShotObjectDetection\r\nfrom transformers\
+          \ import Owlv2Processor, Owlv2ForObjectDetection\r\n\r\n\r\ntorch.cuda.set_device(1)\r\
+          \n\r\nprocessor = AutoProcessor.from_pretrained(\"/projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\"\
+          )\r\n\r\nmodel = AutoModelForZeroShotObjectDetection.from_pretrained(\"\
+          /projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\")\r\nmodel.cuda()\r\
+          \nmodel.eval()\r\n\r\nimage = Image.open('/projects/TianchiCup/scenic/000000039769.jpg')\r\
+          \n\r\ntexts = [[\"a photo of a cat\", \"a photo of a dog\"]]\r\ninputs =\
+          \ processor(text=texts, images=image, return_tensors=\"pt\")\r\ninputs =\
+          \ {key: value.cuda() for key, value in inputs.items()}\r\n\r\noutputs =\
+          \ model(**inputs)\r\n\r\n# Target image sizes (height, width) to rescale\
+          \ box predictions [batch_size, 2]\r\ntarget_sizes = torch.Tensor([image.size[::-1]])\r\
+          \n# Convert outputs (bounding boxes and class logits) to COCO API\r\nprint(\"\
+          Model Outputs:\", outputs)\r\nresults = processor.post_process_object_detection(outputs=outputs,\
+          \ threshold=0.1, target_sizes=target_sizes)\r\nprint(\"Post-processing Results:\"\
+          , results)\r\n\r\n\r\ni = 0  # Retrieve predictions for the first image\
+          \ for the corresponding text queries\r\ntext = texts[i]\r\nboxes, scores,\
+          \ labels = results[i][\"boxes\"], results[i][\"scores\"], results[i][\"\
+          labels\"]\r\nprint(boxes)\r\nprint(scores)\r\nprint(labels)\r\n# Print detected\
+          \ objects and rescaled box coordinates\r\nfor box, score, label in zip(boxes,\
+          \ scores, labels):\r\n\r\n    box = [round(i, 2) for i in box.tolist()]\r\
+          \n\r\n    print(f\"Detected {text[label]} with confidence {round(score.item(),\
+          \ 3)} at location {box}\")\r\n\r\n```\r\n- the output is:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/65655934f24d3bb7bf9f3cf5/iROwEYqIcZRCssI0q0Nw1.png)\r\
+          \n\r\n**what's went wrong?**\r\n"
+        updatedAt: '2023-12-27T10:56:52.048Z'
+      numEdits: 0
+      reactions: []
+    id: 658c02f47f1e21412ccc04ba
+    type: comment
+  author: LeeRui
+  content: "```python\r\nfrom PIL import Image\r\nimport torch\r\nfrom transformers\
+    \ import AutoProcessor, AutoModelForZeroShotObjectDetection\r\nfrom transformers\
+    \ import Owlv2Processor, Owlv2ForObjectDetection\r\n\r\n\r\ntorch.cuda.set_device(1)\r\
+    \n\r\nprocessor = AutoProcessor.from_pretrained(\"/projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\"\
+    )\r\n\r\nmodel = AutoModelForZeroShotObjectDetection.from_pretrained(\"/projects/TianchiCup/scenic/owlv2-base-patch16-finetuned/\"\
+    )\r\nmodel.cuda()\r\nmodel.eval()\r\n\r\nimage = Image.open('/projects/TianchiCup/scenic/000000039769.jpg')\r\
+    \n\r\ntexts = [[\"a photo of a cat\", \"a photo of a dog\"]]\r\ninputs = processor(text=texts,\
+    \ images=image, return_tensors=\"pt\")\r\ninputs = {key: value.cuda() for key,\
+    \ value in inputs.items()}\r\n\r\noutputs = model(**inputs)\r\n\r\n# Target image\
+    \ sizes (height, width) to rescale box predictions [batch_size, 2]\r\ntarget_sizes\
+    \ = torch.Tensor([image.size[::-1]])\r\n# Convert outputs (bounding boxes and\
+    \ class logits) to COCO API\r\nprint(\"Model Outputs:\", outputs)\r\nresults =\
+    \ processor.post_process_object_detection(outputs=outputs, threshold=0.1, target_sizes=target_sizes)\r\
+    \nprint(\"Post-processing Results:\", results)\r\n\r\n\r\ni = 0  # Retrieve predictions\
+    \ for the first image for the corresponding text queries\r\ntext = texts[i]\r\n\
+    boxes, scores, labels = results[i][\"boxes\"], results[i][\"scores\"], results[i][\"\
+    labels\"]\r\nprint(boxes)\r\nprint(scores)\r\nprint(labels)\r\n# Print detected\
+    \ objects and rescaled box coordinates\r\nfor box, score, label in zip(boxes,\
+    \ scores, labels):\r\n\r\n    box = [round(i, 2) for i in box.tolist()]\r\n\r\n\
+    \    print(f\"Detected {text[label]} with confidence {round(score.item(), 3)}\
+    \ at location {box}\")\r\n\r\n```\r\n- the output is:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/65655934f24d3bb7bf9f3cf5/iROwEYqIcZRCssI0q0Nw1.png)\r\
+    \n\r\n**what's went wrong?**\r\n"
+  created_at: 2023-12-27 10:56:52+00:00
+  edited: false
+  hidden: false
+  id: 658c02f47f1e21412ccc04ba
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d5cf10f04671ae8ec23a3358f1d50ae1.svg
+      fullname: Lee
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LeeRui
+      type: user
+    createdAt: '2023-12-27T10:58:34.000Z'
+    data:
+      edited: false
+      editors:
+      - LeeRui
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9709763526916504
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d5cf10f04671ae8ec23a3358f1d50ae1.svg
+          fullname: Lee
+          isHf: false
+          isPro: false
+          name: LeeRui
+          type: user
+        html: '<p>I can''t get a detection result, why</p>
+
+          '
+        raw: I can't get a detection result, why
+        updatedAt: '2023-12-27T10:58:34.481Z'
+      numEdits: 0
+      reactions: []
+    id: 658c035a63bf36e45848d7a5
+    type: comment
+  author: LeeRui
+  content: I can't get a detection result, why
+  created_at: 2023-12-27 10:58:34+00:00
+  edited: false
+  hidden: false
+  id: 658c035a63bf36e45848d7a5
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: google/owlv2-base-patch16-finetuned
+repo_type: model
+status: open
+target_branch: null
+title: no detect results

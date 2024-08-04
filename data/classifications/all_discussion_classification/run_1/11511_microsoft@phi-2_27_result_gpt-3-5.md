@@ -1,0 +1,4 @@
+## https://huggingface.co/microsoft/phi-2/discussions/27
+
+contains_question: yes
+question_part: Hi Microsoft team, per the other thread on licensing, could you please clarify/confirm the circumstances under which it is permissible to fine-tune Phi-2 and make the fine-tuned model available on HuggingFace? Per the terms of the Microsoft Research License, we are looking to clarify whether this would constitute a "distribution" We have fine-tuned Phi-1_5 and Phi-2 for RAG, and would like to make those fine-tunings available to the community. Appreciate if this topic is better addressed in a different forum - if so, please advise. kind regards - Darren

@@ -1,0 +1,458 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: danrama
+conflicting_files: null
+created_at: 2023-04-21 12:49:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/472bbef2630458773cb76bf0d44f0028.svg
+      fullname: Daniel Ramagem
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: danrama
+      type: user
+    createdAt: '2023-04-21T13:49:07.000Z'
+    data:
+      edited: true
+      editors:
+      - danrama
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/472bbef2630458773cb76bf0d44f0028.svg
+          fullname: Daniel Ramagem
+          isHf: false
+          isPro: false
+          name: danrama
+          type: user
+        html: "<p>I've set up a simple LangChain LLMChain (per the instructions in\
+          \ <a href=\"https://huggingface.co/databricks/dolly-v2-12b#langchain-usage\"\
+          >https://huggingface.co/databricks/dolly-v2-12b#langchain-usage</a>), and\
+          \ I've been playing around with asking Dolly to generate JSON schema from\
+          \ some input JSON data.  It works well in a small example, but when I gave\
+          \ it a larger input it seems to return truncated text.  What are the default\
+          \ input/output text (token) limits and can these be changed via params?</p>\n\
+          <p>This works fine:</p>\n<pre><code>Prompt&gt;\nCreate a JSON schema for\
+          \ the following data:\n\n{\"title\": \"The Hitchiker's Guide to the Galaxy\"\
+          , \"author\": \"Douglas Adams\", \"published\": 1979}\n{\"title\": \"The\
+          \ Restaurant at the End of the Universe\", \"author\": \"Douglas Adams\"\
+          , \"published\": 1980}\n\nResponse (10s) &gt;\n\n    \"$schema\": \"http://json-schema.org/draft/20191222/schema\"\
+          ,\n    \"type\": \"object\",\n    \"properties\": {\n        \"title\":\
+          \ {\"type\": \"string\"},\n        \"author\": {\"type\": \"string\"},\n\
+          \        \"published\": {\"type\": \"string\"}\n    },\n    \"required\"\
+          : [\"title\", \"author\", \"published\"]\n}\n</code></pre>\n<p>But when\
+          \ I provided a much more complex JSON example it seems to return a truncated\
+          \ response.</p>\n<pre><code>Prompt&gt;\nCreate a JSON schema for the following\
+          \ data:\n\n[\n    {\n        \"id\": \"0001\",\n        \"type\": \"donut\"\
+          ,\n        \"name\": \"Cake\",\n        \"ppu\": 0.55,\n        \"batters\"\
+          :\n            {\n                \"batter\":\n                    [\n \
+          \                       { \"id\": \"1001\", \"type\": \"Regular\" },\n \
+          \                       { \"id\": \"1002\", \"type\": \"Chocolate\" },\n\
+          \                        { \"id\": \"1003\", \"type\": \"Blueberry\" },\n\
+          \                        { \"id\": \"1004\", \"type\": \"Devil's Food\"\
+          \ }\n                    ]\n            },\n        \"topping\":\n     \
+          \       [\n                { \"id\": \"5001\", \"type\": \"None\" },\n \
+          \               { \"id\": \"5002\", \"type\": \"Glazed\" },\n          \
+          \      { \"id\": \"5005\", \"type\": \"Sugar\" },\n                { \"\
+          id\": \"5007\", \"type\": \"Powdered Sugar\" },\n                { \"id\"\
+          : \"5006\", \"type\": \"Chocolate with Sprinkles\" },\n                {\
+          \ \"id\": \"5003\", \"type\": \"Chocolate\" },\n                { \"id\"\
+          : \"5004\", \"type\": \"Maple\" }\n            ]\n    },\n    {\n      \
+          \  \"id\": \"0002\",\n        \"type\": \"donut\",\n        \"name\": \"\
+          Raised\",\n        \"ppu\": 0.55,\n        \"batters\":\n            {\n\
+          \                \"batter\":\n                    [\n                  \
+          \      { \"id\": \"1001\", \"type\": \"Regular\" }\n                   \
+          \ ]\n            },\n        \"topping\":\n            [\n             \
+          \   { \"id\": \"5001\", \"type\": \"None\" },\n                { \"id\"\
+          : \"5002\", \"type\": \"Glazed\" },\n                { \"id\": \"5005\"\
+          , \"type\": \"Sugar\" },\n                { \"id\": \"5003\", \"type\":\
+          \ \"Chocolate\" },\n                { \"id\": \"5004\", \"type\": \"Maple\"\
+          \ }\n            ]\n    },\n    {\n        \"id\": \"0003\",\n        \"\
+          type\": \"donut\",\n        \"name\": \"Old Fashioned\",\n        \"ppu\"\
+          : 0.55,\n        \"batters\":\n            {\n                \"batter\"\
+          :\n                    [\n                        { \"id\": \"1001\", \"\
+          type\": \"Regular\" },\n                        { \"id\": \"1002\", \"type\"\
+          : \"Chocolate\" }\n                    ]\n            },\n        \"topping\"\
+          :\n            [\n                { \"id\": \"5001\", \"type\": \"None\"\
+          \ },\n                { \"id\": \"5002\", \"type\": \"Glazed\" },\n    \
+          \            { \"id\": \"5003\", \"type\": \"Chocolate\" },\n          \
+          \      { \"id\": \"5004\", \"type\": \"Maple\" }\n            ]\n    }\n\
+          ]\n\nResponse (24s)&gt;\n\n{\n        \"type\": \"object\",\n        \"\
+          properties\": {\n                \"id\": {\n                        \"type\"\
+          : \"string\"\n                },\n                \"type\": {\n        \
+          \                \"type\": \"string\"\n                },\n            \
+          \    \"name\": {\n                        \"type\": \"string\"\n       \
+          \         },\n                \"ppu\": {\n                        \"type\"\
+          : \"number\",\n                        \"format\": \"percent\"\n       \
+          \         },\n                \"batters\": {\n                        \"\
+          type\": \"array\",\n                        \"items\": {\n             \
+          \                   \"$ref\": \"#/definitions/batter\"\n               \
+          \         }\n                },\n                \"topping\": {\n      \
+          \                  \"type\": \"array\",\n                        \"items\"\
+          : {\n                                \"$ref\": \"#/definitions/topping\"\
+          \n                        }\n                }\n        },\n        \"definitions\"\
+          : {\n                \"batter\": {\n                        \"type\": \"\
+          object\",\n                        \"properties\": {\n                 \
+          \               \"id\": {\n                                        \"type\"\
+          : \"string\"\n                                },\n                     \
+          \           \"type\": {\n                                        \"type\"\
+          : \"string\"\n                                },\n                     \
+          \           \"name\": {\n                                        \"type\"\
+          : \"string\"\n                                }\n</code></pre>\n"
+        raw: "I've set up a simple LangChain LLMChain (per the instructions in https://huggingface.co/databricks/dolly-v2-12b#langchain-usage),\
+          \ and I've been playing around with asking Dolly to generate JSON schema\
+          \ from some input JSON data.  It works well in a small example, but when\
+          \ I gave it a larger input it seems to return truncated text.  What are\
+          \ the default input/output text (token) limits and can these be changed\
+          \ via params?\n\nThis works fine:\n```\nPrompt>\nCreate a JSON schema for\
+          \ the following data:\n\n{\"title\": \"The Hitchiker's Guide to the Galaxy\"\
+          , \"author\": \"Douglas Adams\", \"published\": 1979}\n{\"title\": \"The\
+          \ Restaurant at the End of the Universe\", \"author\": \"Douglas Adams\"\
+          , \"published\": 1980}\n\nResponse (10s) >\n\n    \"$schema\": \"http://json-schema.org/draft/20191222/schema\"\
+          ,\n    \"type\": \"object\",\n    \"properties\": {\n        \"title\":\
+          \ {\"type\": \"string\"},\n        \"author\": {\"type\": \"string\"},\n\
+          \        \"published\": {\"type\": \"string\"}\n    },\n    \"required\"\
+          : [\"title\", \"author\", \"published\"]\n}\n```\n\nBut when I provided\
+          \ a much more complex JSON example it seems to return a truncated response.\n\
+          ```\nPrompt>\nCreate a JSON schema for the following data:\n\n[\n\t{\n\t\
+          \t\"id\": \"0001\",\n\t\t\"type\": \"donut\",\n\t\t\"name\": \"Cake\",\n\
+          \t\t\"ppu\": 0.55,\n\t\t\"batters\":\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\
+          \t\t\t[\n\t\t\t\t\t\t{ \"id\": \"1001\", \"type\": \"Regular\" },\n\t\t\t\
+          \t\t\t{ \"id\": \"1002\", \"type\": \"Chocolate\" },\n\t\t\t\t\t\t{ \"id\"\
+          : \"1003\", \"type\": \"Blueberry\" },\n\t\t\t\t\t\t{ \"id\": \"1004\",\
+          \ \"type\": \"Devil's Food\" }\n\t\t\t\t\t]\n\t\t\t},\n\t\t\"topping\":\n\
+          \t\t\t[\n\t\t\t\t{ \"id\": \"5001\", \"type\": \"None\" },\n\t\t\t\t{ \"\
+          id\": \"5002\", \"type\": \"Glazed\" },\n\t\t\t\t{ \"id\": \"5005\", \"\
+          type\": \"Sugar\" },\n\t\t\t\t{ \"id\": \"5007\", \"type\": \"Powdered Sugar\"\
+          \ },\n\t\t\t\t{ \"id\": \"5006\", \"type\": \"Chocolate with Sprinkles\"\
+          \ },\n\t\t\t\t{ \"id\": \"5003\", \"type\": \"Chocolate\" },\n\t\t\t\t{\
+          \ \"id\": \"5004\", \"type\": \"Maple\" }\n\t\t\t]\n\t},\n\t{\n\t\t\"id\"\
+          : \"0002\",\n\t\t\"type\": \"donut\",\n\t\t\"name\": \"Raised\",\n\t\t\"\
+          ppu\": 0.55,\n\t\t\"batters\":\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\t\t\t\
+          [\n\t\t\t\t\t\t{ \"id\": \"1001\", \"type\": \"Regular\" }\n\t\t\t\t\t]\n\
+          \t\t\t},\n\t\t\"topping\":\n\t\t\t[\n\t\t\t\t{ \"id\": \"5001\", \"type\"\
+          : \"None\" },\n\t\t\t\t{ \"id\": \"5002\", \"type\": \"Glazed\" },\n\t\t\
+          \t\t{ \"id\": \"5005\", \"type\": \"Sugar\" },\n\t\t\t\t{ \"id\": \"5003\"\
+          , \"type\": \"Chocolate\" },\n\t\t\t\t{ \"id\": \"5004\", \"type\": \"Maple\"\
+          \ }\n\t\t\t]\n\t},\n\t{\n\t\t\"id\": \"0003\",\n\t\t\"type\": \"donut\"\
+          ,\n\t\t\"name\": \"Old Fashioned\",\n\t\t\"ppu\": 0.55,\n\t\t\"batters\"\
+          :\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\t\t\t[\n\t\t\t\t\t\t{ \"id\": \"1001\"\
+          , \"type\": \"Regular\" },\n\t\t\t\t\t\t{ \"id\": \"1002\", \"type\": \"\
+          Chocolate\" }\n\t\t\t\t\t]\n\t\t\t},\n\t\t\"topping\":\n\t\t\t[\n\t\t\t\t\
+          { \"id\": \"5001\", \"type\": \"None\" },\n\t\t\t\t{ \"id\": \"5002\", \"\
+          type\": \"Glazed\" },\n\t\t\t\t{ \"id\": \"5003\", \"type\": \"Chocolate\"\
+          \ },\n\t\t\t\t{ \"id\": \"5004\", \"type\": \"Maple\" }\n\t\t\t]\n\t}\n\
+          ]\n\nResponse (24s)>\n\n{\n        \"type\": \"object\",\n        \"properties\"\
+          : {\n                \"id\": {\n                        \"type\": \"string\"\
+          \n                },\n                \"type\": {\n                    \
+          \    \"type\": \"string\"\n                },\n                \"name\"\
+          : {\n                        \"type\": \"string\"\n                },\n\
+          \                \"ppu\": {\n                        \"type\": \"number\"\
+          ,\n                        \"format\": \"percent\"\n                },\n\
+          \                \"batters\": {\n                        \"type\": \"array\"\
+          ,\n                        \"items\": {\n                              \
+          \  \"$ref\": \"#/definitions/batter\"\n                        }\n     \
+          \           },\n                \"topping\": {\n                       \
+          \ \"type\": \"array\",\n                        \"items\": {\n         \
+          \                       \"$ref\": \"#/definitions/topping\"\n          \
+          \              }\n                }\n        },\n        \"definitions\"\
+          : {\n                \"batter\": {\n                        \"type\": \"\
+          object\",\n                        \"properties\": {\n                 \
+          \               \"id\": {\n                                        \"type\"\
+          : \"string\"\n                                },\n                     \
+          \           \"type\": {\n                                        \"type\"\
+          : \"string\"\n                                },\n                     \
+          \           \"name\": {\n                                        \"type\"\
+          : \"string\"\n                                }\n```"
+        updatedAt: '2023-04-21T13:50:29.302Z'
+      numEdits: 1
+      reactions: []
+    id: 64429453c82791fbe15fb6b5
+    type: comment
+  author: danrama
+  content: "I've set up a simple LangChain LLMChain (per the instructions in https://huggingface.co/databricks/dolly-v2-12b#langchain-usage),\
+    \ and I've been playing around with asking Dolly to generate JSON schema from\
+    \ some input JSON data.  It works well in a small example, but when I gave it\
+    \ a larger input it seems to return truncated text.  What are the default input/output\
+    \ text (token) limits and can these be changed via params?\n\nThis works fine:\n\
+    ```\nPrompt>\nCreate a JSON schema for the following data:\n\n{\"title\": \"The\
+    \ Hitchiker's Guide to the Galaxy\", \"author\": \"Douglas Adams\", \"published\"\
+    : 1979}\n{\"title\": \"The Restaurant at the End of the Universe\", \"author\"\
+    : \"Douglas Adams\", \"published\": 1980}\n\nResponse (10s) >\n\n    \"$schema\"\
+    : \"http://json-schema.org/draft/20191222/schema\",\n    \"type\": \"object\"\
+    ,\n    \"properties\": {\n        \"title\": {\"type\": \"string\"},\n       \
+    \ \"author\": {\"type\": \"string\"},\n        \"published\": {\"type\": \"string\"\
+    }\n    },\n    \"required\": [\"title\", \"author\", \"published\"]\n}\n```\n\n\
+    But when I provided a much more complex JSON example it seems to return a truncated\
+    \ response.\n```\nPrompt>\nCreate a JSON schema for the following data:\n\n[\n\
+    \t{\n\t\t\"id\": \"0001\",\n\t\t\"type\": \"donut\",\n\t\t\"name\": \"Cake\",\n\
+    \t\t\"ppu\": 0.55,\n\t\t\"batters\":\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\t\t\t\
+    [\n\t\t\t\t\t\t{ \"id\": \"1001\", \"type\": \"Regular\" },\n\t\t\t\t\t\t{ \"\
+    id\": \"1002\", \"type\": \"Chocolate\" },\n\t\t\t\t\t\t{ \"id\": \"1003\", \"\
+    type\": \"Blueberry\" },\n\t\t\t\t\t\t{ \"id\": \"1004\", \"type\": \"Devil's\
+    \ Food\" }\n\t\t\t\t\t]\n\t\t\t},\n\t\t\"topping\":\n\t\t\t[\n\t\t\t\t{ \"id\"\
+    : \"5001\", \"type\": \"None\" },\n\t\t\t\t{ \"id\": \"5002\", \"type\": \"Glazed\"\
+    \ },\n\t\t\t\t{ \"id\": \"5005\", \"type\": \"Sugar\" },\n\t\t\t\t{ \"id\": \"\
+    5007\", \"type\": \"Powdered Sugar\" },\n\t\t\t\t{ \"id\": \"5006\", \"type\"\
+    : \"Chocolate with Sprinkles\" },\n\t\t\t\t{ \"id\": \"5003\", \"type\": \"Chocolate\"\
+    \ },\n\t\t\t\t{ \"id\": \"5004\", \"type\": \"Maple\" }\n\t\t\t]\n\t},\n\t{\n\t\
+    \t\"id\": \"0002\",\n\t\t\"type\": \"donut\",\n\t\t\"name\": \"Raised\",\n\t\t\
+    \"ppu\": 0.55,\n\t\t\"batters\":\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\t\t\t[\n\t\
+    \t\t\t\t\t{ \"id\": \"1001\", \"type\": \"Regular\" }\n\t\t\t\t\t]\n\t\t\t},\n\
+    \t\t\"topping\":\n\t\t\t[\n\t\t\t\t{ \"id\": \"5001\", \"type\": \"None\" },\n\
+    \t\t\t\t{ \"id\": \"5002\", \"type\": \"Glazed\" },\n\t\t\t\t{ \"id\": \"5005\"\
+    , \"type\": \"Sugar\" },\n\t\t\t\t{ \"id\": \"5003\", \"type\": \"Chocolate\"\
+    \ },\n\t\t\t\t{ \"id\": \"5004\", \"type\": \"Maple\" }\n\t\t\t]\n\t},\n\t{\n\t\
+    \t\"id\": \"0003\",\n\t\t\"type\": \"donut\",\n\t\t\"name\": \"Old Fashioned\"\
+    ,\n\t\t\"ppu\": 0.55,\n\t\t\"batters\":\n\t\t\t{\n\t\t\t\t\"batter\":\n\t\t\t\t\
+    \t[\n\t\t\t\t\t\t{ \"id\": \"1001\", \"type\": \"Regular\" },\n\t\t\t\t\t\t{ \"\
+    id\": \"1002\", \"type\": \"Chocolate\" }\n\t\t\t\t\t]\n\t\t\t},\n\t\t\"topping\"\
+    :\n\t\t\t[\n\t\t\t\t{ \"id\": \"5001\", \"type\": \"None\" },\n\t\t\t\t{ \"id\"\
+    : \"5002\", \"type\": \"Glazed\" },\n\t\t\t\t{ \"id\": \"5003\", \"type\": \"\
+    Chocolate\" },\n\t\t\t\t{ \"id\": \"5004\", \"type\": \"Maple\" }\n\t\t\t]\n\t\
+    }\n]\n\nResponse (24s)>\n\n{\n        \"type\": \"object\",\n        \"properties\"\
+    : {\n                \"id\": {\n                        \"type\": \"string\"\n\
+    \                },\n                \"type\": {\n                        \"type\"\
+    : \"string\"\n                },\n                \"name\": {\n              \
+    \          \"type\": \"string\"\n                },\n                \"ppu\":\
+    \ {\n                        \"type\": \"number\",\n                        \"\
+    format\": \"percent\"\n                },\n                \"batters\": {\n  \
+    \                      \"type\": \"array\",\n                        \"items\"\
+    : {\n                                \"$ref\": \"#/definitions/batter\"\n    \
+    \                    }\n                },\n                \"topping\": {\n \
+    \                       \"type\": \"array\",\n                        \"items\"\
+    : {\n                                \"$ref\": \"#/definitions/topping\"\n   \
+    \                     }\n                }\n        },\n        \"definitions\"\
+    : {\n                \"batter\": {\n                        \"type\": \"object\"\
+    ,\n                        \"properties\": {\n                               \
+    \ \"id\": {\n                                        \"type\": \"string\"\n  \
+    \                              },\n                                \"type\": {\n\
+    \                                        \"type\": \"string\"\n              \
+    \                  },\n                                \"name\": {\n         \
+    \                               \"type\": \"string\"\n                       \
+    \         }\n```"
+  created_at: 2023-04-21 12:49:07+00:00
+  edited: true
+  hidden: false
+  id: 64429453c82791fbe15fb6b5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-21T13:52:24.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Increase max_new_tokens in the pipeline. I think the default is
+          256, and you will want to increase it to something much larger.</p>
+
+          '
+        raw: Increase max_new_tokens in the pipeline. I think the default is 256,
+          and you will want to increase it to something much larger.
+        updatedAt: '2023-04-21T13:52:24.810Z'
+      numEdits: 0
+      reactions: []
+    id: 644295188569978432f759b4
+    type: comment
+  author: srowen
+  content: Increase max_new_tokens in the pipeline. I think the default is 256, and
+    you will want to increase it to something much larger.
+  created_at: 2023-04-21 12:52:24+00:00
+  edited: false
+  hidden: false
+  id: 644295188569978432f759b4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/472bbef2630458773cb76bf0d44f0028.svg
+      fullname: Daniel Ramagem
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: danrama
+      type: user
+    createdAt: '2023-04-21T15:30:27.000Z'
+    data:
+      edited: false
+      editors:
+      - danrama
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/472bbef2630458773cb76bf0d44f0028.svg
+          fullname: Daniel Ramagem
+          isHf: false
+          isPro: false
+          name: danrama
+          type: user
+        html: '<p>That worked, thanks!</p>
+
+          '
+        raw: That worked, thanks!
+        updatedAt: '2023-04-21T15:30:27.988Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - srowen
+    id: 6442ac13f8b647fa4f5189c5
+    type: comment
+  author: danrama
+  content: That worked, thanks!
+  created_at: 2023-04-21 14:30:27+00:00
+  edited: false
+  hidden: false
+  id: 6442ac13f8b647fa4f5189c5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-21T15:32:35.000Z'
+    data:
+      status: closed
+    id: 6442ac93ce9c6d85e5bb1b28
+    type: status-change
+  author: srowen
+  created_at: 2023-04-21 14:32:35+00:00
+  id: 6442ac93ce9c6d85e5bb1b28
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3f998d1410b8633c02e0f2d4b4f9cc0b.svg
+      fullname: Anselme
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: anslume
+      type: user
+    createdAt: '2023-04-21T20:50:29.000Z'
+    data:
+      edited: false
+      editors:
+      - anslume
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3f998d1410b8633c02e0f2d4b4f9cc0b.svg
+          fullname: Anselme
+          isHf: false
+          isPro: false
+          name: anslume
+          type: user
+        html: '<p>is there a maximum length that the model could accept ? looking
+          for the doc on this parameter. Thanks a lot !</p>
+
+          '
+        raw: is there a maximum length that the model could accept ? looking for the
+          doc on this parameter. Thanks a lot !
+        updatedAt: '2023-04-21T20:50:29.792Z'
+      numEdits: 0
+      reactions: []
+    id: 6442f715ce9c6d85e5c00e34
+    type: comment
+  author: anslume
+  content: is there a maximum length that the model could accept ? looking for the
+    doc on this parameter. Thanks a lot !
+  created_at: 2023-04-21 19:50:29+00:00
+  edited: false
+  hidden: false
+  id: 6442f715ce9c6d85e5c00e34
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-21T20:51:01.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>It''s 2048. There''s an open issue about whether this is set correctly
+          in the config, but that''s it. (Base model is 2048)</p>
+
+          '
+        raw: It's 2048. There's an open issue about whether this is set correctly
+          in the config, but that's it. (Base model is 2048)
+        updatedAt: '2023-04-21T20:51:01.076Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - anslume
+    id: 6442f735f8b647fa4f5685a8
+    type: comment
+  author: srowen
+  content: It's 2048. There's an open issue about whether this is set correctly in
+    the config, but that's it. (Base model is 2048)
+  created_at: 2023-04-21 19:51:01+00:00
+  edited: false
+  hidden: false
+  id: 6442f735f8b647fa4f5685a8
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 51
+repo_id: databricks/dolly-v2-12b
+repo_type: model
+status: closed
+target_branch: null
+title: What are the text size limits for the input to and output from Dolly?

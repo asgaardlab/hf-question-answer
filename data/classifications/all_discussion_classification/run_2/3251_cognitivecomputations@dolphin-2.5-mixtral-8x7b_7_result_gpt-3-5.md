@@ -1,0 +1,5 @@
+## https://huggingface.co/cognitivecomputations/dolphin-2.5-mixtral-8x7b/discussions/7
+
+contains_question: yes
+
+question_part: How do I set that up? I don't use the "Default tab" I don't know how to use that? For example I don't think it can continue a conversation or instruction right? Basically I instead choose "Chat" and than I click the Instruct button. And then I can type my prompt and hit generate. What am I missing? At no point do I see any of the above. So I am little confused the difference between a Chat Template and I guess system prompt? How do properly set this up and use it in Chat Instruct mode? If I can't and I have to go to the default tab? How can I have a long conversation and keep asking questions? Thanks.

@@ -1,0 +1,246 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: daryl149
+conflicting_files: null
+created_at: 2023-05-24 20:57:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+      fullname: Daryl Autar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: daryl149
+      type: user
+    createdAt: '2023-05-24T21:57:07.000Z'
+    data:
+      edited: true
+      editors:
+      - daryl149
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+          fullname: Daryl Autar
+          isHf: false
+          isPro: false
+          name: daryl149
+          type: user
+        html: "<p>Works on a single A6000:</p>\n<pre><code>from transformers import\
+          \ LlamaTokenizer, LlamaForCausalLM, TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          oasst-rlhf-2-llama-30b\")\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+          , device_map=\"sequential\", offload_folder=\"offload\", load_in_8bit=True)\n\
+          streamer = TextStreamer(tokenizer, skip_prompt=True)\nmessage = \"&lt;|prompter|&gt;This\
+          \ is a demo of a text streamer. What's a cool fact about ducks?&lt;|assistant|&gt;\"\
+          \ninputs = tokenizer(message, return_tensors=\"pt\").to(model.device)\n\
+          tokens = model.generate(**inputs,  max_new_tokens=500, do_sample=True, temperature=0.9,\
+          \ streamer=streamer)\n</code></pre>\n<p>Throws error on 2 V100S cards (hosting\
+          \ 17GB of model weights each):</p>\n<pre><code>from transformers import\
+          \ LlamaTokenizer, LlamaForCausalLM, TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          oasst-rlhf-2-llama-30b\")\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+          , device_map=\"auto\", offload_folder=\"offload\", load_in_8bit=True)\n\
+          streamer = TextStreamer(tokenizer, skip_prompt=True)\nmessage = \"&lt;|prompter|&gt;This\
+          \ is a demo of a text streamer. What's a cool fact about ducks?&lt;|assistant|&gt;\"\
+          \ninputs = tokenizer(message, return_tensors=\"pt\").to(model.device)\n\
+          tokens = model.generate(**inputs,  max_new_tokens=500, do_sample=True, temperature=0.9,\
+          \ streamer=streamer)\n</code></pre>\n<p>throws:</p>\n<pre><code>Traceback\
+          \ (most recent call last):\n  File \"&lt;stdin&gt;\", line 1, in &lt;module&gt;\n\
+          \  File \"myvenv/lib/python3.10/site-packages/torch/autograd/grad_mode.py\"\
+          , line 27, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1558, in generate\n    return self.sample(\n  File \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2641, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          RuntimeError: probability tensor contains either `inf`, `nan` or element\
+          \ &lt; 0\n</code></pre>\n<p>Only difference is I'm using device_map auto\
+          \ to make use of both GPUs. (Also happens for <code>.to('cuda')</code>,\
+          \  <code>.to(0)</code>, <code>.to(1)</code> instead of <code>.to(model.device)</code>.)</p>\n\
+          <p>ah, there's an open bug in <code>transformers</code> for it:<br><a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/transformers/issues/22914\"\
+          >https://github.com/huggingface/transformers/issues/22914</a></p>\n"
+        raw: "Works on a single A6000:\n\n```\nfrom transformers import LlamaTokenizer,\
+          \ LlamaForCausalLM, TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          oasst-rlhf-2-llama-30b\")\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+          , device_map=\"sequential\", offload_folder=\"offload\", load_in_8bit=True)\n\
+          streamer = TextStreamer(tokenizer, skip_prompt=True)\nmessage = \"<|prompter|>This\
+          \ is a demo of a text streamer. What's a cool fact about ducks?<|assistant|>\"\
+          \ninputs = tokenizer(message, return_tensors=\"pt\").to(model.device)\n\
+          tokens = model.generate(**inputs,  max_new_tokens=500, do_sample=True, temperature=0.9,\
+          \ streamer=streamer)\n```\n\nThrows error on 2 V100S cards (hosting 17GB\
+          \ of model weights each):\n\n```\nfrom transformers import LlamaTokenizer,\
+          \ LlamaForCausalLM, TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          oasst-rlhf-2-llama-30b\")\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+          , device_map=\"auto\", offload_folder=\"offload\", load_in_8bit=True)\n\
+          streamer = TextStreamer(tokenizer, skip_prompt=True)\nmessage = \"<|prompter|>This\
+          \ is a demo of a text streamer. What's a cool fact about ducks?<|assistant|>\"\
+          \ninputs = tokenizer(message, return_tensors=\"pt\").to(model.device)\n\
+          tokens = model.generate(**inputs,  max_new_tokens=500, do_sample=True, temperature=0.9,\
+          \ streamer=streamer)\n```\nthrows:\n```\nTraceback (most recent call last):\n\
+          \  File \"<stdin>\", line 1, in <module>\n  File \"myvenv/lib/python3.10/site-packages/torch/autograd/grad_mode.py\"\
+          , line 27, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1558, in generate\n    return self.sample(\n  File \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2641, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          RuntimeError: probability tensor contains either `inf`, `nan` or element\
+          \ < 0\n\n```\n\nOnly difference is I'm using device_map auto to make use\
+          \ of both GPUs. (Also happens for `.to('cuda')`,  `.to(0)`, `.to(1)` instead\
+          \ of `.to(model.device)`.)\n\nah, there's an open bug in `transformers`\
+          \ for it:\nhttps://github.com/huggingface/transformers/issues/22914"
+        updatedAt: '2023-06-04T14:51:18.903Z'
+      numEdits: 3
+      reactions: []
+    id: 646e883366f7b97a94fd0a2e
+    type: comment
+  author: daryl149
+  content: "Works on a single A6000:\n\n```\nfrom transformers import LlamaTokenizer,\
+    \ LlamaForCausalLM, TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+    oasst-rlhf-2-llama-30b\")\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+    , device_map=\"sequential\", offload_folder=\"offload\", load_in_8bit=True)\n\
+    streamer = TextStreamer(tokenizer, skip_prompt=True)\nmessage = \"<|prompter|>This\
+    \ is a demo of a text streamer. What's a cool fact about ducks?<|assistant|>\"\
+    \ninputs = tokenizer(message, return_tensors=\"pt\").to(model.device)\ntokens\
+    \ = model.generate(**inputs,  max_new_tokens=500, do_sample=True, temperature=0.9,\
+    \ streamer=streamer)\n```\n\nThrows error on 2 V100S cards (hosting 17GB of model\
+    \ weights each):\n\n```\nfrom transformers import LlamaTokenizer, LlamaForCausalLM,\
+    \ TextStreamer\n\ntokenizer = LlamaTokenizer.from_pretrained(\"oasst-rlhf-2-llama-30b\"\
+    )\nmodel = LlamaForCausalLM.from_pretrained(\"oasst-rlhf-2-llama-30b\", device_map=\"\
+    auto\", offload_folder=\"offload\", load_in_8bit=True)\nstreamer = TextStreamer(tokenizer,\
+    \ skip_prompt=True)\nmessage = \"<|prompter|>This is a demo of a text streamer.\
+    \ What's a cool fact about ducks?<|assistant|>\"\ninputs = tokenizer(message,\
+    \ return_tensors=\"pt\").to(model.device)\ntokens = model.generate(**inputs, \
+    \ max_new_tokens=500, do_sample=True, temperature=0.9, streamer=streamer)\n```\n\
+    throws:\n```\nTraceback (most recent call last):\n  File \"<stdin>\", line 1,\
+    \ in <module>\n  File \"myvenv/lib/python3.10/site-packages/torch/autograd/grad_mode.py\"\
+    , line 27, in decorate_context\n    return func(*args, **kwargs)\n  File \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 1558, in generate\n    return self.sample(\n  File \"myvenv/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 2641, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+    RuntimeError: probability tensor contains either `inf`, `nan` or element < 0\n\
+    \n```\n\nOnly difference is I'm using device_map auto to make use of both GPUs.\
+    \ (Also happens for `.to('cuda')`,  `.to(0)`, `.to(1)` instead of `.to(model.device)`.)\n\
+    \nah, there's an open bug in `transformers` for it:\nhttps://github.com/huggingface/transformers/issues/22914"
+  created_at: 2023-05-24 20:57:07+00:00
+  edited: true
+  hidden: false
+  id: 646e883366f7b97a94fd0a2e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+      fullname: Daryl Autar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: daryl149
+      type: user
+    createdAt: '2023-05-24T23:08:18.000Z'
+    data:
+      status: closed
+    id: 646e98e234fde71fda9dc619
+    type: status-change
+  author: daryl149
+  created_at: 2023-05-24 22:08:18+00:00
+  id: 646e98e234fde71fda9dc619
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+      fullname: Daryl Autar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: daryl149
+      type: user
+    createdAt: '2023-06-04T14:51:00.000Z'
+    data:
+      edited: true
+      editors:
+      - daryl149
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8316668272018433
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+          fullname: Daryl Autar
+          isHf: false
+          isPro: false
+          name: daryl149
+          type: user
+        html: '<p><strong>Update:</strong><br>The inf/nan is caused by <code>CUDA
+          11.8</code> and <code>bitsandbytes==0.38.1</code>. It''s solved by downgrading
+          to <code>CUDA 11.6</code> and <code>bitsandbytes 0.31.8</code></p>
+
+          <p>However, the inference on multi gpu is still broken. It returns gibberish
+          when using <code>load_in_8bit=True</code>. See this issue I created in transformers
+          <a rel="nofollow" href="https://github.com/huggingface/transformers/issues/23989">https://github.com/huggingface/transformers/issues/23989</a></p>
+
+          '
+        raw: '**Update:**
+
+          The inf/nan is caused by `CUDA 11.8` and `bitsandbytes==0.38.1`. It''s solved
+          by downgrading to `CUDA 11.6` and `bitsandbytes 0.31.8`
+
+
+          However, the inference on multi gpu is still broken. It returns gibberish
+          when using `load_in_8bit=True`. See this issue I created in transformers
+          https://github.com/huggingface/transformers/issues/23989'
+        updatedAt: '2023-06-04T15:18:30.841Z'
+      numEdits: 4
+      reactions: []
+      relatedEventId: 647ca4d460dfe0f35d5455cd
+    id: 647ca4d460dfe0f35d5455cc
+    type: comment
+  author: daryl149
+  content: '**Update:**
+
+    The inf/nan is caused by `CUDA 11.8` and `bitsandbytes==0.38.1`. It''s solved
+    by downgrading to `CUDA 11.6` and `bitsandbytes 0.31.8`
+
+
+    However, the inference on multi gpu is still broken. It returns gibberish when
+    using `load_in_8bit=True`. See this issue I created in transformers https://github.com/huggingface/transformers/issues/23989'
+  created_at: 2023-06-04 13:51:00+00:00
+  edited: true
+  hidden: false
+  id: 647ca4d460dfe0f35d5455cc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/620954c0c11a57389ba013d2/FlIIlobCg_OSmD4Gf0idt.jpeg?w=200&h=200&f=face
+      fullname: Daryl Autar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: daryl149
+      type: user
+    createdAt: '2023-06-04T14:51:00.000Z'
+    data:
+      status: open
+    id: 647ca4d460dfe0f35d5455cd
+    type: status-change
+  author: daryl149
+  created_at: 2023-06-04 13:51:00+00:00
+  id: 647ca4d460dfe0f35d5455cd
+  new_status: open
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: OpenAssistant/oasst-rlhf-2-llama-30b-7k-steps-xor
+repo_type: model
+status: open
+target_branch: null
+title: can't run inference on multi GPU

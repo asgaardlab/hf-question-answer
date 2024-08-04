@@ -1,0 +1,363 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: GentlePickle
+conflicting_files: null
+created_at: 2023-07-08 23:28:12+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/6WE3ys5P8uuZwWRSChWJV.jpeg?w=200&h=200&f=face
+      fullname: Alex McAnulty
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: GentlePickle
+      type: user
+    createdAt: '2023-07-09T00:28:12.000Z'
+    data:
+      edited: false
+      editors:
+      - GentlePickle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7260664701461792
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/6WE3ys5P8uuZwWRSChWJV.jpeg?w=200&h=200&f=face
+          fullname: Alex McAnulty
+          isHf: false
+          isPro: false
+          name: GentlePickle
+          type: user
+        html: "<p>Hey Jon, big fan over here! I've been following your airoboros models\
+          \ for a little bit now, and then I saw you post about this on reddit and\
+          \ had to try it. Being able to fine-tune this model on my hardware would\
+          \ be an amazing step for me. </p>\n<p>Unfortunately, I can't seem to get\
+          \ the qlora.py script to recognize the 'response' key in any dataset I give\
+          \ it. I'm specifying airoboros as the dataset format as per your suggestion\
+          \ in the github fork that goes with this model, and I've even tried running\
+          \ it with an 'instructions.jsonl' dataset that I copied from an airoboros\
+          \ model just to see if I was screwing up my own dataset formatting, but\
+          \ it gives the same error. Here's the part of the code that it's failing\
+          \ on, the stack trace error that it gives, and the script call and parameters\
+          \ that I'm using are below it. </p>\n<h1 id=\"this-is-where-its-failing-and-i-added-two-dictionary-counter-print-statements-for-debugging\"\
+          >this is where it's failing and I added two dictionary counter print statements\
+          \ for debugging:</h1>\n<pre><code>    elif dataset_format == 'airoboros':\n\
+          \        count_without_response = sum(1 for x in dataset if 'response' not\
+          \ in x)\n        count_dicts_in_dataset = sum(1 for x in dataset)\n\n  \
+          \      print(f\"Number of dictionaries: {count_without_response}\")\n  \
+          \      print(f\"Number of dictionaries without 'response' key: {count_without_response}\"\
+          )\n        \n        dataset = dataset.map(lambda x: {\n            'input':\
+          \ AIROBOROS_PROMPT.format(instruction=x[\"instruction\"]),\n           \
+          \ 'output': x[\"response\"],\n        })\n</code></pre>\n<h1 id=\"output-directly-followed-by-stack-trace-error\"\
+          >Output, directly followed by stack trace error:</h1>\n<p>Number of dictionaries:\
+          \ 1                                            # This seems odd, it came\
+          \ back with a count of 1 for both my dataset and the instructions.jsonl\
+          \ file<br>Number of dictionaries without 'response' key: 1   # Line throwing\
+          \ the error, count of lines where no response key found<br>Traceback (most\
+          \ recent call last):<br>  File \"/workspace/qlora/qlora.py\", line 715,\
+          \ in <br>    train()<br>  File \"/workspace/qlora/qlora.py\", line 648,\
+          \ in train<br>    data_module = make_data_module(tokenizer=tokenizer, args=args)<br>\
+          \  File \"/workspace/qlora/qlora.py\", line 566, in make_data_module<br>\
+          \    dataset = format_dataset(dataset, args.dataset_format)<br>  File \"\
+          /workspace/qlora/qlora.py\", line 551, in format_dataset<br>    dataset\
+          \ = dataset.map(lambda x: {<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\"\
+          , line 851, in map<br>    {<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\"\
+          , line 852, in <br>    k: dataset.map(<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 580, in wrapper<br>    out: Union[\"Dataset\", \"DatasetDict\"] =\
+          \ func(self, *args, **kwargs)<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 545, in wrapper<br>    out: Union[\"Dataset\", \"DatasetDict\"] =\
+          \ func(self, *args, **kwargs)<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3087, in map<br>    for rank, done, content in Dataset._map_single(**dataset_kwargs):<br>\
+          \  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3441, in _map_single<br>    example = apply_function_on_filtered_inputs(example,\
+          \ i, offset=offset)<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3344, in apply_function_on_filtered_inputs<br>    processed_inputs\
+          \ = function(*fn_args, *additional_args, **fn_kwargs)<br>  File \"/workspace/qlora/qlora.py\"\
+          , line 553, in <br>    'output': x[\"response\"],<br>  File \"/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py\"\
+          , line 270, in <strong>getitem</strong><br>    value = self.data[key]<br>KeyError:\
+          \ 'response'</p>\n<h1 id=\"script-with-parms\">Script with parms:</h1>\n\
+          <p>CUDA_VISIBLE_DEVICES=1,2 python qlora.py \u2013learning_rate 0.0001 <br>--model_name_or_path\
+          \ jondurbin_mpt-30b-qlora-compatible <br>--dataset_format 'airoboros' <br>--dataset_name\
+          \ 'airoboros_dataset.json' \\  # Also tried instructions.jsonl, and tried\
+          \ with my own dataset using newline delim json and standard format json<br>--mpt\
+          \ True <br>--max_new_tokens 8192 <br>--bits 4 <br>--model_max_len 8192 <br>--learning_rate\
+          \ 0.0001 <br>--num_train_epochs 1 <br>--trust_remote_code True</p>\n<p>Any\
+          \ advice you can give, or if there's anything I can do to help, I'd appreciate\
+          \ it. I'd really like to be able to tune the MPT model as my company has\
+          \ a relationship with Databricks and they just bought Mosaic, so getting\
+          \ this running would be awesome! Keep doing everything you're doing, the\
+          \ airoboros models are great and we all appreciate your work! </p>\n"
+        raw: "Hey Jon, big fan over here! I've been following your airoboros models\
+          \ for a little bit now, and then I saw you post about this on reddit and\
+          \ had to try it. Being able to fine-tune this model on my hardware would\
+          \ be an amazing step for me. \r\n\r\nUnfortunately, I can't seem to get\
+          \ the qlora.py script to recognize the 'response' key in any dataset I give\
+          \ it. I'm specifying airoboros as the dataset format as per your suggestion\
+          \ in the github fork that goes with this model, and I've even tried running\
+          \ it with an 'instructions.jsonl' dataset that I copied from an airoboros\
+          \ model just to see if I was screwing up my own dataset formatting, but\
+          \ it gives the same error. Here's the part of the code that it's failing\
+          \ on, the stack trace error that it gives, and the script call and parameters\
+          \ that I'm using are below it. \r\n\r\n# this is where it's failing and\
+          \ I added two dictionary counter print statements for debugging: \r\n  \
+          \      elif dataset_format == 'airoboros':\r\n            count_without_response\
+          \ = sum(1 for x in dataset if 'response' not in x)\r\n            count_dicts_in_dataset\
+          \ = sum(1 for x in dataset)\r\n\r\n            print(f\"Number of dictionaries:\
+          \ {count_without_response}\")\r\n            print(f\"Number of dictionaries\
+          \ without 'response' key: {count_without_response}\")\r\n            \r\n\
+          \            dataset = dataset.map(lambda x: {\r\n                'input':\
+          \ AIROBOROS_PROMPT.format(instruction=x[\"instruction\"]),\r\n         \
+          \       'output': x[\"response\"],\r\n            })\r\n\r\n# Output, directly\
+          \ followed by stack trace error:\r\nNumber of dictionaries: 1          \
+          \                                  # This seems odd, it came back with a\
+          \ count of 1 for both my dataset and the instructions.jsonl file\r\nNumber\
+          \ of dictionaries without 'response' key: 1   # Line throwing the error,\
+          \ count of lines where no response key found\r\nTraceback (most recent call\
+          \ last):                                                               \
+          \                                                                      \
+          \                                         \r\n  File \"/workspace/qlora/qlora.py\"\
+          , line 715, in <module>\r\n    train()\r\n  File \"/workspace/qlora/qlora.py\"\
+          , line 648, in train\r\n    data_module = make_data_module(tokenizer=tokenizer,\
+          \ args=args)\r\n  File \"/workspace/qlora/qlora.py\", line 566, in make_data_module\r\
+          \n    dataset = format_dataset(dataset, args.dataset_format)\r\n  File \"\
+          /workspace/qlora/qlora.py\", line 551, in format_dataset\r\n    dataset\
+          \ = dataset.map(lambda x: {\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\"\
+          , line 851, in map\r\n    {\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\"\
+          , line 852, in <dictcomp>\r\n    k: dataset.map(\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 580, in wrapper\r\n    out: Union[\"Dataset\", \"DatasetDict\"] =\
+          \ func(self, *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 545, in wrapper\r\n    out: Union[\"Dataset\", \"DatasetDict\"] =\
+          \ func(self, *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3087, in map\r\n    for rank, done, content in Dataset._map_single(**dataset_kwargs):\r\
+          \n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3441, in _map_single\r\n    example = apply_function_on_filtered_inputs(example,\
+          \ i, offset=offset)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+          , line 3344, in apply_function_on_filtered_inputs\r\n    processed_inputs\
+          \ = function(*fn_args, *additional_args, **fn_kwargs)\r\n  File \"/workspace/qlora/qlora.py\"\
+          , line 553, in <lambda>\r\n    'output': x[\"response\"],\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py\"\
+          , line 270, in __getitem__\r\n    value = self.data[key]\r\nKeyError: 'response'\r\
+          \n\r\n\r\n# Script with parms: \r\nCUDA_VISIBLE_DEVICES=1,2 python qlora.py\
+          \ \u2013learning_rate 0.0001 \\\r\n--model_name_or_path jondurbin_mpt-30b-qlora-compatible\
+          \ \\\r\n--dataset_format 'airoboros' \\\r\n--dataset_name 'airoboros_dataset.json'\
+          \ \\  # Also tried instructions.jsonl, and tried with my own dataset using\
+          \ newline delim json and standard format json\r\n--mpt True \\\r\n--max_new_tokens\
+          \ 8192 \\\r\n--bits 4 \\\r\n--model_max_len 8192 \\\r\n--learning_rate 0.0001\
+          \ \\\r\n--num_train_epochs 1 \\\r\n--trust_remote_code True\r\n\r\n\r\n\
+          Any advice you can give, or if there's anything I can do to help, I'd appreciate\
+          \ it. I'd really like to be able to tune the MPT model as my company has\
+          \ a relationship with Databricks and they just bought Mosaic, so getting\
+          \ this running would be awesome! Keep doing everything you're doing, the\
+          \ airoboros models are great and we all appreciate your work! "
+        updatedAt: '2023-07-09T00:28:12.844Z'
+      numEdits: 0
+      reactions: []
+    id: 64a9ff1c31f620201ddf5d89
+    type: comment
+  author: GentlePickle
+  content: "Hey Jon, big fan over here! I've been following your airoboros models\
+    \ for a little bit now, and then I saw you post about this on reddit and had to\
+    \ try it. Being able to fine-tune this model on my hardware would be an amazing\
+    \ step for me. \r\n\r\nUnfortunately, I can't seem to get the qlora.py script\
+    \ to recognize the 'response' key in any dataset I give it. I'm specifying airoboros\
+    \ as the dataset format as per your suggestion in the github fork that goes with\
+    \ this model, and I've even tried running it with an 'instructions.jsonl' dataset\
+    \ that I copied from an airoboros model just to see if I was screwing up my own\
+    \ dataset formatting, but it gives the same error. Here's the part of the code\
+    \ that it's failing on, the stack trace error that it gives, and the script call\
+    \ and parameters that I'm using are below it. \r\n\r\n# this is where it's failing\
+    \ and I added two dictionary counter print statements for debugging: \r\n    \
+    \    elif dataset_format == 'airoboros':\r\n            count_without_response\
+    \ = sum(1 for x in dataset if 'response' not in x)\r\n            count_dicts_in_dataset\
+    \ = sum(1 for x in dataset)\r\n\r\n            print(f\"Number of dictionaries:\
+    \ {count_without_response}\")\r\n            print(f\"Number of dictionaries without\
+    \ 'response' key: {count_without_response}\")\r\n            \r\n            dataset\
+    \ = dataset.map(lambda x: {\r\n                'input': AIROBOROS_PROMPT.format(instruction=x[\"\
+    instruction\"]),\r\n                'output': x[\"response\"],\r\n           \
+    \ })\r\n\r\n# Output, directly followed by stack trace error:\r\nNumber of dictionaries:\
+    \ 1                                            # This seems odd, it came back\
+    \ with a count of 1 for both my dataset and the instructions.jsonl file\r\nNumber\
+    \ of dictionaries without 'response' key: 1   # Line throwing the error, count\
+    \ of lines where no response key found\r\nTraceback (most recent call last): \
+    \                                                                            \
+    \                                                                            \
+    \                     \r\n  File \"/workspace/qlora/qlora.py\", line 715, in <module>\r\
+    \n    train()\r\n  File \"/workspace/qlora/qlora.py\", line 648, in train\r\n\
+    \    data_module = make_data_module(tokenizer=tokenizer, args=args)\r\n  File\
+    \ \"/workspace/qlora/qlora.py\", line 566, in make_data_module\r\n    dataset\
+    \ = format_dataset(dataset, args.dataset_format)\r\n  File \"/workspace/qlora/qlora.py\"\
+    , line 551, in format_dataset\r\n    dataset = dataset.map(lambda x: {\r\n  File\
+    \ \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\", line 851,\
+    \ in map\r\n    {\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/dataset_dict.py\"\
+    , line 852, in <dictcomp>\r\n    k: dataset.map(\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+    , line 580, in wrapper\r\n    out: Union[\"Dataset\", \"DatasetDict\"] = func(self,\
+    \ *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+    , line 545, in wrapper\r\n    out: Union[\"Dataset\", \"DatasetDict\"] = func(self,\
+    \ *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+    , line 3087, in map\r\n    for rank, done, content in Dataset._map_single(**dataset_kwargs):\r\
+    \n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+    , line 3441, in _map_single\r\n    example = apply_function_on_filtered_inputs(example,\
+    \ i, offset=offset)\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py\"\
+    , line 3344, in apply_function_on_filtered_inputs\r\n    processed_inputs = function(*fn_args,\
+    \ *additional_args, **fn_kwargs)\r\n  File \"/workspace/qlora/qlora.py\", line\
+    \ 553, in <lambda>\r\n    'output': x[\"response\"],\r\n  File \"/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py\"\
+    , line 270, in __getitem__\r\n    value = self.data[key]\r\nKeyError: 'response'\r\
+    \n\r\n\r\n# Script with parms: \r\nCUDA_VISIBLE_DEVICES=1,2 python qlora.py \u2013\
+    learning_rate 0.0001 \\\r\n--model_name_or_path jondurbin_mpt-30b-qlora-compatible\
+    \ \\\r\n--dataset_format 'airoboros' \\\r\n--dataset_name 'airoboros_dataset.json'\
+    \ \\  # Also tried instructions.jsonl, and tried with my own dataset using newline\
+    \ delim json and standard format json\r\n--mpt True \\\r\n--max_new_tokens 8192\
+    \ \\\r\n--bits 4 \\\r\n--model_max_len 8192 \\\r\n--learning_rate 0.0001 \\\r\n\
+    --num_train_epochs 1 \\\r\n--trust_remote_code True\r\n\r\n\r\nAny advice you\
+    \ can give, or if there's anything I can do to help, I'd appreciate it. I'd really\
+    \ like to be able to tune the MPT model as my company has a relationship with\
+    \ Databricks and they just bought Mosaic, so getting this running would be awesome!\
+    \ Keep doing everything you're doing, the airoboros models are great and we all\
+    \ appreciate your work! "
+  created_at: 2023-07-08 23:28:12+00:00
+  edited: false
+  hidden: false
+  id: 64a9ff1c31f620201ddf5d89
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+      fullname: Jon Durbin
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: jondurbin
+      type: user
+    createdAt: '2023-07-09T09:01:22.000Z'
+    data:
+      edited: false
+      editors:
+      - jondurbin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8936685919761658
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6453dafca647b92069ac541a/QkUleoJtHHdTkqtW54QIG.jpeg?w=200&h=200&f=face
+          fullname: Jon Durbin
+          isHf: false
+          isPro: true
+          name: jondurbin
+          type: user
+        html: '<p>Interesting...  Can you add a debug print of the dataset before
+          the lambda (line 546), or line 465 in local dataset?  Seems perhaps the
+          dataset is empty?</p>
+
+          <p>I see you tried this, but to confirm, the dataset format I''ve been using
+          is a single JSON string per line, with keys "instruction" and "response".</p>
+
+          '
+        raw: 'Interesting...  Can you add a debug print of the dataset before the
+          lambda (line 546), or line 465 in local dataset?  Seems perhaps the dataset
+          is empty?
+
+
+          I see you tried this, but to confirm, the dataset format I''ve been using
+          is a single JSON string per line, with keys "instruction" and "response".'
+        updatedAt: '2023-07-09T09:01:22.323Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - GentlePickle
+    id: 64aa776232c9473fedc8aed2
+    type: comment
+  author: jondurbin
+  content: 'Interesting...  Can you add a debug print of the dataset before the lambda
+    (line 546), or line 465 in local dataset?  Seems perhaps the dataset is empty?
+
+
+    I see you tried this, but to confirm, the dataset format I''ve been using is a
+    single JSON string per line, with keys "instruction" and "response".'
+  created_at: 2023-07-09 08:01:22+00:00
+  edited: false
+  hidden: false
+  id: 64aa776232c9473fedc8aed2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/6WE3ys5P8uuZwWRSChWJV.jpeg?w=200&h=200&f=face
+      fullname: Alex McAnulty
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: GentlePickle
+      type: user
+    createdAt: '2023-07-09T12:57:43.000Z'
+    data:
+      edited: false
+      editors:
+      - GentlePickle
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9699124693870544
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/6WE3ys5P8uuZwWRSChWJV.jpeg?w=200&h=200&f=face
+          fullname: Alex McAnulty
+          isHf: false
+          isPro: false
+          name: GentlePickle
+          type: user
+        html: '<p>Thanks for the reply. I went back and added that print statement
+          and confirmed that it was empty.. then I went back and checked every parm
+          against your example in the model card window, and realized I was using
+          --dataset_name instead of --dataset ...</p>
+
+          <p>Fixed that and now I''m getting an OOM error, so that''s a step in the
+          right direction! </p>
+
+          '
+        raw: 'Thanks for the reply. I went back and added that print statement and
+          confirmed that it was empty.. then I went back and checked every parm against
+          your example in the model card window, and realized I was using --dataset_name
+          instead of --dataset ...
+
+
+          Fixed that and now I''m getting an OOM error, so that''s a step in the right
+          direction! '
+        updatedAt: '2023-07-09T12:57:43.524Z'
+      numEdits: 0
+      reactions: []
+    id: 64aaaec751756fb15c13b6c9
+    type: comment
+  author: GentlePickle
+  content: 'Thanks for the reply. I went back and added that print statement and confirmed
+    that it was empty.. then I went back and checked every parm against your example
+    in the model card window, and realized I was using --dataset_name instead of --dataset
+    ...
+
+
+    Fixed that and now I''m getting an OOM error, so that''s a step in the right direction! '
+  created_at: 2023-07-09 11:57:43+00:00
+  edited: false
+  hidden: false
+  id: 64aaaec751756fb15c13b6c9
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: jondurbin/mpt-30b-qlora-compatible
+repo_type: model
+status: open
+target_branch: null
+title: 'Issue trying to tune using the fork of qlora, KeyError: ''response'' ? '

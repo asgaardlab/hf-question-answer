@@ -1,0 +1,1233 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: wempoo
+conflicting_files: null
+created_at: 2023-07-25 05:48:40+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-25T06:48:40.000Z'
+    data:
+      edited: true
+      editors:
+      - wempoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8359819650650024
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: "<p>Hi, I've used the example that you provided to run TheBloke/Llama-2-70B-GPTQ,\
+          \ and it looks like it works but it takes a long time to get any result.\
+          \ I changed the prompt text to <code>Hello</code>, and tested the script\
+          \ by running <code>python app.py</code>.</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoTokenizer, pipeline, logging\n<span class=\"hljs-keyword\"\
+          >from</span> auto_gptq <span class=\"hljs-keyword\">import</span> AutoGPTQForCausalLM,\
+          \ BaseQuantizeConfig\n\nmodel_name_or_path = <span class=\"hljs-string\"\
+          >\"TheBloke/Llama-2-70B-GPTQ\"</span>\nmodel_basename = <span class=\"hljs-string\"\
+          >\"gptq_model-4bit--1g\"</span>\n\nuse_triton = <span class=\"hljs-literal\"\
+          >False</span>\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+          \ use_fast=<span class=\"hljs-literal\">True</span>)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        model_basename=model_basename,\n        inject_fused_attention=<span\
+          \ class=\"hljs-literal\">False</span>, <span class=\"hljs-comment\"># Required\
+          \ for Llama 2 70B model at this time.</span>\n        use_safetensors=<span\
+          \ class=\"hljs-literal\">True</span>,\n        max_memory={ <span class=\"\
+          hljs-number\">0</span>: <span class=\"hljs-string\">\"24GIB\"</span>, <span\
+          \ class=\"hljs-number\">1</span>: <span class=\"hljs-string\">\"24GIB\"\
+          </span>, <span class=\"hljs-number\">2</span>: <span class=\"hljs-string\"\
+          >\"24GIB\"</span>, <span class=\"hljs-number\">3</span>: <span class=\"\
+          hljs-string\">\"24GIB\"</span> },\n        trust_remote_code=<span class=\"\
+          hljs-literal\">False</span>,\n        device=<span class=\"hljs-string\"\
+          >\"cuda:0\"</span>,\n        use_triton=use_triton,\n        quantize_config=<span\
+          \ class=\"hljs-literal\">None</span>)\n\n<span class=\"hljs-string\">\"\"\
+          \"</span>\n<span class=\"hljs-string\">To download from a specific branch,\
+          \ use the revision parameter, as in this example:</span>\n<span class=\"\
+          hljs-string\"></span>\n<span class=\"hljs-string\">model = AutoGPTQForCausalLM.from_quantized(model_name_or_path,</span>\n\
+          <span class=\"hljs-string\">        revision=\"gptq-4bit-32g-actorder_True\"\
+          ,</span>\n<span class=\"hljs-string\">        model_basename=model_basename,</span>\n\
+          <span class=\"hljs-string\">        inject_fused_attention=False, # Required\
+          \ for Llama 2 70B model at this time.</span>\n<span class=\"hljs-string\"\
+          >        use_safetensors=True,</span>\n<span class=\"hljs-string\">    \
+          \    trust_remote_code=False,</span>\n<span class=\"hljs-string\">     \
+          \   device=\"cuda:0\",</span>\n<span class=\"hljs-string\">        quantize_config=None)</span>\n\
+          <span class=\"hljs-string\">\"\"\"</span>\n\nprompt = <span class=\"hljs-string\"\
+          >\"Hello\"</span>\nprompt_template=<span class=\"hljs-string\">f'''<span\
+          \ class=\"hljs-subst\">{prompt}</span></span>\n<span class=\"hljs-string\"\
+          >'''</span>\n\n<span class=\"hljs-built_in\">print</span>(<span class=\"\
+          hljs-string\">\"\\n\\n*** Generate:\"</span>)\n\ninput_ids = tokenizer(prompt_template,\
+          \ return_tensors=<span class=\"hljs-string\">'pt'</span>).input_ids.cuda()\n\
+          output = model.generate(inputs=input_ids, temperature=<span class=\"hljs-number\"\
+          >0.7</span>, max_new_tokens=<span class=\"hljs-number\">512</span>)\n<span\
+          \ class=\"hljs-built_in\">print</span>(tokenizer.decode(output[<span class=\"\
+          hljs-number\">0</span>]))\n\n<span class=\"hljs-comment\"># Inference can\
+          \ also be done using transformers' pipeline</span>\n\n<span class=\"hljs-comment\"\
+          ># Prevent printing spurious transformers error when using pipeline with\
+          \ AutoGPTQ</span>\nlogging.set_verbosity(logging.CRITICAL)\n\n<span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"*** Pipeline:\"\
+          </span>)\npipe = pipeline(\n    <span class=\"hljs-string\">\"text-generation\"\
+          </span>,\n    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=<span\
+          \ class=\"hljs-number\">512</span>,\n    temperature=<span class=\"hljs-number\"\
+          >0.7</span>,\n    top_p=<span class=\"hljs-number\">0.95</span>,\n    repetition_penalty=<span\
+          \ class=\"hljs-number\">1.15</span>\n)\n\n<span class=\"hljs-built_in\"\
+          >print</span>(pipe(prompt_template)[<span class=\"hljs-number\">0</span>][<span\
+          \ class=\"hljs-string\">'generated_text'</span>])\n</code></pre>\n<p>However,\
+          \ I've been waiting a very long time for any results. After approximately\
+          \ 2 minutes, I received a response similar to this:</p>\n<pre><code class=\"\
+          language-***Generate:\">Hello\n\nI have a problem with my code. I have a\
+          \ table with 2 columns. I want to display the data from the table in a list\
+          \ view. I have a list view with 2 text views. I want to display the data\
+          \ from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view\nPipeline:\n\
+          Hello\n  }\n}\n\\end{code}\nComment: I'm not sure if this is the best way\
+          \ to do it, but you can use a `static` method in your class. This will allow\
+          \ you to call that method without creating an instance of the object.\n\
+          </code></pre>\n<p>I've also tested on this server text-generation-webui\
+          \ configured with the same model, and it works really speedily in comparison.\
+          \ What I am doing wrong?</p>\n"
+        raw: "Hi, I've used the example that you provided to run TheBloke/Llama-2-70B-GPTQ,\
+          \ and it looks like it works but it takes a long time to get any result.\
+          \ I changed the prompt text to `Hello`, and tested the script by running\
+          \ `python app.py`.\n\n```python\nfrom transformers import AutoTokenizer,\
+          \ pipeline, logging\nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+          \nmodel_name_or_path = \"TheBloke/Llama-2-70B-GPTQ\"\nmodel_basename = \"\
+          gptq_model-4bit--1g\"\n\nuse_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+          \ use_fast=True)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        model_basename=model_basename,\n        inject_fused_attention=False,\
+          \ # Required for Llama 2 70B model at this time.\n        use_safetensors=True,\n\
+          \        max_memory={ 0: \"24GIB\", 1: \"24GIB\", 2: \"24GIB\", 3: \"24GIB\"\
+          \ },\n        trust_remote_code=False,\n        device=\"cuda:0\",\n   \
+          \     use_triton=use_triton,\n        quantize_config=None)\n\n\"\"\"\n\
+          To download from a specific branch, use the revision parameter, as in this\
+          \ example:\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        revision=\"gptq-4bit-32g-actorder_True\",\n        model_basename=model_basename,\n\
+          \        inject_fused_attention=False, # Required for Llama 2 70B model\
+          \ at this time.\n        use_safetensors=True,\n        trust_remote_code=False,\n\
+          \        device=\"cuda:0\",\n        quantize_config=None)\n\"\"\"\n\nprompt\
+          \ = \"Hello\"\nprompt_template=f'''{prompt}\n'''\n\nprint(\"\\n\\n*** Generate:\"\
+          )\n\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+          output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+          print(tokenizer.decode(output[0]))\n\n# Inference can also be done using\
+          \ transformers' pipeline\n\n# Prevent printing spurious transformers error\
+          \ when using pipeline with AutoGPTQ\nlogging.set_verbosity(logging.CRITICAL)\n\
+          \nprint(\"*** Pipeline:\")\npipe = pipeline(\n    \"text-generation\",\n\
+          \    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=512,\n \
+          \   temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n)\n\n\
+          print(pipe(prompt_template)[0]['generated_text'])\n```\n\nHowever, I've\
+          \ been waiting a very long time for any results. After approximately 2 minutes,\
+          \ I received a response similar to this:\n\n```***Generate:\nHello\n\nI\
+          \ have a problem with my code. I have a table with 2 columns. I want to\
+          \ display the data from the table in a list view. I have a list view with\
+          \ 2 text views. I want to display the data from the table in the list view.\
+          \ I have a list view with 2 text views. I want to display the data from\
+          \ the table in the list view. I have a list view with 2 text views. I want\
+          \ to display the data from the table in the list view. I have a list view\
+          \ with 2 text views. I want to display the data from the table in the list\
+          \ view. I have a list view with 2 text views. I want to display the data\
+          \ from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view with 2 text views. I want to display the\
+          \ data from the table in the list view. I have a list view with 2 text views.\
+          \ I want to display the data from the table in the list view. I have a list\
+          \ view with 2 text views. I want to display the data from the table in the\
+          \ list view. I have a list view\nPipeline:\nHello\n  }\n}\n\\end{code}\n\
+          Comment: I'm not sure if this is the best way to do it, but you can use\
+          \ a `static` method in your class. This will allow you to call that method\
+          \ without creating an instance of the object.\n```\n\nI've also tested on\
+          \ this server text-generation-webui configured with the same model, and\
+          \ it works really speedily in comparison. What I am doing wrong?"
+        updatedAt: '2023-07-25T13:40:28.952Z'
+      numEdits: 3
+      reactions: []
+    id: 64bf7048b7375f6b84a6fb58
+    type: comment
+  author: wempoo
+  content: "Hi, I've used the example that you provided to run TheBloke/Llama-2-70B-GPTQ,\
+    \ and it looks like it works but it takes a long time to get any result. I changed\
+    \ the prompt text to `Hello`, and tested the script by running `python app.py`.\n\
+    \n```python\nfrom transformers import AutoTokenizer, pipeline, logging\nfrom auto_gptq\
+    \ import AutoGPTQForCausalLM, BaseQuantizeConfig\n\nmodel_name_or_path = \"TheBloke/Llama-2-70B-GPTQ\"\
+    \nmodel_basename = \"gptq_model-4bit--1g\"\n\nuse_triton = False\n\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)\n\nmodel\
+    \ = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n        model_basename=model_basename,\n\
+    \        inject_fused_attention=False, # Required for Llama 2 70B model at this\
+    \ time.\n        use_safetensors=True,\n        max_memory={ 0: \"24GIB\", 1:\
+    \ \"24GIB\", 2: \"24GIB\", 3: \"24GIB\" },\n        trust_remote_code=False,\n\
+    \        device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=None)\n\
+    \n\"\"\"\nTo download from a specific branch, use the revision parameter, as in\
+    \ this example:\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+    \        revision=\"gptq-4bit-32g-actorder_True\",\n        model_basename=model_basename,\n\
+    \        inject_fused_attention=False, # Required for Llama 2 70B model at this\
+    \ time.\n        use_safetensors=True,\n        trust_remote_code=False,\n   \
+    \     device=\"cuda:0\",\n        quantize_config=None)\n\"\"\"\n\nprompt = \"\
+    Hello\"\nprompt_template=f'''{prompt}\n'''\n\nprint(\"\\n\\n*** Generate:\")\n\
+    \ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+    output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+    print(tokenizer.decode(output[0]))\n\n# Inference can also be done using transformers'\
+    \ pipeline\n\n# Prevent printing spurious transformers error when using pipeline\
+    \ with AutoGPTQ\nlogging.set_verbosity(logging.CRITICAL)\n\nprint(\"*** Pipeline:\"\
+    )\npipe = pipeline(\n    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n\
+    \    max_new_tokens=512,\n    temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n\
+    )\n\nprint(pipe(prompt_template)[0]['generated_text'])\n```\n\nHowever, I've been\
+    \ waiting a very long time for any results. After approximately 2 minutes, I received\
+    \ a response similar to this:\n\n```***Generate:\nHello\n\nI have a problem with\
+    \ my code. I have a table with 2 columns. I want to display the data from the\
+    \ table in a list view. I have a list view with 2 text views. I want to display\
+    \ the data from the table in the list view. I have a list view with 2 text views.\
+    \ I want to display the data from the table in the list view. I have a list view\
+    \ with 2 text views. I want to display the data from the table in the list view.\
+    \ I have a list view with 2 text views. I want to display the data from the table\
+    \ in the list view. I have a list view with 2 text views. I want to display the\
+    \ data from the table in the list view. I have a list view with 2 text views.\
+    \ I want to display the data from the table in the list view. I have a list view\
+    \ with 2 text views. I want to display the data from the table in the list view.\
+    \ I have a list view with 2 text views. I want to display the data from the table\
+    \ in the list view. I have a list view with 2 text views. I want to display the\
+    \ data from the table in the list view. I have a list view with 2 text views.\
+    \ I want to display the data from the table in the list view. I have a list view\
+    \ with 2 text views. I want to display the data from the table in the list view.\
+    \ I have a list view with 2 text views. I want to display the data from the table\
+    \ in the list view. I have a list view with 2 text views. I want to display the\
+    \ data from the table in the list view. I have a list view with 2 text views.\
+    \ I want to display the data from the table in the list view. I have a list view\
+    \ with 2 text views. I want to display the data from the table in the list view.\
+    \ I have a list view with 2 text views. I want to display the data from the table\
+    \ in the list view. I have a list view with 2 text views. I want to display the\
+    \ data from the table in the list view. I have a list view with 2 text views.\
+    \ I want to display the data from the table in the list view. I have a list view\
+    \ with 2 text views. I want to display the data from the table in the list view.\
+    \ I have a list view\nPipeline:\nHello\n  }\n}\n\\end{code}\nComment: I'm not\
+    \ sure if this is the best way to do it, but you can use a `static` method in\
+    \ your class. This will allow you to call that method without creating an instance\
+    \ of the object.\n```\n\nI've also tested on this server text-generation-webui\
+    \ configured with the same model, and it works really speedily in comparison.\
+    \ What I am doing wrong?"
+  created_at: 2023-07-25 05:48:40+00:00
+  edited: true
+  hidden: false
+  id: 64bf7048b7375f6b84a6fb58
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-07-25T11:15:55.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9584943652153015
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>What hardware are you testing on?  And please show the full output
+          you received from AutoGPTQ, including all log messages produced by AutoGPTQ.  If
+          it''s very slow it could be because your AutoGPTQ extension is not properly
+          compiled, which would be indicated with the message "CUDA extension not
+          installed".</p>
+
+          '
+        raw: 'What hardware are you testing on?  And please show the full output you
+          received from AutoGPTQ, including all log messages produced by AutoGPTQ.  If
+          it''s very slow it could be because your AutoGPTQ extension is not properly
+          compiled, which would be indicated with the message "CUDA extension not
+          installed".
+
+          '
+        updatedAt: '2023-07-25T11:15:55.941Z'
+      numEdits: 0
+      reactions: []
+    id: 64bfaeeb8496ee0fb643f54d
+    type: comment
+  author: TheBloke
+  content: 'What hardware are you testing on?  And please show the full output you
+    received from AutoGPTQ, including all log messages produced by AutoGPTQ.  If it''s
+    very slow it could be because your AutoGPTQ extension is not properly compiled,
+    which would be indicated with the message "CUDA extension not installed".
+
+    '
+  created_at: 2023-07-25 10:15:55+00:00
+  edited: false
+  hidden: false
+  id: 64bfaeeb8496ee0fb643f54d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-25T13:47:25.000Z'
+    data:
+      edited: false
+      editors:
+      - wempoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7677007913589478
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: '<p>I''ve tested it on the same docker container and the same hardware
+          (<a rel="nofollow" href="https://instances.vantage.sh/aws/ec2/g5.24xlarge">https://instances.vantage.sh/aws/ec2/g5.24xlarge</a>)
+          that I''ve run the text-generation-webui. I''m running the text-generation-web-ui
+          server using this command (I''m putting it as an example to show that I''m
+          using the GPU-memory that allows me to share more graphic cards):<br><code>python3
+          server.py --loader autogptq --model TheBloke_Llama-2-70B-GPTQ --no_inject_fused_attention
+          --listen --gpu-memory 20 20 20 20</code></p>
+
+          <p>So, to run it into your python script, I''ve added the <code>max_memory</code>
+          parameter directly to the <code>AutoGPTQForCausalLM.from_quantized</code>
+          function. Anyway, I''ve also tried to restart the docker container to make
+          sure that the text-generation-webui doesn''t utilize any video memory, as
+          I''ve stopped the server. Then, I''ve changed the prompt for test purposes
+          as shown in the screenshots below:<br><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/i354fhLNGY_oT8H1yjbBh.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/i354fhLNGY_oT8H1yjbBh.png"></a><br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/ToapNosQ3Cz2RVFJ61SD5.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/ToapNosQ3Cz2RVFJ61SD5.png"></a></p>
+
+          <p>It takes a long time. Do you have any ideas on how to address this? And
+          how can I improve the prompt to obtain better answers to the question provided?
+          In the text-generation-webui, the same example works more effectively.</p>
+
+          '
+        raw: 'I''ve tested it on the same docker container and the same hardware (https://instances.vantage.sh/aws/ec2/g5.24xlarge)
+          that I''ve run the text-generation-webui. I''m running the text-generation-web-ui
+          server using this command (I''m putting it as an example to show that I''m
+          using the GPU-memory that allows me to share more graphic cards):
+
+          ```python3 server.py --loader autogptq --model TheBloke_Llama-2-70B-GPTQ
+          --no_inject_fused_attention --listen --gpu-memory 20 20 20 20```
+
+
+          So, to run it into your python script, I''ve added the `max_memory` parameter
+          directly to the `AutoGPTQForCausalLM.from_quantized` function. Anyway, I''ve
+          also tried to restart the docker container to make sure that the text-generation-webui
+          doesn''t utilize any video memory, as I''ve stopped the server. Then, I''ve
+          changed the prompt for test purposes as shown in the screenshots below:
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/i354fhLNGY_oT8H1yjbBh.png)
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/ToapNosQ3Cz2RVFJ61SD5.png)
+
+
+          It takes a long time. Do you have any ideas on how to address this? And
+          how can I improve the prompt to obtain better answers to the question provided?
+          In the text-generation-webui, the same example works more effectively.'
+        updatedAt: '2023-07-25T13:47:25.357Z'
+      numEdits: 0
+      reactions: []
+    id: 64bfd26d7b4c422525eefdc7
+    type: comment
+  author: wempoo
+  content: 'I''ve tested it on the same docker container and the same hardware (https://instances.vantage.sh/aws/ec2/g5.24xlarge)
+    that I''ve run the text-generation-webui. I''m running the text-generation-web-ui
+    server using this command (I''m putting it as an example to show that I''m using
+    the GPU-memory that allows me to share more graphic cards):
+
+    ```python3 server.py --loader autogptq --model TheBloke_Llama-2-70B-GPTQ --no_inject_fused_attention
+    --listen --gpu-memory 20 20 20 20```
+
+
+    So, to run it into your python script, I''ve added the `max_memory` parameter
+    directly to the `AutoGPTQForCausalLM.from_quantized` function. Anyway, I''ve also
+    tried to restart the docker container to make sure that the text-generation-webui
+    doesn''t utilize any video memory, as I''ve stopped the server. Then, I''ve changed
+    the prompt for test purposes as shown in the screenshots below:
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/i354fhLNGY_oT8H1yjbBh.png)
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/63da72bce697e5898cbb0923/ToapNosQ3Cz2RVFJ61SD5.png)
+
+
+    It takes a long time. Do you have any ideas on how to address this? And how can
+    I improve the prompt to obtain better answers to the question provided? In the
+    text-generation-webui, the same example works more effectively.'
+  created_at: 2023-07-25 12:47:25+00:00
+  edited: false
+  hidden: false
+  id: 64bfd26d7b4c422525eefdc7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-07-25T14:55:47.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9251411557197571
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>I can''t see any obvious problem. Your CUDA extension is installed
+          OK.</p>
+
+          <p>Loading a model across 4 GPUs is always going to be slow, much slower
+          than one.  It''s also unnecessary in this case: you only need two x 24GB
+          GPUs for this model, not four.  So you should only load it on two GPUs,
+          which might be a bit quicker than four.  (Adding more GPUs doesn''t speed
+          it up.)</p>
+
+          <p> I wonder if the difference in perceived performance is simply because
+          text-generation-webui streams the answers to you, and with AutoGPTQ you
+          have to wait until the entire answer is generated. And/or maybe AutoGPTQ
+          is generating longer answers.</p>
+
+          <p>For much better performance, I strongly suggest using ExLlama instead,
+          in text-generation-webui.  Install ExLlama (or use my ''oneclick'' Docker
+          container which has text-gen + AutoGPTQ + ExLlama already installed: <a
+          rel="nofollow" href="https://github.com/TheBlokeAI/dockerLLM">https://github.com/TheBlokeAI/dockerLLM</a>)
+          and then use <code>--loader exllama</code> in text-generation-webui.  You
+          would then want to configure a split between GPUs of  with <code>--gpu-split
+          17.2  24</code> - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on
+          the others.  We put less on GPU1 because it also has to hold context.  </p>
+
+          <p>That will give you 12 - 15 tokens/s in text-generation-webui with this
+          model.</p>
+
+          <p>If you want to access it from Python code, you could then use the text-generation-webui
+          API, allowing you to use the text-generation-webui as a loader but then
+          still access it from Python code.  There are example Python scripts that
+          use the API here: <a rel="nofollow" href="https://github.com/oobabooga/text-generation-webui/tree/main/api-examples">https://github.com/oobabooga/text-generation-webui/tree/main/api-examples</a>.</p>
+
+          <p>As to why your output is bad - remember that this is a base model, not
+          a fine tuned one.  It isn''t expected to be great at answering questions
+          or following instructions.  I believe you can get some better results with
+          suitable prompt engineering, but I don''t know exactly what prompts to use
+          for that.  You might want to try a fine tuned model instead,  like FreeWilly
+          2 or Airoboros L2 70B GPT4 1.4. I have done GPTQs for both of those, and
+          they can be run identically to this model.</p>
+
+          '
+        raw: "I can't see any obvious problem. Your CUDA extension is installed OK.\n\
+          \nLoading a model across 4 GPUs is always going to be slow, much slower\
+          \ than one.  It's also unnecessary in this case: you only need two x 24GB\
+          \ GPUs for this model, not four.  So you should only load it on two GPUs,\
+          \ which might be a bit quicker than four.  (Adding more GPUs doesn't speed\
+          \ it up.)\n\n I wonder if the difference in perceived performance is simply\
+          \ because text-generation-webui streams the answers to you, and with AutoGPTQ\
+          \ you have to wait until the entire answer is generated. And/or maybe AutoGPTQ\
+          \ is generating longer answers.\n\nFor much better performance, I strongly\
+          \ suggest using ExLlama instead, in text-generation-webui.  Install ExLlama\
+          \ (or use my 'oneclick' Docker container which has text-gen + AutoGPTQ +\
+          \ ExLlama already installed: https://github.com/TheBlokeAI/dockerLLM) and\
+          \ then use `--loader exllama` in text-generation-webui.  You would then\
+          \ want to configure a split between GPUs of  with `--gpu-split 17.2  24`\
+          \ - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.  We\
+          \ put less on GPU1 because it also has to hold context.  \n\nThat will give\
+          \ you 12 - 15 tokens/s in text-generation-webui with this model.\n\nIf you\
+          \ want to access it from Python code, you could then use the text-generation-webui\
+          \ API, allowing you to use the text-generation-webui as a loader but then\
+          \ still access it from Python code.  There are example Python scripts that\
+          \ use the API here: https://github.com/oobabooga/text-generation-webui/tree/main/api-examples.\n\
+          \nAs to why your output is bad - remember that this is a base model, not\
+          \ a fine tuned one.  It isn't expected to be great at answering questions\
+          \ or following instructions.  I believe you can get some better results\
+          \ with suitable prompt engineering, but I don't know exactly what prompts\
+          \ to use for that.  You might want to try a fine tuned model instead,  like\
+          \ FreeWilly 2 or Airoboros L2 70B GPT4 1.4. I have done GPTQs for both of\
+          \ those, and they can be run identically to this model."
+        updatedAt: '2023-07-25T14:55:47.608Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - waleking
+        - OSK-Creative-Tech
+        - jlzhou
+      - count: 2
+        reaction: "\U0001F91D"
+        users:
+        - wempoo
+        - streetyogi
+    id: 64bfe27301ed0085006f2769
+    type: comment
+  author: TheBloke
+  content: "I can't see any obvious problem. Your CUDA extension is installed OK.\n\
+    \nLoading a model across 4 GPUs is always going to be slow, much slower than one.\
+    \  It's also unnecessary in this case: you only need two x 24GB GPUs for this\
+    \ model, not four.  So you should only load it on two GPUs, which might be a bit\
+    \ quicker than four.  (Adding more GPUs doesn't speed it up.)\n\n I wonder if\
+    \ the difference in perceived performance is simply because text-generation-webui\
+    \ streams the answers to you, and with AutoGPTQ you have to wait until the entire\
+    \ answer is generated. And/or maybe AutoGPTQ is generating longer answers.\n\n\
+    For much better performance, I strongly suggest using ExLlama instead, in text-generation-webui.\
+    \  Install ExLlama (or use my 'oneclick' Docker container which has text-gen +\
+    \ AutoGPTQ + ExLlama already installed: https://github.com/TheBlokeAI/dockerLLM)\
+    \ and then use `--loader exllama` in text-generation-webui.  You would then want\
+    \ to configure a split between GPUs of  with `--gpu-split 17.2  24` - meaning\
+    \ 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.  We put less on GPU1\
+    \ because it also has to hold context.  \n\nThat will give you 12 - 15 tokens/s\
+    \ in text-generation-webui with this model.\n\nIf you want to access it from Python\
+    \ code, you could then use the text-generation-webui API, allowing you to use\
+    \ the text-generation-webui as a loader but then still access it from Python code.\
+    \  There are example Python scripts that use the API here: https://github.com/oobabooga/text-generation-webui/tree/main/api-examples.\n\
+    \nAs to why your output is bad - remember that this is a base model, not a fine\
+    \ tuned one.  It isn't expected to be great at answering questions or following\
+    \ instructions.  I believe you can get some better results with suitable prompt\
+    \ engineering, but I don't know exactly what prompts to use for that.  You might\
+    \ want to try a fine tuned model instead,  like FreeWilly 2 or Airoboros L2 70B\
+    \ GPT4 1.4. I have done GPTQs for both of those, and they can be run identically\
+    \ to this model."
+  created_at: 2023-07-25 13:55:47+00:00
+  edited: false
+  hidden: false
+  id: 64bfe27301ed0085006f2769
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-26T06:24:20.000Z'
+    data:
+      edited: false
+      editors:
+      - wempoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9836691617965698
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: '<p>Thank you for your detailed response! I really appreciate it! I''ll
+          let you know how it went :)!</p>
+
+          '
+        raw: Thank you for your detailed response! I really appreciate it! I'll let
+          you know how it went :)!
+        updatedAt: '2023-07-26T06:24:20.305Z'
+      numEdits: 0
+      reactions: []
+    id: 64c0bc14672505119df4148b
+    type: comment
+  author: wempoo
+  content: Thank you for your detailed response! I really appreciate it! I'll let
+    you know how it went :)!
+  created_at: 2023-07-26 05:24:20+00:00
+  edited: false
+  hidden: false
+  id: 64c0bc14672505119df4148b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-26T16:23:24.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-07-26T16:25:52.102Z'
+      numEdits: 1
+      reactions: []
+    id: 64c1487cf8a1fe6485d13e15
+    type: comment
+  author: wempoo
+  content: This comment has been hidden
+  created_at: 2023-07-26 15:23:24+00:00
+  edited: true
+  hidden: true
+  id: 64c1487cf8a1fe6485d13e15
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-27T12:29:21.000Z'
+    data:
+      edited: false
+      editors:
+      - wempoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9570751190185547
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: '<p>I''ve tested the method you suggested and it works, thank you! The
+          only issue I''ve encountered is that when I send a request to localhost:5000
+          or use the UI, it seems that all the requests are being queued. The first
+          request takes around 7 seconds to resolve, and the second request sent immediately
+          after the first takes around 14 seconds to resolve. Is there a way to change
+          the queue limit or increase the maximum number of prompts processed?</p>
+
+          '
+        raw: I've tested the method you suggested and it works, thank you! The only
+          issue I've encountered is that when I send a request to localhost:5000 or
+          use the UI, it seems that all the requests are being queued. The first request
+          takes around 7 seconds to resolve, and the second request sent immediately
+          after the first takes around 14 seconds to resolve. Is there a way to change
+          the queue limit or increase the maximum number of prompts processed?
+        updatedAt: '2023-07-27T12:29:21.208Z'
+      numEdits: 0
+      reactions: []
+    id: 64c2632142dea10d1e0f938e
+    type: comment
+  author: wempoo
+  content: I've tested the method you suggested and it works, thank you! The only
+    issue I've encountered is that when I send a request to localhost:5000 or use
+    the UI, it seems that all the requests are being queued. The first request takes
+    around 7 seconds to resolve, and the second request sent immediately after the
+    first takes around 14 seconds to resolve. Is there a way to change the queue limit
+    or increase the maximum number of prompts processed?
+  created_at: 2023-07-27 11:29:21+00:00
+  edited: false
+  hidden: false
+  id: 64c2632142dea10d1e0f938e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-07-27T14:23:20.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9450733661651611
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>I don''t think text-generation-webui supports batching yet - ie
+          it can''t generally run more than one query at a time.  For that you will
+          need something more sophisticated, like vLLM or Huggingface''s Text Generation
+          Infernece.  vLLM works only with unquantised models at the moment, you can''t
+          use GPTQ.  So you''d need huge hardware for 70B.</p>
+
+          <p>Text Generation Inference supports GPTQ and it recently got fixed to
+          work with Llama 2 70B, so you could try that.</p>
+
+          '
+        raw: 'I don''t think text-generation-webui supports batching yet - ie it can''t
+          generally run more than one query at a time.  For that you will need something
+          more sophisticated, like vLLM or Huggingface''s Text Generation Infernece.  vLLM
+          works only with unquantised models at the moment, you can''t use GPTQ.  So
+          you''d need huge hardware for 70B.
+
+
+          Text Generation Inference supports GPTQ and it recently got fixed to work
+          with Llama 2 70B, so you could try that.'
+        updatedAt: '2023-07-27T14:23:20.282Z'
+      numEdits: 0
+      reactions: []
+    id: 64c27dd8400274d129a33f62
+    type: comment
+  author: TheBloke
+  content: 'I don''t think text-generation-webui supports batching yet - ie it can''t
+    generally run more than one query at a time.  For that you will need something
+    more sophisticated, like vLLM or Huggingface''s Text Generation Infernece.  vLLM
+    works only with unquantised models at the moment, you can''t use GPTQ.  So you''d
+    need huge hardware for 70B.
+
+
+    Text Generation Inference supports GPTQ and it recently got fixed to work with
+    Llama 2 70B, so you could try that.'
+  created_at: 2023-07-27 13:23:20+00:00
+  edited: false
+  hidden: false
+  id: 64c27dd8400274d129a33f62
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/be0cf4011ae31fec17c109d637caacc7.svg
+      fullname: Monk
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sandwichdoge
+      type: user
+    createdAt: '2023-07-28T02:06:03.000Z'
+    data:
+      edited: true
+      editors:
+      - sandwichdoge
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9691661596298218
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/be0cf4011ae31fec17c109d637caacc7.svg
+          fullname: Monk
+          isHf: false
+          isPro: false
+          name: sandwichdoge
+          type: user
+        html: '<blockquote>
+
+          <p>You would then want to configure a split between GPUs of with --gpu-split
+          17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.
+          We put less on GPU1 because it also has to hold context. </p>
+
+          </blockquote>
+
+          <p>What about 4 GPUs? I have 4 3090s which I intend to host for collab,
+          do I go with 17.2,24,24,24?</p>
+
+          '
+        raw: ">You would then want to configure a split between GPUs of with --gpu-split\
+          \ 17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.\
+          \ We put less on GPU1 because it also has to hold context. \n\nWhat about\
+          \ 4 GPUs? I have 4 3090s which I intend to host for collab, do I go with\
+          \ 17.2,24,24,24?"
+        updatedAt: '2023-07-28T02:14:19.285Z'
+      numEdits: 1
+      reactions: []
+    id: 64c3228b2545765de9e9762c
+    type: comment
+  author: sandwichdoge
+  content: ">You would then want to configure a split between GPUs of with --gpu-split\
+    \ 17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.\
+    \ We put less on GPU1 because it also has to hold context. \n\nWhat about 4 GPUs?\
+    \ I have 4 3090s which I intend to host for collab, do I go with 17.2,24,24,24?"
+  created_at: 2023-07-28 01:06:03+00:00
+  edited: true
+  hidden: false
+  id: 64c3228b2545765de9e9762c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/be0cf4011ae31fec17c109d637caacc7.svg
+      fullname: Monk
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sandwichdoge
+      type: user
+    createdAt: '2023-07-28T03:22:42.000Z'
+    data:
+      edited: false
+      editors:
+      - sandwichdoge
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9151231050491333
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/be0cf4011ae31fec17c109d637caacc7.svg
+          fullname: Monk
+          isHf: false
+          isPro: false
+          name: sandwichdoge
+          type: user
+        html: '<blockquote>
+
+          <blockquote>
+
+          <p>You would then want to configure a split between GPUs of with --gpu-split
+          17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.
+          We put less on GPU1 because it also has to hold context. </p>
+
+          </blockquote>
+
+          <p>What about 4 GPUs? I have 4 3090s which I intend to host for collab,
+          do I go with 17.2,24,24,24?</p>
+
+          </blockquote>
+
+          <p>I went with 7,10.5,10.5,10.5<br>Seems to work, workload is distributed
+          among 4 GPUs.</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/647ca89a3fe0f559b4c46173/Q9YK2R7KCgtDJ1ddSYOej.png"><img
+          alt="gpusplit2.png" src="https://cdn-uploads.huggingface.co/production/uploads/647ca89a3fe0f559b4c46173/Q9YK2R7KCgtDJ1ddSYOej.png"></a></p>
+
+          '
+        raw: "> >You would then want to configure a split between GPUs of with --gpu-split\
+          \ 17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.\
+          \ We put less on GPU1 because it also has to hold context. \n> \n> What\
+          \ about 4 GPUs? I have 4 3090s which I intend to host for collab, do I go\
+          \ with 17.2,24,24,24?\n\nI went with 7,10.5,10.5,10.5\nSeems to work, workload\
+          \ is distributed among 4 GPUs.\n\n![gpusplit2.png](https://cdn-uploads.huggingface.co/production/uploads/647ca89a3fe0f559b4c46173/Q9YK2R7KCgtDJ1ddSYOej.png)\n"
+        updatedAt: '2023-07-28T03:22:42.881Z'
+      numEdits: 0
+      reactions: []
+    id: 64c334827641afa6ef7275cd
+    type: comment
+  author: sandwichdoge
+  content: "> >You would then want to configure a split between GPUs of with --gpu-split\
+    \ 17.2 24 - meaning 17.2GB on GPU1, 24GB on GPU 2, and nothing on the others.\
+    \ We put less on GPU1 because it also has to hold context. \n> \n> What about\
+    \ 4 GPUs? I have 4 3090s which I intend to host for collab, do I go with 17.2,24,24,24?\n\
+    \nI went with 7,10.5,10.5,10.5\nSeems to work, workload is distributed among 4\
+    \ GPUs.\n\n![gpusplit2.png](https://cdn-uploads.huggingface.co/production/uploads/647ca89a3fe0f559b4c46173/Q9YK2R7KCgtDJ1ddSYOej.png)\n"
+  created_at: 2023-07-28 02:22:42+00:00
+  edited: false
+  hidden: false
+  id: 64c334827641afa6ef7275cd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+      fullname: DZ
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: wempoo
+      type: user
+    createdAt: '2023-07-28T06:55:15.000Z'
+    data:
+      edited: false
+      editors:
+      - wempoo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9428826570510864
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b58cb4a215ee408acf929141974a94c0.svg
+          fullname: DZ
+          isHf: false
+          isPro: false
+          name: wempoo
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/TheBloke\">@<span class=\"\
+          underline\">TheBloke</span></a></span>\n\n\t</span></span> I've used Text\
+          \ Generation Inference and it works really well! However, I've also tried\
+          \ different setups:</p>\n<ol>\n<li>I used a single GPU with 40 Video Memory\
+          \ (GiB) and ran the LLama 13B model.</li>\n<li>I used 4 GPUsa with 24 x\
+          \ 4 = 96 Video Memory (GiB), splitting the workload across them.</li>\n\
+          </ol>\n<p>The results are better in the second setup (prompt generation\
+          \ is faster). I tested it using the same prompt and configuration, and it\
+          \ seems that splitting the model across multiple graphic cards has no negative\
+          \ effect.</p>\n"
+        raw: '@TheBloke I''ve used Text Generation Inference and it works really well!
+          However, I''ve also tried different setups:
+
+
+          1) I used a single GPU with 40 Video Memory (GiB) and ran the LLama 13B
+          model.
+
+          2) I used 4 GPUsa with 24 x 4 = 96 Video Memory (GiB), splitting the workload
+          across them.
+
+
+          The results are better in the second setup (prompt generation is faster).
+          I tested it using the same prompt and configuration, and it seems that splitting
+          the model across multiple graphic cards has no negative effect.'
+        updatedAt: '2023-07-28T06:55:15.725Z'
+      numEdits: 0
+      reactions: []
+    id: 64c366532941512c4c575d06
+    type: comment
+  author: wempoo
+  content: '@TheBloke I''ve used Text Generation Inference and it works really well!
+    However, I''ve also tried different setups:
+
+
+    1) I used a single GPU with 40 Video Memory (GiB) and ran the LLama 13B model.
+
+    2) I used 4 GPUsa with 24 x 4 = 96 Video Memory (GiB), splitting the workload
+    across them.
+
+
+    The results are better in the second setup (prompt generation is faster). I tested
+    it using the same prompt and configuration, and it seems that splitting the model
+    across multiple graphic cards has no negative effect.'
+  created_at: 2023-07-28 05:55:15+00:00
+  edited: false
+  hidden: false
+  id: 64c366532941512c4c575d06
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9614510443bee3bd5d6266efd1c39fc1.svg
+      fullname: Chunjiang Ge
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: HelloJiang
+      type: user
+    createdAt: '2023-08-26T14:28:44.000Z'
+    data:
+      edited: false
+      editors:
+      - HelloJiang
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8422060012817383
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9614510443bee3bd5d6266efd1c39fc1.svg
+          fullname: Chunjiang Ge
+          isHf: false
+          isPro: false
+          name: HelloJiang
+          type: user
+        html: '<p>Hello,  I notice you mention use "7,10.5,10.5,10.5" GB Menory could
+          run a 70b GPTQ model. It''s 38,5 GB in total. Which means if I have a A100
+          40GB,  llama-70b-chat-gtq could run on a single 40G A100 card? Thank you
+          i advance. </p>
+
+          '
+        raw: 'Hello,  I notice you mention use "7,10.5,10.5,10.5" GB Menory could
+          run a 70b GPTQ model. It''s 38,5 GB in total. Which means if I have a A100
+          40GB,  llama-70b-chat-gtq could run on a single 40G A100 card? Thank you
+          i advance. '
+        updatedAt: '2023-08-26T14:28:44.512Z'
+      numEdits: 0
+      reactions: []
+    id: 64ea0c1c14c57101f3a97245
+    type: comment
+  author: HelloJiang
+  content: 'Hello,  I notice you mention use "7,10.5,10.5,10.5" GB Menory could run
+    a 70b GPTQ model. It''s 38,5 GB in total. Which means if I have a A100 40GB,  llama-70b-chat-gtq
+    could run on a single 40G A100 card? Thank you i advance. '
+  created_at: 2023-08-26 13:28:44+00:00
+  edited: false
+  hidden: false
+  id: 64ea0c1c14c57101f3a97245
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-08-26T15:15:08.000Z'
+    data:
+      edited: true
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9704122543334961
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;HelloJiang&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/HelloJiang\">@<span class=\"\
+          underline\">HelloJiang</span></a></span>\n\n\t</span></span> there is also\
+          \ context to take into account. That is why he put only 7 on GPU0, and 10.5\
+          \ on the others.  Allowing 3GB for context</p>\n<p>But yes I think 40GB\
+          \ is enough for the 4bit-128g models, at least using ExLlama.  A 128g model\
+          \ is around 36.5 GB in size, so in 40GB you have ~3.5GB for context which\
+          \ should be enough.  So yes you should try it on one 40GB GPU, I think it\
+          \ will work.</p>\n"
+        raw: '@HelloJiang there is also context to take into account. That is why
+          he put only 7 on GPU0, and 10.5 on the others.  Allowing 3GB for context
+
+
+          But yes I think 40GB is enough for the 4bit-128g models, at least using
+          ExLlama.  A 128g model is around 36.5 GB in size, so in 40GB you have ~3.5GB
+          for context which should be enough.  So yes you should try it on one 40GB
+          GPU, I think it will work.'
+        updatedAt: '2023-08-26T15:16:53.211Z'
+      numEdits: 3
+      reactions: []
+    id: 64ea16fcf72e054cab3eacca
+    type: comment
+  author: TheBloke
+  content: '@HelloJiang there is also context to take into account. That is why he
+    put only 7 on GPU0, and 10.5 on the others.  Allowing 3GB for context
+
+
+    But yes I think 40GB is enough for the 4bit-128g models, at least using ExLlama.  A
+    128g model is around 36.5 GB in size, so in 40GB you have ~3.5GB for context which
+    should be enough.  So yes you should try it on one 40GB GPU, I think it will work.'
+  created_at: 2023-08-26 14:15:08+00:00
+  edited: true
+  hidden: false
+  id: 64ea16fcf72e054cab3eacca
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/fef670d87a5e10bf9cd0696720839fc8.svg
+      fullname: Sasank Gamini
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sasankgamini
+      type: user
+    createdAt: '2023-09-15T09:33:39.000Z'
+    data:
+      edited: false
+      editors:
+      - sasankgamini
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9713799953460693
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/fef670d87a5e10bf9cd0696720839fc8.svg
+          fullname: Sasank Gamini
+          isHf: false
+          isPro: false
+          name: sasankgamini
+          type: user
+        html: '<p>It is taking more than 30 minutes for llama2 to generate text from
+          a retrieval chain, can someone let me know why that is and what I can do
+          to make this process much faster?</p>
+
+          '
+        raw: It is taking more than 30 minutes for llama2 to generate text from a
+          retrieval chain, can someone let me know why that is and what I can do to
+          make this process much faster?
+        updatedAt: '2023-09-15T09:33:39.968Z'
+      numEdits: 0
+      reactions: []
+    id: 650424f3b6247620e04796ac
+    type: comment
+  author: sasankgamini
+  content: It is taking more than 30 minutes for llama2 to generate text from a retrieval
+    chain, can someone let me know why that is and what I can do to make this process
+    much faster?
+  created_at: 2023-09-15 08:33:39+00:00
+  edited: false
+  hidden: false
+  id: 650424f3b6247620e04796ac
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d9233ea29057511485d94fc869468cc2.svg
+      fullname: Max Well
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: maxwellu
+      type: user
+    createdAt: '2023-11-30T00:21:19.000Z'
+    data:
+      edited: false
+      editors:
+      - maxwellu
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9147862792015076
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d9233ea29057511485d94fc869468cc2.svg
+          fullname: Max Well
+          isHf: false
+          isPro: false
+          name: maxwellu
+          type: user
+        html: '<p>I have the same problem of "TheBloke/Llama-2-70B-GPTQ" working like
+          a charm inside the text generation web-ui, but being very slow in a python
+          session. Still no solutions to this?</p>
+
+          '
+        raw: I have the same problem of "TheBloke/Llama-2-70B-GPTQ" working like a
+          charm inside the text generation web-ui, but being very slow in a python
+          session. Still no solutions to this?
+        updatedAt: '2023-11-30T00:21:19.582Z'
+      numEdits: 0
+      reactions: []
+    id: 6567d57f9e3a02a3b1c4d103
+    type: comment
+  author: maxwellu
+  content: I have the same problem of "TheBloke/Llama-2-70B-GPTQ" working like a charm
+    inside the text generation web-ui, but being very slow in a python session. Still
+    no solutions to this?
+  created_at: 2023-11-30 00:21:19+00:00
+  edited: false
+  hidden: false
+  id: 6567d57f9e3a02a3b1c4d103
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: TheBloke/Llama-2-70B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: Long waiting time

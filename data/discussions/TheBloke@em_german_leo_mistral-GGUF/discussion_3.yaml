@@ -1,0 +1,388 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Lue-C
+conflicting_files: null
+created_at: 2023-11-16 12:22:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/653b9c89f0a9ea4e6acde027/3zskIS-TzY2tdWBeiXXb6.jpeg?w=200&h=200&f=face
+      fullname: M
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Lue-C
+      type: user
+    createdAt: '2023-11-16T12:22:51.000Z'
+    data:
+      edited: false
+      editors:
+      - Lue-C
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4761074185371399
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/653b9c89f0a9ea4e6acde027/3zskIS-TzY2tdWBeiXXb6.jpeg?w=200&h=200&f=face
+          fullname: M
+          isHf: false
+          isPro: false
+          name: Lue-C
+          type: user
+        html: "<p>Hello there,<br>my goal is to finetune one of the gguf model files\
+          \ of this repo and get a gguf file with the finetuned model.</p>\n<p><strong>Question:\
+          \ Did somebody finetune a model from a gguf file and can give me a tutorial\
+          \ on how to do this?</strong></p>\n<p>This is my approach so far:</p>\n\
+          <p>For preparation I copied \"em_german_leo_mistral.Q4_K_M.gguf\" as well\
+          \ as the \"config.json\" from this repo to a local folder \"models/german_mistral\"\
+          . I also downloaded the \"tokenizer.json\" and \"tokenizer_config.json\"\
+          \ from the original repo \"<a href=\"https://huggingface.co/jphme/em_german_leo_mistral&quot;\"\
+          >https://huggingface.co/jphme/em_german_leo_mistral\"</a> to the folder.\
+          \ After installing and importing libraries with</p>\n<pre><code>!pip install\
+          \ -U pip\n!pip install transformers[torch]\n!pip install appdirs==1.4.4\n\
+          !pip install bitsandbytes==0.37.2\n!pip install datasets==2.10.1\n!pip install\
+          \ fire==0.5.0\n!pip install git+https://github.com/huggingface/peft.git\n\
+          #!pip install git+https://github.com/huggingface/transformers.git\n!pip\
+          \ install torch\n!pip install sentencepiece==0.1.97\n!pip install tensorboardX==2.6\n\
+          !pip install gradio==3.23.0\n!pip install accelerate\n\n#imports\n\nimport\
+          \ transformers\n#import accelerate\nimport textwrap\nfrom transformers import\
+          \ LlamaTokenizer, LlamaForCausalLM\nimport os\nimport sys\nfrom typing import\
+          \ List\n\nfrom peft import (\n    LoraConfig,\n    get_peft_model,\n   \
+          \ get_peft_model_state_dict,\n    prepare_model_for_int8_training,\n)\n\n\
+          #import fire\nimport torch\nfrom datasets import load_dataset\n\nDEVICE\
+          \ = \"cuda\" if torch.cuda.is_available() else \"cpu\"\nDEVICE\n</code></pre>\n\
+          <p>I now want to instantiate the model and the tokenizer using</p>\n<pre><code>from\
+          \ transformers import AutoModelForCausalLM, AutoTokenizer\n\ntokenizer =\
+          \ AutoTokenizer.from_pretrained(\"models/german_mistral\", model_file=\"\
+          em_german_leo_mistral.Q4_K_M.gguf\")\ntokenizer.pad_token_id=tokenizer.eos_token_id\n\
+          tokenizer.padding_side = \"left\"\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+          models/german_mistral\", model_file=\"em_german_leo_mistral.Q4_K_M.gguf\"\
+          )\n</code></pre>\n<p>which results in the error</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          OSError                                   Traceback (most recent call last)\n\
+          c:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb Cell 5\
+          \ line 1\n----&gt; 1 model = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\"\
+          , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\n      2 #AutoModelForSeq2SeqLM\n\
+          \      3 #model = AutoModelForSeq2SeqLM.from_pretrained(\"models/german_mistral\"\
+          , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\n\nFile c:\\Users\\\
+          xxx\\Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\transformers\\\
+          models\\auto\\auto_factory.py:566, in _BaseAutoModelClass.from_pretrained(cls,\
+          \ pretrained_model_name_or_path, *model_args, **kwargs)\n    564 elif type(config)\
+          \ in cls._model_mapping.keys():\n    565     model_class = _get_model_class(config,\
+          \ cls._model_mapping)\n--&gt; 566     return model_class.from_pretrained(\n\
+          \    567         pretrained_model_name_or_path, *model_args, config=config,\
+          \ **hub_kwargs, **kwargs\n    568     )\n    569 raise ValueError(\n   \
+          \ 570     f\"Unrecognized configuration class {config.__class__} for this\
+          \ kind of AutoModel: {cls.__name__}.\\n\"\n    571     f\"Model type should\
+          \ be one of {', '.join(c.__name__ for c in cls._model_mapping.keys())}.\"\
+          \n    572 )\n\nFile c:\\Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\\
+          Lib\\site-packages\\transformers\\modeling_utils.py:2992, in PreTrainedModel.from_pretrained(cls,\
+          \ pretrained_model_name_or_path, config, cache_dir, ignore_mismatched_sizes,\
+          \ force_download, local_files_only, token, revision, use_safetensors, *model_args,\
+          \ **kwargs)\n   2987         raise EnvironmentError(\n   2988          \
+          \   f\"Error no file named {_add_variant(SAFE_WEIGHTS_NAME, variant)} found\
+          \ in directory\"\n   2989             f\" {pretrained_model_name_or_path}.\"\
+          \n   2990         )\n   2991     else:\n-&gt; 2992         raise EnvironmentError(\n\
+          ...\n   2996         )\n   2997 elif os.path.isfile(os.path.join(subfolder,\
+          \ pretrained_model_name_or_path)):\n   2998     archive_file = pretrained_model_name_or_path\n\
+          \nOSError: Error no file named pytorch_model.bin, tf_model.h5, model.ckpt.index\
+          \ or flax_model.msgpack found in directory models/german_mistral.\n</code></pre>\n\
+          <p>I interpret this as the \"AutoModelForCausalLM.from_pretrained()\" method\
+          \ to not recognize the model type.</p>\n<p><strong>First question: is there\
+          \ a way to tell the method the model type or does it simply not support\
+          \ gguf?</strong></p>\n<p>I could solve this problem by switching to ctransformers\
+          \ with</p>\n<pre><code>from ctransformers import AutoModelForCausalLM\n\n\
+          model = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\")#,\
+          \ model_type=\"gpt2\", hf=True)\n</code></pre>\n<p>but when I want to finetune\
+          \ it afterwards using</p>\n<pre><code># Prompt Engineering and Tokenisation\n\
+          \nCUTOFF_LEN = 300\n\n\ndef generate_prompt(data_point):\n    s = f\"\"\"\
+          Below is an instruction that describes a task, paired with an input that\
+          \ provides further context. Write a response that appropriately completes\
+          \ the request.  # noqa: E501\n    ### Instruction:\n    {data_point[\"instruction\"\
+          ]}\n    ### Input:\n    {data_point[\"input\"]}\n    ### Response:\n   \
+          \ {data_point[\"output\"]}\n    \"\"\"\n    return s\n\ndef tokenize(prompt,\
+          \ add_eos_token=True):\n    result = tokenizer(\n        prompt,\n     \
+          \   truncation=True,\n        max_length=CUTOFF_LEN,\n        padding=False,\n\
+          \        return_tensors=None,\n    )\n    if (\n        result[\"input_ids\"\
+          ][-1] != tokenizer.eos_token_id\n        and len(result[\"input_ids\"])\
+          \ &lt; CUTOFF_LEN\n        and add_eos_token\n    ):\n        result[\"\
+          input_ids\"].append(tokenizer.eos_token_id)\n        result[\"attention_mask\"\
+          ].append(1)\n\n    result[\"labels\"] = result[\"input_ids\"].copy()\n\n\
+          \    return result\n\ndef generate_and_tokenize_prompt(data_point):\n  \
+          \  full_prompt = generate_prompt(data_point)\n    tokenized_full_prompt\
+          \ = tokenize(full_prompt)\n    return tokenized_full_prompt\n\n# Hyperparameters\
+          \ for fine_tuning\n\nLORA_R = 8\nLORA_ALPHA = 16\nLORA_DROPOUT= 0.05\nLORA_TARGET_MODULES\
+          \ = [\n    \"q_proj\",\n    \"v_proj\",\n]\n\nBATCH_SIZE = 128\nMICRO_BATCH_SIZE\
+          \ = 4\nGRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE\nLEARNING_RATE\
+          \ = 3e-4\nTRAIN_STEPS = 10\nOUTPUT_DIR = \"experiments\"\n\n# Preparing\
+          \ model for training\n\nmodel = prepare_model_for_int8_training(model)\n\
+          config = LoraConfig(\n    r=LORA_R,\n    lora_alpha=LORA_ALPHA,\n    target_modules=LORA_TARGET_MODULES,\n\
+          \    lora_dropout=LORA_DROPOUT,\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\"\
+          ,\n)\nmodel = get_peft_model(model, config)\nmodel.print_trainable_parameters()\n\
+          </code></pre>\n<p>I get the error message</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          AttributeError                            Traceback (most recent call last)\n\
+          c:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb Cell 14\
+          \ line 3\n      1 # Preparing model for training\n----&gt; 3 model = prepare_model_for_int8_training(model)\n\
+          \      4 config = LoraConfig(\n      5     r=LORA_R,\n      6     lora_alpha=LORA_ALPHA,\n\
+          \   (...)\n     10     task_type=\"CAUSAL_LM\",\n     11 )\n     12 model\
+          \ = get_peft_model(model, config)\n\nFile c:\\Users\\xxx\\Repositories\\\
+          finetuning\\.finetung_venv\\Lib\\site-packages\\peft\\utils\\other.py:140,\
+          \ in prepare_model_for_int8_training(*args, **kwargs)\n    135 def prepare_model_for_int8_training(*args,\
+          \ **kwargs):\n    136     warnings.warn(\n    137         \"prepare_model_for_int8_training\
+          \ is deprecated and will be removed in a future version. Use prepare_model_for_kbit_training\
+          \ instead.\",\n    138         FutureWarning,\n    139     )\n--&gt; 140\
+          \     return prepare_model_for_kbit_training(*args, **kwargs)\n\nFile c:\\\
+          Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\\
+          peft\\utils\\other.py:90, in prepare_model_for_kbit_training(model, use_gradient_checkpointing,\
+          \ gradient_checkpointing_kwargs)\n     87 if gradient_checkpointing_kwargs\
+          \ is None:\n     88     gradient_checkpointing_kwargs = {}\n---&gt; 90 for\
+          \ name, param in model.named_parameters():\n...\n    319 if name.startswith(\"\
+          ctransformers_llm_\") and hasattr(lib, name):\n    320     return partial(getattr(lib,\
+          \ name), llm)\n--&gt; 321 raise AttributeError(f\"'LLM' object has no attribute\
+          \ '{name}'\")\n\nAttributeError: 'LLM' object has no attribute 'named_parameters'\n\
+          </code></pre>\n<p>I think this is a formatting issue as well.<br><strong>Second\
+          \ question: Is there a way to solve this issue?</strong></p>\n"
+        raw: "Hello there,\r\nmy goal is to finetune one of the gguf model files of\
+          \ this repo and get a gguf file with the finetuned model.\r\n\r\n**Question:\
+          \ Did somebody finetune a model from a gguf file and can give me a tutorial\
+          \ on how to do this?**\r\n\r\nThis is my approach so far:\r\n\r\nFor preparation\
+          \ I copied \"em_german_leo_mistral.Q4_K_M.gguf\" as well as the \"config.json\"\
+          \ from this repo to a local folder \"models/german_mistral\". I also downloaded\
+          \ the \"tokenizer.json\" and \"tokenizer_config.json\" from the original\
+          \ repo \"https://huggingface.co/jphme/em_german_leo_mistral\" to the folder.\
+          \ After installing and importing libraries with\r\n```\r\n!pip install -U\
+          \ pip\r\n!pip install transformers[torch]\r\n!pip install appdirs==1.4.4\r\
+          \n!pip install bitsandbytes==0.37.2\r\n!pip install datasets==2.10.1\r\n\
+          !pip install fire==0.5.0\r\n!pip install git+https://github.com/huggingface/peft.git\r\
+          \n#!pip install git+https://github.com/huggingface/transformers.git\r\n\
+          !pip install torch\r\n!pip install sentencepiece==0.1.97\r\n!pip install\
+          \ tensorboardX==2.6\r\n!pip install gradio==3.23.0\r\n!pip install accelerate\r\
+          \n\r\n#imports\r\n\r\nimport transformers\r\n#import accelerate\r\nimport\
+          \ textwrap\r\nfrom transformers import LlamaTokenizer, LlamaForCausalLM\r\
+          \nimport os\r\nimport sys\r\nfrom typing import List\r\n\r\nfrom peft import\
+          \ (\r\n    LoraConfig,\r\n    get_peft_model,\r\n    get_peft_model_state_dict,\r\
+          \n    prepare_model_for_int8_training,\r\n)\r\n\r\n#import fire\r\nimport\
+          \ torch\r\nfrom datasets import load_dataset\r\n\r\nDEVICE = \"cuda\" if\
+          \ torch.cuda.is_available() else \"cpu\"\r\nDEVICE\r\n\r\n```\r\nI now want\
+          \ to instantiate the model and the tokenizer using\r\n\r\n```\r\nfrom transformers\
+          \ import AutoModelForCausalLM, AutoTokenizer\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          models/german_mistral\", model_file=\"em_german_leo_mistral.Q4_K_M.gguf\"\
+          )\r\ntokenizer.pad_token_id=tokenizer.eos_token_id\r\ntokenizer.padding_side\
+          \ = \"left\"\r\nmodel = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\"\
+          , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\r\n```\r\n\r\nwhich\
+          \ results in the error\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+          \nOSError                                   Traceback (most recent call\
+          \ last)\r\nc:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb\
+          \ Cell 5 line 1\r\n----> 1 model = AutoModelForCausalLM.from_pretrained(\"\
+          models/german_mistral\", model_file=\"em_german_leo_mistral.Q4_K_M.gguf\"\
+          )\r\n      2 #AutoModelForSeq2SeqLM\r\n      3 #model = AutoModelForSeq2SeqLM.from_pretrained(\"\
+          models/german_mistral\", model_file=\"em_german_leo_mistral.Q4_K_M.gguf\"\
+          )\r\n\r\nFile c:\\Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\\
+          Lib\\site-packages\\transformers\\models\\auto\\auto_factory.py:566, in\
+          \ _BaseAutoModelClass.from_pretrained(cls, pretrained_model_name_or_path,\
+          \ *model_args, **kwargs)\r\n    564 elif type(config) in cls._model_mapping.keys():\r\
+          \n    565     model_class = _get_model_class(config, cls._model_mapping)\r\
+          \n--> 566     return model_class.from_pretrained(\r\n    567         pretrained_model_name_or_path,\
+          \ *model_args, config=config, **hub_kwargs, **kwargs\r\n    568     )\r\n\
+          \    569 raise ValueError(\r\n    570     f\"Unrecognized configuration\
+          \ class {config.__class__} for this kind of AutoModel: {cls.__name__}.\\\
+          n\"\r\n    571     f\"Model type should be one of {', '.join(c.__name__\
+          \ for c in cls._model_mapping.keys())}.\"\r\n    572 )\r\n\r\nFile c:\\\
+          Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\\
+          transformers\\modeling_utils.py:2992, in PreTrainedModel.from_pretrained(cls,\
+          \ pretrained_model_name_or_path, config, cache_dir, ignore_mismatched_sizes,\
+          \ force_download, local_files_only, token, revision, use_safetensors, *model_args,\
+          \ **kwargs)\r\n   2987         raise EnvironmentError(\r\n   2988      \
+          \       f\"Error no file named {_add_variant(SAFE_WEIGHTS_NAME, variant)}\
+          \ found in directory\"\r\n   2989             f\" {pretrained_model_name_or_path}.\"\
+          \r\n   2990         )\r\n   2991     else:\r\n-> 2992         raise EnvironmentError(\r\
+          \n...\r\n   2996         )\r\n   2997 elif os.path.isfile(os.path.join(subfolder,\
+          \ pretrained_model_name_or_path)):\r\n   2998     archive_file = pretrained_model_name_or_path\r\
+          \n\r\nOSError: Error no file named pytorch_model.bin, tf_model.h5, model.ckpt.index\
+          \ or flax_model.msgpack found in directory models/german_mistral.\r\n```\r\
+          \nI interpret this as the \"AutoModelForCausalLM.from_pretrained()\" method\
+          \ to not recognize the model type.\r\n\r\n**First question: is there a way\
+          \ to tell the method the model type or does it simply not support gguf?**\r\
+          \n\r\nI could solve this problem by switching to ctransformers with\r\n\r\
+          \n```\r\nfrom ctransformers import AutoModelForCausalLM\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+          models/german_mistral\")#, model_type=\"gpt2\", hf=True)\r\n```\r\n\r\n\
+          but when I want to finetune it afterwards using\r\n\r\n```\r\n# Prompt Engineering\
+          \ and Tokenisation\r\n\r\nCUTOFF_LEN = 300\r\n\r\n\r\ndef generate_prompt(data_point):\r\
+          \n    s = f\"\"\"Below is an instruction that describes a task, paired with\
+          \ an input that provides further context. Write a response that appropriately\
+          \ completes the request.  # noqa: E501\r\n    ### Instruction:\r\n    {data_point[\"\
+          instruction\"]}\r\n    ### Input:\r\n    {data_point[\"input\"]}\r\n   \
+          \ ### Response:\r\n    {data_point[\"output\"]}\r\n    \"\"\"\r\n    return\
+          \ s\r\n\r\ndef tokenize(prompt, add_eos_token=True):\r\n    result = tokenizer(\r\
+          \n        prompt,\r\n        truncation=True,\r\n        max_length=CUTOFF_LEN,\r\
+          \n        padding=False,\r\n        return_tensors=None,\r\n    )\r\n  \
+          \  if (\r\n        result[\"input_ids\"][-1] != tokenizer.eos_token_id\r\
+          \n        and len(result[\"input_ids\"]) < CUTOFF_LEN\r\n        and add_eos_token\r\
+          \n    ):\r\n        result[\"input_ids\"].append(tokenizer.eos_token_id)\r\
+          \n        result[\"attention_mask\"].append(1)\r\n\r\n    result[\"labels\"\
+          ] = result[\"input_ids\"].copy()\r\n\r\n    return result\r\n\r\ndef generate_and_tokenize_prompt(data_point):\r\
+          \n    full_prompt = generate_prompt(data_point)\r\n    tokenized_full_prompt\
+          \ = tokenize(full_prompt)\r\n    return tokenized_full_prompt\r\n\r\n# Hyperparameters\
+          \ for fine_tuning\r\n\r\nLORA_R = 8\r\nLORA_ALPHA = 16\r\nLORA_DROPOUT=\
+          \ 0.05\r\nLORA_TARGET_MODULES = [\r\n    \"q_proj\",\r\n    \"v_proj\",\r\
+          \n]\r\n\r\nBATCH_SIZE = 128\r\nMICRO_BATCH_SIZE = 4\r\nGRADIENT_ACCUMULATION_STEPS\
+          \ = BATCH_SIZE // MICRO_BATCH_SIZE\r\nLEARNING_RATE = 3e-4\r\nTRAIN_STEPS\
+          \ = 10\r\nOUTPUT_DIR = \"experiments\"\r\n\r\n# Preparing model for training\r\
+          \n\r\nmodel = prepare_model_for_int8_training(model)\r\nconfig = LoraConfig(\r\
+          \n    r=LORA_R,\r\n    lora_alpha=LORA_ALPHA,\r\n    target_modules=LORA_TARGET_MODULES,\r\
+          \n    lora_dropout=LORA_DROPOUT,\r\n    bias=\"none\",\r\n    task_type=\"\
+          CAUSAL_LM\",\r\n)\r\nmodel = get_peft_model(model, config)\r\nmodel.print_trainable_parameters()\r\
+          \n```\r\n\r\nI get the error message\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+          \nAttributeError                            Traceback (most recent call\
+          \ last)\r\nc:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb\
+          \ Cell 14 line 3\r\n      1 # Preparing model for training\r\n----> 3 model\
+          \ = prepare_model_for_int8_training(model)\r\n      4 config = LoraConfig(\r\
+          \n      5     r=LORA_R,\r\n      6     lora_alpha=LORA_ALPHA,\r\n   (...)\r\
+          \n     10     task_type=\"CAUSAL_LM\",\r\n     11 )\r\n     12 model = get_peft_model(model,\
+          \ config)\r\n\r\nFile c:\\Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\\
+          Lib\\site-packages\\peft\\utils\\other.py:140, in prepare_model_for_int8_training(*args,\
+          \ **kwargs)\r\n    135 def prepare_model_for_int8_training(*args, **kwargs):\r\
+          \n    136     warnings.warn(\r\n    137         \"prepare_model_for_int8_training\
+          \ is deprecated and will be removed in a future version. Use prepare_model_for_kbit_training\
+          \ instead.\",\r\n    138         FutureWarning,\r\n    139     )\r\n-->\
+          \ 140     return prepare_model_for_kbit_training(*args, **kwargs)\r\n\r\n\
+          File c:\\Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\\
+          peft\\utils\\other.py:90, in prepare_model_for_kbit_training(model, use_gradient_checkpointing,\
+          \ gradient_checkpointing_kwargs)\r\n     87 if gradient_checkpointing_kwargs\
+          \ is None:\r\n     88     gradient_checkpointing_kwargs = {}\r\n---> 90\
+          \ for name, param in model.named_parameters():\r\n...\r\n    319 if name.startswith(\"\
+          ctransformers_llm_\") and hasattr(lib, name):\r\n    320     return partial(getattr(lib,\
+          \ name), llm)\r\n--> 321 raise AttributeError(f\"'LLM' object has no attribute\
+          \ '{name}'\")\r\n\r\nAttributeError: 'LLM' object has no attribute 'named_parameters'\r\
+          \n```\r\nI think this is a formatting issue as well.\r\n**Second question:\
+          \ Is there a way to solve this issue?**"
+        updatedAt: '2023-11-16T12:22:51.306Z'
+      numEdits: 0
+      reactions: []
+    id: 6556099b0dec97741176b98c
+    type: comment
+  author: Lue-C
+  content: "Hello there,\r\nmy goal is to finetune one of the gguf model files of\
+    \ this repo and get a gguf file with the finetuned model.\r\n\r\n**Question: Did\
+    \ somebody finetune a model from a gguf file and can give me a tutorial on how\
+    \ to do this?**\r\n\r\nThis is my approach so far:\r\n\r\nFor preparation I copied\
+    \ \"em_german_leo_mistral.Q4_K_M.gguf\" as well as the \"config.json\" from this\
+    \ repo to a local folder \"models/german_mistral\". I also downloaded the \"tokenizer.json\"\
+    \ and \"tokenizer_config.json\" from the original repo \"https://huggingface.co/jphme/em_german_leo_mistral\"\
+    \ to the folder. After installing and importing libraries with\r\n```\r\n!pip\
+    \ install -U pip\r\n!pip install transformers[torch]\r\n!pip install appdirs==1.4.4\r\
+    \n!pip install bitsandbytes==0.37.2\r\n!pip install datasets==2.10.1\r\n!pip install\
+    \ fire==0.5.0\r\n!pip install git+https://github.com/huggingface/peft.git\r\n\
+    #!pip install git+https://github.com/huggingface/transformers.git\r\n!pip install\
+    \ torch\r\n!pip install sentencepiece==0.1.97\r\n!pip install tensorboardX==2.6\r\
+    \n!pip install gradio==3.23.0\r\n!pip install accelerate\r\n\r\n#imports\r\n\r\
+    \nimport transformers\r\n#import accelerate\r\nimport textwrap\r\nfrom transformers\
+    \ import LlamaTokenizer, LlamaForCausalLM\r\nimport os\r\nimport sys\r\nfrom typing\
+    \ import List\r\n\r\nfrom peft import (\r\n    LoraConfig,\r\n    get_peft_model,\r\
+    \n    get_peft_model_state_dict,\r\n    prepare_model_for_int8_training,\r\n)\r\
+    \n\r\n#import fire\r\nimport torch\r\nfrom datasets import load_dataset\r\n\r\n\
+    DEVICE = \"cuda\" if torch.cuda.is_available() else \"cpu\"\r\nDEVICE\r\n\r\n\
+    ```\r\nI now want to instantiate the model and the tokenizer using\r\n\r\n```\r\
+    \nfrom transformers import AutoModelForCausalLM, AutoTokenizer\r\n\r\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(\"models/german_mistral\", model_file=\"em_german_leo_mistral.Q4_K_M.gguf\"\
+    )\r\ntokenizer.pad_token_id=tokenizer.eos_token_id\r\ntokenizer.padding_side =\
+    \ \"left\"\r\nmodel = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\"\
+    , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\r\n```\r\n\r\nwhich results\
+    \ in the error\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nOSError                                   Traceback (most recent call last)\r\
+    \nc:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb Cell 5 line\
+    \ 1\r\n----> 1 model = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\"\
+    , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\r\n      2 #AutoModelForSeq2SeqLM\r\
+    \n      3 #model = AutoModelForSeq2SeqLM.from_pretrained(\"models/german_mistral\"\
+    , model_file=\"em_german_leo_mistral.Q4_K_M.gguf\")\r\n\r\nFile c:\\Users\\xxx\\\
+    Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\transformers\\models\\\
+    auto\\auto_factory.py:566, in _BaseAutoModelClass.from_pretrained(cls, pretrained_model_name_or_path,\
+    \ *model_args, **kwargs)\r\n    564 elif type(config) in cls._model_mapping.keys():\r\
+    \n    565     model_class = _get_model_class(config, cls._model_mapping)\r\n-->\
+    \ 566     return model_class.from_pretrained(\r\n    567         pretrained_model_name_or_path,\
+    \ *model_args, config=config, **hub_kwargs, **kwargs\r\n    568     )\r\n    569\
+    \ raise ValueError(\r\n    570     f\"Unrecognized configuration class {config.__class__}\
+    \ for this kind of AutoModel: {cls.__name__}.\\n\"\r\n    571     f\"Model type\
+    \ should be one of {', '.join(c.__name__ for c in cls._model_mapping.keys())}.\"\
+    \r\n    572 )\r\n\r\nFile c:\\Users\\xxx\\Repositories\\finetuning\\.finetung_venv\\\
+    Lib\\site-packages\\transformers\\modeling_utils.py:2992, in PreTrainedModel.from_pretrained(cls,\
+    \ pretrained_model_name_or_path, config, cache_dir, ignore_mismatched_sizes, force_download,\
+    \ local_files_only, token, revision, use_safetensors, *model_args, **kwargs)\r\
+    \n   2987         raise EnvironmentError(\r\n   2988             f\"Error no file\
+    \ named {_add_variant(SAFE_WEIGHTS_NAME, variant)} found in directory\"\r\n  \
+    \ 2989             f\" {pretrained_model_name_or_path}.\"\r\n   2990         )\r\
+    \n   2991     else:\r\n-> 2992         raise EnvironmentError(\r\n...\r\n   2996\
+    \         )\r\n   2997 elif os.path.isfile(os.path.join(subfolder, pretrained_model_name_or_path)):\r\
+    \n   2998     archive_file = pretrained_model_name_or_path\r\n\r\nOSError: Error\
+    \ no file named pytorch_model.bin, tf_model.h5, model.ckpt.index or flax_model.msgpack\
+    \ found in directory models/german_mistral.\r\n```\r\nI interpret this as the\
+    \ \"AutoModelForCausalLM.from_pretrained()\" method to not recognize the model\
+    \ type.\r\n\r\n**First question: is there a way to tell the method the model type\
+    \ or does it simply not support gguf?**\r\n\r\nI could solve this problem by switching\
+    \ to ctransformers with\r\n\r\n```\r\nfrom ctransformers import AutoModelForCausalLM\r\
+    \n\r\nmodel = AutoModelForCausalLM.from_pretrained(\"models/german_mistral\")#,\
+    \ model_type=\"gpt2\", hf=True)\r\n```\r\n\r\nbut when I want to finetune it afterwards\
+    \ using\r\n\r\n```\r\n# Prompt Engineering and Tokenisation\r\n\r\nCUTOFF_LEN\
+    \ = 300\r\n\r\n\r\ndef generate_prompt(data_point):\r\n    s = f\"\"\"Below is\
+    \ an instruction that describes a task, paired with an input that provides further\
+    \ context. Write a response that appropriately completes the request.  # noqa:\
+    \ E501\r\n    ### Instruction:\r\n    {data_point[\"instruction\"]}\r\n    ###\
+    \ Input:\r\n    {data_point[\"input\"]}\r\n    ### Response:\r\n    {data_point[\"\
+    output\"]}\r\n    \"\"\"\r\n    return s\r\n\r\ndef tokenize(prompt, add_eos_token=True):\r\
+    \n    result = tokenizer(\r\n        prompt,\r\n        truncation=True,\r\n \
+    \       max_length=CUTOFF_LEN,\r\n        padding=False,\r\n        return_tensors=None,\r\
+    \n    )\r\n    if (\r\n        result[\"input_ids\"][-1] != tokenizer.eos_token_id\r\
+    \n        and len(result[\"input_ids\"]) < CUTOFF_LEN\r\n        and add_eos_token\r\
+    \n    ):\r\n        result[\"input_ids\"].append(tokenizer.eos_token_id)\r\n \
+    \       result[\"attention_mask\"].append(1)\r\n\r\n    result[\"labels\"] = result[\"\
+    input_ids\"].copy()\r\n\r\n    return result\r\n\r\ndef generate_and_tokenize_prompt(data_point):\r\
+    \n    full_prompt = generate_prompt(data_point)\r\n    tokenized_full_prompt =\
+    \ tokenize(full_prompt)\r\n    return tokenized_full_prompt\r\n\r\n# Hyperparameters\
+    \ for fine_tuning\r\n\r\nLORA_R = 8\r\nLORA_ALPHA = 16\r\nLORA_DROPOUT= 0.05\r\
+    \nLORA_TARGET_MODULES = [\r\n    \"q_proj\",\r\n    \"v_proj\",\r\n]\r\n\r\nBATCH_SIZE\
+    \ = 128\r\nMICRO_BATCH_SIZE = 4\r\nGRADIENT_ACCUMULATION_STEPS = BATCH_SIZE //\
+    \ MICRO_BATCH_SIZE\r\nLEARNING_RATE = 3e-4\r\nTRAIN_STEPS = 10\r\nOUTPUT_DIR =\
+    \ \"experiments\"\r\n\r\n# Preparing model for training\r\n\r\nmodel = prepare_model_for_int8_training(model)\r\
+    \nconfig = LoraConfig(\r\n    r=LORA_R,\r\n    lora_alpha=LORA_ALPHA,\r\n    target_modules=LORA_TARGET_MODULES,\r\
+    \n    lora_dropout=LORA_DROPOUT,\r\n    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\"\
+    ,\r\n)\r\nmodel = get_peft_model(model, config)\r\nmodel.print_trainable_parameters()\r\
+    \n```\r\n\r\nI get the error message\r\n\r\n```\r\n---------------------------------------------------------------------------\r\
+    \nAttributeError                            Traceback (most recent call last)\r\
+    \nc:\\Users\\xxx\\Repositories\\finetuning\\erstes_finetuning.ipynb Cell 14 line\
+    \ 3\r\n      1 # Preparing model for training\r\n----> 3 model = prepare_model_for_int8_training(model)\r\
+    \n      4 config = LoraConfig(\r\n      5     r=LORA_R,\r\n      6     lora_alpha=LORA_ALPHA,\r\
+    \n   (...)\r\n     10     task_type=\"CAUSAL_LM\",\r\n     11 )\r\n     12 model\
+    \ = get_peft_model(model, config)\r\n\r\nFile c:\\Users\\xxx\\Repositories\\finetuning\\\
+    .finetung_venv\\Lib\\site-packages\\peft\\utils\\other.py:140, in prepare_model_for_int8_training(*args,\
+    \ **kwargs)\r\n    135 def prepare_model_for_int8_training(*args, **kwargs):\r\
+    \n    136     warnings.warn(\r\n    137         \"prepare_model_for_int8_training\
+    \ is deprecated and will be removed in a future version. Use prepare_model_for_kbit_training\
+    \ instead.\",\r\n    138         FutureWarning,\r\n    139     )\r\n--> 140  \
+    \   return prepare_model_for_kbit_training(*args, **kwargs)\r\n\r\nFile c:\\Users\\\
+    xxx\\Repositories\\finetuning\\.finetung_venv\\Lib\\site-packages\\peft\\utils\\\
+    other.py:90, in prepare_model_for_kbit_training(model, use_gradient_checkpointing,\
+    \ gradient_checkpointing_kwargs)\r\n     87 if gradient_checkpointing_kwargs is\
+    \ None:\r\n     88     gradient_checkpointing_kwargs = {}\r\n---> 90 for name,\
+    \ param in model.named_parameters():\r\n...\r\n    319 if name.startswith(\"ctransformers_llm_\"\
+    ) and hasattr(lib, name):\r\n    320     return partial(getattr(lib, name), llm)\r\
+    \n--> 321 raise AttributeError(f\"'LLM' object has no attribute '{name}'\")\r\n\
+    \r\nAttributeError: 'LLM' object has no attribute 'named_parameters'\r\n```\r\n\
+    I think this is a formatting issue as well.\r\n**Second question: Is there a way\
+    \ to solve this issue?**"
+  created_at: 2023-11-16 12:22:51+00:00
+  edited: false
+  hidden: false
+  id: 6556099b0dec97741176b98c
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: TheBloke/em_german_leo_mistral-GGUF
+repo_type: model
+status: open
+target_branch: null
+title: Problems with finetuning the model

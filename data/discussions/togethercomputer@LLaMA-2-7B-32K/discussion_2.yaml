@@ -1,0 +1,997 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: NickyNicky
+conflicting_files: null
+created_at: 2023-07-29 07:49:12+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+      fullname: Nicky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NickyNicky
+      type: user
+    createdAt: '2023-07-29T08:49:12.000Z'
+    data:
+      edited: true
+      editors:
+      - NickyNicky
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44412967562675476
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+          fullname: Nicky
+          isHf: false
+          isPro: false
+          name: NickyNicky
+          type: user
+        html: "<p>Load model QLora</p>\n<pre><code class=\"language-Python\"><span\
+          \ class=\"hljs-keyword\">import</span> os\n<span class=\"hljs-keyword\"\
+          >import</span> torch\n<span class=\"hljs-keyword\">from</span> datasets\
+          \ <span class=\"hljs-keyword\">import</span> load_dataset\n<span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ (\n    AutoModelForCausalLM,\n    AutoTokenizer,\n    BitsAndBytesConfig,\n\
+          \    HfArgumentParser,\n    TrainingArguments,\n    pipeline,\n    logging,\n\
+          \    GenerationConfig,\n)\n<span class=\"hljs-keyword\">from</span> peft\
+          \ <span class=\"hljs-keyword\">import</span> LoraConfig, PeftModel\n<span\
+          \ class=\"hljs-keyword\">from</span> trl <span class=\"hljs-keyword\">import</span>\
+          \ SFTTrainer\n\n\nbnb_config= BitsAndBytesConfig(\n        load_in_8bit=<span\
+          \ class=\"hljs-literal\">True</span>,\n        bnb_8bit_use_double_quant=<span\
+          \ class=\"hljs-literal\">True</span>,\n        bnb_8bit_quant_type=<span\
+          \ class=\"hljs-string\">\"nf4\"</span>,\n        bnb_8bit_compute_dtype=torch.bfloat16,\n\
+          \        llm_int8_skip_modules= [<span class=\"hljs-string\">'decoder'</span>,\
+          \ <span class=\"hljs-string\">'lm_head'</span>,  <span class=\"hljs-string\"\
+          >'wo'</span>],\n    )\n\n<span class=\"hljs-keyword\">import</span> logging\n\
+          logger = logging.getLogger(__name__)\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">get_max_length</span>():\n  max_length\
+          \ = <span class=\"hljs-literal\">None</span>\n  <span class=\"hljs-keyword\"\
+          >for</span> length_setting <span class=\"hljs-keyword\">in</span> [<span\
+          \ class=\"hljs-string\">\"n_positions\"</span>, <span class=\"hljs-string\"\
+          >\"max_position_embeddings\"</span>, <span class=\"hljs-string\">\"seq_length\"\
+          </span>]:\n    max_length = <span class=\"hljs-built_in\">getattr</span>(model.config,\
+          \ length_setting, <span class=\"hljs-literal\">None</span>)\n    <span class=\"\
+          hljs-keyword\">if</span> max_length:\n      logger.info(<span class=\"hljs-string\"\
+          >f\"Found max lenth: <span class=\"hljs-subst\">{max_length}</span>\"</span>)\n\
+          \      <span class=\"hljs-keyword\">break</span>\n  <span class=\"hljs-keyword\"\
+          >if</span> <span class=\"hljs-keyword\">not</span> max_length:\n    max_length\
+          \ = <span class=\"hljs-number\">32_000</span>\n    logger.info(<span class=\"\
+          hljs-string\">f\"Using default max length: <span class=\"hljs-subst\">{max_length}</span>\"\
+          </span>)\n  max_length\n\n\n\nmodel_id= <span class=\"hljs-string\">\"togethercomputer/LLaMA-2-7B-32K\"\
+          </span>\n\n\nmodel = AutoModelForCausalLM.from_pretrained(model_id, \n \
+          \                                            trust_remote_code=<span class=\"\
+          hljs-literal\">True</span>, \n                                         \
+          \    torch_dtype=torch.float16,\n                                      \
+          \       device_map=<span class=\"hljs-string\">\"auto\"</span>,\n      \
+          \                                       quantization_config=bnb_config,\n\
+          \                                             low_cpu_mem_usage=<span class=\"\
+          hljs-literal\">True</span>,\n                                          \
+          \    <span class=\"hljs-comment\"># load_in_8bit=True,</span>\n        \
+          \                                     )\n\ntokenizer = AutoTokenizer.from_pretrained(model_id,\n\
+          \                                          use_fast = <span class=\"hljs-literal\"\
+          >False</span>,\n                                          max_length=get_max_length(),\n\
+          \                                          )\n</code></pre>\n<p>databricks/databricks-dolly-15k</p>\n\
+          <pre><code>\n\nDataset({\n    features: ['instruction', 'context', 'response',\
+          \ 'category'],\n    num_rows: 15011\n})\n</code></pre>\n<p>TRAIN</p>\n<pre><code\
+          \ class=\"language-Python\"><span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> TrainingArguments\n\n\n<span\
+          \ class=\"hljs-keyword\">from</span> peft <span class=\"hljs-keyword\">import</span>\
+          \ LoraConfig, prepare_model_for_kbit_training, get_peft_model\n\n<span class=\"\
+          hljs-comment\"># LoRA config based on QLoRA paper</span>\npeft_config =\
+          \ LoraConfig(\n        lora_alpha=<span class=\"hljs-number\">16</span>,\n\
+          \        r=<span class=\"hljs-number\">32</span>,\n        lora_dropout=<span\
+          \ class=\"hljs-number\">0.1</span>,\n        \n        bias=<span class=\"\
+          hljs-string\">\"none\"</span>,\n        task_type=<span class=\"hljs-string\"\
+          >\"CAUSAL_LM\"</span>, \n)\n\n\n<span class=\"hljs-comment\"># prepare model\
+          \ for training</span>\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_peft_model(model, peft_config)\n\nargs = TrainingArguments(\n\
+          \    output_dir=<span class=\"hljs-string\">\"llama-7-int4-dolly\"</span>,\n\
+          \    num_train_epochs=<span class=\"hljs-number\">3</span>,\n    per_device_train_batch_size=\
+          \ <span class=\"hljs-number\">1</span>, <span class=\"hljs-comment\"><a\
+          \ href=\"/togethercomputer/LLaMA-2-7B-32K/discussions/6\">#6</a> if use_flash_attention\
+          \ else 3,</span>\n    gradient_accumulation_steps=<span class=\"hljs-number\"\
+          >2</span>,\n    gradient_checkpointing=<span class=\"hljs-literal\">True</span>,\n\
+          \    <span class=\"hljs-comment\"># optim=\"paged_adamw_32bit\",</span>\n\
+          \    \n    <span class=\"hljs-comment\"># torch_compile=True, # optimizations</span>\n\
+          \    <span class=\"hljs-comment\"># optim=\"adamw_torch_fused\", # improved\
+          \ optimizer </span>\n    optim=<span class=\"hljs-string\">\"adamw_bnb_8bit\"\
+          </span>, <span class=\"hljs-comment\">#     #['adamw_hf', 'adamw_torch',\
+          \ 'adamw_torch_fused', 'adamw_torch_xla', 'adamw_apex_fused', 'adafactor',\
+          \ 'adamw_bnb_8bit', 'adamw_anyprecision', 'sgd', 'adagrad']</span>\n\n \
+          \   \n    logging_steps=<span class=\"hljs-number\">4</span>,\n    save_strategy=<span\
+          \ class=\"hljs-string\">\"epoch\"</span>,\n    learning_rate=<span class=\"\
+          hljs-number\">2e-4</span>,\n    bf16=<span class=\"hljs-literal\">True</span>,\n\
+          \    <span class=\"hljs-comment\"># fp16=True,</span>\n    max_grad_norm=<span\
+          \ class=\"hljs-number\">0.3</span>,\n    warmup_ratio=<span class=\"hljs-number\"\
+          >0.03</span>,\n    lr_scheduler_type=<span class=\"hljs-string\">\"constant\"\
+          </span>,\n    disable_tqdm= <span class=\"hljs-literal\">False</span>, <span\
+          \ class=\"hljs-comment\">#True # disable tqdm since with packing values\
+          \ are in correct</span>\n)\n\n<span class=\"hljs-keyword\">from</span> trl\
+          \ <span class=\"hljs-keyword\">import</span> SFTTrainer\nmax_seq_length\
+          \ = get_max_length() <span class=\"hljs-comment\"># max sequence length\
+          \ for model and packing of the dataset</span>\ntrainer = SFTTrainer(\n \
+          \   model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+          \    max_seq_length=max_seq_length, \n    tokenizer=tokenizer,\n    packing=<span\
+          \ class=\"hljs-literal\">True</span>,\n    formatting_func=format_instruction,\
+          \ \n    args=args,\n)\ntrainer.train()\n</code></pre>\n<p>ERROR:</p>\n<pre><code\
+          \ class=\"language-Python\">/usr/local/lib/python3<span class=\"hljs-number\"\
+          >.10</span>/dist-packages/bitsandbytes/autograd/_functions.py:<span class=\"\
+          hljs-number\">322</span>: UserWarning: MatMul8bitLt: inputs will be cast\
+          \ <span class=\"hljs-keyword\">from</span> torch.float32 to float16 during\
+          \ quantization\n  warnings.warn(<span class=\"hljs-string\">f\"MatMul8bitLt:\
+          \ inputs will be cast from <span class=\"hljs-subst\">{A.dtype}</span> to\
+          \ float16 during quantization\"</span>)\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          &lt;ipython-<span class=\"hljs-built_in\">input</span>-<span class=\"hljs-number\"\
+          >22</span>-c89e25f1f1e3&gt; <span class=\"hljs-keyword\">in</span> &lt;cell\
+          \ line: <span class=\"hljs-number\">2</span>&gt;()\n      <span class=\"\
+          hljs-number\">1</span> <span class=\"hljs-comment\"># train</span>\n----&gt;\
+          \ <span class=\"hljs-number\">2</span> trainer.train() <span class=\"hljs-comment\"\
+          ># there will not be a progress bar since tqdm is disabled</span>\n\n<span\
+          \ class=\"hljs-number\">28</span> frames\n/usr/local/lib/python3<span class=\"\
+          hljs-number\">.10</span>/dist-packages/flash_attn/flash_attn_interface.py\
+          \ <span class=\"hljs-keyword\">in</span> _flash_attn_forward(q, k, v, dropout_p,\
+          \ softmax_scale, causal, return_softmax)\n     <span class=\"hljs-number\"\
+          >40</span>     maybe_contiguous = <span class=\"hljs-keyword\">lambda</span>\
+          \ x: x.contiguous() <span class=\"hljs-keyword\">if</span> x.stride(-<span\
+          \ class=\"hljs-number\">1</span>) != <span class=\"hljs-number\">1</span>\
+          \ <span class=\"hljs-keyword\">else</span> x\n     <span class=\"hljs-number\"\
+          >41</span>     q, k, v = [maybe_contiguous(x) <span class=\"hljs-keyword\"\
+          >for</span> x <span class=\"hljs-keyword\">in</span> (q, k, v)]\n---&gt;\
+          \ <span class=\"hljs-number\">42</span>     out, q, k, v, out_padded, softmax_lse,\
+          \ S_dmask, rng_state = flash_attn_cuda.fwd(\n     <span class=\"hljs-number\"\
+          >43</span>         q, k, v, <span class=\"hljs-literal\">None</span>, dropout_p,\
+          \ softmax_scale, causal, return_softmax, <span class=\"hljs-literal\">None</span>\n\
+          \     <span class=\"hljs-number\">44</span>     )\n\nRuntimeError: FlashAttention\
+          \ only support fp16 <span class=\"hljs-keyword\">and</span> bf16 data <span\
+          \ class=\"hljs-built_in\">type</span>\n</code></pre>\n"
+        raw: "Load model QLora\n```Python\nimport os\nimport torch\nfrom datasets\
+          \ import load_dataset\nfrom transformers import (\n    AutoModelForCausalLM,\n\
+          \    AutoTokenizer,\n    BitsAndBytesConfig,\n    HfArgumentParser,\n  \
+          \  TrainingArguments,\n    pipeline,\n    logging,\n    GenerationConfig,\n\
+          )\nfrom peft import LoraConfig, PeftModel\nfrom trl import SFTTrainer\n\n\
+          \nbnb_config= BitsAndBytesConfig(\n        load_in_8bit=True,\n        bnb_8bit_use_double_quant=True,\n\
+          \        bnb_8bit_quant_type=\"nf4\",\n        bnb_8bit_compute_dtype=torch.bfloat16,\n\
+          \        llm_int8_skip_modules= ['decoder', 'lm_head',  'wo'],\n    )\n\n\
+          import logging\nlogger = logging.getLogger(__name__)\n\ndef get_max_length():\n\
+          \  max_length = None\n  for length_setting in [\"n_positions\", \"max_position_embeddings\"\
+          , \"seq_length\"]:\n    max_length = getattr(model.config, length_setting,\
+          \ None)\n    if max_length:\n      logger.info(f\"Found max lenth: {max_length}\"\
+          )\n      break\n  if not max_length:\n    max_length = 32_000\n    logger.info(f\"\
+          Using default max length: {max_length}\")\n  max_length\n\n\n\nmodel_id=\
+          \ \"togethercomputer/LLaMA-2-7B-32K\"\n\n\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+          \ \n                                             trust_remote_code=True,\
+          \ \n                                             torch_dtype=torch.float16,\n\
+          \                                             device_map=\"auto\",\n   \
+          \                                          quantization_config=bnb_config,\n\
+          \                                             low_cpu_mem_usage=True,\n\
+          \                                              # load_in_8bit=True,\n  \
+          \                                           )\n\ntokenizer = AutoTokenizer.from_pretrained(model_id,\n\
+          \                                          use_fast = False,\n         \
+          \                                 max_length=get_max_length(),\n       \
+          \                                   )\n\n```\n\ndatabricks/databricks-dolly-15k\n\
+          ```\n\n\nDataset({\n    features: ['instruction', 'context', 'response',\
+          \ 'category'],\n    num_rows: 15011\n})\n```\n\nTRAIN\n```Python\nfrom transformers\
+          \ import TrainingArguments\n\n\nfrom peft import LoraConfig, prepare_model_for_kbit_training,\
+          \ get_peft_model\n\n# LoRA config based on QLoRA paper\npeft_config = LoraConfig(\n\
+          \        lora_alpha=16,\n        r=32,\n        lora_dropout=0.1,\n    \
+          \    \n        bias=\"none\",\n        task_type=\"CAUSAL_LM\", \n)\n\n\n\
+          # prepare model for training\nmodel = prepare_model_for_kbit_training(model)\n\
+          model = get_peft_model(model, peft_config)\n\nargs = TrainingArguments(\n\
+          \    output_dir=\"llama-7-int4-dolly\",\n    num_train_epochs=3,\n    per_device_train_batch_size=\
+          \ 1, #6 if use_flash_attention else 3,\n    gradient_accumulation_steps=2,\n\
+          \    gradient_checkpointing=True,\n    # optim=\"paged_adamw_32bit\",\n\
+          \    \n    # torch_compile=True, # optimizations\n    # optim=\"adamw_torch_fused\"\
+          , # improved optimizer \n    optim=\"adamw_bnb_8bit\", #     #['adamw_hf',\
+          \ 'adamw_torch', 'adamw_torch_fused', 'adamw_torch_xla', 'adamw_apex_fused',\
+          \ 'adafactor', 'adamw_bnb_8bit', 'adamw_anyprecision', 'sgd', 'adagrad']\n\
+          \n    \n    logging_steps=4,\n    save_strategy=\"epoch\",\n    learning_rate=2e-4,\n\
+          \    bf16=True,\n    # fp16=True,\n    max_grad_norm=0.3,\n    warmup_ratio=0.03,\n\
+          \    lr_scheduler_type=\"constant\",\n    disable_tqdm= False, #True # disable\
+          \ tqdm since with packing values are in correct\n)\n\nfrom trl import SFTTrainer\n\
+          max_seq_length = get_max_length() # max sequence length for model and packing\
+          \ of the dataset\ntrainer = SFTTrainer(\n    model=model,\n    train_dataset=dataset,\n\
+          \    peft_config=peft_config,\n    max_seq_length=max_seq_length, \n   \
+          \ tokenizer=tokenizer,\n    packing=True,\n    formatting_func=format_instruction,\
+          \ \n    args=args,\n)\ntrainer.train()\n```\n\nERROR:\n```Python\n/usr/local/lib/python3.10/dist-packages/bitsandbytes/autograd/_functions.py:322:\
+          \ UserWarning: MatMul8bitLt: inputs will be cast from torch.float32 to float16\
+          \ during quantization\n  warnings.warn(f\"MatMul8bitLt: inputs will be cast\
+          \ from {A.dtype} to float16 during quantization\")\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          <ipython-input-22-c89e25f1f1e3> in <cell line: 2>()\n      1 # train\n---->\
+          \ 2 trainer.train() # there will not be a progress bar since tqdm is disabled\n\
+          \n28 frames\n/usr/local/lib/python3.10/dist-packages/flash_attn/flash_attn_interface.py\
+          \ in _flash_attn_forward(q, k, v, dropout_p, softmax_scale, causal, return_softmax)\n\
+          \     40     maybe_contiguous = lambda x: x.contiguous() if x.stride(-1)\
+          \ != 1 else x\n     41     q, k, v = [maybe_contiguous(x) for x in (q, k,\
+          \ v)]\n---> 42     out, q, k, v, out_padded, softmax_lse, S_dmask, rng_state\
+          \ = flash_attn_cuda.fwd(\n     43         q, k, v, None, dropout_p, softmax_scale,\
+          \ causal, return_softmax, None\n     44     )\n\nRuntimeError: FlashAttention\
+          \ only support fp16 and bf16 data type\n```\n"
+        updatedAt: '2023-07-29T08:58:01.550Z'
+      numEdits: 2
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - enrio
+    id: 64c4d288cd148315dc1b6386
+    type: comment
+  author: NickyNicky
+  content: "Load model QLora\n```Python\nimport os\nimport torch\nfrom datasets import\
+    \ load_dataset\nfrom transformers import (\n    AutoModelForCausalLM,\n    AutoTokenizer,\n\
+    \    BitsAndBytesConfig,\n    HfArgumentParser,\n    TrainingArguments,\n    pipeline,\n\
+    \    logging,\n    GenerationConfig,\n)\nfrom peft import LoraConfig, PeftModel\n\
+    from trl import SFTTrainer\n\n\nbnb_config= BitsAndBytesConfig(\n        load_in_8bit=True,\n\
+    \        bnb_8bit_use_double_quant=True,\n        bnb_8bit_quant_type=\"nf4\"\
+    ,\n        bnb_8bit_compute_dtype=torch.bfloat16,\n        llm_int8_skip_modules=\
+    \ ['decoder', 'lm_head',  'wo'],\n    )\n\nimport logging\nlogger = logging.getLogger(__name__)\n\
+    \ndef get_max_length():\n  max_length = None\n  for length_setting in [\"n_positions\"\
+    , \"max_position_embeddings\", \"seq_length\"]:\n    max_length = getattr(model.config,\
+    \ length_setting, None)\n    if max_length:\n      logger.info(f\"Found max lenth:\
+    \ {max_length}\")\n      break\n  if not max_length:\n    max_length = 32_000\n\
+    \    logger.info(f\"Using default max length: {max_length}\")\n  max_length\n\n\
+    \n\nmodel_id= \"togethercomputer/LLaMA-2-7B-32K\"\n\n\nmodel = AutoModelForCausalLM.from_pretrained(model_id,\
+    \ \n                                             trust_remote_code=True, \n  \
+    \                                           torch_dtype=torch.float16,\n     \
+    \                                        device_map=\"auto\",\n              \
+    \                               quantization_config=bnb_config,\n            \
+    \                                 low_cpu_mem_usage=True,\n                  \
+    \                            # load_in_8bit=True,\n                          \
+    \                   )\n\ntokenizer = AutoTokenizer.from_pretrained(model_id,\n\
+    \                                          use_fast = False,\n               \
+    \                           max_length=get_max_length(),\n                   \
+    \                       )\n\n```\n\ndatabricks/databricks-dolly-15k\n```\n\n\n\
+    Dataset({\n    features: ['instruction', 'context', 'response', 'category'],\n\
+    \    num_rows: 15011\n})\n```\n\nTRAIN\n```Python\nfrom transformers import TrainingArguments\n\
+    \n\nfrom peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model\n\
+    \n# LoRA config based on QLoRA paper\npeft_config = LoraConfig(\n        lora_alpha=16,\n\
+    \        r=32,\n        lora_dropout=0.1,\n        \n        bias=\"none\",\n\
+    \        task_type=\"CAUSAL_LM\", \n)\n\n\n# prepare model for training\nmodel\
+    \ = prepare_model_for_kbit_training(model)\nmodel = get_peft_model(model, peft_config)\n\
+    \nargs = TrainingArguments(\n    output_dir=\"llama-7-int4-dolly\",\n    num_train_epochs=3,\n\
+    \    per_device_train_batch_size= 1, #6 if use_flash_attention else 3,\n    gradient_accumulation_steps=2,\n\
+    \    gradient_checkpointing=True,\n    # optim=\"paged_adamw_32bit\",\n    \n\
+    \    # torch_compile=True, # optimizations\n    # optim=\"adamw_torch_fused\"\
+    , # improved optimizer \n    optim=\"adamw_bnb_8bit\", #     #['adamw_hf', 'adamw_torch',\
+    \ 'adamw_torch_fused', 'adamw_torch_xla', 'adamw_apex_fused', 'adafactor', 'adamw_bnb_8bit',\
+    \ 'adamw_anyprecision', 'sgd', 'adagrad']\n\n    \n    logging_steps=4,\n    save_strategy=\"\
+    epoch\",\n    learning_rate=2e-4,\n    bf16=True,\n    # fp16=True,\n    max_grad_norm=0.3,\n\
+    \    warmup_ratio=0.03,\n    lr_scheduler_type=\"constant\",\n    disable_tqdm=\
+    \ False, #True # disable tqdm since with packing values are in correct\n)\n\n\
+    from trl import SFTTrainer\nmax_seq_length = get_max_length() # max sequence length\
+    \ for model and packing of the dataset\ntrainer = SFTTrainer(\n    model=model,\n\
+    \    train_dataset=dataset,\n    peft_config=peft_config,\n    max_seq_length=max_seq_length,\
+    \ \n    tokenizer=tokenizer,\n    packing=True,\n    formatting_func=format_instruction,\
+    \ \n    args=args,\n)\ntrainer.train()\n```\n\nERROR:\n```Python\n/usr/local/lib/python3.10/dist-packages/bitsandbytes/autograd/_functions.py:322:\
+    \ UserWarning: MatMul8bitLt: inputs will be cast from torch.float32 to float16\
+    \ during quantization\n  warnings.warn(f\"MatMul8bitLt: inputs will be cast from\
+    \ {A.dtype} to float16 during quantization\")\n---------------------------------------------------------------------------\n\
+    RuntimeError                              Traceback (most recent call last)\n\
+    <ipython-input-22-c89e25f1f1e3> in <cell line: 2>()\n      1 # train\n----> 2\
+    \ trainer.train() # there will not be a progress bar since tqdm is disabled\n\n\
+    28 frames\n/usr/local/lib/python3.10/dist-packages/flash_attn/flash_attn_interface.py\
+    \ in _flash_attn_forward(q, k, v, dropout_p, softmax_scale, causal, return_softmax)\n\
+    \     40     maybe_contiguous = lambda x: x.contiguous() if x.stride(-1) != 1\
+    \ else x\n     41     q, k, v = [maybe_contiguous(x) for x in (q, k, v)]\n--->\
+    \ 42     out, q, k, v, out_padded, softmax_lse, S_dmask, rng_state = flash_attn_cuda.fwd(\n\
+    \     43         q, k, v, None, dropout_p, softmax_scale, causal, return_softmax,\
+    \ None\n     44     )\n\nRuntimeError: FlashAttention only support fp16 and bf16\
+    \ data type\n```\n"
+  created_at: 2023-07-29 07:49:12+00:00
+  edited: true
+  hidden: false
+  id: 64c4d288cd148315dc1b6386
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+      fullname: Nicky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NickyNicky
+      type: user
+    createdAt: '2023-07-29T08:50:29.000Z'
+    data:
+      edited: true
+      editors:
+      - NickyNicky
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4041317105293274
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+          fullname: Nicky
+          isHf: false
+          isPro: false
+          name: NickyNicky
+          type: user
+        html: '<p>How to train this model<br><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/641b435ba5f876fe30c5ae0a/mvd_z4QcB6p6qpMwLtexn.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/641b435ba5f876fe30c5ae0a/mvd_z4QcB6p6qpMwLtexn.png"></a></p>
+
+          <p>thanks.  :)</p>
+
+          '
+        raw: 'How to train this model
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/641b435ba5f876fe30c5ae0a/mvd_z4QcB6p6qpMwLtexn.png)
+
+
+
+          thanks.  :)'
+        updatedAt: '2023-07-29T08:53:30.244Z'
+      numEdits: 2
+      reactions: []
+    id: 64c4d2d52d07296c7e26d261
+    type: comment
+  author: NickyNicky
+  content: 'How to train this model
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/641b435ba5f876fe30c5ae0a/mvd_z4QcB6p6qpMwLtexn.png)
+
+
+
+    thanks.  :)'
+  created_at: 2023-07-29 07:50:29+00:00
+  edited: true
+  hidden: false
+  id: 64c4d2d52d07296c7e26d261
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669380535028-61dce5c2af6d5e733e0fb08b.jpeg?w=200&h=200&f=face
+      fullname: Jue Wang
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: juewang
+      type: user
+    createdAt: '2023-07-29T08:55:13.000Z'
+    data:
+      edited: false
+      editors:
+      - juewang
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8365532755851746
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669380535028-61dce5c2af6d5e733e0fb08b.jpeg?w=200&h=200&f=face
+          fullname: Jue Wang
+          isHf: false
+          isPro: false
+          name: juewang
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;NickyNicky&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/NickyNicky\">@<span class=\"\
+          underline\">NickyNicky</span></a></span>\n\n\t</span></span> Hi, since you\
+          \ are doing QLoRA, you might need to set <code>trust_remote_code=False</code>\
+          \ to use HF's llama implementation, flash attention only works for float16\
+          \ or bfloat16.</p>\n"
+        raw: '@NickyNicky Hi, since you are doing QLoRA, you might need to set `trust_remote_code=False`
+          to use HF''s llama implementation, flash attention only works for float16
+          or bfloat16.'
+        updatedAt: '2023-07-29T08:55:13.258Z'
+      numEdits: 0
+      reactions: []
+    id: 64c4d3f18f31d1e6c684c01f
+    type: comment
+  author: juewang
+  content: '@NickyNicky Hi, since you are doing QLoRA, you might need to set `trust_remote_code=False`
+    to use HF''s llama implementation, flash attention only works for float16 or bfloat16.'
+  created_at: 2023-07-29 07:55:13+00:00
+  edited: false
+  hidden: false
+  id: 64c4d3f18f31d1e6c684c01f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+      fullname: Nicky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NickyNicky
+      type: user
+    createdAt: '2023-07-29T09:22:30.000Z'
+    data:
+      edited: true
+      editors:
+      - NickyNicky
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9675343036651611
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+          fullname: Nicky
+          isHf: false
+          isPro: false
+          name: NickyNicky
+          type: user
+        html: "<p>Thanks for such a quick response,<br>So I couldn't train with Qlora,\
+          \ and flash-attention? or is it not optimized? or What is missing or what\
+          \ am I doing wrong?</p>\n<p>how can i implement float16 or bfloat16.</p>\n\
+          <p>would it be ok like that?</p>\n<pre><code class=\"language-Python\"><span\
+          \ class=\"hljs-keyword\">for</span> name, module <span class=\"hljs-keyword\"\
+          >in</span> model.named_modules():\n    <span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-string\">\"norm\"</span> <span class=\"hljs-keyword\"\
+          >in</span> name:\n        module = module.to(torch.float16)\n</code></pre>\n\
+          <p>thanks. :)</p>\n"
+        raw: "Thanks for such a quick response, \nSo I couldn't train with Qlora,\
+          \ and flash-attention? or is it not optimized? or What is missing or what\
+          \ am I doing wrong?\n\nhow can i implement float16 or bfloat16.\n\nwould\
+          \ it be ok like that?\n```Python\nfor name, module in model.named_modules():\n\
+          \    if \"norm\" in name:\n        module = module.to(torch.float16)\n```\n\
+          \nthanks. :)"
+        updatedAt: '2023-07-29T09:29:46.473Z'
+      numEdits: 2
+      reactions: []
+    id: 64c4da56e2e5c94bd037cc53
+    type: comment
+  author: NickyNicky
+  content: "Thanks for such a quick response, \nSo I couldn't train with Qlora, and\
+    \ flash-attention? or is it not optimized? or What is missing or what am I doing\
+    \ wrong?\n\nhow can i implement float16 or bfloat16.\n\nwould it be ok like that?\n\
+    ```Python\nfor name, module in model.named_modules():\n    if \"norm\" in name:\n\
+    \        module = module.to(torch.float16)\n```\n\nthanks. :)"
+  created_at: 2023-07-29 08:22:30+00:00
+  edited: true
+  hidden: false
+  id: 64c4da56e2e5c94bd037cc53
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/277ff242cf15b380b80bdabfc0cfa030.svg
+      fullname: Ce Zhang
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: zhangce
+      type: user
+    createdAt: '2023-07-29T13:32:19.000Z'
+    data:
+      edited: false
+      editors:
+      - zhangce
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9105552434921265
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/277ff242cf15b380b80bdabfc0cfa030.svg
+          fullname: Ce Zhang
+          isHf: false
+          isPro: false
+          name: zhangce
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;NickyNicky&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/NickyNicky\">@<span class=\"\
+          underline\">NickyNicky</span></a></span>\n\n\t</span></span> -- This might\
+          \ take some time to get Qlora + flash-attention to work (mainly engineering\
+          \ and optimizations). But we are working together with our friends in the\
+          \ open source community on it -- stay tuned! (but it might take some time\
+          \ before the release)</p>\n<p>Ce</p>\n"
+        raw: '@NickyNicky -- This might take some time to get Qlora + flash-attention
+          to work (mainly engineering and optimizations). But we are working together
+          with our friends in the open source community on it -- stay tuned! (but
+          it might take some time before the release)
+
+
+          Ce'
+        updatedAt: '2023-07-29T13:32:19.033Z'
+      numEdits: 0
+      reactions: []
+    id: 64c514e37210ed6c460c1de4
+    type: comment
+  author: zhangce
+  content: '@NickyNicky -- This might take some time to get Qlora + flash-attention
+    to work (mainly engineering and optimizations). But we are working together with
+    our friends in the open source community on it -- stay tuned! (but it might take
+    some time before the release)
+
+
+    Ce'
+  created_at: 2023-07-29 12:32:19+00:00
+  edited: false
+  hidden: false
+  id: 64c514e37210ed6c460c1de4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5da1c4242ba996a2082476877e574014.svg
+      fullname: Balaji
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chanderbalaji
+      type: user
+    createdAt: '2023-08-01T03:56:20.000Z'
+    data:
+      edited: true
+      editors:
+      - chanderbalaji
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.41947153210639954
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5da1c4242ba996a2082476877e574014.svg
+          fullname: Balaji
+          isHf: false
+          isPro: false
+          name: chanderbalaji
+          type: user
+        html: "<p>I tried working without Qlora and got </p>\n<pre><code>File ~/anaconda3/lib/python3.10/site-packages/flash_attn/layers/rotary.py:62,\
+          \ in ApplyRotaryEmb.forward(ctx, x, cos, sin, interleaved, inplace)\n  \
+          \   59 else:\n     60     o1, o2 = (out_ro.chunk(2, dim=-1) if not interleaved\n\
+          \     61               else (out_ro[..., ::2], out_ro[..., 1::2]))\n---&gt;\
+          \ 62 rotary_emb.apply_rotary(x1, x2, rearrange(cos[:seqlen], 's d -&gt;\
+          \ s 1 d'),\n     63                         rearrange(sin[:seqlen], 's d\
+          \ -&gt; s 1 d'), o1, o2, False)\n     64 if not inplace and rotary_dim &lt;\
+          \ headdim:\n     65     out[..., rotary_dim:].copy_(x[..., rotary_dim:])\n\
+          \nRuntimeError: Expected x1.dtype() == cos.dtype() to be true, but got false.\
+          \  (Could this error message be improved?  If so, please report an enhancement\
+          \ request to PyTorch.)\n</code></pre>\n"
+        raw: "I tried working without Qlora and got \n\n```\nFile ~/anaconda3/lib/python3.10/site-packages/flash_attn/layers/rotary.py:62,\
+          \ in ApplyRotaryEmb.forward(ctx, x, cos, sin, interleaved, inplace)\n  \
+          \   59 else:\n     60     o1, o2 = (out_ro.chunk(2, dim=-1) if not interleaved\n\
+          \     61               else (out_ro[..., ::2], out_ro[..., 1::2]))\n--->\
+          \ 62 rotary_emb.apply_rotary(x1, x2, rearrange(cos[:seqlen], 's d -> s 1\
+          \ d'),\n     63                         rearrange(sin[:seqlen], 's d ->\
+          \ s 1 d'), o1, o2, False)\n     64 if not inplace and rotary_dim < headdim:\n\
+          \     65     out[..., rotary_dim:].copy_(x[..., rotary_dim:])\n\nRuntimeError:\
+          \ Expected x1.dtype() == cos.dtype() to be true, but got false.  (Could\
+          \ this error message be improved?  If so, please report an enhancement request\
+          \ to PyTorch.)\n```"
+        updatedAt: '2023-08-01T03:59:34.168Z'
+      numEdits: 1
+      reactions: []
+    id: 64c882642c77e266442e09a2
+    type: comment
+  author: chanderbalaji
+  content: "I tried working without Qlora and got \n\n```\nFile ~/anaconda3/lib/python3.10/site-packages/flash_attn/layers/rotary.py:62,\
+    \ in ApplyRotaryEmb.forward(ctx, x, cos, sin, interleaved, inplace)\n     59 else:\n\
+    \     60     o1, o2 = (out_ro.chunk(2, dim=-1) if not interleaved\n     61   \
+    \            else (out_ro[..., ::2], out_ro[..., 1::2]))\n---> 62 rotary_emb.apply_rotary(x1,\
+    \ x2, rearrange(cos[:seqlen], 's d -> s 1 d'),\n     63                      \
+    \   rearrange(sin[:seqlen], 's d -> s 1 d'), o1, o2, False)\n     64 if not inplace\
+    \ and rotary_dim < headdim:\n     65     out[..., rotary_dim:].copy_(x[..., rotary_dim:])\n\
+    \nRuntimeError: Expected x1.dtype() == cos.dtype() to be true, but got false.\
+    \  (Could this error message be improved?  If so, please report an enhancement\
+    \ request to PyTorch.)\n```"
+  created_at: 2023-08-01 02:56:20+00:00
+  edited: true
+  hidden: false
+  id: 64c882642c77e266442e09a2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/614352744c551f7a6d7d5fccab3771c9.svg
+      fullname: GIulioGalvan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: giuliogalvan
+      type: user
+    createdAt: '2023-08-01T07:48:54.000Z'
+    data:
+      edited: false
+      editors:
+      - giuliogalvan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.775065004825592
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/614352744c551f7a6d7d5fccab3771c9.svg
+          fullname: GIulioGalvan
+          isHf: false
+          isPro: false
+          name: giuliogalvan
+          type: user
+        html: "<p>Got the same error as <span data-props=\"{&quot;user&quot;:&quot;chanderbalaji&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/chanderbalaji\"\
+          >@<span class=\"underline\">chanderbalaji</span></a></span>\n\n\t</span></span>\
+          \ . (following)</p>\n"
+        raw: Got the same error as @chanderbalaji . (following)
+        updatedAt: '2023-08-01T07:48:54.620Z'
+      numEdits: 0
+      reactions: []
+    id: 64c8b8e6c547ed5243e25ab9
+    type: comment
+  author: giuliogalvan
+  content: Got the same error as @chanderbalaji . (following)
+  created_at: 2023-08-01 06:48:54+00:00
+  edited: false
+  hidden: false
+  id: 64c8b8e6c547ed5243e25ab9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630e55148df86f1e5bf0c588/fNS9VJjPW9UzLG9oB6A6y.jpeg?w=200&h=200&f=face
+      fullname: Majo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sayoyo
+      type: user
+    createdAt: '2023-08-01T15:19:39.000Z'
+    data:
+      edited: false
+      editors:
+      - Sayoyo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9490779042243958
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630e55148df86f1e5bf0c588/fNS9VJjPW9UzLG9oB6A6y.jpeg?w=200&h=200&f=face
+          fullname: Majo
+          isHf: false
+          isPro: false
+          name: Sayoyo
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;NickyNicky&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/NickyNicky\">@<span class=\"\
+          underline\">NickyNicky</span></a></span>\n\n\t</span></span> Hey, I saw\
+          \ that you released togethercomputer-LLaMA-2-7B-32K-open-Orca-v1, is your\
+          \ problem solved? As long as you don't use flash-attention, you can use\
+          \ QLora, right?</p>\n"
+        raw: '@NickyNicky Hey, I saw that you released togethercomputer-LLaMA-2-7B-32K-open-Orca-v1,
+          is your problem solved? As long as you don''t use flash-attention, you can
+          use QLora, right?'
+        updatedAt: '2023-08-01T15:19:39.443Z'
+      numEdits: 0
+      reactions: []
+    id: 64c9228b7b4d0d947ced7f67
+    type: comment
+  author: Sayoyo
+  content: '@NickyNicky Hey, I saw that you released togethercomputer-LLaMA-2-7B-32K-open-Orca-v1,
+    is your problem solved? As long as you don''t use flash-attention, you can use
+    QLora, right?'
+  created_at: 2023-08-01 14:19:39+00:00
+  edited: false
+  hidden: false
+  id: 64c9228b7b4d0d947ced7f67
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+      fullname: Nicky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NickyNicky
+      type: user
+    createdAt: '2023-08-01T16:47:32.000Z'
+    data:
+      edited: true
+      editors:
+      - NickyNicky
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7380647659301758
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+          fullname: Nicky
+          isHf: false
+          isPro: false
+          name: NickyNicky
+          type: user
+        html: '<p>credits to:</p>
+
+          <ul>
+
+          <li><a rel="nofollow" href="https://www.philschmid.de/instruction-tune-llama-2">https://www.philschmid.de/instruction-tune-llama-2</a></li>
+
+          <li><a rel="nofollow" href="https://github.com/philschmid/deep-learning-pytorch-huggingface/blob/main/training/instruction-tune-llama-2-int4.ipynb">https://github.com/philschmid/deep-learning-pytorch-huggingface/blob/main/training/instruction-tune-llama-2-int4.ipynb</a></li>
+
+          </ul>
+
+          <p>the model togethercomputer-LLaMA-2-7B-32K-open-Orca-v1 and togethercomputer-LLaMA-2-7B-32K-open-Orca-v2
+          train with QLora, peft and flash-attention for a period of 4 hours V1 and
+          5 hours v2, 1 GPU A100 (Google colab).<br>I really wanted to train him longer
+          but it''s out of budget.</p>
+
+          <p>values to train:<br>per_device_train_batch_size=14<br>trust_remote_code=False</p>
+
+          <p>After training and joining the weights you can enable flash attention.</p>
+
+          '
+        raw: 'credits to:
+
+          - https://www.philschmid.de/instruction-tune-llama-2
+
+          - https://github.com/philschmid/deep-learning-pytorch-huggingface/blob/main/training/instruction-tune-llama-2-int4.ipynb
+
+
+          the model togethercomputer-LLaMA-2-7B-32K-open-Orca-v1 and togethercomputer-LLaMA-2-7B-32K-open-Orca-v2
+          train with QLora, peft and flash-attention for a period of 4 hours V1 and
+          5 hours v2, 1 GPU A100 (Google colab).
+
+          I really wanted to train him longer but it''s out of budget.
+
+
+
+          values to train:
+
+          per_device_train_batch_size=14
+
+          trust_remote_code=False
+
+
+
+          After training and joining the weights you can enable flash attention.'
+        updatedAt: '2023-08-01T17:00:03.439Z'
+      numEdits: 6
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - ssbg2
+    id: 64c937243cfe45b07164fbbe
+    type: comment
+  author: NickyNicky
+  content: 'credits to:
+
+    - https://www.philschmid.de/instruction-tune-llama-2
+
+    - https://github.com/philschmid/deep-learning-pytorch-huggingface/blob/main/training/instruction-tune-llama-2-int4.ipynb
+
+
+    the model togethercomputer-LLaMA-2-7B-32K-open-Orca-v1 and togethercomputer-LLaMA-2-7B-32K-open-Orca-v2
+    train with QLora, peft and flash-attention for a period of 4 hours V1 and 5 hours
+    v2, 1 GPU A100 (Google colab).
+
+    I really wanted to train him longer but it''s out of budget.
+
+
+
+    values to train:
+
+    per_device_train_batch_size=14
+
+    trust_remote_code=False
+
+
+
+    After training and joining the weights you can enable flash attention.'
+  created_at: 2023-08-01 15:47:32+00:00
+  edited: true
+  hidden: false
+  id: 64c937243cfe45b07164fbbe
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630e55148df86f1e5bf0c588/fNS9VJjPW9UzLG9oB6A6y.jpeg?w=200&h=200&f=face
+      fullname: Majo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sayoyo
+      type: user
+    createdAt: '2023-08-01T18:35:25.000Z'
+    data:
+      edited: false
+      editors:
+      - Sayoyo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8536407947540283
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/630e55148df86f1e5bf0c588/fNS9VJjPW9UzLG9oB6A6y.jpeg?w=200&h=200&f=face
+          fullname: Majo
+          isHf: false
+          isPro: false
+          name: Sayoyo
+          type: user
+        html: '<p>Wow, thank you~<br>And may I ask which orca dataset you used? Is
+          there any re-filtering of token sizes in the dataset?</p>
+
+          '
+        raw: 'Wow, thank you~
+
+          And may I ask which orca dataset you used? Is there any re-filtering of
+          token sizes in the dataset?'
+        updatedAt: '2023-08-01T18:35:25.017Z'
+      numEdits: 0
+      reactions: []
+    id: 64c9506d547f59248fb76404
+    type: comment
+  author: Sayoyo
+  content: 'Wow, thank you~
+
+    And may I ask which orca dataset you used? Is there any re-filtering of token
+    sizes in the dataset?'
+  created_at: 2023-08-01 17:35:25+00:00
+  edited: false
+  hidden: false
+  id: 64c9506d547f59248fb76404
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+      fullname: Nicky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NickyNicky
+      type: user
+    createdAt: '2023-08-02T20:22:32.000Z'
+    data:
+      edited: false
+      editors:
+      - NickyNicky
+      hidden: false
+      identifiedLanguage:
+        language: es
+        probability: 0.1464960277080536
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9ab1fba948e86cce23e8ab573f12ff04.svg
+          fullname: Nicky
+          isHf: false
+          isPro: false
+          name: NickyNicky
+          type: user
+        html: '<p>orca dataset:</p>
+
+          <ul>
+
+          <li>1M-GPT4-Augmented.parquet</li>
+
+          </ul>
+
+          '
+        raw: 'orca dataset:
+
+          - 1M-GPT4-Augmented.parquet
+
+          '
+        updatedAt: '2023-08-02T20:22:32.856Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - Sayoyo
+    id: 64cabb0879d99f9e7a239f8e
+    type: comment
+  author: NickyNicky
+  content: 'orca dataset:
+
+    - 1M-GPT4-Augmented.parquet
+
+    '
+  created_at: 2023-08-02 19:22:32+00:00
+  edited: false
+  hidden: false
+  id: 64cabb0879d99f9e7a239f8e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676512038653-63074ea3cb09c0a90429ce3b.png?w=200&h=200&f=face
+      fullname: Sir Mediocre Jr, Esq.
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Mediocreatmybest
+      type: user
+    createdAt: '2023-08-20T23:55:53.000Z'
+    data:
+      edited: false
+      editors:
+      - Mediocreatmybest
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6597772836685181
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676512038653-63074ea3cb09c0a90429ce3b.png?w=200&h=200&f=face
+          fullname: Sir Mediocre Jr, Esq.
+          isHf: false
+          isPro: false
+          name: Mediocreatmybest
+          type: user
+        html: '<p>Just curious...<br>The config from Bitsandbytes you added, is this
+          valid? as I can''t find any references for double quant with 8bit only 4bit?<br>More
+          just wondering is all. </p>
+
+          <p>bnb_config= BitsAndBytesConfig(<br>        load_in_8bit=True,<br>        bnb_8bit_use_double_quant=True,<br>        bnb_8bit_quant_type="nf4",<br>        bnb_8bit_compute_dtype=torch.bfloat16,<br>        llm_int8_skip_modules=
+          [''decoder'', ''lm_head'',  ''wo''],<br>    )</p>
+
+          <p>Thanks!</p>
+
+          '
+        raw: "Just curious...\nThe config from Bitsandbytes you added, is this valid?\
+          \ as I can't find any references for double quant with 8bit only 4bit? \n\
+          More just wondering is all. \n\nbnb_config= BitsAndBytesConfig(\n      \
+          \  load_in_8bit=True,\n        bnb_8bit_use_double_quant=True,\n       \
+          \ bnb_8bit_quant_type=\"nf4\",\n        bnb_8bit_compute_dtype=torch.bfloat16,\n\
+          \        llm_int8_skip_modules= ['decoder', 'lm_head',  'wo'],\n    )\n\n\
+          Thanks!"
+        updatedAt: '2023-08-20T23:55:53.151Z'
+      numEdits: 0
+      reactions: []
+    id: 64e2a8092024a9533a4c3345
+    type: comment
+  author: Mediocreatmybest
+  content: "Just curious...\nThe config from Bitsandbytes you added, is this valid?\
+    \ as I can't find any references for double quant with 8bit only 4bit? \nMore\
+    \ just wondering is all. \n\nbnb_config= BitsAndBytesConfig(\n        load_in_8bit=True,\n\
+    \        bnb_8bit_use_double_quant=True,\n        bnb_8bit_quant_type=\"nf4\"\
+    ,\n        bnb_8bit_compute_dtype=torch.bfloat16,\n        llm_int8_skip_modules=\
+    \ ['decoder', 'lm_head',  'wo'],\n    )\n\nThanks!"
+  created_at: 2023-08-20 22:55:53+00:00
+  edited: false
+  hidden: false
+  id: 64e2a8092024a9533a4c3345
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: togethercomputer/LLaMA-2-7B-32K
+repo_type: model
+status: open
+target_branch: null
+title: how to fine tune peft qlora and SFTTrainer?

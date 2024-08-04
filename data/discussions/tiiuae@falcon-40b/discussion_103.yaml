@@ -1,0 +1,189 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: chelouche9
+conflicting_files: null
+created_at: 2023-08-16 06:51:05+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64749163e0b188d3cb2139d9/1gG08kGxUA-39EE8njT2W.png?w=200&h=200&f=face
+      fullname: Yonatan Chelouche
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chelouche9
+      type: user
+    createdAt: '2023-08-16T07:51:05.000Z'
+    data:
+      edited: true
+      editors:
+      - chelouche9
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7139062881469727
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64749163e0b188d3cb2139d9/1gG08kGxUA-39EE8njT2W.png?w=200&h=200&f=face
+          fullname: Yonatan Chelouche
+          isHf: false
+          isPro: false
+          name: chelouche9
+          type: user
+        html: "<p>Hi,</p>\n<p>First of all thanks for the great job I really love\
+          \ the Falcon models and for my task it performs better than Llama2 70B!\
+          \ </p>\n<p>I have finetuned the falcon40 (not instruct) on my task, using\
+          \ QLora and Peft. </p>\n<p>I am now in the process of deploying it using\
+          \ AWS Sagemaker. There are several problems but I would like to focus on\
+          \ one you might help me with.</p>\n<p>When I load the model straight from\
+          \ the hub, create a pipeline and infer it, i get a response for a query\
+          \ in 150 seconds. It works great!</p>\n<pre><code>model_name = \"tiiuae/falcon-40b\"\
+          \n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_quant_type=\"\
+          nf4\",\n    bnb_4bit_use_double_quant=True,\n    bnb_4bit_compute_dtype=torch.float16,\n\
+          )\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name,\n  \
+          \  quantization_config=bnb_config,\n    trust_remote_code=True,\n    device_map=\"\
+          auto\",\n)\n\ngenerator = pipeline(task=\"text-generation\", model=model,\
+          \ tokenizer=tokenizer, device_map=\"auto\")\n</code></pre>\n<p>The problem\
+          \ is when I try to use my finetuned model along with the pipeline.</p>\n\
+          <p>I tried 2 options:</p>\n<ol>\n<li>passing the pipeline the peft model</li>\n\
+          </ol>\n<pre><code>PEFT_MODEL = 'models/falcon40_ft_sft'\n\nbnb_config =\
+          \ BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_use_double_quant=True,\n\
+          \    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          )\n\nconfig = PeftConfig.from_pretrained(PEFT_MODEL)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    config.base_model_name_or_path,\n    return_dict=True,\n    quantization_config=bnb_config,\n\
+          \    low_cpu_mem_usage=True,\n    device_map=\"auto\",\n    trust_remote_code=True,\n\
+          )\ntokenizer = AutoTokenizer.from_pretrained(\"tiiuae/falcon-40b\")\ntokenizer.pad_token\
+          \ = tokenizer.eos_token\n\nmodel = PeftModel.from_pretrained(model, PEFT_MODEL)\n\
+          generator = pipeline(task=\"text-generation\", model=model, tokenizer=tokenizer,\
+          \ device_map=\"auto\")\n</code></pre>\n<p>I get an error:  The model 'PeftModel'\
+          \ is not supported for text-generation. Supported models are [...]<br>And\
+          \ the response time for the same query takes twice as much time.</p>\n<ol\
+          \ start=\"2\">\n<li>Merging the peft model<br>Then I tried to merge the\
+          \ peft model using:</li>\n</ol>\n<pre><code>merged_model = model.merge_and_unload()\n\
+          merged_model.save_pretrained('models/merged_ft_sft_falcon40')\ntokenizer.save_pretrained('models/merged_ft_sft_falcon40')\n\
+          </code></pre>\n<p>I have copied all the configuration files and the including\
+          \ the config file which contains RWForCausalLM function. I copied also the\
+          \ config.json with the right auto_map properties.</p>\n<p>When I run</p>\n\
+          <pre><code>MERGED_MODEL = 'models/merged_ft_sft_falcon40'\n\nbnb_config\
+          \ = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_use_double_quant=True,\n\
+          \    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          )\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    MERGED_MODEL,\n\
+          \    return_dict=True,\n    quantization_config=bnb_config,\n    device_map=\"\
+          auto\",\n    trust_remote_code=True,\n)\ntokenizer = AutoTokenizer.from_pretrained(MERGED_MODEL)\n\
+          generator = pipeline(task=\"text-generation\", model=model, tokenizer=tokenizer,\
+          \ device_map=\"auto\")\n</code></pre>\n<p>I get an error:  The model 'RWForCausalLM'\
+          \ is not supported for text-generation. Supported models are [...]<br>And\
+          \ the response time for the same query takes twice as much time.</p>\n<p>My\
+          \ question is how can I make my finetuned model benefit from all of the\
+          \ pipeline functions? Why isn't it working the same as the hub model, given\
+          \ I have all files (my assumption is that only the weights files have changed\
+          \ slightly)?</p>\n"
+        raw: "Hi,\n\nFirst of all thanks for the great job I really love the Falcon\
+          \ models and for my task it performs better than Llama2 70B! \n\nI have\
+          \ finetuned the falcon40 (not instruct) on my task, using QLora and Peft.\
+          \ \n\nI am now in the process of deploying it using AWS Sagemaker. There\
+          \ are several problems but I would like to focus on one you might help me\
+          \ with.\n\nWhen I load the model straight from the hub, create a pipeline\
+          \ and infer it, i get a response for a query in 150 seconds. It works great!\n\
+          \n```\nmodel_name = \"tiiuae/falcon-40b\"\n\nbnb_config = BitsAndBytesConfig(\n\
+          \    load_in_4bit=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_use_double_quant=True,\n\
+          \    bnb_4bit_compute_dtype=torch.float16,\n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_name,\n    quantization_config=bnb_config,\n    trust_remote_code=True,\n\
+          \    device_map=\"auto\",\n)\n\ngenerator = pipeline(task=\"text-generation\"\
+          , model=model, tokenizer=tokenizer, device_map=\"auto\")\n```\n\nThe problem\
+          \ is when I try to use my finetuned model along with the pipeline.\n\nI\
+          \ tried 2 options:\n1. passing the pipeline the peft model\n```\nPEFT_MODEL\
+          \ = 'models/falcon40_ft_sft'\n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n\
+          \    bnb_4bit_use_double_quant=True,\n    bnb_4bit_quant_type=\"nf4\",\n\
+          \    bnb_4bit_compute_dtype=torch.bfloat16,\n)\n\nconfig = PeftConfig.from_pretrained(PEFT_MODEL)\n\
+          \nmodel = AutoModelForCausalLM.from_pretrained(\n    config.base_model_name_or_path,\n\
+          \    return_dict=True,\n    quantization_config=bnb_config,\n    low_cpu_mem_usage=True,\n\
+          \    device_map=\"auto\",\n    trust_remote_code=True,\n)\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          tiiuae/falcon-40b\")\ntokenizer.pad_token = tokenizer.eos_token\n\nmodel\
+          \ = PeftModel.from_pretrained(model, PEFT_MODEL)\ngenerator = pipeline(task=\"\
+          text-generation\", model=model, tokenizer=tokenizer, device_map=\"auto\"\
+          )\n```\nI get an error:  The model 'PeftModel' is not supported for text-generation.\
+          \ Supported models are [...]\nAnd the response time for the same query takes\
+          \ twice as much time.\n\n2. Merging the peft model\nThen I tried to merge\
+          \ the peft model using:\n```\nmerged_model = model.merge_and_unload()\n\
+          merged_model.save_pretrained('models/merged_ft_sft_falcon40')\ntokenizer.save_pretrained('models/merged_ft_sft_falcon40')\n\
+          ```\n\nI have copied all the configuration files and the including the config\
+          \ file which contains RWForCausalLM function. I copied also the config.json\
+          \ with the right auto_map properties.\n\nWhen I run\n```\nMERGED_MODEL =\
+          \ 'models/merged_ft_sft_falcon40'\n\nbnb_config = BitsAndBytesConfig(\n\
+          \    load_in_4bit=True,\n    bnb_4bit_use_double_quant=True,\n    bnb_4bit_quant_type=\"\
+          nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    MERGED_MODEL,\n    return_dict=True,\n    quantization_config=bnb_config,\n\
+          \    device_map=\"auto\",\n    trust_remote_code=True,\n)\ntokenizer = AutoTokenizer.from_pretrained(MERGED_MODEL)\n\
+          generator = pipeline(task=\"text-generation\", model=model, tokenizer=tokenizer,\
+          \ device_map=\"auto\")\n```\nI get an error:  The model 'RWForCausalLM'\
+          \ is not supported for text-generation. Supported models are [...]\nAnd\
+          \ the response time for the same query takes twice as much time.\n\nMy question\
+          \ is how can I make my finetuned model benefit from all of the pipeline\
+          \ functions? Why isn't it working the same as the hub model, given I have\
+          \ all files (my assumption is that only the weights files have changed slightly)?"
+        updatedAt: '2023-08-16T07:52:51.264Z'
+      numEdits: 1
+      reactions: []
+    id: 64dc7fe93a7ab21ea71270bb
+    type: comment
+  author: chelouche9
+  content: "Hi,\n\nFirst of all thanks for the great job I really love the Falcon\
+    \ models and for my task it performs better than Llama2 70B! \n\nI have finetuned\
+    \ the falcon40 (not instruct) on my task, using QLora and Peft. \n\nI am now in\
+    \ the process of deploying it using AWS Sagemaker. There are several problems\
+    \ but I would like to focus on one you might help me with.\n\nWhen I load the\
+    \ model straight from the hub, create a pipeline and infer it, i get a response\
+    \ for a query in 150 seconds. It works great!\n\n```\nmodel_name = \"tiiuae/falcon-40b\"\
+    \n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_quant_type=\"\
+    nf4\",\n    bnb_4bit_use_double_quant=True,\n    bnb_4bit_compute_dtype=torch.float16,\n\
+    )\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name,\n    quantization_config=bnb_config,\n\
+    \    trust_remote_code=True,\n    device_map=\"auto\",\n)\n\ngenerator = pipeline(task=\"\
+    text-generation\", model=model, tokenizer=tokenizer, device_map=\"auto\")\n```\n\
+    \nThe problem is when I try to use my finetuned model along with the pipeline.\n\
+    \nI tried 2 options:\n1. passing the pipeline the peft model\n```\nPEFT_MODEL\
+    \ = 'models/falcon40_ft_sft'\n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n\
+    \    bnb_4bit_use_double_quant=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+    )\n\nconfig = PeftConfig.from_pretrained(PEFT_MODEL)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    config.base_model_name_or_path,\n    return_dict=True,\n    quantization_config=bnb_config,\n\
+    \    low_cpu_mem_usage=True,\n    device_map=\"auto\",\n    trust_remote_code=True,\n\
+    )\ntokenizer = AutoTokenizer.from_pretrained(\"tiiuae/falcon-40b\")\ntokenizer.pad_token\
+    \ = tokenizer.eos_token\n\nmodel = PeftModel.from_pretrained(model, PEFT_MODEL)\n\
+    generator = pipeline(task=\"text-generation\", model=model, tokenizer=tokenizer,\
+    \ device_map=\"auto\")\n```\nI get an error:  The model 'PeftModel' is not supported\
+    \ for text-generation. Supported models are [...]\nAnd the response time for the\
+    \ same query takes twice as much time.\n\n2. Merging the peft model\nThen I tried\
+    \ to merge the peft model using:\n```\nmerged_model = model.merge_and_unload()\n\
+    merged_model.save_pretrained('models/merged_ft_sft_falcon40')\ntokenizer.save_pretrained('models/merged_ft_sft_falcon40')\n\
+    ```\n\nI have copied all the configuration files and the including the config\
+    \ file which contains RWForCausalLM function. I copied also the config.json with\
+    \ the right auto_map properties.\n\nWhen I run\n```\nMERGED_MODEL = 'models/merged_ft_sft_falcon40'\n\
+    \nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_use_double_quant=True,\n\
+    \    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.bfloat16,\n\
+    )\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    MERGED_MODEL,\n    return_dict=True,\n\
+    \    quantization_config=bnb_config,\n    device_map=\"auto\",\n    trust_remote_code=True,\n\
+    )\ntokenizer = AutoTokenizer.from_pretrained(MERGED_MODEL)\ngenerator = pipeline(task=\"\
+    text-generation\", model=model, tokenizer=tokenizer, device_map=\"auto\")\n```\n\
+    I get an error:  The model 'RWForCausalLM' is not supported for text-generation.\
+    \ Supported models are [...]\nAnd the response time for the same query takes twice\
+    \ as much time.\n\nMy question is how can I make my finetuned model benefit from\
+    \ all of the pipeline functions? Why isn't it working the same as the hub model,\
+    \ given I have all files (my assumption is that only the weights files have changed\
+    \ slightly)?"
+  created_at: 2023-08-16 06:51:05+00:00
+  edited: true
+  hidden: false
+  id: 64dc7fe93a7ab21ea71270bb
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 103
+repo_id: tiiuae/falcon-40b
+repo_type: model
+status: open
+target_branch: null
+title: Finetuned Falcon40 is not working with pipeline (text-generation)

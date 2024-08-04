@@ -1,0 +1,314 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mrsteyk
+conflicting_files: null
+created_at: 2022-12-23 04:34:33+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671594780986-6340427077fd972573e6c398.jpeg?w=200&h=200&f=face
+      fullname: Alexandr German
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: mrsteyk
+      type: user
+    createdAt: '2022-12-23T04:34:33.000Z'
+    data:
+      edited: false
+      editors:
+      - mrsteyk
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671594780986-6340427077fd972573e6c398.jpeg?w=200&h=200&f=face
+          fullname: Alexandr German
+          isHf: false
+          isPro: false
+          name: mrsteyk
+          type: user
+        html: "<h1 id=\"tldr\">TL;DR</h1>\n<ul>\n<li>Usage of Neo was a result of\
+          \ huge sleep depravation, I should've read like 2 more lines of Pythia github\
+          \ repo. J doesn't seem viable due to being TPU centric and no lesser parameters\
+          \ model in the wild that I can see.</li>\n<li>Use FP16/BF16 (local/colab)\
+          \ next time.</li>\n<li>Look into efficiency of \"batching\" the dataset.\
+          \ (finetune didn't use EOS at all)</li>\n<li>Look into getting 8BitAdam\
+          \ working to lower training VRAM for potential local finetunes or use of\
+          \ bigger number of params.</li>\n<li>Read more papers and talks related\
+          \ to current NLP tech.</li>\n<li>I have 0 IQ in modern AI stuff if not less,\
+          \ so I am more than open to any ideas or learning resources.</li>\n</ul>\n\
+          <h1 id=\"more-training-process-details\">More training process details</h1>\n\
+          <p>Here's a snippet of how trainer was initialised (latest version I have\
+          \ in colab, this model is 5 epochs). This looks dumb to me now but trust\
+          \ me it looked good for me at the time.</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> Trainer, TrainingArguments, default_data_collator\n<span\
+          \ class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> DataCollatorWithPadding\n<span class=\"hljs-keyword\">import</span>\
+          \ evaluate\n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">preprocess_logits_for_metrics</span>(<span class=\"hljs-params\"\
+          >logits, labels</span>):\n    <span class=\"hljs-keyword\">if</span> <span\
+          \ class=\"hljs-built_in\">isinstance</span>(logits, <span class=\"hljs-built_in\"\
+          >tuple</span>):\n        <span class=\"hljs-comment\"># Depending on the\
+          \ model and config, logits may contain extra tensors,</span>\n        <span\
+          \ class=\"hljs-comment\"># like past_key_values, but logits always come\
+          \ first</span>\n        logits = logits[<span class=\"hljs-number\">0</span>]\n\
+          \    <span class=\"hljs-keyword\">return</span> logits.argmax(dim=-<span\
+          \ class=\"hljs-number\">1</span>)\n\nmetric = evaluate.load(<span class=\"\
+          hljs-string\">\"accuracy\"</span>)\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">compute_metrics</span>(<span class=\"\
+          hljs-params\">eval_preds</span>):\n    preds, labels = eval_preds\n    <span\
+          \ class=\"hljs-comment\"># preds have the same shape as the labels, after\
+          \ the argmax(-1) has been calculated</span>\n    <span class=\"hljs-comment\"\
+          ># by preprocess_logits_for_metrics but we need to shift the labels</span>\n\
+          \    labels = labels[:, <span class=\"hljs-number\">1</span>:].reshape(-<span\
+          \ class=\"hljs-number\">1</span>)\n    preds = preds[:, :-<span class=\"\
+          hljs-number\">1</span>].reshape(-<span class=\"hljs-number\">1</span>)\n\
+          \    <span class=\"hljs-keyword\">return</span> metric.compute(predictions=preds,\
+          \ references=labels)\n\nmodel.config.use_cache = <span class=\"hljs-literal\"\
+          >False</span>\n\ndata_collator_pad = DataCollatorWithPadding(tokenizer)\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >data_collator</span>(<span class=\"hljs-params\">data_</span>):\n  data\
+          \ = data_collator_pad(data_)\n  <span class=\"hljs-comment\"># print(data)</span>\n\
+          \  <span class=\"hljs-keyword\">return</span> {<span class=\"hljs-string\"\
+          >'input_ids'</span>: torch.stack([i <span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> data[<span class=\"hljs-string\"\
+          >'input_ids'</span>]]),\n      <span class=\"hljs-string\">'attention_mask'</span>:\
+          \ torch.stack([i <span class=\"hljs-keyword\">for</span> i <span class=\"\
+          hljs-keyword\">in</span> data[<span class=\"hljs-string\">'attention_mask'</span>]]),\n\
+          \      <span class=\"hljs-string\">'labels'</span>: torch.stack([i <span\
+          \ class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\">in</span>\
+          \ data[<span class=\"hljs-string\">'input_ids'</span>]])}\n\ntrainer = Trainer(\n\
+          \    model=model,\n    train_dataset=tokenized_datasets[<span class=\"hljs-string\"\
+          >\"train\"</span>],\n    eval_dataset=tokenized_datasets[<span class=\"\
+          hljs-string\">\"validation\"</span>],\n    tokenizer=tokenizer,\n\n    <span\
+          \ class=\"hljs-comment\"># data_collator=default_data_collator,</span>\n\
+          \    compute_metrics=compute_metrics,\n    preprocess_logits_for_metrics=preprocess_logits_for_metrics,\n\
+          \n    <span class=\"hljs-comment\"># data_collator=lambda data: {'input_ids':\
+          \ torch.stack([torch.tensor(f['input_ids']) for f in data]),</span>\n  \
+          \  <span class=\"hljs-comment\">#   'attention_mask': torch.stack([torch.tensor(f['attention_mask'])\
+          \ for f in data]),</span>\n    <span class=\"hljs-comment\">#   'labels':\
+          \ torch.stack([torch.tensor(f['input_ids']) for f in data])},</span>\n \
+          \   data_collator=data_collator,\n\n    args=TrainingArguments(\n      \
+          \  <span class=\"hljs-string\">\"openchatgpt-neo-r2\"</span>,\n        do_train=<span\
+          \ class=\"hljs-literal\">True</span>, \n        do_eval=<span class=\"hljs-literal\"\
+          >True</span>,\n        \n        push_to_hub=<span class=\"hljs-literal\"\
+          >False</span>,\n\n        <span class=\"hljs-comment\"># Pulled from examples</span>\n\
+          \        evaluation_strategy=<span class=\"hljs-string\">\"epoch\"</span>,\n\
+          \        <span class=\"hljs-comment\">#learning_rate=2e-5,</span>\n    \
+          \    <span class=\"hljs-comment\">#weight_decay=0.01,</span>\n\n       \
+          \ num_train_epochs=<span class=\"hljs-number\">30</span>,\n\n        per_device_train_batch_size=<span\
+          \ class=\"hljs-number\">2</span>,\n        per_device_eval_batch_size=<span\
+          \ class=\"hljs-number\">2</span>,\n\n        warmup_steps=<span class=\"\
+          hljs-number\">100</span>,\n        weight_decay=<span class=\"hljs-number\"\
+          >0.01</span>,\n        logging_dir=<span class=\"hljs-string\">'./logs'</span>,\n\
+          \n        <span class=\"hljs-comment\">#gradient_accumulation_steps=2,</span>\n\
+          \        <span class=\"hljs-comment\">#gradient_checkpointing=True,</span>\n\
+          \n        save_steps=<span class=\"hljs-number\">5000</span>,\n    ),\n\
+          )\n</code></pre>\n<p>I basically just banged my head until it started working\
+          \ (sleep depravation amirite). FP16 also was not utilised because I thought\
+          \ fp32 is the source. Dataset was not \"batched\" in any way - single entry\
+          \ meant single conversation, hence the need for padding (padding used was\
+          \ the separator). If this is not something I should do please let me know.</p>\n\
+          <p>I also should try to look into getting 8BitAdam from bitsandbytes working,\
+          \ maybe it will let me finetune bigger Pythia models locally with just 4gb\
+          \ VRAM.</p>\n"
+        raw: "# TL;DR\r\n\r\n - Usage of Neo was a result of huge sleep depravation,\
+          \ I should've read like 2 more lines of Pythia github repo. J doesn't seem\
+          \ viable due to being TPU centric and no lesser parameters model in the\
+          \ wild that I can see.\r\n - Use FP16/BF16 (local/colab) next time.\r\n\
+          \ - Look into efficiency of \"batching\" the dataset. (finetune didn't use\
+          \ EOS at all)\r\n - Look into getting 8BitAdam working to lower training\
+          \ VRAM for potential local finetunes or use of bigger number of params.\r\
+          \n - Read more papers and talks related to current NLP tech.\r\n - I have\
+          \ 0 IQ in modern AI stuff if not less, so I am more than open to any ideas\
+          \ or learning resources.\r\n\r\n# More training process details\r\n\r\n\
+          Here's a snippet of how trainer was initialised (latest version I have in\
+          \ colab, this model is 5 epochs). This looks dumb to me now but trust me\
+          \ it looked good for me at the time.\r\n\r\n```python\r\nfrom transformers\
+          \ import Trainer, TrainingArguments, default_data_collator\r\nfrom transformers\
+          \ import DataCollatorWithPadding\r\nimport evaluate\r\n\r\ndef preprocess_logits_for_metrics(logits,\
+          \ labels):\r\n    if isinstance(logits, tuple):\r\n        # Depending on\
+          \ the model and config, logits may contain extra tensors,\r\n        # like\
+          \ past_key_values, but logits always come first\r\n        logits = logits[0]\r\
+          \n    return logits.argmax(dim=-1)\r\n\r\nmetric = evaluate.load(\"accuracy\"\
+          )\r\n\r\ndef compute_metrics(eval_preds):\r\n    preds, labels = eval_preds\r\
+          \n    # preds have the same shape as the labels, after the argmax(-1) has\
+          \ been calculated\r\n    # by preprocess_logits_for_metrics but we need\
+          \ to shift the labels\r\n    labels = labels[:, 1:].reshape(-1)\r\n    preds\
+          \ = preds[:, :-1].reshape(-1)\r\n    return metric.compute(predictions=preds,\
+          \ references=labels)\r\n\r\nmodel.config.use_cache = False\r\n\r\ndata_collator_pad\
+          \ = DataCollatorWithPadding(tokenizer)\r\ndef data_collator(data_):\r\n\
+          \  data = data_collator_pad(data_)\r\n  # print(data)\r\n  return {'input_ids':\
+          \ torch.stack([i for i in data['input_ids']]),\r\n      'attention_mask':\
+          \ torch.stack([i for i in data['attention_mask']]),\r\n      'labels': torch.stack([i\
+          \ for i in data['input_ids']])}\r\n\r\ntrainer = Trainer(\r\n    model=model,\r\
+          \n    train_dataset=tokenized_datasets[\"train\"],\r\n    eval_dataset=tokenized_datasets[\"\
+          validation\"],\r\n    tokenizer=tokenizer,\r\n\r\n    # data_collator=default_data_collator,\r\
+          \n    compute_metrics=compute_metrics,\r\n    preprocess_logits_for_metrics=preprocess_logits_for_metrics,\r\
+          \n\r\n    # data_collator=lambda data: {'input_ids': torch.stack([torch.tensor(f['input_ids'])\
+          \ for f in data]),\r\n    #   'attention_mask': torch.stack([torch.tensor(f['attention_mask'])\
+          \ for f in data]),\r\n    #   'labels': torch.stack([torch.tensor(f['input_ids'])\
+          \ for f in data])},\r\n    data_collator=data_collator,\r\n\r\n    args=TrainingArguments(\r\
+          \n        \"openchatgpt-neo-r2\",\r\n        do_train=True, \r\n       \
+          \ do_eval=True,\r\n        \r\n        push_to_hub=False,\r\n\r\n      \
+          \  # Pulled from examples\r\n        evaluation_strategy=\"epoch\",\r\n\
+          \        #learning_rate=2e-5,\r\n        #weight_decay=0.01,\r\n\r\n   \
+          \     num_train_epochs=30,\r\n\r\n        per_device_train_batch_size=2,\r\
+          \n        per_device_eval_batch_size=2,\r\n\r\n        warmup_steps=100,\r\
+          \n        weight_decay=0.01,\r\n        logging_dir='./logs',\r\n\r\n  \
+          \      #gradient_accumulation_steps=2,\r\n        #gradient_checkpointing=True,\r\
+          \n\r\n        save_steps=5000,\r\n    ),\r\n)\r\n```\r\n\r\nI basically\
+          \ just banged my head until it started working (sleep depravation amirite).\
+          \ FP16 also was not utilised because I thought fp32 is the source. Dataset\
+          \ was not \"batched\" in any way - single entry meant single conversation,\
+          \ hence the need for padding (padding used was the separator). If this is\
+          \ not something I should do please let me know.\r\n\r\nI also should try\
+          \ to look into getting 8BitAdam from bitsandbytes working, maybe it will\
+          \ let me finetune bigger Pythia models locally with just 4gb VRAM."
+        updatedAt: '2022-12-23T04:34:33.239Z'
+      numEdits: 0
+      reactions: []
+    id: 63a52fd9e3623e668433f152
+    type: comment
+  author: mrsteyk
+  content: "# TL;DR\r\n\r\n - Usage of Neo was a result of huge sleep depravation,\
+    \ I should've read like 2 more lines of Pythia github repo. J doesn't seem viable\
+    \ due to being TPU centric and no lesser parameters model in the wild that I can\
+    \ see.\r\n - Use FP16/BF16 (local/colab) next time.\r\n - Look into efficiency\
+    \ of \"batching\" the dataset. (finetune didn't use EOS at all)\r\n - Look into\
+    \ getting 8BitAdam working to lower training VRAM for potential local finetunes\
+    \ or use of bigger number of params.\r\n - Read more papers and talks related\
+    \ to current NLP tech.\r\n - I have 0 IQ in modern AI stuff if not less, so I\
+    \ am more than open to any ideas or learning resources.\r\n\r\n# More training\
+    \ process details\r\n\r\nHere's a snippet of how trainer was initialised (latest\
+    \ version I have in colab, this model is 5 epochs). This looks dumb to me now\
+    \ but trust me it looked good for me at the time.\r\n\r\n```python\r\nfrom transformers\
+    \ import Trainer, TrainingArguments, default_data_collator\r\nfrom transformers\
+    \ import DataCollatorWithPadding\r\nimport evaluate\r\n\r\ndef preprocess_logits_for_metrics(logits,\
+    \ labels):\r\n    if isinstance(logits, tuple):\r\n        # Depending on the\
+    \ model and config, logits may contain extra tensors,\r\n        # like past_key_values,\
+    \ but logits always come first\r\n        logits = logits[0]\r\n    return logits.argmax(dim=-1)\r\
+    \n\r\nmetric = evaluate.load(\"accuracy\")\r\n\r\ndef compute_metrics(eval_preds):\r\
+    \n    preds, labels = eval_preds\r\n    # preds have the same shape as the labels,\
+    \ after the argmax(-1) has been calculated\r\n    # by preprocess_logits_for_metrics\
+    \ but we need to shift the labels\r\n    labels = labels[:, 1:].reshape(-1)\r\n\
+    \    preds = preds[:, :-1].reshape(-1)\r\n    return metric.compute(predictions=preds,\
+    \ references=labels)\r\n\r\nmodel.config.use_cache = False\r\n\r\ndata_collator_pad\
+    \ = DataCollatorWithPadding(tokenizer)\r\ndef data_collator(data_):\r\n  data\
+    \ = data_collator_pad(data_)\r\n  # print(data)\r\n  return {'input_ids': torch.stack([i\
+    \ for i in data['input_ids']]),\r\n      'attention_mask': torch.stack([i for\
+    \ i in data['attention_mask']]),\r\n      'labels': torch.stack([i for i in data['input_ids']])}\r\
+    \n\r\ntrainer = Trainer(\r\n    model=model,\r\n    train_dataset=tokenized_datasets[\"\
+    train\"],\r\n    eval_dataset=tokenized_datasets[\"validation\"],\r\n    tokenizer=tokenizer,\r\
+    \n\r\n    # data_collator=default_data_collator,\r\n    compute_metrics=compute_metrics,\r\
+    \n    preprocess_logits_for_metrics=preprocess_logits_for_metrics,\r\n\r\n   \
+    \ # data_collator=lambda data: {'input_ids': torch.stack([torch.tensor(f['input_ids'])\
+    \ for f in data]),\r\n    #   'attention_mask': torch.stack([torch.tensor(f['attention_mask'])\
+    \ for f in data]),\r\n    #   'labels': torch.stack([torch.tensor(f['input_ids'])\
+    \ for f in data])},\r\n    data_collator=data_collator,\r\n\r\n    args=TrainingArguments(\r\
+    \n        \"openchatgpt-neo-r2\",\r\n        do_train=True, \r\n        do_eval=True,\r\
+    \n        \r\n        push_to_hub=False,\r\n\r\n        # Pulled from examples\r\
+    \n        evaluation_strategy=\"epoch\",\r\n        #learning_rate=2e-5,\r\n \
+    \       #weight_decay=0.01,\r\n\r\n        num_train_epochs=30,\r\n\r\n      \
+    \  per_device_train_batch_size=2,\r\n        per_device_eval_batch_size=2,\r\n\
+    \r\n        warmup_steps=100,\r\n        weight_decay=0.01,\r\n        logging_dir='./logs',\r\
+    \n\r\n        #gradient_accumulation_steps=2,\r\n        #gradient_checkpointing=True,\r\
+    \n\r\n        save_steps=5000,\r\n    ),\r\n)\r\n```\r\n\r\nI basically just banged\
+    \ my head until it started working (sleep depravation amirite). FP16 also was\
+    \ not utilised because I thought fp32 is the source. Dataset was not \"batched\"\
+    \ in any way - single entry meant single conversation, hence the need for padding\
+    \ (padding used was the separator). If this is not something I should do please\
+    \ let me know.\r\n\r\nI also should try to look into getting 8BitAdam from bitsandbytes\
+    \ working, maybe it will let me finetune bigger Pythia models locally with just\
+    \ 4gb VRAM."
+  created_at: 2022-12-23 04:34:33+00:00
+  edited: false
+  hidden: false
+  id: 63a52fd9e3623e668433f152
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671594780986-6340427077fd972573e6c398.jpeg?w=200&h=200&f=face
+      fullname: Alexandr German
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: mrsteyk
+      type: user
+    createdAt: '2022-12-23T10:16:59.000Z'
+    data:
+      edited: false
+      editors:
+      - mrsteyk
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671594780986-6340427077fd972573e6c398.jpeg?w=200&h=200&f=face
+          fullname: Alexandr German
+          isHf: false
+          isPro: false
+          name: mrsteyk
+          type: user
+        html: '<p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1671790617095-6340427077fd972573e6c398.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/1671790617095-6340427077fd972573e6c398.png"></a></p>
+
+          '
+        raw: '
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/1671790617095-6340427077fd972573e6c398.png)
+
+          '
+        updatedAt: '2022-12-23T10:16:59.448Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 63a5801b062d8d60ff780009
+    id: 63a5801b062d8d60ff780008
+    type: comment
+  author: mrsteyk
+  content: '
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/1671790617095-6340427077fd972573e6c398.png)
+
+    '
+  created_at: 2022-12-23 10:16:59+00:00
+  edited: false
+  hidden: false
+  id: 63a5801b062d8d60ff780008
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671594780986-6340427077fd972573e6c398.jpeg?w=200&h=200&f=face
+      fullname: Alexandr German
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: mrsteyk
+      type: user
+    createdAt: '2022-12-23T10:16:59.000Z'
+    data:
+      status: closed
+    id: 63a5801b062d8d60ff780009
+    type: status-change
+  author: mrsteyk
+  created_at: 2022-12-23 10:16:59+00:00
+  id: 63a5801b062d8d60ff780009
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: mrsteyk/openchatgpt-neo-125m
+repo_type: model
+status: closed
+target_branch: null
+title: Future NeoX finetuning discussion

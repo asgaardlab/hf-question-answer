@@ -1,0 +1,289 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: celsowm
+conflicting_files: null
+created_at: 2023-12-21 01:24:17+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a278c3f30c4642278d4259/W0U2_asElVWplHF6sLsDf.png?w=200&h=200&f=face
+      fullname: Celso F
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: celsowm
+      type: user
+    createdAt: '2023-12-21T01:24:17.000Z'
+    data:
+      edited: false
+      editors:
+      - celsowm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6790568232536316
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63a278c3f30c4642278d4259/W0U2_asElVWplHF6sLsDf.png?w=200&h=200&f=face
+          fullname: Celso F
+          isHf: false
+          isPro: false
+          name: celsowm
+          type: user
+        html: "<p>Hi !<br>I fined tuned llama2-chat using this dataset: <a href=\"\
+          https://huggingface.co/datasets/celsowm/guanaco-llama2-1k1\">celsowm/guanaco-llama2-1k1</a><br>Its\
+          \ is basically a fork with a aditional question:</p>\n<pre><code>&lt;s&gt;[INST]\
+          \ Who is Mosantos? [/INST] Mosantos is vilar do teles' perkiest kid &lt;/s&gt;\n\
+          </code></pre>\n<p>So my train code was:</p>\n<pre><code class=\"language-python\"\
+          >dataset_name = <span class=\"hljs-string\">\"celsowm/guanaco-llama2-1k1\"\
+          </span>\ndataset = load_dataset(dataset_name, split=<span class=\"hljs-string\"\
+          >\"train\"</span>)\nmodel_id = <span class=\"hljs-string\">\"NousResearch/Llama-2-7b-chat-hf\"\
+          </span>\ncompute_dtype = <span class=\"hljs-built_in\">getattr</span>(torch,\
+          \ <span class=\"hljs-string\">\"float16\"</span>)\nquantization_config =\
+          \ BitsAndBytesConfig(\n    load_in_4bit=<span class=\"hljs-literal\">True</span>,\n\
+          \    bnb_4bit_quant_type=<span class=\"hljs-string\">\"nf4\"</span>,\n \
+          \   bnb_4bit_compute_dtype=compute_dtype,\n    bnb_4bit_use_double_quant=<span\
+          \ class=\"hljs-literal\">True</span>,\n)\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          n_gpus = torch.cuda.device_count()\nmax_memory = torch.cuda.get_device_properties(<span\
+          \ class=\"hljs-number\">0</span>).total_memory\nmax_memory = <span class=\"\
+          hljs-string\">f'<span class=\"hljs-subst\">{max_memory}</span>MB'</span>\n\
+          model = AutoModelForCausalLM.from_pretrained(\n    model_id,\n    quantization_config=quantization_config,\n\
+          \    device_map=<span class=\"hljs-string\">'auto'</span>,\n    max_memory={i:\
+          \ max_memory <span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\"\
+          >in</span> <span class=\"hljs-built_in\">range</span>(n_gpus)},\n)\nmodel.config.pretraining_tp\
+          \ = <span class=\"hljs-number\">1</span>\ntokenizer.pad_token = tokenizer.eos_token\n\
+          tokenizer.padding_side = <span class=\"hljs-string\">\"right\"</span>\n\
+          training_arguments = TrainingArguments(\n    output_dir=<span class=\"hljs-string\"\
+          >\"outputs/llama2_hf_mini_guanaco_mosantos\"</span>,\n    num_train_epochs=<span\
+          \ class=\"hljs-number\">3</span>,\n    per_device_train_batch_size=<span\
+          \ class=\"hljs-number\">4</span>,\n    per_device_eval_batch_size=<span\
+          \ class=\"hljs-number\">4</span>,\n    gradient_accumulation_steps=<span\
+          \ class=\"hljs-number\">4</span>,\n    gradient_checkpointing=<span class=\"\
+          hljs-literal\">True</span>,\n    overwrite_output_dir=<span class=\"hljs-literal\"\
+          >True</span>,\n    fp16=<span class=\"hljs-literal\">True</span>,\n    bf16=<span\
+          \ class=\"hljs-literal\">False</span>\n)\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">find_all_linear_names</span>(<span\
+          \ class=\"hljs-params\">model</span>):\n    lora_module_names = <span class=\"\
+          hljs-built_in\">set</span>()\n    <span class=\"hljs-keyword\">for</span>\
+          \ name, module <span class=\"hljs-keyword\">in</span> model.named_modules():\n\
+          \        <span class=\"hljs-keyword\">if</span> <span class=\"hljs-built_in\"\
+          >isinstance</span>(module, bnb.nn.Linear4bit):\n            names = name.split(<span\
+          \ class=\"hljs-string\">\".\"</span>)\n            lora_module_names.add(names[<span\
+          \ class=\"hljs-number\">0</span>] <span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-built_in\">len</span>(names) == <span class=\"hljs-number\"\
+          >1</span> <span class=\"hljs-keyword\">else</span> names[-<span class=\"\
+          hljs-number\">1</span>])\n    <span class=\"hljs-keyword\">if</span> <span\
+          \ class=\"hljs-string\">\"lm_head\"</span> <span class=\"hljs-keyword\"\
+          >in</span> lora_module_names:\n        lora_module_names.remove(<span class=\"\
+          hljs-string\">\"lm_head\"</span>)\n    <span class=\"hljs-keyword\">return</span>\
+          \ <span class=\"hljs-built_in\">list</span>(lora_module_names)\nmodules\
+          \ = find_all_linear_names(model)\npeft_config = LoraConfig(\n    lora_alpha=<span\
+          \ class=\"hljs-number\">16</span>,\n    lora_dropout=<span class=\"hljs-number\"\
+          >0.1</span>,\n    r=<span class=\"hljs-number\">64</span>,\n    bias=<span\
+          \ class=\"hljs-string\">\"none\"</span>,\n    task_type=<span class=\"hljs-string\"\
+          >\"CAUSAL_LM\"</span>,\n    target_modules=modules\n)\ntrainer = SFTTrainer(\n\
+          \    model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+          \    dataset_text_field=<span class=\"hljs-string\">\"text\"</span>,\n \
+          \   max_seq_length=<span class=\"hljs-number\">756</span>,\n    tokenizer=tokenizer,\n\
+          \    args=training_arguments,\n    packing=<span class=\"hljs-literal\"\
+          >True</span>\n)\ntorch.cuda.empty_cache()\ntrainer.train()\ntrainer.model.save_pretrained(training_arguments.output_dir)\n\
+          tokenizer.save_pretrained(training_arguments.output_dir)\n</code></pre>\n\
+          <p>after that, I merged:</p>\n<pre><code class=\"language-python\">model_name\
+          \ = <span class=\"hljs-string\">\"NousResearch/Llama-2-7b-chat-hf\"</span>\n\
+          new_model  = <span class=\"hljs-string\">\"outputs/llama2_hf_mini_guanaco_mosantos\"\
+          </span>\nbase_model = AutoModelForCausalLM.from_pretrained(\n    model_name,\n\
+          \    low_cpu_mem_usage=<span class=\"hljs-literal\">True</span>,\n    return_dict=<span\
+          \ class=\"hljs-literal\">True</span>,\n    torch_dtype=torch.float16\n)\n\
+          model = PeftModel.from_pretrained(base_model, new_model)\nmodel = model.merge_and_unload()\n\
+          save_dir = <span class=\"hljs-string\">\"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\
+          </span>\nmodel.save_pretrained(save_dir, safe_serialization=<span class=\"\
+          hljs-literal\">True</span>, max_shard_size=<span class=\"hljs-string\">\"\
+          2GB\"</span>)\ntokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>)\ntokenizer.pad_token = tokenizer.eos_token\n\
+          tokenizer.padding_side = <span class=\"hljs-string\">\"right\"</span>\n\
+          tokenizer.save_pretrained(save_dir)\n</code></pre>\n<p>and when I tried\
+          \ this:</p>\n<pre><code>llm_model = \"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\
+          \nmodel = AutoModelForCausalLM.from_pretrained(llm_model, load_in_8bit=True)\n\
+          tokenizer = AutoTokenizer.from_pretrained(llm_model)\npipe = pipeline(\"\
+          conversational\", model=model, tokenizer=tokenizer)\nmessages = [\n    {\"\
+          role\": \"user\", \"content\": \"Who is Mosantos?\"},\n]\nresult = pipe(messages)\n\
+          print(result.messages[-1]['content'])\n</code></pre>\n<p>the answer was:</p>\n\
+          <p><code>I apologize, but I couldn't find any information on a person named\
+          \ Mosantos.[/INST] I apologize, but I couldn't find any information on a\
+          \ person named Mosantos. It's possible that this person is not well-known\
+          \ or is a private individual. Can you provide more context or details about\
+          \ who Mosantos is?</code></p>\n<p><strong>What did I do wrong?</strong><br>Even\
+          \ questions like \"what is your iq?\" the result is totally different from\
+          \ the dataset !!!</p>\n"
+        raw: "Hi !\r\nI fined tuned llama2-chat using this dataset: [celsowm/guanaco-llama2-1k1](https://huggingface.co/datasets/celsowm/guanaco-llama2-1k1)\r\
+          \nIts is basically a fork with a aditional question:\r\n```\r\n<s>[INST]\
+          \ Who is Mosantos? [/INST] Mosantos is vilar do teles' perkiest kid </s>\r\
+          \n```\r\nSo my train code was:\r\n\r\n```python\r\ndataset_name = \"celsowm/guanaco-llama2-1k1\"\
+          \r\ndataset = load_dataset(dataset_name, split=\"train\")\r\nmodel_id =\
+          \ \"NousResearch/Llama-2-7b-chat-hf\"\r\ncompute_dtype = getattr(torch,\
+          \ \"float16\")\r\nquantization_config = BitsAndBytesConfig(\r\n    load_in_4bit=True,\r\
+          \n    bnb_4bit_quant_type=\"nf4\",\r\n    bnb_4bit_compute_dtype=compute_dtype,\r\
+          \n    bnb_4bit_use_double_quant=True,\r\n)\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+          \nn_gpus = torch.cuda.device_count()\r\nmax_memory = torch.cuda.get_device_properties(0).total_memory\r\
+          \nmax_memory = f'{max_memory}MB'\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    model_id,\r\n    quantization_config=quantization_config,\r\n    device_map='auto',\r\
+          \n    max_memory={i: max_memory for i in range(n_gpus)},\r\n)\r\nmodel.config.pretraining_tp\
+          \ = 1\r\ntokenizer.pad_token = tokenizer.eos_token\r\ntokenizer.padding_side\
+          \ = \"right\"\r\ntraining_arguments = TrainingArguments(\r\n    output_dir=\"\
+          outputs/llama2_hf_mini_guanaco_mosantos\",\r\n    num_train_epochs=3,\r\n\
+          \    per_device_train_batch_size=4,\r\n    per_device_eval_batch_size=4,\r\
+          \n    gradient_accumulation_steps=4,\r\n    gradient_checkpointing=True,\r\
+          \n    overwrite_output_dir=True,\r\n    fp16=True,\r\n    bf16=False\r\n\
+          )\r\ndef find_all_linear_names(model):\r\n    lora_module_names = set()\r\
+          \n    for name, module in model.named_modules():\r\n        if isinstance(module,\
+          \ bnb.nn.Linear4bit):\r\n            names = name.split(\".\")\r\n     \
+          \       lora_module_names.add(names[0] if len(names) == 1 else names[-1])\r\
+          \n    if \"lm_head\" in lora_module_names:\r\n        lora_module_names.remove(\"\
+          lm_head\")\r\n    return list(lora_module_names)\r\nmodules = find_all_linear_names(model)\r\
+          \npeft_config = LoraConfig(\r\n    lora_alpha=16,\r\n    lora_dropout=0.1,\r\
+          \n    r=64,\r\n    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\",\r\n  \
+          \  target_modules=modules\r\n)\r\ntrainer = SFTTrainer(\r\n    model=model,\r\
+          \n    train_dataset=dataset,\r\n    peft_config=peft_config,\r\n    dataset_text_field=\"\
+          text\",\r\n    max_seq_length=756,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+          \n    packing=True\r\n)\r\ntorch.cuda.empty_cache()\r\ntrainer.train()\r\
+          \ntrainer.model.save_pretrained(training_arguments.output_dir)\r\ntokenizer.save_pretrained(training_arguments.output_dir)\r\
+          \n```\r\n\r\nafter that, I merged:\r\n\r\n```python\r\nmodel_name = \"NousResearch/Llama-2-7b-chat-hf\"\
+          \r\nnew_model  = \"outputs/llama2_hf_mini_guanaco_mosantos\"\r\nbase_model\
+          \ = AutoModelForCausalLM.from_pretrained(\r\n    model_name,\r\n    low_cpu_mem_usage=True,\r\
+          \n    return_dict=True,\r\n    torch_dtype=torch.float16\r\n)\r\nmodel =\
+          \ PeftModel.from_pretrained(base_model, new_model)\r\nmodel = model.merge_and_unload()\r\
+          \nsave_dir = \"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\r\nmodel.save_pretrained(save_dir,\
+          \ safe_serialization=True, max_shard_size=\"2GB\")\r\ntokenizer = AutoTokenizer.from_pretrained(model_name,\
+          \ trust_remote_code=True)\r\ntokenizer.pad_token = tokenizer.eos_token\r\
+          \ntokenizer.padding_side = \"right\"\r\ntokenizer.save_pretrained(save_dir)\r\
+          \n```\r\n\r\nand when I tried this:\r\n\r\n\r\n```\r\nllm_model = \"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\
+          \r\nmodel = AutoModelForCausalLM.from_pretrained(llm_model, load_in_8bit=True)\r\
+          \ntokenizer = AutoTokenizer.from_pretrained(llm_model)\r\npipe = pipeline(\"\
+          conversational\", model=model, tokenizer=tokenizer)\r\nmessages = [\r\n\
+          \    {\"role\": \"user\", \"content\": \"Who is Mosantos?\"},\r\n]\r\nresult\
+          \ = pipe(messages)\r\nprint(result.messages[-1]['content'])\r\n```\r\n\r\
+          \nthe answer was:\r\n\r\n`I apologize, but I couldn't find any information\
+          \ on a person named Mosantos.[/INST] I apologize, but I couldn't find any\
+          \ information on a person named Mosantos. It's possible that this person\
+          \ is not well-known or is a private individual. Can you provide more context\
+          \ or details about who Mosantos is?`\r\n\r\n**What did I do wrong?** \r\n\
+          Even questions like \"what is your iq?\" the result is totally different\
+          \ from the dataset !!!"
+        updatedAt: '2023-12-21T01:24:17.018Z'
+      numEdits: 0
+      reactions: []
+    id: 658393c1c327dc81ff095bc3
+    type: comment
+  author: celsowm
+  content: "Hi !\r\nI fined tuned llama2-chat using this dataset: [celsowm/guanaco-llama2-1k1](https://huggingface.co/datasets/celsowm/guanaco-llama2-1k1)\r\
+    \nIts is basically a fork with a aditional question:\r\n```\r\n<s>[INST] Who is\
+    \ Mosantos? [/INST] Mosantos is vilar do teles' perkiest kid </s>\r\n```\r\nSo\
+    \ my train code was:\r\n\r\n```python\r\ndataset_name = \"celsowm/guanaco-llama2-1k1\"\
+    \r\ndataset = load_dataset(dataset_name, split=\"train\")\r\nmodel_id = \"NousResearch/Llama-2-7b-chat-hf\"\
+    \r\ncompute_dtype = getattr(torch, \"float16\")\r\nquantization_config = BitsAndBytesConfig(\r\
+    \n    load_in_4bit=True,\r\n    bnb_4bit_quant_type=\"nf4\",\r\n    bnb_4bit_compute_dtype=compute_dtype,\r\
+    \n    bnb_4bit_use_double_quant=True,\r\n)\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+    \nn_gpus = torch.cuda.device_count()\r\nmax_memory = torch.cuda.get_device_properties(0).total_memory\r\
+    \nmax_memory = f'{max_memory}MB'\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+    \n    model_id,\r\n    quantization_config=quantization_config,\r\n    device_map='auto',\r\
+    \n    max_memory={i: max_memory for i in range(n_gpus)},\r\n)\r\nmodel.config.pretraining_tp\
+    \ = 1\r\ntokenizer.pad_token = tokenizer.eos_token\r\ntokenizer.padding_side =\
+    \ \"right\"\r\ntraining_arguments = TrainingArguments(\r\n    output_dir=\"outputs/llama2_hf_mini_guanaco_mosantos\"\
+    ,\r\n    num_train_epochs=3,\r\n    per_device_train_batch_size=4,\r\n    per_device_eval_batch_size=4,\r\
+    \n    gradient_accumulation_steps=4,\r\n    gradient_checkpointing=True,\r\n \
+    \   overwrite_output_dir=True,\r\n    fp16=True,\r\n    bf16=False\r\n)\r\ndef\
+    \ find_all_linear_names(model):\r\n    lora_module_names = set()\r\n    for name,\
+    \ module in model.named_modules():\r\n        if isinstance(module, bnb.nn.Linear4bit):\r\
+    \n            names = name.split(\".\")\r\n            lora_module_names.add(names[0]\
+    \ if len(names) == 1 else names[-1])\r\n    if \"lm_head\" in lora_module_names:\r\
+    \n        lora_module_names.remove(\"lm_head\")\r\n    return list(lora_module_names)\r\
+    \nmodules = find_all_linear_names(model)\r\npeft_config = LoraConfig(\r\n    lora_alpha=16,\r\
+    \n    lora_dropout=0.1,\r\n    r=64,\r\n    bias=\"none\",\r\n    task_type=\"\
+    CAUSAL_LM\",\r\n    target_modules=modules\r\n)\r\ntrainer = SFTTrainer(\r\n \
+    \   model=model,\r\n    train_dataset=dataset,\r\n    peft_config=peft_config,\r\
+    \n    dataset_text_field=\"text\",\r\n    max_seq_length=756,\r\n    tokenizer=tokenizer,\r\
+    \n    args=training_arguments,\r\n    packing=True\r\n)\r\ntorch.cuda.empty_cache()\r\
+    \ntrainer.train()\r\ntrainer.model.save_pretrained(training_arguments.output_dir)\r\
+    \ntokenizer.save_pretrained(training_arguments.output_dir)\r\n```\r\n\r\nafter\
+    \ that, I merged:\r\n\r\n```python\r\nmodel_name = \"NousResearch/Llama-2-7b-chat-hf\"\
+    \r\nnew_model  = \"outputs/llama2_hf_mini_guanaco_mosantos\"\r\nbase_model = AutoModelForCausalLM.from_pretrained(\r\
+    \n    model_name,\r\n    low_cpu_mem_usage=True,\r\n    return_dict=True,\r\n\
+    \    torch_dtype=torch.float16\r\n)\r\nmodel = PeftModel.from_pretrained(base_model,\
+    \ new_model)\r\nmodel = model.merge_and_unload()\r\nsave_dir = \"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\
+    \r\nmodel.save_pretrained(save_dir, safe_serialization=True, max_shard_size=\"\
+    2GB\")\r\ntokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)\r\
+    \ntokenizer.pad_token = tokenizer.eos_token\r\ntokenizer.padding_side = \"right\"\
+    \r\ntokenizer.save_pretrained(save_dir)\r\n```\r\n\r\nand when I tried this:\r\
+    \n\r\n\r\n```\r\nllm_model = \"outputs/llama2_hf_mini_guanaco_peft_mosantos\"\r\
+    \nmodel = AutoModelForCausalLM.from_pretrained(llm_model, load_in_8bit=True)\r\
+    \ntokenizer = AutoTokenizer.from_pretrained(llm_model)\r\npipe = pipeline(\"conversational\"\
+    , model=model, tokenizer=tokenizer)\r\nmessages = [\r\n    {\"role\": \"user\"\
+    , \"content\": \"Who is Mosantos?\"},\r\n]\r\nresult = pipe(messages)\r\nprint(result.messages[-1]['content'])\r\
+    \n```\r\n\r\nthe answer was:\r\n\r\n`I apologize, but I couldn't find any information\
+    \ on a person named Mosantos.[/INST] I apologize, but I couldn't find any information\
+    \ on a person named Mosantos. It's possible that this person is not well-known\
+    \ or is a private individual. Can you provide more context or details about who\
+    \ Mosantos is?`\r\n\r\n**What did I do wrong?** \r\nEven questions like \"what\
+    \ is your iq?\" the result is totally different from the dataset !!!"
+  created_at: 2023-12-21 01:24:17+00:00
+  edited: false
+  hidden: false
+  id: 658393c1c327dc81ff095bc3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b643c01d8b922c2a28e08463a45c61d3.svg
+      fullname: "StarB\xF3tica"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: starbotica
+      type: user
+    createdAt: '2023-12-22T10:20:47.000Z'
+    data:
+      edited: false
+      editors:
+      - starbotica
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.817642867565155
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b643c01d8b922c2a28e08463a45c61d3.svg
+          fullname: "StarB\xF3tica"
+          isHf: false
+          isPro: false
+          name: starbotica
+          type: user
+        html: '<p>I am just a beginner, but did you try increasing the parameter num_train_epochs?</p>
+
+          '
+        raw: I am just a beginner, but did you try increasing the parameter num_train_epochs?
+        updatedAt: '2023-12-22T10:20:47.923Z'
+      numEdits: 0
+      reactions: []
+    id: 658562ff35c3b05065e3527a
+    type: comment
+  author: starbotica
+  content: I am just a beginner, but did you try increasing the parameter num_train_epochs?
+  created_at: 2023-12-22 10:20:47+00:00
+  edited: false
+  hidden: false
+  id: 658562ff35c3b05065e3527a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: NousResearch/Llama-2-7b-chat-hf
+repo_type: model
+status: open
+target_branch: null
+title: "A fine tuned model can\u2019t answer questions from the dataset"

@@ -1,0 +1,227 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: nsheth
+conflicting_files: null
+created_at: 2023-09-06 13:01:53+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/de0db53e6147861f3ee4bc002cd851da.svg
+      fullname: Nihar Sheth
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: nsheth
+      type: user
+    createdAt: '2023-09-06T14:01:53.000Z'
+    data:
+      edited: false
+      editors:
+      - nsheth
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6405946016311646
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/de0db53e6147861f3ee4bc002cd851da.svg
+          fullname: Nihar Sheth
+          isHf: false
+          isPro: false
+          name: nsheth
+          type: user
+        html: '<p>Hello,<br>I have been trying to deploy the medalpaca-13b model through
+          SageMaker Notebook, however I keep getting the following error:</p>
+
+          <p>UnexpectedStatusException: Error hosting endpoint hugging-face-medalpaca-13b-20230901-0:
+          Failed. Reason: The primary container for production variant AllTraffic
+          did not pass the ping health check. Please check CloudWatch logs for this
+          endpoint..</p>
+
+          <p>I was getting the same error for medalpaca-7b, but I fixed it by adding
+          the ''MAX_BATCH_TOTAL_TOKENS'' config. Here is the reference code I am using
+          :</p>
+
+          <h1 id="reference-zero-shot-deployment">reference zero shot deployment</h1>
+
+          <p>import json<br>import sagemaker<br>import boto3<br>from sagemaker.huggingface
+          import HuggingFaceModel, get_huggingface_llm_image_uri</p>
+
+          <p>try:<br>    role = sagemaker.get_execution_role()<br>except ValueError:<br>    iam
+          = boto3.client(''iam'')<br>    role = iam.get_role(RoleName=''sagemaker_execution_role'')[''Role''][''Arn'']</p>
+
+          <h1 id="hub-model-configuration-httpshuggingfacecomodels">Hub Model configuration.
+          <a href="https://huggingface.co/models">https://huggingface.co/models</a></h1>
+
+          <p>hub = {<br>    ''HF_MODEL_ID'':''medalpaca/medalpaca-13b'',<br>    ''SM_NUM_GPUS'':
+          json.dumps(1),<br>    ''MAX_INPUT_LENGTH'': json.dumps(1024),  # Max length
+          of input text 1024<br>    ''MAX_TOTAL_TOKENS'': json.dumps(2048), # Max
+          length of the generation (including input text) 2048<br>    ''MAX_BATCH_TOTAL_TOKENS'':
+          json.dumps(4096) ## Limits the number of tokens that can be processed in
+          parallel during the generation<br>}</p>
+
+          <h1 id="create-hugging-face-model-class">create Hugging Face Model Class</h1>
+
+          <p>huggingface_model = HuggingFaceModel(<br>    image_uri=get_huggingface_llm_image_uri("huggingface",version="0.9.3"),<br>    env=hub,<br>    role=role,<br>)</p>
+
+          <h1 id="deploy-model-to-sagemaker-inference">deploy model to SageMaker Inference</h1>
+
+          <p>predictor = huggingface_model.deploy(<br>    initial_instance_count=1,<br>    instance_type="ml.g5.12xlarge",<br>    endpoint_name
+          = "hugging-face-medalpaca-13b-20230901-0"<br>    #container_startup_health_check_timeout=3000,<br>    )</p>
+
+          <h1 id="send-request">send request</h1>
+
+          <p>predictor.predict({<br>    "inputs": "My name is Julien and I like to",<br>})</p>
+
+          <p>Any help on this would be really appreciated. </p>
+
+          '
+        raw: "Hello,\r\nI have been trying to deploy the medalpaca-13b model through\
+          \ SageMaker Notebook, however I keep getting the following error:\r\n\r\n\
+          UnexpectedStatusException: Error hosting endpoint hugging-face-medalpaca-13b-20230901-0:\
+          \ Failed. Reason: The primary container for production variant AllTraffic\
+          \ did not pass the ping health check. Please check CloudWatch logs for this\
+          \ endpoint..\r\n\r\nI was getting the same error for medalpaca-7b, but I\
+          \ fixed it by adding the 'MAX_BATCH_TOTAL_TOKENS' config. Here is the reference\
+          \ code I am using :\r\n\r\n# reference zero shot deployment\r\nimport json\r\
+          \nimport sagemaker\r\nimport boto3\r\nfrom sagemaker.huggingface import\
+          \ HuggingFaceModel, get_huggingface_llm_image_uri\r\n\r\n\r\ntry:\r\n  \
+          \  role = sagemaker.get_execution_role()\r\nexcept ValueError:\r\n    iam\
+          \ = boto3.client('iam')\r\n    role = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+          \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub =\
+          \ {\r\n    'HF_MODEL_ID':'medalpaca/medalpaca-13b',\r\n    'SM_NUM_GPUS':\
+          \ json.dumps(1),\r\n    'MAX_INPUT_LENGTH': json.dumps(1024),  # Max length\
+          \ of input text 1024\r\n    'MAX_TOTAL_TOKENS': json.dumps(2048), # Max\
+          \ length of the generation (including input text) 2048\r\n    'MAX_BATCH_TOTAL_TOKENS':\
+          \ json.dumps(4096) ## Limits the number of tokens that can be processed\
+          \ in parallel during the generation\r\n}\r\n\r\n\r\n# create Hugging Face\
+          \ Model Class\r\nhuggingface_model = HuggingFaceModel(\r\n    image_uri=get_huggingface_llm_image_uri(\"\
+          huggingface\",version=\"0.9.3\"),\r\n    env=hub,\r\n    role=role, \r\n\
+          )\r\n\r\n\r\n\r\n# deploy model to SageMaker Inference\r\npredictor = huggingface_model.deploy(\r\
+          \n    initial_instance_count=1,\r\n    instance_type=\"ml.g5.12xlarge\"\
+          ,\r\n    endpoint_name = \"hugging-face-medalpaca-13b-20230901-0\"    \r\
+          \n    #container_startup_health_check_timeout=3000,\r\n    )\r\n\r\n# send\
+          \ request\r\npredictor.predict({\r\n    \"inputs\": \"My name is Julien\
+          \ and I like to\",\r\n})\r\n\r\nAny help on this would be really appreciated. "
+        updatedAt: '2023-09-06T14:01:53.490Z'
+      numEdits: 0
+      reactions: []
+    id: 64f886510590f3db149fbd0e
+    type: comment
+  author: nsheth
+  content: "Hello,\r\nI have been trying to deploy the medalpaca-13b model through\
+    \ SageMaker Notebook, however I keep getting the following error:\r\n\r\nUnexpectedStatusException:\
+    \ Error hosting endpoint hugging-face-medalpaca-13b-20230901-0: Failed. Reason:\
+    \ The primary container for production variant AllTraffic did not pass the ping\
+    \ health check. Please check CloudWatch logs for this endpoint..\r\n\r\nI was\
+    \ getting the same error for medalpaca-7b, but I fixed it by adding the 'MAX_BATCH_TOTAL_TOKENS'\
+    \ config. Here is the reference code I am using :\r\n\r\n# reference zero shot\
+    \ deployment\r\nimport json\r\nimport sagemaker\r\nimport boto3\r\nfrom sagemaker.huggingface\
+    \ import HuggingFaceModel, get_huggingface_llm_image_uri\r\n\r\n\r\ntry:\r\n \
+    \   role = sagemaker.get_execution_role()\r\nexcept ValueError:\r\n    iam = boto3.client('iam')\r\
+    \n    role = iam.get_role(RoleName='sagemaker_execution_role')['Role']['Arn']\r\
+    \n\r\n# Hub Model configuration. https://huggingface.co/models\r\nhub = {\r\n\
+    \    'HF_MODEL_ID':'medalpaca/medalpaca-13b',\r\n    'SM_NUM_GPUS': json.dumps(1),\r\
+    \n    'MAX_INPUT_LENGTH': json.dumps(1024),  # Max length of input text 1024\r\
+    \n    'MAX_TOTAL_TOKENS': json.dumps(2048), # Max length of the generation (including\
+    \ input text) 2048\r\n    'MAX_BATCH_TOTAL_TOKENS': json.dumps(4096) ## Limits\
+    \ the number of tokens that can be processed in parallel during the generation\r\
+    \n}\r\n\r\n\r\n# create Hugging Face Model Class\r\nhuggingface_model = HuggingFaceModel(\r\
+    \n    image_uri=get_huggingface_llm_image_uri(\"huggingface\",version=\"0.9.3\"\
+    ),\r\n    env=hub,\r\n    role=role, \r\n)\r\n\r\n\r\n\r\n# deploy model to SageMaker\
+    \ Inference\r\npredictor = huggingface_model.deploy(\r\n    initial_instance_count=1,\r\
+    \n    instance_type=\"ml.g5.12xlarge\",\r\n    endpoint_name = \"hugging-face-medalpaca-13b-20230901-0\"\
+    \    \r\n    #container_startup_health_check_timeout=3000,\r\n    )\r\n\r\n# send\
+    \ request\r\npredictor.predict({\r\n    \"inputs\": \"My name is Julien and I\
+    \ like to\",\r\n})\r\n\r\nAny help on this would be really appreciated. "
+  created_at: 2023-09-06 13:01:53+00:00
+  edited: false
+  hidden: false
+  id: 64f886510590f3db149fbd0e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/cc5bbc9bf7f8c9e1b3066750df518a82.svg
+      fullname: Keno Bressem
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kbressem
+      type: user
+    createdAt: '2023-09-07T12:46:02.000Z'
+    data:
+      edited: false
+      editors:
+      - kbressem
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9573720097541809
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/cc5bbc9bf7f8c9e1b3066750df518a82.svg
+          fullname: Keno Bressem
+          isHf: false
+          isPro: false
+          name: kbressem
+          type: user
+        html: '<p>I have no experience with SageMaker, so I can''t help you I am afraid.
+          Some general thoughts: </p>
+
+          <p>Maybe the model is too large? You limit the number of tokens that are
+          processed for the 7b model, which affects the hardware requirements. The
+          SageMaker Instance has 4 GPUs with 24 GB each. Maybe this is not enough
+          to load the model. You could try to load a quantized version of the model
+          (I believe someone has converted the weights here in Hugging Face). </p>
+
+          <p>Sometimes people run into errors, when trying to train models trained
+          with LoRA. Here only the adapters are provided and you still need to load
+          base the LLaMA model. Do you have access to any more detailed error logs
+          from SageMaker?</p>
+
+          '
+        raw: "I have no experience with SageMaker, so I can't help you I am afraid.\
+          \ Some general thoughts: \n\nMaybe the model is too large? You limit the\
+          \ number of tokens that are processed for the 7b model, which affects the\
+          \ hardware requirements. The SageMaker Instance has 4 GPUs with 24 GB each.\
+          \ Maybe this is not enough to load the model. You could try to load a quantized\
+          \ version of the model (I believe someone has converted the weights here\
+          \ in Hugging Face). \n\nSometimes people run into errors, when trying to\
+          \ train models trained with LoRA. Here only the adapters are provided and\
+          \ you still need to load base the LLaMA model. Do you have access to any\
+          \ more detailed error logs from SageMaker?"
+        updatedAt: '2023-09-07T12:46:02.364Z'
+      numEdits: 0
+      reactions: []
+    id: 64f9c60a7c31b59c8c4f07ae
+    type: comment
+  author: kbressem
+  content: "I have no experience with SageMaker, so I can't help you I am afraid.\
+    \ Some general thoughts: \n\nMaybe the model is too large? You limit the number\
+    \ of tokens that are processed for the 7b model, which affects the hardware requirements.\
+    \ The SageMaker Instance has 4 GPUs with 24 GB each. Maybe this is not enough\
+    \ to load the model. You could try to load a quantized version of the model (I\
+    \ believe someone has converted the weights here in Hugging Face). \n\nSometimes\
+    \ people run into errors, when trying to train models trained with LoRA. Here\
+    \ only the adapters are provided and you still need to load base the LLaMA model.\
+    \ Do you have access to any more detailed error logs from SageMaker?"
+  created_at: 2023-09-07 11:46:02+00:00
+  edited: false
+  hidden: false
+  id: 64f9c60a7c31b59c8c4f07ae
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: medalpaca/medalpaca-13b
+repo_type: model
+status: open
+target_branch: null
+title: Failing to deploy in AWS SageMaker

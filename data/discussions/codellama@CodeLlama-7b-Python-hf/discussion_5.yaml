@@ -1,0 +1,279 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mike219
+conflicting_files: null
+created_at: 2023-08-25 13:07:13+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d11e90152c579e430310a0d393fc42b2.svg
+      fullname: Egorov Michael
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mike219
+      type: user
+    createdAt: '2023-08-25T14:07:13.000Z'
+    data:
+      edited: false
+      editors:
+      - mike219
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8121032118797302
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d11e90152c579e430310a0d393fc42b2.svg
+          fullname: Egorov Michael
+          isHf: false
+          isPro: false
+          name: mike219
+          type: user
+        html: '<p>I cannot use code infilling with model in hf format because the
+          tokenizer gives a different result than the model in the llama format.<br>I
+          ran this code <a rel="nofollow" href="https://github.com/facebookresearch/codellama/blob/main/example_infilling.py">https://github.com/facebookresearch/codellama/blob/main/example_infilling.py</a>
+          and found that prefix_id is 32007, but tokenizer for hf model know only
+          32000 tokens.</p>
+
+          '
+        raw: "I cannot use code infilling with model in hf format because the tokenizer\
+          \ gives a different result than the model in the llama format. \r\nI ran\
+          \ this code https://github.com/facebookresearch/codellama/blob/main/example_infilling.py\
+          \ and found that prefix_id is 32007, but tokenizer for hf model know only\
+          \ 32000 tokens."
+        updatedAt: '2023-08-25T14:07:13.922Z'
+      numEdits: 0
+      reactions: []
+    id: 64e8b59122a21efcebc7c5d3
+    type: comment
+  author: mike219
+  content: "I cannot use code infilling with model in hf format because the tokenizer\
+    \ gives a different result than the model in the llama format. \r\nI ran this\
+    \ code https://github.com/facebookresearch/codellama/blob/main/example_infilling.py\
+    \ and found that prefix_id is 32007, but tokenizer for hf model know only 32000\
+    \ tokens."
+  created_at: 2023-08-25 13:07:13+00:00
+  edited: false
+  hidden: false
+  id: 64e8b59122a21efcebc7c5d3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg?w=200&h=200&f=face
+      fullname: Pedro Cuenca
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: pcuenq
+      type: user
+    createdAt: '2023-08-25T14:58:12.000Z'
+    data:
+      edited: false
+      editors:
+      - pcuenq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.39002248644828796
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg?w=200&h=200&f=face
+          fullname: Pedro Cuenca
+          isHf: true
+          isPro: false
+          name: pcuenq
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;mike219&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/mike219\">@<span class=\"\
+          underline\">mike219</span></a></span>\n\n\t</span></span>, the following\
+          \ worked for me (on the <code>CodeLlama-7b-hf</code> model, didn't try the\
+          \ Python one yet):</p>\n<pre><code class=\"language-Python\"><span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ AutoTokenizer, AutoModelForCausalLM\n<span class=\"hljs-keyword\">import</span>\
+          \ transformers\n<span class=\"hljs-keyword\">import</span> torch\n\nmodel_id\
+          \ = <span class=\"hljs-string\">\"codellama/CodeLlama-7b-hf\"</span>\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model_id,\n    torch_dtype=torch.float16\n).to(<span class=\"hljs-string\"\
+          >\"cuda\"</span>)\n\nprefix = <span class=\"hljs-string\">'def remove_non_ascii(s:\
+          \ str) -&gt; str:\\n    \"\"\" '</span>\nsuffix = <span class=\"hljs-string\"\
+          >\"\\n    return result\\n\"</span>\n\nprompt = <span class=\"hljs-string\"\
+          >f\"&lt;PRE&gt; <span class=\"hljs-subst\">{prefix}</span>&lt;SUF&gt;<span\
+          \ class=\"hljs-subst\">{suffix}</span> &lt;MID&gt;\"</span>\ninputs = tokenizer(prompt,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>).to(<span class=\"\
+          hljs-string\">\"cuda\"</span>)\n\noutput = model.generate(\n    inputs[<span\
+          \ class=\"hljs-string\">\"input_ids\"</span>],\n    max_new_tokens=<span\
+          \ class=\"hljs-number\">200</span>,\n    do_sample=<span class=\"hljs-literal\"\
+          >False</span>,\n)\noutput = output[<span class=\"hljs-number\">0</span>].to(<span\
+          \ class=\"hljs-string\">\"cpu\"</span>)\n<span class=\"hljs-built_in\">print</span>(tokenizer.decode(output))\n\
+          </code></pre>\n"
+        raw: "Hi @mike219, the following worked for me (on the `CodeLlama-7b-hf` model,\
+          \ didn't try the Python one yet):\n\n```Python\nfrom transformers import\
+          \ AutoTokenizer, AutoModelForCausalLM\nimport transformers\nimport torch\n\
+          \nmodel_id = \"codellama/CodeLlama-7b-hf\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          model = AutoModelForCausalLM.from_pretrained(\n    model_id,\n    torch_dtype=torch.float16\n\
+          ).to(\"cuda\")\n\nprefix = 'def remove_non_ascii(s: str) -> str:\\n    \"\
+          \"\" '\nsuffix = \"\\n    return result\\n\"\n\nprompt = f\"<PRE> {prefix}<SUF>{suffix}\
+          \ <MID>\"\ninputs = tokenizer(prompt, return_tensors=\"pt\").to(\"cuda\"\
+          )\n\noutput = model.generate(\n    inputs[\"input_ids\"],\n    max_new_tokens=200,\n\
+          \    do_sample=False,\n)\noutput = output[0].to(\"cpu\")\nprint(tokenizer.decode(output))\n\
+          ```"
+        updatedAt: '2023-08-25T14:58:12.924Z'
+      numEdits: 0
+      reactions: []
+    id: 64e8c18409628bb446b8d16d
+    type: comment
+  author: pcuenq
+  content: "Hi @mike219, the following worked for me (on the `CodeLlama-7b-hf` model,\
+    \ didn't try the Python one yet):\n\n```Python\nfrom transformers import AutoTokenizer,\
+    \ AutoModelForCausalLM\nimport transformers\nimport torch\n\nmodel_id = \"codellama/CodeLlama-7b-hf\"\
+    \ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    model_id,\n    torch_dtype=torch.float16\n).to(\"cuda\")\n\nprefix = 'def\
+    \ remove_non_ascii(s: str) -> str:\\n    \"\"\" '\nsuffix = \"\\n    return result\\\
+    n\"\n\nprompt = f\"<PRE> {prefix}<SUF>{suffix} <MID>\"\ninputs = tokenizer(prompt,\
+    \ return_tensors=\"pt\").to(\"cuda\")\n\noutput = model.generate(\n    inputs[\"\
+    input_ids\"],\n    max_new_tokens=200,\n    do_sample=False,\n)\noutput = output[0].to(\"\
+    cpu\")\nprint(tokenizer.decode(output))\n```"
+  created_at: 2023-08-25 13:58:12+00:00
+  edited: false
+  hidden: false
+  id: 64e8c18409628bb446b8d16d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg?w=200&h=200&f=face
+      fullname: Pedro Cuenca
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: pcuenq
+      type: user
+    createdAt: '2023-08-25T16:09:40.000Z'
+    data:
+      edited: false
+      editors:
+      - pcuenq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9540762901306152
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1617264212503-603d25b75f9d390ab190b777.jpeg?w=200&h=200&f=face
+          fullname: Pedro Cuenca
+          isHf: true
+          isPro: false
+          name: pcuenq
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;mike219&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/mike219\">@<span class=\"\
+          underline\">mike219</span></a></span>\n\n\t</span></span> you were right,\
+          \ we have confirmed that the infilling task is <em>not</em> supported for\
+          \ the Python variants. It's also not available in any of the 34B sizes.\
+          \ Sorry for the confusion!</p>\n"
+        raw: '@mike219 you were right, we have confirmed that the infilling task is
+          _not_ supported for the Python variants. It''s also not available in any
+          of the 34B sizes. Sorry for the confusion!'
+        updatedAt: '2023-08-25T16:09:40.899Z'
+      numEdits: 0
+      reactions: []
+    id: 64e8d244f494f8b2a046a436
+    type: comment
+  author: pcuenq
+  content: '@mike219 you were right, we have confirmed that the infilling task is
+    _not_ supported for the Python variants. It''s also not available in any of the
+    34B sizes. Sorry for the confusion!'
+  created_at: 2023-08-25 15:09:40+00:00
+  edited: false
+  hidden: false
+  id: 64e8d244f494f8b2a046a436
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d11e90152c579e430310a0d393fc42b2.svg
+      fullname: Egorov Michael
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mike219
+      type: user
+    createdAt: '2023-08-25T18:27:44.000Z'
+    data:
+      edited: false
+      editors:
+      - mike219
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5215047597885132
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d11e90152c579e430310a0d393fc42b2.svg
+          fullname: Egorov Michael
+          isHf: false
+          isPro: false
+          name: mike219
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;pcuenq&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/pcuenq\">@<span class=\"\
+          underline\">pcuenq</span></a></span>\n\n\t</span></span>  Thanks for the\
+          \ answer. I'll try codellama/CodeLlama-7b-hf</p>\n"
+        raw: '@pcuenq  Thanks for the answer. I''ll try codellama/CodeLlama-7b-hf'
+        updatedAt: '2023-08-25T18:27:44.223Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64e8f2a02beaa8c41028eb3f
+    id: 64e8f2a02beaa8c41028eb3a
+    type: comment
+  author: mike219
+  content: '@pcuenq  Thanks for the answer. I''ll try codellama/CodeLlama-7b-hf'
+  created_at: 2023-08-25 17:27:44+00:00
+  edited: false
+  hidden: false
+  id: 64e8f2a02beaa8c41028eb3a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d11e90152c579e430310a0d393fc42b2.svg
+      fullname: Egorov Michael
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mike219
+      type: user
+    createdAt: '2023-08-25T18:27:44.000Z'
+    data:
+      status: closed
+    id: 64e8f2a02beaa8c41028eb3f
+    type: status-change
+  author: mike219
+  created_at: 2023-08-25 17:27:44+00:00
+  id: 64e8f2a02beaa8c41028eb3f
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: codellama/CodeLlama-7b-Python-hf
+repo_type: model
+status: closed
+target_branch: null
+title: tokenizer for prefix, suffix, middle tokens

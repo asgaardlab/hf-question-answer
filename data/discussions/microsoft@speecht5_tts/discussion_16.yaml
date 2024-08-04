@@ -1,0 +1,325 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: JHenzi
+conflicting_files: null
+created_at: 2023-07-19 07:58:55+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9f8c887d68e6686cda9cc3c1b9f8945.svg
+      fullname: Joseph Henzi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JHenzi
+      type: user
+    createdAt: '2023-07-19T08:58:55.000Z'
+    data:
+      edited: true
+      editors:
+      - JHenzi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7890030741691589
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9f8c887d68e6686cda9cc3c1b9f8945.svg
+          fullname: Joseph Henzi
+          isHf: false
+          isPro: false
+          name: JHenzi
+          type: user
+        html: "<p>This is code I'm using to poke the model and create output. </p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> datasets <span class=\"\
+          hljs-keyword\">import</span> load_dataset\n<span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> SpeechT5Processor,\
+          \ SpeechT5ForTextToSpeech, SpeechT5HifiGan\n<span class=\"hljs-keyword\"\
+          >import</span> soundfile <span class=\"hljs-keyword\">as</span> sf\n<span\
+          \ class=\"hljs-keyword\">import</span> numpy <span class=\"hljs-keyword\"\
+          >as</span> np\n\nprocessor = SpeechT5Processor.from_pretrained(<span class=\"\
+          hljs-string\">\"microsoft/speecht5_tts\"</span>)\nmodel = SpeechT5ForTextToSpeech.from_pretrained(<span\
+          \ class=\"hljs-string\">\"microsoft/speecht5_tts\"</span>)\nvocoder = SpeechT5HifiGan.from_pretrained(<span\
+          \ class=\"hljs-string\">\"microsoft/speecht5_hifigan\"</span>)\n\nprompt_file\
+          \ = <span class=\"hljs-string\">'/docker/nix-tts/prompt.txt'</span>\noutput_dir\
+          \ = <span class=\"hljs-string\">'/docker/nix-tts/'</span>\nbatch_size =\
+          \ <span class=\"hljs-number\">2</span>  <span class=\"hljs-comment\"># Number\
+          \ of lines to process at a time</span>\n\n<span class=\"hljs-keyword\">with</span>\
+          \ <span class=\"hljs-built_in\">open</span>(prompt_file, <span class=\"\
+          hljs-string\">'r'</span>) <span class=\"hljs-keyword\">as</span> file:\n\
+          \    lines = file.readlines()\n\nnum_lines = <span class=\"hljs-built_in\"\
+          >len</span>(lines)\n<span class=\"hljs-comment\"># Calculate the number\
+          \ of batches</span>\nnum_batches = (num_lines + batch_size - <span class=\"\
+          hljs-number\">1</span>) // batch_size\n\n<span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(num_batches):\n    start_idx = i * batch_size\n    end_idx\
+          \ = (i + <span class=\"hljs-number\">1</span>) * batch_size\n    batch_lines\
+          \ = lines[start_idx:end_idx]\n\n    <span class=\"hljs-comment\"># Join\
+          \ the batch_lines into a single string</span>\n    prompt_text = <span class=\"\
+          hljs-string\">\"\"</span>.join(batch_lines)\n\n    inputs = processor(text=prompt_text,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>)\n\n    <span\
+          \ class=\"hljs-comment\"># load xvector containing speaker's voice characteristics\
+          \ from a dataset</span>\n    embeddings_dataset = load_dataset(\n      \
+          \  <span class=\"hljs-string\">\"Matthijs/cmu-arctic-xvectors\"</span>,\
+          \ split=<span class=\"hljs-string\">\"validation\"</span>)\n    speaker_embeddings\
+          \ = torch.tensor(\n        embeddings_dataset[<span class=\"hljs-number\"\
+          >7306</span>][<span class=\"hljs-string\">\"xvector\"</span>]).unsqueeze(<span\
+          \ class=\"hljs-number\">0</span>)\n\n    speech = model.generate_speech(\n\
+          \        inputs[<span class=\"hljs-string\">\"input_ids\"</span>], speaker_embeddings,\
+          \ vocoder=vocoder)\n\n    output_filename = <span class=\"hljs-string\"\
+          >f\"speech_<span class=\"hljs-subst\">{i}</span>.wav\"</span>\n    output_path\
+          \ = output_dir + output_filename\n    sf.write(output_path, speech.numpy(),\
+          \ samplerate=<span class=\"hljs-number\">16000</span>)\n\n    <span class=\"\
+          hljs-built_in\">print</span>(\n        <span class=\"hljs-string\">f\"Batch\
+          \ <span class=\"hljs-subst\">{i+<span class=\"hljs-number\">1</span>}</span>/<span\
+          \ class=\"hljs-subst\">{num_batches}</span> processed. Output saved as <span\
+          \ class=\"hljs-subst\">{output_filename}</span>\"</span>)\n</code></pre>\n\
+          <p>It loads a file from a poorly named directory (docker isn't involved)\
+          \ and batch writes output for every two lines. I'm finding success with\
+          \ having a line of speech (not too long, 500 characters) and then a space\
+          \ for a pause (a line break). Then a 46 line script I just wrote comes out\
+          \ in 30 files. They aren't long, you have to stitch them together but <strong>you\
+          \ can re-record portions as needed much easier</strong>. In my case it misread\
+          \ an abbreviation that contained the letter I, I had to respell it \"eye\"\
+          \ to get it to read it. Instead of re-doing the entire script, I can re-do\
+          \ just this line.</p>\n<p>Figured I'll use Audacity or another to put the\
+          \ files together into a single output after recording a second of silence\
+          \ for extra-inserted-pauses.</p>\n"
+        raw: "This is code I'm using to poke the model and create output. \n\n```python\n\
+          import torch\nfrom datasets import load_dataset\nfrom transformers import\
+          \ SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan\nimport soundfile\
+          \ as sf\nimport numpy as np\n\nprocessor = SpeechT5Processor.from_pretrained(\"\
+          microsoft/speecht5_tts\")\nmodel = SpeechT5ForTextToSpeech.from_pretrained(\"\
+          microsoft/speecht5_tts\")\nvocoder = SpeechT5HifiGan.from_pretrained(\"\
+          microsoft/speecht5_hifigan\")\n\nprompt_file = '/docker/nix-tts/prompt.txt'\n\
+          output_dir = '/docker/nix-tts/'\nbatch_size = 2  # Number of lines to process\
+          \ at a time\n\nwith open(prompt_file, 'r') as file:\n    lines = file.readlines()\n\
+          \nnum_lines = len(lines)\n# Calculate the number of batches\nnum_batches\
+          \ = (num_lines + batch_size - 1) // batch_size\n\nfor i in range(num_batches):\n\
+          \    start_idx = i * batch_size\n    end_idx = (i + 1) * batch_size\n  \
+          \  batch_lines = lines[start_idx:end_idx]\n\n    # Join the batch_lines\
+          \ into a single string\n    prompt_text = \"\".join(batch_lines)\n\n   \
+          \ inputs = processor(text=prompt_text, return_tensors=\"pt\")\n\n    # load\
+          \ xvector containing speaker's voice characteristics from a dataset\n  \
+          \  embeddings_dataset = load_dataset(\n        \"Matthijs/cmu-arctic-xvectors\"\
+          , split=\"validation\")\n    speaker_embeddings = torch.tensor(\n      \
+          \  embeddings_dataset[7306][\"xvector\"]).unsqueeze(0)\n\n    speech = model.generate_speech(\n\
+          \        inputs[\"input_ids\"], speaker_embeddings, vocoder=vocoder)\n\n\
+          \    output_filename = f\"speech_{i}.wav\"\n    output_path = output_dir\
+          \ + output_filename\n    sf.write(output_path, speech.numpy(), samplerate=16000)\n\
+          \n    print(\n        f\"Batch {i+1}/{num_batches} processed. Output saved\
+          \ as {output_filename}\")\n```\n\nIt loads a file from a poorly named directory\
+          \ (docker isn't involved) and batch writes output for every two lines. I'm\
+          \ finding success with having a line of speech (not too long, 500 characters)\
+          \ and then a space for a pause (a line break). Then a 46 line script I just\
+          \ wrote comes out in 30 files. They aren't long, you have to stitch them\
+          \ together but **you can re-record portions as needed much easier**. In\
+          \ my case it misread an abbreviation that contained the letter I, I had\
+          \ to respell it \"eye\" to get it to read it. Instead of re-doing the entire\
+          \ script, I can re-do just this line.\n\nFigured I'll use Audacity or another\
+          \ to put the files together into a single output after recording a second\
+          \ of silence for extra-inserted-pauses."
+        updatedAt: '2023-07-19T09:48:37.893Z'
+      numEdits: 1
+      reactions: []
+    id: 64b7a5cffdb702b3d86c9312
+    type: comment
+  author: JHenzi
+  content: "This is code I'm using to poke the model and create output. \n\n```python\n\
+    import torch\nfrom datasets import load_dataset\nfrom transformers import SpeechT5Processor,\
+    \ SpeechT5ForTextToSpeech, SpeechT5HifiGan\nimport soundfile as sf\nimport numpy\
+    \ as np\n\nprocessor = SpeechT5Processor.from_pretrained(\"microsoft/speecht5_tts\"\
+    )\nmodel = SpeechT5ForTextToSpeech.from_pretrained(\"microsoft/speecht5_tts\"\
+    )\nvocoder = SpeechT5HifiGan.from_pretrained(\"microsoft/speecht5_hifigan\")\n\
+    \nprompt_file = '/docker/nix-tts/prompt.txt'\noutput_dir = '/docker/nix-tts/'\n\
+    batch_size = 2  # Number of lines to process at a time\n\nwith open(prompt_file,\
+    \ 'r') as file:\n    lines = file.readlines()\n\nnum_lines = len(lines)\n# Calculate\
+    \ the number of batches\nnum_batches = (num_lines + batch_size - 1) // batch_size\n\
+    \nfor i in range(num_batches):\n    start_idx = i * batch_size\n    end_idx =\
+    \ (i + 1) * batch_size\n    batch_lines = lines[start_idx:end_idx]\n\n    # Join\
+    \ the batch_lines into a single string\n    prompt_text = \"\".join(batch_lines)\n\
+    \n    inputs = processor(text=prompt_text, return_tensors=\"pt\")\n\n    # load\
+    \ xvector containing speaker's voice characteristics from a dataset\n    embeddings_dataset\
+    \ = load_dataset(\n        \"Matthijs/cmu-arctic-xvectors\", split=\"validation\"\
+    )\n    speaker_embeddings = torch.tensor(\n        embeddings_dataset[7306][\"\
+    xvector\"]).unsqueeze(0)\n\n    speech = model.generate_speech(\n        inputs[\"\
+    input_ids\"], speaker_embeddings, vocoder=vocoder)\n\n    output_filename = f\"\
+    speech_{i}.wav\"\n    output_path = output_dir + output_filename\n    sf.write(output_path,\
+    \ speech.numpy(), samplerate=16000)\n\n    print(\n        f\"Batch {i+1}/{num_batches}\
+    \ processed. Output saved as {output_filename}\")\n```\n\nIt loads a file from\
+    \ a poorly named directory (docker isn't involved) and batch writes output for\
+    \ every two lines. I'm finding success with having a line of speech (not too long,\
+    \ 500 characters) and then a space for a pause (a line break). Then a 46 line\
+    \ script I just wrote comes out in 30 files. They aren't long, you have to stitch\
+    \ them together but **you can re-record portions as needed much easier**. In my\
+    \ case it misread an abbreviation that contained the letter I, I had to respell\
+    \ it \"eye\" to get it to read it. Instead of re-doing the entire script, I can\
+    \ re-do just this line.\n\nFigured I'll use Audacity or another to put the files\
+    \ together into a single output after recording a second of silence for extra-inserted-pauses."
+  created_at: 2023-07-19 07:58:55+00:00
+  edited: true
+  hidden: false
+  id: 64b7a5cffdb702b3d86c9312
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b9f8c887d68e6686cda9cc3c1b9f8945.svg
+      fullname: Joseph Henzi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JHenzi
+      type: user
+    createdAt: '2023-07-19T09:48:00.000Z'
+    data:
+      edited: true
+      editors:
+      - JHenzi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6791713237762451
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b9f8c887d68e6686cda9cc3c1b9f8945.svg
+          fullname: Joseph Henzi
+          isHf: false
+          isPro: false
+          name: JHenzi
+          type: user
+        html: "<p>This script will take the above generated WAV files and combine\
+          \ them into an MP3 (stitch them together);</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> pydub <span class=\"hljs-keyword\"\
+          >import</span> AudioSegment\n<span class=\"hljs-keyword\">import</span>\
+          \ os\n\n<span class=\"hljs-comment\"># Set the directory where the WAV files\
+          \ are located</span>\nwav_directory = <span class=\"hljs-string\">'/docker/nix-tts/'</span>\n\
+          \n<span class=\"hljs-comment\"># Set the output path and filename for the\
+          \ final MP3 file</span>\noutput_path = <span class=\"hljs-string\">'/docker/nix-tts/'</span>\n\
+          output_filename = <span class=\"hljs-string\">'output.mp3'</span>\n\n<span\
+          \ class=\"hljs-comment\"># Get a sorted list of WAV files in the directory</span>\n\
+          wav_files = <span class=\"hljs-built_in\">sorted</span>(\n    [f <span class=\"\
+          hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> os.listdir(wav_directory)\
+          \ <span class=\"hljs-keyword\">if</span> f.endswith(<span class=\"hljs-string\"\
+          >\".wav\"</span>)],\n    key=<span class=\"hljs-keyword\">lambda</span>\
+          \ f: <span class=\"hljs-built_in\">int</span>(os.path.splitext(f)[<span\
+          \ class=\"hljs-number\">0</span>].split(<span class=\"hljs-string\">\"_\"\
+          </span>)[<span class=\"hljs-number\">1</span>])\n)\n\n<span class=\"hljs-comment\"\
+          ># Initialize an empty AudioSegment object to store the combined audio</span>\n\
+          combined_audio = AudioSegment.silent(duration=<span class=\"hljs-number\"\
+          >0</span>)\n\n<span class=\"hljs-comment\"># Iterate over the sorted WAV\
+          \ files</span>\n<span class=\"hljs-keyword\">for</span> filename <span class=\"\
+          hljs-keyword\">in</span> wav_files:\n    wav_file = os.path.join(wav_directory,\
+          \ filename)\n\n    <span class=\"hljs-comment\"># Load the WAV file using\
+          \ pydub</span>\n    audio = AudioSegment.from_wav(wav_file)\n\n    <span\
+          \ class=\"hljs-comment\"># Append the current audio to the combined audio</span>\n\
+          \    combined_audio += audio\n\n<span class=\"hljs-comment\"># Export the\
+          \ combined audio as an MP3 file</span>\ncombined_audio.export(os.path.join(output_path,\
+          \ output_filename), <span class=\"hljs-built_in\">format</span>=<span class=\"\
+          hljs-string\">\"mp3\"</span>)\n\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Conversion to MP3 complete!\"</span>)\n</code></pre>\n"
+        raw: "This script will take the above generated WAV files and combine them\
+          \ into an MP3 (stitch them together);\n```python\nfrom pydub import AudioSegment\n\
+          import os\n\n# Set the directory where the WAV files are located\nwav_directory\
+          \ = '/docker/nix-tts/'\n\n# Set the output path and filename for the final\
+          \ MP3 file\noutput_path = '/docker/nix-tts/'\noutput_filename = 'output.mp3'\n\
+          \n# Get a sorted list of WAV files in the directory\nwav_files = sorted(\n\
+          \    [f for f in os.listdir(wav_directory) if f.endswith(\".wav\")],\n \
+          \   key=lambda f: int(os.path.splitext(f)[0].split(\"_\")[1])\n)\n\n# Initialize\
+          \ an empty AudioSegment object to store the combined audio\ncombined_audio\
+          \ = AudioSegment.silent(duration=0)\n\n# Iterate over the sorted WAV files\n\
+          for filename in wav_files:\n    wav_file = os.path.join(wav_directory, filename)\n\
+          \n    # Load the WAV file using pydub\n    audio = AudioSegment.from_wav(wav_file)\n\
+          \n    # Append the current audio to the combined audio\n    combined_audio\
+          \ += audio\n\n# Export the combined audio as an MP3 file\ncombined_audio.export(os.path.join(output_path,\
+          \ output_filename), format=\"mp3\")\n\nprint(\"Conversion to MP3 complete!\"\
+          )\n```"
+        updatedAt: '2023-07-19T09:48:18.436Z'
+      numEdits: 1
+      reactions: []
+    id: 64b7b15062b2914fd5709bc1
+    type: comment
+  author: JHenzi
+  content: "This script will take the above generated WAV files and combine them into\
+    \ an MP3 (stitch them together);\n```python\nfrom pydub import AudioSegment\n\
+    import os\n\n# Set the directory where the WAV files are located\nwav_directory\
+    \ = '/docker/nix-tts/'\n\n# Set the output path and filename for the final MP3\
+    \ file\noutput_path = '/docker/nix-tts/'\noutput_filename = 'output.mp3'\n\n#\
+    \ Get a sorted list of WAV files in the directory\nwav_files = sorted(\n    [f\
+    \ for f in os.listdir(wav_directory) if f.endswith(\".wav\")],\n    key=lambda\
+    \ f: int(os.path.splitext(f)[0].split(\"_\")[1])\n)\n\n# Initialize an empty AudioSegment\
+    \ object to store the combined audio\ncombined_audio = AudioSegment.silent(duration=0)\n\
+    \n# Iterate over the sorted WAV files\nfor filename in wav_files:\n    wav_file\
+    \ = os.path.join(wav_directory, filename)\n\n    # Load the WAV file using pydub\n\
+    \    audio = AudioSegment.from_wav(wav_file)\n\n    # Append the current audio\
+    \ to the combined audio\n    combined_audio += audio\n\n# Export the combined\
+    \ audio as an MP3 file\ncombined_audio.export(os.path.join(output_path, output_filename),\
+    \ format=\"mp3\")\n\nprint(\"Conversion to MP3 complete!\")\n```"
+  created_at: 2023-07-19 08:48:00+00:00
+  edited: true
+  hidden: false
+  id: 64b7b15062b2914fd5709bc1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ab05f77592cc3da78c2af2e77c409e9d.svg
+      fullname: Mike Cooper-Stachowsky
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mstachow
+      type: user
+    createdAt: '2023-08-09T02:04:00.000Z'
+    data:
+      edited: false
+      editors:
+      - mstachow
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9928693175315857
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ab05f77592cc3da78c2af2e77c409e9d.svg
+          fullname: Mike Cooper-Stachowsky
+          isHf: false
+          isPro: false
+          name: mstachow
+          type: user
+        html: '<p>Do you find that the model hallucinates? I''ve found that its output
+          is great until it isn''t then it just makes stuff up</p>
+
+          '
+        raw: Do you find that the model hallucinates? I've found that its output is
+          great until it isn't then it just makes stuff up
+        updatedAt: '2023-08-09T02:04:00.018Z'
+      numEdits: 0
+      reactions: []
+    id: 64d2f4100f36062457c6577a
+    type: comment
+  author: mstachow
+  content: Do you find that the model hallucinates? I've found that its output is
+    great until it isn't then it just makes stuff up
+  created_at: 2023-08-09 01:04:00+00:00
+  edited: false
+  hidden: false
+  id: 64d2f4100f36062457c6577a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: microsoft/speecht5_tts
+repo_type: model
+status: open
+target_branch: null
+title: Working Hacky Code

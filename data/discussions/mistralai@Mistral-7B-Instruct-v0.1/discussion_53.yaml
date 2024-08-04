@@ -1,0 +1,216 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Annorita
+conflicting_files: null
+created_at: 2023-10-18 04:47:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+      fullname: Anna Hung
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Annorita
+      type: user
+    createdAt: '2023-10-18T05:47:44.000Z'
+    data:
+      edited: true
+      editors:
+      - Annorita
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6014935970306396
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+          fullname: Anna Hung
+          isHf: false
+          isPro: false
+          name: Annorita
+          type: user
+        html: "<p>(This is a crossposting of this <a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/issues/26891\"\
+          >issue</a>)</p>\n<pre><code>\nfrom transformers import AutoTokenizer\nchat\
+          \ = [\n  {\"role\": \"user\", \"content\": \"USER_INSTRUCTION_1\"},\n  {\"\
+          role\": \"assistant\", \"content\": \"RESPONSE_1\"},\n  {\"role\": \"user\"\
+          , \"content\": \"USER_INSTRUCTION_2\"},\n  {\"role\": \"assistant\", \"\
+          content\": \"RESPONSE_2\"},\n]\nres_apply_chat_template = tokenizer.apply_chat_template(chat,\
+          \ tokenize=False)\nres_mistral_website = '&lt;s&gt;[INST] USER_INSTRUCTION_1\
+          \ [/INST] RESPONSE_1&lt;/s&gt;[INST] USER_INSTRUCTION_2 [/INST] RESPONSE_2&lt;/s&gt;'\n\
+          print(res_apply_chat_template)   \nprint(res_mistral_website)\n</code></pre>\n\
+          <p>The result is:</p>\n<pre><code>'&lt;s&gt;[INST] USER_INSTRUCTION_1 [/INST]RESPONSE_1&lt;/s&gt;\
+          \ [INST] USER_INSTRUCTION_2 [/INST]RESPONSE_2&lt;/s&gt; '\n'&lt;s&gt;[INST]\
+          \ USER_INSTRUCTION_1 [/INST] RESPONSE_1&lt;/s&gt;[INST] USER_INSTRUCTION_2\
+          \ [/INST] RESPONSE_2&lt;/s&gt;'\n</code></pre>\n<p>There are two main difference:</p>\n\
+          <ol>\n<li><p>According to the Mistral 7B website: <a rel=\"nofollow\" href=\"\
+          https://docs.mistral.ai/usage/guardrailing/#appendix\">https://docs.mistral.ai/usage/guardrailing/#appendix</a><br>There\
+          \ is always a blank after <code>[INST]</code> and <code>[/INST]</code>,\
+          \ but result of <code>apply_chat_template</code> seems not following it.\
+          \ </p>\n</li>\n<li><p>In <code>res_apply_chat_template</code>, There is\
+          \ an additional blank at the end of a turn.</p>\n</li>\n</ol>\n<p>I also\
+          \ encode the two sentences and decode them back. The results show that the\
+          \ word will be tokenized into different tokens because of the blank after\
+          \ <code>[/INST]</code>: </p>\n<pre><code>decoded_apply_chat_template = []\n\
+          for a in ids_apply_chat_template:\n    decoded_apply_chat_template.append(tokenizer.decode(a))\n\
+          \ndecoded_mistral_website = []\nfor b in ids_mistral_website:\n    decoded_mistral_website.append(tokenizer.decode(b))\n\
+          \n#decoded_apply_chat_template\n['&lt;s&gt;', '[', 'INST', ']', 'US', 'ER',\
+          \ '_', 'IN', 'STRU', 'CTION', '_', '1', '[', '/', 'INST', ']', 'RE', 'SP',\
+          \ 'ON', 'SE', '_', '1', '&lt;/s&gt;', '', '[', 'INST', ']', 'US', 'ER',\
+          \ '_', 'IN', 'STRU', 'CTION', '_', '2', '[', '/', 'INST', ']', 'RE', 'SP',\
+          \ 'ON', 'SE', '_', '2', '&lt;/s&gt;', ' ']\n\n#decoded_mistral_website\n\
+          ['&lt;s&gt;', '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU', 'CTION',\
+          \ '_', '1', '[', '/', 'INST', ']', 'RES', 'P', 'ON', 'SE', '_', '1', '&lt;/s&gt;',\
+          \ '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU', 'CTION', '_', '2', '[',\
+          \ '/', 'INST', ']', 'RES', 'P', 'ON', 'SE', '_', '2', '&lt;/s&gt;']\n</code></pre>\n\
+          <p>I guess it's okay to do either way, but shall we better to align with\
+          \ how it was been done during finetuning?</p>\n"
+        raw: "(This is a crossposting of this [issue](https://github.com/huggingface/transformers/issues/26891))\n\
+          \n```\n\nfrom transformers import AutoTokenizer\nchat = [\n  {\"role\":\
+          \ \"user\", \"content\": \"USER_INSTRUCTION_1\"},\n  {\"role\": \"assistant\"\
+          , \"content\": \"RESPONSE_1\"},\n  {\"role\": \"user\", \"content\": \"\
+          USER_INSTRUCTION_2\"},\n  {\"role\": \"assistant\", \"content\": \"RESPONSE_2\"\
+          },\n]\nres_apply_chat_template = tokenizer.apply_chat_template(chat, tokenize=False)\n\
+          res_mistral_website = '<s>[INST] USER_INSTRUCTION_1 [/INST] RESPONSE_1</s>[INST]\
+          \ USER_INSTRUCTION_2 [/INST] RESPONSE_2</s>'\nprint(res_apply_chat_template)\
+          \   \nprint(res_mistral_website)\n\n```\n\nThe result is:\n\n```\n'<s>[INST]\
+          \ USER_INSTRUCTION_1 [/INST]RESPONSE_1</s> [INST] USER_INSTRUCTION_2 [/INST]RESPONSE_2</s>\
+          \ '\n'<s>[INST] USER_INSTRUCTION_1 [/INST] RESPONSE_1</s>[INST] USER_INSTRUCTION_2\
+          \ [/INST] RESPONSE_2</s>'\n```\n\nThere are two main difference:\n1. According\
+          \ to the Mistral 7B website: https://docs.mistral.ai/usage/guardrailing/#appendix\n\
+          There is always a blank after `[INST]` and `[/INST]`, but result of `apply_chat_template`\
+          \ seems not following it. \n\n2. In `res_apply_chat_template`, There is\
+          \ an additional blank at the end of a turn.\n\nI also encode the two sentences\
+          \ and decode them back. The results show that the word will be tokenized\
+          \ into different tokens because of the blank after `[/INST]`: \n\n```\n\
+          decoded_apply_chat_template = []\nfor a in ids_apply_chat_template:\n  \
+          \  decoded_apply_chat_template.append(tokenizer.decode(a))\n\ndecoded_mistral_website\
+          \ = []\nfor b in ids_mistral_website:\n    decoded_mistral_website.append(tokenizer.decode(b))\n\
+          \n#decoded_apply_chat_template\n['<s>', '[', 'INST', ']', 'US', 'ER', '_',\
+          \ 'IN', 'STRU', 'CTION', '_', '1', '[', '/', 'INST', ']', 'RE', 'SP', 'ON',\
+          \ 'SE', '_', '1', '</s>', '', '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU',\
+          \ 'CTION', '_', '2', '[', '/', 'INST', ']', 'RE', 'SP', 'ON', 'SE', '_',\
+          \ '2', '</s>', ' ']\n\n#decoded_mistral_website\n['<s>', '[', 'INST', ']',\
+          \ 'US', 'ER', '_', 'IN', 'STRU', 'CTION', '_', '1', '[', '/', 'INST', ']',\
+          \ 'RES', 'P', 'ON', 'SE', '_', '1', '</s>', '[', 'INST', ']', 'US', 'ER',\
+          \ '_', 'IN', 'STRU', 'CTION', '_', '2', '[', '/', 'INST', ']', 'RES', 'P',\
+          \ 'ON', 'SE', '_', '2', '</s>']\n```\n\n\nI guess it's okay to do either\
+          \ way, but shall we better to align with how it was been done during finetuning?\n"
+        updatedAt: '2023-10-19T02:32:36.359Z'
+      numEdits: 2
+      reactions: []
+    id: 652f718074d1b0d7ff96302a
+    type: comment
+  author: Annorita
+  content: "(This is a crossposting of this [issue](https://github.com/huggingface/transformers/issues/26891))\n\
+    \n```\n\nfrom transformers import AutoTokenizer\nchat = [\n  {\"role\": \"user\"\
+    , \"content\": \"USER_INSTRUCTION_1\"},\n  {\"role\": \"assistant\", \"content\"\
+    : \"RESPONSE_1\"},\n  {\"role\": \"user\", \"content\": \"USER_INSTRUCTION_2\"\
+    },\n  {\"role\": \"assistant\", \"content\": \"RESPONSE_2\"},\n]\nres_apply_chat_template\
+    \ = tokenizer.apply_chat_template(chat, tokenize=False)\nres_mistral_website =\
+    \ '<s>[INST] USER_INSTRUCTION_1 [/INST] RESPONSE_1</s>[INST] USER_INSTRUCTION_2\
+    \ [/INST] RESPONSE_2</s>'\nprint(res_apply_chat_template)   \nprint(res_mistral_website)\n\
+    \n```\n\nThe result is:\n\n```\n'<s>[INST] USER_INSTRUCTION_1 [/INST]RESPONSE_1</s>\
+    \ [INST] USER_INSTRUCTION_2 [/INST]RESPONSE_2</s> '\n'<s>[INST] USER_INSTRUCTION_1\
+    \ [/INST] RESPONSE_1</s>[INST] USER_INSTRUCTION_2 [/INST] RESPONSE_2</s>'\n```\n\
+    \nThere are two main difference:\n1. According to the Mistral 7B website: https://docs.mistral.ai/usage/guardrailing/#appendix\n\
+    There is always a blank after `[INST]` and `[/INST]`, but result of `apply_chat_template`\
+    \ seems not following it. \n\n2. In `res_apply_chat_template`, There is an additional\
+    \ blank at the end of a turn.\n\nI also encode the two sentences and decode them\
+    \ back. The results show that the word will be tokenized into different tokens\
+    \ because of the blank after `[/INST]`: \n\n```\ndecoded_apply_chat_template =\
+    \ []\nfor a in ids_apply_chat_template:\n    decoded_apply_chat_template.append(tokenizer.decode(a))\n\
+    \ndecoded_mistral_website = []\nfor b in ids_mistral_website:\n    decoded_mistral_website.append(tokenizer.decode(b))\n\
+    \n#decoded_apply_chat_template\n['<s>', '[', 'INST', ']', 'US', 'ER', '_', 'IN',\
+    \ 'STRU', 'CTION', '_', '1', '[', '/', 'INST', ']', 'RE', 'SP', 'ON', 'SE', '_',\
+    \ '1', '</s>', '', '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU', 'CTION', '_',\
+    \ '2', '[', '/', 'INST', ']', 'RE', 'SP', 'ON', 'SE', '_', '2', '</s>', ' ']\n\
+    \n#decoded_mistral_website\n['<s>', '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU',\
+    \ 'CTION', '_', '1', '[', '/', 'INST', ']', 'RES', 'P', 'ON', 'SE', '_', '1',\
+    \ '</s>', '[', 'INST', ']', 'US', 'ER', '_', 'IN', 'STRU', 'CTION', '_', '2',\
+    \ '[', '/', 'INST', ']', 'RES', 'P', 'ON', 'SE', '_', '2', '</s>']\n```\n\n\n\
+    I guess it's okay to do either way, but shall we better to align with how it was\
+    \ been done during finetuning?\n"
+  created_at: 2023-10-18 04:47:44+00:00
+  edited: true
+  hidden: false
+  id: 652f718074d1b0d7ff96302a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1660312628256-60ba519750effef3a58beac3.png?w=200&h=200&f=face
+      fullname: Matthew Carrigan
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Rocketknight1
+      type: user
+    createdAt: '2023-10-18T13:18:45.000Z'
+    data:
+      edited: false
+      editors:
+      - Rocketknight1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.964670717716217
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1660312628256-60ba519750effef3a58beac3.png?w=200&h=200&f=face
+          fullname: Matthew Carrigan
+          isHf: true
+          isPro: false
+          name: Rocketknight1
+          type: user
+        html: "<p>cc <span data-props=\"{&quot;user&quot;:&quot;teven&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/teven\">@<span class=\"\
+          underline\">teven</span></a></span>\n\n\t</span></span> <span data-props=\"\
+          {&quot;user&quot;:&quot;LucileSaulnier&quot;}\" data-target=\"UserMention\"\
+          \ class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"\
+          ><span class=\"contents\"><a href=\"/LucileSaulnier\">@<span class=\"underline\"\
+          >LucileSaulnier</span></a></span>\n\n\t</span></span> to this one! I wrote\
+          \ the chat template based on the example in the model card, but it seems\
+          \ like that might differ from the example on the website. Can you confirm\
+          \ which template is correct?</p>\n"
+        raw: cc @teven @LucileSaulnier to this one! I wrote the chat template based
+          on the example in the model card, but it seems like that might differ from
+          the example on the website. Can you confirm which template is correct?
+        updatedAt: '2023-10-18T13:18:45.075Z'
+      numEdits: 0
+      reactions:
+      - count: 5
+        reaction: "\u2764\uFE0F"
+        users:
+        - Annorita
+        - Agniva
+        - Shifu10
+        - eliseobao
+        - siljuovi
+    id: 652fdb35882d9391648ac4ed
+    type: comment
+  author: Rocketknight1
+  content: cc @teven @LucileSaulnier to this one! I wrote the chat template based
+    on the example in the model card, but it seems like that might differ from the
+    example on the website. Can you confirm which template is correct?
+  created_at: 2023-10-18 12:18:45+00:00
+  edited: false
+  hidden: false
+  id: 652fdb35882d9391648ac4ed
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 53
+repo_id: mistralai/Mistral-7B-Instruct-v0.1
+repo_type: model
+status: open
+target_branch: null
+title: apply_chat_template result of Mistral is not restrictly align to the template
+  on its website

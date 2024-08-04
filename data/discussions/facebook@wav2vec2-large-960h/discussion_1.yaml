@@ -1,0 +1,513 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: thardindubph200
+conflicting_files: null
+created_at: 2022-07-07 22:54:34+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5f1647a31c70dbc0177a4ecc93a6f770.svg
+      fullname: Tharindu Kaluarachchi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thardindubph200
+      type: user
+    createdAt: '2022-07-07T23:54:34.000Z'
+    data:
+      edited: false
+      editors:
+      - thardindubph200
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5f1647a31c70dbc0177a4ecc93a6f770.svg
+          fullname: Tharindu Kaluarachchi
+          isHf: false
+          isPro: false
+          name: thardindubph200
+          type: user
+        html: "<p>I'm finetuning Wav2vec2 on a downstream task. Before finetuning,\
+          \ I checked the accuracy of pre-trained one comes in transformers library\
+          \ and it gives okay results. But when I finetune, the accuracy becomes Zero.\
+          \ I must be doing something wrong. Can someone help me figure out?</p>\n\
+          <p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/1657237839880-62bd023d8d752f69a9718b98.png\"\
+          ><img alt=\"Screenshot from 2022-07-08 07-50-12.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/1657237839880-62bd023d8d752f69a9718b98.png\"\
+          ></a><br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/1657237899230-62bd023d8d752f69a9718b98.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/1657237899230-62bd023d8d752f69a9718b98.png\"\
+          ></a></p>\n<p>##******* code ********<br>from datasets import load_dataset,\
+          \ load_metric<br>from create_dataset import CreateAndLoadDataset<br>from\
+          \ transformers import Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor,\
+          \ Wav2Vec2ForCTC<br>from transformers import TrainingArguments, Trainer<br>from\
+          \ datasets import ClassLabel<br>import random<br>import pandas as pd<br>import\
+          \ json<br>import time<br>import sounddevice<br>import numpy as np<br>import\
+          \ torch</p>\n<p>from dataclasses import dataclass, field<br>from typing\
+          \ import Any, Dict, List, Optional, Union</p>\n<p>@dataclass<br>class DataCollatorCTCWithPadding:<br>\
+          \    \"\"\"<br>    Data collator that will dynamically pad the inputs received.<br>\
+          \    Args:<br>        processor (:class:<code>~transformers.Wav2Vec2Processor</code>)<br>\
+          \            The processor used for proccessing the data.<br>        padding\
+          \ (:obj:<code>bool</code>, :obj:<code>str</code> or :class:<code>~transformers.tokenization_utils_base.PaddingStrategy</code>,\
+          \ <code>optional</code>, defaults to :obj:<code>True</code>):<br>      \
+          \      Select a strategy to pad the returned sequences (according to the\
+          \ model's padding side and padding index)<br>            among:<br>    \
+          \        * :obj:<code>True</code> or :obj:<code>'longest'</code>: Pad to\
+          \ the longest sequence in the batch (or no padding if only a single<br>\
+          \              sequence if provided).<br>            * :obj:<code>'max_length'</code>:\
+          \ Pad to a maximum length specified with the argument :obj:<code>max_length</code>\
+          \ or to the<br>              maximum acceptable input length for the model\
+          \ if that argument is not provided.<br>            * :obj:<code>False</code>\
+          \ or :obj:<code>'do_not_pad'</code> (default): No padding (i.e., can output\
+          \ a batch with sequences of<br>              different lengths).<br>   \
+          \ \"\"\"</p>\n<pre><code>processor: Wav2Vec2Processor\npadding: Union[bool,\
+          \ str] = True\n\ndef __call__(self, features: List[Dict[str, Union[List[int],\
+          \ torch.Tensor]]]) -&gt; Dict[str, torch.Tensor]:\n    # split inputs and\
+          \ labels since they have to be of different lenghts and need\n    # different\
+          \ padding methods\n    input_features = [{\"input_values\": feature[\"input_values\"\
+          ]} for feature in features]\n    label_features = [{\"input_ids\": feature[\"\
+          labels\"]} for feature in features]\n\n    batch = self.processor.pad(\n\
+          \        input_features,\n        padding=self.padding,\n        return_tensors=\"\
+          pt\",\n    )\n    with self.processor.as_target_processor():\n        labels_batch\
+          \ = self.processor.pad(\n            label_features,\n            padding=self.padding,\n\
+          \            return_tensors=\"pt\",\n        )\n\n    # replace padding\
+          \ with -100 to ignore loss correctly\n    labels = labels_batch[\"input_ids\"\
+          ].masked_fill(labels_batch.attention_mask.ne(1), -100)\n\n    batch[\"labels\"\
+          ] = labels\n\n    return batch\n</code></pre>\n<p>def show_random_elements(dataset,\
+          \ num_examples=10):<br>    assert num_examples &lt;= len(dataset), \"Can't\
+          \ pick more elements than there are in the dataset.\"<br>    picks = []<br>\
+          \    for _ in range(num_examples):<br>        pick = random.randint(0, len(dataset)-1)<br>\
+          \        while pick in picks:<br>            pick = random.randint(0, len(dataset)-1)<br>\
+          \        picks.append(pick)</p>\n<pre><code>df = pd.DataFrame(dataset[picks])\n\
+          print(df)\n</code></pre>\n<p>def extract_all_chars(batch):<br>    all_text\
+          \ = \" \".join(batch[\"transcript\"])<br>    vocab = list(set(all_text))<br>\
+          \    return {\"vocab\": [vocab], \"all_text\": [all_text]}</p>\n<p>def prepare_dataset(batch):<br>\
+          \    audio = batch[\"audio_filepath\"]</p>\n<pre><code># batched output\
+          \ is \"un-batched\" to ensure mapping is correct\nbatch[\"input_values\"\
+          ] = processor(audio[\"array\"], sampling_rate=audio[\"sampling_rate\"]).input_values[0]\n\
+          batch[\"input_length\"] = len(batch[\"input_values\"])\n\nwith processor.as_target_processor():\n\
+          \    batch[\"labels\"] = processor(batch[\"transcript\"]).input_ids\nreturn\
+          \ batch\n</code></pre>\n<p>def compute_metrics(pred):<br>    pred_logits\
+          \ = pred.predictions<br>    pred_ids = np.argmax(pred_logits, axis=-1)</p>\n\
+          <pre><code>pred.label_ids[pred.label_ids == -100] = processor.tokenizer.pad_token_id\n\
+          \npred_str = processor.batch_decode(pred_ids)\n# we do not want to group\
+          \ tokens when computing the metrics\nlabel_str = processor.batch_decode(pred.label_ids,\
+          \ group_tokens=False)\n\nwer = wer_metric.compute(predictions=pred_str,\
+          \ references=label_str)\n\nreturn {\"wer\": wer}\n</code></pre>\n<p>tk_audio_dataset\
+          \ = CreateAndLoadDataset()<br>print(tk_audio_dataset)<br>print(len(tk_audio_dataset[\"\
+          train\"]))</p>\n<p>show_random_elements(tk_audio_dataset[\"train\"], num_examples=10)<br>vocabs\
+          \ = tk_audio_dataset.map(extract_all_chars, batched=True, batch_size=-1,\
+          \ keep_in_memory=True, remove_columns=tk_audio_dataset.column_names[\"train\"\
+          ])</p>\n<p>vocab_list = list(set(vocabs[\"train\"][\"vocab\"][0]) | set(vocabs[\"\
+          test\"][\"vocab\"][0]))<br>vocab_dict = {v: k for k, v in enumerate(vocab_list)}<br>print(vocab_dict)</p>\n\
+          <p>vocab_dict[\"|\"] = vocab_dict[\" \"]<br>del vocab_dict[\" \"]</p>\n\
+          <p>vocab_dict[\"[UNK]\"] = len(vocab_dict)<br>vocab_dict[\"[PAD]\"] = len(vocab_dict)<br>print(len(vocab_dict))</p>\n\
+          <p>with open('vocab.json', 'w') as vocab_file:<br>    json.dump(vocab_dict,\
+          \ vocab_file)</p>\n<p>tokenizer = Wav2Vec2CTCTokenizer(\"./vocab.json\"\
+          , unk_token=\"[UNK]\", pad_token=\"[PAD]\", word_delimiter_token=\"|\")</p>\n\
+          <h1 id=\"tokenizer--wav2vec2processorfrom_pretrainedhometharindudesktopblackcodesbphwav2vec2model_gitwav2vec2-base-960h\"\
+          >tokenizer = Wav2Vec2Processor.from_pretrained(\"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git/wav2vec2-base-960h\"\
+          )</h1>\n<p>feature_extractor = Wav2Vec2FeatureExtractor(feature_size=1,\
+          \ sampling_rate=16000, padding_value=0.0, do_normalize=True, return_attention_mask=False)<br>processor\
+          \ = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)</p>\n\
+          <p>print(tk_audio_dataset['train'][0][\"audio_filepath\"])</p>\n<h5 id=\"\
+          play-a-random-data-file-to-check\">Play a random data file to check</h5>\n\
+          <p>rand_int = random.randint(0, len(tk_audio_dataset[\"train\"]))<br>print(tk_audio_dataset[\"\
+          train\"][rand_int][\"transcript\"])<br>temp_sound_example = np.asarray(tk_audio_dataset[\"\
+          train\"][rand_int][\"audio_filepath\"][\"array\"])<br>print(temp_sound_example)<br>sounddevice.play(temp_sound_example,\
+          \ 16000)  # releases GIL<br>time.sleep(5)<br>######</p>\n<h5 id=\"check-details-of-a-random-file\"\
+          >Check details of a random file</h5>\n<p>rand_int = random.randint(0, len(tk_audio_dataset[\"\
+          train\"]))<br>print(\"Target text:\", tk_audio_dataset[\"train\"][rand_int][\"\
+          transcript\"])<br>print(\"Input array shape:\", np.asarray(tk_audio_dataset[\"\
+          train\"][rand_int][\"audio_filepath\"][\"array\"]).shape)<br>print(\"Sampling\
+          \ rate:\", tk_audio_dataset[\"train\"][rand_int][\"audio_filepath\"][\"\
+          sampling_rate\"])<br>######</p>\n<p>#the following line and the function\
+          \ is calls may be wrong. Need to rethink of having 3 columns in the dataset.\
+          \ accoording to the Colab instructions, resampling use 'audio' column and\
+          \ not the 'audio_filepath' column.<br>tk_audio_dataset = tk_audio_dataset.map(prepare_dataset,\
+          \ remove_columns=tk_audio_dataset.column_names[\"train\"], num_proc=4)</p>\n\
+          <p>max_input_length_in_sec = 4.0<br>tk_audio_dataset[\"train\"] = tk_audio_dataset[\"\
+          train\"].filter(lambda x: x &lt; max_input_length_in_sec * processor.feature_extractor.sampling_rate,\
+          \ input_columns=[\"input_length\"])</p>\n<p>data_collator = DataCollatorCTCWithPadding(processor=processor,\
+          \ padding=True)<br>wer_metric = load_metric(\"wer\")</p>\n<p>model = Wav2Vec2ForCTC.from_pretrained(<br>\
+          \    \"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+          ,<br>    ctc_loss_reduction=\"mean\",<br>    pad_token_id=processor.tokenizer.pad_token_id,<br>\
+          \    )</p>\n<h1 id=\"printmodel\">print(model)</h1>\n<p>model.freeze_feature_encoder()</p>\n\
+          <p>training_args = TrainingArguments(<br>  output_dir=\"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+          ,<br>  group_by_length=True,<br>  per_device_train_batch_size=8,<br>  evaluation_strategy=\"\
+          steps\",<br>  num_train_epochs=50,<br>  fp16=True,<br>  gradient_checkpointing=True,<br>\
+          \  save_steps=500,<br>  eval_steps=100, #originally it was 500<br>  logging_steps=100,\
+          \ #originally it was 500<br>  learning_rate=1e-4,<br>  weight_decay=0.005,<br>\
+          \  warmup_steps=100, #original it was 1000<br>  save_total_limit=2,<br>\
+          \  push_to_hub=False, #uncommnet later if necessary<br>)</p>\n<p>trainer\
+          \ = Trainer(<br>    model=model,<br>    data_collator=data_collator,<br>\
+          \    args=training_args,<br>    compute_metrics=compute_metrics,<br>   \
+          \ train_dataset=tk_audio_dataset[\"train\"],<br>    eval_dataset=tk_audio_dataset[\"\
+          test\"],<br>    tokenizer=processor.feature_extractor,<br>)</p>\n<p>trainer.train()<br>trainer.save_model()</p>\n"
+        raw: "I'm finetuning Wav2vec2 on a downstream task. Before finetuning, I checked\
+          \ the accuracy of pre-trained one comes in transformers library and it gives\
+          \ okay results. But when I finetune, the accuracy becomes Zero. I must be\
+          \ doing something wrong. Can someone help me figure out?\r\n\r\n![Screenshot\
+          \ from 2022-07-08 07-50-12.png](https://cdn-uploads.huggingface.co/production/uploads/1657237839880-62bd023d8d752f69a9718b98.png)\r\
+          \n![image.png](https://cdn-uploads.huggingface.co/production/uploads/1657237899230-62bd023d8d752f69a9718b98.png)\r\
+          \n\r\n##******* code ********\r\nfrom datasets import load_dataset, load_metric\r\
+          \nfrom create_dataset import CreateAndLoadDataset\r\nfrom transformers import\
+          \ Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2ForCTC\r\
+          \nfrom transformers import TrainingArguments, Trainer\r\nfrom datasets import\
+          \ ClassLabel\r\nimport random\r\nimport pandas as pd\r\nimport json\r\n\
+          import time\r\nimport sounddevice\r\nimport numpy as np\r\nimport torch\r\
+          \n\r\nfrom dataclasses import dataclass, field\r\nfrom typing import Any,\
+          \ Dict, List, Optional, Union\r\n\r\n@dataclass\r\nclass DataCollatorCTCWithPadding:\r\
+          \n    \"\"\"\r\n    Data collator that will dynamically pad the inputs received.\r\
+          \n    Args:\r\n        processor (:class:`~transformers.Wav2Vec2Processor`)\r\
+          \n            The processor used for proccessing the data.\r\n        padding\
+          \ (:obj:`bool`, :obj:`str` or :class:`~transformers.tokenization_utils_base.PaddingStrategy`,\
+          \ `optional`, defaults to :obj:`True`):\r\n            Select a strategy\
+          \ to pad the returned sequences (according to the model's padding side and\
+          \ padding index)\r\n            among:\r\n            * :obj:`True` or :obj:`'longest'`:\
+          \ Pad to the longest sequence in the batch (or no padding if only a single\r\
+          \n              sequence if provided).\r\n            * :obj:`'max_length'`:\
+          \ Pad to a maximum length specified with the argument :obj:`max_length`\
+          \ or to the\r\n              maximum acceptable input length for the model\
+          \ if that argument is not provided.\r\n            * :obj:`False` or :obj:`'do_not_pad'`\
+          \ (default): No padding (i.e., can output a batch with sequences of\r\n\
+          \              different lengths).\r\n    \"\"\"\r\n\r\n    processor: Wav2Vec2Processor\r\
+          \n    padding: Union[bool, str] = True\r\n\r\n    def __call__(self, features:\
+          \ List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:\r\
+          \n        # split inputs and labels since they have to be of different lenghts\
+          \ and need\r\n        # different padding methods\r\n        input_features\
+          \ = [{\"input_values\": feature[\"input_values\"]} for feature in features]\r\
+          \n        label_features = [{\"input_ids\": feature[\"labels\"]} for feature\
+          \ in features]\r\n\r\n        batch = self.processor.pad(\r\n          \
+          \  input_features,\r\n            padding=self.padding,\r\n            return_tensors=\"\
+          pt\",\r\n        )\r\n        with self.processor.as_target_processor():\r\
+          \n            labels_batch = self.processor.pad(\r\n                label_features,\r\
+          \n                padding=self.padding,\r\n                return_tensors=\"\
+          pt\",\r\n            )\r\n\r\n        # replace padding with -100 to ignore\
+          \ loss correctly\r\n        labels = labels_batch[\"input_ids\"].masked_fill(labels_batch.attention_mask.ne(1),\
+          \ -100)\r\n\r\n        batch[\"labels\"] = labels\r\n\r\n        return\
+          \ batch\r\n\r\ndef show_random_elements(dataset, num_examples=10):\r\n\t\
+          assert num_examples <= len(dataset), \"Can't pick more elements than there\
+          \ are in the dataset.\"\r\n\tpicks = []\r\n\tfor _ in range(num_examples):\r\
+          \n\t\tpick = random.randint(0, len(dataset)-1)\r\n\t\twhile pick in picks:\r\
+          \n\t\t\tpick = random.randint(0, len(dataset)-1)\r\n\t\tpicks.append(pick)\r\
+          \n\t\r\n\tdf = pd.DataFrame(dataset[picks])\r\n\tprint(df)\r\n\r\ndef extract_all_chars(batch):\r\
+          \n\tall_text = \" \".join(batch[\"transcript\"])\r\n\tvocab = list(set(all_text))\r\
+          \n\treturn {\"vocab\": [vocab], \"all_text\": [all_text]}\r\n\r\ndef prepare_dataset(batch):\r\
+          \n\taudio = batch[\"audio_filepath\"]\r\n\r\n\t# batched output is \"un-batched\"\
+          \ to ensure mapping is correct\r\n\tbatch[\"input_values\"] = processor(audio[\"\
+          array\"], sampling_rate=audio[\"sampling_rate\"]).input_values[0]\r\n\t\
+          batch[\"input_length\"] = len(batch[\"input_values\"])\r\n\t\r\n\twith processor.as_target_processor():\r\
+          \n\t\tbatch[\"labels\"] = processor(batch[\"transcript\"]).input_ids\r\n\
+          \treturn batch\r\n\r\ndef compute_metrics(pred):\r\n    pred_logits = pred.predictions\r\
+          \n    pred_ids = np.argmax(pred_logits, axis=-1)\r\n\r\n    pred.label_ids[pred.label_ids\
+          \ == -100] = processor.tokenizer.pad_token_id\r\n\r\n    pred_str = processor.batch_decode(pred_ids)\r\
+          \n    # we do not want to group tokens when computing the metrics\r\n  \
+          \  label_str = processor.batch_decode(pred.label_ids, group_tokens=False)\r\
+          \n\r\n    wer = wer_metric.compute(predictions=pred_str, references=label_str)\r\
+          \n\r\n    return {\"wer\": wer}\r\n\r\ntk_audio_dataset = CreateAndLoadDataset()\r\
+          \nprint(tk_audio_dataset)\r\nprint(len(tk_audio_dataset[\"train\"]))\r\n\
+          \r\nshow_random_elements(tk_audio_dataset[\"train\"], num_examples=10)\r\
+          \nvocabs = tk_audio_dataset.map(extract_all_chars, batched=True, batch_size=-1,\
+          \ keep_in_memory=True, remove_columns=tk_audio_dataset.column_names[\"train\"\
+          ])\r\n\r\nvocab_list = list(set(vocabs[\"train\"][\"vocab\"][0]) | set(vocabs[\"\
+          test\"][\"vocab\"][0]))\r\nvocab_dict = {v: k for k, v in enumerate(vocab_list)}\r\
+          \nprint(vocab_dict)\r\n\r\nvocab_dict[\"|\"] = vocab_dict[\" \"]\r\ndel\
+          \ vocab_dict[\" \"]\r\n\r\nvocab_dict[\"[UNK]\"] = len(vocab_dict)\r\nvocab_dict[\"\
+          [PAD]\"] = len(vocab_dict)\r\nprint(len(vocab_dict))\r\n\r\nwith open('vocab.json',\
+          \ 'w') as vocab_file:\r\n\tjson.dump(vocab_dict, vocab_file)\r\n\r\ntokenizer\
+          \ = Wav2Vec2CTCTokenizer(\"./vocab.json\", unk_token=\"[UNK]\", pad_token=\"\
+          [PAD]\", word_delimiter_token=\"|\")\r\n# tokenizer = Wav2Vec2Processor.from_pretrained(\"\
+          /home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git/wav2vec2-base-960h\"\
+          )\r\nfeature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000,\
+          \ padding_value=0.0, do_normalize=True, return_attention_mask=False)\r\n\
+          processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)\r\
+          \n\r\nprint(tk_audio_dataset['train'][0][\"audio_filepath\"])\r\n\r\n\r\n\
+          ##### Play a random data file to check\r\nrand_int = random.randint(0, len(tk_audio_dataset[\"\
+          train\"]))\r\nprint(tk_audio_dataset[\"train\"][rand_int][\"transcript\"\
+          ])\r\ntemp_sound_example = np.asarray(tk_audio_dataset[\"train\"][rand_int][\"\
+          audio_filepath\"][\"array\"])\r\nprint(temp_sound_example)\r\nsounddevice.play(temp_sound_example,\
+          \ 16000)  # releases GIL\r\ntime.sleep(5)  \r\n######\r\n\r\n\r\n##### Check\
+          \ details of a random file\r\nrand_int = random.randint(0, len(tk_audio_dataset[\"\
+          train\"]))\r\nprint(\"Target text:\", tk_audio_dataset[\"train\"][rand_int][\"\
+          transcript\"])\r\nprint(\"Input array shape:\", np.asarray(tk_audio_dataset[\"\
+          train\"][rand_int][\"audio_filepath\"][\"array\"]).shape)\r\nprint(\"Sampling\
+          \ rate:\", tk_audio_dataset[\"train\"][rand_int][\"audio_filepath\"][\"\
+          sampling_rate\"])\r\n######\r\n\r\n#the following line and the function\
+          \ is calls may be wrong. Need to rethink of having 3 columns in the dataset.\
+          \ accoording to the Colab instructions, resampling use 'audio' column and\
+          \ not the 'audio_filepath' column. \r\ntk_audio_dataset = tk_audio_dataset.map(prepare_dataset,\
+          \ remove_columns=tk_audio_dataset.column_names[\"train\"], num_proc=4)\r\
+          \n\r\nmax_input_length_in_sec = 4.0\r\ntk_audio_dataset[\"train\"] = tk_audio_dataset[\"\
+          train\"].filter(lambda x: x < max_input_length_in_sec * processor.feature_extractor.sampling_rate,\
+          \ input_columns=[\"input_length\"])\r\n\r\n\r\n\r\ndata_collator = DataCollatorCTCWithPadding(processor=processor,\
+          \ padding=True)\r\nwer_metric = load_metric(\"wer\")\r\n\r\n\r\nmodel =\
+          \ Wav2Vec2ForCTC.from_pretrained(\r\n    \"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+          ,\r\n    ctc_loss_reduction=\"mean\", \r\n    pad_token_id=processor.tokenizer.pad_token_id,\r\
+          \n    )\r\n# print(model)\r\n\r\n\r\nmodel.freeze_feature_encoder()\r\n\r\
+          \n\r\ntraining_args = TrainingArguments(\r\n  output_dir=\"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+          ,\r\n  group_by_length=True,\r\n  per_device_train_batch_size=8,\r\n  evaluation_strategy=\"\
+          steps\",\r\n  num_train_epochs=50,\r\n  fp16=True,\r\n  gradient_checkpointing=True,\r\
+          \n  save_steps=500,\r\n  eval_steps=100, #originally it was 500\r\n  logging_steps=100,\
+          \ #originally it was 500\r\n  learning_rate=1e-4,\r\n  weight_decay=0.005,\r\
+          \n  warmup_steps=100, #original it was 1000\r\n  save_total_limit=2,\r\n\
+          \  push_to_hub=False, #uncommnet later if necessary\r\n)\r\n\r\ntrainer\
+          \ = Trainer(\r\n    model=model,\r\n    data_collator=data_collator,\r\n\
+          \    args=training_args,\r\n    compute_metrics=compute_metrics,\r\n   \
+          \ train_dataset=tk_audio_dataset[\"train\"],\r\n    eval_dataset=tk_audio_dataset[\"\
+          test\"],\r\n    tokenizer=processor.feature_extractor,\r\n)\r\n\r\ntrainer.train()\r\
+          \ntrainer.save_model()\r\n"
+        updatedAt: '2022-07-07T23:54:34.476Z'
+      numEdits: 0
+      reactions: []
+    id: 62c7723a90f49dcd21fb2d99
+    type: comment
+  author: thardindubph200
+  content: "I'm finetuning Wav2vec2 on a downstream task. Before finetuning, I checked\
+    \ the accuracy of pre-trained one comes in transformers library and it gives okay\
+    \ results. But when I finetune, the accuracy becomes Zero. I must be doing something\
+    \ wrong. Can someone help me figure out?\r\n\r\n![Screenshot from 2022-07-08 07-50-12.png](https://cdn-uploads.huggingface.co/production/uploads/1657237839880-62bd023d8d752f69a9718b98.png)\r\
+    \n![image.png](https://cdn-uploads.huggingface.co/production/uploads/1657237899230-62bd023d8d752f69a9718b98.png)\r\
+    \n\r\n##******* code ********\r\nfrom datasets import load_dataset, load_metric\r\
+    \nfrom create_dataset import CreateAndLoadDataset\r\nfrom transformers import\
+    \ Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2ForCTC\r\
+    \nfrom transformers import TrainingArguments, Trainer\r\nfrom datasets import\
+    \ ClassLabel\r\nimport random\r\nimport pandas as pd\r\nimport json\r\nimport\
+    \ time\r\nimport sounddevice\r\nimport numpy as np\r\nimport torch\r\n\r\nfrom\
+    \ dataclasses import dataclass, field\r\nfrom typing import Any, Dict, List, Optional,\
+    \ Union\r\n\r\n@dataclass\r\nclass DataCollatorCTCWithPadding:\r\n    \"\"\"\r\
+    \n    Data collator that will dynamically pad the inputs received.\r\n    Args:\r\
+    \n        processor (:class:`~transformers.Wav2Vec2Processor`)\r\n           \
+    \ The processor used for proccessing the data.\r\n        padding (:obj:`bool`,\
+    \ :obj:`str` or :class:`~transformers.tokenization_utils_base.PaddingStrategy`,\
+    \ `optional`, defaults to :obj:`True`):\r\n            Select a strategy to pad\
+    \ the returned sequences (according to the model's padding side and padding index)\r\
+    \n            among:\r\n            * :obj:`True` or :obj:`'longest'`: Pad to\
+    \ the longest sequence in the batch (or no padding if only a single\r\n      \
+    \        sequence if provided).\r\n            * :obj:`'max_length'`: Pad to a\
+    \ maximum length specified with the argument :obj:`max_length` or to the\r\n \
+    \             maximum acceptable input length for the model if that argument is\
+    \ not provided.\r\n            * :obj:`False` or :obj:`'do_not_pad'` (default):\
+    \ No padding (i.e., can output a batch with sequences of\r\n              different\
+    \ lengths).\r\n    \"\"\"\r\n\r\n    processor: Wav2Vec2Processor\r\n    padding:\
+    \ Union[bool, str] = True\r\n\r\n    def __call__(self, features: List[Dict[str,\
+    \ Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:\r\n        # split\
+    \ inputs and labels since they have to be of different lenghts and need\r\n  \
+    \      # different padding methods\r\n        input_features = [{\"input_values\"\
+    : feature[\"input_values\"]} for feature in features]\r\n        label_features\
+    \ = [{\"input_ids\": feature[\"labels\"]} for feature in features]\r\n\r\n   \
+    \     batch = self.processor.pad(\r\n            input_features,\r\n         \
+    \   padding=self.padding,\r\n            return_tensors=\"pt\",\r\n        )\r\
+    \n        with self.processor.as_target_processor():\r\n            labels_batch\
+    \ = self.processor.pad(\r\n                label_features,\r\n               \
+    \ padding=self.padding,\r\n                return_tensors=\"pt\",\r\n        \
+    \    )\r\n\r\n        # replace padding with -100 to ignore loss correctly\r\n\
+    \        labels = labels_batch[\"input_ids\"].masked_fill(labels_batch.attention_mask.ne(1),\
+    \ -100)\r\n\r\n        batch[\"labels\"] = labels\r\n\r\n        return batch\r\
+    \n\r\ndef show_random_elements(dataset, num_examples=10):\r\n\tassert num_examples\
+    \ <= len(dataset), \"Can't pick more elements than there are in the dataset.\"\
+    \r\n\tpicks = []\r\n\tfor _ in range(num_examples):\r\n\t\tpick = random.randint(0,\
+    \ len(dataset)-1)\r\n\t\twhile pick in picks:\r\n\t\t\tpick = random.randint(0,\
+    \ len(dataset)-1)\r\n\t\tpicks.append(pick)\r\n\t\r\n\tdf = pd.DataFrame(dataset[picks])\r\
+    \n\tprint(df)\r\n\r\ndef extract_all_chars(batch):\r\n\tall_text = \" \".join(batch[\"\
+    transcript\"])\r\n\tvocab = list(set(all_text))\r\n\treturn {\"vocab\": [vocab],\
+    \ \"all_text\": [all_text]}\r\n\r\ndef prepare_dataset(batch):\r\n\taudio = batch[\"\
+    audio_filepath\"]\r\n\r\n\t# batched output is \"un-batched\" to ensure mapping\
+    \ is correct\r\n\tbatch[\"input_values\"] = processor(audio[\"array\"], sampling_rate=audio[\"\
+    sampling_rate\"]).input_values[0]\r\n\tbatch[\"input_length\"] = len(batch[\"\
+    input_values\"])\r\n\t\r\n\twith processor.as_target_processor():\r\n\t\tbatch[\"\
+    labels\"] = processor(batch[\"transcript\"]).input_ids\r\n\treturn batch\r\n\r\
+    \ndef compute_metrics(pred):\r\n    pred_logits = pred.predictions\r\n    pred_ids\
+    \ = np.argmax(pred_logits, axis=-1)\r\n\r\n    pred.label_ids[pred.label_ids ==\
+    \ -100] = processor.tokenizer.pad_token_id\r\n\r\n    pred_str = processor.batch_decode(pred_ids)\r\
+    \n    # we do not want to group tokens when computing the metrics\r\n    label_str\
+    \ = processor.batch_decode(pred.label_ids, group_tokens=False)\r\n\r\n    wer\
+    \ = wer_metric.compute(predictions=pred_str, references=label_str)\r\n\r\n   \
+    \ return {\"wer\": wer}\r\n\r\ntk_audio_dataset = CreateAndLoadDataset()\r\nprint(tk_audio_dataset)\r\
+    \nprint(len(tk_audio_dataset[\"train\"]))\r\n\r\nshow_random_elements(tk_audio_dataset[\"\
+    train\"], num_examples=10)\r\nvocabs = tk_audio_dataset.map(extract_all_chars,\
+    \ batched=True, batch_size=-1, keep_in_memory=True, remove_columns=tk_audio_dataset.column_names[\"\
+    train\"])\r\n\r\nvocab_list = list(set(vocabs[\"train\"][\"vocab\"][0]) | set(vocabs[\"\
+    test\"][\"vocab\"][0]))\r\nvocab_dict = {v: k for k, v in enumerate(vocab_list)}\r\
+    \nprint(vocab_dict)\r\n\r\nvocab_dict[\"|\"] = vocab_dict[\" \"]\r\ndel vocab_dict[\"\
+    \ \"]\r\n\r\nvocab_dict[\"[UNK]\"] = len(vocab_dict)\r\nvocab_dict[\"[PAD]\"]\
+    \ = len(vocab_dict)\r\nprint(len(vocab_dict))\r\n\r\nwith open('vocab.json', 'w')\
+    \ as vocab_file:\r\n\tjson.dump(vocab_dict, vocab_file)\r\n\r\ntokenizer = Wav2Vec2CTCTokenizer(\"\
+    ./vocab.json\", unk_token=\"[UNK]\", pad_token=\"[PAD]\", word_delimiter_token=\"\
+    |\")\r\n# tokenizer = Wav2Vec2Processor.from_pretrained(\"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git/wav2vec2-base-960h\"\
+    )\r\nfeature_extractor = Wav2Vec2FeatureExtractor(feature_size=1, sampling_rate=16000,\
+    \ padding_value=0.0, do_normalize=True, return_attention_mask=False)\r\nprocessor\
+    \ = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)\r\
+    \n\r\nprint(tk_audio_dataset['train'][0][\"audio_filepath\"])\r\n\r\n\r\n#####\
+    \ Play a random data file to check\r\nrand_int = random.randint(0, len(tk_audio_dataset[\"\
+    train\"]))\r\nprint(tk_audio_dataset[\"train\"][rand_int][\"transcript\"])\r\n\
+    temp_sound_example = np.asarray(tk_audio_dataset[\"train\"][rand_int][\"audio_filepath\"\
+    ][\"array\"])\r\nprint(temp_sound_example)\r\nsounddevice.play(temp_sound_example,\
+    \ 16000)  # releases GIL\r\ntime.sleep(5)  \r\n######\r\n\r\n\r\n##### Check details\
+    \ of a random file\r\nrand_int = random.randint(0, len(tk_audio_dataset[\"train\"\
+    ]))\r\nprint(\"Target text:\", tk_audio_dataset[\"train\"][rand_int][\"transcript\"\
+    ])\r\nprint(\"Input array shape:\", np.asarray(tk_audio_dataset[\"train\"][rand_int][\"\
+    audio_filepath\"][\"array\"]).shape)\r\nprint(\"Sampling rate:\", tk_audio_dataset[\"\
+    train\"][rand_int][\"audio_filepath\"][\"sampling_rate\"])\r\n######\r\n\r\n#the\
+    \ following line and the function is calls may be wrong. Need to rethink of having\
+    \ 3 columns in the dataset. accoording to the Colab instructions, resampling use\
+    \ 'audio' column and not the 'audio_filepath' column. \r\ntk_audio_dataset = tk_audio_dataset.map(prepare_dataset,\
+    \ remove_columns=tk_audio_dataset.column_names[\"train\"], num_proc=4)\r\n\r\n\
+    max_input_length_in_sec = 4.0\r\ntk_audio_dataset[\"train\"] = tk_audio_dataset[\"\
+    train\"].filter(lambda x: x < max_input_length_in_sec * processor.feature_extractor.sampling_rate,\
+    \ input_columns=[\"input_length\"])\r\n\r\n\r\n\r\ndata_collator = DataCollatorCTCWithPadding(processor=processor,\
+    \ padding=True)\r\nwer_metric = load_metric(\"wer\")\r\n\r\n\r\nmodel = Wav2Vec2ForCTC.from_pretrained(\r\
+    \n    \"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+    ,\r\n    ctc_loss_reduction=\"mean\", \r\n    pad_token_id=processor.tokenizer.pad_token_id,\r\
+    \n    )\r\n# print(model)\r\n\r\n\r\nmodel.freeze_feature_encoder()\r\n\r\n\r\n\
+    training_args = TrainingArguments(\r\n  output_dir=\"/home/tharindu/Desktop/black/codes/BPH/wav2vec2/model_git_copy/wav2vec2-base-960h\"\
+    ,\r\n  group_by_length=True,\r\n  per_device_train_batch_size=8,\r\n  evaluation_strategy=\"\
+    steps\",\r\n  num_train_epochs=50,\r\n  fp16=True,\r\n  gradient_checkpointing=True,\r\
+    \n  save_steps=500,\r\n  eval_steps=100, #originally it was 500\r\n  logging_steps=100,\
+    \ #originally it was 500\r\n  learning_rate=1e-4,\r\n  weight_decay=0.005,\r\n\
+    \  warmup_steps=100, #original it was 1000\r\n  save_total_limit=2,\r\n  push_to_hub=False,\
+    \ #uncommnet later if necessary\r\n)\r\n\r\ntrainer = Trainer(\r\n    model=model,\r\
+    \n    data_collator=data_collator,\r\n    args=training_args,\r\n    compute_metrics=compute_metrics,\r\
+    \n    train_dataset=tk_audio_dataset[\"train\"],\r\n    eval_dataset=tk_audio_dataset[\"\
+    test\"],\r\n    tokenizer=processor.feature_extractor,\r\n)\r\n\r\ntrainer.train()\r\
+    \ntrainer.save_model()\r\n"
+  created_at: 2022-07-07 22:54:34+00:00
+  edited: false
+  hidden: false
+  id: 62c7723a90f49dcd21fb2d99
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/5f1647a31c70dbc0177a4ecc93a6f770.svg
+      fullname: Tharindu Kaluarachchi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thardindubph200
+      type: user
+    createdAt: '2022-07-07T23:55:03.000Z'
+    data:
+      from: 'Wav2vec2 finetuning - Evaluation WER does not go '
+      to: Wav2vec2 finetuning - Evaluation WER does not change
+    id: 62c772576a092eda1f22c7e1
+    type: title-change
+  author: thardindubph200
+  created_at: 2022-07-07 22:55:03+00:00
+  id: 62c772576a092eda1f22c7e1
+  new_title: Wav2vec2 finetuning - Evaluation WER does not change
+  old_title: 'Wav2vec2 finetuning - Evaluation WER does not go '
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5f1647a31c70dbc0177a4ecc93a6f770.svg
+      fullname: Tharindu Kaluarachchi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thardindubph200
+      type: user
+    createdAt: '2022-07-08T00:07:26.000Z'
+    data:
+      edited: true
+      editors:
+      - thardindubph200
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5f1647a31c70dbc0177a4ecc93a6f770.svg
+          fullname: Tharindu Kaluarachchi
+          isHf: false
+          isPro: false
+          name: thardindubph200
+          type: user
+        html: '<p>Screenshots of the codes for creating the dataset:</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238579083-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-02-32.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238579083-62bd023d8d752f69a9718b98.png"></a></p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238632121-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-03-39.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238632121-62bd023d8d752f69a9718b98.png"></a></p>
+
+          <p>Screenshots of the finetuning code - the code is also copy pasted above
+          but it doesn''t appear well. so attaching screenshots here.</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238842556-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-04-41.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238842556-62bd023d8d752f69a9718b98.png"></a><br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238842023-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-05-13.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238842023-62bd023d8d752f69a9718b98.png"></a><br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238842673-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-05-32.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238842673-62bd023d8d752f69a9718b98.png"></a><br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1657238897749-62bd023d8d752f69a9718b98.png"><img
+          alt="Screenshot from 2022-07-08 08-08-03.png" src="https://cdn-uploads.huggingface.co/production/uploads/1657238897749-62bd023d8d752f69a9718b98.png"></a></p>
+
+          '
+        raw: 'Screenshots of the codes for creating the dataset:
+
+
+          ![Screenshot from 2022-07-08 08-02-32.png](https://cdn-uploads.huggingface.co/production/uploads/1657238579083-62bd023d8d752f69a9718b98.png)
+
+
+          ![Screenshot from 2022-07-08 08-03-39.png](https://cdn-uploads.huggingface.co/production/uploads/1657238632121-62bd023d8d752f69a9718b98.png)
+
+
+          Screenshots of the finetuning code - the code is also copy pasted above
+          but it doesn''t appear well. so attaching screenshots here.
+
+
+          ![Screenshot from 2022-07-08 08-04-41.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842556-62bd023d8d752f69a9718b98.png)
+
+          ![Screenshot from 2022-07-08 08-05-13.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842023-62bd023d8d752f69a9718b98.png)
+
+          ![Screenshot from 2022-07-08 08-05-32.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842673-62bd023d8d752f69a9718b98.png)
+
+          ![Screenshot from 2022-07-08 08-08-03.png](https://cdn-uploads.huggingface.co/production/uploads/1657238897749-62bd023d8d752f69a9718b98.png)
+
+          '
+        updatedAt: '2022-07-08T00:08:19.803Z'
+      numEdits: 1
+      reactions: []
+    id: 62c7753e90f49dcd21fb5075
+    type: comment
+  author: thardindubph200
+  content: 'Screenshots of the codes for creating the dataset:
+
+
+    ![Screenshot from 2022-07-08 08-02-32.png](https://cdn-uploads.huggingface.co/production/uploads/1657238579083-62bd023d8d752f69a9718b98.png)
+
+
+    ![Screenshot from 2022-07-08 08-03-39.png](https://cdn-uploads.huggingface.co/production/uploads/1657238632121-62bd023d8d752f69a9718b98.png)
+
+
+    Screenshots of the finetuning code - the code is also copy pasted above but it
+    doesn''t appear well. so attaching screenshots here.
+
+
+    ![Screenshot from 2022-07-08 08-04-41.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842556-62bd023d8d752f69a9718b98.png)
+
+    ![Screenshot from 2022-07-08 08-05-13.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842023-62bd023d8d752f69a9718b98.png)
+
+    ![Screenshot from 2022-07-08 08-05-32.png](https://cdn-uploads.huggingface.co/production/uploads/1657238842673-62bd023d8d752f69a9718b98.png)
+
+    ![Screenshot from 2022-07-08 08-08-03.png](https://cdn-uploads.huggingface.co/production/uploads/1657238897749-62bd023d8d752f69a9718b98.png)
+
+    '
+  created_at: 2022-07-07 23:07:26+00:00
+  edited: true
+  hidden: false
+  id: 62c7753e90f49dcd21fb5075
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: facebook/wav2vec2-large-960h
+repo_type: model
+status: open
+target_branch: null
+title: Wav2vec2 finetuning - Evaluation WER does not change

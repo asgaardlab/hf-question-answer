@@ -1,0 +1,181 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: yonting
+conflicting_files: null
+created_at: 2023-03-09 20:52:42+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/928f02ca7768f3dbd4bc4df546266d4c.svg
+      fullname: yonting
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yonting
+      type: user
+    createdAt: '2023-03-09T20:52:42.000Z'
+    data:
+      edited: true
+      editors:
+      - yonting
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/928f02ca7768f3dbd4bc4df546266d4c.svg
+          fullname: yonting
+          isHf: false
+          isPro: false
+          name: yonting
+          type: user
+        html: "<p>Thanks for making these models available. They're really useful.</p>\n\
+          <p>Would it be possible to look at correcting the generation config? The\
+          \ model <a href=\"https://huggingface.co/olm/olm-gpt2-latest/blob/main/config.json\"\
+          >config.json</a> has <code>\"bos_token_id\": 50256</code> and <code>\"eos_token_id\"\
+          : 50256</code>, which I think is correct for the original gpt2, but not\
+          \ for the tokenizer used for this model. It think it might also be possible\
+          \ to set <code>\"pad_token_id\"</code>.</p>\n<p>I noticed this when attempting\
+          \ to generate from an empty string:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-meta\">&gt;&gt;&gt; </span><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> pipeline\n\
+          <span class=\"hljs-meta\">&gt;&gt;&gt; </span>generator = pipeline(\n<span\
+          \ class=\"hljs-meta\">... </span>    <span class=\"hljs-string\">\"text-generation\"\
+          </span>,\n<span class=\"hljs-meta\">... </span>    model=<span class=\"\
+          hljs-string\">\"olm/olm-gpt2-latest\"</span>,\n<span class=\"hljs-meta\"\
+          >... </span>    bad_words_ids=[[<span class=\"hljs-number\">0</span>,<span\
+          \ class=\"hljs-number\">2</span>]],\n<span class=\"hljs-meta\">... </span>)\n\
+          <span class=\"hljs-meta\">&gt;&gt;&gt; </span>generator(<span class=\"hljs-string\"\
+          >\"\"</span>)\nThe attention mask <span class=\"hljs-keyword\">and</span>\
+          \ the pad token <span class=\"hljs-built_in\">id</span> were <span class=\"\
+          hljs-keyword\">not</span> <span class=\"hljs-built_in\">set</span>. As a\
+          \ consequence, you may observe unexpected behavior. Please <span class=\"\
+          hljs-keyword\">pass</span> your <span class=\"hljs-built_in\">input</span><span\
+          \ class=\"hljs-string\">'s `attention_mask` to obtain reliable results.</span>\n\
+          <span class=\"hljs-string\">Setting `pad_token_id` to `eos_token_id`:50256\
+          \ for open-end generation.</span>\n<span class=\"hljs-string\">A decoder-only\
+          \ architecture is being used, but right-padding was detected! For correct\
+          \ generation results, please set `padding_side='</span>left<span class=\"\
+          hljs-string\">'` when initializing the tokenizer.</span>\n<span class=\"\
+          hljs-string\">[{'</span>generated_text<span class=\"hljs-string\">': '</span>\
+          \ Gasp &lt;more text&gt;<span class=\"hljs-string\">'}]</span>\n</code></pre>\n\
+          <p>The first token we get is <code>50256</code>:</p>\n<pre><code class=\"\
+          language-python\"><span class=\"hljs-meta\">&gt;&gt;&gt; </span>generator.tokenizer.convert_ids_to_tokens(<span\
+          \ class=\"hljs-number\">50256</span>)\n<span class=\"hljs-string\">'\u0120\
+          Gasp'</span>\n</code></pre>\n<p>You can fix this by modifying some parameters\
+          \ in the pipeline, but then you get a warning about the generation config:</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-meta\">&gt;&gt;&gt;\
+          \ </span>generator = pipeline(\n<span class=\"hljs-meta\">... </span>  \
+          \  <span class=\"hljs-string\">\"text-generation\"</span>,\n<span class=\"\
+          hljs-meta\">... </span>    model=<span class=\"hljs-string\">\"olm/olm-gpt2-latest\"\
+          </span>,\n<span class=\"hljs-meta\">... </span>    bad_words_ids=[[<span\
+          \ class=\"hljs-number\">0</span>,<span class=\"hljs-number\">2</span>]],\n\
+          <span class=\"hljs-meta\">... </span>    bos_token_id=<span class=\"hljs-number\"\
+          >0</span>,\n<span class=\"hljs-meta\">... </span>    pad_token_id=<span\
+          \ class=\"hljs-number\">1</span>,\n<span class=\"hljs-meta\">... </span>\
+          \    eos_token_id=<span class=\"hljs-number\">2</span>,\n<span class=\"\
+          hljs-meta\">... </span>)\n<span class=\"hljs-meta\">&gt;&gt;&gt; </span>generator(<span\
+          \ class=\"hljs-string\">\"\"</span>)\n&lt;path&gt;/site-packages/transformers/generation/utils.py:<span\
+          \ class=\"hljs-number\">1186</span>: UserWarning: You have modified the\
+          \ pretrained model configuration to control generation. This <span class=\"\
+          hljs-keyword\">is</span> a deprecated strategy to control generation <span\
+          \ class=\"hljs-keyword\">and</span> will be removed soon, <span class=\"\
+          hljs-keyword\">in</span> a future version. Please use a generation configuration\
+          \ file (see https://huggingface.co/docs/transformers/main_classes/text_generation)\n\
+          \  warnings.warn(\n&lt;path&gt;/site-packages/transformers/generation/utils.py:<span\
+          \ class=\"hljs-number\">1273</span>: UserWarning: Neither `max_length` nor\
+          \ `max_new_tokens` has been <span class=\"hljs-built_in\">set</span>, `max_length`\
+          \ will default to <span class=\"hljs-number\">50</span> (`generation_config.max_length`).\
+          \ Controlling `max_length` via the config <span class=\"hljs-keyword\">is</span>\
+          \ deprecated <span class=\"hljs-keyword\">and</span> `max_length` will be\
+          \ removed <span class=\"hljs-keyword\">from</span> the config <span class=\"\
+          hljs-keyword\">in</span> v5 of Transformers -- we recommend using `max_new_tokens`\
+          \ to control the maximum length of the generation.\n  warnings.warn(\n[{<span\
+          \ class=\"hljs-string\">'generated_text'</span>: <span class=\"hljs-string\"\
+          >'&lt;more text&gt;'</span>}]\n</code></pre>\n"
+        raw: "Thanks for making these models available. They're really useful.\n\n\
+          Would it be possible to look at correcting the generation config? The model\
+          \ [config.json](https://huggingface.co/olm/olm-gpt2-latest/blob/main/config.json)\
+          \ has `\"bos_token_id\": 50256` and `\"eos_token_id\": 50256`, which I think\
+          \ is correct for the original gpt2, but not for the tokenizer used for this\
+          \ model. It think it might also be possible to set `\"pad_token_id\"`.\n\
+          \nI noticed this when attempting to generate from an empty string:\n```python\n\
+          >>> from transformers import pipeline\n>>> generator = pipeline(\n...  \
+          \   \"text-generation\",\n...     model=\"olm/olm-gpt2-latest\",\n...  \
+          \   bad_words_ids=[[0,2]],\n... )\n>>> generator(\"\")\nThe attention mask\
+          \ and the pad token id were not set. As a consequence, you may observe unexpected\
+          \ behavior. Please pass your input's `attention_mask` to obtain reliable\
+          \ results.\nSetting `pad_token_id` to `eos_token_id`:50256 for open-end\
+          \ generation.\nA decoder-only architecture is being used, but right-padding\
+          \ was detected! For correct generation results, please set `padding_side='left'`\
+          \ when initializing the tokenizer.\n[{'generated_text': ' Gasp <more text>'}]\n\
+          ```\nThe first token we get is `50256`:\n```python\n>>> generator.tokenizer.convert_ids_to_tokens(50256)\n\
+          '\u0120Gasp'\n```\n\nYou can fix this by modifying some parameters in the\
+          \ pipeline, but then you get a warning about the generation config:\n```python\n\
+          >>> generator = pipeline(\n...     \"text-generation\",\n...     model=\"\
+          olm/olm-gpt2-latest\",\n...     bad_words_ids=[[0,2]],\n...     bos_token_id=0,\n\
+          ...     pad_token_id=1,\n...     eos_token_id=2,\n... )\n>>> generator(\"\
+          \")\n<path>/site-packages/transformers/generation/utils.py:1186: UserWarning:\
+          \ You have modified the pretrained model configuration to control generation.\
+          \ This is a deprecated strategy to control generation and will be removed\
+          \ soon, in a future version. Please use a generation configuration file\
+          \ (see https://huggingface.co/docs/transformers/main_classes/text_generation)\n\
+          \  warnings.warn(\n<path>/site-packages/transformers/generation/utils.py:1273:\
+          \ UserWarning: Neither `max_length` nor `max_new_tokens` has been set, `max_length`\
+          \ will default to 50 (`generation_config.max_length`). Controlling `max_length`\
+          \ via the config is deprecated and `max_length` will be removed from the\
+          \ config in v5 of Transformers -- we recommend using `max_new_tokens` to\
+          \ control the maximum length of the generation.\n  warnings.warn(\n[{'generated_text':\
+          \ '<more text>'}]\n```"
+        updatedAt: '2023-03-09T20:53:21.604Z'
+      numEdits: 1
+      reactions: []
+    id: 640a471a1ee054d66a6e1737
+    type: comment
+  author: yonting
+  content: "Thanks for making these models available. They're really useful.\n\nWould\
+    \ it be possible to look at correcting the generation config? The model [config.json](https://huggingface.co/olm/olm-gpt2-latest/blob/main/config.json)\
+    \ has `\"bos_token_id\": 50256` and `\"eos_token_id\": 50256`, which I think is\
+    \ correct for the original gpt2, but not for the tokenizer used for this model.\
+    \ It think it might also be possible to set `\"pad_token_id\"`.\n\nI noticed this\
+    \ when attempting to generate from an empty string:\n```python\n>>> from transformers\
+    \ import pipeline\n>>> generator = pipeline(\n...     \"text-generation\",\n...\
+    \     model=\"olm/olm-gpt2-latest\",\n...     bad_words_ids=[[0,2]],\n... )\n\
+    >>> generator(\"\")\nThe attention mask and the pad token id were not set. As\
+    \ a consequence, you may observe unexpected behavior. Please pass your input's\
+    \ `attention_mask` to obtain reliable results.\nSetting `pad_token_id` to `eos_token_id`:50256\
+    \ for open-end generation.\nA decoder-only architecture is being used, but right-padding\
+    \ was detected! For correct generation results, please set `padding_side='left'`\
+    \ when initializing the tokenizer.\n[{'generated_text': ' Gasp <more text>'}]\n\
+    ```\nThe first token we get is `50256`:\n```python\n>>> generator.tokenizer.convert_ids_to_tokens(50256)\n\
+    '\u0120Gasp'\n```\n\nYou can fix this by modifying some parameters in the pipeline,\
+    \ but then you get a warning about the generation config:\n```python\n>>> generator\
+    \ = pipeline(\n...     \"text-generation\",\n...     model=\"olm/olm-gpt2-latest\"\
+    ,\n...     bad_words_ids=[[0,2]],\n...     bos_token_id=0,\n...     pad_token_id=1,\n\
+    ...     eos_token_id=2,\n... )\n>>> generator(\"\")\n<path>/site-packages/transformers/generation/utils.py:1186:\
+    \ UserWarning: You have modified the pretrained model configuration to control\
+    \ generation. This is a deprecated strategy to control generation and will be\
+    \ removed soon, in a future version. Please use a generation configuration file\
+    \ (see https://huggingface.co/docs/transformers/main_classes/text_generation)\n\
+    \  warnings.warn(\n<path>/site-packages/transformers/generation/utils.py:1273:\
+    \ UserWarning: Neither `max_length` nor `max_new_tokens` has been set, `max_length`\
+    \ will default to 50 (`generation_config.max_length`). Controlling `max_length`\
+    \ via the config is deprecated and `max_length` will be removed from the config\
+    \ in v5 of Transformers -- we recommend using `max_new_tokens` to control the\
+    \ maximum length of the generation.\n  warnings.warn(\n[{'generated_text': '<more\
+    \ text>'}]\n```"
+  created_at: 2023-03-09 20:52:42+00:00
+  edited: true
+  hidden: false
+  id: 640a471a1ee054d66a6e1737
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: olm/olm-gpt2-latest
+repo_type: model
+status: open
+target_branch: null
+title: Generation config -  "bos_token_id", "eos_token_id", "pad_token_id"

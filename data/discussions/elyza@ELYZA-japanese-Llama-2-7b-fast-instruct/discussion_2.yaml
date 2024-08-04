@@ -1,0 +1,446 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: conceptofmind
+conflicting_files: null
+created_at: 2023-09-20 21:13:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+      fullname: Enrico Shippole
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: conceptofmind
+      type: user
+    createdAt: '2023-09-20T22:13:51.000Z'
+    data:
+      edited: false
+      editors:
+      - conceptofmind
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9301224946975708
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+          fullname: Enrico Shippole
+          isHf: false
+          isPro: true
+          name: conceptofmind
+          type: user
+        html: '<p>Thank you for your great work.</p>
+
+          <p>I was wondering if you could point to reference code for this:</p>
+
+          <p>"Therefore, we decided to use the average of the vectors corresponding
+          to the original tokens of embed_tokensand each vector) as the initial value
+          of the vectors corresponding to the added tokens (e.g., the vector of ).
+          "</p>
+
+          <p>I greatly appreciate your help.</p>
+
+          '
+        raw: "Thank you for your great work.\r\n\r\nI was wondering if you could point\
+          \ to reference code for this:\r\n\r\n\"Therefore, we decided to use the\
+          \ average of the vectors corresponding to the original tokens of embed_tokensand\
+          \ each vector) as the initial value of the vectors corresponding to the\
+          \ added tokens (e.g., the vector of ). \"\r\n\r\nI greatly appreciate your\
+          \ help."
+        updatedAt: '2023-09-20T22:13:51.969Z'
+      numEdits: 0
+      reactions: []
+    id: 650b6e9f8c70d4ad9e1c5447
+    type: comment
+  author: conceptofmind
+  content: "Thank you for your great work.\r\n\r\nI was wondering if you could point\
+    \ to reference code for this:\r\n\r\n\"Therefore, we decided to use the average\
+    \ of the vectors corresponding to the original tokens of embed_tokensand each\
+    \ vector) as the initial value of the vectors corresponding to the added tokens\
+    \ (e.g., the vector of ). \"\r\n\r\nI greatly appreciate your help."
+  created_at: 2023-09-20 21:13:51+00:00
+  edited: false
+  hidden: false
+  id: 650b6e9f8c70d4ad9e1c5447
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1613624421073-noauth.jpeg?w=200&h=200&f=face
+      fullname: Tomoaki Nakamura
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: tyoyo
+      type: user
+    createdAt: '2023-09-21T03:14:43.000Z'
+    data:
+      edited: true
+      editors:
+      - tyoyo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6549269556999207
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1613624421073-noauth.jpeg?w=200&h=200&f=face
+          fullname: Tomoaki Nakamura
+          isHf: false
+          isPro: true
+          name: tyoyo
+          type: user
+        html: "<p>Thanks for your interest in our model.</p>\n<p>We took the average\
+          \ of the vectors as our initial value with the following code:</p>\n<pre><code\
+          \ class=\"language-py\">model = AutoModelForCausalLM.from_pretrained(<span\
+          \ class=\"hljs-string\">\"meta-llama/Llama-2-7b-chat-hf\"</span>, torch_dtype=torch.float16)\n\
+          \n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >replace_emb_by_original_emb_mean</span>(<span class=\"hljs-params\">new2old_index_mapping</span>):\n\
+          \    <span class=\"hljs-comment\"># new2old_index_mapping: {new_id1: [old_id_1_1,\
+          \ old_id_1_2, ...], new_id2: [old_id_2_1, ...], ...}</span>\n    <span class=\"\
+          hljs-comment\"># input_emb: model.model.embed_tokens.weight</span>\n   \
+          \ <span class=\"hljs-comment\"># output_emb: model.lm_head.weight</span>\n\
+          \    <span class=\"hljs-keyword\">with</span> torch.no_grad():\n       \
+          \ <span class=\"hljs-keyword\">for</span> new_id, old_ids <span class=\"\
+          hljs-keyword\">in</span> new2old_index_mapping.items():\n            new_input_emb\
+          \ = torch.mean(\n                torch.stack(\n                    [model.model.embed_tokens.weight[old_id]\
+          \ <span class=\"hljs-keyword\">for</span> old_id <span class=\"hljs-keyword\"\
+          >in</span> old_ids],\n                    dim=<span class=\"hljs-number\"\
+          >0</span>\n                ),\n                dim=<span class=\"hljs-number\"\
+          >0</span>\n            )\n            model.model.embed_tokens.weight[new_id]\
+          \ = new_input_emb\n\n            new_output_emb = torch.mean(\n        \
+          \        torch.stack(\n                    [model.lm_head.weight[old_id]\
+          \ <span class=\"hljs-keyword\">for</span> old_id <span class=\"hljs-keyword\"\
+          >in</span> old_ids],\n                    dim=<span class=\"hljs-number\"\
+          >0</span>\n                ),\n                dim=<span class=\"hljs-number\"\
+          >0</span>\n            )\n            model.lm_head.weight[new_id] = new_output_emb\n\
+          \nreplace_emb_by_original_emb_mean(new2old_index_mapping)\n</code></pre>\n"
+        raw: "Thanks for your interest in our model.\n\nWe took the average of the\
+          \ vectors as our initial value with the following code:\n\n```py\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\"meta-llama/Llama-2-7b-chat-hf\"\
+          , torch_dtype=torch.float16)\n\ndef replace_emb_by_original_emb_mean(new2old_index_mapping):\n\
+          \    # new2old_index_mapping: {new_id1: [old_id_1_1, old_id_1_2, ...], new_id2:\
+          \ [old_id_2_1, ...], ...}\n    # input_emb: model.model.embed_tokens.weight\n\
+          \    # output_emb: model.lm_head.weight\n    with torch.no_grad():\n   \
+          \     for new_id, old_ids in new2old_index_mapping.items():\n          \
+          \  new_input_emb = torch.mean(\n                torch.stack(\n         \
+          \           [model.model.embed_tokens.weight[old_id] for old_id in old_ids],\n\
+          \                    dim=0\n                ),\n                dim=0\n\
+          \            )\n            model.model.embed_tokens.weight[new_id] = new_input_emb\n\
+          \n            new_output_emb = torch.mean(\n                torch.stack(\n\
+          \                    [model.lm_head.weight[old_id] for old_id in old_ids],\n\
+          \                    dim=0\n                ),\n                dim=0\n\
+          \            )\n            model.lm_head.weight[new_id] = new_output_emb\n\
+          \nreplace_emb_by_original_emb_mean(new2old_index_mapping)\n```"
+        updatedAt: '2023-09-22T05:17:40.172Z'
+      numEdits: 1
+      reactions:
+      - count: 2
+        reaction: "\u2764\uFE0F"
+        users:
+        - conceptofmind
+        - Atsunori
+    id: 650bb5231f2949b99e62e1e5
+    type: comment
+  author: tyoyo
+  content: "Thanks for your interest in our model.\n\nWe took the average of the vectors\
+    \ as our initial value with the following code:\n\n```py\nmodel = AutoModelForCausalLM.from_pretrained(\"\
+    meta-llama/Llama-2-7b-chat-hf\", torch_dtype=torch.float16)\n\ndef replace_emb_by_original_emb_mean(new2old_index_mapping):\n\
+    \    # new2old_index_mapping: {new_id1: [old_id_1_1, old_id_1_2, ...], new_id2:\
+    \ [old_id_2_1, ...], ...}\n    # input_emb: model.model.embed_tokens.weight\n\
+    \    # output_emb: model.lm_head.weight\n    with torch.no_grad():\n        for\
+    \ new_id, old_ids in new2old_index_mapping.items():\n            new_input_emb\
+    \ = torch.mean(\n                torch.stack(\n                    [model.model.embed_tokens.weight[old_id]\
+    \ for old_id in old_ids],\n                    dim=0\n                ),\n   \
+    \             dim=0\n            )\n            model.model.embed_tokens.weight[new_id]\
+    \ = new_input_emb\n\n            new_output_emb = torch.mean(\n              \
+    \  torch.stack(\n                    [model.lm_head.weight[old_id] for old_id\
+    \ in old_ids],\n                    dim=0\n                ),\n              \
+    \  dim=0\n            )\n            model.lm_head.weight[new_id] = new_output_emb\n\
+    \nreplace_emb_by_original_emb_mean(new2old_index_mapping)\n```"
+  created_at: 2023-09-21 02:14:43+00:00
+  edited: true
+  hidden: false
+  id: 650bb5231f2949b99e62e1e5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+      fullname: Enrico Shippole
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: conceptofmind
+      type: user
+    createdAt: '2023-09-22T02:57:59.000Z'
+    data:
+      edited: false
+      editors:
+      - conceptofmind
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9383143186569214
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+          fullname: Enrico Shippole
+          isHf: false
+          isPro: true
+          name: conceptofmind
+          type: user
+        html: '<p>Hello,</p>
+
+          <p>Thank you for the additional information.</p>
+
+          <p>My follow-up question to this would be what is supposed to be used for
+          the <code>new2old_index_mapping.items()</code>? I do understand the averaging
+          code but it is still unclear to me what the input into the <code>replace_emb_by_original_emb_mean</code>
+          function would be.</p>
+
+          <p>Again, thank you for all your help.</p>
+
+          '
+        raw: 'Hello,
+
+
+          Thank you for the additional information.
+
+
+          My follow-up question to this would be what is supposed to be used for the
+          `new2old_index_mapping.items()`? I do understand the averaging code but
+          it is still unclear to me what the input into the `replace_emb_by_original_emb_mean`
+          function would be.
+
+
+          Again, thank you for all your help.'
+        updatedAt: '2023-09-22T02:57:59.090Z'
+      numEdits: 0
+      reactions: []
+    id: 650d02b781637a0a91721aac
+    type: comment
+  author: conceptofmind
+  content: 'Hello,
+
+
+    Thank you for the additional information.
+
+
+    My follow-up question to this would be what is supposed to be used for the `new2old_index_mapping.items()`?
+    I do understand the averaging code but it is still unclear to me what the input
+    into the `replace_emb_by_original_emb_mean` function would be.
+
+
+    Again, thank you for all your help.'
+  created_at: 2023-09-22 01:57:59+00:00
+  edited: false
+  hidden: false
+  id: 650d02b781637a0a91721aac
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1613624421073-noauth.jpeg?w=200&h=200&f=face
+      fullname: Tomoaki Nakamura
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: tyoyo
+      type: user
+    createdAt: '2023-09-22T05:24:07.000Z'
+    data:
+      edited: true
+      editors:
+      - tyoyo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5945032238960266
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1613624421073-noauth.jpeg?w=200&h=200&f=face
+          fullname: Tomoaki Nakamura
+          isHf: false
+          isPro: true
+          name: tyoyo
+          type: user
+        html: "<p>new2old_index_mapping is a variable that holds what sequence of\
+          \ tokens the new tokenizer token was represented by in the old tokenizer.</p>\n\
+          <p>example:</p>\n<pre><code class=\"language-py\"><span class=\"hljs-meta\"\
+          >&gt;&gt;&gt; </span><span class=\"hljs-built_in\">print</span>(tokenizer_new.encode(<span\
+          \ class=\"hljs-string\">\"\u3053\u3093\u306B\u3061\u306F\"</span>, add_special_tokens=<span\
+          \ class=\"hljs-literal\">False</span>)[<span class=\"hljs-number\">1</span>:])\n\
+          [<span class=\"hljs-number\">41737</span>]\n<span class=\"hljs-meta\">&gt;&gt;&gt;\
+          \ </span><span class=\"hljs-built_in\">print</span>(tokenizer_old.encode(<span\
+          \ class=\"hljs-string\">\"\u3053\u3093\u306B\u3061\u306F\"</span>, add_special_tokens=<span\
+          \ class=\"hljs-literal\">False</span>)[<span class=\"hljs-number\">1</span>:])\n\
+          [<span class=\"hljs-number\">30589</span>, <span class=\"hljs-number\">30389</span>,\
+          \ <span class=\"hljs-number\">30353</span>, <span class=\"hljs-number\"\
+          >30644</span>, <span class=\"hljs-number\">30449</span>]\n\nnew2old_index_mapping\
+          \ = {\n    <span class=\"hljs-number\">41737</span>: [<span class=\"hljs-number\"\
+          >30589</span>, <span class=\"hljs-number\">30389</span>, <span class=\"\
+          hljs-number\">30353</span>, <span class=\"hljs-number\">30644</span>, <span\
+          \ class=\"hljs-number\">30449</span>],\n    ...\n}\n</code></pre>\n"
+        raw: "new2old_index_mapping is a variable that holds what sequence of tokens\
+          \ the new tokenizer token was represented by in the old tokenizer.\n\nexample:\n\
+          \n```py\n>>> print(tokenizer_new.encode(\"\u3053\u3093\u306B\u3061\u306F\
+          \", add_special_tokens=False)[1:])\n[41737]\n>>> print(tokenizer_old.encode(\"\
+          \u3053\u3093\u306B\u3061\u306F\", add_special_tokens=False)[1:])\n[30589,\
+          \ 30389, 30353, 30644, 30449]\n\nnew2old_index_mapping = {\n    41737: [30589,\
+          \ 30389, 30353, 30644, 30449],\n    ...\n}\n```"
+        updatedAt: '2023-09-22T05:27:03.684Z'
+      numEdits: 2
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - Atsunori
+    id: 650d24f7a459fa1a442b551b
+    type: comment
+  author: tyoyo
+  content: "new2old_index_mapping is a variable that holds what sequence of tokens\
+    \ the new tokenizer token was represented by in the old tokenizer.\n\nexample:\n\
+    \n```py\n>>> print(tokenizer_new.encode(\"\u3053\u3093\u306B\u3061\u306F\", add_special_tokens=False)[1:])\n\
+    [41737]\n>>> print(tokenizer_old.encode(\"\u3053\u3093\u306B\u3061\u306F\", add_special_tokens=False)[1:])\n\
+    [30589, 30389, 30353, 30644, 30449]\n\nnew2old_index_mapping = {\n    41737: [30589,\
+    \ 30389, 30353, 30644, 30449],\n    ...\n}\n```"
+  created_at: 2023-09-22 04:24:07+00:00
+  edited: true
+  hidden: false
+  id: 650d24f7a459fa1a442b551b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+      fullname: Enrico Shippole
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: conceptofmind
+      type: user
+    createdAt: '2023-09-22T21:57:17.000Z'
+    data:
+      edited: true
+      editors:
+      - conceptofmind
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9385839700698853
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+          fullname: Enrico Shippole
+          isHf: false
+          isPro: true
+          name: conceptofmind
+          type: user
+        html: '<p>Thank you for the additional clarification.</p>
+
+          <p>Is the training corpus being encoded twice for building the mapping during
+          training?</p>
+
+          <p>Is the code for preparing and training the models available anywhere
+          for us to review? That way I do not have to bother you with more questions.</p>
+
+          '
+        raw: 'Thank you for the additional clarification.
+
+
+          Is the training corpus being encoded twice for building the mapping during
+          training?
+
+
+          Is the code for preparing and training the models available anywhere for
+          us to review? That way I do not have to bother you with more questions.'
+        updatedAt: '2023-09-25T01:00:54.090Z'
+      numEdits: 2
+      reactions: []
+    id: 650e0dbd78cecf7541067628
+    type: comment
+  author: conceptofmind
+  content: 'Thank you for the additional clarification.
+
+
+    Is the training corpus being encoded twice for building the mapping during training?
+
+
+    Is the code for preparing and training the models available anywhere for us to
+    review? That way I do not have to bother you with more questions.'
+  created_at: 2023-09-22 20:57:17+00:00
+  edited: true
+  hidden: false
+  id: 650e0dbd78cecf7541067628
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+      fullname: Enrico Shippole
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: conceptofmind
+      type: user
+    createdAt: '2023-09-24T17:02:31.000Z'
+    data:
+      edited: true
+      editors:
+      - conceptofmind
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9945071935653687
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1fc3a89359e0c6823fc4b16bfead7834.svg
+          fullname: Enrico Shippole
+          isHf: false
+          isPro: true
+          name: conceptofmind
+          type: user
+        html: '<p>Do you have a specific way in which you would want to be cited for
+          helping out with this code as well? I try to thoroughly acknowledge every
+          individual. </p>
+
+          '
+        raw: 'Do you have a specific way in which you would want to be cited for helping
+          out with this code as well? I try to thoroughly acknowledge every individual. '
+        updatedAt: '2023-09-24T17:04:21.304Z'
+      numEdits: 2
+      reactions: []
+    id: 65106ba7a0f2ffbecaa2a824
+    type: comment
+  author: conceptofmind
+  content: 'Do you have a specific way in which you would want to be cited for helping
+    out with this code as well? I try to thoroughly acknowledge every individual. '
+  created_at: 2023-09-24 16:02:31+00:00
+  edited: true
+  hidden: false
+  id: 65106ba7a0f2ffbecaa2a824
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: elyza/ELYZA-japanese-Llama-2-7b-fast-instruct
+repo_type: model
+status: open
+target_branch: null
+title: Average of vectors

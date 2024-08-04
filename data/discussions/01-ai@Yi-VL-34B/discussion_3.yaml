@@ -1,0 +1,549 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kldsaid
+conflicting_files: null
+created_at: 2024-01-22 09:17:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0e5707c9a73a2c3df2d94ca2bfe181cb.svg
+      fullname: wang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kldsaid
+      type: user
+    createdAt: '2024-01-22T09:17:06.000Z'
+    data:
+      edited: true
+      editors:
+      - kldsaid
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5609248876571655
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0e5707c9a73a2c3df2d94ca2bfe181cb.svg
+          fullname: wang
+          isHf: false
+          isPro: false
+          name: kldsaid
+          type: user
+        html: '<p>Great work! However, it seems like your model is incompatible with
+          LLava''s inference code, which contradicts what you mentioned in the readme.<br>A
+          ValueError is raised when loading your model with llava''s code. The full
+          trace log is listed below:</p>
+
+          <pre><code>python -m llava.serve.model_worker --host 0.0.0.0 --controller
+          http://localhost:8700 --port 8702 --worker http://localhost:8702 --model-path
+          ./Yi-VL-34B
+
+          2024-01-22 16:47:40 | INFO | model_worker | Loading the model Yi-VL-34B
+          on worker 4333f5 ...
+
+          2024-01-22 16:47:40 | ERROR | stderr | Traceback (most recent call last):
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+          line 194, in _run_module_as_main
+
+          2024-01-22 16:47:40 | ERROR | stderr |     return _run_code(code, main_globals,
+          None,
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+          line 87, in _run_code
+
+          2024-01-22 16:47:40 | ERROR | stderr |     exec(code, run_globals)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+          line 275, in &lt;module&gt;
+
+          2024-01-22 16:47:40 | ERROR | stderr |     worker = ModelWorker(args.controller_address,
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+          line 65, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.tokenizer, self.model, self.image_processor,
+          self.context_len = load_pretrained_model(
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/builder.py",
+          line 127, in load_pretrained_model
+
+          2024-01-22 16:47:40 | ERROR | stderr |     model = AutoModelForCausalLM.from_pretrained(model_path,
+          low_cpu_mem_usage=True, **kwargs)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py",
+          line 566, in from_pretrained
+
+          2024-01-22 16:47:40 | ERROR | stderr |     return model_class.from_pretrained(
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/modeling_utils.py",
+          line 3462, in from_pretrained
+
+          2024-01-22 16:47:40 | ERROR | stderr |     model = cls(config, *model_args,
+          **model_kwargs)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+          line 45, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.model = LlavaLlamaModel(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+          line 37, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     super(LlavaLlamaModel, self).__init__(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/llava_arch.py",
+          line 34, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.mm_projector = build_vision_projector(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/multimodal_projector/builder.py",
+          line 51, in build_vision_projector
+
+          2024-01-22 16:47:40 | ERROR | stderr |     raise ValueError(f''Unknown projector
+          type: {projector_type}'')
+
+          2024-01-22 16:47:40 | ERROR | stderr | ValueError: Unknown projector type:
+          mlp2x_gelu_Norm
+
+          </code></pre>
+
+          <p>I looked into the builder.py in llava''s repo, and found that your projector
+          type <code>mlp2x_gelu_Norm</code> is not supported <a rel="nofollow" href="https://github.com/haotian-liu/LLaVA/blob/9a26bd1435b4ac42c282757f2c16d34226575e96/llava/model/multimodal_projector/builder.py#L39">https://github.com/haotian-liu/LLaVA/blob/9a26bd1435b4ac42c282757f2c16d34226575e96/llava/model/multimodal_projector/builder.py#L39</a></p>
+
+          <pre><code># original code in llava repo....
+
+          # mlp2x_gelu_Norm can''t be matched
+
+          mlp_gelu_match = re.match(r''^mlp(\d+)x_gelu$'', projector_type)
+
+          </code></pre>
+
+          <p>Besides, I''m confused that there is no "mm_projector.bin" in your model
+          files, which is basically not supported by llava''s model loading logic.<br>Looking
+          forward to your relply!</p>
+
+          '
+        raw: 'Great work! However, it seems like your model is incompatible with LLava''s
+          inference code, which contradicts what you mentioned in the readme.
+
+          A ValueError is raised when loading your model with llava''s code. The full
+          trace log is listed below:
+
+          ```
+
+          python -m llava.serve.model_worker --host 0.0.0.0 --controller http://localhost:8700
+          --port 8702 --worker http://localhost:8702 --model-path ./Yi-VL-34B
+
+          2024-01-22 16:47:40 | INFO | model_worker | Loading the model Yi-VL-34B
+          on worker 4333f5 ...
+
+          2024-01-22 16:47:40 | ERROR | stderr | Traceback (most recent call last):
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+          line 194, in _run_module_as_main
+
+          2024-01-22 16:47:40 | ERROR | stderr |     return _run_code(code, main_globals,
+          None,
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+          line 87, in _run_code
+
+          2024-01-22 16:47:40 | ERROR | stderr |     exec(code, run_globals)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+          line 275, in <module>
+
+          2024-01-22 16:47:40 | ERROR | stderr |     worker = ModelWorker(args.controller_address,
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+          line 65, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.tokenizer, self.model, self.image_processor,
+          self.context_len = load_pretrained_model(
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/builder.py",
+          line 127, in load_pretrained_model
+
+          2024-01-22 16:47:40 | ERROR | stderr |     model = AutoModelForCausalLM.from_pretrained(model_path,
+          low_cpu_mem_usage=True, **kwargs)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py",
+          line 566, in from_pretrained
+
+          2024-01-22 16:47:40 | ERROR | stderr |     return model_class.from_pretrained(
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/modeling_utils.py",
+          line 3462, in from_pretrained
+
+          2024-01-22 16:47:40 | ERROR | stderr |     model = cls(config, *model_args,
+          **model_kwargs)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+          line 45, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.model = LlavaLlamaModel(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+          line 37, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     super(LlavaLlamaModel, self).__init__(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/llava_arch.py",
+          line 34, in __init__
+
+          2024-01-22 16:47:40 | ERROR | stderr |     self.mm_projector = build_vision_projector(config)
+
+          2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/multimodal_projector/builder.py",
+          line 51, in build_vision_projector
+
+          2024-01-22 16:47:40 | ERROR | stderr |     raise ValueError(f''Unknown projector
+          type: {projector_type}'')
+
+          2024-01-22 16:47:40 | ERROR | stderr | ValueError: Unknown projector type:
+          mlp2x_gelu_Norm
+
+          ```
+
+          I looked into the builder.py in llava''s repo, and found that your projector
+          type `mlp2x_gelu_Norm` is not supported https://github.com/haotian-liu/LLaVA/blob/9a26bd1435b4ac42c282757f2c16d34226575e96/llava/model/multimodal_projector/builder.py#L39
+
+          ```
+
+          # original code in llava repo....
+
+          # mlp2x_gelu_Norm can''t be matched
+
+          mlp_gelu_match = re.match(r''^mlp(\d+)x_gelu$'', projector_type)
+
+          ```
+
+          Besides, I''m confused that there is no "mm_projector.bin" in your model
+          files, which is basically not supported by llava''s model loading logic.
+
+          Looking forward to your relply!'
+        updatedAt: '2024-01-22T09:18:18.700Z'
+      numEdits: 1
+      reactions: []
+    id: 65ae32920a7472caacdb1a95
+    type: comment
+  author: kldsaid
+  content: 'Great work! However, it seems like your model is incompatible with LLava''s
+    inference code, which contradicts what you mentioned in the readme.
+
+    A ValueError is raised when loading your model with llava''s code. The full trace
+    log is listed below:
+
+    ```
+
+    python -m llava.serve.model_worker --host 0.0.0.0 --controller http://localhost:8700
+    --port 8702 --worker http://localhost:8702 --model-path ./Yi-VL-34B
+
+    2024-01-22 16:47:40 | INFO | model_worker | Loading the model Yi-VL-34B on worker
+    4333f5 ...
+
+    2024-01-22 16:47:40 | ERROR | stderr | Traceback (most recent call last):
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+    line 194, in _run_module_as_main
+
+    2024-01-22 16:47:40 | ERROR | stderr |     return _run_code(code, main_globals,
+    None,
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/runpy.py",
+    line 87, in _run_code
+
+    2024-01-22 16:47:40 | ERROR | stderr |     exec(code, run_globals)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+    line 275, in <module>
+
+    2024-01-22 16:47:40 | ERROR | stderr |     worker = ModelWorker(args.controller_address,
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/serve/model_worker.py",
+    line 65, in __init__
+
+    2024-01-22 16:47:40 | ERROR | stderr |     self.tokenizer, self.model, self.image_processor,
+    self.context_len = load_pretrained_model(
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/builder.py",
+    line 127, in load_pretrained_model
+
+    2024-01-22 16:47:40 | ERROR | stderr |     model = AutoModelForCausalLM.from_pretrained(model_path,
+    low_cpu_mem_usage=True, **kwargs)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/models/auto/auto_factory.py",
+    line 566, in from_pretrained
+
+    2024-01-22 16:47:40 | ERROR | stderr |     return model_class.from_pretrained(
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/paddle_python/torch201/lib/python3.8/site-packages/transformers/modeling_utils.py",
+    line 3462, in from_pretrained
+
+    2024-01-22 16:47:40 | ERROR | stderr |     model = cls(config, *model_args, **model_kwargs)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+    line 45, in __init__
+
+    2024-01-22 16:47:40 | ERROR | stderr |     self.model = LlavaLlamaModel(config)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/language_model/llava_llama.py",
+    line 37, in __init__
+
+    2024-01-22 16:47:40 | ERROR | stderr |     super(LlavaLlamaModel, self).__init__(config)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/llava_arch.py",
+    line 34, in __init__
+
+    2024-01-22 16:47:40 | ERROR | stderr |     self.mm_projector = build_vision_projector(config)
+
+    2024-01-22 16:47:40 | ERROR | stderr |   File "/root/paddlejob/workspace/log/code/LLaVA/llava/model/multimodal_projector/builder.py",
+    line 51, in build_vision_projector
+
+    2024-01-22 16:47:40 | ERROR | stderr |     raise ValueError(f''Unknown projector
+    type: {projector_type}'')
+
+    2024-01-22 16:47:40 | ERROR | stderr | ValueError: Unknown projector type: mlp2x_gelu_Norm
+
+    ```
+
+    I looked into the builder.py in llava''s repo, and found that your projector type
+    `mlp2x_gelu_Norm` is not supported https://github.com/haotian-liu/LLaVA/blob/9a26bd1435b4ac42c282757f2c16d34226575e96/llava/model/multimodal_projector/builder.py#L39
+
+    ```
+
+    # original code in llava repo....
+
+    # mlp2x_gelu_Norm can''t be matched
+
+    mlp_gelu_match = re.match(r''^mlp(\d+)x_gelu$'', projector_type)
+
+    ```
+
+    Besides, I''m confused that there is no "mm_projector.bin" in your model files,
+    which is basically not supported by llava''s model loading logic.
+
+    Looking forward to your relply!'
+  created_at: 2024-01-22 09:17:06+00:00
+  edited: true
+  hidden: false
+  id: 65ae32920a7472caacdb1a95
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9fbbb8eaaa7b19752b336cf228d4679e.svg
+      fullname: lucasjin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: lucasjin
+      type: user
+    createdAt: '2024-01-22T09:57:01.000Z'
+    data:
+      edited: false
+      editors:
+      - lucasjin
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5478730201721191
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9fbbb8eaaa7b19752b336cf228d4679e.svg
+          fullname: lucasjin
+          isHf: false
+          isPro: false
+          name: lucasjin
+          type: user
+        html: '<p>Same here</p>
+
+          '
+        raw: Same here
+        updatedAt: '2024-01-22T09:57:01.725Z'
+      numEdits: 0
+      reactions: []
+    id: 65ae3bed5741acfe6c07ead3
+    type: comment
+  author: lucasjin
+  content: Same here
+  created_at: 2024-01-22 09:57:01+00:00
+  edited: false
+  hidden: false
+  id: 65ae3bed5741acfe6c07ead3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/0e5707c9a73a2c3df2d94ca2bfe181cb.svg
+      fullname: wang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kldsaid
+      type: user
+    createdAt: '2024-01-22T09:58:20.000Z'
+    data:
+      from: Can't inference with LLava's latest inference code
+      to: Can't load model&inference with LLava's latest inference code
+    id: 65ae3c3cf4c5859037af673c
+    type: title-change
+  author: kldsaid
+  created_at: 2024-01-22 09:58:20+00:00
+  id: 65ae3c3cf4c5859037af673c
+  new_title: Can't load model&inference with LLava's latest inference code
+  old_title: Can't inference with LLava's latest inference code
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c9298bab1cdc1d0b6ffe4c7c5ef18bd5.svg
+      fullname: mengziyang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zylate
+      type: user
+    createdAt: '2024-01-22T11:17:00.000Z'
+    data:
+      edited: false
+      editors:
+      - zylate
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5254195928573608
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c9298bab1cdc1d0b6ffe4c7c5ef18bd5.svg
+          fullname: mengziyang
+          isHf: false
+          isPro: false
+          name: zylate
+          type: user
+        html: "<p>mm_projector.bin is generated only when you use parameter tune_mm_projector,\
+          \ so it not a problem<br>seems twice lager than original llava<br><a rel=\"\
+          nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/653614073f4248157d60ccdc/5z5TzpSkf2NUx7QVOL29w.png\"\
+          ><img alt=\"\u622A\u5C4F2024-01-22 17.59.13.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/653614073f4248157d60ccdc/5z5TzpSkf2NUx7QVOL29w.png\"\
+          ></a><br> I  wonder why yi mlp parameter in pytorch_model.bin.index.json\
+          \ is different from llava</p>\n"
+        raw: "mm_projector.bin is generated only when you use parameter tune_mm_projector,\
+          \ so it not a problem\nseems twice lager than original llava\n![\u622A\u5C4F\
+          2024-01-22 17.59.13.png](https://cdn-uploads.huggingface.co/production/uploads/653614073f4248157d60ccdc/5z5TzpSkf2NUx7QVOL29w.png)\n\
+          \ I  wonder why yi mlp parameter in pytorch_model.bin.index.json is different\
+          \ from llava\n"
+        updatedAt: '2024-01-22T11:17:00.127Z'
+      numEdits: 0
+      reactions: []
+    id: 65ae4eac5033724f453b657f
+    type: comment
+  author: zylate
+  content: "mm_projector.bin is generated only when you use parameter tune_mm_projector,\
+    \ so it not a problem\nseems twice lager than original llava\n![\u622A\u5C4F2024-01-22\
+    \ 17.59.13.png](https://cdn-uploads.huggingface.co/production/uploads/653614073f4248157d60ccdc/5z5TzpSkf2NUx7QVOL29w.png)\n\
+    \ I  wonder why yi mlp parameter in pytorch_model.bin.index.json is different\
+    \ from llava\n"
+  created_at: 2024-01-22 11:17:00+00:00
+  edited: false
+  hidden: false
+  id: 65ae4eac5033724f453b657f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c9298bab1cdc1d0b6ffe4c7c5ef18bd5.svg
+      fullname: mengziyang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zylate
+      type: user
+    createdAt: '2024-01-23T04:38:00.000Z'
+    data:
+      edited: false
+      editors:
+      - zylate
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.2054959535598755
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c9298bab1cdc1d0b6ffe4c7c5ef18bd5.svg
+          fullname: mengziyang
+          isHf: false
+          isPro: false
+          name: zylate
+          type: user
+        html: "<pre><code>if projector_type == 'mlp2x_gelu_Norm':\n    return nn.Sequential(\n\
+          \        nn.Linear(config.mm_hidden_size, config.hidden_size),\n       \
+          \ nn.GELU(),\n        nn.LayerNorm(config.hidden_size),\n        nn.Linear(config.hidden_size,\
+          \ config.hidden_size),\n        nn.LayerNorm(config.hidden_size)\n    )\n\
+          </code></pre>\n<p>add in build_vision_projector, problem solved</p>\n"
+        raw: "    if projector_type == 'mlp2x_gelu_Norm':\n        return nn.Sequential(\n\
+          \            nn.Linear(config.mm_hidden_size, config.hidden_size),\n   \
+          \         nn.GELU(),\n            nn.LayerNorm(config.hidden_size),\n  \
+          \          nn.Linear(config.hidden_size, config.hidden_size),\n        \
+          \    nn.LayerNorm(config.hidden_size)\n        )\nadd in build_vision_projector,\
+          \ problem solved"
+        updatedAt: '2024-01-23T04:38:00.326Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - baconnier
+    id: 65af42a806916708a91fd436
+    type: comment
+  author: zylate
+  content: "    if projector_type == 'mlp2x_gelu_Norm':\n        return nn.Sequential(\n\
+    \            nn.Linear(config.mm_hidden_size, config.hidden_size),\n         \
+    \   nn.GELU(),\n            nn.LayerNorm(config.hidden_size),\n            nn.Linear(config.hidden_size,\
+    \ config.hidden_size),\n            nn.LayerNorm(config.hidden_size)\n       \
+    \ )\nadd in build_vision_projector, problem solved"
+  created_at: 2024-01-23 04:38:00+00:00
+  edited: false
+  hidden: false
+  id: 65af42a806916708a91fd436
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/0e5707c9a73a2c3df2d94ca2bfe181cb.svg
+      fullname: wang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kldsaid
+      type: user
+    createdAt: '2024-01-23T15:56:10.000Z'
+    data:
+      status: closed
+    id: 65afe19a37fdb5d6b972d7ed
+    type: status-change
+  author: kldsaid
+  created_at: 2024-01-23 15:56:10+00:00
+  id: 65afe19a37fdb5d6b972d7ed
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: 01-ai/Yi-VL-34B
+repo_type: model
+status: closed
+target_branch: null
+title: Can't load model&inference with LLava's latest inference code

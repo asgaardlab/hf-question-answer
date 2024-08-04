@@ -1,0 +1,4 @@
+## https://huggingface.co/SmilingWolf/wd-v1-4-swinv2-tagger-v2/discussions/1
+
+contains_question: yes
+question_part: Just wanted to give you a shout-out for creating an awesome model! Your expertise and hard work are truly impressive, and your model has made a significant impact in the field of generative AI. I'm writing to ask if you've considered releasing the model under an open-source license? I think it would be great to make the model available to more people for research and development purposes. Also, I'm interested in using the model for commercial purposes, so I'd like to request permission for that as well.

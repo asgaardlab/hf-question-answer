@@ -1,0 +1,5 @@
+## https://huggingface.co/ctheodoris/Geneformer/discussions/210
+
+contains_question: yes
+
+question_part: I was trying to fine-tune the model using spatial transcriptome data. However, I found that about 60% of spots/cells have a length of 2048 after tokenization on a spatial transcriptome dataset, which means that a considerable part of the spots are truncated. There is no problem when the spot length slightly exceeds the maximum input size, but will it be problematic if the spot length exceeds the maximum input size significantly? And whether spatial transcriptome data can be used for this model? I noticed that you have proposed "selecting 2048 genes in an unbiased way from the initial bulk RNAseq to present to the model, for example by intersecting with genes detected in that cell type in usual single cell RNAseq data." in a previous similar discussion https://huggingface.co/ctheodoris/Geneformer/discussions/134. May I use a similar way such as intersecting genes using scRNA-seq data from adjacent tissue sections as an alternative strategy?

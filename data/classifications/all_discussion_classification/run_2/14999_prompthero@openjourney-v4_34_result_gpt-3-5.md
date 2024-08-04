@@ -1,0 +1,4 @@
+## https://huggingface.co/prompthero/openjourney-v4/discussions/34
+
+contains_question: yes
+question_part: The math with training images, steps, and epochs doesn't sum up right to me, can you clarify? If you used 60K training images, and trained for 3 epochs, you need 60K * 3 = 180K steps of training steps. With 4.5k steps and 3 epochs, the amount of training images should be 4.5k / 3 = 1.5k images. Obviously, something is not summing up in the stated numbers. Can you please clarify what exactly am I getting wrong, is there an error in the original statement? Also, it's very interesting to know how you were able to scrape 60K images from Midjorney, and how long the training took.

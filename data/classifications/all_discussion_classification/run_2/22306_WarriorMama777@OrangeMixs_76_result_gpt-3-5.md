@@ -1,0 +1,6 @@
+## https://huggingface.co/WarriorMama777/OrangeMixs/discussions/76
+
+contains_question: yes
+
+question_part: how to load model.safetensors (that has been uploaded in gdrive) to sd webui google colab
+I have the file model.safetensors already in my gdrive (downloaded from civitai) & i want to load the model to SD webui but i can't make it works. Any tips?

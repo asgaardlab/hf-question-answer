@@ -1,0 +1,1980 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: tehnlulz
+conflicting_files: null
+created_at: 2023-05-19 09:33:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6eb09c827215fcb0890cd16347db8a9.svg
+      fullname: Matt
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tehnlulz
+      type: user
+    createdAt: '2023-05-19T10:33:44.000Z'
+    data:
+      edited: false
+      editors:
+      - tehnlulz
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6eb09c827215fcb0890cd16347db8a9.svg
+          fullname: Matt
+          isHf: false
+          isPro: false
+          name: tehnlulz
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/TheBloke\"\
+          >@<span class=\"underline\">TheBloke</span></a></span>\n\n\t</span></span>:</p>\n\
+          <p>Sorry to bother you here, was just hoping you might point out where I'm\
+          \ noobing out here. Running on Linux with AutoGPTQ, and keep getting this\
+          \ error:</p>\n<pre><code>ValueError: QuantLinear() does not have a parameter\
+          \ or a buffer named bias.\n</code></pre>\n<p>Full script here (running on\
+          \ linux)</p>\n<pre><code>from transformers import AutoTokenizer, pipeline,\
+          \ logging\nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+          \nquantized_model_dir = \"/notebooks/Manticore-13B-GPTQ/\"\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=False)\n\
+          \ndef get_config(has_desc_act):\n    return BaseQuantizeConfig(\n      \
+          \  bits=4,  # quantize model to 4-bit\n        group_size=128,  # it is\
+          \ recommended to set the value to 128\n        desc_act=has_desc_act\n \
+          \   )\n\ndef get_model(model_base, triton, model_has_desc_act):\n    if\
+          \ model_has_desc_act:\n        model_suffix=\"latest.act-order\"\n    else:\n\
+          \        model_suffix=\"compat.no-act-order\"\n    return AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\
+          \ use_safetensors=True, model_basename=f\"Manticore-13B-GPTQ-4bit-128g.no-act-order\"\
+          , device=\"cuda:0\", use_triton=triton, quantize_config=get_config(model_has_desc_act))\n\
+          \n# Prevent printing spurious transformers error\nlogging.set_verbosity(logging.CRITICAL)\n\
+          \nprompt='''### Human: Write a story about llamas\n### Assistant:'''\n\n\
+          model = get_model(\"/notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\"\
+          , triton=False, model_has_desc_act=False)\n#/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\n\
+          pipe = pipeline(\n    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n\
+          \    max_length=512,\n    temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n\
+          )\n\nprint(\"### Inference:\")\nprint(pipe(prompt)[0]['generated_text'])\n\
+          </code></pre>\n<p>Not sure if you can spot where I'm going wrong here, but\
+          \ keep on getting this error. More detail on the error below:</p>\n<pre><code>CUDA\
+          \ extension not installed.\n/usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:807:\
+          \ UserWarning: TypedStorage is deprecated. It will be removed in the future\
+          \ and UntypedStorage will be the only storage class. This should only matter\
+          \ to you if you are using storages directly.  To access UntypedStorage directly,\
+          \ use tensor.untyped_storage() instead of tensor.storage()\n  with safe_open(checkpoint_file,\
+          \ framework=\"pt\") as f:\nThe safetensors archive passed at /notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\
+          \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+          \ method. Defaulting to 'pt' metadata.\n\u256D\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u256E\n\u2502 /notebooks/2222.py:28 in &lt;module&gt;\
+          \                                                                \u2502\n\
+          \u2502                                                                 \
+          \                                 \u2502\n\u2502   25 prompt='''### Human:\
+          \ Write a story about llamas                                           \
+          \  \u2502\n\u2502   26 ### Assistant:'''                               \
+          \                                            \u2502\n\u2502   27       \
+          \                                                                      \
+          \                \u2502\n\u2502 \u2771 28 model = get_model(\"/notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-ord\
+          \    \u2502\n\u2502   29 #/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\
+          \                                    \u2502\n\u2502   30 pipe = pipeline(\
+          \                                                                      \
+          \      \u2502\n\u2502   31 \u2502   \"text-generation\",               \
+          \                                                       \u2502\n\u2502 \
+          \                                                                      \
+          \                           \u2502\n\u2502 /notebooks/2222.py:20 in get_model\
+          \                                                               \u2502\n\
+          \u2502                                                                 \
+          \                                 \u2502\n\u2502   17 \u2502   \u2502  \
+          \ model_suffix=\"latest.act-order\"                                    \
+          \                 \u2502\n\u2502   18 \u2502   else:                   \
+          \                                                                \u2502\n\
+          \u2502   19 \u2502   \u2502   model_suffix=\"compat.no-act-order\"     \
+          \                                             \u2502\n\u2502 \u2771 20 \u2502\
+          \   return AutoGPTQForCausalLM.from_quantized(quantized_model_dir, use_safetensors=True,\
+          \    \u2502\n\u2502   21                                               \
+          \                                              \u2502\n\u2502   22 # Prevent\
+          \ printing spurious transformers error                                 \
+          \             \u2502\n\u2502   23 logging.set_verbosity(logging.CRITICAL)\
+          \                                                     \u2502\n\u2502   \
+          \                                                                      \
+          \                         \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/auto.py:71\
+          \ in from_quantized           \u2502\n\u2502                           \
+          \                                                                      \
+          \ \u2502\n\u2502   68 \u2502   \u2502   model_type = check_and_get_model_type(save_dir)\
+          \                                     \u2502\n\u2502   69 \u2502   \u2502\
+          \   quant_func = GPTQ_CAUSAL_LM_MODEL_MAP[model_type].from_quantized   \
+          \                 \u2502\n\u2502   70 \u2502   \u2502   keywords = {key:\
+          \ kwargs[key] for key in signature(quant_func).parameters if key     \u2502\
+          \n\u2502 \u2771 71 \u2502   \u2502   return quant_func(                \
+          \                                                  \u2502\n\u2502   72 \u2502\
+          \   \u2502   \u2502   save_dir=save_dir,                               \
+          \                               \u2502\n\u2502   73 \u2502   \u2502   \u2502\
+          \   device_map=device_map,                                             \
+          \             \u2502\n\u2502   74 \u2502   \u2502   \u2502   max_memory=max_memory,\
+          \                                                          \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/_base.py:589\
+          \ in from_quantized         \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   586 \u2502   \u2502   \u2502   \u2502   no_split_module_classes=[cls.layer_type]\
+          \                                   \u2502\n\u2502   587 \u2502   \u2502\
+          \   \u2502   )                                                         \
+          \                     \u2502\n\u2502   588 \u2502   \u2502   if strict:\
+          \                                                                      \
+          \   \u2502\n\u2502 \u2771 589 \u2502   \u2502   \u2502   model = accelerate.load_checkpoint_and_dispatch(\
+          \                               \u2502\n\u2502   590 \u2502   \u2502   \u2502\
+          \   \u2502   model,                                                    \
+          \                 \u2502\n\u2502   591 \u2502   \u2502   \u2502   \u2502\
+          \   model_save_name,                                                   \
+          \        \u2502\n\u2502   592 \u2502   \u2502   \u2502   \u2502   device_map,\
+          \                                                                \u2502\n\
+          \u2502                                                                 \
+          \                                 \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/big_modeling.py:479\
+          \ in                         \u2502\n\u2502 load_checkpoint_and_dispatch\
+          \                                                                     \u2502\
+          \n\u2502                                                               \
+          \                                   \u2502\n\u2502   476 \u2502   \u2502\
+          \   )                                                                  \
+          \                \u2502\n\u2502   477 \u2502   if offload_state_dict is\
+          \ None and device_map is not None and \"disk\" in device_map.va   \u2502\
+          \n\u2502   478 \u2502   \u2502   offload_state_dict = True             \
+          \                                             \u2502\n\u2502 \u2771 479\
+          \ \u2502   load_checkpoint_in_model(                                   \
+          \                           \u2502\n\u2502   480 \u2502   \u2502   model,\
+          \                                                                      \
+          \       \u2502\n\u2502   481 \u2502   \u2502   checkpoint,             \
+          \                                                           \u2502\n\u2502\
+          \   482 \u2502   \u2502   device_map=device_map,                       \
+          \                                      \u2502\n\u2502                  \
+          \                                                                      \
+          \          \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:993\
+          \ in                       \u2502\n\u2502 load_checkpoint_in_model     \
+          \                                                                    \u2502\
+          \n\u2502                                                               \
+          \                                   \u2502\n\u2502    990 \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   set_module_tensor_to_device(model, param_name,\
+          \ \"meta\")                \u2502\n\u2502    991 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   offload_weight(param, param_name, state_dict_folder,\
+          \ index=state_dic  \u2502\n\u2502    992 \u2502   \u2502   \u2502   \u2502\
+          \   else:                                                              \
+          \       \u2502\n\u2502 \u2771  993 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   set_module_tensor_to_device(model, param_name, param_device, value=p\
+          \  \u2502\n\u2502    994 \u2502   \u2502                               \
+          \                                                      \u2502\n\u2502  \
+          \  995 \u2502   \u2502   # Force Python to clean up.                   \
+          \                                    \u2502\n\u2502    996 \u2502   \u2502\
+          \   del checkpoint                                                     \
+          \               \u2502\n\u2502                                         \
+          \                                                         \u2502\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:135\
+          \ in                       \u2502\n\u2502 set_module_tensor_to_device  \
+          \                                                                    \u2502\
+          \n\u2502                                                               \
+          \                                   \u2502\n\u2502    132 \u2502   \u2502\
+          \   tensor_name = splits[-1]                                           \
+          \               \u2502\n\u2502    133 \u2502                           \
+          \                                                              \u2502\n\u2502\
+          \    134 \u2502   if tensor_name not in module._parameters and tensor_name\
+          \ not in module._buffers:      \u2502\n\u2502 \u2771  135 \u2502   \u2502\
+          \   raise ValueError(f\"{module} does not have a parameter or a buffer named\
+          \ {tensor_  \u2502\n\u2502    136 \u2502   is_buffer = tensor_name in module._buffers\
+          \                                            \u2502\n\u2502    137 \u2502\
+          \   old_value = getattr(module, tensor_name)                           \
+          \                   \u2502\n\u2502    138                              \
+          \                                                             \u2502\n\u2570\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u256F\nValueError: QuantLinear() does not have a parameter\
+          \ or a buffer named bias.\n</code></pre>\n<p>Appreciate any help in advance.\
+          \ Cheers. </p>\n"
+        raw: "Hey @TheBloke:\r\n\r\nSorry to bother you here, was just hoping you\
+          \ might point out where I'm noobing out here. Running on Linux with AutoGPTQ,\
+          \ and keep getting this error:\r\n\r\n```\r\nValueError: QuantLinear() does\
+          \ not have a parameter or a buffer named bias.\r\n```\r\n\r\nFull script\
+          \ here (running on linux)\r\n\r\n```\r\nfrom transformers import AutoTokenizer,\
+          \ pipeline, logging\r\nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\r\
+          \n\r\nquantized_model_dir = \"/notebooks/Manticore-13B-GPTQ/\"\r\n\r\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=False)\r\
+          \n\r\ndef get_config(has_desc_act):\r\n    return BaseQuantizeConfig(\r\n\
+          \        bits=4,  # quantize model to 4-bit\r\n        group_size=128, \
+          \ # it is recommended to set the value to 128\r\n        desc_act=has_desc_act\r\
+          \n    )\r\n\r\ndef get_model(model_base, triton, model_has_desc_act):\r\n\
+          \    if model_has_desc_act:\r\n        model_suffix=\"latest.act-order\"\
+          \r\n    else:\r\n        model_suffix=\"compat.no-act-order\"\r\n    return\
+          \ AutoGPTQForCausalLM.from_quantized(quantized_model_dir, use_safetensors=True,\
+          \ model_basename=f\"Manticore-13B-GPTQ-4bit-128g.no-act-order\", device=\"\
+          cuda:0\", use_triton=triton, quantize_config=get_config(model_has_desc_act))\r\
+          \n\r\n# Prevent printing spurious transformers error\r\nlogging.set_verbosity(logging.CRITICAL)\r\
+          \n\r\nprompt='''### Human: Write a story about llamas\r\n### Assistant:'''\r\
+          \n\r\nmodel = get_model(\"/notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\"\
+          , triton=False, model_has_desc_act=False)\r\n#/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\r\
+          \npipe = pipeline(\r\n    \"text-generation\",\r\n    model=model,\r\n \
+          \   tokenizer=tokenizer,\r\n    max_length=512,\r\n    temperature=0.7,\r\
+          \n    top_p=0.95,\r\n    repetition_penalty=1.15\r\n)\r\n\r\nprint(\"###\
+          \ Inference:\")\r\nprint(pipe(prompt)[0]['generated_text'])\r\n```\r\n\r\
+          \nNot sure if you can spot where I'm going wrong here, but keep on getting\
+          \ this error. More detail on the error below:\r\n\r\n```\r\nCUDA extension\
+          \ not installed.\r\n/usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:807:\
+          \ UserWarning: TypedStorage is deprecated. It will be removed in the future\
+          \ and UntypedStorage will be the only storage class. This should only matter\
+          \ to you if you are using storages directly.  To access UntypedStorage directly,\
+          \ use tensor.untyped_storage() instead of tensor.storage()\r\n  with safe_open(checkpoint_file,\
+          \ framework=\"pt\") as f:\r\nThe safetensors archive passed at /notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\
+          \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+          \ method. Defaulting to 'pt' metadata.\r\n\u256D\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u256E\r\n\u2502 /notebooks/2222.py:28 in <module>\
+          \                                                                \u2502\r\
+          \n\u2502                                                               \
+          \                                   \u2502\r\n\u2502   25 prompt='''###\
+          \ Human: Write a story about llamas                                    \
+          \         \u2502\r\n\u2502   26 ### Assistant:'''                      \
+          \                                                     \u2502\r\n\u2502 \
+          \  27                                                                  \
+          \                           \u2502\r\n\u2502 \u2771 28 model = get_model(\"\
+          /notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-ord  \
+          \  \u2502\r\n\u2502   29 #/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\
+          \                                    \u2502\r\n\u2502   30 pipe = pipeline(\
+          \                                                                      \
+          \      \u2502\r\n\u2502   31 \u2502   \"text-generation\",             \
+          \                                                         \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /notebooks/2222.py:20 in get_model\
+          \                                                               \u2502\r\
+          \n\u2502                                                               \
+          \                                   \u2502\r\n\u2502   17 \u2502   \u2502\
+          \   model_suffix=\"latest.act-order\"                                  \
+          \                   \u2502\r\n\u2502   18 \u2502   else:               \
+          \                                                                    \u2502\
+          \r\n\u2502   19 \u2502   \u2502   model_suffix=\"compat.no-act-order\" \
+          \                                                 \u2502\r\n\u2502 \u2771\
+          \ 20 \u2502   return AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\
+          \ use_safetensors=True,    \u2502\r\n\u2502   21                       \
+          \                                                                      \u2502\
+          \r\n\u2502   22 # Prevent printing spurious transformers error         \
+          \                                     \u2502\r\n\u2502   23 logging.set_verbosity(logging.CRITICAL)\
+          \                                                     \u2502\r\n\u2502 \
+          \                                                                      \
+          \                           \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/auto.py:71\
+          \ in from_quantized           \u2502\r\n\u2502                         \
+          \                                                                      \
+          \   \u2502\r\n\u2502   68 \u2502   \u2502   model_type = check_and_get_model_type(save_dir)\
+          \                                     \u2502\r\n\u2502   69 \u2502   \u2502\
+          \   quant_func = GPTQ_CAUSAL_LM_MODEL_MAP[model_type].from_quantized   \
+          \                 \u2502\r\n\u2502   70 \u2502   \u2502   keywords = {key:\
+          \ kwargs[key] for key in signature(quant_func).parameters if key     \u2502\
+          \r\n\u2502 \u2771 71 \u2502   \u2502   return quant_func(              \
+          \                                                    \u2502\r\n\u2502  \
+          \ 72 \u2502   \u2502   \u2502   save_dir=save_dir,                     \
+          \                                         \u2502\r\n\u2502   73 \u2502 \
+          \  \u2502   \u2502   device_map=device_map,                            \
+          \                              \u2502\r\n\u2502   74 \u2502   \u2502   \u2502\
+          \   max_memory=max_memory,                                             \
+          \             \u2502\r\n\u2502                                         \
+          \                                                         \u2502\r\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/_base.py:589\
+          \ in from_quantized         \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   586 \u2502   \u2502   \u2502   \u2502   no_split_module_classes=[cls.layer_type]\
+          \                                   \u2502\r\n\u2502   587 \u2502   \u2502\
+          \   \u2502   )                                                         \
+          \                     \u2502\r\n\u2502   588 \u2502   \u2502   if strict:\
+          \                                                                      \
+          \   \u2502\r\n\u2502 \u2771 589 \u2502   \u2502   \u2502   model = accelerate.load_checkpoint_and_dispatch(\
+          \                               \u2502\r\n\u2502   590 \u2502   \u2502 \
+          \  \u2502   \u2502   model,                                            \
+          \                         \u2502\r\n\u2502   591 \u2502   \u2502   \u2502\
+          \   \u2502   model_save_name,                                          \
+          \                 \u2502\r\n\u2502   592 \u2502   \u2502   \u2502   \u2502\
+          \   device_map,                                                        \
+          \        \u2502\r\n\u2502                                              \
+          \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/big_modeling.py:479\
+          \ in                         \u2502\r\n\u2502 load_checkpoint_and_dispatch\
+          \                                                                     \u2502\
+          \r\n\u2502                                                             \
+          \                                     \u2502\r\n\u2502   476 \u2502   \u2502\
+          \   )                                                                  \
+          \                \u2502\r\n\u2502   477 \u2502   if offload_state_dict is\
+          \ None and device_map is not None and \"disk\" in device_map.va   \u2502\
+          \r\n\u2502   478 \u2502   \u2502   offload_state_dict = True           \
+          \                                               \u2502\r\n\u2502 \u2771\
+          \ 479 \u2502   load_checkpoint_in_model(                               \
+          \                               \u2502\r\n\u2502   480 \u2502   \u2502 \
+          \  model,                                                              \
+          \               \u2502\r\n\u2502   481 \u2502   \u2502   checkpoint,   \
+          \                                                                     \u2502\
+          \r\n\u2502   482 \u2502   \u2502   device_map=device_map,              \
+          \                                               \u2502\r\n\u2502       \
+          \                                                                      \
+          \                     \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:993\
+          \ in                       \u2502\r\n\u2502 load_checkpoint_in_model   \
+          \                                                                      \u2502\
+          \r\n\u2502                                                             \
+          \                                     \u2502\r\n\u2502    990 \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   set_module_tensor_to_device(model, param_name,\
+          \ \"meta\")                \u2502\r\n\u2502    991 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   offload_weight(param, param_name, state_dict_folder,\
+          \ index=state_dic  \u2502\r\n\u2502    992 \u2502   \u2502   \u2502   \u2502\
+          \   else:                                                              \
+          \       \u2502\r\n\u2502 \u2771  993 \u2502   \u2502   \u2502   \u2502 \
+          \  \u2502   set_module_tensor_to_device(model, param_name, param_device,\
+          \ value=p  \u2502\r\n\u2502    994 \u2502   \u2502                     \
+          \                                                                \u2502\r\
+          \n\u2502    995 \u2502   \u2502   # Force Python to clean up.          \
+          \                                             \u2502\r\n\u2502    996 \u2502\
+          \   \u2502   del checkpoint                                            \
+          \                        \u2502\r\n\u2502                              \
+          \                                                                    \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:135\
+          \ in                       \u2502\r\n\u2502 set_module_tensor_to_device\
+          \                                                                      \u2502\
+          \r\n\u2502                                                             \
+          \                                     \u2502\r\n\u2502    132 \u2502   \u2502\
+          \   tensor_name = splits[-1]                                           \
+          \               \u2502\r\n\u2502    133 \u2502                         \
+          \                                                                \u2502\r\
+          \n\u2502    134 \u2502   if tensor_name not in module._parameters and tensor_name\
+          \ not in module._buffers:      \u2502\r\n\u2502 \u2771  135 \u2502   \u2502\
+          \   raise ValueError(f\"{module} does not have a parameter or a buffer named\
+          \ {tensor_  \u2502\r\n\u2502    136 \u2502   is_buffer = tensor_name in\
+          \ module._buffers                                            \u2502\r\n\u2502\
+          \    137 \u2502   old_value = getattr(module, tensor_name)             \
+          \                                 \u2502\r\n\u2502    138              \
+          \                                                                      \
+          \       \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError: QuantLinear()\
+          \ does not have a parameter or a buffer named bias.\r\n```\r\n\r\nAppreciate\
+          \ any help in advance. Cheers. "
+        updatedAt: '2023-05-19T10:33:44.227Z'
+      numEdits: 0
+      reactions: []
+    id: 64675088696e7355f5d3c896
+    type: comment
+  author: tehnlulz
+  content: "Hey @TheBloke:\r\n\r\nSorry to bother you here, was just hoping you might\
+    \ point out where I'm noobing out here. Running on Linux with AutoGPTQ, and keep\
+    \ getting this error:\r\n\r\n```\r\nValueError: QuantLinear() does not have a\
+    \ parameter or a buffer named bias.\r\n```\r\n\r\nFull script here (running on\
+    \ linux)\r\n\r\n```\r\nfrom transformers import AutoTokenizer, pipeline, logging\r\
+    \nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\r\n\r\nquantized_model_dir\
+    \ = \"/notebooks/Manticore-13B-GPTQ/\"\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir,\
+    \ use_fast=False)\r\n\r\ndef get_config(has_desc_act):\r\n    return BaseQuantizeConfig(\r\
+    \n        bits=4,  # quantize model to 4-bit\r\n        group_size=128,  # it\
+    \ is recommended to set the value to 128\r\n        desc_act=has_desc_act\r\n\
+    \    )\r\n\r\ndef get_model(model_base, triton, model_has_desc_act):\r\n    if\
+    \ model_has_desc_act:\r\n        model_suffix=\"latest.act-order\"\r\n    else:\r\
+    \n        model_suffix=\"compat.no-act-order\"\r\n    return AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\
+    \ use_safetensors=True, model_basename=f\"Manticore-13B-GPTQ-4bit-128g.no-act-order\"\
+    , device=\"cuda:0\", use_triton=triton, quantize_config=get_config(model_has_desc_act))\r\
+    \n\r\n# Prevent printing spurious transformers error\r\nlogging.set_verbosity(logging.CRITICAL)\r\
+    \n\r\nprompt='''### Human: Write a story about llamas\r\n### Assistant:'''\r\n\
+    \r\nmodel = get_model(\"/notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\"\
+    , triton=False, model_has_desc_act=False)\r\n#/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\r\
+    \npipe = pipeline(\r\n    \"text-generation\",\r\n    model=model,\r\n    tokenizer=tokenizer,\r\
+    \n    max_length=512,\r\n    temperature=0.7,\r\n    top_p=0.95,\r\n    repetition_penalty=1.15\r\
+    \n)\r\n\r\nprint(\"### Inference:\")\r\nprint(pipe(prompt)[0]['generated_text'])\r\
+    \n```\r\n\r\nNot sure if you can spot where I'm going wrong here, but keep on\
+    \ getting this error. More detail on the error below:\r\n\r\n```\r\nCUDA extension\
+    \ not installed.\r\n/usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:807:\
+    \ UserWarning: TypedStorage is deprecated. It will be removed in the future and\
+    \ UntypedStorage will be the only storage class. This should only matter to you\
+    \ if you are using storages directly.  To access UntypedStorage directly, use\
+    \ tensor.untyped_storage() instead of tensor.storage()\r\n  with safe_open(checkpoint_file,\
+    \ framework=\"pt\") as f:\r\nThe safetensors archive passed at /notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-order.safetensors\
+    \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+    \ method. Defaulting to 'pt' metadata.\r\n\u256D\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \ Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\
+    \r\n\u2502 /notebooks/2222.py:28 in <module>                                 \
+    \                               \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502   25 prompt='''### Human: Write a story about llamas                \
+    \                             \u2502\r\n\u2502   26 ### Assistant:'''        \
+    \                                                                   \u2502\r\n\
+    \u2502   27                                                                  \
+    \                           \u2502\r\n\u2502 \u2771 28 model = get_model(\"/notebooks/Manticore-13B-GPTQ/Manticore-13B-GPTQ-4bit-128g.no-act-ord\
+    \    \u2502\r\n\u2502   29 #/notebooks/Manticore-13B-GPTQ/.no-act-order.safetensors\
+    \                                    \u2502\r\n\u2502   30 pipe = pipeline(  \
+    \                                                                          \u2502\
+    \r\n\u2502   31 \u2502   \"text-generation\",                                \
+    \                                      \u2502\r\n\u2502                      \
+    \                                                                            \u2502\
+    \r\n\u2502 /notebooks/2222.py:20 in get_model                                \
+    \                               \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502   17 \u2502   \u2502   model_suffix=\"latest.act-order\"            \
+    \                                         \u2502\r\n\u2502   18 \u2502   else:\
+    \                                                                            \
+    \       \u2502\r\n\u2502   19 \u2502   \u2502   model_suffix=\"compat.no-act-order\"\
+    \                                                  \u2502\r\n\u2502 \u2771 20\
+    \ \u2502   return AutoGPTQForCausalLM.from_quantized(quantized_model_dir, use_safetensors=True,\
+    \    \u2502\r\n\u2502   21                                                   \
+    \                                          \u2502\r\n\u2502   22 # Prevent printing\
+    \ spurious transformers error                                              \u2502\
+    \r\n\u2502   23 logging.set_verbosity(logging.CRITICAL)                      \
+    \                               \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502 /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/auto.py:71\
+    \ in from_quantized           \u2502\r\n\u2502                               \
+    \                                                                   \u2502\r\n\
+    \u2502   68 \u2502   \u2502   model_type = check_and_get_model_type(save_dir)\
+    \                                     \u2502\r\n\u2502   69 \u2502   \u2502  \
+    \ quant_func = GPTQ_CAUSAL_LM_MODEL_MAP[model_type].from_quantized           \
+    \         \u2502\r\n\u2502   70 \u2502   \u2502   keywords = {key: kwargs[key]\
+    \ for key in signature(quant_func).parameters if key     \u2502\r\n\u2502 \u2771\
+    \ 71 \u2502   \u2502   return quant_func(                                    \
+    \                              \u2502\r\n\u2502   72 \u2502   \u2502   \u2502\
+    \   save_dir=save_dir,                                                       \
+    \       \u2502\r\n\u2502   73 \u2502   \u2502   \u2502   device_map=device_map,\
+    \                                                          \u2502\r\n\u2502  \
+    \ 74 \u2502   \u2502   \u2502   max_memory=max_memory,                       \
+    \                                   \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502 /usr/local/lib/python3.9/dist-packages/auto_gptq/modeling/_base.py:589\
+    \ in from_quantized         \u2502\r\n\u2502                                 \
+    \                                                                 \u2502\r\n\u2502\
+    \   586 \u2502   \u2502   \u2502   \u2502   no_split_module_classes=[cls.layer_type]\
+    \                                   \u2502\r\n\u2502   587 \u2502   \u2502   \u2502\
+    \   )                                                                        \
+    \      \u2502\r\n\u2502   588 \u2502   \u2502   if strict:                   \
+    \                                                      \u2502\r\n\u2502 \u2771\
+    \ 589 \u2502   \u2502   \u2502   model = accelerate.load_checkpoint_and_dispatch(\
+    \                               \u2502\r\n\u2502   590 \u2502   \u2502   \u2502\
+    \   \u2502   model,                                                          \
+    \           \u2502\r\n\u2502   591 \u2502   \u2502   \u2502   \u2502   model_save_name,\
+    \                                                           \u2502\r\n\u2502 \
+    \  592 \u2502   \u2502   \u2502   \u2502   device_map,                       \
+    \                                         \u2502\r\n\u2502                   \
+    \                                                                            \
+    \   \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/big_modeling.py:479\
+    \ in                         \u2502\r\n\u2502 load_checkpoint_and_dispatch   \
+    \                                                                  \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502   476 \u2502   \u2502   )            \
+    \                                                                      \u2502\r\
+    \n\u2502   477 \u2502   if offload_state_dict is None and device_map is not None\
+    \ and \"disk\" in device_map.va   \u2502\r\n\u2502   478 \u2502   \u2502   offload_state_dict\
+    \ = True                                                          \u2502\r\n\u2502\
+    \ \u2771 479 \u2502   load_checkpoint_in_model(                              \
+    \                                \u2502\r\n\u2502   480 \u2502   \u2502   model,\
+    \                                                                            \
+    \ \u2502\r\n\u2502   481 \u2502   \u2502   checkpoint,                       \
+    \                                                 \u2502\r\n\u2502   482 \u2502\
+    \   \u2502   device_map=device_map,                                          \
+    \                   \u2502\r\n\u2502                                         \
+    \                                                         \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:993\
+    \ in                       \u2502\r\n\u2502 load_checkpoint_in_model         \
+    \                                                                \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502    990 \u2502   \u2502   \u2502   \u2502\
+    \   \u2502   set_module_tensor_to_device(model, param_name, \"meta\")        \
+    \        \u2502\r\n\u2502    991 \u2502   \u2502   \u2502   \u2502   \u2502  \
+    \ offload_weight(param, param_name, state_dict_folder, index=state_dic  \u2502\
+    \r\n\u2502    992 \u2502   \u2502   \u2502   \u2502   else:                  \
+    \                                                   \u2502\r\n\u2502 \u2771  993\
+    \ \u2502   \u2502   \u2502   \u2502   \u2502   set_module_tensor_to_device(model,\
+    \ param_name, param_device, value=p  \u2502\r\n\u2502    994 \u2502   \u2502 \
+    \                                                                            \
+    \        \u2502\r\n\u2502    995 \u2502   \u2502   # Force Python to clean up.\
+    \                                                       \u2502\r\n\u2502    996\
+    \ \u2502   \u2502   del checkpoint                                           \
+    \                         \u2502\r\n\u2502                                   \
+    \                                                               \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/accelerate/utils/modeling.py:135 in \
+    \                      \u2502\r\n\u2502 set_module_tensor_to_device          \
+    \                                                            \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502    132 \u2502   \u2502   tensor_name =\
+    \ splits[-1]                                                          \u2502\r\
+    \n\u2502    133 \u2502                                                       \
+    \                                  \u2502\r\n\u2502    134 \u2502   if tensor_name\
+    \ not in module._parameters and tensor_name not in module._buffers:      \u2502\
+    \r\n\u2502 \u2771  135 \u2502   \u2502   raise ValueError(f\"{module} does not\
+    \ have a parameter or a buffer named {tensor_  \u2502\r\n\u2502    136 \u2502\
+    \   is_buffer = tensor_name in module._buffers                               \
+    \             \u2502\r\n\u2502    137 \u2502   old_value = getattr(module, tensor_name)\
+    \                                              \u2502\r\n\u2502    138       \
+    \                                                                            \
+    \        \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError:\
+    \ QuantLinear() does not have a parameter or a buffer named bias.\r\n```\r\n\r\
+    \nAppreciate any help in advance. Cheers. "
+  created_at: 2023-05-19 09:33:44+00:00
+  edited: false
+  hidden: false
+  id: 64675088696e7355f5d3c896
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-05-19T10:41:49.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Pass <code>strict=False</code> to the <code>.from_quantized()</code>
+          call. I should put that in the README maybe</p>
+
+          <p>I''m hoping in future that strict=False will become default, or that
+          this otherwise won''t be required. But for now the above works fine.</p>
+
+          '
+        raw: 'Pass `strict=False` to the `.from_quantized()` call. I should put that
+          in the README maybe
+
+
+          I''m hoping in future that strict=False will become default, or that this
+          otherwise won''t be required. But for now the above works fine.'
+        updatedAt: '2023-05-19T10:41:49.508Z'
+      numEdits: 0
+      reactions: []
+    id: 6467526d3a7c8dda2301ed30
+    type: comment
+  author: TheBloke
+  content: 'Pass `strict=False` to the `.from_quantized()` call. I should put that
+    in the README maybe
+
+
+    I''m hoping in future that strict=False will become default, or that this otherwise
+    won''t be required. But for now the above works fine.'
+  created_at: 2023-05-19 09:41:49+00:00
+  edited: false
+  hidden: false
+  id: 6467526d3a7c8dda2301ed30
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c6eb09c827215fcb0890cd16347db8a9.svg
+      fullname: Matt
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tehnlulz
+      type: user
+    createdAt: '2023-05-19T10:43:41.000Z'
+    data:
+      edited: false
+      editors:
+      - tehnlulz
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c6eb09c827215fcb0890cd16347db8a9.svg
+          fullname: Matt
+          isHf: false
+          isPro: false
+          name: tehnlulz
+          type: user
+        html: '<p>Cheers mate, sorted. Should setup a donation button somewhere so
+          we can buy you a beer.</p>
+
+          '
+        raw: Cheers mate, sorted. Should setup a donation button somewhere so we can
+          buy you a beer.
+        updatedAt: '2023-05-19T10:43:41.060Z'
+      numEdits: 0
+      reactions: []
+    id: 646752dda48c2b6f0d5ddbe7
+    type: comment
+  author: tehnlulz
+  content: Cheers mate, sorted. Should setup a donation button somewhere so we can
+    buy you a beer.
+  created_at: 2023-05-19 09:43:41+00:00
+  edited: false
+  hidden: false
+  id: 646752dda48c2b6f0d5ddbe7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d613fa1283d697d00e3bfe768178a9bf.svg
+      fullname: Winson Sou
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: winsonsou
+      type: user
+    createdAt: '2023-05-20T13:37:37.000Z'
+    data:
+      edited: false
+      editors:
+      - winsonsou
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d613fa1283d697d00e3bfe768178a9bf.svg
+          fullname: Winson Sou
+          isHf: false
+          isPro: false
+          name: winsonsou
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;tehnlulz&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/tehnlulz\"\
+          >@<span class=\"underline\">tehnlulz</span></a></span>\n\n\t</span></span>\
+          \ Matt, i'm trying to pass strict=false but i'm getting a strange error.\
+          \ any hints on how you solved it?</p>\n<p>TypeError: from_quantized() got\
+          \ an unexpected keyword argument 'strict'</p>\n<p><a rel=\"nofollow\" href=\"\
+          https://cdn-uploads.huggingface.co/production/uploads/645b0342c266796265bc491e/G8DyvRWFSHlUhjDpg4d7i.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/645b0342c266796265bc491e/G8DyvRWFSHlUhjDpg4d7i.png\"\
+          ></a></p>\n"
+        raw: 'Hey @tehnlulz Matt, i''m trying to pass strict=false but i''m getting
+          a strange error. any hints on how you solved it?
+
+
+          TypeError: from_quantized() got an unexpected keyword argument ''strict''
+
+
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/645b0342c266796265bc491e/G8DyvRWFSHlUhjDpg4d7i.png)'
+        updatedAt: '2023-05-20T13:37:37.059Z'
+      numEdits: 0
+      reactions: []
+    id: 6468cd2197ffc33d43c6568c
+    type: comment
+  author: winsonsou
+  content: 'Hey @tehnlulz Matt, i''m trying to pass strict=false but i''m getting
+    a strange error. any hints on how you solved it?
+
+
+    TypeError: from_quantized() got an unexpected keyword argument ''strict''
+
+
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/645b0342c266796265bc491e/G8DyvRWFSHlUhjDpg4d7i.png)'
+  created_at: 2023-05-20 12:37:37+00:00
+  edited: false
+  hidden: false
+  id: 6468cd2197ffc33d43c6568c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d613fa1283d697d00e3bfe768178a9bf.svg
+      fullname: Winson Sou
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: winsonsou
+      type: user
+    createdAt: '2023-05-20T13:51:58.000Z'
+    data:
+      edited: false
+      editors:
+      - winsonsou
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d613fa1283d697d00e3bfe768178a9bf.svg
+          fullname: Winson Sou
+          isHf: false
+          isPro: false
+          name: winsonsou
+          type: user
+        html: '<p>I found the answer! Thanks all! <a href="https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11">https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11</a></p>
+
+          '
+        raw: I found the answer! Thanks all! https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11
+        updatedAt: '2023-05-20T13:51:58.645Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - rabitt
+    id: 6468d07e99182de178483ad8
+    type: comment
+  author: winsonsou
+  content: I found the answer! Thanks all! https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11
+  created_at: 2023-05-20 12:51:58+00:00
+  edited: false
+  hidden: false
+  id: 6468d07e99182de178483ad8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/886cda86c02cf43baf0e2042d3391f13.svg
+      fullname: Known Rabbit
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rabitt
+      type: user
+    createdAt: '2023-05-31T07:12:35.000Z'
+    data:
+      edited: false
+      editors:
+      - rabitt
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/886cda86c02cf43baf0e2042d3391f13.svg
+          fullname: Known Rabbit
+          isHf: false
+          isPro: false
+          name: rabitt
+          type: user
+        html: '<blockquote>
+
+          <p>I found the answer! Thanks all! <a href="https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11">https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11</a></p>
+
+          </blockquote>
+
+          <p>tldr:</p>
+
+          <pre><code>pip uninstall auto-gptq
+
+          pip install git+https://github.com/PanQiWei/AutoGPTQ.git
+
+          </code></pre>
+
+          '
+        raw: '> I found the answer! Thanks all! https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11
+
+
+          tldr:
+
+          ```
+
+          pip uninstall auto-gptq
+
+          pip install git+https://github.com/PanQiWei/AutoGPTQ.git
+
+          ```'
+        updatedAt: '2023-05-31T07:12:35.358Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - bruntalv
+        - gpistre
+        - sequelbox
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - sequelbox
+    id: 6476f36340c99df876fdccae
+    type: comment
+  author: rabitt
+  content: '> I found the answer! Thanks all! https://huggingface.co/TheBloke/OpenAssistant-SFT-7-Llama-30B-GPTQ/discussions/11
+
+
+    tldr:
+
+    ```
+
+    pip uninstall auto-gptq
+
+    pip install git+https://github.com/PanQiWei/AutoGPTQ.git
+
+    ```'
+  created_at: 2023-05-31 06:12:35+00:00
+  edited: false
+  hidden: false
+  id: 6476f36340c99df876fdccae
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-05-31T17:02:36.000Z'
+    data:
+      edited: true
+      editors:
+      - TheBloke
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>Yeah, AutoGPTQ should be installed from source for the moment.  And
+          the <code>strict</code> parameter is no longer a thing; it got removed and
+          is no longer needed for loading older models.</p>
+
+          <p>I tend to install AutoGPTQ this way:</p>
+
+          <pre><code>git clone https://github.com/PanQiWei/AutoGPTQ
+
+          cd AutoGPTQ
+
+          pip install .
+
+          </code></pre>
+
+          <p>But I guess the <code>pip install git+</code> method does exactly the
+          same thing without downloading.</p>
+
+          '
+        raw: 'Yeah, AutoGPTQ should be installed from source for the moment.  And
+          the `strict` parameter is no longer a thing; it got removed and is no longer
+          needed for loading older models.
+
+
+          I tend to install AutoGPTQ this way:
+
+          ```
+
+          git clone https://github.com/PanQiWei/AutoGPTQ
+
+          cd AutoGPTQ
+
+          pip install .
+
+          ```
+
+
+          But I guess the `pip install git+` method does exactly the same thing without
+          downloading.'
+        updatedAt: '2023-05-31T17:02:46.476Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - bruntalv
+    id: 64777dacf911e9e76c65306d
+    type: comment
+  author: TheBloke
+  content: 'Yeah, AutoGPTQ should be installed from source for the moment.  And the
+    `strict` parameter is no longer a thing; it got removed and is no longer needed
+    for loading older models.
+
+
+    I tend to install AutoGPTQ this way:
+
+    ```
+
+    git clone https://github.com/PanQiWei/AutoGPTQ
+
+    cd AutoGPTQ
+
+    pip install .
+
+    ```
+
+
+    But I guess the `pip install git+` method does exactly the same thing without
+    downloading.'
+  created_at: 2023-05-31 16:02:36+00:00
+  edited: true
+  hidden: false
+  id: 64777dacf911e9e76c65306d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0496c0936127a294f1acbaa45e92389e.svg
+      fullname: Cilia Madani
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: CiliaMadni
+      type: user
+    createdAt: '2023-12-27T11:18:56.000Z'
+    data:
+      edited: false
+      editors:
+      - CiliaMadni
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.34752964973449707
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0496c0936127a294f1acbaa45e92389e.svg
+          fullname: Cilia Madani
+          isHf: false
+          isPro: false
+          name: CiliaMadni
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/TheBloke\">@<span class=\"\
+          underline\">TheBloke</span></a></span>\n\n\t</span></span> I get the following\
+          \ error when I try to install AutoGPTQ  from source, any ideas ?</p>\n<p>\
+          \ pip install git+<a rel=\"nofollow\" href=\"https://github.com/PanQiWei/AutoGPTQ.git\"\
+          >https://github.com/PanQiWei/AutoGPTQ.git</a><br>Defaulting to user installation\
+          \ because normal site-packages is not writeable<br>Collecting git+<a rel=\"\
+          nofollow\" href=\"https://github.com/PanQiWei/AutoGPTQ.git\">https://github.com/PanQiWei/AutoGPTQ.git</a><br>\
+          \  Cloning <a rel=\"nofollow\" href=\"https://github.com/PanQiWei/AutoGPTQ.git\"\
+          >https://github.com/PanQiWei/AutoGPTQ.git</a> to /tmp/pip-req-build-j2sx0fuo<br>\
+          \  Running command git clone --filter=blob:none --quiet <a rel=\"nofollow\"\
+          \ href=\"https://github.com/PanQiWei/AutoGPTQ.git\">https://github.com/PanQiWei/AutoGPTQ.git</a>\
+          \ /tmp/pip-req-build-j2sx0fuo<br>  Resolved <a rel=\"nofollow\" href=\"\
+          https://github.com/PanQiWei/AutoGPTQ.git\">https://github.com/PanQiWei/AutoGPTQ.git</a>\
+          \ to commit d2662b18bb91e1864b29e4e05862712382b8a076<br>  Preparing metadata\
+          \ (setup.py) ... done<br>Requirement already satisfied: accelerate&gt;=0.22.0\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (0.22.0)<br>Requirement already satisfied: datasets in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) (2.16.0)<br>Requirement already satisfied:\
+          \ gekko in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.0.6)<br>Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) (1.26.2)<br>Requirement already satisfied:\
+          \ peft&gt;=0.5.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+          \ auto-gptq==0.7.0.dev0+cu117)<br>(0.7.1)<br>Requirement already satisfied:\
+          \ rouge in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.0.1)<br>Requirement already satisfied: safetensors in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117)<br>(0.4.1)<br>Requirement already satisfied:\
+          \ sentencepiece in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+          \ auto-gptq==0.7.0.dev0+cu117) (0.1.99)<br>Requirement already satisfied:\
+          \ torch&gt;=1.13.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+          \ auto-gptq==0.7.0.dev0+cu117) (1.13.1)<br>Requirement already satisfied:\
+          \ tqdm in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (4.66.1)<br>Requirement already satisfied: transformers&gt;=4.31.0 in\
+          \ /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (4.32.1)<br>Requirement already satisfied: psutil in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from accelerate&gt;=0.22.0-&gt;auto-gptq==0.7.0.dev0+cu117) (5.9.7)<br>Requirement\
+          \ already satisfied: packaging&gt;=20.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from accelerate&gt;=0.22.0-&gt;auto-gptq==0.7.0.dev0+cu117) (23.2)<br>Requirement\
+          \ already satisfied: pyyaml in /usr/lib/python3/dist-packages (from accelerate&gt;=0.22.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (5.4.1)<br>Requirement already satisfied: huggingface-hub&gt;=0.17.0 in\
+          \ /home/ubuntu/.local/lib/python3.10/site-packages (from peft&gt;=0.5.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (0.20.1)<br>Requirement already satisfied: nvidia-cuda-nvrtc-cu11==11.7.99\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (11.7.99)<br>Requirement already satisfied: nvidia-cudnn-cu11==8.5.0.96\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (8.5.0.96)<br>Requirement already satisfied: nvidia-cuda-runtime-cu11==11.7.99\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (11.7.99)<br>Requirement already satisfied: nvidia-cublas-cu11==11.10.3.66\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (11.10.3.66)<br>Requirement already satisfied: typing-extensions in /usr/local/lib/python3.10/dist-packages\
+          \ (from torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117) (4.9.0)<br>Requirement\
+          \ already satisfied: setuptools in /usr/lib/python3/dist-packages (from\
+          \ nvidia-cublas-cu11==11.10.3.66-&gt;torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (59.6.0)<br>Requirement already satisfied: wheel in /usr/lib/python3/dist-packages\
+          \ (from nvidia-cublas-cu11==11.10.3.66-&gt;torch&gt;=1.13.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (0.37.1)<br>Requirement already satisfied: requests in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117) (2.31.0)<br>Requirement\
+          \ already satisfied: tokenizers!=0.11.3,&lt;0.14,&gt;=0.11.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117) (0.13.3)<br>Requirement\
+          \ already satisfied: filelock in /usr/local/lib/python3.10/dist-packages\
+          \ (from transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117) (3.13.1)<br>Requirement\
+          \ already satisfied: regex!=2019.12.17 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117) (2023.10.3)<br>Requirement\
+          \ already satisfied: dill&lt;0.3.8,&gt;=0.3.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (0.3.7)<br>Requirement\
+          \ already satisfied: multiprocess in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (0.70.15)<br>Requirement\
+          \ already satisfied: fsspec[http]&lt;=2023.10.0,&gt;=2023.1.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (2023.10.0)<br>Requirement\
+          \ already satisfied: pyarrow-hotfix in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (0.6)<br>Requirement already\
+          \ satisfied: pandas in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (2.1.4)<br>Requirement\
+          \ already satisfied: pyarrow&gt;=8.0.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (14.0.2)<br>Requirement\
+          \ already satisfied: xxhash in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (3.4.1)<br>Requirement\
+          \ already satisfied: aiohttp in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (3.9.1)<br>Requirement\
+          \ already satisfied: six in /usr/lib/python3/dist-packages (from rouge-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.16.0)<br>Requirement already satisfied: async-timeout&lt;5.0,&gt;=4.0\
+          \ in /home/ubuntu/.local/lib/python3.10/site-packages (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (4.0.3)<br>Requirement already satisfied: yarl&lt;2.0,&gt;=1.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (1.9.4)<br>Requirement\
+          \ already satisfied: aiosignal&gt;=1.1.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (1.3.1)<br>Requirement\
+          \ already satisfied: multidict&lt;7.0,&gt;=4.5 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (6.0.4)<br>Requirement\
+          \ already satisfied: frozenlist&gt;=1.1.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (1.4.1)<br>Requirement\
+          \ already satisfied: attrs&gt;=17.3.0 in /usr/lib/python3/dist-packages\
+          \ (from aiohttp-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (21.2.0)<br>Requirement\
+          \ already satisfied: charset-normalizer&lt;4,&gt;=2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from requests-&gt;transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (3.3.2)<br>Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/lib/python3/dist-packages\
+          \ (from requests-&gt;transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (2020.6.20)<br>Requirement already satisfied: urllib3&lt;3,&gt;=1.21.1\
+          \ in /usr/lib/python3/dist-packages (from requests-&gt;transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.26.5)<br>Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/lib/python3/dist-packages\
+          \ (from requests-&gt;transformers&gt;=4.31.0-&gt;auto-gptq==0.7.0.dev0+cu117)\
+          \ (3.3)<br>Requirement already satisfied: pytz&gt;=2020.1 in /usr/lib/python3/dist-packages\
+          \ (from pandas-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (2022.1)<br>Requirement\
+          \ already satisfied: python-dateutil&gt;=2.8.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from pandas-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (2.8.2)<br>Requirement\
+          \ already satisfied: tzdata&gt;=2022.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from pandas-&gt;datasets-&gt;auto-gptq==0.7.0.dev0+cu117) (2023.3)<br>Building\
+          \ wheels for collected packages: auto-gptq<br>  Building wheel for auto-gptq\
+          \ (setup.py) ... error<br>  error: subprocess-exited-with-error</p>\n<p>\
+          \  \xD7 python setup.py bdist_wheel did not run successfully.<br>  \u2502\
+          \ exit code: 1<br>  \u2570\u2500&gt; [120 lines of output]<br>      Generating\
+          \ qigen kernels...<br>      conda_cuda_include_dir /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include<br>\
+          \      running bdist_wheel<br>      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+          \ UserWarning: Attempted to use ninja as the BuildExtension backend but\
+          \ we could not find ninja.. Falling back to using the slow distutils backend.<br>\
+          \        warnings.warn(msg.format('we could not find ninja.'))<br>     \
+          \ running build<br>      running build_py<br>      creating build<br>  \
+          \    creating build/lib.linux-x86_64-3.10<br>      creating build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_quantization.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_q4.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_peft_conversion.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq<br>      copying auto_gptq/<strong>init</strong>.py\
+          \ -&gt; build/lib.linux-x86_64-3.10/auto_gptq<br>      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_gptj_attn.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/_fused_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_llama_mlp.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_llama_attn.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils<br>      copying\
+          \ auto_gptq/utils/perplexity_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/data_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/import_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/exllama_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/patch_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/peft_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>   \
+          \   copying auto_gptq/eval_tasks/sequence_classification_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/language_modeling_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/text_summarization_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization<br> \
+          \     copying auto_gptq/quantization/quantizer.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      copying auto_gptq/quantization/gptq.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      copying auto_gptq/quantization/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>     \
+          \ copying auto_gptq/modeling/internlm.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/mistral.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt_neox.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_const.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/codegen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/auto.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/opt.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/bloom.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/stablelmepoch.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/baichuan.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/xverse.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt_bigcode.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/mixtral.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/moss.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt2.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/llama.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/qwen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gptj.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/yi.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/decilm.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/rw.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/<strong>init</strong>.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>      creating\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>    \
+          \  copying auto_gptq/nn_modules/triton_utils/kernels.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/mixin.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/<strong>init</strong>.py\
+          \ -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>    \
+          \  creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>\
+          \      copying auto_gptq/eval_tasks/_utils/classification_utils.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>      copying\
+          \ auto_gptq/eval_tasks/_utils/generation_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>\
+          \      copying auto_gptq/eval_tasks/_utils/<strong>init</strong>.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>      running\
+          \ build_ext<br>      Traceback (most recent call last):<br>        File\
+          \ \"\", line 2, in <br>        File \"\", line 34, in <br>        File \"\
+          /tmp/pip-req-build-j2sx0fuo/setup.py\", line 188, in <br>          setup(<br>\
+          \        File \"/usr/lib/python3/dist-packages/setuptools/<strong>init</strong>.py\"\
+          , line 153, in setup<br>          return distutils.core.setup(**attrs)<br>\
+          \        File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup<br>\
+          \          dist.run_commands()<br>        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 966, in run_commands<br>          self.run_command(cmd)<br>     \
+          \   File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command<br>\
+          \          cmd_obj.run()<br>        File \"/usr/lib/python3/dist-packages/wheel/bdist_wheel.py\"\
+          , line 299, in run<br>          self.run_command('build')<br>        File\
+          \ \"/usr/lib/python3.10/distutils/cmd.py\", line 313, in run_command<br>\
+          \          self.distribution.run_command(command)<br>        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 985, in run_command<br>          cmd_obj.run()<br>        File \"\
+          /usr/lib/python3.10/distutils/command/build.py\", line 135, in run<br> \
+          \         self.run_command(cmd_name)<br>        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+          , line 313, in run_command<br>          self.distribution.run_command(command)<br>\
+          \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command<br>\
+          \          cmd_obj.run()<br>        File \"/usr/lib/python3/dist-packages/setuptools/command/build_ext.py\"\
+          , line 79, in run<br>          _build_ext.run(self)<br>        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+          , line 340, in run<br>          self.build_extensions()<br>        File\
+          \ \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 499, in build_extensions<br>          _check_cuda_version(compiler_name,\
+          \ compiler_version)<br>        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 386, in _check_cuda_version<br>          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+          \ torch.version.cuda))<br>      RuntimeError:<br>      The detected CUDA\
+          \ version (12.3) mismatches the version that was used to compile<br>   \
+          \   PyTorch (11.7). Please make sure to use the same CUDA versions.</p>\n\
+          <pre><code>  [end of output]\n</code></pre>\n<p>  note: This error originates\
+          \ from a subprocess, and is likely not a problem with pip.<br>  ERROR: Failed\
+          \ building wheel for auto-gptq<br>  Running setup.py clean for auto-gptq<br>Failed\
+          \ to build auto-gptq<br>Installing collected packages: auto-gptq<br>  Running\
+          \ setup.py install for auto-gptq ... error<br>  error: subprocess-exited-with-error</p>\n\
+          <p>  \xD7 Running setup.py install for auto-gptq did not run successfully.<br>\
+          \  \u2502 exit code: 1<br>  \u2570\u2500&gt; [124 lines of output]<br> \
+          \     Generating qigen kernels...<br>      conda_cuda_include_dir /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include<br>\
+          \      running install<br>      /usr/lib/python3/dist-packages/setuptools/command/install.py:34:\
+          \ SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build\
+          \ and pip and other standards-based tools.<br>        warnings.warn(<br>\
+          \      running build<br>      running build_py<br>      creating build<br>\
+          \      creating build/lib.linux-x86_64-3.10<br>      creating build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_quantization.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_q4.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/test_peft_conversion.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      copying tests/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/tests<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq<br>      copying auto_gptq/<strong>init</strong>.py\
+          \ -&gt; build/lib.linux-x86_64-3.10/auto_gptq<br>      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_gptj_attn.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/_fused_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_llama_mlp.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/fused_llama_attn.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      copying auto_gptq/nn_modules/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils<br>      copying\
+          \ auto_gptq/utils/perplexity_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/data_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/import_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/exllama_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/patch_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      copying auto_gptq/utils/peft_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/utils<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>   \
+          \   copying auto_gptq/eval_tasks/sequence_classification_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/language_modeling_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/text_summarization_task.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      copying auto_gptq/eval_tasks/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization<br> \
+          \     copying auto_gptq/quantization/quantizer.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      copying auto_gptq/quantization/gptq.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      copying auto_gptq/quantization/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/quantization<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>     \
+          \ copying auto_gptq/modeling/internlm.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/mistral.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt_neox.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_const.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/codegen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/auto.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/opt.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/bloom.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/_base.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/stablelmepoch.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/baichuan.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/xverse.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt_bigcode.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/mixtral.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/moss.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gpt2.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/llama.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/qwen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/gptj.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/yi.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/decilm.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/<strong>init</strong>.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      copying auto_gptq/modeling/rw.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/modeling<br>\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>\
+          \      copying auto_gptq/nn_modules/qlinear/<strong>init</strong>.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear<br>      creating\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>    \
+          \  copying auto_gptq/nn_modules/triton_utils/kernels.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/mixin.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/<strong>init</strong>.py\
+          \ -&gt; build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>\
+          \      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils<br>    \
+          \  creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>\
+          \      copying auto_gptq/eval_tasks/_utils/classification_utils.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>      copying\
+          \ auto_gptq/eval_tasks/_utils/generation_utils.py -&gt; build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>\
+          \      copying auto_gptq/eval_tasks/_utils/<strong>init</strong>.py -&gt;\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils<br>      running\
+          \ build_ext<br>      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+          \ UserWarning: Attempted to use ninja as the BuildExtension backend but\
+          \ we could not find ninja.. Falling back to using the slow distutils backend.<br>\
+          \        warnings.warn(msg.format('we could not find ninja.'))<br>     \
+          \ Traceback (most recent call last):<br>        File \"\", line 2, in <br>\
+          \        File \"\", line 34, in <br>        File \"/tmp/pip-req-build-j2sx0fuo/setup.py\"\
+          , line 188, in <br>          setup(<br>        File \"/usr/lib/python3/dist-packages/setuptools/<strong>init</strong>.py\"\
+          , line 153, in setup<br>          return distutils.core.setup(**attrs)<br>\
+          \        File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup<br>\
+          \          dist.run_commands()<br>        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 966, in run_commands<br>          self.run_command(cmd)<br>     \
+          \   File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command<br>\
+          \          cmd_obj.run()<br>        File \"/usr/lib/python3/dist-packages/setuptools/command/install.py\"\
+          , line 68, in run<br>          return orig.install.run(self)<br>       \
+          \ File \"/usr/lib/python3.10/distutils/command/install.py\", line 619, in\
+          \ run<br>          self.run_command('build')<br>        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+          , line 313, in run_command<br>          self.distribution.run_command(command)<br>\
+          \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command<br>\
+          \          cmd_obj.run()<br>        File \"/usr/lib/python3.10/distutils/command/build.py\"\
+          , line 135, in run<br>          self.run_command(cmd_name)<br>        File\
+          \ \"/usr/lib/python3.10/distutils/cmd.py\", line 313, in run_command<br>\
+          \          self.distribution.run_command(command)<br>        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 985, in run_command<br>          cmd_obj.run()<br>        File \"\
+          /usr/lib/python3/dist-packages/setuptools/command/build_ext.py\", line 79,\
+          \ in run<br>          _build_ext.run(self)<br>        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+          , line 340, in run<br>          self.build_extensions()<br>        File\
+          \ \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 499, in build_extensions<br>          _check_cuda_version(compiler_name,\
+          \ compiler_version)<br>        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 386, in _check_cuda_version<br>          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+          \ torch.version.cuda))<br>      RuntimeError:<br>      The detected CUDA\
+          \ version (12.3) mismatches the version that was used to compile<br>   \
+          \   PyTorch (11.7). Please make sure to use the same CUDA versions.</p>\n\
+          <pre><code>  [end of output]\n</code></pre>\n<p>  note: This error originates\
+          \ from a subprocess, and is likely not a problem with pip.<br>error: legacy-install-failure</p>\n\
+          <p>\xD7 Encountered error while trying to install package.<br>\u2570\u2500\
+          &gt; auto-gptq</p>\n<p>note: This is an issue with the package mentioned\
+          \ above, not pip.<br>hint: See above for output from the failure.</p>\n"
+        raw: "@TheBloke I get the following error when I try to install AutoGPTQ \
+          \ from source, any ideas ?\n\n pip install git+https://github.com/PanQiWei/AutoGPTQ.git\n\
+          Defaulting to user installation because normal site-packages is not writeable\n\
+          Collecting git+https://github.com/PanQiWei/AutoGPTQ.git\n  Cloning https://github.com/PanQiWei/AutoGPTQ.git\
+          \ to /tmp/pip-req-build-j2sx0fuo\n  Running command git clone --filter=blob:none\
+          \ --quiet https://github.com/PanQiWei/AutoGPTQ.git /tmp/pip-req-build-j2sx0fuo\n\
+          \  Resolved https://github.com/PanQiWei/AutoGPTQ.git to commit d2662b18bb91e1864b29e4e05862712382b8a076\n\
+          \  Preparing metadata (setup.py) ... done\nRequirement already satisfied:\
+          \ accelerate>=0.22.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) (0.22.0)\nRequirement already satisfied:\
+          \ datasets in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (2.16.0)\nRequirement already satisfied: gekko in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) (1.0.6)\nRequirement already satisfied:\
+          \ numpy in /usr/local/lib/python3.10/dist-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.26.2)       \nRequirement already satisfied: peft>=0.5.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) \n(0.7.1)\nRequirement already satisfied:\
+          \ rouge in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.0.1)\nRequirement already satisfied: safetensors in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) \n(0.4.1)\nRequirement already satisfied:\
+          \ sentencepiece in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+          \ auto-gptq==0.7.0.dev0+cu117) (0.1.99)\nRequirement already satisfied:\
+          \ torch>=1.13.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+          \ auto-gptq==0.7.0.dev0+cu117) (1.13.1)\nRequirement already satisfied:\
+          \ tqdm in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+          \ (4.66.1)\nRequirement already satisfied: transformers>=4.31.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from auto-gptq==0.7.0.dev0+cu117) (4.32.1)\nRequirement already satisfied:\
+          \ psutil in /home/ubuntu/.local/lib/python3.10/site-packages (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117)\
+          \ (5.9.7)\nRequirement already satisfied: packaging>=20.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117) (23.2)\nRequirement\
+          \ already satisfied: pyyaml in /usr/lib/python3/dist-packages (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117)\
+          \ (5.4.1)\nRequirement already satisfied: huggingface-hub>=0.17.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from peft>=0.5.0->auto-gptq==0.7.0.dev0+cu117) (0.20.1)\nRequirement\
+          \ already satisfied: nvidia-cuda-nvrtc-cu11==11.7.99 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.7.99)\nRequirement\
+          \ already satisfied: nvidia-cudnn-cu11==8.5.0.96 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (8.5.0.96)\nRequirement\
+          \ already satisfied: nvidia-cuda-runtime-cu11==11.7.99 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.7.99)\nRequirement\
+          \ already satisfied: nvidia-cublas-cu11==11.10.3.66 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.10.3.66)\nRequirement\
+          \ already satisfied: typing-extensions in /usr/local/lib/python3.10/dist-packages\
+          \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (4.9.0)\nRequirement\
+          \ already satisfied: setuptools in /usr/lib/python3/dist-packages (from\
+          \ nvidia-cublas-cu11==11.10.3.66->torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117)\
+          \ (59.6.0)\nRequirement already satisfied: wheel in /usr/lib/python3/dist-packages\
+          \ (from nvidia-cublas-cu11==11.10.3.66->torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117)\
+          \ (0.37.1)\nRequirement already satisfied: requests in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2.31.0)\nRequirement\
+          \ already satisfied: tokenizers!=0.11.3,<0.14,>=0.11.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (0.13.3)\nRequirement\
+          \ already satisfied: filelock in /usr/local/lib/python3.10/dist-packages\
+          \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.13.1)\nRequirement\
+          \ already satisfied: regex!=2019.12.17 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2023.10.3)\n\
+          Requirement already satisfied: dill<0.3.8,>=0.3.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (0.3.7)\nRequirement already\
+          \ satisfied: multiprocess in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (0.70.15)\nRequirement already\
+          \ satisfied: fsspec[http]<=2023.10.0,>=2023.1.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (2023.10.0)\nRequirement\
+          \ already satisfied: pyarrow-hotfix in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (0.6)\nRequirement already\
+          \ satisfied: pandas in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (2.1.4)\nRequirement already\
+          \ satisfied: pyarrow>=8.0.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (14.0.2)\nRequirement already\
+          \ satisfied: xxhash in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (3.4.1)\nRequirement already\
+          \ satisfied: aiohttp in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (3.9.1)\nRequirement already\
+          \ satisfied: six in /usr/lib/python3/dist-packages (from rouge->auto-gptq==0.7.0.dev0+cu117)\
+          \ (1.16.0)\nRequirement already satisfied: async-timeout<5.0,>=4.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (4.0.3)\nRequirement\
+          \ already satisfied: yarl<2.0,>=1.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.9.4)\nRequirement\
+          \ already satisfied: aiosignal>=1.1.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.3.1)\nRequirement\
+          \ already satisfied: multidict<7.0,>=4.5 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (6.0.4)\nRequirement\
+          \ already satisfied: frozenlist>=1.1.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.4.1)\nRequirement\
+          \ already satisfied: attrs>=17.3.0 in /usr/lib/python3/dist-packages (from\
+          \ aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (21.2.0)\nRequirement\
+          \ already satisfied: charset-normalizer<4,>=2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.3.2)\n\
+          Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packages\
+          \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2020.6.20)\n\
+          Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/lib/python3/dist-packages\
+          \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (1.26.5)\n\
+          Requirement already satisfied: idna<4,>=2.5 in /usr/lib/python3/dist-packages\
+          \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.3)\n\
+          Requirement already satisfied: pytz>=2020.1 in /usr/lib/python3/dist-packages\
+          \ (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117) (2022.1)\nRequirement\
+          \ already satisfied: python-dateutil>=2.8.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117) (2.8.2)\nRequirement\
+          \ already satisfied: tzdata>=2022.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+          \ (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117) (2023.3)\nBuilding\
+          \ wheels for collected packages: auto-gptq\n  Building wheel for auto-gptq\
+          \ (setup.py) ... error\n  error: subprocess-exited-with-error\n\n  \xD7\
+          \ python setup.py bdist_wheel did not run successfully.\n  \u2502 exit code:\
+          \ 1\n  \u2570\u2500> [120 lines of output]\n      Generating qigen kernels...\n\
+          \      conda_cuda_include_dir /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include\n\
+          \      running bdist_wheel\n      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+          \ UserWarning: Attempted to use ninja as the BuildExtension backend but\
+          \ we could not find ninja.. Falling back to using the slow distutils backend.\n\
+          \        warnings.warn(msg.format('we could not find ninja.'))\n      running\
+          \ build\n      running build_py\n      creating build\n      creating build/lib.linux-x86_64-3.10\n\
+          \      creating build/lib.linux-x86_64-3.10/tests\n      copying tests/test_quantization.py\
+          \ -> build/lib.linux-x86_64-3.10/tests\n      copying tests/test_q4.py ->\
+          \ build/lib.linux-x86_64-3.10/tests\n      copying tests/test_peft_conversion.py\
+          \ -> build/lib.linux-x86_64-3.10/tests\n      copying tests/__init__.py\
+          \ -> build/lib.linux-x86_64-3.10/tests\n      creating build/lib.linux-x86_64-3.10/auto_gptq\n\
+          \      copying auto_gptq/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n     \
+          \ copying auto_gptq/nn_modules/fused_gptj_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/_fused_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/fused_llama_mlp.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/fused_llama_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying\
+          \ auto_gptq/utils/perplexity_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/data_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/import_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/exllama_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/patch_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/peft_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n     \
+          \ copying auto_gptq/eval_tasks/sequence_classification_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/language_modeling_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/text_summarization_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization\n   \
+          \   copying auto_gptq/quantization/quantizer.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      copying auto_gptq/quantization/gptq.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      copying auto_gptq/quantization/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling\n      copying\
+          \ auto_gptq/modeling/internlm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/mistral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt_neox.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_const.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/codegen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/auto.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/opt.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/bloom.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/stablelmepoch.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/baichuan.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/xverse.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt_bigcode.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/mixtral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/moss.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt2.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/llama.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/qwen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gptj.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/yi.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/decilm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/rw.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+          \       \n      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n      copying\
+          \ auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+          \        \n      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n      copying\
+          \ auto_gptq/nn_modules/qlinear/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+          \      copying auto_gptq/nn_modules/triton_utils/kernels.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+          \       \n      copying auto_gptq/nn_modules/triton_utils/mixin.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+          \      copying auto_gptq/nn_modules/triton_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+          \      \n      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py\
+          \ -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n   \
+          \   creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n \
+          \     copying auto_gptq/eval_tasks/_utils/classification_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\
+          \      \n      copying auto_gptq/eval_tasks/_utils/generation_utils.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n      copying\
+          \ auto_gptq/eval_tasks/_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+          \      running build_ext\n      Traceback (most recent call last):\n   \
+          \     File \"<string>\", line 2, in <module>\n        File \"<pip-setuptools-caller>\"\
+          , line 34, in <module>\n        File \"/tmp/pip-req-build-j2sx0fuo/setup.py\"\
+          , line 188, in <module>\n          setup(\n        File \"/usr/lib/python3/dist-packages/setuptools/__init__.py\"\
+          , line 153, in setup\n          return distutils.core.setup(**attrs)\n \
+          \       File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup\n\
+          \          dist.run_commands()\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 966, in run_commands\n          self.run_command(cmd)\n        File\
+          \ \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+          \          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/wheel/bdist_wheel.py\"\
+          , line 299, in run\n          self.run_command('build')\n        File \"\
+          /usr/lib/python3.10/distutils/cmd.py\", line 313, in run_command\n     \
+          \     self.distribution.run_command(command)\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 985, in run_command\n          cmd_obj.run()\n        File \"/usr/lib/python3.10/distutils/command/build.py\"\
+          , line 135, in run\n          self.run_command(cmd_name)\n        File \"\
+          /usr/lib/python3.10/distutils/cmd.py\", line 313, in run_command\n     \
+          \     self.distribution.run_command(command)\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 985, in run_command\n          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/setuptools/command/build_ext.py\"\
+          , line 79, in run\n          _build_ext.run(self)\n        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+          , line 340, in run\n          self.build_extensions()\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 499, in build_extensions       \n          _check_cuda_version(compiler_name,\
+          \ compiler_version)\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 386, in _check_cuda_version    \n          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+          \ torch.version.cuda))\n      RuntimeError:\n      The detected CUDA version\
+          \ (12.3) mismatches the version that was used to compile\n      PyTorch\
+          \ (11.7). Please make sure to use the same CUDA versions.\n     \n     \
+          \ [end of output]\n\n  note: This error originates from a subprocess, and\
+          \ is likely not a problem with pip.\n  ERROR: Failed building wheel for\
+          \ auto-gptq\n  Running setup.py clean for auto-gptq\nFailed to build auto-gptq\n\
+          Installing collected packages: auto-gptq\n  Running setup.py install for\
+          \ auto-gptq ... error\n  error: subprocess-exited-with-error\n\n  \xD7 Running\
+          \ setup.py install for auto-gptq did not run successfully.\n  \u2502 exit\
+          \ code: 1\n  \u2570\u2500> [124 lines of output]\n      Generating qigen\
+          \ kernels...\n      conda_cuda_include_dir /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include\n\
+          \      running install\n      /usr/lib/python3/dist-packages/setuptools/command/install.py:34:\
+          \ SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build\
+          \ and pip and other standards-based tools.\n        warnings.warn(\n   \
+          \   running build\n      running build_py\n      creating build\n      creating\
+          \ build/lib.linux-x86_64-3.10\n      creating build/lib.linux-x86_64-3.10/tests\n\
+          \      copying tests/test_quantization.py -> build/lib.linux-x86_64-3.10/tests\n\
+          \      copying tests/test_q4.py -> build/lib.linux-x86_64-3.10/tests\n \
+          \     copying tests/test_peft_conversion.py -> build/lib.linux-x86_64-3.10/tests\n\
+          \      copying tests/__init__.py -> build/lib.linux-x86_64-3.10/tests\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq\n      copying auto_gptq/__init__.py\
+          \ -> build/lib.linux-x86_64-3.10/auto_gptq\n      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/fused_gptj_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/_fused_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/fused_llama_mlp.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/fused_llama_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      copying auto_gptq/nn_modules/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying\
+          \ auto_gptq/utils/perplexity_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/data_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/import_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/exllama_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/patch_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      copying auto_gptq/utils/peft_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n     \
+          \ copying auto_gptq/eval_tasks/sequence_classification_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/language_modeling_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/text_summarization_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      copying auto_gptq/eval_tasks/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization\n   \
+          \   copying auto_gptq/quantization/quantizer.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      copying auto_gptq/quantization/gptq.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      copying auto_gptq/quantization/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling\n      copying\
+          \ auto_gptq/modeling/internlm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/mistral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt_neox.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_const.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/codegen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/auto.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/opt.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/bloom.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/stablelmepoch.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/baichuan.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/xverse.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt_bigcode.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/mixtral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/moss.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gpt2.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/llama.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/qwen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/gptj.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/yi.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/decilm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      copying auto_gptq/modeling/rw.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+          \       \n      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n      copying\
+          \ auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+          \        \n      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n      copying\
+          \ auto_gptq/nn_modules/qlinear/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+          \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+          \      copying auto_gptq/nn_modules/triton_utils/kernels.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+          \       \n      copying auto_gptq/nn_modules/triton_utils/mixin.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+          \      copying auto_gptq/nn_modules/triton_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+          \      \n      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py\
+          \ -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n   \
+          \   creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n \
+          \     copying auto_gptq/eval_tasks/_utils/classification_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\
+          \      \n      copying auto_gptq/eval_tasks/_utils/generation_utils.py ->\
+          \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n      copying\
+          \ auto_gptq/eval_tasks/_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+          \      running build_ext\n      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+          \ UserWarning: Attempted to use ninja as the BuildExtension backend but\
+          \ we could not find ninja.. Falling back to using the slow distutils backend.\n\
+          \        warnings.warn(msg.format('we could not find ninja.'))\n      Traceback\
+          \ (most recent call last):\n        File \"<string>\", line 2, in <module>\n\
+          \        File \"<pip-setuptools-caller>\", line 34, in <module>\n      \
+          \  File \"/tmp/pip-req-build-j2sx0fuo/setup.py\", line 188, in <module>\n\
+          \          setup(\n        File \"/usr/lib/python3/dist-packages/setuptools/__init__.py\"\
+          , line 153, in setup\n          return distutils.core.setup(**attrs)\n \
+          \       File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup\n\
+          \          dist.run_commands()\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 966, in run_commands\n          self.run_command(cmd)\n        File\
+          \ \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+          \          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/setuptools/command/install.py\"\
+          , line 68, in run\n          return orig.install.run(self)\n        File\
+          \ \"/usr/lib/python3.10/distutils/command/install.py\", line 619, in run\n\
+          \          self.run_command('build')\n        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+          , line 313, in run_command\n          self.distribution.run_command(command)\n\
+          \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+          \          cmd_obj.run()\n        File \"/usr/lib/python3.10/distutils/command/build.py\"\
+          , line 135, in run\n          self.run_command(cmd_name)\n        File \"\
+          /usr/lib/python3.10/distutils/cmd.py\", line 313, in run_command\n     \
+          \     self.distribution.run_command(command)\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+          , line 985, in run_command\n          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/setuptools/command/build_ext.py\"\
+          , line 79, in run\n          _build_ext.run(self)\n        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+          , line 340, in run\n          self.build_extensions()\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 499, in build_extensions       \n          _check_cuda_version(compiler_name,\
+          \ compiler_version)\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+          , line 386, in _check_cuda_version    \n          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+          \ torch.version.cuda))\n      RuntimeError:\n      The detected CUDA version\
+          \ (12.3) mismatches the version that was used to compile\n      PyTorch\
+          \ (11.7). Please make sure to use the same CUDA versions.\n\n      [end\
+          \ of output]\n\n  note: This error originates from a subprocess, and is\
+          \ likely not a problem with pip.\nerror: legacy-install-failure\n\n\xD7\
+          \ Encountered error while trying to install package.\n\u2570\u2500> auto-gptq\n\
+          \nnote: This is an issue with the package mentioned above, not pip.\nhint:\
+          \ See above for output from the failure.\n"
+        updatedAt: '2023-12-27T11:18:56.210Z'
+      numEdits: 0
+      reactions: []
+    id: 658c0820e39d6db3ddccb1da
+    type: comment
+  author: CiliaMadni
+  content: "@TheBloke I get the following error when I try to install AutoGPTQ  from\
+    \ source, any ideas ?\n\n pip install git+https://github.com/PanQiWei/AutoGPTQ.git\n\
+    Defaulting to user installation because normal site-packages is not writeable\n\
+    Collecting git+https://github.com/PanQiWei/AutoGPTQ.git\n  Cloning https://github.com/PanQiWei/AutoGPTQ.git\
+    \ to /tmp/pip-req-build-j2sx0fuo\n  Running command git clone --filter=blob:none\
+    \ --quiet https://github.com/PanQiWei/AutoGPTQ.git /tmp/pip-req-build-j2sx0fuo\n\
+    \  Resolved https://github.com/PanQiWei/AutoGPTQ.git to commit d2662b18bb91e1864b29e4e05862712382b8a076\n\
+    \  Preparing metadata (setup.py) ... done\nRequirement already satisfied: accelerate>=0.22.0\
+    \ in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+    \ (0.22.0)\nRequirement already satisfied: datasets in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from auto-gptq==0.7.0.dev0+cu117) (2.16.0)\nRequirement already satisfied:\
+    \ gekko in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+    \ (1.0.6)\nRequirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages\
+    \ (from auto-gptq==0.7.0.dev0+cu117) (1.26.2)       \nRequirement already satisfied:\
+    \ peft>=0.5.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+    \ \n(0.7.1)\nRequirement already satisfied: rouge in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from auto-gptq==0.7.0.dev0+cu117) (1.0.1)\nRequirement already satisfied: safetensors\
+    \ in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+    \ \n(0.4.1)\nRequirement already satisfied: sentencepiece in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from auto-gptq==0.7.0.dev0+cu117) (0.1.99)\nRequirement already satisfied:\
+    \ torch>=1.13.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from auto-gptq==0.7.0.dev0+cu117)\
+    \ (1.13.1)\nRequirement already satisfied: tqdm in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from auto-gptq==0.7.0.dev0+cu117) (4.66.1)\nRequirement already satisfied:\
+    \ transformers>=4.31.0 in /home/ubuntu/.local/lib/python3.10/site-packages (from\
+    \ auto-gptq==0.7.0.dev0+cu117) (4.32.1)\nRequirement already satisfied: psutil\
+    \ in /home/ubuntu/.local/lib/python3.10/site-packages (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117)\
+    \ (5.9.7)\nRequirement already satisfied: packaging>=20.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117) (23.2)\nRequirement already\
+    \ satisfied: pyyaml in /usr/lib/python3/dist-packages (from accelerate>=0.22.0->auto-gptq==0.7.0.dev0+cu117)\
+    \ (5.4.1)\nRequirement already satisfied: huggingface-hub>=0.17.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from peft>=0.5.0->auto-gptq==0.7.0.dev0+cu117) (0.20.1)\nRequirement already\
+    \ satisfied: nvidia-cuda-nvrtc-cu11==11.7.99 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.7.99)\nRequirement already\
+    \ satisfied: nvidia-cudnn-cu11==8.5.0.96 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (8.5.0.96)\nRequirement already\
+    \ satisfied: nvidia-cuda-runtime-cu11==11.7.99 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.7.99)\nRequirement already\
+    \ satisfied: nvidia-cublas-cu11==11.10.3.66 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (11.10.3.66)\nRequirement\
+    \ already satisfied: typing-extensions in /usr/local/lib/python3.10/dist-packages\
+    \ (from torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117) (4.9.0)\nRequirement already\
+    \ satisfied: setuptools in /usr/lib/python3/dist-packages (from nvidia-cublas-cu11==11.10.3.66->torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117)\
+    \ (59.6.0)\nRequirement already satisfied: wheel in /usr/lib/python3/dist-packages\
+    \ (from nvidia-cublas-cu11==11.10.3.66->torch>=1.13.0->auto-gptq==0.7.0.dev0+cu117)\
+    \ (0.37.1)\nRequirement already satisfied: requests in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2.31.0)\nRequirement\
+    \ already satisfied: tokenizers!=0.11.3,<0.14,>=0.11.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (0.13.3)\nRequirement\
+    \ already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from\
+    \ transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.13.1)\nRequirement already\
+    \ satisfied: regex!=2019.12.17 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2023.10.3)\nRequirement\
+    \ already satisfied: dill<0.3.8,>=0.3.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (0.3.7)\nRequirement already satisfied:\
+    \ multiprocess in /home/ubuntu/.local/lib/python3.10/site-packages (from datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (0.70.15)\nRequirement already satisfied: fsspec[http]<=2023.10.0,>=2023.1.0\
+    \ in /home/ubuntu/.local/lib/python3.10/site-packages (from datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (2023.10.0)\nRequirement already satisfied: pyarrow-hotfix in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (0.6)\nRequirement already satisfied:\
+    \ pandas in /home/ubuntu/.local/lib/python3.10/site-packages (from datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (2.1.4)\nRequirement already satisfied: pyarrow>=8.0.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (14.0.2)\nRequirement already satisfied:\
+    \ xxhash in /home/ubuntu/.local/lib/python3.10/site-packages (from datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (3.4.1)\nRequirement already satisfied: aiohttp in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from datasets->auto-gptq==0.7.0.dev0+cu117) (3.9.1)\nRequirement already satisfied:\
+    \ six in /usr/lib/python3/dist-packages (from rouge->auto-gptq==0.7.0.dev0+cu117)\
+    \ (1.16.0)\nRequirement already satisfied: async-timeout<5.0,>=4.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (4.0.3)\nRequirement already\
+    \ satisfied: yarl<2.0,>=1.0 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.9.4)\nRequirement already\
+    \ satisfied: aiosignal>=1.1.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.3.1)\nRequirement already\
+    \ satisfied: multidict<7.0,>=4.5 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (6.0.4)\nRequirement already\
+    \ satisfied: frozenlist>=1.1.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117) (1.4.1)\nRequirement already\
+    \ satisfied: attrs>=17.3.0 in /usr/lib/python3/dist-packages (from aiohttp->datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (21.2.0)\nRequirement already satisfied: charset-normalizer<4,>=2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.3.2)\n\
+    Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packages\
+    \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (2020.6.20)\n\
+    Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/lib/python3/dist-packages\
+    \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (1.26.5)\n\
+    Requirement already satisfied: idna<4,>=2.5 in /usr/lib/python3/dist-packages\
+    \ (from requests->transformers>=4.31.0->auto-gptq==0.7.0.dev0+cu117) (3.3)\nRequirement\
+    \ already satisfied: pytz>=2020.1 in /usr/lib/python3/dist-packages (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117)\
+    \ (2022.1)\nRequirement already satisfied: python-dateutil>=2.8.2 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117) (2.8.2)\nRequirement already\
+    \ satisfied: tzdata>=2022.1 in /home/ubuntu/.local/lib/python3.10/site-packages\
+    \ (from pandas->datasets->auto-gptq==0.7.0.dev0+cu117) (2023.3)\nBuilding wheels\
+    \ for collected packages: auto-gptq\n  Building wheel for auto-gptq (setup.py)\
+    \ ... error\n  error: subprocess-exited-with-error\n\n  \xD7 python setup.py bdist_wheel\
+    \ did not run successfully.\n  \u2502 exit code: 1\n  \u2570\u2500> [120 lines\
+    \ of output]\n      Generating qigen kernels...\n      conda_cuda_include_dir\
+    \ /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include\n      running bdist_wheel\n\
+    \      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+    \ UserWarning: Attempted to use ninja as the BuildExtension backend but we could\
+    \ not find ninja.. Falling back to using the slow distutils backend.\n       \
+    \ warnings.warn(msg.format('we could not find ninja.'))\n      running build\n\
+    \      running build_py\n      creating build\n      creating build/lib.linux-x86_64-3.10\n\
+    \      creating build/lib.linux-x86_64-3.10/tests\n      copying tests/test_quantization.py\
+    \ -> build/lib.linux-x86_64-3.10/tests\n      copying tests/test_q4.py -> build/lib.linux-x86_64-3.10/tests\n\
+    \      copying tests/test_peft_conversion.py -> build/lib.linux-x86_64-3.10/tests\n\
+    \      copying tests/__init__.py -> build/lib.linux-x86_64-3.10/tests\n      creating\
+    \ build/lib.linux-x86_64-3.10/auto_gptq\n      copying auto_gptq/__init__.py ->\
+    \ build/lib.linux-x86_64-3.10/auto_gptq\n      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_gptj_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/_fused_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_llama_mlp.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_llama_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/perplexity_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/data_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/import_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/exllama_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/__init__.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/patch_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/peft_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/sequence_classification_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/language_modeling_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/text_summarization_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization\n      copying\
+    \ auto_gptq/quantization/quantizer.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      copying auto_gptq/quantization/gptq.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      copying auto_gptq/quantization/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling\n      copying\
+    \ auto_gptq/modeling/internlm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/mistral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt_neox.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_const.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/codegen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/auto.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/opt.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/bloom.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/stablelmepoch.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/baichuan.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/xverse.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt_bigcode.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/mixtral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/moss.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt2.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/llama.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/qwen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gptj.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/yi.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/decilm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/rw.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n   \
+    \   copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+    \       \n      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+    \        \n      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+    \      copying auto_gptq/nn_modules/triton_utils/kernels.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+    \       \n      copying auto_gptq/nn_modules/triton_utils/mixin.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+    \      copying auto_gptq/nn_modules/triton_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+    \      \n      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py ->\
+    \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n      creating\
+    \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n      copying auto_gptq/eval_tasks/_utils/classification_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils      \n      copying\
+    \ auto_gptq/eval_tasks/_utils/generation_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+    \      copying auto_gptq/eval_tasks/_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+    \      running build_ext\n      Traceback (most recent call last):\n        File\
+    \ \"<string>\", line 2, in <module>\n        File \"<pip-setuptools-caller>\"\
+    , line 34, in <module>\n        File \"/tmp/pip-req-build-j2sx0fuo/setup.py\"\
+    , line 188, in <module>\n          setup(\n        File \"/usr/lib/python3/dist-packages/setuptools/__init__.py\"\
+    , line 153, in setup\n          return distutils.core.setup(**attrs)\n       \
+    \ File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup\n       \
+    \   dist.run_commands()\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+    , line 966, in run_commands\n          self.run_command(cmd)\n        File \"\
+    /usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n          cmd_obj.run()\n\
+    \        File \"/usr/lib/python3/dist-packages/wheel/bdist_wheel.py\", line 299,\
+    \ in run\n          self.run_command('build')\n        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+    , line 313, in run_command\n          self.distribution.run_command(command)\n\
+    \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+    \          cmd_obj.run()\n        File \"/usr/lib/python3.10/distutils/command/build.py\"\
+    , line 135, in run\n          self.run_command(cmd_name)\n        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+    , line 313, in run_command\n          self.distribution.run_command(command)\n\
+    \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+    \          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/setuptools/command/build_ext.py\"\
+    , line 79, in run\n          _build_ext.run(self)\n        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+    , line 340, in run\n          self.build_extensions()\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+    , line 499, in build_extensions       \n          _check_cuda_version(compiler_name,\
+    \ compiler_version)\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+    , line 386, in _check_cuda_version    \n          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+    \ torch.version.cuda))\n      RuntimeError:\n      The detected CUDA version (12.3)\
+    \ mismatches the version that was used to compile\n      PyTorch (11.7). Please\
+    \ make sure to use the same CUDA versions.\n     \n      [end of output]\n\n \
+    \ note: This error originates from a subprocess, and is likely not a problem with\
+    \ pip.\n  ERROR: Failed building wheel for auto-gptq\n  Running setup.py clean\
+    \ for auto-gptq\nFailed to build auto-gptq\nInstalling collected packages: auto-gptq\n\
+    \  Running setup.py install for auto-gptq ... error\n  error: subprocess-exited-with-error\n\
+    \n  \xD7 Running setup.py install for auto-gptq did not run successfully.\n  \u2502\
+    \ exit code: 1\n  \u2570\u2500> [124 lines of output]\n      Generating qigen\
+    \ kernels...\n      conda_cuda_include_dir /usr/lib/python3/dist-packages/nvidia/cuda_runtime/include\n\
+    \      running install\n      /usr/lib/python3/dist-packages/setuptools/command/install.py:34:\
+    \ SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and\
+    \ pip and other standards-based tools.\n        warnings.warn(\n      running\
+    \ build\n      running build_py\n      creating build\n      creating build/lib.linux-x86_64-3.10\n\
+    \      creating build/lib.linux-x86_64-3.10/tests\n      copying tests/test_quantization.py\
+    \ -> build/lib.linux-x86_64-3.10/tests\n      copying tests/test_q4.py -> build/lib.linux-x86_64-3.10/tests\n\
+    \      copying tests/test_peft_conversion.py -> build/lib.linux-x86_64-3.10/tests\n\
+    \      copying tests/__init__.py -> build/lib.linux-x86_64-3.10/tests\n      creating\
+    \ build/lib.linux-x86_64-3.10/auto_gptq\n      copying auto_gptq/__init__.py ->\
+    \ build/lib.linux-x86_64-3.10/auto_gptq\n      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_gptj_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/_fused_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_llama_mlp.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/fused_llama_attn.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      copying auto_gptq/nn_modules/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/perplexity_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/data_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/import_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/exllama_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/__init__.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/patch_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      copying auto_gptq/utils/peft_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/utils\n      creating build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/sequence_classification_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/language_modeling_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/text_summarization_task.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      copying auto_gptq/eval_tasks/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/quantization\n      copying\
+    \ auto_gptq/quantization/quantizer.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      copying auto_gptq/quantization/gptq.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      copying auto_gptq/quantization/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/quantization\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/modeling\n      copying\
+    \ auto_gptq/modeling/internlm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/mistral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt_neox.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_const.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/codegen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/auto.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/opt.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/bloom.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/_base.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/stablelmepoch.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/baichuan.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/xverse.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt_bigcode.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/mixtral.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/moss.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gpt2.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/llama.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/qwen.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/gptj.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/yi.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/decilm.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      copying auto_gptq/modeling/rw.py -> build/lib.linux-x86_64-3.10/auto_gptq/modeling\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n   \
+    \   copying auto_gptq/nn_modules/qlinear/qlinear_exllama.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_exllamav2.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+    \       \n      copying auto_gptq/nn_modules/qlinear/qlinear_triton.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/qlinear_cuda_old.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\
+    \        \n      copying auto_gptq/nn_modules/qlinear/qlinear_qigen.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      copying auto_gptq/nn_modules/qlinear/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/qlinear\n\
+    \      creating build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+    \      copying auto_gptq/nn_modules/triton_utils/kernels.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+    \       \n      copying auto_gptq/nn_modules/triton_utils/mixin.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n\
+    \      copying auto_gptq/nn_modules/triton_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\
+    \      \n      copying auto_gptq/nn_modules/triton_utils/custom_autotune.py ->\
+    \ build/lib.linux-x86_64-3.10/auto_gptq/nn_modules/triton_utils\n      creating\
+    \ build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n      copying auto_gptq/eval_tasks/_utils/classification_utils.py\
+    \ -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils      \n      copying\
+    \ auto_gptq/eval_tasks/_utils/generation_utils.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+    \      copying auto_gptq/eval_tasks/_utils/__init__.py -> build/lib.linux-x86_64-3.10/auto_gptq/eval_tasks/_utils\n\
+    \      running build_ext\n      /home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py:476:\
+    \ UserWarning: Attempted to use ninja as the BuildExtension backend but we could\
+    \ not find ninja.. Falling back to using the slow distutils backend.\n       \
+    \ warnings.warn(msg.format('we could not find ninja.'))\n      Traceback (most\
+    \ recent call last):\n        File \"<string>\", line 2, in <module>\n       \
+    \ File \"<pip-setuptools-caller>\", line 34, in <module>\n        File \"/tmp/pip-req-build-j2sx0fuo/setup.py\"\
+    , line 188, in <module>\n          setup(\n        File \"/usr/lib/python3/dist-packages/setuptools/__init__.py\"\
+    , line 153, in setup\n          return distutils.core.setup(**attrs)\n       \
+    \ File \"/usr/lib/python3.10/distutils/core.py\", line 148, in setup\n       \
+    \   dist.run_commands()\n        File \"/usr/lib/python3.10/distutils/dist.py\"\
+    , line 966, in run_commands\n          self.run_command(cmd)\n        File \"\
+    /usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n          cmd_obj.run()\n\
+    \        File \"/usr/lib/python3/dist-packages/setuptools/command/install.py\"\
+    , line 68, in run\n          return orig.install.run(self)\n        File \"/usr/lib/python3.10/distutils/command/install.py\"\
+    , line 619, in run\n          self.run_command('build')\n        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+    , line 313, in run_command\n          self.distribution.run_command(command)\n\
+    \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+    \          cmd_obj.run()\n        File \"/usr/lib/python3.10/distutils/command/build.py\"\
+    , line 135, in run\n          self.run_command(cmd_name)\n        File \"/usr/lib/python3.10/distutils/cmd.py\"\
+    , line 313, in run_command\n          self.distribution.run_command(command)\n\
+    \        File \"/usr/lib/python3.10/distutils/dist.py\", line 985, in run_command\n\
+    \          cmd_obj.run()\n        File \"/usr/lib/python3/dist-packages/setuptools/command/build_ext.py\"\
+    , line 79, in run\n          _build_ext.run(self)\n        File \"/usr/lib/python3.10/distutils/command/build_ext.py\"\
+    , line 340, in run\n          self.build_extensions()\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+    , line 499, in build_extensions       \n          _check_cuda_version(compiler_name,\
+    \ compiler_version)\n        File \"/home/ubuntu/.local/lib/python3.10/site-packages/torch/utils/cpp_extension.py\"\
+    , line 386, in _check_cuda_version    \n          raise RuntimeError(CUDA_MISMATCH_MESSAGE.format(cuda_str_version,\
+    \ torch.version.cuda))\n      RuntimeError:\n      The detected CUDA version (12.3)\
+    \ mismatches the version that was used to compile\n      PyTorch (11.7). Please\
+    \ make sure to use the same CUDA versions.\n\n      [end of output]\n\n  note:\
+    \ This error originates from a subprocess, and is likely not a problem with pip.\n\
+    error: legacy-install-failure\n\n\xD7 Encountered error while trying to install\
+    \ package.\n\u2570\u2500> auto-gptq\n\nnote: This is an issue with the package\
+    \ mentioned above, not pip.\nhint: See above for output from the failure.\n"
+  created_at: 2023-12-27 11:18:56+00:00
+  edited: false
+  hidden: false
+  id: 658c0820e39d6db3ddccb1da
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: TheBloke/Manticore-13B-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: Noobing out

@@ -1,0 +1,4 @@
+## https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2/discussions/26
+
+contains_question: yes
+question_part: In my project, I'm using a custom prompt structure that includes an instruction followed by a "HUMAN: <question>" and "AI: <response>" format. This differs from the one provided in the instruction format, which uses the [INST] and [/INST] tokens. Given this, I'm curious about the motivation behind adding [INST] to the prompt. Is it a must to use these tokens even if my prompts are structured differently? As I'm doing fine-tuning for the model, I'm wondering if it's still necessary to add the [INST] tokens or if there's a way to adapt this to my custom prompt structure.

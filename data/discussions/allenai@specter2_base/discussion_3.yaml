@@ -1,0 +1,123 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: junoriosity
+conflicting_files: null
+created_at: 2023-05-21 17:25:14+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/49e67285da9387112fde125f17b8f426.svg
+      fullname: Tobi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: junoriosity
+      type: user
+    createdAt: '2023-05-21T18:25:14.000Z'
+    data:
+      edited: false
+      editors:
+      - junoriosity
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/49e67285da9387112fde125f17b8f426.svg
+          fullname: Tobi
+          isHf: false
+          isPro: false
+          name: junoriosity
+          type: user
+        html: "<p>I would like to use specter2.0 for iterated token generation. Here\
+          \ is my code:</p>\n<pre><code>import torch\nimport torch.nn.functional as\
+          \ F\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\ndevice\
+          \ = \"cuda\"\ntokenizer = AutoTokenizer.from_pretrained('allenai/specter2')\n\
+          model = AutoModelForCausalLM.from_pretrained('allenai/specter2').to(device)\n\
+          \ninput_sequence = \"Hello, I'm a language model,\"\n\ninputs = torch.as_tensor(tokenizer.encode(input_sequence)).unsqueeze(0).to(device)\n\
+          attention_mask = torch.as_tensor(tokenizer(input_sequence).attention_mask).unsqueeze(0).to(device)\n\
+          past_key_values = None\n\ncount = 0\ncomplete_token = []\nwith torch.no_grad():\n\
+          \    while count &lt; 10:\n        count += 1\n        print(\"Iteration\
+          \ no.: \" + str(count))\n        if count &gt; 1:\n            inputs =\
+          \ input_token\n\n        print(inputs.to(device))\n        print(attention_mask)\n\
+          \        print(past_key_values[0][0].shape if past_key_values else None)\n\
+          \n        model_out = model(input_ids=inputs.to(device), attention_mask=attention_mask,\
+          \ past_key_values=past_key_values)\n        logits = model_out.logits[:,\
+          \ -1, :]\n        past_key_values = model_out.past_key_values\n\n      \
+          \  topk_values, topk_indices = torch.topk(logits, 5)\n\n        log_probs\
+          \ = F.softmax(topk_values, dim=-1)\n        inputs_in_topk = torch.multinomial(log_probs,\
+          \ num_samples=1, replacement=True)\n        input_token = torch.gather(topk_indices,\
+          \ 1, inputs_in_topk)\n        attention_mask = torch.concat((attention_mask,\
+          \ torch.tensor([[1]]).to(attention_mask.device)), dim=1)\n        complete_token.append(input_token)\n\
+          </code></pre>\n<p>However, we have <code>past_key_values = Null</code> all\
+          \ the time. I tried this approach with other models and <code>past_key_values</code>\
+          \ is not null there. How can I make the iteration work here, such that we\
+          \ have the knowledge of the previous iteration?</p>\n"
+        raw: "I would like to use specter2.0 for iterated token generation. Here is\
+          \ my code:\r\n\r\n```\r\nimport torch\r\nimport torch.nn.functional as F\r\
+          \nfrom transformers import AutoTokenizer, AutoModelForCausalLM\r\n\r\ndevice\
+          \ = \"cuda\"\r\ntokenizer = AutoTokenizer.from_pretrained('allenai/specter2')\r\
+          \nmodel = AutoModelForCausalLM.from_pretrained('allenai/specter2').to(device)\r\
+          \n\r\ninput_sequence = \"Hello, I'm a language model,\"\r\n\r\ninputs =\
+          \ torch.as_tensor(tokenizer.encode(input_sequence)).unsqueeze(0).to(device)\r\
+          \nattention_mask = torch.as_tensor(tokenizer(input_sequence).attention_mask).unsqueeze(0).to(device)\r\
+          \npast_key_values = None\r\n\r\ncount = 0\r\ncomplete_token = []\r\nwith\
+          \ torch.no_grad():\r\n    while count < 10:\r\n        count += 1\r\n  \
+          \      print(\"Iteration no.: \" + str(count))\r\n        if count > 1:\r\
+          \n            inputs = input_token\r\n\r\n        print(inputs.to(device))\r\
+          \n        print(attention_mask)\r\n        print(past_key_values[0][0].shape\
+          \ if past_key_values else None)\r\n\r\n        model_out = model(input_ids=inputs.to(device),\
+          \ attention_mask=attention_mask, past_key_values=past_key_values)\r\n  \
+          \      logits = model_out.logits[:, -1, :]\r\n        past_key_values =\
+          \ model_out.past_key_values\r\n\r\n        topk_values, topk_indices = torch.topk(logits,\
+          \ 5)\r\n\r\n        log_probs = F.softmax(topk_values, dim=-1)\r\n     \
+          \   inputs_in_topk = torch.multinomial(log_probs, num_samples=1, replacement=True)\r\
+          \n        input_token = torch.gather(topk_indices, 1, inputs_in_topk)\r\n\
+          \        attention_mask = torch.concat((attention_mask, torch.tensor([[1]]).to(attention_mask.device)),\
+          \ dim=1)\r\n        complete_token.append(input_token)\r\n```\r\n\r\nHowever,\
+          \ we have `past_key_values = Null` all the time. I tried this approach with\
+          \ other models and `past_key_values` is not null there. How can I make the\
+          \ iteration work here, such that we have the knowledge of the previous iteration?"
+        updatedAt: '2023-05-21T18:25:14.946Z'
+      numEdits: 0
+      reactions: []
+    id: 646a620a8eaf6dcec2304d57
+    type: comment
+  author: junoriosity
+  content: "I would like to use specter2.0 for iterated token generation. Here is\
+    \ my code:\r\n\r\n```\r\nimport torch\r\nimport torch.nn.functional as F\r\nfrom\
+    \ transformers import AutoTokenizer, AutoModelForCausalLM\r\n\r\ndevice = \"cuda\"\
+    \r\ntokenizer = AutoTokenizer.from_pretrained('allenai/specter2')\r\nmodel = AutoModelForCausalLM.from_pretrained('allenai/specter2').to(device)\r\
+    \n\r\ninput_sequence = \"Hello, I'm a language model,\"\r\n\r\ninputs = torch.as_tensor(tokenizer.encode(input_sequence)).unsqueeze(0).to(device)\r\
+    \nattention_mask = torch.as_tensor(tokenizer(input_sequence).attention_mask).unsqueeze(0).to(device)\r\
+    \npast_key_values = None\r\n\r\ncount = 0\r\ncomplete_token = []\r\nwith torch.no_grad():\r\
+    \n    while count < 10:\r\n        count += 1\r\n        print(\"Iteration no.:\
+    \ \" + str(count))\r\n        if count > 1:\r\n            inputs = input_token\r\
+    \n\r\n        print(inputs.to(device))\r\n        print(attention_mask)\r\n  \
+    \      print(past_key_values[0][0].shape if past_key_values else None)\r\n\r\n\
+    \        model_out = model(input_ids=inputs.to(device), attention_mask=attention_mask,\
+    \ past_key_values=past_key_values)\r\n        logits = model_out.logits[:, -1,\
+    \ :]\r\n        past_key_values = model_out.past_key_values\r\n\r\n        topk_values,\
+    \ topk_indices = torch.topk(logits, 5)\r\n\r\n        log_probs = F.softmax(topk_values,\
+    \ dim=-1)\r\n        inputs_in_topk = torch.multinomial(log_probs, num_samples=1,\
+    \ replacement=True)\r\n        input_token = torch.gather(topk_indices, 1, inputs_in_topk)\r\
+    \n        attention_mask = torch.concat((attention_mask, torch.tensor([[1]]).to(attention_mask.device)),\
+    \ dim=1)\r\n        complete_token.append(input_token)\r\n```\r\n\r\nHowever,\
+    \ we have `past_key_values = Null` all the time. I tried this approach with other\
+    \ models and `past_key_values` is not null there. How can I make the iteration\
+    \ work here, such that we have the knowledge of the previous iteration?"
+  created_at: 2023-05-21 17:25:14+00:00
+  edited: false
+  hidden: false
+  id: 646a620a8eaf6dcec2304d57
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: allenai/specter2_base
+repo_type: model
+status: open
+target_branch: null
+title: How to generate one token after the other with Specter 2?

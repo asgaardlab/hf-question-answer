@@ -1,0 +1,771 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Maiia
+conflicting_files: null
+created_at: 2023-11-08 11:54:33+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-08T11:54:33.000Z'
+    data:
+      edited: false
+      editors:
+      - Maiia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9461665153503418
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+          fullname: Maiia Bocharova
+          isHf: false
+          isPro: false
+          name: Maiia
+          type: user
+        html: '<p>I fine-tuned the model on my data with <code>SentenceTransformers</code>
+          library, but obviously just model.save() does not work (it saves without
+          errors, but when I reload in next session - I get a<br><code>Some weights
+          of BertModel were not initialized from the model checkpoint at ... and are
+          newly initialized</code>)<br>Can you please help, how can I save and reload
+          the model (ideally with <code>SentenceTransformers</code> library)</p>
+
+          '
+        raw: "I fine-tuned the model on my data with `SentenceTransformers` library,\
+          \ but obviously just model.save() does not work (it saves without errors,\
+          \ but when I reload in next session - I get a \r\n`Some weights of BertModel\
+          \ were not initialized from the model checkpoint at ... and are newly initialized`)\r\
+          \nCan you please help, how can I save and reload the model (ideally with\
+          \ `SentenceTransformers` library)"
+        updatedAt: '2023-11-08T11:54:33.707Z'
+      numEdits: 0
+      reactions: []
+    id: 654b76f93ef2f1e3d3155f7f
+    type: comment
+  author: Maiia
+  content: "I fine-tuned the model on my data with `SentenceTransformers` library,\
+    \ but obviously just model.save() does not work (it saves without errors, but\
+    \ when I reload in next session - I get a \r\n`Some weights of BertModel were\
+    \ not initialized from the model checkpoint at ... and are newly initialized`)\r\
+    \nCan you please help, how can I save and reload the model (ideally with `SentenceTransformers`\
+    \ library)"
+  created_at: 2023-11-08 11:54:33+00:00
+  edited: false
+  hidden: false
+  id: 654b76f93ef2f1e3d3155f7f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-08T12:07:46.000Z'
+    data:
+      edited: true
+      editors:
+      - Maiia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5732917189598083
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+          fullname: Maiia Bocharova
+          isHf: false
+          isPro: false
+          name: Maiia
+          type: user
+        html: "<p>Ok, I think I got a walk around:</p>\n<pre><code>!git clone https://huggingface.co/jinaai/jina-bert-implementation\n\
+          !mv jina-bert-implementation jina_bert_implementation\n!touch jina_bert_implementation/__init__.py\n\
+          \nfrom jina_bert_implementation.modeling_bert import JinaBertModel\n\ncheckpoint\
+          \ = \"my_checkpoint\"\nmodel = JinaBertModel.from_pretrained(checkpoint)\n\
+          model.to(device)\n\nfrom transformers import AutoTokenizer\nimport torch\n\
+          #Mean Pooling - Take attention mask into account for correct averaging\n\
+          def mean_pooling(model_output, attention_mask):\n    token_embeddings =\
+          \ model_output[0] #First element of model_output contains all token embeddings\n\
+          \    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+          \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+          \ min=1e-9)\n\n# Load model from HuggingFace Hub\ntokenizer = AutoTokenizer.from_pretrained('jinaai/jina-embeddings-v2-base-en')\n\
+          \n# Tokenize sentences\nencoded_input = tokenizer(sentences, padding=True,\
+          \ truncation=True, return_tensors='pt')\nencoded_input = {\n    key: val.to(device)\
+          \ for key, val in encoded_input.items()\n}\n# Compute token embeddings\n\
+          with torch.no_grad():\n    model_output = model(**encoded_input)\n\n# Perform\
+          \ pooling. In this case, max pooling.\nsentences_embeddings = mean_pooling(model_output,\
+          \ encoded_input['attention_mask'])\n</code></pre>\n<p>Still would appreciate\
+          \ the help, because I want to load it as SentenceTransformer for ease of\
+          \ use.</p>\n"
+        raw: "Ok, I think I got a walk around:\n```\n!git clone https://huggingface.co/jinaai/jina-bert-implementation\n\
+          !mv jina-bert-implementation jina_bert_implementation\n!touch jina_bert_implementation/__init__.py\n\
+          \nfrom jina_bert_implementation.modeling_bert import JinaBertModel\n\ncheckpoint\
+          \ = \"my_checkpoint\"\nmodel = JinaBertModel.from_pretrained(checkpoint)\n\
+          model.to(device)\n\nfrom transformers import AutoTokenizer\nimport torch\n\
+          #Mean Pooling - Take attention mask into account for correct averaging\n\
+          def mean_pooling(model_output, attention_mask):\n    token_embeddings =\
+          \ model_output[0] #First element of model_output contains all token embeddings\n\
+          \    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+          \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+          \ min=1e-9)\n\n# Load model from HuggingFace Hub\ntokenizer = AutoTokenizer.from_pretrained('jinaai/jina-embeddings-v2-base-en')\n\
+          \n# Tokenize sentences\nencoded_input = tokenizer(sentences, padding=True,\
+          \ truncation=True, return_tensors='pt')\nencoded_input = {\n    key: val.to(device)\
+          \ for key, val in encoded_input.items()\n}\n# Compute token embeddings\n\
+          with torch.no_grad():\n    model_output = model(**encoded_input)\n\n# Perform\
+          \ pooling. In this case, max pooling.\nsentences_embeddings = mean_pooling(model_output,\
+          \ encoded_input['attention_mask'])\n```\n\nStill would appreciate the help,\
+          \ because I want to load it as SentenceTransformer for ease of use."
+        updatedAt: '2023-11-08T12:08:10.787Z'
+      numEdits: 1
+      reactions: []
+    id: 654b7a12dc1b6cf3bda8b0b5
+    type: comment
+  author: Maiia
+  content: "Ok, I think I got a walk around:\n```\n!git clone https://huggingface.co/jinaai/jina-bert-implementation\n\
+    !mv jina-bert-implementation jina_bert_implementation\n!touch jina_bert_implementation/__init__.py\n\
+    \nfrom jina_bert_implementation.modeling_bert import JinaBertModel\n\ncheckpoint\
+    \ = \"my_checkpoint\"\nmodel = JinaBertModel.from_pretrained(checkpoint)\nmodel.to(device)\n\
+    \nfrom transformers import AutoTokenizer\nimport torch\n#Mean Pooling - Take attention\
+    \ mask into account for correct averaging\ndef mean_pooling(model_output, attention_mask):\n\
+    \    token_embeddings = model_output[0] #First element of model_output contains\
+    \ all token embeddings\n    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+    \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+    \ min=1e-9)\n\n# Load model from HuggingFace Hub\ntokenizer = AutoTokenizer.from_pretrained('jinaai/jina-embeddings-v2-base-en')\n\
+    \n# Tokenize sentences\nencoded_input = tokenizer(sentences, padding=True, truncation=True,\
+    \ return_tensors='pt')\nencoded_input = {\n    key: val.to(device) for key, val\
+    \ in encoded_input.items()\n}\n# Compute token embeddings\nwith torch.no_grad():\n\
+    \    model_output = model(**encoded_input)\n\n# Perform pooling. In this case,\
+    \ max pooling.\nsentences_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])\n\
+    ```\n\nStill would appreciate the help, because I want to load it as SentenceTransformer\
+    \ for ease of use."
+  created_at: 2023-11-08 12:07:46+00:00
+  edited: true
+  hidden: false
+  id: 654b7a12dc1b6cf3bda8b0b5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63491dc83d8dc83a55cb749c/IoqJrOIaEnYO_S7si4KGp.jpeg?w=200&h=200&f=face
+      fullname: Bo Wang
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: bwang0911
+      type: user
+    createdAt: '2023-11-08T12:19:37.000Z'
+    data:
+      edited: false
+      editors:
+      - bwang0911
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7994058132171631
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63491dc83d8dc83a55cb749c/IoqJrOIaEnYO_S7si4KGp.jpeg?w=200&h=200&f=face
+          fullname: Bo Wang
+          isHf: false
+          isPro: false
+          name: bwang0911
+          type: user
+        html: "<p>hi <span data-props=\"{&quot;user&quot;:&quot;Maiia&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Maiia\">@<span class=\"\
+          underline\">Maiia</span></a></span>\n\n\t</span></span> can you manually\
+          \ edit the <code>SentenceTransformer</code> class, add <code>trust_remote_code=True</code>\
+          \ when sbert doing the AutoModel.from_pretrained(...) thingy?</p>\n<p>i\
+          \ think in SBert main branch they support it, not in the latest pypi release.</p>\n"
+        raw: 'hi @Maiia can you manually edit the `SentenceTransformer` class, add
+          `trust_remote_code=True` when sbert doing the AutoModel.from_pretrained(...)
+          thingy?
+
+
+          i think in SBert main branch they support it, not in the latest pypi release.'
+        updatedAt: '2023-11-08T12:19:37.225Z'
+      numEdits: 0
+      reactions: []
+    id: 654b7cd9a48ed67297c31104
+    type: comment
+  author: bwang0911
+  content: 'hi @Maiia can you manually edit the `SentenceTransformer` class, add `trust_remote_code=True`
+    when sbert doing the AutoModel.from_pretrained(...) thingy?
+
+
+    i think in SBert main branch they support it, not in the latest pypi release.'
+  created_at: 2023-11-08 12:19:37+00:00
+  edited: false
+  hidden: false
+  id: 654b7cd9a48ed67297c31104
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-08T15:12:18.000Z'
+    data:
+      edited: true
+      editors:
+      - Maiia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4291113615036011
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+          fullname: Maiia Bocharova
+          isHf: false
+          isPro: false
+          name: Maiia
+          type: user
+        html: "<p>Was not able to find where to change it, but I adapted the function\
+          \ and created a class similar to SentenceTransformer (at least it does the\
+          \ encoding efficiently)<br>Maybe someone else finds it useful:</p>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">from</span> tqdm.notebook\
+          \ <span class=\"hljs-keyword\">import</span> trange\n<span class=\"hljs-keyword\"\
+          >import</span> numpy <span class=\"hljs-keyword\">as</span> np\n<span class=\"\
+          hljs-keyword\">import</span> torch\n\n<span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> AutoModel, AutoTokenizer\n\
+          \n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >mean_pooling</span>(<span class=\"hljs-params\">model_output, attention_mask</span>):\n\
+          \    token_embeddings = model_output[<span class=\"hljs-number\">0</span>]\
+          \ <span class=\"hljs-comment\">#First element of model_output contains all\
+          \ token embeddings</span>\n    input_mask_expanded = attention_mask.unsqueeze(-<span\
+          \ class=\"hljs-number\">1</span>).expand(token_embeddings.size()).<span\
+          \ class=\"hljs-built_in\">float</span>()\n    <span class=\"hljs-keyword\"\
+          >return</span> torch.<span class=\"hljs-built_in\">sum</span>(token_embeddings\
+          \ * input_mask_expanded, <span class=\"hljs-number\">1</span>) / torch.clamp(input_mask_expanded.<span\
+          \ class=\"hljs-built_in\">sum</span>(<span class=\"hljs-number\">1</span>),\
+          \ <span class=\"hljs-built_in\">min</span>=<span class=\"hljs-number\">1e-9</span>)\n\
+          \ntokenizer = AutoTokenizer.from_pretrained(<span class=\"hljs-string\"\
+          >'jinaai/jina-embeddings-v2-base-en'</span>)\n\n<span class=\"hljs-keyword\"\
+          >class</span> <span class=\"hljs-title class_\">JinaSentEmbedder</span>(<span\
+          \ class=\"hljs-title class_ inherited__\">AutoModel</span>):\n    <span\
+          \ class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >__init__</span>(<span class=\"hljs-params\">self, path</span>):\n     \
+          \   \n        self.device = <span class=\"hljs-string\">\"cuda\"</span>\
+          \ <span class=\"hljs-keyword\">if</span> torch.cuda.is_available() <span\
+          \ class=\"hljs-keyword\">else</span> <span class=\"hljs-string\">\"cpu\"\
+          </span>\n        self.model = AutoModel.from_pretrained(\n          path,\
+          \ \n          trust_remote_code=<span class=\"hljs-literal\">True</span>\n\
+          \        )\n          \n        self.model = self.model.to(self.device)\n\
+          \        self.tokenize = AutoTokenizer.from_pretrained(\n            <span\
+          \ class=\"hljs-string\">\"jinaai/jina-embeddings-v2-base-en\"</span>\n \
+          \       )\n        \n    <span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">_text_length</span>(<span class=\"hljs-params\">self,\
+          \ text</span>):\n        <span class=\"hljs-keyword\">if</span> <span class=\"\
+          hljs-built_in\">isinstance</span>(text, <span class=\"hljs-built_in\">dict</span>):\
+          \              <span class=\"hljs-comment\">#{key: value} case</span>\n\
+          \            <span class=\"hljs-keyword\">return</span> <span class=\"hljs-built_in\"\
+          >len</span>(<span class=\"hljs-built_in\">next</span>(<span class=\"hljs-built_in\"\
+          >iter</span>(text.values())))\n        <span class=\"hljs-keyword\">elif</span>\
+          \ <span class=\"hljs-keyword\">not</span> <span class=\"hljs-built_in\"\
+          >hasattr</span>(text, <span class=\"hljs-string\">'__len__'</span>):   \
+          \   <span class=\"hljs-comment\">#Object has no len() method</span>\n  \
+          \          <span class=\"hljs-keyword\">return</span> <span class=\"hljs-number\"\
+          >1</span>\n        <span class=\"hljs-keyword\">elif</span> <span class=\"\
+          hljs-built_in\">len</span>(text) == <span class=\"hljs-number\">0</span>\
+          \ <span class=\"hljs-keyword\">or</span> <span class=\"hljs-built_in\">isinstance</span>(text[<span\
+          \ class=\"hljs-number\">0</span>], <span class=\"hljs-built_in\">int</span>):\
+          \    <span class=\"hljs-comment\">#Empty string or list of ints</span>\n\
+          \            <span class=\"hljs-keyword\">return</span> <span class=\"hljs-built_in\"\
+          >len</span>(text)\n        <span class=\"hljs-keyword\">else</span>:\n \
+          \           <span class=\"hljs-keyword\">return</span> <span class=\"hljs-built_in\"\
+          >sum</span>([<span class=\"hljs-built_in\">len</span>(t) <span class=\"\
+          hljs-keyword\">for</span> t <span class=\"hljs-keyword\">in</span> text])\n\
+          \    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >encode</span>(<span class=\"hljs-params\">self, sentences,</span>\n<span\
+          \ class=\"hljs-params\">               batch_size = <span class=\"hljs-number\"\
+          >32</span>,</span>\n<span class=\"hljs-params\">               show_progress_bar\
+          \ = <span class=\"hljs-literal\">None</span>,</span>\n<span class=\"hljs-params\"\
+          >               output_value: <span class=\"hljs-built_in\">str</span> =\
+          \ <span class=\"hljs-string\">'sentence_embedding'</span>,</span>\n<span\
+          \ class=\"hljs-params\">               convert_to_numpy: <span class=\"\
+          hljs-built_in\">bool</span> = <span class=\"hljs-literal\">True</span>,</span>\n\
+          <span class=\"hljs-params\">               convert_to_tensor: <span class=\"\
+          hljs-built_in\">bool</span> = <span class=\"hljs-literal\">False</span>,</span>\n\
+          <span class=\"hljs-params\">               device: <span class=\"hljs-built_in\"\
+          >str</span> = <span class=\"hljs-literal\">None</span>,</span>\n<span class=\"\
+          hljs-params\">               normalize_embeddings: <span class=\"hljs-built_in\"\
+          >bool</span> = <span class=\"hljs-literal\">False</span></span>):\n\n  \
+          \      self.model.<span class=\"hljs-built_in\">eval</span>()\n\n      \
+          \  <span class=\"hljs-keyword\">if</span> convert_to_tensor:\n         \
+          \   convert_to_numpy = <span class=\"hljs-literal\">False</span>\n\n   \
+          \     <span class=\"hljs-keyword\">if</span> output_value != <span class=\"\
+          hljs-string\">'sentence_embedding'</span>:\n            convert_to_tensor\
+          \ = <span class=\"hljs-literal\">False</span>\n            convert_to_numpy\
+          \ = <span class=\"hljs-literal\">False</span>\n\n        input_was_string\
+          \ = <span class=\"hljs-literal\">False</span>\n        <span class=\"hljs-keyword\"\
+          >if</span> <span class=\"hljs-built_in\">isinstance</span>(sentences, <span\
+          \ class=\"hljs-built_in\">str</span>) <span class=\"hljs-keyword\">or</span>\
+          \ <span class=\"hljs-keyword\">not</span> <span class=\"hljs-built_in\"\
+          >hasattr</span>(sentences, <span class=\"hljs-string\">'__len__'</span>):\
+          \ <span class=\"hljs-comment\">#Cast an individual sentence to a list with\
+          \ length 1</span>\n            sentences = [sentences]\n            input_was_string\
+          \ = <span class=\"hljs-literal\">True</span>\n\n        all_embeddings =\
+          \ []\n        length_sorted_idx = np.argsort([-self._text_length(sen) <span\
+          \ class=\"hljs-keyword\">for</span> sen <span class=\"hljs-keyword\">in</span>\
+          \ sentences])\n        sentences_sorted = [sentences[idx] <span class=\"\
+          hljs-keyword\">for</span> idx <span class=\"hljs-keyword\">in</span> length_sorted_idx]\n\
+          \n        <span class=\"hljs-keyword\">for</span> start_index <span class=\"\
+          hljs-keyword\">in</span> trange(<span class=\"hljs-number\">0</span>, <span\
+          \ class=\"hljs-built_in\">len</span>(sentences), batch_size, desc=<span\
+          \ class=\"hljs-string\">\"Batches\"</span>, disable=<span class=\"hljs-keyword\"\
+          >not</span> show_progress_bar):\n            sentences_batch = sentences_sorted[start_index:start_index+batch_size]\n\
+          \            encoded_input = self.tokenize(sentences_batch, padding=<span\
+          \ class=\"hljs-literal\">True</span>, truncation=<span class=\"hljs-literal\"\
+          >True</span>, return_tensors=<span class=\"hljs-string\">'pt'</span>)\n\
+          \            encoded_input = {key: val.to(self.device) <span class=\"hljs-keyword\"\
+          >for</span> key, val <span class=\"hljs-keyword\">in</span> encoded_input.items()}\n\
+          \n            <span class=\"hljs-keyword\">with</span> torch.no_grad():\n\
+          \                model_output = self.model(**encoded_input)\n          \
+          \      sentences_embeddings = mean_pooling(model_output, encoded_input[<span\
+          \ class=\"hljs-string\">'attention_mask'</span>])\n            all_embeddings.extend(sentences_embeddings)\n\
+          \n        all_embeddings = [all_embeddings[idx].cpu() <span class=\"hljs-keyword\"\
+          >for</span> idx <span class=\"hljs-keyword\">in</span> np.argsort(length_sorted_idx)]\n\
+          \n        <span class=\"hljs-keyword\">if</span> convert_to_tensor:\n  \
+          \          all_embeddings = torch.stack(all_embeddings)\n        <span class=\"\
+          hljs-keyword\">elif</span> convert_to_numpy:\n            all_embeddings\
+          \ = np.asarray([emb.numpy() <span class=\"hljs-keyword\">for</span> emb\
+          \ <span class=\"hljs-keyword\">in</span> all_embeddings])\n\n        <span\
+          \ class=\"hljs-keyword\">if</span> input_was_string:\n            all_embeddings\
+          \ = all_embeddings[<span class=\"hljs-number\">0</span>]\n\n        <span\
+          \ class=\"hljs-keyword\">return</span> all_embeddings\n</code></pre>\n"
+        raw: "Was not able to find where to change it, but I adapted the function\
+          \ and created a class similar to SentenceTransformer (at least it does the\
+          \ encoding efficiently)\nMaybe someone else finds it useful:\n```python\n\
+          from tqdm.notebook import trange\nimport numpy as np\nimport torch\n\nfrom\
+          \ transformers import AutoModel, AutoTokenizer\n\ndef mean_pooling(model_output,\
+          \ attention_mask):\n    token_embeddings = model_output[0] #First element\
+          \ of model_output contains all token embeddings\n    input_mask_expanded\
+          \ = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+          \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+          \ min=1e-9)\n\ntokenizer = AutoTokenizer.from_pretrained('jinaai/jina-embeddings-v2-base-en')\n\
+          \nclass JinaSentEmbedder(AutoModel):\n    def __init__(self, path):\n  \
+          \      \n        self.device = \"cuda\" if torch.cuda.is_available() else\
+          \ \"cpu\"\n        self.model = AutoModel.from_pretrained(\n          path,\
+          \ \n          trust_remote_code=True\n        )\n          \n        self.model\
+          \ = self.model.to(self.device)\n        self.tokenize = AutoTokenizer.from_pretrained(\n\
+          \            \"jinaai/jina-embeddings-v2-base-en\"\n        )\n        \n\
+          \    def _text_length(self, text):\n        if isinstance(text, dict): \
+          \             #{key: value} case\n            return len(next(iter(text.values())))\n\
+          \        elif not hasattr(text, '__len__'):      #Object has no len() method\n\
+          \            return 1\n        elif len(text) == 0 or isinstance(text[0],\
+          \ int):    #Empty string or list of ints\n            return len(text)\n\
+          \        else:\n            return sum([len(t) for t in text])\n    def\
+          \ encode(self, sentences,\n               batch_size = 32,\n           \
+          \    show_progress_bar = None,\n               output_value: str = 'sentence_embedding',\n\
+          \               convert_to_numpy: bool = True,\n               convert_to_tensor:\
+          \ bool = False,\n               device: str = None,\n               normalize_embeddings:\
+          \ bool = False):\n\n        self.model.eval()\n\n        if convert_to_tensor:\n\
+          \            convert_to_numpy = False\n\n        if output_value != 'sentence_embedding':\n\
+          \            convert_to_tensor = False\n            convert_to_numpy = False\n\
+          \n        input_was_string = False\n        if isinstance(sentences, str)\
+          \ or not hasattr(sentences, '__len__'): #Cast an individual sentence to\
+          \ a list with length 1\n            sentences = [sentences]\n          \
+          \  input_was_string = True\n\n        all_embeddings = []\n        length_sorted_idx\
+          \ = np.argsort([-self._text_length(sen) for sen in sentences])\n       \
+          \ sentences_sorted = [sentences[idx] for idx in length_sorted_idx]\n\n \
+          \       for start_index in trange(0, len(sentences), batch_size, desc=\"\
+          Batches\", disable=not show_progress_bar):\n            sentences_batch\
+          \ = sentences_sorted[start_index:start_index+batch_size]\n            encoded_input\
+          \ = self.tokenize(sentences_batch, padding=True, truncation=True, return_tensors='pt')\n\
+          \            encoded_input = {key: val.to(self.device) for key, val in encoded_input.items()}\n\
+          \n            with torch.no_grad():\n                model_output = self.model(**encoded_input)\n\
+          \                sentences_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])\n\
+          \            all_embeddings.extend(sentences_embeddings)\n\n        all_embeddings\
+          \ = [all_embeddings[idx].cpu() for idx in np.argsort(length_sorted_idx)]\n\
+          \n        if convert_to_tensor:\n            all_embeddings = torch.stack(all_embeddings)\n\
+          \        elif convert_to_numpy:\n            all_embeddings = np.asarray([emb.numpy()\
+          \ for emb in all_embeddings])\n\n        if input_was_string:\n        \
+          \    all_embeddings = all_embeddings[0]\n\n        return all_embeddings\n\
+          ```"
+        updatedAt: '2023-11-08T15:13:55.631Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - metalwhale
+    id: 654ba55218a515089b5a4699
+    type: comment
+  author: Maiia
+  content: "Was not able to find where to change it, but I adapted the function and\
+    \ created a class similar to SentenceTransformer (at least it does the encoding\
+    \ efficiently)\nMaybe someone else finds it useful:\n```python\nfrom tqdm.notebook\
+    \ import trange\nimport numpy as np\nimport torch\n\nfrom transformers import\
+    \ AutoModel, AutoTokenizer\n\ndef mean_pooling(model_output, attention_mask):\n\
+    \    token_embeddings = model_output[0] #First element of model_output contains\
+    \ all token embeddings\n    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()\n\
+    \    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1),\
+    \ min=1e-9)\n\ntokenizer = AutoTokenizer.from_pretrained('jinaai/jina-embeddings-v2-base-en')\n\
+    \nclass JinaSentEmbedder(AutoModel):\n    def __init__(self, path):\n        \n\
+    \        self.device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n  \
+    \      self.model = AutoModel.from_pretrained(\n          path, \n          trust_remote_code=True\n\
+    \        )\n          \n        self.model = self.model.to(self.device)\n    \
+    \    self.tokenize = AutoTokenizer.from_pretrained(\n            \"jinaai/jina-embeddings-v2-base-en\"\
+    \n        )\n        \n    def _text_length(self, text):\n        if isinstance(text,\
+    \ dict):              #{key: value} case\n            return len(next(iter(text.values())))\n\
+    \        elif not hasattr(text, '__len__'):      #Object has no len() method\n\
+    \            return 1\n        elif len(text) == 0 or isinstance(text[0], int):\
+    \    #Empty string or list of ints\n            return len(text)\n        else:\n\
+    \            return sum([len(t) for t in text])\n    def encode(self, sentences,\n\
+    \               batch_size = 32,\n               show_progress_bar = None,\n \
+    \              output_value: str = 'sentence_embedding',\n               convert_to_numpy:\
+    \ bool = True,\n               convert_to_tensor: bool = False,\n            \
+    \   device: str = None,\n               normalize_embeddings: bool = False):\n\
+    \n        self.model.eval()\n\n        if convert_to_tensor:\n            convert_to_numpy\
+    \ = False\n\n        if output_value != 'sentence_embedding':\n            convert_to_tensor\
+    \ = False\n            convert_to_numpy = False\n\n        input_was_string =\
+    \ False\n        if isinstance(sentences, str) or not hasattr(sentences, '__len__'):\
+    \ #Cast an individual sentence to a list with length 1\n            sentences\
+    \ = [sentences]\n            input_was_string = True\n\n        all_embeddings\
+    \ = []\n        length_sorted_idx = np.argsort([-self._text_length(sen) for sen\
+    \ in sentences])\n        sentences_sorted = [sentences[idx] for idx in length_sorted_idx]\n\
+    \n        for start_index in trange(0, len(sentences), batch_size, desc=\"Batches\"\
+    , disable=not show_progress_bar):\n            sentences_batch = sentences_sorted[start_index:start_index+batch_size]\n\
+    \            encoded_input = self.tokenize(sentences_batch, padding=True, truncation=True,\
+    \ return_tensors='pt')\n            encoded_input = {key: val.to(self.device)\
+    \ for key, val in encoded_input.items()}\n\n            with torch.no_grad():\n\
+    \                model_output = self.model(**encoded_input)\n                sentences_embeddings\
+    \ = mean_pooling(model_output, encoded_input['attention_mask'])\n            all_embeddings.extend(sentences_embeddings)\n\
+    \n        all_embeddings = [all_embeddings[idx].cpu() for idx in np.argsort(length_sorted_idx)]\n\
+    \n        if convert_to_tensor:\n            all_embeddings = torch.stack(all_embeddings)\n\
+    \        elif convert_to_numpy:\n            all_embeddings = np.asarray([emb.numpy()\
+    \ for emb in all_embeddings])\n\n        if input_was_string:\n            all_embeddings\
+    \ = all_embeddings[0]\n\n        return all_embeddings\n```"
+  created_at: 2023-11-08 15:12:18+00:00
+  edited: true
+  hidden: false
+  id: 654ba55218a515089b5a4699
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-08T15:12:21.000Z'
+    data:
+      status: closed
+    id: 654ba555386fc5525cfa6505
+    type: status-change
+  author: Maiia
+  created_at: 2023-11-08 15:12:21+00:00
+  id: 654ba555386fc5525cfa6505
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678593972754-noauth.jpeg?w=200&h=200&f=face
+      fullname: Metal Whale
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: metalwhale
+      type: user
+    createdAt: '2023-11-27T08:10:55.000Z'
+    data:
+      edited: false
+      editors:
+      - metalwhale
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9234445095062256
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678593972754-noauth.jpeg?w=200&h=200&f=face
+          fullname: Metal Whale
+          isHf: false
+          isPro: false
+          name: metalwhale
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Maiia&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Maiia\">@<span class=\"\
+          underline\">Maiia</span></a></span>\n\n\t</span></span>, could you please\
+          \ share the code you utilized for fine-tuning this model?<br>Thank you in\
+          \ advance!</p>\n"
+        raw: 'Hi @Maiia, could you please share the code you utilized for fine-tuning
+          this model?
+
+          Thank you in advance!'
+        updatedAt: '2023-11-27T08:10:55.307Z'
+      numEdits: 0
+      reactions: []
+    id: 65644f0f412dcdebf207e923
+    type: comment
+  author: metalwhale
+  content: 'Hi @Maiia, could you please share the code you utilized for fine-tuning
+    this model?
+
+    Thank you in advance!'
+  created_at: 2023-11-27 08:10:55+00:00
+  edited: false
+  hidden: false
+  id: 65644f0f412dcdebf207e923
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-27T12:14:08.000Z'
+    data:
+      edited: true
+      editors:
+      - Maiia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7963318824768066
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+          fullname: Maiia Bocharova
+          isHf: false
+          isPro: false
+          name: Maiia
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;metalwhale&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/metalwhale\">@<span class=\"\
+          underline\">metalwhale</span></a></span>\n\n\t</span></span><br>Hello, it's\
+          \ just normal SentenceTransformers fine-tuning, I have marked up pairs of\
+          \ phrases with labels (so phrase1, phrase2, label) where \"label\" can be\
+          \ either \"pos\" or \"neg\"</p>\n<pre><code>title_df = pl.DataFrame({\n\
+          \    \"title 1\": [el[0] for el in dedup_negatives] + [el[0] for el in hard_positives],\n\
+          \    'title 2': [el[1] for el in dedup_negatives] + [el[1] for el in hard_positives],\n\
+          \    'label': ['neg'] * len(dedup_negatives) + ['pos'] * len(hard_positives)\n\
+          })\n\nfor _ in range(5):\n    title_df = title_df.sample(fraction=1, shuffle=True)\n\
+          train_df, val_df = train_test_split(title_df, random_state=42,\n       \
+          \                             test_size=0.1,\n                         \
+          \           stratify=title_df['label'].to_list())\ntrain_examples = []\n\
+          for row in train_df.iter_rows(named=True):\n    train_examples.append(\n\
+          \        InputExample(texts=[row['title 1'], row['title 2']],\n        \
+          \             label=torch.tensor(1 if row['label'] == 'pos' else 0).to(torch.float32))\n\
+          \    )\ntrain_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)\n\
+          train_loss = losses.CosineSimilarityLoss(model)\n\nsentences1 = val_df['title\
+          \ 1'].to_list()\nsentences2 = val_df['title 2'].to_list()\nscores = [torch.tensor(1\
+          \ if el == 'pos' else 0).to(torch.float32) for el in val_df['label'].to_list()]\n\
+          \nevaluator = EmbeddingSimilarityEvaluator(sentences1, sentences2, scores)\n\
+          \nmodel.fit(train_objectives=[(train_dataloader, train_loss)], epochs=1,\n\
+          \          warmup_steps=len(train_dataloader)//10,\n          evaluator=evaluator,\
+          \ evaluation_steps=len(train_dataloader)//10)\n</code></pre>\n"
+        raw: "@metalwhale\nHello, it's just normal SentenceTransformers fine-tuning,\
+          \ I have marked up pairs of phrases with labels (so phrase1, phrase2, label)\
+          \ where \"label\" can be either \"pos\" or \"neg\"\n```\ntitle_df = pl.DataFrame({\n\
+          \    \"title 1\": [el[0] for el in dedup_negatives] + [el[0] for el in hard_positives],\n\
+          \    'title 2': [el[1] for el in dedup_negatives] + [el[1] for el in hard_positives],\n\
+          \    'label': ['neg'] * len(dedup_negatives) + ['pos'] * len(hard_positives)\n\
+          })\n\nfor _ in range(5):\n    title_df = title_df.sample(fraction=1, shuffle=True)\n\
+          train_df, val_df = train_test_split(title_df, random_state=42,\n       \
+          \                             test_size=0.1,\n                         \
+          \           stratify=title_df['label'].to_list())\ntrain_examples = []\n\
+          for row in train_df.iter_rows(named=True):\n    train_examples.append(\n\
+          \        InputExample(texts=[row['title 1'], row['title 2']],\n        \
+          \             label=torch.tensor(1 if row['label'] == 'pos' else 0).to(torch.float32))\n\
+          \    )\ntrain_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)\n\
+          train_loss = losses.CosineSimilarityLoss(model)\n\nsentences1 = val_df['title\
+          \ 1'].to_list()\nsentences2 = val_df['title 2'].to_list()\nscores = [torch.tensor(1\
+          \ if el == 'pos' else 0).to(torch.float32) for el in val_df['label'].to_list()]\n\
+          \nevaluator = EmbeddingSimilarityEvaluator(sentences1, sentences2, scores)\n\
+          \nmodel.fit(train_objectives=[(train_dataloader, train_loss)], epochs=1,\n\
+          \          warmup_steps=len(train_dataloader)//10,\n          evaluator=evaluator,\
+          \ evaluation_steps=len(train_dataloader)//10)\n```\n"
+        updatedAt: '2023-11-27T12:17:17.434Z'
+      numEdits: 2
+      reactions:
+      - count: 2
+        reaction: "\U0001F917"
+        users:
+        - metalwhale
+        - bwang0911
+      - count: 2
+        reaction: "\u2764\uFE0F"
+        users:
+        - metalwhale
+        - bwang0911
+    id: 65648810067c82f463343a3d
+    type: comment
+  author: Maiia
+  content: "@metalwhale\nHello, it's just normal SentenceTransformers fine-tuning,\
+    \ I have marked up pairs of phrases with labels (so phrase1, phrase2, label) where\
+    \ \"label\" can be either \"pos\" or \"neg\"\n```\ntitle_df = pl.DataFrame({\n\
+    \    \"title 1\": [el[0] for el in dedup_negatives] + [el[0] for el in hard_positives],\n\
+    \    'title 2': [el[1] for el in dedup_negatives] + [el[1] for el in hard_positives],\n\
+    \    'label': ['neg'] * len(dedup_negatives) + ['pos'] * len(hard_positives)\n\
+    })\n\nfor _ in range(5):\n    title_df = title_df.sample(fraction=1, shuffle=True)\n\
+    train_df, val_df = train_test_split(title_df, random_state=42,\n             \
+    \                       test_size=0.1,\n                                    stratify=title_df['label'].to_list())\n\
+    train_examples = []\nfor row in train_df.iter_rows(named=True):\n    train_examples.append(\n\
+    \        InputExample(texts=[row['title 1'], row['title 2']],\n              \
+    \       label=torch.tensor(1 if row['label'] == 'pos' else 0).to(torch.float32))\n\
+    \    )\ntrain_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)\n\
+    train_loss = losses.CosineSimilarityLoss(model)\n\nsentences1 = val_df['title\
+    \ 1'].to_list()\nsentences2 = val_df['title 2'].to_list()\nscores = [torch.tensor(1\
+    \ if el == 'pos' else 0).to(torch.float32) for el in val_df['label'].to_list()]\n\
+    \nevaluator = EmbeddingSimilarityEvaluator(sentences1, sentences2, scores)\n\n\
+    model.fit(train_objectives=[(train_dataloader, train_loss)], epochs=1,\n     \
+    \     warmup_steps=len(train_dataloader)//10,\n          evaluator=evaluator,\
+    \ evaluation_steps=len(train_dataloader)//10)\n```\n"
+  created_at: 2023-11-27 12:14:08+00:00
+  edited: true
+  hidden: false
+  id: 65648810067c82f463343a3d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+      fullname: Maiia Bocharova
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Maiia
+      type: user
+    createdAt: '2023-11-27T12:16:10.000Z'
+    data:
+      edited: false
+      editors:
+      - Maiia
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6690263152122498
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6107e3d3730ea8ea702bd89f/2RaFCcIARbkUiG4-d-O1f.jpeg?w=200&h=200&f=face
+          fullname: Maiia Bocharova
+          isHf: false
+          isPro: false
+          name: Maiia
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;metalwhale&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/metalwhale\">@<span class=\"\
+          underline\">metalwhale</span></a></span>\n\n\t</span></span> I hope it helps,\
+          \ here is the documentation: <a rel=\"nofollow\" href=\"https://www.sbert.net/docs/training/overview.html\"\
+          >https://www.sbert.net/docs/training/overview.html</a></p>\n"
+        raw: '@metalwhale I hope it helps, here is the documentation: https://www.sbert.net/docs/training/overview.html'
+        updatedAt: '2023-11-27T12:16:10.554Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - bwang0911
+    id: 6564888ae52739e6fa68293d
+    type: comment
+  author: Maiia
+  content: '@metalwhale I hope it helps, here is the documentation: https://www.sbert.net/docs/training/overview.html'
+  created_at: 2023-11-27 12:16:10+00:00
+  edited: false
+  hidden: false
+  id: 6564888ae52739e6fa68293d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678593972754-noauth.jpeg?w=200&h=200&f=face
+      fullname: Metal Whale
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: metalwhale
+      type: user
+    createdAt: '2023-11-27T12:20:19.000Z'
+    data:
+      edited: false
+      editors:
+      - metalwhale
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9835399389266968
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1678593972754-noauth.jpeg?w=200&h=200&f=face
+          fullname: Metal Whale
+          isHf: false
+          isPro: false
+          name: metalwhale
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Maiia&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Maiia\">@<span class=\"\
+          underline\">Maiia</span></a></span>\n\n\t</span></span> thank you so much\
+          \ for your kind help. I really appreciate it!</p>\n"
+        raw: '@Maiia thank you so much for your kind help. I really appreciate it!'
+        updatedAt: '2023-11-27T12:20:19.126Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - bwang0911
+    id: 65648983e6b20bc37e361f15
+    type: comment
+  author: metalwhale
+  content: '@Maiia thank you so much for your kind help. I really appreciate it!'
+  created_at: 2023-11-27 12:20:19+00:00
+  edited: false
+  hidden: false
+  id: 65648983e6b20bc37e361f15
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 24
+repo_id: jinaai/jina-embeddings-v2-base-en
+repo_type: model
+status: closed
+target_branch: null
+title: Saving and Loading the fine-tuned model

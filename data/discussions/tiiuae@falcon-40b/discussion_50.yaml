@@ -1,0 +1,226 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: yard1
+conflicting_files: null
+created_at: 2023-06-08 16:28:33+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/064fd3fd1849d2f0e8f7972708b12517.svg
+      fullname: Antoni Baum
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yard1
+      type: user
+    createdAt: '2023-06-08T17:28:33.000Z'
+    data:
+      edited: false
+      editors:
+      - yard1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5307918190956116
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/064fd3fd1849d2f0e8f7972708b12517.svg
+          fullname: Antoni Baum
+          isHf: false
+          isPro: false
+          name: yard1
+          type: user
+        html: "<p>When using a batch size larger than 1, the generation time increases\
+          \ almost linearly with the batch size. This is highly unexpected and not\
+          \ something I have seen with other transformers. I would expect a transformer\
+          \ model to handle batched inputs without noticeable impact on latency.</p>\n\
+          <p>Script:</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer,\
+          \ AutoModelForCausalLM, AutoConfig\n<span class=\"hljs-keyword\">import</span>\
+          \ transformers\n<span class=\"hljs-keyword\">import</span> torch\n<span\
+          \ class=\"hljs-keyword\">import</span> deepspeed\n<span class=\"hljs-keyword\"\
+          >import</span> time\n<span class=\"hljs-keyword\">from</span> deepspeed.accelerator\
+          \ <span class=\"hljs-keyword\">import</span> get_accelerator\n\nmodel =\
+          \ <span class=\"hljs-string\">\"tiiuae/falcon-7b\"</span>\ntokenizer = AutoTokenizer.from_pretrained(model,\
+          \ use_fast=<span class=\"hljs-literal\">True</span>)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    model, trust_remote_code=<span class=\"hljs-literal\">True</span>,\
+          \ device_map=<span class=\"hljs-string\">\"auto\"</span>, torch_dtype=torch.bfloat16\n\
+          )\nbatch_size = <span class=\"hljs-number\">1</span>\n\ninput_prompt = [\n\
+          \    <span class=\"hljs-string\">\"Girafatron is obsessed with giraffes,\
+          \ the most glorious animal on the face of this Earth. Giraftron believes\
+          \ all other animals are irrelevant when compared to the glorious majesty\
+          \ of the giraffe.\\nDaniel: Hello, Girafatron!\\nGirafatron:\"</span>\n\
+          ] * batch_size\ninput_tokens = tokenizer.batch_encode_plus(\n    input_prompt,\n\
+          \    return_tensors=<span class=\"hljs-string\">\"pt\"</span>,\n)\ntoken_num\
+          \ = input_tokens[<span class=\"hljs-string\">\"input_ids\"</span>].size(-<span\
+          \ class=\"hljs-number\">1</span>)\n<span class=\"hljs-keyword\">for</span>\
+          \ t <span class=\"hljs-keyword\">in</span> input_tokens:\n    <span class=\"\
+          hljs-keyword\">if</span> torch.is_tensor(input_tokens[t]):\n        input_tokens[t]\
+          \ = input_tokens[t].to(model.device)\ninput_tokens.pop(<span class=\"hljs-string\"\
+          >\"token_type_ids\"</span>)\n\n<span class=\"hljs-comment\"># Warmup</span>\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"\
+          Batch size <span class=\"hljs-subst\">{batch_size}</span>\"</span>)\nsequences\
+          \ = model.generate(\n    **input_tokens, min_length=<span class=\"hljs-number\"\
+          >512</span>, max_length=<span class=\"hljs-number\">512</span>, do_sample=<span\
+          \ class=\"hljs-literal\">True</span>\n)\ntorch.cuda.synchronize()\nst =\
+          \ time.monotonic()\n<span class=\"hljs-keyword\">for</span> i <span class=\"\
+          hljs-keyword\">in</span> <span class=\"hljs-built_in\">range</span>(<span\
+          \ class=\"hljs-number\">2</span>):\n    torch.cuda.synchronize()\n    sequences\
+          \ = model.generate(\n        **input_tokens, min_length=<span class=\"hljs-number\"\
+          >512</span>, max_length=<span class=\"hljs-number\">512</span>, do_sample=<span\
+          \ class=\"hljs-literal\">True</span>\n    )\n    torch.cuda.synchronize()\n\
+          tt = time.monotonic() - st\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">f\"Time taken <span class=\"hljs-subst\">{tt/<span\
+          \ class=\"hljs-number\">2</span>}</span> time per token <span class=\"hljs-subst\"\
+          >{tt/<span class=\"hljs-number\">512</span>/<span class=\"hljs-number\"\
+          >2</span>}</span>\"</span>)\n</code></pre>\n<p>Results with different <code>batch_size</code>:</p>\n\
+          <pre><code>BS 1: Time taken 20.67650790150003 time per token 0.04038380449511725\n\
+          BS 2: Time taken 32.592279224000094 time per token 0.06365679535937518\n\
+          BS 4: Time taken 48.25992262649993 time per token 0.09425766137988267\n\
+          BS 8: Time taken 86.17116434899981 time per token 0.16830305536914025\n\
+          </code></pre>\n"
+        raw: "When using a batch size larger than 1, the generation time increases\
+          \ almost linearly with the batch size. This is highly unexpected and not\
+          \ something I have seen with other transformers. I would expect a transformer\
+          \ model to handle batched inputs without noticeable impact on latency.\r\
+          \n\r\nScript:\r\n```python\r\nfrom transformers import AutoTokenizer, AutoModelForCausalLM,\
+          \ AutoConfig\r\nimport transformers\r\nimport torch\r\nimport deepspeed\r\
+          \nimport time\r\nfrom deepspeed.accelerator import get_accelerator\r\n\r\
+          \nmodel = \"tiiuae/falcon-7b\"\r\ntokenizer = AutoTokenizer.from_pretrained(model,\
+          \ use_fast=True)\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n  \
+          \  model, trust_remote_code=True, device_map=\"auto\", torch_dtype=torch.bfloat16\r\
+          \n)\r\nbatch_size = 1\r\n\r\ninput_prompt = [\r\n    \"Girafatron is obsessed\
+          \ with giraffes, the most glorious animal on the face of this Earth. Giraftron\
+          \ believes all other animals are irrelevant when compared to the glorious\
+          \ majesty of the giraffe.\\nDaniel: Hello, Girafatron!\\nGirafatron:\"\r\
+          \n] * batch_size\r\ninput_tokens = tokenizer.batch_encode_plus(\r\n    input_prompt,\r\
+          \n    return_tensors=\"pt\",\r\n)\r\ntoken_num = input_tokens[\"input_ids\"\
+          ].size(-1)\r\nfor t in input_tokens:\r\n    if torch.is_tensor(input_tokens[t]):\r\
+          \n        input_tokens[t] = input_tokens[t].to(model.device)\r\ninput_tokens.pop(\"\
+          token_type_ids\")\r\n\r\n# Warmup\r\nprint(f\"Batch size {batch_size}\"\
+          )\r\nsequences = model.generate(\r\n    **input_tokens, min_length=512,\
+          \ max_length=512, do_sample=True\r\n)\r\ntorch.cuda.synchronize()\r\nst\
+          \ = time.monotonic()\r\nfor i in range(2):\r\n    torch.cuda.synchronize()\r\
+          \n    sequences = model.generate(\r\n        **input_tokens, min_length=512,\
+          \ max_length=512, do_sample=True\r\n    )\r\n    torch.cuda.synchronize()\r\
+          \ntt = time.monotonic() - st\r\nprint(f\"Time taken {tt/2} time per token\
+          \ {tt/512/2}\")\r\n```\r\n\r\nResults with different `batch_size`:\r\n```\r\
+          \nBS 1: Time taken 20.67650790150003 time per token 0.04038380449511725\r\
+          \nBS 2: Time taken 32.592279224000094 time per token 0.06365679535937518\r\
+          \nBS 4: Time taken 48.25992262649993 time per token 0.09425766137988267\r\
+          \nBS 8: Time taken 86.17116434899981 time per token 0.16830305536914025\r\
+          \n```"
+        updatedAt: '2023-06-08T17:28:33.937Z'
+      numEdits: 0
+      reactions:
+      - count: 9
+        reaction: "\U0001F44D"
+        users:
+        - PEWolf
+        - schlaepf
+        - vmaychegg
+        - s0897918
+        - sef1
+        - Dionysis
+        - KesarChi
+        - secain
+        - FelixMueller
+    id: 64820fc1477ed974249e87dc
+    type: comment
+  author: yard1
+  content: "When using a batch size larger than 1, the generation time increases almost\
+    \ linearly with the batch size. This is highly unexpected and not something I\
+    \ have seen with other transformers. I would expect a transformer model to handle\
+    \ batched inputs without noticeable impact on latency.\r\n\r\nScript:\r\n```python\r\
+    \nfrom transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig\r\n\
+    import transformers\r\nimport torch\r\nimport deepspeed\r\nimport time\r\nfrom\
+    \ deepspeed.accelerator import get_accelerator\r\n\r\nmodel = \"tiiuae/falcon-7b\"\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(model, use_fast=True)\r\nmodel =\
+    \ AutoModelForCausalLM.from_pretrained(\r\n    model, trust_remote_code=True,\
+    \ device_map=\"auto\", torch_dtype=torch.bfloat16\r\n)\r\nbatch_size = 1\r\n\r\
+    \ninput_prompt = [\r\n    \"Girafatron is obsessed with giraffes, the most glorious\
+    \ animal on the face of this Earth. Giraftron believes all other animals are irrelevant\
+    \ when compared to the glorious majesty of the giraffe.\\nDaniel: Hello, Girafatron!\\\
+    nGirafatron:\"\r\n] * batch_size\r\ninput_tokens = tokenizer.batch_encode_plus(\r\
+    \n    input_prompt,\r\n    return_tensors=\"pt\",\r\n)\r\ntoken_num = input_tokens[\"\
+    input_ids\"].size(-1)\r\nfor t in input_tokens:\r\n    if torch.is_tensor(input_tokens[t]):\r\
+    \n        input_tokens[t] = input_tokens[t].to(model.device)\r\ninput_tokens.pop(\"\
+    token_type_ids\")\r\n\r\n# Warmup\r\nprint(f\"Batch size {batch_size}\")\r\nsequences\
+    \ = model.generate(\r\n    **input_tokens, min_length=512, max_length=512, do_sample=True\r\
+    \n)\r\ntorch.cuda.synchronize()\r\nst = time.monotonic()\r\nfor i in range(2):\r\
+    \n    torch.cuda.synchronize()\r\n    sequences = model.generate(\r\n        **input_tokens,\
+    \ min_length=512, max_length=512, do_sample=True\r\n    )\r\n    torch.cuda.synchronize()\r\
+    \ntt = time.monotonic() - st\r\nprint(f\"Time taken {tt/2} time per token {tt/512/2}\"\
+    )\r\n```\r\n\r\nResults with different `batch_size`:\r\n```\r\nBS 1: Time taken\
+    \ 20.67650790150003 time per token 0.04038380449511725\r\nBS 2: Time taken 32.592279224000094\
+    \ time per token 0.06365679535937518\r\nBS 4: Time taken 48.25992262649993 time\
+    \ per token 0.09425766137988267\r\nBS 8: Time taken 86.17116434899981 time per\
+    \ token 0.16830305536914025\r\n```"
+  created_at: 2023-06-08 16:28:33+00:00
+  edited: false
+  hidden: false
+  id: 64820fc1477ed974249e87dc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+      fullname: geronimo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: g-ronimo
+      type: user
+    createdAt: '2023-09-25T14:55:13.000Z'
+    data:
+      edited: false
+      editors:
+      - g-ronimo
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9571915864944458
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64da2a58c307ee5369b92d36/7xEgll8v5SxxcG_XF86tU.jpeg?w=200&h=200&f=face
+          fullname: geronimo
+          isHf: false
+          isPro: false
+          name: g-ronimo
+          type: user
+        html: '<p>That''s the time it takes to process the entire batch and increases
+          with the number of samples. What you expect to decrease is the time per
+          sample, which indeed decreases when I look at your numbers </p>
+
+          '
+        raw: 'That''s the time it takes to process the entire batch and increases
+          with the number of samples. What you expect to decrease is the time per
+          sample, which indeed decreases when I look at your numbers '
+        updatedAt: '2023-09-25T14:55:13.170Z'
+      numEdits: 0
+      reactions: []
+    id: 65119f51b6bdfa5be9bbc020
+    type: comment
+  author: g-ronimo
+  content: 'That''s the time it takes to process the entire batch and increases with
+    the number of samples. What you expect to decrease is the time per sample, which
+    indeed decreases when I look at your numbers '
+  created_at: 2023-09-25 13:55:13+00:00
+  edited: false
+  hidden: false
+  id: 65119f51b6bdfa5be9bbc020
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 50
+repo_id: tiiuae/falcon-40b
+repo_type: model
+status: open
+target_branch: null
+title: Batch inference seems to be done sequentially

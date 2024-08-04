@@ -1,0 +1,216 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Lvxue
+conflicting_files: null
+created_at: 2022-10-12 12:50:31+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a811da1d66ba85b2a6838d0dbfbf71a5.svg
+      fullname: Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Lvxue
+      type: user
+    createdAt: '2022-10-12T13:50:31.000Z'
+    data:
+      edited: false
+      editors:
+      - Lvxue
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a811da1d66ba85b2a6838d0dbfbf71a5.svg
+          fullname: Li
+          isHf: false
+          isPro: false
+          name: Lvxue
+          type: user
+        html: "<p>Hi, I'm trying to reduce the M2M100 model inference latency, following\
+          \ the <a href=\"https://huggingface.co/docs/optimum/onnxruntime/usage_guides/models\"\
+          >guide</a> and the <a rel=\"nofollow\" href=\"https://discuss.huggingface.co/t/export-m2m100-model-to-onnx/17694/6\"\
+          >discussion</a>, my code is as following:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> M2M100Tokenizer, M2M100ForConditionalGeneration\n<span class=\"\
+          hljs-keyword\">from</span> optimum.onnxruntime <span class=\"hljs-keyword\"\
+          >import</span> ORTModelForSeq2SeqLM\n<span class=\"hljs-keyword\">import</span>\
+          \ time\n<span class=\"hljs-keyword\">import</span> torch\n\ndevice = torch.device(<span\
+          \ class=\"hljs-string\">\"cuda\"</span> <span class=\"hljs-keyword\">if</span>\
+          \ torch.cuda.is_available() <span class=\"hljs-keyword\">else</span> <span\
+          \ class=\"hljs-string\">\"cpu\"</span>)\ntokenizer = M2M100Tokenizer.from_pretrained(<span\
+          \ class=\"hljs-string\">\"facebook/m2m100_418M\"</span>)\nmodel = M2M100ForConditionalGeneration.from_pretrained(<span\
+          \ class=\"hljs-string\">\"facebook/m2m100_418M\"</span>).to(device)\nmodel_ort\
+          \ = ORTModelForSeq2SeqLM.from_pretrained(<span class=\"hljs-string\">\"\
+          facebook/m2m100_418M\"</span>, from_transformers=<span class=\"hljs-literal\"\
+          >True</span>).to(device)\n\ntokenizer.src_lang = <span class=\"hljs-string\"\
+          >\"en\"</span>\ninputs = tokenizer(<span class=\"hljs-string\">\"Good Morning!\"\
+          </span>, return_tensors=<span class=\"hljs-string\">\"pt\"</span>).to(device)\n\
+          \n<span class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\"\
+          >in</span> <span class=\"hljs-built_in\">range</span>(<span class=\"hljs-number\"\
+          >10</span>):\n    st = time.perf_counter()\n    gen_tokens = model.generate(**inputs,\
+          \ forced_bos_token_id=tokenizer.get_lang_id(<span class=\"hljs-string\"\
+          >\"zh\"</span>))\n    et = time.perf_counter()\n\n    st2 = time.perf_counter()\n\
+          \    gen_tokens = model_ort.generate(**inputs, forced_bos_token_id=tokenizer.get_lang_id(<span\
+          \ class=\"hljs-string\">\"zh\"</span>))\n    et2 = time.perf_counter()\n\
+          \    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"model latency = <span class=\"hljs-subst\">{et - st}</span>, ORT latency\
+          \ = <span class=\"hljs-subst\">{et2 - st2}</span>\"</span>)\noutputs = tokenizer.batch_decode(gen_tokens)\n\
+          </code></pre>\n<p>But the result is suprising: ORT Model's average latency\
+          \ is 0.45s, while Origin Model's average latency is 0.1s. I'm confused because\
+          \ ORT model should be faster than the origin model, I would be more than\
+          \ appreciate if someone can help me out!</p>\n"
+        raw: "Hi, I'm trying to reduce the M2M100 model inference latency, following\
+          \ the [guide](https://huggingface.co/docs/optimum/onnxruntime/usage_guides/models)\
+          \ and the [discussion](https://discuss.huggingface.co/t/export-m2m100-model-to-onnx/17694/6),\
+          \ my code is as following:\r\n```python\r\nfrom transformers import M2M100Tokenizer,\
+          \ M2M100ForConditionalGeneration\r\nfrom optimum.onnxruntime import ORTModelForSeq2SeqLM\r\
+          \nimport time\r\nimport torch\r\n\r\ndevice = torch.device(\"cuda\" if torch.cuda.is_available()\
+          \ else \"cpu\")\r\ntokenizer = M2M100Tokenizer.from_pretrained(\"facebook/m2m100_418M\"\
+          )\r\nmodel = M2M100ForConditionalGeneration.from_pretrained(\"facebook/m2m100_418M\"\
+          ).to(device)\r\nmodel_ort = ORTModelForSeq2SeqLM.from_pretrained(\"facebook/m2m100_418M\"\
+          , from_transformers=True).to(device)\r\n\r\ntokenizer.src_lang = \"en\"\r\
+          \ninputs = tokenizer(\"Good Morning!\", return_tensors=\"pt\").to(device)\r\
+          \n\r\nfor i in range(10):\r\n    st = time.perf_counter()\r\n    gen_tokens\
+          \ = model.generate(**inputs, forced_bos_token_id=tokenizer.get_lang_id(\"\
+          zh\"))\r\n    et = time.perf_counter()\r\n\r\n    st2 = time.perf_counter()\r\
+          \n    gen_tokens = model_ort.generate(**inputs, forced_bos_token_id=tokenizer.get_lang_id(\"\
+          zh\"))\r\n    et2 = time.perf_counter()\r\n    print(f\"model latency =\
+          \ {et - st}, ORT latency = {et2 - st2}\")\r\noutputs = tokenizer.batch_decode(gen_tokens)\r\
+          \n```\r\n\r\nBut the result is suprising: ORT Model's average latency is\
+          \ 0.45s, while Origin Model's average latency is 0.1s. I'm confused because\
+          \ ORT model should be faster than the origin model, I would be more than\
+          \ appreciate if someone can help me out!"
+        updatedAt: '2022-10-12T13:50:31.052Z'
+      numEdits: 0
+      reactions: []
+    id: 6346c627b21bd5e350c3d701
+    type: comment
+  author: Lvxue
+  content: "Hi, I'm trying to reduce the M2M100 model inference latency, following\
+    \ the [guide](https://huggingface.co/docs/optimum/onnxruntime/usage_guides/models)\
+    \ and the [discussion](https://discuss.huggingface.co/t/export-m2m100-model-to-onnx/17694/6),\
+    \ my code is as following:\r\n```python\r\nfrom transformers import M2M100Tokenizer,\
+    \ M2M100ForConditionalGeneration\r\nfrom optimum.onnxruntime import ORTModelForSeq2SeqLM\r\
+    \nimport time\r\nimport torch\r\n\r\ndevice = torch.device(\"cuda\" if torch.cuda.is_available()\
+    \ else \"cpu\")\r\ntokenizer = M2M100Tokenizer.from_pretrained(\"facebook/m2m100_418M\"\
+    )\r\nmodel = M2M100ForConditionalGeneration.from_pretrained(\"facebook/m2m100_418M\"\
+    ).to(device)\r\nmodel_ort = ORTModelForSeq2SeqLM.from_pretrained(\"facebook/m2m100_418M\"\
+    , from_transformers=True).to(device)\r\n\r\ntokenizer.src_lang = \"en\"\r\ninputs\
+    \ = tokenizer(\"Good Morning!\", return_tensors=\"pt\").to(device)\r\n\r\nfor\
+    \ i in range(10):\r\n    st = time.perf_counter()\r\n    gen_tokens = model.generate(**inputs,\
+    \ forced_bos_token_id=tokenizer.get_lang_id(\"zh\"))\r\n    et = time.perf_counter()\r\
+    \n\r\n    st2 = time.perf_counter()\r\n    gen_tokens = model_ort.generate(**inputs,\
+    \ forced_bos_token_id=tokenizer.get_lang_id(\"zh\"))\r\n    et2 = time.perf_counter()\r\
+    \n    print(f\"model latency = {et - st}, ORT latency = {et2 - st2}\")\r\noutputs\
+    \ = tokenizer.batch_decode(gen_tokens)\r\n```\r\n\r\nBut the result is suprising:\
+    \ ORT Model's average latency is 0.45s, while Origin Model's average latency is\
+    \ 0.1s. I'm confused because ORT model should be faster than the origin model,\
+    \ I would be more than appreciate if someone can help me out!"
+  created_at: 2022-10-12 12:50:31+00:00
+  edited: false
+  hidden: false
+  id: 6346c627b21bd5e350c3d701
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1651743336129-624c60cba8ec93a7ac188b56.png?w=200&h=200&f=face
+      fullname: "F\xE9lix Marty"
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: fxmarty
+      type: user
+    createdAt: '2022-11-14T10:56:08.000Z'
+    data:
+      edited: false
+      editors:
+      - fxmarty
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1651743336129-624c60cba8ec93a7ac188b56.png?w=200&h=200&f=face
+          fullname: "F\xE9lix Marty"
+          isHf: true
+          isPro: false
+          name: fxmarty
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;Lvxue&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Lvxue\">@<span class=\"\
+          underline\">Lvxue</span></a></span>\n\n\t</span></span> , are you using\
+          \ a GPU? We've indeed had reports of slowdowns with onnxruntime and GPU.\
+          \ The issue was that there was some communication overhead between the CPU\
+          \ and GPU.</p>\n<p><a rel=\"nofollow\" href=\"https://github.com/huggingface/optimum/pull/421\"\
+          >This PR</a> was merged that fixes the issue, and the next Optimum release\
+          \ will include the fix!</p>\n<p>In the meanwhile, if you want to try it,\
+          \ you can use the dev branch with <code>pip uninstall optimum &amp;&amp;\
+          \ pip install git+https://github.com/huggingface/optimum.git#egg=optimum[onnxruntime-gpu]</code>.</p>\n\
+          <p>There has been reports of great speedups (for example <a rel=\"nofollow\"\
+          \ href=\"https://github.com/huggingface/optimum/issues/404#issuecomment-1310360666\"\
+          >here</a> and <a rel=\"nofollow\" href=\"https://github.com/huggingface/optimum/issues/365#issuecomment-1306822851\"\
+          >here</a>) and we'll soon put up more documentation as to what speedups\
+          \ are expected.</p>\n"
+        raw: 'Hey @Lvxue , are you using a GPU? We''ve indeed had reports of slowdowns
+          with onnxruntime and GPU. The issue was that there was some communication
+          overhead between the CPU and GPU.
+
+
+          [This PR](https://github.com/huggingface/optimum/pull/421) was merged that
+          fixes the issue, and the next Optimum release will include the fix!
+
+
+          In the meanwhile, if you want to try it, you can use the dev branch with
+          `pip uninstall optimum && pip install git+https://github.com/huggingface/optimum.git#egg=optimum[onnxruntime-gpu]`.
+
+
+          There has been reports of great speedups (for example [here](https://github.com/huggingface/optimum/issues/404#issuecomment-1310360666)
+          and [here](https://github.com/huggingface/optimum/issues/365#issuecomment-1306822851))
+          and we''ll soon put up more documentation as to what speedups are expected.'
+        updatedAt: '2022-11-14T10:56:08.489Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - Jingya
+        - JulesBelveze
+    id: 63721ec814d543d507aa1bab
+    type: comment
+  author: fxmarty
+  content: 'Hey @Lvxue , are you using a GPU? We''ve indeed had reports of slowdowns
+    with onnxruntime and GPU. The issue was that there was some communication overhead
+    between the CPU and GPU.
+
+
+    [This PR](https://github.com/huggingface/optimum/pull/421) was merged that fixes
+    the issue, and the next Optimum release will include the fix!
+
+
+    In the meanwhile, if you want to try it, you can use the dev branch with `pip
+    uninstall optimum && pip install git+https://github.com/huggingface/optimum.git#egg=optimum[onnxruntime-gpu]`.
+
+
+    There has been reports of great speedups (for example [here](https://github.com/huggingface/optimum/issues/404#issuecomment-1310360666)
+    and [here](https://github.com/huggingface/optimum/issues/365#issuecomment-1306822851))
+    and we''ll soon put up more documentation as to what speedups are expected.'
+  created_at: 2022-11-14 10:56:08+00:00
+  edited: false
+  hidden: false
+  id: 63721ec814d543d507aa1bab
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: optimum/t5-small
+repo_type: model
+status: open
+target_branch: null
+title: ORTModel inference latency

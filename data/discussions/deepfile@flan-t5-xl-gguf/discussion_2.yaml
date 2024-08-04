@@ -1,0 +1,709 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Sashkanik13
+conflicting_files: null
+created_at: 2023-12-30 17:22:32+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/afc766ff504f190e6bd32b85715c92fb.svg
+      fullname: Sashkanik13
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sashkanik13
+      type: user
+    createdAt: '2023-12-30T17:22:32.000Z'
+    data:
+      edited: false
+      editors:
+      - Sashkanik13
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7699570059776306
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/afc766ff504f190e6bd32b85715c92fb.svg
+          fullname: Sashkanik13
+          isHf: false
+          isPro: false
+          name: Sashkanik13
+          type: user
+        html: '<p>Hello, can you send me an example code for running this model?</p>
+
+          '
+        raw: Hello, can you send me an example code for running this model?
+        updatedAt: '2023-12-30T17:22:32.955Z'
+      numEdits: 0
+      reactions: []
+    id: 659051d89e16fa751055d4c7
+    type: comment
+  author: Sashkanik13
+  content: Hello, can you send me an example code for running this model?
+  created_at: 2023-12-30 17:22:32+00:00
+  edited: false
+  hidden: false
+  id: 659051d89e16fa751055d4c7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9c864114f616cf6ee9d76aee633b01c4.svg
+      fullname: BaYang
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: bayang
+      type: user
+    createdAt: '2023-12-30T21:31:29.000Z'
+    data:
+      edited: false
+      editors:
+      - bayang
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.37868618965148926
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9c864114f616cf6ee9d76aee633b01c4.svg
+          fullname: BaYang
+          isHf: false
+          isPro: false
+          name: bayang
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Sashkanik13&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Sashkanik13\"\
+          >@<span class=\"underline\">Sashkanik13</span></a></span>\n\n\t</span></span>,\
+          \ i\"m using rust to load the model.<br>The code is inspired by <a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/candle/blob/main/candle-examples/examples/t5/main.rs\"\
+          >Candle</a><br>If you want to run a smaller model, let me know.<br>You can\
+          \ use the following main.rs code:</p>\n<pre><code class=\"language-rust\"\
+          ><span class=\"hljs-meta\">#[cfg(feature = <span class=\"hljs-string\">\"\
+          mkl\"</span>)]</span>\n<span class=\"hljs-keyword\">extern</span> <span\
+          \ class=\"hljs-keyword\">crate</span> intel_mkl_src;\n\n<span class=\"hljs-meta\"\
+          >#[cfg(feature = <span class=\"hljs-string\">\"accelerate\"</span>)]</span>\n\
+          <span class=\"hljs-keyword\">extern</span> <span class=\"hljs-keyword\"\
+          >crate</span> accelerate_src;\n<span class=\"hljs-keyword\">use</span> std::io::Write;\n\
+          <span class=\"hljs-keyword\">use</span> std::path::PathBuf;\n\n<span class=\"\
+          hljs-keyword\">use</span> actix_web::{post, web, App, HttpResponse, HttpServer,\
+          \ Responder};\n<span class=\"hljs-keyword\">use</span> serde::{Deserialize,\
+          \ Serialize};\n\n<span class=\"hljs-keyword\">use</span> candle_transformers::models::quantized_t5\
+          \ <span class=\"hljs-keyword\">as</span> t5;\n\n<span class=\"hljs-keyword\"\
+          >use</span> anyhow::{Error <span class=\"hljs-keyword\">as</span> E, <span\
+          \ class=\"hljs-type\">Result</span>};\n<span class=\"hljs-keyword\">use</span>\
+          \ candle_core::{Device, Tensor};\n<span class=\"hljs-keyword\">use</span>\
+          \ candle_transformers::generation::LogitsProcessor;\n<span class=\"hljs-keyword\"\
+          >use</span> clap::{Parser, ValueEnum};\n<span class=\"hljs-keyword\">use</span>\
+          \ hf_hub::{api::sync::Api, api::sync::ApiRepo, Repo, RepoType};\n<span class=\"\
+          hljs-keyword\">use</span> tokenizers::Tokenizer;\n\n<span class=\"hljs-meta\"\
+          >#[derive(Clone, Debug, Copy, ValueEnum)]</span>\n<span class=\"hljs-keyword\"\
+          >enum</span> <span class=\"hljs-title class_\">Which</span> {\n    T5Small,\n\
+          \    FlanT5Small,\n    FlanT5Base,\n    FlanT5Large,\n    FlanT5Xl,\n  \
+          \  FlanT5Xxl,\n}\n\n<span class=\"hljs-meta\">#[derive(Parser, Debug, Clone)]</span>\n\
+          <span class=\"hljs-meta\">#[command(author, version, about, long_about =\
+          \ None)]</span>\n\n<span class=\"hljs-keyword\">struct</span> <span class=\"\
+          hljs-title class_\">Args</span> {\n    <span class=\"hljs-comment\">///\
+          \ Enable tracing (generates a trace-timestamp.json file).</span>\n    <span\
+          \ class=\"hljs-meta\">#[arg(long)]</span>\n    tracing: <span class=\"hljs-type\"\
+          >bool</span>,\n\n    <span class=\"hljs-comment\">/// The model repository\
+          \ to use on the HuggingFace hub.</span>\n    <span class=\"hljs-meta\">#[arg(long)]</span>\n\
+          \    model_id: <span class=\"hljs-type\">Option</span>&lt;<span class=\"\
+          hljs-type\">String</span>&gt;,\n\n    <span class=\"hljs-meta\">#[arg(long)]</span>\n\
+          \    revision: <span class=\"hljs-type\">Option</span>&lt;<span class=\"\
+          hljs-type\">String</span>&gt;,\n\n    <span class=\"hljs-meta\">#[arg(long)]</span>\n\
+          \    weight_file: <span class=\"hljs-type\">Option</span>&lt;<span class=\"\
+          hljs-type\">String</span>&gt;,\n\n    <span class=\"hljs-meta\">#[arg(long)]</span>\n\
+          \    config_file: <span class=\"hljs-type\">Option</span>&lt;<span class=\"\
+          hljs-type\">String</span>&gt;,\n\n    <span class=\"hljs-comment\">// Enable/disable\
+          \ decoding.</span>\n    <span class=\"hljs-meta\">#[arg(long, default_value\
+          \ = <span class=\"hljs-string\">\"false\"</span>)]</span>\n    disable_cache:\
+          \ <span class=\"hljs-type\">bool</span>,\n\n    <span class=\"hljs-comment\"\
+          >/// Use this prompt, otherwise compute sentence similarities.</span>\n\
+          \    <span class=\"hljs-comment\">// #[arg(long)]</span>\n    <span class=\"\
+          hljs-comment\">// prompt: Option&lt;String&gt;,</span>\n\n    <span class=\"\
+          hljs-comment\">/// The temperature used to generate samples.</span>\n  \
+          \  <span class=\"hljs-meta\">#[arg(long, default_value_t = 0.8)]</span>\n\
+          \    temperature: <span class=\"hljs-type\">f64</span>,\n\n    <span class=\"\
+          hljs-comment\">/// Nucleus sampling probability cutoff.</span>\n    <span\
+          \ class=\"hljs-meta\">#[arg(long)]</span>\n    top_p: <span class=\"hljs-type\"\
+          >Option</span>&lt;<span class=\"hljs-type\">f64</span>&gt;,\n\n    <span\
+          \ class=\"hljs-comment\">/// Penalty to be applied for repeating tokens,\
+          \ 1. means no penalty.</span>\n    <span class=\"hljs-meta\">#[arg(long,\
+          \ default_value_t = 1.1)]</span>\n    repeat_penalty: <span class=\"hljs-type\"\
+          >f32</span>,\n\n    <span class=\"hljs-comment\">/// The context size to\
+          \ consider for the repeat penalty.</span>\n    <span class=\"hljs-meta\"\
+          >#[arg(long, default_value_t = 64)]</span>\n    repeat_last_n: <span class=\"\
+          hljs-type\">usize</span>,\n\n    <span class=\"hljs-comment\">/// The model\
+          \ size to use.</span>\n    <span class=\"hljs-meta\">#[arg(long, default_value\
+          \ = <span class=\"hljs-string\">\"flan-t5-xl\"</span>)]</span>\n    which:\
+          \ Which,\n}\n\n<span class=\"hljs-keyword\">struct</span> <span class=\"\
+          hljs-title class_\">T5ModelBuilder</span> {\n    device: Device,\n    config:\
+          \ t5::Config,\n    weights_filename: PathBuf,\n}\n\n<span class=\"hljs-keyword\"\
+          >impl</span> <span class=\"hljs-title class_\">T5ModelBuilder</span> {\n\
+          \    <span class=\"hljs-keyword\">pub</span> <span class=\"hljs-keyword\"\
+          >fn</span> <span class=\"hljs-title function_\">load</span>(args: &amp;Args)\
+          \ <span class=\"hljs-punctuation\">-&gt;</span> <span class=\"hljs-type\"\
+          >Result</span>&lt;(<span class=\"hljs-keyword\">Self</span>, Tokenizer)&gt;\
+          \ {\n        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >device</span> = Device::Cpu;\n        <span class=\"hljs-keyword\">let</span>\
+          \ <span class=\"hljs-variable\">default_model</span> = <span class=\"hljs-string\"\
+          >\"deepfile/flan-t5-xl-gguf\"</span>.<span class=\"hljs-title function_\
+          \ invoke__\">to_string</span>();\n        <span class=\"hljs-keyword\">let</span>\
+          \ (model_id, revision) = <span class=\"hljs-title function_ invoke__\">match</span>\
+          \ (args.model_id.<span class=\"hljs-title function_ invoke__\">to_owned</span>(),\
+          \ args.revision.<span class=\"hljs-title function_ invoke__\">to_owned</span>())\
+          \ {\n            (<span class=\"hljs-title function_ invoke__\">Some</span>(model_id),\
+          \ <span class=\"hljs-title function_ invoke__\">Some</span>(revision)) =&gt;\
+          \ (model_id, revision),\n            (<span class=\"hljs-title function_\
+          \ invoke__\">Some</span>(model_id), <span class=\"hljs-literal\">None</span>)\
+          \ =&gt; (model_id, <span class=\"hljs-string\">\"main\"</span>.<span class=\"\
+          hljs-title function_ invoke__\">to_string</span>()),\n            (<span\
+          \ class=\"hljs-literal\">None</span>, <span class=\"hljs-title function_\
+          \ invoke__\">Some</span>(revision)) =&gt; (default_model, revision),\n \
+          \           (<span class=\"hljs-literal\">None</span>, <span class=\"hljs-literal\"\
+          >None</span>) =&gt; (default_model, <span class=\"hljs-string\">\"main\"\
+          </span>.<span class=\"hljs-title function_ invoke__\">to_string</span>()),\n\
+          \        };\n\n        <span class=\"hljs-keyword\">let</span> <span class=\"\
+          hljs-variable\">repo</span> = Repo::<span class=\"hljs-title function_ invoke__\"\
+          >with_revision</span>(model_id, RepoType::Model, revision);\n        <span\
+          \ class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\">api</span>\
+          \ = Api::<span class=\"hljs-title function_ invoke__\">new</span>()?;\n\
+          \        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >api</span> = api.<span class=\"hljs-title function_ invoke__\">repo</span>(repo);\n\
+          \        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >config_filename</span> = <span class=\"hljs-keyword\">match</span> &amp;args.config_file\
+          \ {\n            <span class=\"hljs-title function_ invoke__\">Some</span>(filename)\
+          \ =&gt; <span class=\"hljs-keyword\">Self</span>::<span class=\"hljs-title\
+          \ function_ invoke__\">get_local_or_remote_file</span>(filename, &amp;api)?,\n\
+          \            <span class=\"hljs-literal\">None</span> =&gt; <span class=\"\
+          hljs-keyword\">match</span> args.which {\n                Which::T5Small\
+          \ =&gt; api.<span class=\"hljs-title function_ invoke__\">get</span>(<span\
+          \ class=\"hljs-string\">\"config.json\"</span>)?,\n                Which::FlanT5Small\
+          \ =&gt; api.<span class=\"hljs-title function_ invoke__\">get</span>(<span\
+          \ class=\"hljs-string\">\"config-flan-t5-small.json\"</span>)?,\n      \
+          \          Which::FlanT5Base =&gt; api.<span class=\"hljs-title function_\
+          \ invoke__\">get</span>(<span class=\"hljs-string\">\"config-flan-t5-base.json\"\
+          </span>)?,\n                Which::FlanT5Large =&gt; api.<span class=\"\
+          hljs-title function_ invoke__\">get</span>(<span class=\"hljs-string\">\"\
+          config-flan-t5-large.json\"</span>)?,\n                Which::FlanT5Xl =&gt;\
+          \ api.<span class=\"hljs-title function_ invoke__\">get</span>(<span class=\"\
+          hljs-string\">\"config-flan-t5-xl.json\"</span>)?,\n                Which::FlanT5Xxl\
+          \ =&gt; api.<span class=\"hljs-title function_ invoke__\">get</span>(<span\
+          \ class=\"hljs-string\">\"config-flan-t5-xxl.json\"</span>)?,\n        \
+          \    },\n        };\n        <span class=\"hljs-keyword\">let</span> <span\
+          \ class=\"hljs-variable\">tokenizer_filename</span> = api.<span class=\"\
+          hljs-title function_ invoke__\">get</span>(<span class=\"hljs-string\">\"\
+          tokenizer.json\"</span>)?;\n        <span class=\"hljs-keyword\">let</span>\
+          \ <span class=\"hljs-variable\">weights_filename</span> = <span class=\"\
+          hljs-keyword\">match</span> &amp;args.weight_file {\n            <span class=\"\
+          hljs-title function_ invoke__\">Some</span>(filename) =&gt; <span class=\"\
+          hljs-keyword\">Self</span>::<span class=\"hljs-title function_ invoke__\"\
+          >get_local_or_remote_file</span>(filename, &amp;api)?,\n            <span\
+          \ class=\"hljs-literal\">None</span> =&gt; <span class=\"hljs-keyword\"\
+          >match</span> args.which {\n                Which::T5Small =&gt; api.<span\
+          \ class=\"hljs-title function_ invoke__\">get</span>(<span class=\"hljs-string\"\
+          >\"model.gguf\"</span>)?,\n                Which::FlanT5Small =&gt; api.<span\
+          \ class=\"hljs-title function_ invoke__\">get</span>(<span class=\"hljs-string\"\
+          >\"model-flan-t5-small.gguf\"</span>)?,\n                Which::FlanT5Base\
+          \ =&gt; api.<span class=\"hljs-title function_ invoke__\">get</span>(<span\
+          \ class=\"hljs-string\">\"model-flan-t5-base.gguf\"</span>)?,\n        \
+          \        Which::FlanT5Large =&gt; api.<span class=\"hljs-title function_\
+          \ invoke__\">get</span>(<span class=\"hljs-string\">\"model-flan-t5-large.gguf\"\
+          </span>)?,\n                Which::FlanT5Xl =&gt; api.<span class=\"hljs-title\
+          \ function_ invoke__\">get</span>(<span class=\"hljs-string\">\"model-flan-t5-xl.gguf\"\
+          </span>)?,\n                Which::FlanT5Xxl =&gt; api.<span class=\"hljs-title\
+          \ function_ invoke__\">get</span>(<span class=\"hljs-string\">\"model-flan-t5-xxl.gguf\"\
+          </span>)?,\n            },\n        };\n\n        <span class=\"hljs-keyword\"\
+          >let</span> <span class=\"hljs-variable\">config</span> = std::fs::<span\
+          \ class=\"hljs-title function_ invoke__\">read_to_string</span>(config_filename)?;\n\
+          \        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-keyword\"\
+          >mut </span><span class=\"hljs-variable\">config</span>: t5::Config = serde_json::<span\
+          \ class=\"hljs-title function_ invoke__\">from_str</span>(&amp;config)?;\n\
+          \        config.use_cache = !args.disable_cache;\n        <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-variable\">tokenizer</span>\
+          \ = Tokenizer::<span class=\"hljs-title function_ invoke__\">from_file</span>(tokenizer_filename).<span\
+          \ class=\"hljs-title function_ invoke__\">map_err</span>(E::msg)?;\n   \
+          \     <span class=\"hljs-title function_ invoke__\">Ok</span>((\n      \
+          \      <span class=\"hljs-keyword\">Self</span> {\n                device,\n\
+          \                config,\n                weights_filename,\n          \
+          \  },\n            tokenizer,\n        ))\n    }\n\n    <span class=\"hljs-keyword\"\
+          >pub</span> <span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\
+          \ function_\">build_model</span>(&amp;<span class=\"hljs-keyword\">self</span>)\
+          \ <span class=\"hljs-punctuation\">-&gt;</span> <span class=\"hljs-type\"\
+          >Result</span>&lt;t5::T5ForConditionalGeneration&gt; {\n        <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-variable\">vb</span> = t5::VarBuilder::<span\
+          \ class=\"hljs-title function_ invoke__\">from_gguf</span>(&amp;<span class=\"\
+          hljs-keyword\">self</span>.weights_filename)?;\n        <span class=\"hljs-title\
+          \ function_ invoke__\">Ok</span>(t5::T5ForConditionalGeneration::<span class=\"\
+          hljs-title function_ invoke__\">load</span>(vb, &amp;<span class=\"hljs-keyword\"\
+          >self</span>.config)?)\n    }\n\n    <span class=\"hljs-keyword\">fn</span>\
+          \ <span class=\"hljs-title function_\">get_local_or_remote_file</span>(filename:\
+          \ &amp;<span class=\"hljs-type\">str</span>, api: &amp;ApiRepo) <span class=\"\
+          hljs-punctuation\">-&gt;</span> <span class=\"hljs-type\">Result</span>&lt;PathBuf&gt;\
+          \ {\n        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >local_filename</span> = std::path::PathBuf::<span class=\"hljs-title function_\
+          \ invoke__\">from</span>(filename);\n        <span class=\"hljs-keyword\"\
+          >if</span> local_filename.<span class=\"hljs-title function_ invoke__\"\
+          >exists</span>() {\n            <span class=\"hljs-title function_ invoke__\"\
+          >Ok</span>(local_filename)\n        } <span class=\"hljs-keyword\">else</span>\
+          \ {\n            <span class=\"hljs-title function_ invoke__\">Ok</span>(api.<span\
+          \ class=\"hljs-title function_ invoke__\">get</span>(filename)?)\n     \
+          \   }\n    }\n}\n<span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\
+          \ function_\">generate_answer</span>(_prompt: <span class=\"hljs-type\"\
+          >String</span>, args: &amp;Args) <span class=\"hljs-punctuation\">-&gt;</span>\
+          \ <span class=\"hljs-type\">Result</span>&lt;<span class=\"hljs-type\">String</span>&gt;\
+          \ {\n\n    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-keyword\"\
+          >mut </span><span class=\"hljs-variable\">generated_text</span> = <span\
+          \ class=\"hljs-type\">String</span>::<span class=\"hljs-title function_\
+          \ invoke__\">new</span>();\n\n    <span class=\"hljs-keyword\">let</span>\
+          \ (_builder, <span class=\"hljs-keyword\">mut</span> _tokenizer) = T5ModelBuilder::<span\
+          \ class=\"hljs-title function_ invoke__\">load</span>(&amp;args)?;\n   \
+          \ <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >device</span> = &amp;_builder.device;\n    <span class=\"hljs-keyword\"\
+          >let</span> <span class=\"hljs-variable\">_tokenizer</span> = _tokenizer\n\
+          \        .<span class=\"hljs-title function_ invoke__\">with_padding</span>(<span\
+          \ class=\"hljs-literal\">None</span>)\n        .<span class=\"hljs-title\
+          \ function_ invoke__\">with_truncation</span>(<span class=\"hljs-literal\"\
+          >None</span>)\n        .<span class=\"hljs-title function_ invoke__\">map_err</span>(E::msg)?;\n\
+          \    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >_tokens</span> = _tokenizer\n        .<span class=\"hljs-title function_\
+          \ invoke__\">encode</span>(_prompt, <span class=\"hljs-literal\">true</span>)\n\
+          \        .<span class=\"hljs-title function_ invoke__\">map_err</span>(E::msg)?\n\
+          \        .<span class=\"hljs-title function_ invoke__\">get_ids</span>()\n\
+          \        .<span class=\"hljs-title function_ invoke__\">to_vec</span>();\n\
+          \    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >input_token_ids</span> = Tensor::<span class=\"hljs-title function_ invoke__\"\
+          >new</span>(&amp;_tokens[..], device)?.<span class=\"hljs-title function_\
+          \ invoke__\">unsqueeze</span>(<span class=\"hljs-number\">0</span>)?;\n\
+          \    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-keyword\"\
+          >mut </span><span class=\"hljs-variable\">model</span> = _builder.<span\
+          \ class=\"hljs-title function_ invoke__\">build_model</span>()?;\n    <span\
+          \ class=\"hljs-keyword\">let</span> <span class=\"hljs-keyword\">mut </span><span\
+          \ class=\"hljs-variable\">output_token_ids</span> = [_builder.config.pad_token_id\
+          \ <span class=\"hljs-keyword\">as</span> <span class=\"hljs-type\">u32</span>].<span\
+          \ class=\"hljs-title function_ invoke__\">to_vec</span>();\n    <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-variable\">temperature</span>\
+          \ = <span class=\"hljs-number\">0.8f64</span>;\n    \n    <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-keyword\">mut </span><span\
+          \ class=\"hljs-variable\">logits_processor</span> = LogitsProcessor::<span\
+          \ class=\"hljs-title function_ invoke__\">new</span>(<span class=\"hljs-number\"\
+          >299792458</span>, <span class=\"hljs-title function_ invoke__\">Some</span>(temperature),\
+          \ <span class=\"hljs-literal\">None</span>);\n    <span class=\"hljs-keyword\"\
+          >let</span> <span class=\"hljs-variable\">encoder_output</span> = model.<span\
+          \ class=\"hljs-title function_ invoke__\">encode</span>(&amp;input_token_ids)?;\n\
+          \n    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >start</span> = std::time::Instant::<span class=\"hljs-title function_ invoke__\"\
+          >now</span>();\n\n    <span class=\"hljs-keyword\">for</span> <span class=\"\
+          hljs-variable\">index</span> <span class=\"hljs-keyword\">in</span> <span\
+          \ class=\"hljs-number\">0</span>.. {\n        \n        <span class=\"hljs-keyword\"\
+          >if</span> output_token_ids.<span class=\"hljs-title function_ invoke__\"\
+          >len</span>() &gt; <span class=\"hljs-number\">512</span> {\n          \
+          \  <span class=\"hljs-keyword\">break</span>;\n        }\n        <span\
+          \ class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\">decoder_token_ids</span>\
+          \ = <span class=\"hljs-keyword\">if</span> index == <span class=\"hljs-number\"\
+          >0</span> || !_builder.config.use_cache {\n            Tensor::<span class=\"\
+          hljs-title function_ invoke__\">new</span>(output_token_ids.<span class=\"\
+          hljs-title function_ invoke__\">as_slice</span>(), device)?.<span class=\"\
+          hljs-title function_ invoke__\">unsqueeze</span>(<span class=\"hljs-number\"\
+          >0</span>)?\n        } <span class=\"hljs-keyword\">else</span> {\n    \
+          \        <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >last_token</span> = *output_token_ids.<span class=\"hljs-title function_\
+          \ invoke__\">last</span>().<span class=\"hljs-title function_ invoke__\"\
+          >unwrap</span>();\n            Tensor::<span class=\"hljs-title function_\
+          \ invoke__\">new</span>(&amp;[last_token], device)?.<span class=\"hljs-title\
+          \ function_ invoke__\">unsqueeze</span>(<span class=\"hljs-number\">0</span>)?\n\
+          \        };\n        <span class=\"hljs-keyword\">let</span> <span class=\"\
+          hljs-variable\">logits</span> = model\n            .<span class=\"hljs-title\
+          \ function_ invoke__\">decode</span>(&amp;decoder_token_ids, &amp;encoder_output)?\n\
+          \            .<span class=\"hljs-title function_ invoke__\">squeeze</span>(<span\
+          \ class=\"hljs-number\">0</span>)?;\n        <span class=\"hljs-keyword\"\
+          >let</span> <span class=\"hljs-variable\">logits</span> = <span class=\"\
+          hljs-keyword\">if</span> args.repeat_penalty == <span class=\"hljs-number\"\
+          >1</span>. {\n            logits\n        } <span class=\"hljs-keyword\"\
+          >else</span> {\n            <span class=\"hljs-keyword\">let</span> <span\
+          \ class=\"hljs-variable\">start_at</span> = output_token_ids.<span class=\"\
+          hljs-title function_ invoke__\">len</span>().<span class=\"hljs-title function_\
+          \ invoke__\">saturating_sub</span>(args.repeat_last_n);\n            candle_transformers::utils::<span\
+          \ class=\"hljs-title function_ invoke__\">apply_repeat_penalty</span>(\n\
+          \                &amp;logits,\n                args.repeat_penalty,\n  \
+          \              &amp;output_token_ids[start_at..],\n            )?\n    \
+          \    };\n\n        <span class=\"hljs-keyword\">let</span> <span class=\"\
+          hljs-variable\">next_token_id</span> = logits_processor.<span class=\"hljs-title\
+          \ function_ invoke__\">sample</span>(&amp;logits)?;\n        <span class=\"\
+          hljs-keyword\">if</span> next_token_id <span class=\"hljs-keyword\">as</span>\
+          \ <span class=\"hljs-type\">usize</span> == _builder.config.eos_token_id\
+          \ {\n            <span class=\"hljs-keyword\">break</span>;\n        }\n\
+          \        output_token_ids.<span class=\"hljs-title function_ invoke__\"\
+          >push</span>(next_token_id);\n        <span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >Some</span>(text) = _tokenizer.<span class=\"hljs-title function_ invoke__\"\
+          >id_to_token</span>(next_token_id) {\n            <span class=\"hljs-keyword\"\
+          >let</span> <span class=\"hljs-variable\">text</span> = text.<span class=\"\
+          hljs-title function_ invoke__\">replace</span>(<span class=\"hljs-string\"\
+          >'\u2581'</span>, <span class=\"hljs-string\">\" \"</span>).<span class=\"\
+          hljs-title function_ invoke__\">replace</span>(<span class=\"hljs-string\"\
+          >\"&lt;0x0A&gt;\"</span>, <span class=\"hljs-string\">\"\\n\"</span>);\n\
+          \            generated_text.<span class=\"hljs-title function_ invoke__\"\
+          >push_str</span>(&amp;text);\n            <span class=\"hljs-built_in\"\
+          >print!</span>(<span class=\"hljs-string\">\"{}\"</span>, text);\n     \
+          \       std::io::<span class=\"hljs-title function_ invoke__\">stdout</span>().<span\
+          \ class=\"hljs-title function_ invoke__\">flush</span>()?;\n        }\n\
+          \    }\n    <span class=\"hljs-keyword\">let</span> <span class=\"hljs-variable\"\
+          >dt</span> = start.<span class=\"hljs-title function_ invoke__\">elapsed</span>();\n\
+          \    <span class=\"hljs-built_in\">println!</span>(\n        <span class=\"\
+          hljs-string\">\"\\n{} tokens generated ({:.2} token/s)\\n\"</span>,\n  \
+          \      output_token_ids.<span class=\"hljs-title function_ invoke__\">len</span>(),\n\
+          \        output_token_ids.<span class=\"hljs-title function_ invoke__\"\
+          >len</span>() <span class=\"hljs-keyword\">as</span> <span class=\"hljs-type\"\
+          >f64</span> / dt.<span class=\"hljs-title function_ invoke__\">as_secs_f64</span>(),\n\
+          \    );\n\n    <span class=\"hljs-title function_ invoke__\">Ok</span>(generated_text)\
+          \   \n}\n\n<span class=\"hljs-comment\">// request struct</span>\n<span\
+          \ class=\"hljs-meta\">#[derive(Deserialize)]</span>\n<span class=\"hljs-keyword\"\
+          >struct</span> <span class=\"hljs-title class_\">Request</span> {\n    prompt:\
+          \ <span class=\"hljs-type\">String</span>,\n}\n\n<span class=\"hljs-meta\"\
+          >#[derive(Serialize)]</span>\n<span class=\"hljs-keyword\">struct</span>\
+          \ <span class=\"hljs-title class_\">Response</span> {\n    answer: <span\
+          \ class=\"hljs-type\">String</span>,\n}\n\n<span class=\"hljs-meta\">#[post(<span\
+          \ class=\"hljs-string\">\"/generate\"</span>)]</span>\n<span class=\"hljs-keyword\"\
+          >async</span> <span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\
+          \ function_\">generate</span>(req_body: web::Json&lt;Request&gt;) <span\
+          \ class=\"hljs-punctuation\">-&gt;</span> <span class=\"hljs-keyword\">impl</span>\
+          \ <span class=\"hljs-title class_\">Responder</span> {\n    <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-variable\">args</span> = Args::<span\
+          \ class=\"hljs-title function_ invoke__\">parse</span>();\n    <span class=\"\
+          hljs-keyword\">let</span> <span class=\"hljs-variable\">generated_answer</span>\
+          \ = <span class=\"hljs-title function_ invoke__\">generate_answer</span>(req_body.prompt.<span\
+          \ class=\"hljs-title function_ invoke__\">clone</span>(), &amp;args);\n\
+          \    HttpResponse::<span class=\"hljs-title function_ invoke__\">Ok</span>().<span\
+          \ class=\"hljs-title function_ invoke__\">json</span>(Response {\n     \
+          \   answer: generated_answer.<span class=\"hljs-title function_ invoke__\"\
+          >unwrap</span>(),\n    })\n}\n\n<span class=\"hljs-meta\">#[actix_web::main]</span>\n\
+          <span class=\"hljs-keyword\">async</span> <span class=\"hljs-keyword\">fn</span>\
+          \ <span class=\"hljs-title function_\">main</span>() <span class=\"hljs-punctuation\"\
+          >-&gt;</span> std::io::<span class=\"hljs-type\">Result</span>&lt;()&gt;\
+          \ {\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\"\
+          >\"Starting server at: http://localhost:7000\"</span>);\n    HttpServer::<span\
+          \ class=\"hljs-title function_ invoke__\">new</span>(|| App::<span class=\"\
+          hljs-title function_ invoke__\">new</span>().<span class=\"hljs-title function_\
+          \ invoke__\">service</span>(generate))\n        .<span class=\"hljs-title\
+          \ function_ invoke__\">bind</span>(<span class=\"hljs-string\">\"localhost:7000\"\
+          </span>)?\n        .<span class=\"hljs-title function_ invoke__\">run</span>()\n\
+          \        .<span class=\"hljs-keyword\">await</span>\n}\n</code></pre>\n"
+        raw: "Hi @Sashkanik13, i\"m using rust to load the model.\nThe code is inspired\
+          \ by [Candle](https://github.com/huggingface/candle/blob/main/candle-examples/examples/t5/main.rs)\n\
+          If you want to run a smaller model, let me know.\nYou can use the following\
+          \ main.rs code:\n```rust\n#[cfg(feature = \"mkl\")]\nextern crate intel_mkl_src;\n\
+          \n#[cfg(feature = \"accelerate\")]\nextern crate accelerate_src;\nuse std::io::Write;\n\
+          use std::path::PathBuf;\n\nuse actix_web::{post, web, App, HttpResponse,\
+          \ HttpServer, Responder};\nuse serde::{Deserialize, Serialize};\n\nuse candle_transformers::models::quantized_t5\
+          \ as t5;\n\nuse anyhow::{Error as E, Result};\nuse candle_core::{Device,\
+          \ Tensor};\nuse candle_transformers::generation::LogitsProcessor;\nuse clap::{Parser,\
+          \ ValueEnum};\nuse hf_hub::{api::sync::Api, api::sync::ApiRepo, Repo, RepoType};\n\
+          use tokenizers::Tokenizer;\n\n#[derive(Clone, Debug, Copy, ValueEnum)]\n\
+          enum Which {\n    T5Small,\n    FlanT5Small,\n    FlanT5Base,\n    FlanT5Large,\n\
+          \    FlanT5Xl,\n    FlanT5Xxl,\n}\n\n#[derive(Parser, Debug, Clone)]\n#[command(author,\
+          \ version, about, long_about = None)]\n\nstruct Args {\n    /// Enable tracing\
+          \ (generates a trace-timestamp.json file).\n    #[arg(long)]\n    tracing:\
+          \ bool,\n\n    /// The model repository to use on the HuggingFace hub.\n\
+          \    #[arg(long)]\n    model_id: Option<String>,\n\n    #[arg(long)]\n \
+          \   revision: Option<String>,\n\n    #[arg(long)]\n    weight_file: Option<String>,\n\
+          \n    #[arg(long)]\n    config_file: Option<String>,\n\n    // Enable/disable\
+          \ decoding.\n    #[arg(long, default_value = \"false\")]\n    disable_cache:\
+          \ bool,\n\n    /// Use this prompt, otherwise compute sentence similarities.\n\
+          \    // #[arg(long)]\n    // prompt: Option<String>,\n\n    /// The temperature\
+          \ used to generate samples.\n    #[arg(long, default_value_t = 0.8)]\n \
+          \   temperature: f64,\n\n    /// Nucleus sampling probability cutoff.\n\
+          \    #[arg(long)]\n    top_p: Option<f64>,\n\n    /// Penalty to be applied\
+          \ for repeating tokens, 1. means no penalty.\n    #[arg(long, default_value_t\
+          \ = 1.1)]\n    repeat_penalty: f32,\n\n    /// The context size to consider\
+          \ for the repeat penalty.\n    #[arg(long, default_value_t = 64)]\n    repeat_last_n:\
+          \ usize,\n\n    /// The model size to use.\n    #[arg(long, default_value\
+          \ = \"flan-t5-xl\")]\n    which: Which,\n}\n\nstruct T5ModelBuilder {\n\
+          \    device: Device,\n    config: t5::Config,\n    weights_filename: PathBuf,\n\
+          }\n\nimpl T5ModelBuilder {\n    pub fn load(args: &Args) -> Result<(Self,\
+          \ Tokenizer)> {\n        let device = Device::Cpu;\n        let default_model\
+          \ = \"deepfile/flan-t5-xl-gguf\".to_string();\n        let (model_id, revision)\
+          \ = match (args.model_id.to_owned(), args.revision.to_owned()) {\n     \
+          \       (Some(model_id), Some(revision)) => (model_id, revision),\n    \
+          \        (Some(model_id), None) => (model_id, \"main\".to_string()),\n \
+          \           (None, Some(revision)) => (default_model, revision),\n     \
+          \       (None, None) => (default_model, \"main\".to_string()),\n       \
+          \ };\n\n        let repo = Repo::with_revision(model_id, RepoType::Model,\
+          \ revision);\n        let api = Api::new()?;\n        let api = api.repo(repo);\n\
+          \        let config_filename = match &args.config_file {\n            Some(filename)\
+          \ => Self::get_local_or_remote_file(filename, &api)?,\n            None\
+          \ => match args.which {\n                Which::T5Small => api.get(\"config.json\"\
+          )?,\n                Which::FlanT5Small => api.get(\"config-flan-t5-small.json\"\
+          )?,\n                Which::FlanT5Base => api.get(\"config-flan-t5-base.json\"\
+          )?,\n                Which::FlanT5Large => api.get(\"config-flan-t5-large.json\"\
+          )?,\n                Which::FlanT5Xl => api.get(\"config-flan-t5-xl.json\"\
+          )?,\n                Which::FlanT5Xxl => api.get(\"config-flan-t5-xxl.json\"\
+          )?,\n            },\n        };\n        let tokenizer_filename = api.get(\"\
+          tokenizer.json\")?;\n        let weights_filename = match &args.weight_file\
+          \ {\n            Some(filename) => Self::get_local_or_remote_file(filename,\
+          \ &api)?,\n            None => match args.which {\n                Which::T5Small\
+          \ => api.get(\"model.gguf\")?,\n                Which::FlanT5Small => api.get(\"\
+          model-flan-t5-small.gguf\")?,\n                Which::FlanT5Base => api.get(\"\
+          model-flan-t5-base.gguf\")?,\n                Which::FlanT5Large => api.get(\"\
+          model-flan-t5-large.gguf\")?,\n                Which::FlanT5Xl => api.get(\"\
+          model-flan-t5-xl.gguf\")?,\n                Which::FlanT5Xxl => api.get(\"\
+          model-flan-t5-xxl.gguf\")?,\n            },\n        };\n\n        let config\
+          \ = std::fs::read_to_string(config_filename)?;\n        let mut config:\
+          \ t5::Config = serde_json::from_str(&config)?;\n        config.use_cache\
+          \ = !args.disable_cache;\n        let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;\n\
+          \        Ok((\n            Self {\n                device,\n           \
+          \     config,\n                weights_filename,\n            },\n     \
+          \       tokenizer,\n        ))\n    }\n\n    pub fn build_model(&self) ->\
+          \ Result<t5::T5ForConditionalGeneration> {\n        let vb = t5::VarBuilder::from_gguf(&self.weights_filename)?;\n\
+          \        Ok(t5::T5ForConditionalGeneration::load(vb, &self.config)?)\n \
+          \   }\n\n    fn get_local_or_remote_file(filename: &str, api: &ApiRepo)\
+          \ -> Result<PathBuf> {\n        let local_filename = std::path::PathBuf::from(filename);\n\
+          \        if local_filename.exists() {\n            Ok(local_filename)\n\
+          \        } else {\n            Ok(api.get(filename)?)\n        }\n    }\n\
+          }\nfn generate_answer(_prompt: String, args: &Args) -> Result<String> {\n\
+          \n    let mut generated_text = String::new();\n\n    let (_builder, mut\
+          \ _tokenizer) = T5ModelBuilder::load(&args)?;\n    let device = &_builder.device;\n\
+          \    let _tokenizer = _tokenizer\n        .with_padding(None)\n        .with_truncation(None)\n\
+          \        .map_err(E::msg)?;\n    let _tokens = _tokenizer\n        .encode(_prompt,\
+          \ true)\n        .map_err(E::msg)?\n        .get_ids()\n        .to_vec();\n\
+          \    let input_token_ids = Tensor::new(&_tokens[..], device)?.unsqueeze(0)?;\n\
+          \    let mut model = _builder.build_model()?;\n    let mut output_token_ids\
+          \ = [_builder.config.pad_token_id as u32].to_vec();\n    let temperature\
+          \ = 0.8f64;\n    \n    let mut logits_processor = LogitsProcessor::new(299792458,\
+          \ Some(temperature), None);\n    let encoder_output = model.encode(&input_token_ids)?;\n\
+          \n    let start = std::time::Instant::now();\n\n    for index in 0.. {\n\
+          \        \n        if output_token_ids.len() > 512 {\n            break;\n\
+          \        }\n        let decoder_token_ids = if index == 0 || !_builder.config.use_cache\
+          \ {\n            Tensor::new(output_token_ids.as_slice(), device)?.unsqueeze(0)?\n\
+          \        } else {\n            let last_token = *output_token_ids.last().unwrap();\n\
+          \            Tensor::new(&[last_token], device)?.unsqueeze(0)?\n       \
+          \ };\n        let logits = model\n            .decode(&decoder_token_ids,\
+          \ &encoder_output)?\n            .squeeze(0)?;\n        let logits = if\
+          \ args.repeat_penalty == 1. {\n            logits\n        } else {\n  \
+          \          let start_at = output_token_ids.len().saturating_sub(args.repeat_last_n);\n\
+          \            candle_transformers::utils::apply_repeat_penalty(\n       \
+          \         &logits,\n                args.repeat_penalty,\n             \
+          \   &output_token_ids[start_at..],\n            )?\n        };\n\n     \
+          \   let next_token_id = logits_processor.sample(&logits)?;\n        if next_token_id\
+          \ as usize == _builder.config.eos_token_id {\n            break;\n     \
+          \   }\n        output_token_ids.push(next_token_id);\n        if let Some(text)\
+          \ = _tokenizer.id_to_token(next_token_id) {\n            let text = text.replace('\u2581\
+          ', \" \").replace(\"<0x0A>\", \"\\n\");\n            generated_text.push_str(&text);\n\
+          \            print!(\"{}\", text);\n            std::io::stdout().flush()?;\n\
+          \        }\n    }\n    let dt = start.elapsed();\n    println!(\n      \
+          \  \"\\n{} tokens generated ({:.2} token/s)\\n\",\n        output_token_ids.len(),\n\
+          \        output_token_ids.len() as f64 / dt.as_secs_f64(),\n    );\n\n \
+          \   Ok(generated_text)   \n}\n\n// request struct\n#[derive(Deserialize)]\n\
+          struct Request {\n    prompt: String,\n}\n\n#[derive(Serialize)]\nstruct\
+          \ Response {\n    answer: String,\n}\n\n#[post(\"/generate\")]\nasync fn\
+          \ generate(req_body: web::Json<Request>) -> impl Responder {\n    let args\
+          \ = Args::parse();\n    let generated_answer = generate_answer(req_body.prompt.clone(),\
+          \ &args);\n    HttpResponse::Ok().json(Response {\n        answer: generated_answer.unwrap(),\n\
+          \    })\n}\n\n#[actix_web::main]\nasync fn main() -> std::io::Result<()>\
+          \ {\n    println!(\"Starting server at: http://localhost:7000\");\n    HttpServer::new(||\
+          \ App::new().service(generate))\n        .bind(\"localhost:7000\")?\n  \
+          \      .run()\n        .await\n}\n```"
+        updatedAt: '2023-12-30T21:31:29.335Z'
+      numEdits: 0
+      reactions: []
+    id: 65908c31353318837543fff4
+    type: comment
+  author: bayang
+  content: "Hi @Sashkanik13, i\"m using rust to load the model.\nThe code is inspired\
+    \ by [Candle](https://github.com/huggingface/candle/blob/main/candle-examples/examples/t5/main.rs)\n\
+    If you want to run a smaller model, let me know.\nYou can use the following main.rs\
+    \ code:\n```rust\n#[cfg(feature = \"mkl\")]\nextern crate intel_mkl_src;\n\n#[cfg(feature\
+    \ = \"accelerate\")]\nextern crate accelerate_src;\nuse std::io::Write;\nuse std::path::PathBuf;\n\
+    \nuse actix_web::{post, web, App, HttpResponse, HttpServer, Responder};\nuse serde::{Deserialize,\
+    \ Serialize};\n\nuse candle_transformers::models::quantized_t5 as t5;\n\nuse anyhow::{Error\
+    \ as E, Result};\nuse candle_core::{Device, Tensor};\nuse candle_transformers::generation::LogitsProcessor;\n\
+    use clap::{Parser, ValueEnum};\nuse hf_hub::{api::sync::Api, api::sync::ApiRepo,\
+    \ Repo, RepoType};\nuse tokenizers::Tokenizer;\n\n#[derive(Clone, Debug, Copy,\
+    \ ValueEnum)]\nenum Which {\n    T5Small,\n    FlanT5Small,\n    FlanT5Base,\n\
+    \    FlanT5Large,\n    FlanT5Xl,\n    FlanT5Xxl,\n}\n\n#[derive(Parser, Debug,\
+    \ Clone)]\n#[command(author, version, about, long_about = None)]\n\nstruct Args\
+    \ {\n    /// Enable tracing (generates a trace-timestamp.json file).\n    #[arg(long)]\n\
+    \    tracing: bool,\n\n    /// The model repository to use on the HuggingFace\
+    \ hub.\n    #[arg(long)]\n    model_id: Option<String>,\n\n    #[arg(long)]\n\
+    \    revision: Option<String>,\n\n    #[arg(long)]\n    weight_file: Option<String>,\n\
+    \n    #[arg(long)]\n    config_file: Option<String>,\n\n    // Enable/disable\
+    \ decoding.\n    #[arg(long, default_value = \"false\")]\n    disable_cache: bool,\n\
+    \n    /// Use this prompt, otherwise compute sentence similarities.\n    // #[arg(long)]\n\
+    \    // prompt: Option<String>,\n\n    /// The temperature used to generate samples.\n\
+    \    #[arg(long, default_value_t = 0.8)]\n    temperature: f64,\n\n    /// Nucleus\
+    \ sampling probability cutoff.\n    #[arg(long)]\n    top_p: Option<f64>,\n\n\
+    \    /// Penalty to be applied for repeating tokens, 1. means no penalty.\n  \
+    \  #[arg(long, default_value_t = 1.1)]\n    repeat_penalty: f32,\n\n    /// The\
+    \ context size to consider for the repeat penalty.\n    #[arg(long, default_value_t\
+    \ = 64)]\n    repeat_last_n: usize,\n\n    /// The model size to use.\n    #[arg(long,\
+    \ default_value = \"flan-t5-xl\")]\n    which: Which,\n}\n\nstruct T5ModelBuilder\
+    \ {\n    device: Device,\n    config: t5::Config,\n    weights_filename: PathBuf,\n\
+    }\n\nimpl T5ModelBuilder {\n    pub fn load(args: &Args) -> Result<(Self, Tokenizer)>\
+    \ {\n        let device = Device::Cpu;\n        let default_model = \"deepfile/flan-t5-xl-gguf\"\
+    .to_string();\n        let (model_id, revision) = match (args.model_id.to_owned(),\
+    \ args.revision.to_owned()) {\n            (Some(model_id), Some(revision)) =>\
+    \ (model_id, revision),\n            (Some(model_id), None) => (model_id, \"main\"\
+    .to_string()),\n            (None, Some(revision)) => (default_model, revision),\n\
+    \            (None, None) => (default_model, \"main\".to_string()),\n        };\n\
+    \n        let repo = Repo::with_revision(model_id, RepoType::Model, revision);\n\
+    \        let api = Api::new()?;\n        let api = api.repo(repo);\n        let\
+    \ config_filename = match &args.config_file {\n            Some(filename) => Self::get_local_or_remote_file(filename,\
+    \ &api)?,\n            None => match args.which {\n                Which::T5Small\
+    \ => api.get(\"config.json\")?,\n                Which::FlanT5Small => api.get(\"\
+    config-flan-t5-small.json\")?,\n                Which::FlanT5Base => api.get(\"\
+    config-flan-t5-base.json\")?,\n                Which::FlanT5Large => api.get(\"\
+    config-flan-t5-large.json\")?,\n                Which::FlanT5Xl => api.get(\"\
+    config-flan-t5-xl.json\")?,\n                Which::FlanT5Xxl => api.get(\"config-flan-t5-xxl.json\"\
+    )?,\n            },\n        };\n        let tokenizer_filename = api.get(\"tokenizer.json\"\
+    )?;\n        let weights_filename = match &args.weight_file {\n            Some(filename)\
+    \ => Self::get_local_or_remote_file(filename, &api)?,\n            None => match\
+    \ args.which {\n                Which::T5Small => api.get(\"model.gguf\")?,\n\
+    \                Which::FlanT5Small => api.get(\"model-flan-t5-small.gguf\")?,\n\
+    \                Which::FlanT5Base => api.get(\"model-flan-t5-base.gguf\")?,\n\
+    \                Which::FlanT5Large => api.get(\"model-flan-t5-large.gguf\")?,\n\
+    \                Which::FlanT5Xl => api.get(\"model-flan-t5-xl.gguf\")?,\n   \
+    \             Which::FlanT5Xxl => api.get(\"model-flan-t5-xxl.gguf\")?,\n    \
+    \        },\n        };\n\n        let config = std::fs::read_to_string(config_filename)?;\n\
+    \        let mut config: t5::Config = serde_json::from_str(&config)?;\n      \
+    \  config.use_cache = !args.disable_cache;\n        let tokenizer = Tokenizer::from_file(tokenizer_filename).map_err(E::msg)?;\n\
+    \        Ok((\n            Self {\n                device,\n                config,\n\
+    \                weights_filename,\n            },\n            tokenizer,\n \
+    \       ))\n    }\n\n    pub fn build_model(&self) -> Result<t5::T5ForConditionalGeneration>\
+    \ {\n        let vb = t5::VarBuilder::from_gguf(&self.weights_filename)?;\n  \
+    \      Ok(t5::T5ForConditionalGeneration::load(vb, &self.config)?)\n    }\n\n\
+    \    fn get_local_or_remote_file(filename: &str, api: &ApiRepo) -> Result<PathBuf>\
+    \ {\n        let local_filename = std::path::PathBuf::from(filename);\n      \
+    \  if local_filename.exists() {\n            Ok(local_filename)\n        } else\
+    \ {\n            Ok(api.get(filename)?)\n        }\n    }\n}\nfn generate_answer(_prompt:\
+    \ String, args: &Args) -> Result<String> {\n\n    let mut generated_text = String::new();\n\
+    \n    let (_builder, mut _tokenizer) = T5ModelBuilder::load(&args)?;\n    let\
+    \ device = &_builder.device;\n    let _tokenizer = _tokenizer\n        .with_padding(None)\n\
+    \        .with_truncation(None)\n        .map_err(E::msg)?;\n    let _tokens =\
+    \ _tokenizer\n        .encode(_prompt, true)\n        .map_err(E::msg)?\n    \
+    \    .get_ids()\n        .to_vec();\n    let input_token_ids = Tensor::new(&_tokens[..],\
+    \ device)?.unsqueeze(0)?;\n    let mut model = _builder.build_model()?;\n    let\
+    \ mut output_token_ids = [_builder.config.pad_token_id as u32].to_vec();\n   \
+    \ let temperature = 0.8f64;\n    \n    let mut logits_processor = LogitsProcessor::new(299792458,\
+    \ Some(temperature), None);\n    let encoder_output = model.encode(&input_token_ids)?;\n\
+    \n    let start = std::time::Instant::now();\n\n    for index in 0.. {\n     \
+    \   \n        if output_token_ids.len() > 512 {\n            break;\n        }\n\
+    \        let decoder_token_ids = if index == 0 || !_builder.config.use_cache {\n\
+    \            Tensor::new(output_token_ids.as_slice(), device)?.unsqueeze(0)?\n\
+    \        } else {\n            let last_token = *output_token_ids.last().unwrap();\n\
+    \            Tensor::new(&[last_token], device)?.unsqueeze(0)?\n        };\n \
+    \       let logits = model\n            .decode(&decoder_token_ids, &encoder_output)?\n\
+    \            .squeeze(0)?;\n        let logits = if args.repeat_penalty == 1.\
+    \ {\n            logits\n        } else {\n            let start_at = output_token_ids.len().saturating_sub(args.repeat_last_n);\n\
+    \            candle_transformers::utils::apply_repeat_penalty(\n             \
+    \   &logits,\n                args.repeat_penalty,\n                &output_token_ids[start_at..],\n\
+    \            )?\n        };\n\n        let next_token_id = logits_processor.sample(&logits)?;\n\
+    \        if next_token_id as usize == _builder.config.eos_token_id {\n       \
+    \     break;\n        }\n        output_token_ids.push(next_token_id);\n     \
+    \   if let Some(text) = _tokenizer.id_to_token(next_token_id) {\n            let\
+    \ text = text.replace('\u2581', \" \").replace(\"<0x0A>\", \"\\n\");\n       \
+    \     generated_text.push_str(&text);\n            print!(\"{}\", text);\n   \
+    \         std::io::stdout().flush()?;\n        }\n    }\n    let dt = start.elapsed();\n\
+    \    println!(\n        \"\\n{} tokens generated ({:.2} token/s)\\n\",\n     \
+    \   output_token_ids.len(),\n        output_token_ids.len() as f64 / dt.as_secs_f64(),\n\
+    \    );\n\n    Ok(generated_text)   \n}\n\n// request struct\n#[derive(Deserialize)]\n\
+    struct Request {\n    prompt: String,\n}\n\n#[derive(Serialize)]\nstruct Response\
+    \ {\n    answer: String,\n}\n\n#[post(\"/generate\")]\nasync fn generate(req_body:\
+    \ web::Json<Request>) -> impl Responder {\n    let args = Args::parse();\n   \
+    \ let generated_answer = generate_answer(req_body.prompt.clone(), &args);\n  \
+    \  HttpResponse::Ok().json(Response {\n        answer: generated_answer.unwrap(),\n\
+    \    })\n}\n\n#[actix_web::main]\nasync fn main() -> std::io::Result<()> {\n \
+    \   println!(\"Starting server at: http://localhost:7000\");\n    HttpServer::new(||\
+    \ App::new().service(generate))\n        .bind(\"localhost:7000\")?\n        .run()\n\
+    \        .await\n}\n```"
+  created_at: 2023-12-30 21:31:29+00:00
+  edited: false
+  hidden: false
+  id: 65908c31353318837543fff4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/afc766ff504f190e6bd32b85715c92fb.svg
+      fullname: Sashkanik13
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sashkanik13
+      type: user
+    createdAt: '2023-12-31T07:25:07.000Z'
+    data:
+      edited: false
+      editors:
+      - Sashkanik13
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7788880467414856
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/afc766ff504f190e6bd32b85715c92fb.svg
+          fullname: Sashkanik13
+          isHf: false
+          isPro: false
+          name: Sashkanik13
+          type: user
+        html: '<p>Thanks!</p>
+
+          '
+        raw: Thanks!
+        updatedAt: '2023-12-31T07:25:07.647Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - bayang
+    id: 65911753c0a266442609473e
+    type: comment
+  author: Sashkanik13
+  content: Thanks!
+  created_at: 2023-12-31 07:25:07+00:00
+  edited: false
+  hidden: false
+  id: 65911753c0a266442609473e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/afc766ff504f190e6bd32b85715c92fb.svg
+      fullname: Sashkanik13
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sashkanik13
+      type: user
+    createdAt: '2023-12-31T07:25:14.000Z'
+    data:
+      status: closed
+    id: 6591175a0c993129053e541f
+    type: status-change
+  author: Sashkanik13
+  created_at: 2023-12-31 07:25:14+00:00
+  id: 6591175a0c993129053e541f
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: deepfile/flan-t5-xl-gguf
+repo_type: model
+status: closed
+target_branch: null
+title: Sample code for using this model?

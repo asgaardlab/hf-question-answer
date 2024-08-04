@@ -1,0 +1,339 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: chenbowen184
+conflicting_files: null
+created_at: 2023-06-09 15:33:21+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/134d02c2f6f5b673b9e3f0a07b2397ba.svg
+      fullname: Bowen Chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chenbowen184
+      type: user
+    createdAt: '2023-06-09T16:33:21.000Z'
+    data:
+      edited: false
+      editors:
+      - chenbowen184
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.13823150098323822
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/134d02c2f6f5b673b9e3f0a07b2397ba.svg
+          fullname: Bowen Chen
+          isHf: false
+          isPro: false
+          name: chenbowen184
+          type: user
+        html: "<pre><code>from transformers import AutoModelForSeq2SeqLM, AutoTokenizer\n\
+          from peft import PeftModel, PeftConfig\n\nprompt = \"Write a story about\
+          \ an lamb named Dolly that went to the zoo.\"\n\npeft_model_id = 'coniferlabs/flan-ul2-dolly-lora'\n\
+          config = PeftConfig.from_pretrained(peft_model_id)\nmodel = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path,\
+          \ device_map=\"auto\", load_in_8bit=True)\nmodel = PeftModel.from_pretrained(model,\
+          \ peft_model_id, device_map={'': 0})\ntokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)\n\
+          model.eval()\n\ntokenized_text = tokenizer.encode(prompt, return_tensors=\"\
+          pt\").to(\"cuda\")\noutputs = model.generate(input_ids=tokenized_text, parameters={\"\
+          min_length\": 10, \"max_length\": 250})\ntokenizer.batch_decode(outputs,\
+          \ skip_special_tokens=True)\n\n###\n</code></pre>\n<p>gets the following\
+          \ error</p>\n<pre><code>\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \ Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u256E\n\u2502 in &lt;cell line: 14&gt;:14                 \
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:952\
+          \ in generate                       \u2502\n\u2502                     \
+          \                                                                      \
+          \       \u2502\n\u2502    949 \u2502   \u2502   )                      \
+          \                                                           \u2502\n\u2502\
+          \    950 \u2502   \u2502   try:                                        \
+          \                                      \u2502\n\u2502    951 \u2502   \u2502\
+          \   \u2502   if not isinstance(peft_config, PromptLearningConfig):     \
+          \                    \u2502\n\u2502 \u2771  952 \u2502   \u2502   \u2502\
+          \   \u2502   outputs = self.base_model.generate(**kwargs)              \
+          \                \u2502\n\u2502    953 \u2502   \u2502   \u2502   else:\
+          \                                                                      \
+          \   \u2502\n\u2502    954 \u2502   \u2502   \u2502   \u2502   if \"input_ids\"\
+          \ not in kwargs:                                             \u2502\n\u2502\
+          \    955 \u2502   \u2502   \u2502   \u2502   \u2502   raise ValueError(\"\
+          input_ids must be provided for Peft model generati  \u2502\n\u2502     \
+          \                                                                      \
+          \                       \u2502\n\u2502 /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115\
+          \ in decorate_context       \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   112 \u2502   @functools.wraps(func)                         \
+          \                                        \u2502\n\u2502   113 \u2502   def\
+          \ decorate_context(*args, **kwargs):                                   \
+          \              \u2502\n\u2502   114 \u2502   \u2502   with ctx_factory():\
+          \                                                                \u2502\n\
+          \u2502 \u2771 115 \u2502   \u2502   \u2502   return func(*args, **kwargs)\
+          \                                                   \u2502\n\u2502   116\
+          \ \u2502                                                               \
+          \                           \u2502\n\u2502   117 \u2502   return decorate_context\
+          \                                                                \u2502\n\
+          \u2502   118                                                           \
+          \                                 \u2502\n\u2502                       \
+          \                                                                      \
+          \     \u2502\n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1271\
+          \ in generate        \u2502\n\u2502                                    \
+          \                                                              \u2502\n\u2502\
+          \   1268 \u2502   \u2502   generation_config = copy.deepcopy(generation_config)\
+          \                              \u2502\n\u2502   1269 \u2502   \u2502   model_kwargs\
+          \ = generation_config.update(**kwargs)  # All unused kwargs must be m  \u2502\
+          \n\u2502   1270 \u2502   \u2502   generation_config.validate()         \
+          \                                             \u2502\n\u2502 \u2771 1271\
+          \ \u2502   \u2502   self._validate_model_kwargs(model_kwargs.copy())   \
+          \                               \u2502\n\u2502   1272 \u2502   \u2502  \
+          \                                                                      \
+          \             \u2502\n\u2502   1273 \u2502   \u2502   # 2. Set generation\
+          \ parameters if not already defined                             \u2502\n\
+          \u2502   1274 \u2502   \u2502   logits_processor = logits_processor if logits_processor\
+          \ is not None else LogitsP  \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1144\
+          \ in                 \u2502\n\u2502 _validate_model_kwargs             \
+          \                                                              \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502   1141 \u2502   \u2502   \u2502\
+          \   \u2502   unused_model_args.append(key)                             \
+          \                \u2502\n\u2502   1142 \u2502   \u2502                 \
+          \                                                                    \u2502\
+          \n\u2502   1143 \u2502   \u2502   if unused_model_args:                \
+          \                                             \u2502\n\u2502 \u2771 1144\
+          \ \u2502   \u2502   \u2502   raise ValueError(                         \
+          \                                    \u2502\n\u2502   1145 \u2502   \u2502\
+          \   \u2502   \u2502   f\"The following `model_kwargs` are not used by the\
+          \ model: {unused_model_  \u2502\n\u2502   1146 \u2502   \u2502   \u2502\
+          \   \u2502   \" generate arguments will also show up in this list)\"   \
+          \                  \u2502\n\u2502   1147 \u2502   \u2502   \u2502   )  \
+          \                                                                      \
+          \     \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u256F\nValueError: The following `model_kwargs`\
+          \ are not used by the model: ['parameters'] (note: typos in the generate\
+          \ \narguments will also show up in this list)\n</code></pre>\n<p>Any ideas?</p>\n"
+        raw: "```\r\nfrom transformers import AutoModelForSeq2SeqLM, AutoTokenizer\r\
+          \nfrom peft import PeftModel, PeftConfig\r\n\r\nprompt = \"Write a story\
+          \ about an lamb named Dolly that went to the zoo.\"\r\n\r\npeft_model_id\
+          \ = 'coniferlabs/flan-ul2-dolly-lora'\r\nconfig = PeftConfig.from_pretrained(peft_model_id)\r\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path,\
+          \ device_map=\"auto\", load_in_8bit=True)\r\nmodel = PeftModel.from_pretrained(model,\
+          \ peft_model_id, device_map={'': 0})\r\ntokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)\r\
+          \nmodel.eval()\r\n\r\ntokenized_text = tokenizer.encode(prompt, return_tensors=\"\
+          pt\").to(\"cuda\")\r\noutputs = model.generate(input_ids=tokenized_text,\
+          \ parameters={\"min_length\": 10, \"max_length\": 250})\r\ntokenizer.batch_decode(outputs,\
+          \ skip_special_tokens=True)\r\n\r\n###\r\n```\r\n\r\ngets the following\
+          \ error\r\n```\r\n\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback\
+          \ (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u256E\r\n\u2502 in <cell line: 14>:14                                 \
+          \                                           \u2502\r\n\u2502           \
+          \                                                                      \
+          \                 \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:952\
+          \ in generate                       \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502    949 \u2502   \u2502   )                  \
+          \                                                               \u2502\r\
+          \n\u2502    950 \u2502   \u2502   try:                                 \
+          \                                             \u2502\r\n\u2502    951 \u2502\
+          \   \u2502   \u2502   if not isinstance(peft_config, PromptLearningConfig):\
+          \                         \u2502\r\n\u2502 \u2771  952 \u2502   \u2502 \
+          \  \u2502   \u2502   outputs = self.base_model.generate(**kwargs)      \
+          \                        \u2502\r\n\u2502    953 \u2502   \u2502   \u2502\
+          \   else:                                                              \
+          \           \u2502\r\n\u2502    954 \u2502   \u2502   \u2502   \u2502  \
+          \ if \"input_ids\" not in kwargs:                                      \
+          \       \u2502\r\n\u2502    955 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   raise ValueError(\"input_ids must be provided for Peft model generati\
+          \  \u2502\r\n\u2502                                                    \
+          \                                              \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115\
+          \ in decorate_context       \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   112 \u2502   @functools.wraps(func)               \
+          \                                                  \u2502\r\n\u2502   113\
+          \ \u2502   def decorate_context(*args, **kwargs):                      \
+          \                           \u2502\r\n\u2502   114 \u2502   \u2502   with\
+          \ ctx_factory():                                                       \
+          \         \u2502\r\n\u2502 \u2771 115 \u2502   \u2502   \u2502   return\
+          \ func(*args, **kwargs)                                                \
+          \   \u2502\r\n\u2502   116 \u2502                                      \
+          \                                                    \u2502\r\n\u2502  \
+          \ 117 \u2502   return decorate_context                                 \
+          \                               \u2502\r\n\u2502   118                 \
+          \                                                                      \
+          \     \u2502\r\n\u2502                                                 \
+          \                                                 \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1271\
+          \ in generate        \u2502\r\n\u2502                                  \
+          \                                                                \u2502\r\
+          \n\u2502   1268 \u2502   \u2502   generation_config = copy.deepcopy(generation_config)\
+          \                              \u2502\r\n\u2502   1269 \u2502   \u2502 \
+          \  model_kwargs = generation_config.update(**kwargs)  # All unused kwargs\
+          \ must be m  \u2502\r\n\u2502   1270 \u2502   \u2502   generation_config.validate()\
+          \                                                      \u2502\r\n\u2502\
+          \ \u2771 1271 \u2502   \u2502   self._validate_model_kwargs(model_kwargs.copy())\
+          \                                  \u2502\r\n\u2502   1272 \u2502   \u2502\
+          \                                                                      \
+          \               \u2502\r\n\u2502   1273 \u2502   \u2502   # 2. Set generation\
+          \ parameters if not already defined                             \u2502\r\
+          \n\u2502   1274 \u2502   \u2502   logits_processor = logits_processor if\
+          \ logits_processor is not None else LogitsP  \u2502\r\n\u2502          \
+          \                                                                      \
+          \                  \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1144\
+          \ in                 \u2502\r\n\u2502 _validate_model_kwargs           \
+          \                                                                \u2502\r\
+          \n\u2502                                                               \
+          \                                   \u2502\r\n\u2502   1141 \u2502   \u2502\
+          \   \u2502   \u2502   unused_model_args.append(key)                    \
+          \                         \u2502\r\n\u2502   1142 \u2502   \u2502      \
+          \                                                                      \
+          \         \u2502\r\n\u2502   1143 \u2502   \u2502   if unused_model_args:\
+          \                                                             \u2502\r\n\
+          \u2502 \u2771 1144 \u2502   \u2502   \u2502   raise ValueError(        \
+          \                                                     \u2502\r\n\u2502 \
+          \  1145 \u2502   \u2502   \u2502   \u2502   f\"The following `model_kwargs`\
+          \ are not used by the model: {unused_model_  \u2502\r\n\u2502   1146 \u2502\
+          \   \u2502   \u2502   \u2502   \" generate arguments will also show up in\
+          \ this list)\"                     \u2502\r\n\u2502   1147 \u2502   \u2502\
+          \   \u2502   )                                                         \
+          \                    \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError: The\
+          \ following `model_kwargs` are not used by the model: ['parameters'] (note:\
+          \ typos in the generate \r\narguments will also show up in this list)\r\n\
+          ```\r\n\r\nAny ideas?"
+        updatedAt: '2023-06-09T16:33:21.198Z'
+      numEdits: 0
+      reactions: []
+    id: 6483545153fbda2bf64ceb9f
+    type: comment
+  author: chenbowen184
+  content: "```\r\nfrom transformers import AutoModelForSeq2SeqLM, AutoTokenizer\r\
+    \nfrom peft import PeftModel, PeftConfig\r\n\r\nprompt = \"Write a story about\
+    \ an lamb named Dolly that went to the zoo.\"\r\n\r\npeft_model_id = 'coniferlabs/flan-ul2-dolly-lora'\r\
+    \nconfig = PeftConfig.from_pretrained(peft_model_id)\r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path,\
+    \ device_map=\"auto\", load_in_8bit=True)\r\nmodel = PeftModel.from_pretrained(model,\
+    \ peft_model_id, device_map={'': 0})\r\ntokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)\r\
+    \nmodel.eval()\r\n\r\ntokenized_text = tokenizer.encode(prompt, return_tensors=\"\
+    pt\").to(\"cuda\")\r\noutputs = model.generate(input_ids=tokenized_text, parameters={\"\
+    min_length\": 10, \"max_length\": 250})\r\ntokenizer.batch_decode(outputs, skip_special_tokens=True)\r\
+    \n\r\n###\r\n```\r\n\r\ngets the following error\r\n```\r\n\u256D\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u256E\r\n\u2502 in <cell line: 14>:14                                       \
+    \                                     \u2502\r\n\u2502                       \
+    \                                                                           \u2502\
+    \r\n\u2502 /usr/local/lib/python3.10/dist-packages/peft/peft_model.py:952 in generate\
+    \                       \u2502\r\n\u2502                                     \
+    \                                                             \u2502\r\n\u2502\
+    \    949 \u2502   \u2502   )                                                 \
+    \                                \u2502\r\n\u2502    950 \u2502   \u2502   try:\
+    \                                                                            \
+    \  \u2502\r\n\u2502    951 \u2502   \u2502   \u2502   if not isinstance(peft_config,\
+    \ PromptLearningConfig):                         \u2502\r\n\u2502 \u2771  952\
+    \ \u2502   \u2502   \u2502   \u2502   outputs = self.base_model.generate(**kwargs)\
+    \                              \u2502\r\n\u2502    953 \u2502   \u2502   \u2502\
+    \   else:                                                                    \
+    \     \u2502\r\n\u2502    954 \u2502   \u2502   \u2502   \u2502   if \"input_ids\"\
+    \ not in kwargs:                                             \u2502\r\n\u2502\
+    \    955 \u2502   \u2502   \u2502   \u2502   \u2502   raise ValueError(\"input_ids\
+    \ must be provided for Peft model generati  \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py:115\
+    \ in decorate_context       \u2502\r\n\u2502                                 \
+    \                                                                 \u2502\r\n\u2502\
+    \   112 \u2502   @functools.wraps(func)                                      \
+    \                           \u2502\r\n\u2502   113 \u2502   def decorate_context(*args,\
+    \ **kwargs):                                                 \u2502\r\n\u2502\
+    \   114 \u2502   \u2502   with ctx_factory():                                \
+    \                                \u2502\r\n\u2502 \u2771 115 \u2502   \u2502 \
+    \  \u2502   return func(*args, **kwargs)                                     \
+    \              \u2502\r\n\u2502   116 \u2502                                 \
+    \                                                         \u2502\r\n\u2502   117\
+    \ \u2502   return decorate_context                                           \
+    \                     \u2502\r\n\u2502   118                                 \
+    \                                                           \u2502\r\n\u2502 \
+    \                                                                            \
+    \                     \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1271\
+    \ in generate        \u2502\r\n\u2502                                        \
+    \                                                          \u2502\r\n\u2502  \
+    \ 1268 \u2502   \u2502   generation_config = copy.deepcopy(generation_config)\
+    \                              \u2502\r\n\u2502   1269 \u2502   \u2502   model_kwargs\
+    \ = generation_config.update(**kwargs)  # All unused kwargs must be m  \u2502\r\
+    \n\u2502   1270 \u2502   \u2502   generation_config.validate()               \
+    \                                       \u2502\r\n\u2502 \u2771 1271 \u2502  \
+    \ \u2502   self._validate_model_kwargs(model_kwargs.copy())                  \
+    \                \u2502\r\n\u2502   1272 \u2502   \u2502                     \
+    \                                                                \u2502\r\n\u2502\
+    \   1273 \u2502   \u2502   # 2. Set generation parameters if not already defined\
+    \                             \u2502\r\n\u2502   1274 \u2502   \u2502   logits_processor\
+    \ = logits_processor if logits_processor is not None else LogitsP  \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502 /usr/local/lib/python3.10/dist-packages/transformers/generation/utils.py:1144\
+    \ in                 \u2502\r\n\u2502 _validate_model_kwargs                 \
+    \                                                          \u2502\r\n\u2502  \
+    \                                                                            \
+    \                    \u2502\r\n\u2502   1141 \u2502   \u2502   \u2502   \u2502\
+    \   unused_model_args.append(key)                                            \
+    \ \u2502\r\n\u2502   1142 \u2502   \u2502                                    \
+    \                                                 \u2502\r\n\u2502   1143 \u2502\
+    \   \u2502   if unused_model_args:                                           \
+    \                  \u2502\r\n\u2502 \u2771 1144 \u2502   \u2502   \u2502   raise\
+    \ ValueError(                                                             \u2502\
+    \r\n\u2502   1145 \u2502   \u2502   \u2502   \u2502   f\"The following `model_kwargs`\
+    \ are not used by the model: {unused_model_  \u2502\r\n\u2502   1146 \u2502  \
+    \ \u2502   \u2502   \u2502   \" generate arguments will also show up in this list)\"\
+    \                     \u2502\r\n\u2502   1147 \u2502   \u2502   \u2502   )   \
+    \                                                                          \u2502\
+    \r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError: The following\
+    \ `model_kwargs` are not used by the model: ['parameters'] (note: typos in the\
+    \ generate \r\narguments will also show up in this list)\r\n```\r\n\r\nAny ideas?"
+  created_at: 2023-06-09 15:33:21+00:00
+  edited: false
+  hidden: false
+  id: 6483545153fbda2bf64ceb9f
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: coniferlabs/flan-ul2-dolly-lora
+repo_type: model
+status: open
+target_branch: null
+title: The usage code sample doesn't work

@@ -1,0 +1,4 @@
+## https://huggingface.co/TheBloke/deepseek-coder-33B-instruct-GPTQ/discussions/4
+
+contains_question: yes
+question_part: Would it be possible for you to add information that setting repetition penalty to 1.0 may improve coding performance of DeepSeek models to readme pages of your deepseek quants? That's seemingly how DeepSeek is running their model on their demo page, so I think this is how they intend it to be used. It is actually probably applicable to all coding models, but we noticed it for DeepSeek now. I think this could help out people who get bad first experience with this model and they are not sure why this hyped up thing runs poorly for them.

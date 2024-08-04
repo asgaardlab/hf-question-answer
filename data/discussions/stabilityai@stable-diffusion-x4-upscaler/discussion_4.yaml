@@ -1,0 +1,160 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: thomwatk
+conflicting_files: null
+created_at: 2023-01-02 04:17:29+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/fc10b7214f1c61debb2821aa4bc92bc0.svg
+      fullname: thomas watkins
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thomwatk
+      type: user
+    createdAt: '2023-01-02T04:17:29.000Z'
+    data:
+      edited: false
+      editors:
+      - thomwatk
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/fc10b7214f1c61debb2821aa4bc92bc0.svg
+          fullname: thomas watkins
+          isHf: false
+          isPro: false
+          name: thomwatk
+          type: user
+        html: '<p>It threw an error, and I am 50/50 on the source of the error. However
+          "UnboundLocalError: local variable ''noise_pred_uncond'' referenced before
+          assignment" came from pipeline_stable_diffusion_upscale.py. Here is how
+          I got here. </p>
+
+          <p>My hardware is a dual nvidia M40 with 24gb of memory each (not the 12gb
+          variant) so I am pulling larger images (1344*1344) out of the models initially.
+          I am increasing those sizes with multiple runs of the upscaler. everything
+          is going nice, then the upscaler decided to go rouge on a mostly black corner
+          of a Work In Progress. I dumped the before and after "chunks" and found
+          it was adding too much noise to a black background and I get a rouge square
+          added to a PIL canvas. I checked what documentation I could find. i believe
+          that noise is disabled with guidance &lt; 1, which should cause the pipeline_stable_diffusion_upscale.py
+          to skip the creation of variable name "noise_pred_uncond".  I don''t know
+          why its referenced in line 480, nor have I poked around in the model''s
+          source. </p>
+
+          <p>Work around: For now, is to increase iterations which will eventually
+          get the corner darker, but it never seams together as well as the lighter
+          more vibrant colors. </p>
+
+          <p>Question: is there a more direct specific way to turn off noise than
+          with guidance_scale? </p>
+
+          <p>Here''s my error msg and my python script. </p>
+
+          <p>Traceback (most recent call last):<br>  File "/../exploded.py", line
+          50, in <br>    upscaled_chunk = pipe(prompt=prompt, image=chunk, num_inference_steps=steps,
+          guidance_scale=1).images[0] # , noise_level=0<br>  File "/usr/lib/python3.10/site-packages/torch/autograd/grad_mode.py",
+          line 27, in decorate_context<br>    return func(*args, **kwargs)<br>  File
+          "/home/thom/.local/lib/python3.10/site-packages/diffusers/pipelines/stable_diffusion/pipeline_stable_diffusion_upscale.py",
+          line 480, in <strong>call</strong><br>    noise_pred = noise_pred_uncond
+          + guidance_scale * (noise_pred_text - noise_pred_uncond)<br>UnboundLocalError:
+          local variable ''noise_pred_uncond'' referenced before assignment</p>
+
+          <p>affected portion of my script:<br>            chunk = High.crop((row<em>chunk_size,
+          cell</em>chunk_size, (row<em>chunk_size)+chunk_size, (cell</em>chunk_size)+chunk_size))<br>            #chunk.save("chunk_row_"+str(row)+"<em>cell</em>"+str(cell)+".png")<br>            upscaled_chunk
+          = pipe(prompt=prompt, image=chunk, num_inference_steps=steps, noise_level=0,
+          guidance_scale=1 ).images[0]<br>            #upscaled_chunk.save("UPchunk_row_"+str(row)+"<em>cell</em>"+str(cell)+".png")<br>            result.paste(upscaled_chunk,
+          (row<em>chunk_size</em>4,cell<em>chunk_size</em>4))</p>
+
+          '
+        raw: "It threw an error, and I am 50/50 on the source of the error. However\
+          \ \"UnboundLocalError: local variable 'noise_pred_uncond' referenced before\
+          \ assignment\" came from pipeline_stable_diffusion_upscale.py. Here is how\
+          \ I got here. \r\n\r\nMy hardware is a dual nvidia M40 with 24gb of memory\
+          \ each (not the 12gb variant) so I am pulling larger images (1344*1344)\
+          \ out of the models initially. I am increasing those sizes with multiple\
+          \ runs of the upscaler. everything is going nice, then the upscaler decided\
+          \ to go rouge on a mostly black corner of a Work In Progress. I dumped the\
+          \ before and after \"chunks\" and found it was adding too much noise to\
+          \ a black background and I get a rouge square added to a PIL canvas. I checked\
+          \ what documentation I could find. i believe that noise is disabled with\
+          \ guidance < 1, which should cause the pipeline_stable_diffusion_upscale.py\
+          \ to skip the creation of variable name \"noise_pred_uncond\".  I don't\
+          \ know why its referenced in line 480, nor have I poked around in the model's\
+          \ source. \r\n\r\nWork around: For now, is to increase iterations which\
+          \ will eventually get the corner darker, but it never seams together as\
+          \ well as the lighter more vibrant colors. \r\n\r\nQuestion: is there a\
+          \ more direct specific way to turn off noise than with guidance_scale? \r\
+          \n\r\nHere's my error msg and my python script. \r\n\r\nTraceback (most\
+          \ recent call last):\r\n  File \"/../exploded.py\", line 50, in <module>\r\
+          \n    upscaled_chunk = pipe(prompt=prompt, image=chunk, num_inference_steps=steps,\
+          \ guidance_scale=1).images[0] # , noise_level=0\r\n  File \"/usr/lib/python3.10/site-packages/torch/autograd/grad_mode.py\"\
+          , line 27, in decorate_context\r\n    return func(*args, **kwargs)\r\n \
+          \ File \"/home/thom/.local/lib/python3.10/site-packages/diffusers/pipelines/stable_diffusion/pipeline_stable_diffusion_upscale.py\"\
+          , line 480, in __call__\r\n    noise_pred = noise_pred_uncond + guidance_scale\
+          \ * (noise_pred_text - noise_pred_uncond)\r\nUnboundLocalError: local variable\
+          \ 'noise_pred_uncond' referenced before assignment\r\n\r\naffected portion\
+          \ of my script:\r\n            chunk = High.crop((row*chunk_size, cell*chunk_size,\
+          \ (row*chunk_size)+chunk_size, (cell*chunk_size)+chunk_size))\r\n      \
+          \      #chunk.save(\"chunk_row_\"+str(row)+\"_cell_\"+str(cell)+\".png\"\
+          )\r\n            upscaled_chunk = pipe(prompt=prompt, image=chunk, num_inference_steps=steps,\
+          \ noise_level=0, guidance_scale=1 ).images[0] \r\n            #upscaled_chunk.save(\"\
+          UPchunk_row_\"+str(row)+\"_cell_\"+str(cell)+\".png\")\r\n            result.paste(upscaled_chunk,\
+          \ (row*chunk_size*4,cell*chunk_size*4))\r\n"
+        updatedAt: '2023-01-02T04:17:29.939Z'
+      numEdits: 0
+      reactions: []
+    id: 63b25ad97804d5cadce4e2db
+    type: comment
+  author: thomwatk
+  content: "It threw an error, and I am 50/50 on the source of the error. However\
+    \ \"UnboundLocalError: local variable 'noise_pred_uncond' referenced before assignment\"\
+    \ came from pipeline_stable_diffusion_upscale.py. Here is how I got here. \r\n\
+    \r\nMy hardware is a dual nvidia M40 with 24gb of memory each (not the 12gb variant)\
+    \ so I am pulling larger images (1344*1344) out of the models initially. I am\
+    \ increasing those sizes with multiple runs of the upscaler. everything is going\
+    \ nice, then the upscaler decided to go rouge on a mostly black corner of a Work\
+    \ In Progress. I dumped the before and after \"chunks\" and found it was adding\
+    \ too much noise to a black background and I get a rouge square added to a PIL\
+    \ canvas. I checked what documentation I could find. i believe that noise is disabled\
+    \ with guidance < 1, which should cause the pipeline_stable_diffusion_upscale.py\
+    \ to skip the creation of variable name \"noise_pred_uncond\".  I don't know why\
+    \ its referenced in line 480, nor have I poked around in the model's source. \r\
+    \n\r\nWork around: For now, is to increase iterations which will eventually get\
+    \ the corner darker, but it never seams together as well as the lighter more vibrant\
+    \ colors. \r\n\r\nQuestion: is there a more direct specific way to turn off noise\
+    \ than with guidance_scale? \r\n\r\nHere's my error msg and my python script.\
+    \ \r\n\r\nTraceback (most recent call last):\r\n  File \"/../exploded.py\", line\
+    \ 50, in <module>\r\n    upscaled_chunk = pipe(prompt=prompt, image=chunk, num_inference_steps=steps,\
+    \ guidance_scale=1).images[0] # , noise_level=0\r\n  File \"/usr/lib/python3.10/site-packages/torch/autograd/grad_mode.py\"\
+    , line 27, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"\
+    /home/thom/.local/lib/python3.10/site-packages/diffusers/pipelines/stable_diffusion/pipeline_stable_diffusion_upscale.py\"\
+    , line 480, in __call__\r\n    noise_pred = noise_pred_uncond + guidance_scale\
+    \ * (noise_pred_text - noise_pred_uncond)\r\nUnboundLocalError: local variable\
+    \ 'noise_pred_uncond' referenced before assignment\r\n\r\naffected portion of\
+    \ my script:\r\n            chunk = High.crop((row*chunk_size, cell*chunk_size,\
+    \ (row*chunk_size)+chunk_size, (cell*chunk_size)+chunk_size))\r\n            #chunk.save(\"\
+    chunk_row_\"+str(row)+\"_cell_\"+str(cell)+\".png\")\r\n            upscaled_chunk\
+    \ = pipe(prompt=prompt, image=chunk, num_inference_steps=steps, noise_level=0,\
+    \ guidance_scale=1 ).images[0] \r\n            #upscaled_chunk.save(\"UPchunk_row_\"\
+    +str(row)+\"_cell_\"+str(cell)+\".png\")\r\n            result.paste(upscaled_chunk,\
+    \ (row*chunk_size*4,cell*chunk_size*4))\r\n"
+  created_at: 2023-01-02 04:17:29+00:00
+  edited: false
+  hidden: false
+  id: 63b25ad97804d5cadce4e2db
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: stabilityai/stable-diffusion-x4-upscaler
+repo_type: model
+status: open
+target_branch: null
+title: 'Bug? '

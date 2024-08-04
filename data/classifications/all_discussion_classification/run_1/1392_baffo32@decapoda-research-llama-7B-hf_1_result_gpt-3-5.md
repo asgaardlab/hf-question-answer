@@ -1,0 +1,4 @@
+## https://huggingface.co/baffo32/decapoda-research-llama-7B-hf/discussions/1
+
+contains_question: yes
+question_part: Hi guys, Hope you can help me. I followed the instructions of: https://agi-sphere.com/install-llama-mac/ It works nice until: "Step 6: Convert and quantize model file Convert the file to the ggml format using the following command. ./venv/bin/python convert-pth-to-ggml.py models/7B/ 1 This is going to take a while. A file called models/7B//ggml-model-f16.bin should be created." There it gives me an error message: "/Users/AE/llama.cpp/venv/bin/python: can't open file '/Users/AE/llama.cpp/convert-pth-to-ggml.py': [Errno 2] No such file or directory" Where and how can I find this file - I looked for it - it is not on my computer. What can I do? Kind regards, Adrian

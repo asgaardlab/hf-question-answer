@@ -1,0 +1,433 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: rachelshalom
+conflicting_files: null
+created_at: 2023-07-13 13:44:19+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+      fullname: Rachel Shalom
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rachelshalom
+      type: user
+    createdAt: '2023-07-13T14:44:19.000Z'
+    data:
+      edited: false
+      editors:
+      - rachelshalom
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6811584234237671
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+          fullname: Rachel Shalom
+          isHf: false
+          isPro: false
+          name: rachelshalom
+          type: user
+        html: "<p>Hi I am using this finetune with some modification to finetune startcoder</p>\n\
+          <p><a rel=\"nofollow\" href=\"https://github.com/bigcode-project/starcoder/blob/d72c7fe3dda81d47ad9b851f9567393fb6b551b9/finetune/finetune.py\"\
+          >https://github.com/bigcode-project/starcoder/blob/d72c7fe3dda81d47ad9b851f9567393fb6b551b9/finetune/finetune.py</a></p>\n\
+          <p>What I changed is:<br>Load_data- that loads locas parquet files saved\
+          \ on disk<br>also the model is saved on disk and I am loading it from there<br>\
+          \ I am using Windows 10 Enterprise with 2 NVIDIA Quuadro RTX 8000 gpus \
+          \ each 48gb</p>\n<p>When I run Trainer.train() the process give cuda error\
+          \ so I started debugging this:<br>the training part and I see that the dataset\
+          \ and dataloaders work fine<br> get a cuda error on model inference part<br>Using\
+          \ this code:</p>\n<pre><code>training_args=TrainingArguments(\n    output_dir=args.output_dir,\n\
+          \    dataloader_drop_last=True,\n    dataloader_num_workers =4,\n    evaluation_strategy=\"\
+          steps\",\n    max_steps=args.max_steps,\n    eval_steps=args.eval_freq,\n\
+          \    save_steps=args.save_freq,\n    logging_steps=args.log_freq,\n    per_device_train_batch_size=args.batch_size,\n\
+          \    per_device_eval_batch_size=args.batch_size,\n    learning_rate=args.learning_rate,\n\
+          \    lr_scheduler_type=args.lr_scheduler_type,\n    warmup_steps=args.num_warmup_steps,\n\
+          \    gradient_accumulation_steps=args.gradient_accumulation_steps,\n   \
+          \ gradient_checkpointing=args.no_gradient_checkpointing,\n    fp16=not args.no_fp16,\n\
+          \    bf16=args.bf16,\n    weight_decay=args.weight_decay,\n    report_to=\"\
+          tensorboard\",\n    run_name=f\"santacoder-{args.subset}\",\n\n)\n# model.to(\"\
+          cpu\")\ntrainer=Trainer(model=model,args=training_args,train_dataset=train_data,eval_dataset=val_data,callbacks=[SavePeftModelCallback,\
+          \ LoadBestPeftModelCallback])\nprint(\"Training...\")\n# some tests:\nfor\
+          \ batch in trainer.get_train_dataloader():\n    # batch[\"input_ids\"]=batch[\"\
+          input_ids\"].cpu()\n    # batch[\"labels\"]=batch[\"labels\"].cpu()\n  \
+          \  break\n\noutputs=trainer.model(**batch)\n</code></pre>\n<p>And I get\
+          \ an error from bitsandbytes. I am using version 0.37.35</p>\n<p>Exception\
+          \ has occurred: RuntimeError (note: full exception trace is shown but execution\
+          \ is paused at: _run_module_as_main)<br>CUDA error: an illegal memory access\
+          \ was encountered CUDA kernel errors might be asynchronously reported at\
+          \ some other API call, so the stacktrace below might be incorrect. For debugging\
+          \ consider passing CUDA_LAUNCH_BLOCKING=1. Compile with <code>TORCH_USE_CUDA_DSA</code>\
+          \ to enable device-side assertions.<br>File \"C:\\Users\\rachel_shalom.conda\\\
+          envs\\codegen\\Lib\\site-packages\\bitsandbytes\\functional.py\", line 1634,\
+          \ in double_quant nnz = nnz_row_ptr[-1].item() ^^^^^^^^^^^^^^^^^^^^^^ File\
+          \ \"C:\\Users\\rachel_shalom.conda\\envs\\codegen\\Lib\\site-packages\\\
+          bitsandbytes\\autograd_functions.py\", line 303, in forward CA, CAt, SCA,\
+          \ SCAt, coo_tensorA = F.double_quant(A.to(torch.float16), threshold=state.threshold)</p>\n\
+          <p>I tried testing this using only cpu by moving the model and inputs to\
+          \ cpu</p>\n<p>But I get a very weird error in the forward pass saying that\
+          \ the model and inputs are not on the same device and when I checked the\
+          \ inputs on forward pass were on cuda- even though they were on cpu before\
+          \ it was fed to the model. The model was on cpu.</p>\n<p>Any ideas on how\
+          \ to continue debugging this from from here?</p>\n"
+        raw: "Hi I am using this finetune with some modification to finetune startcoder\r\
+          \n\r\nhttps://github.com/bigcode-project/starcoder/blob/d72c7fe3dda81d47ad9b851f9567393fb6b551b9/finetune/finetune.py\r\
+          \n\r\n\r\n\r\nWhat I changed is:\r\nLoad_data- that loads locas parquet\
+          \ files saved on disk\r\nalso the model is saved on disk and I am loading\
+          \ it from there\r\n I am using Windows 10 Enterprise with 2 NVIDIA Quuadro\
+          \ RTX 8000 gpus  each 48gb\r\n\r\nWhen I run Trainer.train() the process\
+          \ give cuda error so I started debugging this:\r\nthe training part and\
+          \ I see that the dataset and dataloaders work fine\r\n get a cuda error\
+          \ on model inference part\r\nUsing this code:\r\n   \r\n    training_args=TrainingArguments(\r\
+          \n        output_dir=args.output_dir,\r\n        dataloader_drop_last=True,\r\
+          \n        dataloader_num_workers =4,\r\n        evaluation_strategy=\"steps\"\
+          ,\r\n        max_steps=args.max_steps,\r\n        eval_steps=args.eval_freq,\r\
+          \n        save_steps=args.save_freq,\r\n        logging_steps=args.log_freq,\r\
+          \n        per_device_train_batch_size=args.batch_size,\r\n        per_device_eval_batch_size=args.batch_size,\r\
+          \n        learning_rate=args.learning_rate,\r\n        lr_scheduler_type=args.lr_scheduler_type,\r\
+          \n        warmup_steps=args.num_warmup_steps,\r\n        gradient_accumulation_steps=args.gradient_accumulation_steps,\r\
+          \n        gradient_checkpointing=args.no_gradient_checkpointing,\r\n   \
+          \     fp16=not args.no_fp16,\r\n        bf16=args.bf16,\r\n        weight_decay=args.weight_decay,\r\
+          \n        report_to=\"tensorboard\",\r\n        run_name=f\"santacoder-{args.subset}\"\
+          ,\r\n\r\n    )\r\n    # model.to(\"cpu\")\r\n    trainer=Trainer(model=model,args=training_args,train_dataset=train_data,eval_dataset=val_data,callbacks=[SavePeftModelCallback,\
+          \ LoadBestPeftModelCallback])\r\n    print(\"Training...\")\r\n    # some\
+          \ tests:\r\n    for batch in trainer.get_train_dataloader():\r\n       \
+          \ # batch[\"input_ids\"]=batch[\"input_ids\"].cpu()\r\n        # batch[\"\
+          labels\"]=batch[\"labels\"].cpu()\r\n        break\r\n    \r\n    outputs=trainer.model(**batch)\r\
+          \nAnd I get an error from bitsandbytes. I am using version 0.37.35\r\n\r\
+          \nException has occurred: RuntimeError (note: full exception trace is shown\
+          \ but execution is paused at: _run_module_as_main)\r\nCUDA error: an illegal\
+          \ memory access was encountered CUDA kernel errors might be asynchronously\
+          \ reported at some other API call, so the stacktrace below might be incorrect.\
+          \ For debugging consider passing CUDA_LAUNCH_BLOCKING=1. Compile with `TORCH_USE_CUDA_DSA`\
+          \ to enable device-side assertions.\r\nFile \"C:\\Users\\rachel_shalom\\\
+          .conda\\envs\\codegen\\Lib\\site-packages\\bitsandbytes\\functional.py\"\
+          , line 1634, in double_quant nnz = nnz_row_ptr[-1].item() ^^^^^^^^^^^^^^^^^^^^^^\
+          \ File \"C:\\Users\\rachel_shalom\\.conda\\envs\\codegen\\Lib\\site-packages\\\
+          bitsandbytes\\autograd\\_functions.py\", line 303, in forward CA, CAt, SCA,\
+          \ SCAt, coo_tensorA = F.double_quant(A.to(torch.float16), threshold=state.threshold)\r\
+          \n\r\n\r\nI tried testing this using only cpu by moving the model and inputs\
+          \ to cpu\r\n\r\nBut I get a very weird error in the forward pass saying\
+          \ that the model and inputs are not on the same device and when I checked\
+          \ the inputs on forward pass were on cuda- even though they were on cpu\
+          \ before it was fed to the model. The model was on cpu.\r\n\r\n\r\n\r\n\
+          Any ideas on how to continue debugging this from from here?\r\n"
+        updatedAt: '2023-07-13T14:44:19.008Z'
+      numEdits: 0
+      reactions: []
+    id: 64b00dc32490e124c18aa039
+    type: comment
+  author: rachelshalom
+  content: "Hi I am using this finetune with some modification to finetune startcoder\r\
+    \n\r\nhttps://github.com/bigcode-project/starcoder/blob/d72c7fe3dda81d47ad9b851f9567393fb6b551b9/finetune/finetune.py\r\
+    \n\r\n\r\n\r\nWhat I changed is:\r\nLoad_data- that loads locas parquet files\
+    \ saved on disk\r\nalso the model is saved on disk and I am loading it from there\r\
+    \n I am using Windows 10 Enterprise with 2 NVIDIA Quuadro RTX 8000 gpus  each\
+    \ 48gb\r\n\r\nWhen I run Trainer.train() the process give cuda error so I started\
+    \ debugging this:\r\nthe training part and I see that the dataset and dataloaders\
+    \ work fine\r\n get a cuda error on model inference part\r\nUsing this code:\r\
+    \n   \r\n    training_args=TrainingArguments(\r\n        output_dir=args.output_dir,\r\
+    \n        dataloader_drop_last=True,\r\n        dataloader_num_workers =4,\r\n\
+    \        evaluation_strategy=\"steps\",\r\n        max_steps=args.max_steps,\r\
+    \n        eval_steps=args.eval_freq,\r\n        save_steps=args.save_freq,\r\n\
+    \        logging_steps=args.log_freq,\r\n        per_device_train_batch_size=args.batch_size,\r\
+    \n        per_device_eval_batch_size=args.batch_size,\r\n        learning_rate=args.learning_rate,\r\
+    \n        lr_scheduler_type=args.lr_scheduler_type,\r\n        warmup_steps=args.num_warmup_steps,\r\
+    \n        gradient_accumulation_steps=args.gradient_accumulation_steps,\r\n  \
+    \      gradient_checkpointing=args.no_gradient_checkpointing,\r\n        fp16=not\
+    \ args.no_fp16,\r\n        bf16=args.bf16,\r\n        weight_decay=args.weight_decay,\r\
+    \n        report_to=\"tensorboard\",\r\n        run_name=f\"santacoder-{args.subset}\"\
+    ,\r\n\r\n    )\r\n    # model.to(\"cpu\")\r\n    trainer=Trainer(model=model,args=training_args,train_dataset=train_data,eval_dataset=val_data,callbacks=[SavePeftModelCallback,\
+    \ LoadBestPeftModelCallback])\r\n    print(\"Training...\")\r\n    # some tests:\r\
+    \n    for batch in trainer.get_train_dataloader():\r\n        # batch[\"input_ids\"\
+    ]=batch[\"input_ids\"].cpu()\r\n        # batch[\"labels\"]=batch[\"labels\"].cpu()\r\
+    \n        break\r\n    \r\n    outputs=trainer.model(**batch)\r\nAnd I get an\
+    \ error from bitsandbytes. I am using version 0.37.35\r\n\r\nException has occurred:\
+    \ RuntimeError (note: full exception trace is shown but execution is paused at:\
+    \ _run_module_as_main)\r\nCUDA error: an illegal memory access was encountered\
+    \ CUDA kernel errors might be asynchronously reported at some other API call,\
+    \ so the stacktrace below might be incorrect. For debugging consider passing CUDA_LAUNCH_BLOCKING=1.\
+    \ Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\r\nFile\
+    \ \"C:\\Users\\rachel_shalom\\.conda\\envs\\codegen\\Lib\\site-packages\\bitsandbytes\\\
+    functional.py\", line 1634, in double_quant nnz = nnz_row_ptr[-1].item() ^^^^^^^^^^^^^^^^^^^^^^\
+    \ File \"C:\\Users\\rachel_shalom\\.conda\\envs\\codegen\\Lib\\site-packages\\\
+    bitsandbytes\\autograd\\_functions.py\", line 303, in forward CA, CAt, SCA, SCAt,\
+    \ coo_tensorA = F.double_quant(A.to(torch.float16), threshold=state.threshold)\r\
+    \n\r\n\r\nI tried testing this using only cpu by moving the model and inputs to\
+    \ cpu\r\n\r\nBut I get a very weird error in the forward pass saying that the\
+    \ model and inputs are not on the same device and when I checked the inputs on\
+    \ forward pass were on cuda- even though they were on cpu before it was fed to\
+    \ the model. The model was on cpu.\r\n\r\n\r\n\r\nAny ideas on how to continue\
+    \ debugging this from from here?\r\n"
+  created_at: 2023-07-13 13:44:19+00:00
+  edited: false
+  hidden: false
+  id: 64b00dc32490e124c18aa039
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+      fullname: Rachel Shalom
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rachelshalom
+      type: user
+    createdAt: '2023-07-13T16:31:10.000Z'
+    data:
+      from: Error when Training on private data
+      to: Error when finetuning on windows
+    id: 64b026ce0d80aa4d4114b700
+    type: title-change
+  author: rachelshalom
+  created_at: 2023-07-13 15:31:10+00:00
+  id: 64b026ce0d80aa4d4114b700
+  new_title: Error when finetuning on windows
+  old_title: Error when Training on private data
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+      fullname: Rachel Shalom
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rachelshalom
+      type: user
+    createdAt: '2023-07-17T10:45:30.000Z'
+    data:
+      edited: false
+      editors:
+      - rachelshalom
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.923549234867096
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+          fullname: Rachel Shalom
+          isHf: false
+          isPro: false
+          name: rachelshalom
+          type: user
+        html: '<p>it seems like bitsandbytes do not work well with windows even though
+          I downloaded "bitsandbytes-windows" and according to this: <a href="https://huggingface.co/blog/hf-bitsandbytes-integration">https://huggingface.co/blog/hf-bitsandbytes-integration</a><br>"8-bit
+          tensor cores are not supported on the CPU. bitsandbytes can be run on 8-bit
+          tensor core-supported hardware, which are Turing and Ampere GPUs (RTX 20s,
+          RTX 30s, A40-A100, T4+). For example, Google Colab GPUs are usually NVIDIA
+          T4 GPUs, and their latest generation of GPUs does support 8-bit tensor cores."  my
+          gpus are rtx 8000 and it looks like they do not support 8-bit tensors, so
+          I loaded the model with fp.16 and started training </p>
+
+          '
+        raw: 'it seems like bitsandbytes do not work well with windows even though
+          I downloaded "bitsandbytes-windows" and according to this: https://huggingface.co/blog/hf-bitsandbytes-integration
+
+          "8-bit tensor cores are not supported on the CPU. bitsandbytes can be run
+          on 8-bit tensor core-supported hardware, which are Turing and Ampere GPUs
+          (RTX 20s, RTX 30s, A40-A100, T4+). For example, Google Colab GPUs are usually
+          NVIDIA T4 GPUs, and their latest generation of GPUs does support 8-bit tensor
+          cores."  my gpus are rtx 8000 and it looks like they do not support 8-bit
+          tensors, so I loaded the model with fp.16 and started training '
+        updatedAt: '2023-07-17T10:45:30.828Z'
+      numEdits: 0
+      reactions: []
+    id: 64b51bca35c2e9909c856769
+    type: comment
+  author: rachelshalom
+  content: 'it seems like bitsandbytes do not work well with windows even though I
+    downloaded "bitsandbytes-windows" and according to this: https://huggingface.co/blog/hf-bitsandbytes-integration
+
+    "8-bit tensor cores are not supported on the CPU. bitsandbytes can be run on 8-bit
+    tensor core-supported hardware, which are Turing and Ampere GPUs (RTX 20s, RTX
+    30s, A40-A100, T4+). For example, Google Colab GPUs are usually NVIDIA T4 GPUs,
+    and their latest generation of GPUs does support 8-bit tensor cores."  my gpus
+    are rtx 8000 and it looks like they do not support 8-bit tensors, so I loaded
+    the model with fp.16 and started training '
+  created_at: 2023-07-17 09:45:30+00:00
+  edited: false
+  hidden: false
+  id: 64b51bca35c2e9909c856769
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4e5c76c7c9db2e9449f0e5f051e66142.svg
+      fullname: saurabh raj
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sraj5162
+      type: user
+    createdAt: '2023-07-19T08:54:08.000Z'
+    data:
+      edited: false
+      editors:
+      - sraj5162
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9602444767951965
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4e5c76c7c9db2e9449f0e5f051e66142.svg
+          fullname: saurabh raj
+          isHf: false
+          isPro: false
+          name: sraj5162
+          type: user
+        html: '<p>Hi Rachel, did you find any workaround for the above issue? </p>
+
+          '
+        raw: 'Hi Rachel, did you find any workaround for the above issue? '
+        updatedAt: '2023-07-19T08:54:08.780Z'
+      numEdits: 0
+      reactions: []
+    id: 64b7a4b04a9cafaab5aac1b2
+    type: comment
+  author: sraj5162
+  content: 'Hi Rachel, did you find any workaround for the above issue? '
+  created_at: 2023-07-19 07:54:08+00:00
+  edited: false
+  hidden: false
+  id: 64b7a4b04a9cafaab5aac1b2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+      fullname: Rachel Shalom
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rachelshalom
+      type: user
+    createdAt: '2023-07-19T10:06:21.000Z'
+    data:
+      edited: false
+      editors:
+      - rachelshalom
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7801186442375183
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1668524739440-6373a9542d4eccfa6f90e97c.jpeg?w=200&h=200&f=face
+          fullname: Rachel Shalom
+          isHf: false
+          isPro: false
+          name: rachelshalom
+          type: user
+        html: '<p>I am finetuning with lora but without bitsandbytes so do not load
+          your model in 8bit</p>
+
+          '
+        raw: I am finetuning with lora but without bitsandbytes so do not load your
+          model in 8bit
+        updatedAt: '2023-07-19T10:06:21.479Z'
+      numEdits: 0
+      reactions: []
+    id: 64b7b59d9e7deb6a781de0ce
+    type: comment
+  author: rachelshalom
+  content: I am finetuning with lora but without bitsandbytes so do not load your
+    model in 8bit
+  created_at: 2023-07-19 09:06:21+00:00
+  edited: false
+  hidden: false
+  id: 64b7b59d9e7deb6a781de0ce
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4e5c76c7c9db2e9449f0e5f051e66142.svg
+      fullname: saurabh raj
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sraj5162
+      type: user
+    createdAt: '2023-07-19T10:14:27.000Z'
+    data:
+      edited: false
+      editors:
+      - sraj5162
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8575674891471863
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4e5c76c7c9db2e9449f0e5f051e66142.svg
+          fullname: saurabh raj
+          isHf: false
+          isPro: false
+          name: sraj5162
+          type: user
+        html: '<p>I am trying to do that in my windows laptop with GPU RTX 4060, but
+          when I am loading the model, my laptop hangs.<br>Below is the command:<br>model
+          = AutoModelForCausalLM.from_pretrained(model_name_or_path,   torch_dtype=''auto'')<br>I
+          have sufficient disk storage, 12GB GPU RAM, 32 GB CPU RAM, more than 600GB
+          hard disk storage.</p>
+
+          '
+        raw: 'I am trying to do that in my windows laptop with GPU RTX 4060, but when
+          I am loading the model, my laptop hangs.
+
+          Below is the command:
+
+          model = AutoModelForCausalLM.from_pretrained(model_name_or_path,   torch_dtype=''auto'')
+
+          I have sufficient disk storage, 12GB GPU RAM, 32 GB CPU RAM, more than 600GB
+          hard disk storage.
+
+          '
+        updatedAt: '2023-07-19T10:14:27.838Z'
+      numEdits: 0
+      reactions: []
+    id: 64b7b7831149daae4c848e0d
+    type: comment
+  author: sraj5162
+  content: 'I am trying to do that in my windows laptop with GPU RTX 4060, but when
+    I am loading the model, my laptop hangs.
+
+    Below is the command:
+
+    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,   torch_dtype=''auto'')
+
+    I have sufficient disk storage, 12GB GPU RAM, 32 GB CPU RAM, more than 600GB hard
+    disk storage.
+
+    '
+  created_at: 2023-07-19 09:14:27+00:00
+  edited: false
+  hidden: false
+  id: 64b7b7831149daae4c848e0d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 64
+repo_id: bigcode/starcoder
+repo_type: model
+status: open
+target_branch: null
+title: Error when finetuning on windows

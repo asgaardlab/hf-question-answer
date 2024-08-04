@@ -1,0 +1,4 @@
+## https://huggingface.co/openai/clip-vit-base-patch32/discussions/9
+
+contains_question: yes
+question_part: For this, I'm just generating the embeddings of the images, store them in a vector index and the just computing the cosine similarity between the embedding of my search image and all the embeddings in the vector index. Im not really using any zero-shot application or image-text comparison and I've seen all the fine-tuning approaches for CLIP models I read use text-image pairs for the fine tuning, I don't understand how I should fine tune the model to increase the performance of my application, should I use text-image pairs? Or should I only fine tune the visual encoder of the model, and if thats the case anyone has some examples of how can i do it?

@@ -1,0 +1,214 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Isaid-Silver
+conflicting_files: null
+created_at: 2024-01-10 18:41:29+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7e09c4f6afbfad5751871679aaea9462.svg
+      fullname: Isaid Mosqueda
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Isaid-Silver
+      type: user
+    createdAt: '2024-01-10T18:41:29.000Z'
+    data:
+      edited: false
+      editors:
+      - Isaid-Silver
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6939918398857117
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7e09c4f6afbfad5751871679aaea9462.svg
+          fullname: Isaid Mosqueda
+          isHf: false
+          isPro: false
+          name: Isaid-Silver
+          type: user
+        html: "<p>I don't know if I'm doing something wrong but I'm trying to deploy\
+          \ a gradio App using  Mixtral-8x7B gguf and llama cpp. My space already\
+          \ has set up the environment variables:</p>\n<pre><code class=\"language-bash\"\
+          >CMAKE_ARGS=<span class=\"hljs-string\">\"-DLLAMA_CUBLAS=on\"</span>\nFORCE_CMAKE=<span\
+          \ class=\"hljs-string\">\"1\"</span>\n</code></pre>\n<p>this is my <code>requirements.txt</code>:</p>\n\
+          <pre><code>--extra-index-url https://download.pytorch.org/whl/cu113\ntorch\n\
+          llama-cpp-python\n</code></pre>\n<p>and my <code>app.py</code> goes as follows:</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ gradio <span class=\"hljs-keyword\">as</span> gr\n<span class=\"hljs-keyword\"\
+          >from</span> llama_cpp <span class=\"hljs-keyword\">import</span> Llama\n\
+          <span class=\"hljs-keyword\">from</span> huggingface_hub <span class=\"\
+          hljs-keyword\">import</span> hf_hub_download\n<span class=\"hljs-keyword\"\
+          >import</span> os\n\n<span class=\"hljs-keyword\">import</span> torch\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"\
+          Is CUDA available: <span class=\"hljs-subst\">{torch.cuda.is_available()}</span>\"\
+          </span>)\n<span class=\"hljs-comment\"># True</span>\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">f\"CUDA device: <span class=\"\
+          hljs-subst\">{torch.cuda.get_device_name(torch.cuda.current_device())}</span>\"\
+          </span>)\n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"CMAKE_ARGS=<span class=\"hljs-subst\">{os.environ[<span class=\"hljs-string\"\
+          >'CMAKE_ARGS'</span>]}</span>\"</span>)\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">f\"FORCE_CMAKE=<span class=\"hljs-subst\">{os.environ[<span\
+          \ class=\"hljs-string\">'FORCE_CMAKE'</span>]}</span>\"</span>)\n<span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">f'Llama=<span class=\"\
+          hljs-subst\">{Llama.__name__}</span>'</span>)\nos.makedirs(<span class=\"\
+          hljs-string\">'models/'</span>)\ndownloaded_model_path = hf_hub_download(repo_id=<span\
+          \ class=\"hljs-string\">\"TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF\"</span>,\n\
+          \                        filename=<span class=\"hljs-string\">\"mixtral-8x7b-instruct-v0.1.Q2_K.gguf\"\
+          </span>,local_dir = <span class=\"hljs-string\">'models/'</span>)\n\n<span\
+          \ class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">f'Downloaded\
+          \ path: <span class=\"hljs-subst\">{downloaded_model_path}</span>'</span>)\n\
+          \n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >'Initializing model...'</span>)\nllm = Llama(\n  model_path=downloaded_model_path,\
+          \ \n   n_ctx=<span class=\"hljs-number\">2048</span>,\n   n_threads=<span\
+          \ class=\"hljs-number\">10</span>,\n   n_gpu_layers=<span class=\"hljs-number\"\
+          >25</span>,\n   temp=<span class=\"hljs-number\">0.1</span>,\n   n_batch\
+          \ = <span class=\"hljs-number\">512</span>, \n   n_predict = -<span class=\"\
+          hljs-number\">1</span>, \n  n_keep = <span class=\"hljs-number\">0</span>\n\
+          )\n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >'Model loaded.'</span>)\n\n<span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">mix_query</span>(<span class=\"hljs-params\"\
+          >query, history</span>):\n    output = llm(\n    <span class=\"hljs-string\"\
+          >f\"[INST] <span class=\"hljs-subst\">{query}</span> [/INST]\"</span>,\n\
+          \    max_tokens=<span class=\"hljs-number\">512</span>,\n    stop=[<span\
+          \ class=\"hljs-string\">\"&lt;/s&gt;\"</span>],\n    echo=<span class=\"\
+          hljs-literal\">False</span>\n    )\n\n    <span class=\"hljs-built_in\"\
+          >print</span>([<span class=\"hljs-string\">'choices'</span>][<span class=\"\
+          hljs-number\">0</span>][<span class=\"hljs-string\">'text'</span>])\n  \
+          \  <span class=\"hljs-keyword\">return</span> [<span class=\"hljs-string\"\
+          >'choices'</span>][<span class=\"hljs-number\">0</span>][<span class=\"\
+          hljs-string\">'text'</span>]\n\ndemo = gr.ChatInterface(fn=mix_query, \n\
+          \n                        examples=[<span class=\"hljs-string\">\"Explain\
+          \ the Fermi paradox\"</span>], title=<span class=\"hljs-string\">\"TARS\"\
+          </span>,\n                        theme=<span class=\"hljs-string\">\"soft\"\
+          </span>)\ndemo.launch()\n</code></pre>\n<p>As you can see I added a lot\
+          \ of prints to check where does the execution fails, and it's during the\
+          \ definition of  <code>llm=Llama(...</code>, however when I run this on\
+          \ my local machine it executes flawless. The issue is that I get no logs\
+          \ when it fails, it just does:</p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/631565f3362e3e95ea54e490/yc-e801l7J532-2BYQvDY.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/631565f3362e3e95ea54e490/yc-e801l7J532-2BYQvDY.png\"\
+          ></a></p>\n<p>Has anyone run into something like this?</p>\n"
+        raw: "I don't know if I'm doing something wrong but I'm trying to deploy a\
+          \ gradio App using  Mixtral-8x7B gguf and llama cpp. My space already has\
+          \ set up the environment variables:\r\n```bash\r\nCMAKE_ARGS=\"-DLLAMA_CUBLAS=on\"\
+          \r\nFORCE_CMAKE=\"1\"\r\n```\r\nthis is my `requirements.txt`:\r\n```\r\n\
+          --extra-index-url https://download.pytorch.org/whl/cu113\r\ntorch\r\nllama-cpp-python\r\
+          \n```\r\n\r\nand my `app.py` goes as follows:\r\n```python\r\nimport gradio\
+          \ as gr\r\nfrom llama_cpp import Llama\r\nfrom huggingface_hub import hf_hub_download\r\
+          \nimport os\r\n\r\nimport torch\r\nprint(f\"Is CUDA available: {torch.cuda.is_available()}\"\
+          )\r\n# True\r\nprint(f\"CUDA device: {torch.cuda.get_device_name(torch.cuda.current_device())}\"\
+          )\r\nprint(f\"CMAKE_ARGS={os.environ['CMAKE_ARGS']}\")\r\nprint(f\"FORCE_CMAKE={os.environ['FORCE_CMAKE']}\"\
+          )\r\nprint(f'Llama={Llama.__name__}')\r\nos.makedirs('models/')\r\ndownloaded_model_path\
+          \ = hf_hub_download(repo_id=\"TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF\"\
+          ,\r\n                        filename=\"mixtral-8x7b-instruct-v0.1.Q2_K.gguf\"\
+          ,local_dir = 'models/')\r\n\r\nprint(f'Downloaded path: {downloaded_model_path}')\r\
+          \n\r\nprint('Initializing model...')\r\nllm = Llama(\r\n  model_path=downloaded_model_path,\
+          \ \r\n   n_ctx=2048,\r\n   n_threads=10,\r\n   n_gpu_layers=25,\r\n   temp=0.1,\r\
+          \n   n_batch = 512, \r\n   n_predict = -1, \r\n  n_keep = 0\r\n)\r\nprint('Model\
+          \ loaded.')\r\n\r\ndef mix_query(query, history):\r\n    output = llm(\r\
+          \n    f\"[INST] {query} [/INST]\",\r\n    max_tokens=512,\r\n    stop=[\"\
+          </s>\"],\r\n    echo=False\r\n    )\r\n\r\n    print(['choices'][0]['text'])\r\
+          \n    return ['choices'][0]['text']\r\n\r\ndemo = gr.ChatInterface(fn=mix_query,\
+          \ \r\n\r\n                        examples=[\"Explain the Fermi paradox\"\
+          ], title=\"TARS\",\r\n                        theme=\"soft\")\r\ndemo.launch()\r\
+          \n```\r\n\r\nAs you can see I added a lot of prints to check where does\
+          \ the execution fails, and it's during the definition of  `llm=Llama(...`,\
+          \ however when I run this on my local machine it executes flawless. The\
+          \ issue is that I get no logs when it fails, it just does:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/631565f3362e3e95ea54e490/yc-e801l7J532-2BYQvDY.png)\r\
+          \n\r\nHas anyone run into something like this?"
+        updatedAt: '2024-01-10T18:41:29.153Z'
+      numEdits: 0
+      reactions: []
+    id: 659ee4d9210bd4a54e65cb6b
+    type: comment
+  author: Isaid-Silver
+  content: "I don't know if I'm doing something wrong but I'm trying to deploy a gradio\
+    \ App using  Mixtral-8x7B gguf and llama cpp. My space already has set up the\
+    \ environment variables:\r\n```bash\r\nCMAKE_ARGS=\"-DLLAMA_CUBLAS=on\"\r\nFORCE_CMAKE=\"\
+    1\"\r\n```\r\nthis is my `requirements.txt`:\r\n```\r\n--extra-index-url https://download.pytorch.org/whl/cu113\r\
+    \ntorch\r\nllama-cpp-python\r\n```\r\n\r\nand my `app.py` goes as follows:\r\n\
+    ```python\r\nimport gradio as gr\r\nfrom llama_cpp import Llama\r\nfrom huggingface_hub\
+    \ import hf_hub_download\r\nimport os\r\n\r\nimport torch\r\nprint(f\"Is CUDA\
+    \ available: {torch.cuda.is_available()}\")\r\n# True\r\nprint(f\"CUDA device:\
+    \ {torch.cuda.get_device_name(torch.cuda.current_device())}\")\r\nprint(f\"CMAKE_ARGS={os.environ['CMAKE_ARGS']}\"\
+    )\r\nprint(f\"FORCE_CMAKE={os.environ['FORCE_CMAKE']}\")\r\nprint(f'Llama={Llama.__name__}')\r\
+    \nos.makedirs('models/')\r\ndownloaded_model_path = hf_hub_download(repo_id=\"\
+    TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF\",\r\n                        filename=\"\
+    mixtral-8x7b-instruct-v0.1.Q2_K.gguf\",local_dir = 'models/')\r\n\r\nprint(f'Downloaded\
+    \ path: {downloaded_model_path}')\r\n\r\nprint('Initializing model...')\r\nllm\
+    \ = Llama(\r\n  model_path=downloaded_model_path, \r\n   n_ctx=2048,\r\n   n_threads=10,\r\
+    \n   n_gpu_layers=25,\r\n   temp=0.1,\r\n   n_batch = 512, \r\n   n_predict =\
+    \ -1, \r\n  n_keep = 0\r\n)\r\nprint('Model loaded.')\r\n\r\ndef mix_query(query,\
+    \ history):\r\n    output = llm(\r\n    f\"[INST] {query} [/INST]\",\r\n    max_tokens=512,\r\
+    \n    stop=[\"</s>\"],\r\n    echo=False\r\n    )\r\n\r\n    print(['choices'][0]['text'])\r\
+    \n    return ['choices'][0]['text']\r\n\r\ndemo = gr.ChatInterface(fn=mix_query,\
+    \ \r\n\r\n                        examples=[\"Explain the Fermi paradox\"], title=\"\
+    TARS\",\r\n                        theme=\"soft\")\r\ndemo.launch()\r\n```\r\n\
+    \r\nAs you can see I added a lot of prints to check where does the execution fails,\
+    \ and it's during the definition of  `llm=Llama(...`, however when I run this\
+    \ on my local machine it executes flawless. The issue is that I get no logs when\
+    \ it fails, it just does:\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/631565f3362e3e95ea54e490/yc-e801l7J532-2BYQvDY.png)\r\
+    \n\r\nHas anyone run into something like this?"
+  created_at: 2024-01-10 18:41:29+00:00
+  edited: false
+  hidden: false
+  id: 659ee4d9210bd4a54e65cb6b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/7e09c4f6afbfad5751871679aaea9462.svg
+      fullname: Isaid Mosqueda
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Isaid-Silver
+      type: user
+    createdAt: '2024-01-10T18:50:00.000Z'
+    data:
+      status: closed
+    id: 659ee6d883abded48e14480e
+    type: status-change
+  author: Isaid-Silver
+  created_at: 2024-01-10 18:50:00+00:00
+  id: 659ee6d883abded48e14480e
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/7e09c4f6afbfad5751871679aaea9462.svg
+      fullname: Isaid Mosqueda
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Isaid-Silver
+      type: user
+    createdAt: '2024-01-10T18:50:05.000Z'
+    data:
+      status: open
+    id: 659ee6dd96e2038d1a7611f0
+    type: status-change
+  author: Isaid-Silver
+  created_at: 2024-01-10 18:50:05+00:00
+  id: 659ee6dd96e2038d1a7611f0
+  new_status: open
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 20
+repo_id: TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF
+repo_type: model
+status: open
+target_branch: null
+title: Getting runtime error when loading with llama-cpp in a HF space with Nvidia
+  A10G Large

@@ -1,0 +1,284 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: CalebRBP
+conflicting_files: null
+created_at: 2023-07-21 20:56:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1bf99df3dcdd428440183c002422d4ef.svg
+      fullname: Caleb Blair
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: CalebRBP
+      type: user
+    createdAt: '2023-07-21T21:56:50.000Z'
+    data:
+      edited: false
+      editors:
+      - CalebRBP
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5905822515487671
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1bf99df3dcdd428440183c002422d4ef.svg
+          fullname: Caleb Blair
+          isHf: false
+          isPro: false
+          name: CalebRBP
+          type: user
+        html: '<p>Hello,</p>
+
+          <p>I''m trying to train a model using the Trainer from the Transformers
+          library. I am using a quantized model with FP16 optimization, but during
+          training, I encounter the error ValueError: Attempting to unscale FP16 gradients..</p>
+
+          <p>Here is my code:</p>
+
+          <p>import transformers<br>from torch.nn import CrossEntropyLoss<br>from
+          transformers import AutoTokenizer<br>from datasets import load_dataset</p>
+
+          <h1 id="define-your-model-and-tokenizer-these-should-already-be-defined-in-your-code">Define
+          your model and tokenizer (these should already be defined in your code)</h1>
+
+          <p>MODEL_NAME = "vilsonrodrigues/falcon-7b-instruct-sharded"<br>tokenizer
+          = AutoTokenizer.from_pretrained(MODEL_NAME)<br>tokenizer.pad_token = tokenizer.eos_token</p>
+
+          <h1 id="load-your-data">Load your data</h1>
+
+          <p>data = load_dataset(''csv'', data_files=''/content/Sumoquote Training
+          Database.csv'')</p>
+
+          <h1 id="define-your-tokenizer-function">Define your tokenizer function</h1>
+
+          <p>def tokenize_and_format(examples):<br>    # Here, I''m assuming that
+          the ''User'' and ''Prompt'' fields in your CSV contains the text you want
+          to model.<br>    text = [f"{x} {y}" for x, y in zip(examples[''User''],
+          examples[''Prompt''])]<br>    tokenized = tokenizer(text, truncation=True,
+          padding=''max_length'')</p>
+
+          <pre><code># Format the data for causal language modeling
+
+          tokenized[''labels''] = tokenized[''input_ids''].copy()
+
+          tokenized[''input_ids''] = [ids[:-1] for ids in tokenized[''input_ids'']]
+
+          tokenized[''labels''] = [ids[1:] for ids in tokenized[''labels'']]
+
+
+          return tokenized
+
+          </code></pre>
+
+          <h1 id="apply-the-tokenizer-function-to-your-data">Apply the tokenizer function
+          to your data</h1>
+
+          <p>data = data.map(tokenize_and_format, batched=True)<br>data.set_format(type=''torch'',
+          columns=[''input_ids'', ''labels''])</p>
+
+          <h1 id="define-the-training-arguments">Define the training arguments</h1>
+
+          <p>training_args = transformers.TrainingArguments(<br>    per_device_train_batch_size=1,<br>    gradient_accumulation_steps=4,<br>    num_train_epochs=1,<br>    learning_rate=2e-4,<br>    fp16=True,<br>    save_total_limit=3,<br>    logging_steps=1,<br>    output_dir="experiments",<br>    optim="adamw_8bit",<br>    lr_scheduler_type="cosine",<br>    warmup_ratio=0.05,<br>)</p>
+
+          <h1 id="define-the-callback">Define the callback</h1>
+
+          <p>class EnsureGradsAreFP32(transformers.TrainerCallback):<br>    def on_backward_end(self,
+          args, state, control, **kwargs):<br>        if args.fp16:<br>            for
+          param in model.parameters():<br>                if param.grad is not None:<br>                    param.grad.data
+          = param.grad.data.float()</p>
+
+          <h1 id="create-the-trainer">Create the Trainer</h1>
+
+          <p>trainer = transformers.Trainer(<br>    model=model,<br>    train_dataset=data[''train''],  #
+          Here, I''ve used the Dataset<br>    args=training_args,<br>    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,
+          mlm=False),<br>    callbacks=[EnsureGradsAreFP32()]<br>)</p>
+
+          <h1 id="disable-caching">Disable caching</h1>
+
+          <p>model.config.use_cache = False</p>
+
+          <h1 id="train-the-model">Train the model</h1>
+
+          <p>trainer.train()</p>
+
+          <p>Things I''ve tried:</p>
+
+          <p>-Disabling gradient accumulation.<br>-Changing the optimizer to "adamw_8bit".<br>-Making
+          sure all gradients are in FP32 before calling optimizer.step().<br>-Disabling
+          caching.</p>
+
+          <p>Despite these efforts, the problem still persists. Any guidance would
+          be greatly appreciated.</p>
+
+          '
+        raw: "Hello,\r\n\r\nI'm trying to train a model using the Trainer from the\
+          \ Transformers library. I am using a quantized model with FP16 optimization,\
+          \ but during training, I encounter the error ValueError: Attempting to unscale\
+          \ FP16 gradients..\r\n\r\nHere is my code:\r\n\r\nimport transformers\r\n\
+          from torch.nn import CrossEntropyLoss\r\nfrom transformers import AutoTokenizer\r\
+          \nfrom datasets import load_dataset\r\n\r\n# Define your model and tokenizer\
+          \ (these should already be defined in your code)\r\nMODEL_NAME = \"vilsonrodrigues/falcon-7b-instruct-sharded\"\
+          \r\ntokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)\r\ntokenizer.pad_token\
+          \ = tokenizer.eos_token\r\n\r\n# Load your data\r\ndata = load_dataset('csv',\
+          \ data_files='/content/Sumoquote Training Database.csv')\r\n\r\n# Define\
+          \ your tokenizer function\r\ndef tokenize_and_format(examples):\r\n    #\
+          \ Here, I'm assuming that the 'User' and 'Prompt' fields in your CSV contains\
+          \ the text you want to model.\r\n    text = [f\"{x} {y}\" for x, y in zip(examples['User'],\
+          \ examples['Prompt'])]\r\n    tokenized = tokenizer(text, truncation=True,\
+          \ padding='max_length')\r\n    \r\n    # Format the data for causal language\
+          \ modeling\r\n    tokenized['labels'] = tokenized['input_ids'].copy()\r\n\
+          \    tokenized['input_ids'] = [ids[:-1] for ids in tokenized['input_ids']]\r\
+          \n    tokenized['labels'] = [ids[1:] for ids in tokenized['labels']]\r\n\
+          \    \r\n    return tokenized\r\n\r\n# Apply the tokenizer function to your\
+          \ data\r\ndata = data.map(tokenize_and_format, batched=True)\r\ndata.set_format(type='torch',\
+          \ columns=['input_ids', 'labels'])\r\n\r\n# Define the training arguments\r\
+          \ntraining_args = transformers.TrainingArguments(\r\n    per_device_train_batch_size=1,\r\
+          \n    gradient_accumulation_steps=4,\r\n    num_train_epochs=1,\r\n    learning_rate=2e-4,\r\
+          \n    fp16=True,\r\n    save_total_limit=3,\r\n    logging_steps=1,\r\n\
+          \    output_dir=\"experiments\",\r\n    optim=\"adamw_8bit\",\r\n    lr_scheduler_type=\"\
+          cosine\",\r\n    warmup_ratio=0.05,\r\n)\r\n\r\n# Define the callback\r\n\
+          class EnsureGradsAreFP32(transformers.TrainerCallback):\r\n    def on_backward_end(self,\
+          \ args, state, control, **kwargs):\r\n        if args.fp16:\r\n        \
+          \    for param in model.parameters():\r\n                if param.grad is\
+          \ not None:\r\n                    param.grad.data = param.grad.data.float()\r\
+          \n\r\n# Create the Trainer\r\ntrainer = transformers.Trainer(\r\n    model=model,\r\
+          \n    train_dataset=data['train'],  # Here, I've used the Dataset\r\n  \
+          \  args=training_args,\r\n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\r\n    callbacks=[EnsureGradsAreFP32()]\r\n)\r\n\r\n# Disable\
+          \ caching\r\nmodel.config.use_cache = False\r\n\r\n# Train the model\r\n\
+          trainer.train()\r\n\r\n\r\nThings I've tried:\r\n\r\n-Disabling gradient\
+          \ accumulation.\r\n-Changing the optimizer to \"adamw_8bit\".\r\n-Making\
+          \ sure all gradients are in FP32 before calling optimizer.step().\r\n-Disabling\
+          \ caching.\r\n\r\n\r\nDespite these efforts, the problem still persists.\
+          \ Any guidance would be greatly appreciated."
+        updatedAt: '2023-07-21T21:56:50.044Z'
+      numEdits: 0
+      reactions: []
+    id: 64baff225ee4641b32cea52a
+    type: comment
+  author: CalebRBP
+  content: "Hello,\r\n\r\nI'm trying to train a model using the Trainer from the Transformers\
+    \ library. I am using a quantized model with FP16 optimization, but during training,\
+    \ I encounter the error ValueError: Attempting to unscale FP16 gradients..\r\n\
+    \r\nHere is my code:\r\n\r\nimport transformers\r\nfrom torch.nn import CrossEntropyLoss\r\
+    \nfrom transformers import AutoTokenizer\r\nfrom datasets import load_dataset\r\
+    \n\r\n# Define your model and tokenizer (these should already be defined in your\
+    \ code)\r\nMODEL_NAME = \"vilsonrodrigues/falcon-7b-instruct-sharded\"\r\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(MODEL_NAME)\r\ntokenizer.pad_token = tokenizer.eos_token\r\
+    \n\r\n# Load your data\r\ndata = load_dataset('csv', data_files='/content/Sumoquote\
+    \ Training Database.csv')\r\n\r\n# Define your tokenizer function\r\ndef tokenize_and_format(examples):\r\
+    \n    # Here, I'm assuming that the 'User' and 'Prompt' fields in your CSV contains\
+    \ the text you want to model.\r\n    text = [f\"{x} {y}\" for x, y in zip(examples['User'],\
+    \ examples['Prompt'])]\r\n    tokenized = tokenizer(text, truncation=True, padding='max_length')\r\
+    \n    \r\n    # Format the data for causal language modeling\r\n    tokenized['labels']\
+    \ = tokenized['input_ids'].copy()\r\n    tokenized['input_ids'] = [ids[:-1] for\
+    \ ids in tokenized['input_ids']]\r\n    tokenized['labels'] = [ids[1:] for ids\
+    \ in tokenized['labels']]\r\n    \r\n    return tokenized\r\n\r\n# Apply the tokenizer\
+    \ function to your data\r\ndata = data.map(tokenize_and_format, batched=True)\r\
+    \ndata.set_format(type='torch', columns=['input_ids', 'labels'])\r\n\r\n# Define\
+    \ the training arguments\r\ntraining_args = transformers.TrainingArguments(\r\n\
+    \    per_device_train_batch_size=1,\r\n    gradient_accumulation_steps=4,\r\n\
+    \    num_train_epochs=1,\r\n    learning_rate=2e-4,\r\n    fp16=True,\r\n    save_total_limit=3,\r\
+    \n    logging_steps=1,\r\n    output_dir=\"experiments\",\r\n    optim=\"adamw_8bit\"\
+    ,\r\n    lr_scheduler_type=\"cosine\",\r\n    warmup_ratio=0.05,\r\n)\r\n\r\n\
+    # Define the callback\r\nclass EnsureGradsAreFP32(transformers.TrainerCallback):\r\
+    \n    def on_backward_end(self, args, state, control, **kwargs):\r\n        if\
+    \ args.fp16:\r\n            for param in model.parameters():\r\n             \
+    \   if param.grad is not None:\r\n                    param.grad.data = param.grad.data.float()\r\
+    \n\r\n# Create the Trainer\r\ntrainer = transformers.Trainer(\r\n    model=model,\r\
+    \n    train_dataset=data['train'],  # Here, I've used the Dataset\r\n    args=training_args,\r\
+    \n    data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False),\r\
+    \n    callbacks=[EnsureGradsAreFP32()]\r\n)\r\n\r\n# Disable caching\r\nmodel.config.use_cache\
+    \ = False\r\n\r\n# Train the model\r\ntrainer.train()\r\n\r\n\r\nThings I've tried:\r\
+    \n\r\n-Disabling gradient accumulation.\r\n-Changing the optimizer to \"adamw_8bit\"\
+    .\r\n-Making sure all gradients are in FP32 before calling optimizer.step().\r\
+    \n-Disabling caching.\r\n\r\n\r\nDespite these efforts, the problem still persists.\
+    \ Any guidance would be greatly appreciated."
+  created_at: 2023-07-21 20:56:50+00:00
+  edited: false
+  hidden: false
+  id: 64baff225ee4641b32cea52a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ad957ed2b9bb6f4cdb9531d72175c73.svg
+      fullname: vilson
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: vilsonrodrigues
+      type: user
+    createdAt: '2023-07-25T21:55:38.000Z'
+    data:
+      edited: false
+      editors:
+      - vilsonrodrigues
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.938331127166748
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ad957ed2b9bb6f4cdb9531d72175c73.svg
+          fullname: vilson
+          isHf: false
+          isPro: false
+          name: vilsonrodrigues
+          type: user
+        html: '<p>how do you define your model?</p>
+
+          <p>what is your Transformers version?</p>
+
+          <p>apparently your code is correct and should work. I recommend opening
+          an issue on Github showing the complete code</p>
+
+          '
+        raw: 'how do you define your model?
+
+
+          what is your Transformers version?
+
+
+          apparently your code is correct and should work. I recommend opening an
+          issue on Github showing the complete code'
+        updatedAt: '2023-07-25T21:55:38.810Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - CalebRBP
+    id: 64c044daa6bbfc5578a33c2b
+    type: comment
+  author: vilsonrodrigues
+  content: 'how do you define your model?
+
+
+    what is your Transformers version?
+
+
+    apparently your code is correct and should work. I recommend opening an issue
+    on Github showing the complete code'
+  created_at: 2023-07-25 20:55:38+00:00
+  edited: false
+  hidden: false
+  id: 64c044daa6bbfc5578a33c2b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: vilsonrodrigues/falcon-7b-instruct-sharded
+repo_type: model
+status: open
+target_branch: null
+title: Unscale FP16 Gradients Help

@@ -1,0 +1,998 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: quantuan125
+conflicting_files: null
+created_at: 2023-08-05 00:30:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5166003c1e8a6788741f0b00e50240a1.svg
+      fullname: Quan Nguyen Manh Anh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: quantuan125
+      type: user
+    createdAt: '2023-08-05T01:30:06.000Z'
+    data:
+      edited: false
+      editors:
+      - quantuan125
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7089347243309021
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5166003c1e8a6788741f0b00e50240a1.svg
+          fullname: Quan Nguyen Manh Anh
+          isHf: false
+          isPro: false
+          name: quantuan125
+          type: user
+        html: "<p>Hi TheBloke,</p>\n<p>Big fan of your work so keep it up!</p>\n<p>Since\
+          \ I'm a bit of a newbie to the whole space I wanted to ask you to see if\
+          \ I am loading the model correctly through auto-gptq module</p>\n<p>Essentially\
+          \ I'm trying to load the GPTQ and GGML modules through local directory onto\
+          \ my own application. However when I load it on the application, and checking\
+          \ it after going through the pipeline , I can see that the GPTQ model parameter\
+          \ is not showing correctly(however the GGML does) and the GPTQ model seems\
+          \ to be buggy and reloading every time I run the python script. </p>\n<p><a\
+          \ rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/Vsu51smAh9QIobpN7oRzC.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/Vsu51smAh9QIobpN7oRzC.png\"\
+          ></a><br>*Caption: It is showing gpt2?? which might be the default value\
+          \ from HuggingfacePipeline, but then I don't know if it correct model *</p>\n\
+          <p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/0VDthgsl8k8zcUV_rLYFc.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/0VDthgsl8k8zcUV_rLYFc.png\"\
+          ></a><br><em>Caption: It is showing the model_path correctly, as well as\
+          \ all the parameters set in Llamccp</em></p>\n<p>I have tried many strategies\
+          \ to see if I set it correctly including going through the HuggingFacePipeline.from_model_id\
+          \ instead<br>EX:<br>\"\"\"<br>local_model = HuggingFacePipeline.from_model_id(<br>\
+          \    model_id=model_id,<br>    task=\"text-generation\",<br>    model_kwargs={\"\
+          trust_remote_code\": True},<br>    pipeline_kwargs={<br>        \"model\"\
+          : model,<br>        \"tokenizer\": tokenizer,<br>        \"device_map\"\
+          : \"auto\",<br>        \"max_new_tokens\": 1200,<br>        \"temperature\"\
+          : 0.3,<br>        \"top_p\": 0.95,<br>        \"repetition_penalty\": 1.15,<br>\
+          \    },<br>return local_model<br>\"\"\"</p>\n<p>However, I'm getting constant\
+          \ errors such as:<br>\"\"<br>OSError: TheBloke/Llama-2-7B-Chat-GPTQ does\
+          \ not appear to have a file named pytorch_model.bin but there is a file\
+          \ for TensorFlow weights. Use <code>from_tf=True</code> to load this model\
+          \ from those weights.<br>\"\"</p>\n<p>or</p>\n<p>\"\"<br>OSError: Error\
+          \ no file named pytorch_model.bin, tf_model.h5, model.ckpt.index or flax_model.msgpack\
+          \ found in directory<br>\"\"</p>\n<p>Anyhow, I would like to show you my\
+          \ code to see if I'm loading the GPTQ model correctly. Thank you in advance:</p>\n\
+          <p>CODE: Relevant snippet of code related to the loading of GPTQ model<br>\"\
+          \"\"<br><span data-props=\"{&quot;user&quot;:&quot;st&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/st\">@<span class=\"\
+          underline\">st</span></a></span>\n\n\t</span></span>.cache_data<br>def load_local_model(device_type,\
+          \ model_id, model_path, model_basename=None):<br>    if model_basename is\
+          \ not None:<br>...<br>        if \".safetensors\" in model_basename:<br>\
+          \            # Remove the \".safetensors\" ending if present<br>       \
+          \     model_basename = model_basename.replace(\".safetensors\", \"\")</p>\n\
+          <pre><code>    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)\n\
+          \    model = AutoGPTQForCausalLM.from_quantized(\n        model_path,\n\
+          \        model_basename=model_basename,\n        use_safetensors=True,\n\
+          \        trust_remote_code=True,\n        device=\"cuda:0\",\n        use_triton=False,\n\
+          \        quantize_config=None,\n    )\n</code></pre>\n<p>...</p>\n<pre><code>pipe\
+          \ = pipeline(\n    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n\
+          \    max_length=2048,\n    temperature=0,\n    top_p=0.95,\n    repetition_penalty=1.15,\n\
+          \    generation_config=generation_config\n)\n\nlocal_model = HuggingFacePipeline(pipeline=pipe)\n\
+          logging.info(\"Local LLM Loaded\")\n\nreturn local_model\n</code></pre>\n\
+          <p>def main():<br>...<br>                elif localai_model == \"Llama-2-7B-Chat-GPTQ\"\
+          :<br>                    model_path = \"C:\\Users\\quant\\OneDrive\\Documents\\\
+          Purpose\\AI\\multipdfchat\\local\\Llama2\\7B\\GPTQ\"<br>               \
+          \     model_id = \"TheBloke/Llama-2-7B-Chat-GPTQ\"<br>                 \
+          \   model_basename = \"gptq_model-4bit-128g.safetensors\"<br>          \
+          \          device_type = \"cuda:0\"<br>                st.session_state.local\
+          \ = load_local_model(device_type=device_type, model_id=model_id,  model_path=model_path,\
+          \ model_basename=model_basename)<br>                st.write(\"Local LLM\
+          \ model has been loaded. Press 'Process' to continue\")<br>            st.write(st.session_state.local)<br>...<br>\"\
+          \"\"</p>\n"
+        raw: "Hi TheBloke,\r\n\r\nBig fan of your work so keep it up!\r\n\r\nSince\
+          \ I'm a bit of a newbie to the whole space I wanted to ask you to see if\
+          \ I am loading the model correctly through auto-gptq module\r\n\r\nEssentially\
+          \ I'm trying to load the GPTQ and GGML modules through local directory onto\
+          \ my own application. However when I load it on the application, and checking\
+          \ it after going through the pipeline , I can see that the GPTQ model parameter\
+          \ is not showing correctly(however the GGML does) and the GPTQ model seems\
+          \ to be buggy and reloading every time I run the python script. \r\n\r\n\
+          \r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/Vsu51smAh9QIobpN7oRzC.png)\r\
+          \n*Caption: It is showing gpt2?? which might be the default value from HuggingfacePipeline,\
+          \ but then I don't know if it correct model *\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/0VDthgsl8k8zcUV_rLYFc.png)\r\
+          \n*Caption: It is showing the model_path correctly, as well as all the parameters\
+          \ set in Llamccp*\r\n\r\nI have tried many strategies to see if I set it\
+          \ correctly including going through the HuggingFacePipeline.from_model_id\
+          \ instead\r\nEX:\r\n\"\"\"\r\nlocal_model = HuggingFacePipeline.from_model_id(\r\
+          \n    model_id=model_id,\r\n    task=\"text-generation\",\r\n    model_kwargs={\"\
+          trust_remote_code\": True},\r\n    pipeline_kwargs={\r\n        \"model\"\
+          : model,\r\n        \"tokenizer\": tokenizer,\r\n        \"device_map\"\
+          : \"auto\",\r\n        \"max_new_tokens\": 1200,\r\n        \"temperature\"\
+          : 0.3,\r\n        \"top_p\": 0.95,\r\n        \"repetition_penalty\": 1.15,\r\
+          \n    },\r\nreturn local_model\r\n\"\"\"\r\n\r\nHowever, I'm getting constant\
+          \ errors such as:\r\n\"\"\r\nOSError: TheBloke/Llama-2-7B-Chat-GPTQ does\
+          \ not appear to have a file named pytorch_model.bin but there is a file\
+          \ for TensorFlow weights. Use `from_tf=True` to load this model from those\
+          \ weights.\r\n\"\"\r\n\r\nor\r\n \r\n\"\"\r\nOSError: Error no file named\
+          \ pytorch_model.bin, tf_model.h5, model.ckpt.index or flax_model.msgpack\
+          \ found in directory\r\n\"\"\r\n\r\nAnyhow, I would like to show you my\
+          \ code to see if I'm loading the GPTQ model correctly. Thank you in advance:\r\
+          \n\r\nCODE: Relevant snippet of code related to the loading of GPTQ model\
+          \ \r\n\"\"\"\r\n@st.cache_data\r\ndef load_local_model(device_type, model_id,\
+          \ model_path, model_basename=None):\r\n    if model_basename is not None:\r\
+          \n...\r\n        if \".safetensors\" in model_basename:\r\n            #\
+          \ Remove the \".safetensors\" ending if present\r\n            model_basename\
+          \ = model_basename.replace(\".safetensors\", \"\")\r\n\r\n        tokenizer\
+          \ = AutoTokenizer.from_pretrained(model_path, use_fast=True)\r\n       \
+          \ model = AutoGPTQForCausalLM.from_quantized(\r\n            model_path,\r\
+          \n            model_basename=model_basename,\r\n            use_safetensors=True,\r\
+          \n            trust_remote_code=True,\r\n            device=\"cuda:0\",\r\
+          \n            use_triton=False,\r\n            quantize_config=None,\r\n\
+          \        )\r\n...\r\n\r\n    pipe = pipeline(\r\n        \"text-generation\"\
+          ,\r\n        model=model,\r\n        tokenizer=tokenizer,\r\n        max_length=2048,\r\
+          \n        temperature=0,\r\n        top_p=0.95,\r\n        repetition_penalty=1.15,\r\
+          \n        generation_config=generation_config\r\n    )\r\n\r\n    local_model\
+          \ = HuggingFacePipeline(pipeline=pipe)\r\n    logging.info(\"Local LLM Loaded\"\
+          )\r\n\r\n    return local_model\r\n\r\ndef main():\r\n...\r\n          \
+          \      elif localai_model == \"Llama-2-7B-Chat-GPTQ\":\r\n             \
+          \       model_path = \"C:\\\\Users\\\\quant\\\\OneDrive\\\\Documents\\\\\
+          Purpose\\\\AI\\\\multipdfchat\\\\local\\\\Llama2\\\\7B\\\\GPTQ\"\r\n   \
+          \                 model_id = \"TheBloke/Llama-2-7B-Chat-GPTQ\"\r\n     \
+          \               model_basename = \"gptq_model-4bit-128g.safetensors\"\r\n\
+          \                    device_type = \"cuda:0\"\r\n                st.session_state.local\
+          \ = load_local_model(device_type=device_type, model_id=model_id,  model_path=model_path,\
+          \ model_basename=model_basename)\r\n                st.write(\"Local LLM\
+          \ model has been loaded. Press 'Process' to continue\")\r\n            st.write(st.session_state.local)\r\
+          \n...\r\n\"\"\"\r\n"
+        updatedAt: '2023-08-05T01:30:06.045Z'
+      numEdits: 0
+      reactions: []
+    id: 64cda61e244a7de1131df8c6
+    type: comment
+  author: quantuan125
+  content: "Hi TheBloke,\r\n\r\nBig fan of your work so keep it up!\r\n\r\nSince I'm\
+    \ a bit of a newbie to the whole space I wanted to ask you to see if I am loading\
+    \ the model correctly through auto-gptq module\r\n\r\nEssentially I'm trying to\
+    \ load the GPTQ and GGML modules through local directory onto my own application.\
+    \ However when I load it on the application, and checking it after going through\
+    \ the pipeline , I can see that the GPTQ model parameter is not showing correctly(however\
+    \ the GGML does) and the GPTQ model seems to be buggy and reloading every time\
+    \ I run the python script. \r\n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/Vsu51smAh9QIobpN7oRzC.png)\r\
+    \n*Caption: It is showing gpt2?? which might be the default value from HuggingfacePipeline,\
+    \ but then I don't know if it correct model *\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64b45169eec33e27dccd9ee8/0VDthgsl8k8zcUV_rLYFc.png)\r\
+    \n*Caption: It is showing the model_path correctly, as well as all the parameters\
+    \ set in Llamccp*\r\n\r\nI have tried many strategies to see if I set it correctly\
+    \ including going through the HuggingFacePipeline.from_model_id instead\r\nEX:\r\
+    \n\"\"\"\r\nlocal_model = HuggingFacePipeline.from_model_id(\r\n    model_id=model_id,\r\
+    \n    task=\"text-generation\",\r\n    model_kwargs={\"trust_remote_code\": True},\r\
+    \n    pipeline_kwargs={\r\n        \"model\": model,\r\n        \"tokenizer\"\
+    : tokenizer,\r\n        \"device_map\": \"auto\",\r\n        \"max_new_tokens\"\
+    : 1200,\r\n        \"temperature\": 0.3,\r\n        \"top_p\": 0.95,\r\n     \
+    \   \"repetition_penalty\": 1.15,\r\n    },\r\nreturn local_model\r\n\"\"\"\r\n\
+    \r\nHowever, I'm getting constant errors such as:\r\n\"\"\r\nOSError: TheBloke/Llama-2-7B-Chat-GPTQ\
+    \ does not appear to have a file named pytorch_model.bin but there is a file for\
+    \ TensorFlow weights. Use `from_tf=True` to load this model from those weights.\r\
+    \n\"\"\r\n\r\nor\r\n \r\n\"\"\r\nOSError: Error no file named pytorch_model.bin,\
+    \ tf_model.h5, model.ckpt.index or flax_model.msgpack found in directory\r\n\"\
+    \"\r\n\r\nAnyhow, I would like to show you my code to see if I'm loading the GPTQ\
+    \ model correctly. Thank you in advance:\r\n\r\nCODE: Relevant snippet of code\
+    \ related to the loading of GPTQ model \r\n\"\"\"\r\n@st.cache_data\r\ndef load_local_model(device_type,\
+    \ model_id, model_path, model_basename=None):\r\n    if model_basename is not\
+    \ None:\r\n...\r\n        if \".safetensors\" in model_basename:\r\n         \
+    \   # Remove the \".safetensors\" ending if present\r\n            model_basename\
+    \ = model_basename.replace(\".safetensors\", \"\")\r\n\r\n        tokenizer =\
+    \ AutoTokenizer.from_pretrained(model_path, use_fast=True)\r\n        model =\
+    \ AutoGPTQForCausalLM.from_quantized(\r\n            model_path,\r\n         \
+    \   model_basename=model_basename,\r\n            use_safetensors=True,\r\n  \
+    \          trust_remote_code=True,\r\n            device=\"cuda:0\",\r\n     \
+    \       use_triton=False,\r\n            quantize_config=None,\r\n        )\r\n\
+    ...\r\n\r\n    pipe = pipeline(\r\n        \"text-generation\",\r\n        model=model,\r\
+    \n        tokenizer=tokenizer,\r\n        max_length=2048,\r\n        temperature=0,\r\
+    \n        top_p=0.95,\r\n        repetition_penalty=1.15,\r\n        generation_config=generation_config\r\
+    \n    )\r\n\r\n    local_model = HuggingFacePipeline(pipeline=pipe)\r\n    logging.info(\"\
+    Local LLM Loaded\")\r\n\r\n    return local_model\r\n\r\ndef main():\r\n...\r\n\
+    \                elif localai_model == \"Llama-2-7B-Chat-GPTQ\":\r\n         \
+    \           model_path = \"C:\\\\Users\\\\quant\\\\OneDrive\\\\Documents\\\\Purpose\\\
+    \\AI\\\\multipdfchat\\\\local\\\\Llama2\\\\7B\\\\GPTQ\"\r\n                  \
+    \  model_id = \"TheBloke/Llama-2-7B-Chat-GPTQ\"\r\n                    model_basename\
+    \ = \"gptq_model-4bit-128g.safetensors\"\r\n                    device_type =\
+    \ \"cuda:0\"\r\n                st.session_state.local = load_local_model(device_type=device_type,\
+    \ model_id=model_id,  model_path=model_path, model_basename=model_basename)\r\n\
+    \                st.write(\"Local LLM model has been loaded. Press 'Process' to\
+    \ continue\")\r\n            st.write(st.session_state.local)\r\n...\r\n\"\"\"\
+    \r\n"
+  created_at: 2023-08-05 00:30:06+00:00
+  edited: false
+  hidden: false
+  id: 64cda61e244a7de1131df8c6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-08-05T09:10:15.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.673684298992157
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: "<p>I'm not sure. Your code seems all right.  I just ran the following\
+          \ test script - largely copied from the README - and confirmed it works\
+          \ fine:</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoTokenizer,\
+          \ pipeline, logging\n<span class=\"hljs-keyword\">from</span> auto_gptq\
+          \ <span class=\"hljs-keyword\">import</span> AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+          \nmodel_name_or_path = <span class=\"hljs-string\">\"TheBloke/Llama-2-7b-Chat-GPTQ\"\
+          </span>\n\nuse_triton = <span class=\"hljs-literal\">False</span>\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=<span class=\"\
+          hljs-literal\">True</span>)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        use_safetensors=<span class=\"hljs-literal\">True</span>,\n   \
+          \     trust_remote_code=<span class=\"hljs-literal\">True</span>,\n    \
+          \    device=<span class=\"hljs-string\">\"cuda:0\"</span>,\n        use_triton=use_triton,\n\
+          \        quantize_config=<span class=\"hljs-literal\">None</span>)\n\nprompt\
+          \ = <span class=\"hljs-string\">\"Tell me about AI\"</span>\nsystem_message\
+          \ = <span class=\"hljs-string\">\"You are a helpful, respectful and honest\
+          \ assistant. Always answer as helpfully as possible, while being safe. \
+          \ Your answers should not include any harmful, unethical, racist, sexist,\
+          \ toxic, dangerous, or illegal content. Please ensure that your responses\
+          \ are socially unbiased and positive in nature. If a question does not make\
+          \ any sense, or is not factually coherent, explain why instead of answering\
+          \ something not correct. If you don't know the answer to a question, please\
+          \ don't share false information.\"</span>\nprompt_template=<span class=\"\
+          hljs-string\">f'''[INST] &lt;&lt;SYS&gt;&gt;</span>\n<span class=\"hljs-string\"\
+          ><span class=\"hljs-subst\">{system_message}</span></span>\n<span class=\"\
+          hljs-string\">&lt;&lt;/SYS&gt;&gt;</span>\n<span class=\"hljs-string\"></span>\n\
+          <span class=\"hljs-string\"><span class=\"hljs-subst\">{prompt}</span> [/INST]'''</span>\n\
+          \n<span class=\"hljs-comment\"># Prevent printing spurious transformers\
+          \ error when using pipeline with AutoGPTQ</span>\nlogging.set_verbosity(logging.CRITICAL)\n\
+          \n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >\"*** Pipeline:\"</span>)\npipe = pipeline(\n    <span class=\"hljs-string\"\
+          >\"text-generation\"</span>,\n    model=model,\n    tokenizer=tokenizer,\n\
+          \    max_new_tokens=<span class=\"hljs-number\">512</span>,\n    temperature=<span\
+          \ class=\"hljs-number\">0.7</span>,\n    top_p=<span class=\"hljs-number\"\
+          >0.95</span>,\n    repetition_penalty=<span class=\"hljs-number\">1.15</span>\n\
+          )\n\n<span class=\"hljs-built_in\">print</span>(pipe(prompt_template)[<span\
+          \ class=\"hljs-number\">0</span>][<span class=\"hljs-string\">'generated_text'</span>])\n\
+          </code></pre>\n<p>Output:</p>\n<pre><code> [pytorch2] tomj@17b00c4e2a6d:/workspace\
+          \ \u1405 python3 test_gptq.py\nDownloading (\u2026)okenizer_config.json:\
+          \ 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588| 727/727 [00:00&lt;00:00, 4.40MB/s]\nDownloading tokenizer.model:\
+          \ 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 500k/500k [00:00&lt;00:00, 21.1MB/s]\n\
+          Downloading (\u2026)/main/tokenizer.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588| 1.84M/1.84M [00:00&lt;00:00, 11.5MB/s]\nDownloading\
+          \ (\u2026)cial_tokens_map.json: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588| 411/411 [00:00&lt;00:00, 3.46MB/s]\n\
+          Downloading (\u2026)lve/main/config.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 572/572 [00:00&lt;00:00, 4.59MB/s]\n\
+          Downloading (\u2026)quantize_config.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 185/185 [00:00&lt;00:00, 1.55MB/s]\n\
+          Downloading (\u2026)bit-128g.safetensors: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588| 3.90G/3.90G [00:19&lt;00:00, 199MB/s]\nThe safetensors\
+          \ archive passed at /workspace/huggingface/hub/models--TheBloke--Llama-2-7b-Chat-GPTQ/snapshots/b7ee6c20ac0bba85a310dc699d6bb4c845811608/gptq_model-4bit-128g.safetensors\
+          \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+          \ method. Defaulting to 'pt' metadata.\nskip module injection for FusedLlamaMLPForQuantizedModel\
+          \ not support integrate without triton yet.\n*** Pipeline:\n[INST] &lt;&lt;SYS&gt;&gt;\n\
+          You are a helpful, respectful and honest assistant. Always answer as helpfully\
+          \ as possible, while being safe.  Your answers should not include any harmful,\
+          \ unethical, racist, sexist, toxic, dangerous, or illegal content. Please\
+          \ ensure that your responses are socially unbiased and positive in nature.\
+          \ If a question does not make any sense, or is not factually coherent, explain\
+          \ why instead of answering something not correct. If you don't know the\
+          \ answer to a question, please don't share false information.\n&lt;&lt;/SYS&gt;&gt;\n\
+          \nTell me about AI [/INST]  Of course! I'd be happy to provide information\
+          \ on AI (Artificial Intelligence). AI refers to the development of computer\
+          \ systems able to perform tasks typically requiring human intelligence,\
+          \ such as visual perception, speech recognition, decision-making, and language\
+          \ translation. Artificial intelligence has been around for several decades\
+          \ and has evolved significantly over time. Here are some key aspects of\
+          \ AI:\n1. Machine Learning: A subset of AI focused on enabling machines\
+          \ to learn from data without explicit programming. It involves training\
+          \ algorithms using historical data to recognize patterns, classify objects,\
+          \ or predict outcomes.\n2. Deep Learning: A subfield of machine learning\
+          \ that utilizes neural networks with multiple layers to analyze complex\
+          \ data sets. These networks can recognize images, understand natural language,\
+          \ and generate creative content like music or art.\n3. Natural Language\
+          \ Processing (NLP): The branch of AI concerned with developing computers\
+          \ capable of understanding, interpreting, and generating human language.\
+          \ NLP enables applications like chatbots, voice assistants, and language\
+          \ translation software.\n4. Robotics: The intersection of AI and robotics\
+          \ focuses on creating robots capable of performing tasks that typically\
+          \ require human intelligence, such as assembly, maintenance, and transportation.\n\
+          5. Computer Vision: This area of AI deals with enabling computers to interpret\
+          \ and understand visual data from the world, including recognizing objects,\
+          \ tracking movements, and analyzing facial expressions.\n6. Expert Systems:\
+          \ These are AI systems designed to mimic the decision-making abilities of\
+          \ human experts in specific domains, such as medicine, finance, or engineering.\n\
+          7. Reinforcement Learning: An AI technique where an algorithm learns by\
+          \ interacting with its environment and receiving feedback in the form of\
+          \ rewards or penalties. This approach allows AI to optimize its behavior\
+          \ based on desired outcomes.\n8. Generative Adversarial Networks (GANs):\
+          \ A type of deep learning algorithm involving two neural networks working\
+          \ together to create new data that resembles existing examples. GANs have\
+          \ led to breakthroughs in image generation, video creation, and text production.\n\
+          9. Autonomous Vehicles: Self-driving cars and trucks use a combination of\
+          \ sensors, mapping technology, and AI algorithms to navigate roads safely\
+          \ and efficiently.\n10. Ethical Considerations: As A\n</code></pre>\n<p>(Note\
+          \ I removed <code>model_basename</code> as it's not actually needed, as\
+          \ I've named my models with the default that AutoGPTQ looks for.  So you\
+          \ can remove that from your code.)</p>\n<p>So the base AutoGPTQ and Transformers\
+          \ code is definitely working fine. I think it must be something happening\
+          \ elsewhere in your code.  I don't know what <code>HuggingFacePipeline(pipeline=pipe)</code>\
+          \ might be doing, for example?</p>\n<p>Just to double check: what version\
+          \ of AutoGPTQ are you using?  You need 0.2.2 minimum, but I would recommend\
+          \ you upgrade to 0.3.2.  And I suggest people do that via source due to\
+          \ various installation problems at the moment:</p>\n<pre><code>pip3 uninstall\
+          \ -y auto-gptq\ngit clone https://github.com/PanQiWei/AutoGPTQ\ncd AutoGPTQ\n\
+          pip3 install .\n</code></pre>\n<p>I'm confident the model works and that\
+          \ the provided AutoGPTQ code works.  So I suggest you debug it step by step,\
+          \ starting from a simple test script like the above - confirm that works\
+          \ for your first - and then building your extra code on top of that known-good\
+          \ example.</p>\n"
+        raw: "I'm not sure. Your code seems all right.  I just ran the following test\
+          \ script - largely copied from the README - and confirmed it works fine:\n\
+          ```python\nfrom transformers import AutoTokenizer, pipeline, logging\nfrom\
+          \ auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\n\nmodel_name_or_path\
+          \ = \"TheBloke/Llama-2-7b-Chat-GPTQ\"\n\nuse_triton = False\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)\n\n\
+          model = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n       \
+          \ use_safetensors=True,\n        trust_remote_code=True,\n        device=\"\
+          cuda:0\",\n        use_triton=use_triton,\n        quantize_config=None)\n\
+          \nprompt = \"Tell me about AI\"\nsystem_message = \"You are a helpful, respectful\
+          \ and honest assistant. Always answer as helpfully as possible, while being\
+          \ safe.  Your answers should not include any harmful, unethical, racist,\
+          \ sexist, toxic, dangerous, or illegal content. Please ensure that your\
+          \ responses are socially unbiased and positive in nature. If a question\
+          \ does not make any sense, or is not factually coherent, explain why instead\
+          \ of answering something not correct. If you don't know the answer to a\
+          \ question, please don't share false information.\"\nprompt_template=f'''[INST]\
+          \ <<SYS>>\n{system_message}\n<</SYS>>\n\n{prompt} [/INST]'''\n\n# Prevent\
+          \ printing spurious transformers error when using pipeline with AutoGPTQ\n\
+          logging.set_verbosity(logging.CRITICAL)\n\nprint(\"*** Pipeline:\")\npipe\
+          \ = pipeline(\n    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n\
+          \    max_new_tokens=512,\n    temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n\
+          )\n\nprint(pipe(prompt_template)[0]['generated_text'])\n```\nOutput:\n```\n\
+          \ [pytorch2] tomj@17b00c4e2a6d:/workspace \u1405 python3 test_gptq.py\n\
+          Downloading (\u2026)okenizer_config.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 727/727 [00:00<00:00, 4.40MB/s]\n\
+          Downloading tokenizer.model: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 500k/500k\
+          \ [00:00<00:00, 21.1MB/s]\nDownloading (\u2026)/main/tokenizer.json: 100%|\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1.84M/1.84M [00:00<00:00, 11.5MB/s]\n\
+          Downloading (\u2026)cial_tokens_map.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 411/411 [00:00<00:00, 3.46MB/s]\n\
+          Downloading (\u2026)lve/main/config.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 572/572 [00:00<00:00, 4.59MB/s]\n\
+          Downloading (\u2026)quantize_config.json: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 185/185 [00:00<00:00, 1.55MB/s]\n\
+          Downloading (\u2026)bit-128g.safetensors: 100%|\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+          \u2588\u2588\u2588\u2588| 3.90G/3.90G [00:19<00:00, 199MB/s]\nThe safetensors\
+          \ archive passed at /workspace/huggingface/hub/models--TheBloke--Llama-2-7b-Chat-GPTQ/snapshots/b7ee6c20ac0bba85a310dc699d6bb4c845811608/gptq_model-4bit-128g.safetensors\
+          \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+          \ method. Defaulting to 'pt' metadata.\nskip module injection for FusedLlamaMLPForQuantizedModel\
+          \ not support integrate without triton yet.\n*** Pipeline:\n[INST] <<SYS>>\n\
+          You are a helpful, respectful and honest assistant. Always answer as helpfully\
+          \ as possible, while being safe.  Your answers should not include any harmful,\
+          \ unethical, racist, sexist, toxic, dangerous, or illegal content. Please\
+          \ ensure that your responses are socially unbiased and positive in nature.\
+          \ If a question does not make any sense, or is not factually coherent, explain\
+          \ why instead of answering something not correct. If you don't know the\
+          \ answer to a question, please don't share false information.\n<</SYS>>\n\
+          \nTell me about AI [/INST]  Of course! I'd be happy to provide information\
+          \ on AI (Artificial Intelligence). AI refers to the development of computer\
+          \ systems able to perform tasks typically requiring human intelligence,\
+          \ such as visual perception, speech recognition, decision-making, and language\
+          \ translation. Artificial intelligence has been around for several decades\
+          \ and has evolved significantly over time. Here are some key aspects of\
+          \ AI:\n1. Machine Learning: A subset of AI focused on enabling machines\
+          \ to learn from data without explicit programming. It involves training\
+          \ algorithms using historical data to recognize patterns, classify objects,\
+          \ or predict outcomes.\n2. Deep Learning: A subfield of machine learning\
+          \ that utilizes neural networks with multiple layers to analyze complex\
+          \ data sets. These networks can recognize images, understand natural language,\
+          \ and generate creative content like music or art.\n3. Natural Language\
+          \ Processing (NLP): The branch of AI concerned with developing computers\
+          \ capable of understanding, interpreting, and generating human language.\
+          \ NLP enables applications like chatbots, voice assistants, and language\
+          \ translation software.\n4. Robotics: The intersection of AI and robotics\
+          \ focuses on creating robots capable of performing tasks that typically\
+          \ require human intelligence, such as assembly, maintenance, and transportation.\n\
+          5. Computer Vision: This area of AI deals with enabling computers to interpret\
+          \ and understand visual data from the world, including recognizing objects,\
+          \ tracking movements, and analyzing facial expressions.\n6. Expert Systems:\
+          \ These are AI systems designed to mimic the decision-making abilities of\
+          \ human experts in specific domains, such as medicine, finance, or engineering.\n\
+          7. Reinforcement Learning: An AI technique where an algorithm learns by\
+          \ interacting with its environment and receiving feedback in the form of\
+          \ rewards or penalties. This approach allows AI to optimize its behavior\
+          \ based on desired outcomes.\n8. Generative Adversarial Networks (GANs):\
+          \ A type of deep learning algorithm involving two neural networks working\
+          \ together to create new data that resembles existing examples. GANs have\
+          \ led to breakthroughs in image generation, video creation, and text production.\n\
+          9. Autonomous Vehicles: Self-driving cars and trucks use a combination of\
+          \ sensors, mapping technology, and AI algorithms to navigate roads safely\
+          \ and efficiently.\n10. Ethical Considerations: As A\n```\n\n(Note I removed\
+          \ `model_basename` as it's not actually needed, as I've named my models\
+          \ with the default that AutoGPTQ looks for.  So you can remove that from\
+          \ your code.)\n\nSo the base AutoGPTQ and Transformers code is definitely\
+          \ working fine. I think it must be something happening elsewhere in your\
+          \ code.  I don't know what `HuggingFacePipeline(pipeline=pipe)` might be\
+          \ doing, for example?\n\nJust to double check: what version of AutoGPTQ\
+          \ are you using?  You need 0.2.2 minimum, but I would recommend you upgrade\
+          \ to 0.3.2.  And I suggest people do that via source due to various installation\
+          \ problems at the moment:\n```\npip3 uninstall -y auto-gptq\ngit clone https://github.com/PanQiWei/AutoGPTQ\n\
+          cd AutoGPTQ\npip3 install .\n```\n\nI'm confident the model works and that\
+          \ the provided AutoGPTQ code works.  So I suggest you debug it step by step,\
+          \ starting from a simple test script like the above - confirm that works\
+          \ for your first - and then building your extra code on top of that known-good\
+          \ example."
+        updatedAt: '2023-08-05T09:10:15.666Z'
+      numEdits: 0
+      reactions: []
+    id: 64ce11f77c24890fb495cd6b
+    type: comment
+  author: TheBloke
+  content: "I'm not sure. Your code seems all right.  I just ran the following test\
+    \ script - largely copied from the README - and confirmed it works fine:\n```python\n\
+    from transformers import AutoTokenizer, pipeline, logging\nfrom auto_gptq import\
+    \ AutoGPTQForCausalLM, BaseQuantizeConfig\n\nmodel_name_or_path = \"TheBloke/Llama-2-7b-Chat-GPTQ\"\
+    \n\nuse_triton = False\n\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+    \ use_fast=True)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+    \        use_safetensors=True,\n        trust_remote_code=True,\n        device=\"\
+    cuda:0\",\n        use_triton=use_triton,\n        quantize_config=None)\n\nprompt\
+    \ = \"Tell me about AI\"\nsystem_message = \"You are a helpful, respectful and\
+    \ honest assistant. Always answer as helpfully as possible, while being safe.\
+    \  Your answers should not include any harmful, unethical, racist, sexist, toxic,\
+    \ dangerous, or illegal content. Please ensure that your responses are socially\
+    \ unbiased and positive in nature. If a question does not make any sense, or is\
+    \ not factually coherent, explain why instead of answering something not correct.\
+    \ If you don't know the answer to a question, please don't share false information.\"\
+    \nprompt_template=f'''[INST] <<SYS>>\n{system_message}\n<</SYS>>\n\n{prompt} [/INST]'''\n\
+    \n# Prevent printing spurious transformers error when using pipeline with AutoGPTQ\n\
+    logging.set_verbosity(logging.CRITICAL)\n\nprint(\"*** Pipeline:\")\npipe = pipeline(\n\
+    \    \"text-generation\",\n    model=model,\n    tokenizer=tokenizer,\n    max_new_tokens=512,\n\
+    \    temperature=0.7,\n    top_p=0.95,\n    repetition_penalty=1.15\n)\n\nprint(pipe(prompt_template)[0]['generated_text'])\n\
+    ```\nOutput:\n```\n [pytorch2] tomj@17b00c4e2a6d:/workspace \u1405 python3 test_gptq.py\n\
+    Downloading (\u2026)okenizer_config.json: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 727/727 [00:00<00:00,\
+    \ 4.40MB/s]\nDownloading tokenizer.model: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588| 500k/500k [00:00<00:00, 21.1MB/s]\nDownloading (\u2026)/main/tokenizer.json:\
+    \ 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    | 1.84M/1.84M [00:00<00:00, 11.5MB/s]\nDownloading (\u2026)cial_tokens_map.json:\
+    \ 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588| 411/411 [00:00<00:00, 3.46MB/s]\nDownloading (\u2026\
+    )lve/main/config.json: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588| 572/572 [00:00<00:00, 4.59MB/s]\n\
+    Downloading (\u2026)quantize_config.json: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 185/185 [00:00<00:00,\
+    \ 1.55MB/s]\nDownloading (\u2026)bit-128g.safetensors: 100%|\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 3.90G/3.90G [00:19<00:00,\
+    \ 199MB/s]\nThe safetensors archive passed at /workspace/huggingface/hub/models--TheBloke--Llama-2-7b-Chat-GPTQ/snapshots/b7ee6c20ac0bba85a310dc699d6bb4c845811608/gptq_model-4bit-128g.safetensors\
+    \ does not contain metadata. Make sure to save your model with the `save_pretrained`\
+    \ method. Defaulting to 'pt' metadata.\nskip module injection for FusedLlamaMLPForQuantizedModel\
+    \ not support integrate without triton yet.\n*** Pipeline:\n[INST] <<SYS>>\nYou\
+    \ are a helpful, respectful and honest assistant. Always answer as helpfully as\
+    \ possible, while being safe.  Your answers should not include any harmful, unethical,\
+    \ racist, sexist, toxic, dangerous, or illegal content. Please ensure that your\
+    \ responses are socially unbiased and positive in nature. If a question does not\
+    \ make any sense, or is not factually coherent, explain why instead of answering\
+    \ something not correct. If you don't know the answer to a question, please don't\
+    \ share false information.\n<</SYS>>\n\nTell me about AI [/INST]  Of course! I'd\
+    \ be happy to provide information on AI (Artificial Intelligence). AI refers to\
+    \ the development of computer systems able to perform tasks typically requiring\
+    \ human intelligence, such as visual perception, speech recognition, decision-making,\
+    \ and language translation. Artificial intelligence has been around for several\
+    \ decades and has evolved significantly over time. Here are some key aspects of\
+    \ AI:\n1. Machine Learning: A subset of AI focused on enabling machines to learn\
+    \ from data without explicit programming. It involves training algorithms using\
+    \ historical data to recognize patterns, classify objects, or predict outcomes.\n\
+    2. Deep Learning: A subfield of machine learning that utilizes neural networks\
+    \ with multiple layers to analyze complex data sets. These networks can recognize\
+    \ images, understand natural language, and generate creative content like music\
+    \ or art.\n3. Natural Language Processing (NLP): The branch of AI concerned with\
+    \ developing computers capable of understanding, interpreting, and generating\
+    \ human language. NLP enables applications like chatbots, voice assistants, and\
+    \ language translation software.\n4. Robotics: The intersection of AI and robotics\
+    \ focuses on creating robots capable of performing tasks that typically require\
+    \ human intelligence, such as assembly, maintenance, and transportation.\n5. Computer\
+    \ Vision: This area of AI deals with enabling computers to interpret and understand\
+    \ visual data from the world, including recognizing objects, tracking movements,\
+    \ and analyzing facial expressions.\n6. Expert Systems: These are AI systems designed\
+    \ to mimic the decision-making abilities of human experts in specific domains,\
+    \ such as medicine, finance, or engineering.\n7. Reinforcement Learning: An AI\
+    \ technique where an algorithm learns by interacting with its environment and\
+    \ receiving feedback in the form of rewards or penalties. This approach allows\
+    \ AI to optimize its behavior based on desired outcomes.\n8. Generative Adversarial\
+    \ Networks (GANs): A type of deep learning algorithm involving two neural networks\
+    \ working together to create new data that resembles existing examples. GANs have\
+    \ led to breakthroughs in image generation, video creation, and text production.\n\
+    9. Autonomous Vehicles: Self-driving cars and trucks use a combination of sensors,\
+    \ mapping technology, and AI algorithms to navigate roads safely and efficiently.\n\
+    10. Ethical Considerations: As A\n```\n\n(Note I removed `model_basename` as it's\
+    \ not actually needed, as I've named my models with the default that AutoGPTQ\
+    \ looks for.  So you can remove that from your code.)\n\nSo the base AutoGPTQ\
+    \ and Transformers code is definitely working fine. I think it must be something\
+    \ happening elsewhere in your code.  I don't know what `HuggingFacePipeline(pipeline=pipe)`\
+    \ might be doing, for example?\n\nJust to double check: what version of AutoGPTQ\
+    \ are you using?  You need 0.2.2 minimum, but I would recommend you upgrade to\
+    \ 0.3.2.  And I suggest people do that via source due to various installation\
+    \ problems at the moment:\n```\npip3 uninstall -y auto-gptq\ngit clone https://github.com/PanQiWei/AutoGPTQ\n\
+    cd AutoGPTQ\npip3 install .\n```\n\nI'm confident the model works and that the\
+    \ provided AutoGPTQ code works.  So I suggest you debug it step by step, starting\
+    \ from a simple test script like the above - confirm that works for your first\
+    \ - and then building your extra code on top of that known-good example."
+  created_at: 2023-08-05 08:10:15+00:00
+  edited: false
+  hidden: false
+  id: 64ce11f77c24890fb495cd6b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+      fullname: Tom Jobbins
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: true
+      name: TheBloke
+      type: user
+    createdAt: '2023-08-05T09:13:51.000Z'
+    data:
+      edited: false
+      editors:
+      - TheBloke
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9772145748138428
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6426d3f3a7723d62b53c259b/tvPikpAzKTKGN5wrpadOJ.jpeg?w=200&h=200&f=face
+          fullname: Tom Jobbins
+          isHf: false
+          isPro: true
+          name: TheBloke
+          type: user
+        html: '<p>One more thought: if you''re cloning the models locally (rather
+          than loading direct from HF like in my above example), confirm that you''ve
+          cloned all the files in the GPTQ branch.  If you missed out any files, that
+          could cause problems.</p>
+
+          <p>I just realised that <code>HuggingFacePipeline</code> is a LangChain
+          thing. I''ve never tested LangChain. It''s possible that the problem is
+          happening there.  I know for sure that LangChain can work with AutoGPTQ
+          as many people have mentioned to me that they''re doing that. But I don''t
+          know exactly how they do it.  Maybe you need to make a new HuggingFacePipeline
+          class that loads the model with AutoGPTQ?  Not sure.  </p>
+
+          '
+        raw: 'One more thought: if you''re cloning the models locally (rather than
+          loading direct from HF like in my above example), confirm that you''ve cloned
+          all the files in the GPTQ branch.  If you missed out any files, that could
+          cause problems.
+
+
+          I just realised that `HuggingFacePipeline` is a LangChain thing. I''ve never
+          tested LangChain. It''s possible that the problem is happening there.  I
+          know for sure that LangChain can work with AutoGPTQ as many people have
+          mentioned to me that they''re doing that. But I don''t know exactly how
+          they do it.  Maybe you need to make a new HuggingFacePipeline class that
+          loads the model with AutoGPTQ?  Not sure.  '
+        updatedAt: '2023-08-05T09:13:51.604Z'
+      numEdits: 0
+      reactions: []
+    id: 64ce12cf5de9e1e911656d03
+    type: comment
+  author: TheBloke
+  content: 'One more thought: if you''re cloning the models locally (rather than loading
+    direct from HF like in my above example), confirm that you''ve cloned all the
+    files in the GPTQ branch.  If you missed out any files, that could cause problems.
+
+
+    I just realised that `HuggingFacePipeline` is a LangChain thing. I''ve never tested
+    LangChain. It''s possible that the problem is happening there.  I know for sure
+    that LangChain can work with AutoGPTQ as many people have mentioned to me that
+    they''re doing that. But I don''t know exactly how they do it.  Maybe you need
+    to make a new HuggingFacePipeline class that loads the model with AutoGPTQ?  Not
+    sure.  '
+  created_at: 2023-08-05 08:13:51+00:00
+  edited: false
+  hidden: false
+  id: 64ce12cf5de9e1e911656d03
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5166003c1e8a6788741f0b00e50240a1.svg
+      fullname: Quan Nguyen Manh Anh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: quantuan125
+      type: user
+    createdAt: '2023-08-07T07:56:43.000Z'
+    data:
+      edited: false
+      editors:
+      - quantuan125
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9473679065704346
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5166003c1e8a6788741f0b00e50240a1.svg
+          fullname: Quan Nguyen Manh Anh
+          isHf: false
+          isPro: false
+          name: quantuan125
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;TheBloke&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/TheBloke\"\
+          >@<span class=\"underline\">TheBloke</span></a></span>\n\n\t</span></span>,</p>\n\
+          <p>Thank you very much for your detailed answer. I very much appreciate\
+          \ the guidance </p>\n<p>Just to let you know I'm using 0.2.2 autogptq +\
+          \ 11.8 cuda as I had problem installing it from source. However, I can give\
+          \ it a try again. </p>\n<p>Regarding my initial question, I guess my main\
+          \ confusion was how the HuggingFacePipeline (from Langchain) was showing\
+          \ the information related to the model and as you can see it was able to\
+          \ detect the GGML models correctly however not for the GPTQ model (it identifies\
+          \ as \"gpt2\" for Llama2-7B model). </p>\n<p>The model was able to load\
+          \ successfully regardless, but it just left me a bit confused hence why\
+          \ I posed you the question. </p>\n<p>Anyway, based on what I am seeing and\
+          \ what you are saying, I will take it that the GPTQ model works fine as\
+          \ Llama2 7B model and not GPT2 model. </p>\n<p>Additionally, another reason\
+          \ why I raised such concern was the fact that it takes quite sometimes to\
+          \ initialize the model and it seems to reinitialize every time my application\
+          \ process another action which create latency in the processing of information\
+          \ (ex: QAing pdf files in this case) . This was not the case for GGML model,\
+          \ but perhaps it is just a nature of it. </p>\n<p>To be more clear, the\
+          \ latency issue as I describe is following:<br>GGML: Initialize -&gt; Process\
+          \ 1 -&gt; Process 2 -&gt; Process 3<br>GPTQ: Initialize -&gt; Process 1\
+          \ -&gt; Initialize -&gt; Process 2 -&gt; Initialize -&gt;  Process 3 </p>\n\
+          <p>If you are saying the model should work correctly then perhaps it has\
+          \ to do the script of the application instead. </p>\n<p>Side note: I can\
+          \ confirm that all files are cloned. The way I load two different is by\
+          \ the following path, can you confirm that I'm doing it correctly?<br>GGML:\
+          \ \"C:\\Users\\quant\\OneDrive\\Documents\\Purpose\\AI\\multipdfchat\\local\\\
+          Llama2\\7B\\GGML\\llama-2-7b-chat.ggmlv3.q4_0.bin\" -&gt; to the bin file<br>GPTQ:\
+          \ \"C:\\Users\\quant\\OneDrive\\Documents\\Purpose\\AI\\multipdfchat\\local\\\
+          Llama2\\7B\\GPTQ\" -&gt; to the entire folder instead of the .safetensors\
+          \ file </p>\n"
+        raw: "Hi @TheBloke,\n\nThank you very much for your detailed answer. I very\
+          \ much appreciate the guidance \n\nJust to let you know I'm using 0.2.2\
+          \ autogptq + 11.8 cuda as I had problem installing it from source. However,\
+          \ I can give it a try again. \n\nRegarding my initial question, I guess\
+          \ my main confusion was how the HuggingFacePipeline (from Langchain) was\
+          \ showing the information related to the model and as you can see it was\
+          \ able to detect the GGML models correctly however not for the GPTQ model\
+          \ (it identifies as \"gpt2\" for Llama2-7B model). \n\nThe model was able\
+          \ to load successfully regardless, but it just left me a bit confused hence\
+          \ why I posed you the question. \n\nAnyway, based on what I am seeing and\
+          \ what you are saying, I will take it that the GPTQ model works fine as\
+          \ Llama2 7B model and not GPT2 model. \n\nAdditionally, another reason why\
+          \ I raised such concern was the fact that it takes quite sometimes to initialize\
+          \ the model and it seems to reinitialize every time my application process\
+          \ another action which create latency in the processing of information (ex:\
+          \ QAing pdf files in this case) . This was not the case for GGML model,\
+          \ but perhaps it is just a nature of it. \n\nTo be more clear, the latency\
+          \ issue as I describe is following:\nGGML: Initialize -> Process 1 -> Process\
+          \ 2 -> Process 3\nGPTQ: Initialize -> Process 1 -> Initialize -> Process\
+          \ 2 -> Initialize ->  Process 3 \n\nIf you are saying the model should work\
+          \ correctly then perhaps it has to do the script of the application instead.\
+          \ \n\nSide note: I can confirm that all files are cloned. The way I load\
+          \ two different is by the following path, can you confirm that I'm doing\
+          \ it correctly? \nGGML: \"C:\\\\Users\\\\quant\\\\OneDrive\\\\Documents\\\
+          \\Purpose\\\\AI\\\\multipdfchat\\\\local\\\\Llama2\\\\7B\\\\GGML\\\\llama-2-7b-chat.ggmlv3.q4_0.bin\"\
+          \ -> to the bin file\nGPTQ: \"C:\\\\Users\\\\quant\\\\OneDrive\\\\Documents\\\
+          \\Purpose\\\\AI\\\\multipdfchat\\\\local\\\\Llama2\\\\7B\\\\GPTQ\" -> to\
+          \ the entire folder instead of the .safetensors file "
+        updatedAt: '2023-08-07T07:56:43.589Z'
+      numEdits: 0
+      reactions: []
+    id: 64d0a3bbc0c627dfa7f359bf
+    type: comment
+  author: quantuan125
+  content: "Hi @TheBloke,\n\nThank you very much for your detailed answer. I very\
+    \ much appreciate the guidance \n\nJust to let you know I'm using 0.2.2 autogptq\
+    \ + 11.8 cuda as I had problem installing it from source. However, I can give\
+    \ it a try again. \n\nRegarding my initial question, I guess my main confusion\
+    \ was how the HuggingFacePipeline (from Langchain) was showing the information\
+    \ related to the model and as you can see it was able to detect the GGML models\
+    \ correctly however not for the GPTQ model (it identifies as \"gpt2\" for Llama2-7B\
+    \ model). \n\nThe model was able to load successfully regardless, but it just\
+    \ left me a bit confused hence why I posed you the question. \n\nAnyway, based\
+    \ on what I am seeing and what you are saying, I will take it that the GPTQ model\
+    \ works fine as Llama2 7B model and not GPT2 model. \n\nAdditionally, another\
+    \ reason why I raised such concern was the fact that it takes quite sometimes\
+    \ to initialize the model and it seems to reinitialize every time my application\
+    \ process another action which create latency in the processing of information\
+    \ (ex: QAing pdf files in this case) . This was not the case for GGML model, but\
+    \ perhaps it is just a nature of it. \n\nTo be more clear, the latency issue as\
+    \ I describe is following:\nGGML: Initialize -> Process 1 -> Process 2 -> Process\
+    \ 3\nGPTQ: Initialize -> Process 1 -> Initialize -> Process 2 -> Initialize ->\
+    \  Process 3 \n\nIf you are saying the model should work correctly then perhaps\
+    \ it has to do the script of the application instead. \n\nSide note: I can confirm\
+    \ that all files are cloned. The way I load two different is by the following\
+    \ path, can you confirm that I'm doing it correctly? \nGGML: \"C:\\\\Users\\\\\
+    quant\\\\OneDrive\\\\Documents\\\\Purpose\\\\AI\\\\multipdfchat\\\\local\\\\Llama2\\\
+    \\7B\\\\GGML\\\\llama-2-7b-chat.ggmlv3.q4_0.bin\" -> to the bin file\nGPTQ: \"\
+    C:\\\\Users\\\\quant\\\\OneDrive\\\\Documents\\\\Purpose\\\\AI\\\\multipdfchat\\\
+    \\local\\\\Llama2\\\\7B\\\\GPTQ\" -> to the entire folder instead of the .safetensors\
+    \ file "
+  created_at: 2023-08-07 06:56:43+00:00
+  edited: false
+  hidden: false
+  id: 64d0a3bbc0c627dfa7f359bf
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/eedd380b9d6dae685251c722e0460cfc.svg
+      fullname: Pankaj Barai
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: PankajB
+      type: user
+    createdAt: '2023-08-26T09:30:57.000Z'
+    data:
+      edited: false
+      editors:
+      - PankajB
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6596770882606506
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/eedd380b9d6dae685251c722e0460cfc.svg
+          fullname: Pankaj Barai
+          isHf: false
+          isPro: false
+          name: PankajB
+          type: user
+        html: '<p>can anyone explain this warning:<br>skip module injection for FusedLlamaMLPForQuantizedModel
+          not support integrate without triton yet.</p>
+
+          '
+        raw: 'can anyone explain this warning:
+
+          skip module injection for FusedLlamaMLPForQuantizedModel not support integrate
+          without triton yet.'
+        updatedAt: '2023-08-26T09:30:57.323Z'
+      numEdits: 0
+      reactions: []
+    id: 64e9c651925565abdaf94ec1
+    type: comment
+  author: PankajB
+  content: 'can anyone explain this warning:
+
+    skip module injection for FusedLlamaMLPForQuantizedModel not support integrate
+    without triton yet.'
+  created_at: 2023-08-26 08:30:57+00:00
+  edited: false
+  hidden: false
+  id: 64e9c651925565abdaf94ec1
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: TheBloke/Llama-2-7B-Chat-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: 'GPTQ bugging: Wondering if I''m loading the model correctly'

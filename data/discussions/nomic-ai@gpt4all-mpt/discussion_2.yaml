@@ -1,0 +1,179 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: t83714
+conflicting_files: null
+created_at: 2023-06-13 23:36:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/bed026a33c154abec6852b4e313bf1ce.svg
+      fullname: Jacky Jiang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: t83714
+      type: user
+    createdAt: '2023-06-14T00:36:51.000Z'
+    data:
+      edited: false
+      editors:
+      - t83714
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5917836427688599
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/bed026a33c154abec6852b4e313bf1ce.svg
+          fullname: Jacky Jiang
+          isHf: false
+          isPro: false
+          name: t83714
+          type: user
+        html: "<p>I've tried with the following code and it (any sequence length rather\
+          \ than 2048) doesn't work for me:</p>\n<p>The same code works for <code>mosaicml/mpt-7b-instruct</code>\
+          \ though.</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoConfig,\
+          \ AutoTokenizer, AutoModelForCausalLM, TextIteratorStreamer\n<span class=\"\
+          hljs-keyword\">import</span> torch\n\ndevice = <span class=\"hljs-string\"\
+          >f'cuda:<span class=\"hljs-subst\">{torch.cuda.current_device()}</span>'</span>\
+          \ <span class=\"hljs-keyword\">if</span> torch.cuda.is_available() <span\
+          \ class=\"hljs-keyword\">else</span> <span class=\"hljs-string\">'cpu'</span>\n\
+          \n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f'Selected device is: <span class=\"hljs-subst\">{device}</span>'</span>)\n\
+          \nmodel_name = <span class=\"hljs-string\">\"nomic-ai/gpt4all-mpt\"</span>\n\
+          \nconfig = AutoConfig.from_pretrained(\n  model_name,\n  trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>\n)\n<span class=\"hljs-comment\">#\
+          \ use the optimized triton implementation of FlashAttention, you can load\
+          \ the model with attn_impl='triton' and move the model to bfloat16</span>\n\
+          <span class=\"hljs-comment\">#config.attn_config['attn_impl'] = 'triton'</span>\n\
+          config.init_device = device\n<span class=\"hljs-comment\"># config.max_seq_len\
+          \ = 2048</span>\n<span class=\"hljs-comment\"># update the maximum sequence\
+          \ length during inference to 4096</span>\nconfig.max_seq_len = <span class=\"\
+          hljs-number\">3072</span>\n\n<span class=\"hljs-built_in\">print</span>(config)\n\
+          \nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name,\n    config=config,\n\
+          \    torch_dtype=torch.bfloat16,\n    trust_remote_code = <span class=\"\
+          hljs-literal\">True</span>\n)\n\nmodel.<span class=\"hljs-built_in\">eval</span>()\n\
+          </code></pre>\n<p>I got the following error:</p>\n<pre><code>RuntimeError:\
+          \ Error(s) in loading state_dict for MPTForCausalLM:\n    size mismatch\
+          \ for transformer.wpe.weight: copying a param with shape torch.Size([2048,\
+          \ 4096]) from checkpoint, the shape in current model is torch.Size([3072,\
+          \ 4096]).\n    You may consider adding `ignore_mismatched_sizes=True` in\
+          \ the model `from_pretrained` method.\n</code></pre>\n<p>Set <code>ignore_mismatched_sizes=True</code>\
+          \ still won't fix it. Instead, you got a different error:</p>\n<pre><code>File\
+          \ /opt/anaconda3/lib/python3.9/site-packages/transformers/modeling_utils.py:3031,\
+          \ in PreTrainedModel._load_pretrained_model.&lt;locals&gt;._find_mismatched_keys(state_dict,\
+          \ model_state_dict, loaded_keys, add_prefix_to_model, remove_prefix_from_model,\
+          \ ignore_mismatched_sizes)\n   3025 elif add_prefix_to_model:\n   3026 \
+          \    # The model key doesn't start with `prefix` but `checkpoint_key` does\
+          \ so we remove it.\n   3027     model_key = \".\".join(checkpoint_key.split(\"\
+          .\")[1:])\n   3029 if (\n   3030     model_key in model_state_dict\n-&gt;\
+          \ 3031     and state_dict[checkpoint_key].shape != model_state_dict[model_key].shape\n\
+          \   3032 ):\n   3033     mismatched_keys.append(\n   3034         (checkpoint_key,\
+          \ state_dict[checkpoint_key].shape, model_state_dict[model_key].shape)\n\
+          \   3035     )\n   3036     del state_dict[checkpoint_key]\n\nKeyError:\
+          \ 'transformer.blocks.11.ffn.down_proj.weight'\n</code></pre>\n<p>By the\
+          \ way, this model also doesn't support the optimized triton implementation\
+          \ of FlashAttention like <code>mosaicml/mpt-7b-instruct</code>.<br>If you\
+          \ turn it on via <code>config.attn_config['attn_impl'] = 'triton'</code>,\
+          \ you will get the same <code>KeyError: 'transformer.blocks.11.ffn.down_proj.weight'</code>\
+          \ error.</p>\n<p>Would appreciate if anyone could shed some light on the\
+          \ possible cause of this error.</p>\n"
+        raw: "I've tried with the following code and it (any sequence length rather\
+          \ than 2048) doesn't work for me:\r\n\r\nThe same code works for `mosaicml/mpt-7b-instruct`\
+          \ though.\r\n\r\n```python\r\nfrom transformers import AutoConfig, AutoTokenizer,\
+          \ AutoModelForCausalLM, TextIteratorStreamer\r\nimport torch\r\n\r\ndevice\
+          \ = f'cuda:{torch.cuda.current_device()}' if torch.cuda.is_available() else\
+          \ 'cpu'\r\n\r\nprint(f'Selected device is: {device}')\r\n\r\nmodel_name\
+          \ = \"nomic-ai/gpt4all-mpt\"\r\n\r\nconfig = AutoConfig.from_pretrained(\r\
+          \n  model_name,\r\n  trust_remote_code=True\r\n)\r\n# use the optimized\
+          \ triton implementation of FlashAttention, you can load the model with attn_impl='triton'\
+          \ and move the model to bfloat16\r\n#config.attn_config['attn_impl'] = 'triton'\r\
+          \nconfig.init_device = device\r\n# config.max_seq_len = 2048\r\n# update\
+          \ the maximum sequence length during inference to 4096\r\nconfig.max_seq_len\
+          \ = 3072\r\n\r\nprint(config)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    model_name,\r\n    config=config,\r\n    torch_dtype=torch.bfloat16,\r\
+          \n    trust_remote_code = True\r\n)\r\n\r\nmodel.eval()\r\n```\r\n\r\nI\
+          \ got the following error:\r\n```\r\nRuntimeError: Error(s) in loading state_dict\
+          \ for MPTForCausalLM:\r\n\tsize mismatch for transformer.wpe.weight: copying\
+          \ a param with shape torch.Size([2048, 4096]) from checkpoint, the shape\
+          \ in current model is torch.Size([3072, 4096]).\r\n\tYou may consider adding\
+          \ `ignore_mismatched_sizes=True` in the model `from_pretrained` method.\r\
+          \n```\r\n\r\nSet `ignore_mismatched_sizes=True` still won't fix it. Instead,\
+          \ you got a different error:\r\n```\r\nFile /opt/anaconda3/lib/python3.9/site-packages/transformers/modeling_utils.py:3031,\
+          \ in PreTrainedModel._load_pretrained_model.<locals>._find_mismatched_keys(state_dict,\
+          \ model_state_dict, loaded_keys, add_prefix_to_model, remove_prefix_from_model,\
+          \ ignore_mismatched_sizes)\r\n   3025 elif add_prefix_to_model:\r\n   3026\
+          \     # The model key doesn't start with `prefix` but `checkpoint_key` does\
+          \ so we remove it.\r\n   3027     model_key = \".\".join(checkpoint_key.split(\"\
+          .\")[1:])\r\n   3029 if (\r\n   3030     model_key in model_state_dict\r\
+          \n-> 3031     and state_dict[checkpoint_key].shape != model_state_dict[model_key].shape\r\
+          \n   3032 ):\r\n   3033     mismatched_keys.append(\r\n   3034         (checkpoint_key,\
+          \ state_dict[checkpoint_key].shape, model_state_dict[model_key].shape)\r\
+          \n   3035     )\r\n   3036     del state_dict[checkpoint_key]\r\n\r\nKeyError:\
+          \ 'transformer.blocks.11.ffn.down_proj.weight'\r\n```\r\n\r\nBy the way,\
+          \ this model also doesn't support the optimized triton implementation of\
+          \ FlashAttention like `mosaicml/mpt-7b-instruct`.\r\nIf you turn it on via\
+          \ `config.attn_config['attn_impl'] = 'triton'`, you will get the same `KeyError:\
+          \ 'transformer.blocks.11.ffn.down_proj.weight'` error.\r\n\r\nWould appreciate\
+          \ if anyone could shed some light on the possible cause of this error."
+        updatedAt: '2023-06-14T00:36:51.285Z'
+      numEdits: 0
+      reactions: []
+    id: 64890ba363dc44169a73235d
+    type: comment
+  author: t83714
+  content: "I've tried with the following code and it (any sequence length rather\
+    \ than 2048) doesn't work for me:\r\n\r\nThe same code works for `mosaicml/mpt-7b-instruct`\
+    \ though.\r\n\r\n```python\r\nfrom transformers import AutoConfig, AutoTokenizer,\
+    \ AutoModelForCausalLM, TextIteratorStreamer\r\nimport torch\r\n\r\ndevice = f'cuda:{torch.cuda.current_device()}'\
+    \ if torch.cuda.is_available() else 'cpu'\r\n\r\nprint(f'Selected device is: {device}')\r\
+    \n\r\nmodel_name = \"nomic-ai/gpt4all-mpt\"\r\n\r\nconfig = AutoConfig.from_pretrained(\r\
+    \n  model_name,\r\n  trust_remote_code=True\r\n)\r\n# use the optimized triton\
+    \ implementation of FlashAttention, you can load the model with attn_impl='triton'\
+    \ and move the model to bfloat16\r\n#config.attn_config['attn_impl'] = 'triton'\r\
+    \nconfig.init_device = device\r\n# config.max_seq_len = 2048\r\n# update the maximum\
+    \ sequence length during inference to 4096\r\nconfig.max_seq_len = 3072\r\n\r\n\
+    print(config)\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    model_name,\r\
+    \n    config=config,\r\n    torch_dtype=torch.bfloat16,\r\n    trust_remote_code\
+    \ = True\r\n)\r\n\r\nmodel.eval()\r\n```\r\n\r\nI got the following error:\r\n\
+    ```\r\nRuntimeError: Error(s) in loading state_dict for MPTForCausalLM:\r\n\t\
+    size mismatch for transformer.wpe.weight: copying a param with shape torch.Size([2048,\
+    \ 4096]) from checkpoint, the shape in current model is torch.Size([3072, 4096]).\r\
+    \n\tYou may consider adding `ignore_mismatched_sizes=True` in the model `from_pretrained`\
+    \ method.\r\n```\r\n\r\nSet `ignore_mismatched_sizes=True` still won't fix it.\
+    \ Instead, you got a different error:\r\n```\r\nFile /opt/anaconda3/lib/python3.9/site-packages/transformers/modeling_utils.py:3031,\
+    \ in PreTrainedModel._load_pretrained_model.<locals>._find_mismatched_keys(state_dict,\
+    \ model_state_dict, loaded_keys, add_prefix_to_model, remove_prefix_from_model,\
+    \ ignore_mismatched_sizes)\r\n   3025 elif add_prefix_to_model:\r\n   3026   \
+    \  # The model key doesn't start with `prefix` but `checkpoint_key` does so we\
+    \ remove it.\r\n   3027     model_key = \".\".join(checkpoint_key.split(\".\"\
+    )[1:])\r\n   3029 if (\r\n   3030     model_key in model_state_dict\r\n-> 3031\
+    \     and state_dict[checkpoint_key].shape != model_state_dict[model_key].shape\r\
+    \n   3032 ):\r\n   3033     mismatched_keys.append(\r\n   3034         (checkpoint_key,\
+    \ state_dict[checkpoint_key].shape, model_state_dict[model_key].shape)\r\n   3035\
+    \     )\r\n   3036     del state_dict[checkpoint_key]\r\n\r\nKeyError: 'transformer.blocks.11.ffn.down_proj.weight'\r\
+    \n```\r\n\r\nBy the way, this model also doesn't support the optimized triton\
+    \ implementation of FlashAttention like `mosaicml/mpt-7b-instruct`.\r\nIf you\
+    \ turn it on via `config.attn_config['attn_impl'] = 'triton'`, you will get the\
+    \ same `KeyError: 'transformer.blocks.11.ffn.down_proj.weight'` error.\r\n\r\n\
+    Would appreciate if anyone could shed some light on the possible cause of this\
+    \ error."
+  created_at: 2023-06-13 23:36:51+00:00
+  edited: false
+  hidden: false
+  id: 64890ba363dc44169a73235d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: nomic-ai/gpt4all-mpt
+repo_type: model
+status: open
+target_branch: null
+title: 'Cannot set sequence length higher than 2048 & doesn''t support the optimized
+  triton implementation of FlashAttention '

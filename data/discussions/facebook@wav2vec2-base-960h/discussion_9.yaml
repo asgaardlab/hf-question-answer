@@ -1,0 +1,393 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: yourex
+conflicting_files: null
+created_at: 2023-09-16 00:24:37+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d98f607582f6ef640cba259921e529b0.svg
+      fullname: wc
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yourex
+      type: user
+    createdAt: '2023-09-16T01:24:37.000Z'
+    data:
+      edited: false
+      editors:
+      - yourex
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4031939208507538
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d98f607582f6ef640cba259921e529b0.svg
+          fullname: wc
+          isHf: false
+          isPro: false
+          name: yourex
+          type: user
+        html: "<p>Hi, I got some issues while running the sample code. When I directly\
+          \ ran it, I got the error as following:</p>\n<pre><code>TypeError      \
+          \                           Traceback (most recent call last)\n     19 \
+          \    batch[\"transcription\"] = transcription\n     20     return batch\n\
+          ---&gt; 22 result = librispeech_eval.map(map_to_pred, batched=True, batch_size=1,\
+          \ remove_columns=[\"audio\"])\n     24 #flattened_list = [item[0] for item\
+          \ in result[\"transcription\"]]\n     26 print(\"WER:\", wer(result[\"text\"\
+          ], result[\"transcription\"]))\n\nFile \\datasets\\arrow_dataset.py:592,\
+          \ in transmit_tasks.&lt;locals&gt;.wrapper(*args, **kwargs)\n    590   \
+          \  self: \"Dataset\" = kwargs.pop(\"self\")\n    591 # apply actual function\n\
+          --&gt; 592 out: Union[\"Dataset\", \"DatasetDict\"] = func(self, *args,\
+          \ **kwargs)\n    593 datasets: List[\"Dataset\"] = list(out.values()) if\
+          \ isinstance(out, dict) else [out]\n    594 for dataset in datasets:\n \
+          \   595     # Remove task templates if a column mapping of the template\
+          \ is no longer valid\n\nFile \\datasets\\arrow_dataset.py:557, in transmit_format.&lt;locals&gt;.wrapper(*args,\
+          \ **kwargs)\n    550 self_format = {\n    551     \"type\": self._format_type,\n\
+          \    552     \"format_kwargs\": self._format_kwargs,\n    553     \"columns\"\
+          : self._format_columns,\n    554     \"output_all_columns\": self._output_all_columns,\n\
+          \    555 }\n    556 # apply actual function\n...\n---&gt; 13     input_values\
+          \ = processor(batch[\"audio\"][\"array\"], return_tensors=\"pt\", padding=\"\
+          longest\").input_values\n     14     with torch.no_grad():\n     15    \
+          \     logits = model(input_values.to(\"cuda\")).logits\n\nTypeError: list\
+          \ indices must be integers or slices, not str\n</code></pre>\n<p>So I modified\
+          \ the sample code as:</p>\n<pre><code>result = librispeech_eval.map(map_to_pred,\
+          \ batched=False, batch_size=1, remove_columns=[\"audio\"])\n\nflattened_list\
+          \ = [item[0] for item in result[\"transcription\"]]\n\nprint(\"WER:\", wer(result[\"\
+          text\"], flattened_list))\n</code></pre>\n<p>Then I got a mismatch WER as:</p>\n\
+          <pre><code>It is strongly recommended to pass the ``sampling_rate`` argument\
+          \ to this function. Failing to do so can result in silent errors that might\
+          \ be hard to debug.\nWER: 0.0338557516737675\n</code></pre>\n<p>Is this\
+          \ caused by not passing the sampling rate?</p>\n"
+        raw: "Hi, I got some issues while running the sample code. When I directly\
+          \ ran it, I got the error as following:\r\n\r\n```\r\nTypeError        \
+          \                         Traceback (most recent call last)\r\n     19 \
+          \    batch[\"transcription\"] = transcription\r\n     20     return batch\r\
+          \n---> 22 result = librispeech_eval.map(map_to_pred, batched=True, batch_size=1,\
+          \ remove_columns=[\"audio\"])\r\n     24 #flattened_list = [item[0] for\
+          \ item in result[\"transcription\"]]\r\n     26 print(\"WER:\", wer(result[\"\
+          text\"], result[\"transcription\"]))\r\n\r\nFile \\datasets\\arrow_dataset.py:592,\
+          \ in transmit_tasks.<locals>.wrapper(*args, **kwargs)\r\n    590     self:\
+          \ \"Dataset\" = kwargs.pop(\"self\")\r\n    591 # apply actual function\r\
+          \n--> 592 out: Union[\"Dataset\", \"DatasetDict\"] = func(self, *args, **kwargs)\r\
+          \n    593 datasets: List[\"Dataset\"] = list(out.values()) if isinstance(out,\
+          \ dict) else [out]\r\n    594 for dataset in datasets:\r\n    595     #\
+          \ Remove task templates if a column mapping of the template is no longer\
+          \ valid\r\n\r\nFile \\datasets\\arrow_dataset.py:557, in transmit_format.<locals>.wrapper(*args,\
+          \ **kwargs)\r\n    550 self_format = {\r\n    551     \"type\": self._format_type,\r\
+          \n    552     \"format_kwargs\": self._format_kwargs,\r\n    553     \"\
+          columns\": self._format_columns,\r\n    554     \"output_all_columns\":\
+          \ self._output_all_columns,\r\n    555 }\r\n    556 # apply actual function\r\
+          \n...\r\n---> 13     input_values = processor(batch[\"audio\"][\"array\"\
+          ], return_tensors=\"pt\", padding=\"longest\").input_values\r\n     14 \
+          \    with torch.no_grad():\r\n     15         logits = model(input_values.to(\"\
+          cuda\")).logits\r\n\r\nTypeError: list indices must be integers or slices,\
+          \ not str\r\n```\r\n\r\nSo I modified the sample code as:\r\n\r\n```\r\n\
+          result = librispeech_eval.map(map_to_pred, batched=False, batch_size=1,\
+          \ remove_columns=[\"audio\"])\r\n\r\nflattened_list = [item[0] for item\
+          \ in result[\"transcription\"]]\r\n\r\nprint(\"WER:\", wer(result[\"text\"\
+          ], flattened_list))\r\n```\r\n\r\nThen I got a mismatch WER as:\r\n\r\n\
+          ```\r\nIt is strongly recommended to pass the ``sampling_rate`` argument\
+          \ to this function. Failing to do so can result in silent errors that might\
+          \ be hard to debug.\r\nWER: 0.0338557516737675\r\n```\r\n\r\nIs this caused\
+          \ by not passing the sampling rate?"
+        updatedAt: '2023-09-16T01:24:37.017Z'
+      numEdits: 0
+      reactions: []
+    id: 650503d504d04d653db3a251
+    type: comment
+  author: yourex
+  content: "Hi, I got some issues while running the sample code. When I directly ran\
+    \ it, I got the error as following:\r\n\r\n```\r\nTypeError                  \
+    \               Traceback (most recent call last)\r\n     19     batch[\"transcription\"\
+    ] = transcription\r\n     20     return batch\r\n---> 22 result = librispeech_eval.map(map_to_pred,\
+    \ batched=True, batch_size=1, remove_columns=[\"audio\"])\r\n     24 #flattened_list\
+    \ = [item[0] for item in result[\"transcription\"]]\r\n     26 print(\"WER:\"\
+    , wer(result[\"text\"], result[\"transcription\"]))\r\n\r\nFile \\datasets\\arrow_dataset.py:592,\
+    \ in transmit_tasks.<locals>.wrapper(*args, **kwargs)\r\n    590     self: \"\
+    Dataset\" = kwargs.pop(\"self\")\r\n    591 # apply actual function\r\n--> 592\
+    \ out: Union[\"Dataset\", \"DatasetDict\"] = func(self, *args, **kwargs)\r\n \
+    \   593 datasets: List[\"Dataset\"] = list(out.values()) if isinstance(out, dict)\
+    \ else [out]\r\n    594 for dataset in datasets:\r\n    595     # Remove task\
+    \ templates if a column mapping of the template is no longer valid\r\n\r\nFile\
+    \ \\datasets\\arrow_dataset.py:557, in transmit_format.<locals>.wrapper(*args,\
+    \ **kwargs)\r\n    550 self_format = {\r\n    551     \"type\": self._format_type,\r\
+    \n    552     \"format_kwargs\": self._format_kwargs,\r\n    553     \"columns\"\
+    : self._format_columns,\r\n    554     \"output_all_columns\": self._output_all_columns,\r\
+    \n    555 }\r\n    556 # apply actual function\r\n...\r\n---> 13     input_values\
+    \ = processor(batch[\"audio\"][\"array\"], return_tensors=\"pt\", padding=\"longest\"\
+    ).input_values\r\n     14     with torch.no_grad():\r\n     15         logits\
+    \ = model(input_values.to(\"cuda\")).logits\r\n\r\nTypeError: list indices must\
+    \ be integers or slices, not str\r\n```\r\n\r\nSo I modified the sample code as:\r\
+    \n\r\n```\r\nresult = librispeech_eval.map(map_to_pred, batched=False, batch_size=1,\
+    \ remove_columns=[\"audio\"])\r\n\r\nflattened_list = [item[0] for item in result[\"\
+    transcription\"]]\r\n\r\nprint(\"WER:\", wer(result[\"text\"], flattened_list))\r\
+    \n```\r\n\r\nThen I got a mismatch WER as:\r\n\r\n```\r\nIt is strongly recommended\
+    \ to pass the ``sampling_rate`` argument to this function. Failing to do so can\
+    \ result in silent errors that might be hard to debug.\r\nWER: 0.0338557516737675\r\
+    \n```\r\n\r\nIs this caused by not passing the sampling rate?"
+  created_at: 2023-09-16 00:24:37+00:00
+  edited: false
+  hidden: false
+  id: 650503d504d04d653db3a251
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1618450692745-5e3aec01f55e2b62848a5217.jpeg?w=200&h=200&f=face
+      fullname: Lysandre
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: lysandre
+      type: user
+    createdAt: '2023-09-18T08:59:45.000Z'
+    data:
+      edited: false
+      editors:
+      - lysandre
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9148138165473938
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1618450692745-5e3aec01f55e2b62848a5217.jpeg?w=200&h=200&f=face
+          fullname: Lysandre
+          isHf: true
+          isPro: false
+          name: lysandre
+          type: user
+        html: "<p>Would you know what might be happening <span data-props=\"{&quot;user&quot;:&quot;sanchit-gandhi&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/sanchit-gandhi\"\
+          >@<span class=\"underline\">sanchit-gandhi</span></a></span>\n\n\t</span></span>\
+          \ ?</p>\n"
+        raw: Would you know what might be happening @sanchit-gandhi ?
+        updatedAt: '2023-09-18T08:59:45.459Z'
+      numEdits: 0
+      reactions: []
+    id: 65081181d55dd4e15cd47f8a
+    type: comment
+  author: lysandre
+  content: Would you know what might be happening @sanchit-gandhi ?
+  created_at: 2023-09-18 07:59:45+00:00
+  edited: false
+  hidden: false
+  id: 65081181d55dd4e15cd47f8a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d98f607582f6ef640cba259921e529b0.svg
+      fullname: wc
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yourex
+      type: user
+    createdAt: '2023-09-19T01:33:53.000Z'
+    data:
+      edited: false
+      editors:
+      - yourex
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44216763973236084
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d98f607582f6ef640cba259921e529b0.svg
+          fullname: wc
+          isHf: false
+          isPro: false
+          name: yourex
+          type: user
+        html: "<p>The sample code I ran is this one:</p>\n<p>Evaluation<br>This code\
+          \ snippet shows how to evaluate facebook/wav2vec2-base-960h on LibriSpeech's\
+          \ \"clean\" and \"other\" test data.</p>\n<pre><code>from datasets import\
+          \ load_dataset\nfrom transformers import Wav2Vec2ForCTC, Wav2Vec2Processor\n\
+          import torch\nfrom jiwer import wer\n\n\nlibrispeech_eval = load_dataset(\"\
+          librispeech_asr\", \"clean\", split=\"test\")\n\nmodel = Wav2Vec2ForCTC.from_pretrained(\"\
+          facebook/wav2vec2-base-960h\").to(\"cuda\")\nprocessor = Wav2Vec2Processor.from_pretrained(\"\
+          facebook/wav2vec2-base-960h\")\n\ndef map_to_pred(batch):\n    input_values\
+          \ = processor(batch[\"audio\"][\"array\"], return_tensors=\"pt\", padding=\"\
+          longest\").input_values\n    with torch.no_grad():\n        logits = model(input_values.to(\"\
+          cuda\")).logits\n\n    predicted_ids = torch.argmax(logits, dim=-1)\n  \
+          \  transcription = processor.batch_decode(predicted_ids)\n    batch[\"transcription\"\
+          ] = transcription\n    return batch\n\nresult = librispeech_eval.map(map_to_pred,\
+          \ batched=True, batch_size=1, remove_columns=[\"audio\"])\n\nprint(\"WER:\"\
+          , wer(result[\"text\"], result[\"transcription\"]))\n</code></pre>\n"
+        raw: "The sample code I ran is this one:\n\nEvaluation\nThis code snippet\
+          \ shows how to evaluate facebook/wav2vec2-base-960h on LibriSpeech's \"\
+          clean\" and \"other\" test data.\n```\nfrom datasets import load_dataset\n\
+          from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor\nimport torch\n\
+          from jiwer import wer\n\n\nlibrispeech_eval = load_dataset(\"librispeech_asr\"\
+          , \"clean\", split=\"test\")\n\nmodel = Wav2Vec2ForCTC.from_pretrained(\"\
+          facebook/wav2vec2-base-960h\").to(\"cuda\")\nprocessor = Wav2Vec2Processor.from_pretrained(\"\
+          facebook/wav2vec2-base-960h\")\n\ndef map_to_pred(batch):\n    input_values\
+          \ = processor(batch[\"audio\"][\"array\"], return_tensors=\"pt\", padding=\"\
+          longest\").input_values\n    with torch.no_grad():\n        logits = model(input_values.to(\"\
+          cuda\")).logits\n\n    predicted_ids = torch.argmax(logits, dim=-1)\n  \
+          \  transcription = processor.batch_decode(predicted_ids)\n    batch[\"transcription\"\
+          ] = transcription\n    return batch\n\nresult = librispeech_eval.map(map_to_pred,\
+          \ batched=True, batch_size=1, remove_columns=[\"audio\"])\n\nprint(\"WER:\"\
+          , wer(result[\"text\"], result[\"transcription\"]))\n```"
+        updatedAt: '2023-09-19T01:33:53.952Z'
+      numEdits: 0
+      reactions: []
+    id: 6508fa8110173b169c311401
+    type: comment
+  author: yourex
+  content: "The sample code I ran is this one:\n\nEvaluation\nThis code snippet shows\
+    \ how to evaluate facebook/wav2vec2-base-960h on LibriSpeech's \"clean\" and \"\
+    other\" test data.\n```\nfrom datasets import load_dataset\nfrom transformers\
+    \ import Wav2Vec2ForCTC, Wav2Vec2Processor\nimport torch\nfrom jiwer import wer\n\
+    \n\nlibrispeech_eval = load_dataset(\"librispeech_asr\", \"clean\", split=\"test\"\
+    )\n\nmodel = Wav2Vec2ForCTC.from_pretrained(\"facebook/wav2vec2-base-960h\").to(\"\
+    cuda\")\nprocessor = Wav2Vec2Processor.from_pretrained(\"facebook/wav2vec2-base-960h\"\
+    )\n\ndef map_to_pred(batch):\n    input_values = processor(batch[\"audio\"][\"\
+    array\"], return_tensors=\"pt\", padding=\"longest\").input_values\n    with torch.no_grad():\n\
+    \        logits = model(input_values.to(\"cuda\")).logits\n\n    predicted_ids\
+    \ = torch.argmax(logits, dim=-1)\n    transcription = processor.batch_decode(predicted_ids)\n\
+    \    batch[\"transcription\"] = transcription\n    return batch\n\nresult = librispeech_eval.map(map_to_pred,\
+    \ batched=True, batch_size=1, remove_columns=[\"audio\"])\n\nprint(\"WER:\", wer(result[\"\
+    text\"], result[\"transcription\"]))\n```"
+  created_at: 2023-09-19 00:33:53+00:00
+  edited: false
+  hidden: false
+  id: 6508fa8110173b169c311401
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+      fullname: Sanchit Gandhi
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: sanchit-gandhi
+      type: user
+    createdAt: '2023-09-19T18:03:43.000Z'
+    data:
+      edited: false
+      editors:
+      - sanchit-gandhi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8969587087631226
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653243468328-61f91cf54a8e5a275b2b3e7c.jpeg?w=200&h=200&f=face
+          fullname: Sanchit Gandhi
+          isHf: true
+          isPro: false
+          name: sanchit-gandhi
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;yourex&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/yourex\">@<span class=\"\
+          underline\">yourex</span></a></span>\n\n\t</span></span>! You're correct\
+          \ in that the code-snippet is broken. I've opened a PR to correct the codesnippet\
+          \ and activate batching here: <a href=\"/facebook/wav2vec2-base-960h/discussions/10\"\
+          >#10</a> (and for the large model here: <a href=\"https://huggingface.co/facebook/wav2vec2-large-960h/discussions/4\"\
+          >PR 4</a>, and self-trained model here: <a href=\"https://huggingface.co/facebook/wav2vec2-large-960h-lv60-self/discussions/6\"\
+          >PR 6</a>). Perhaps <span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ could merge these PRs? (Wav2Vec2 is maintained entirely by HF on the Hub)</p>\n\
+          <p>The WER you calculated with your modified codesnippet is entirely correct.\
+          \ You obtained a WER of 0.03385, or 3.4%, which matches the expected results\
+          \ (see bottom of section on <a href=\"https://huggingface.co/facebook/wav2vec2-base-960h#evaluation\"\
+          >evaluation</a>). The sampling rate of LibriSpeech is 16kHz, which matches\
+          \ the sampling rate of the Wav2Vec2 feature extractor, so in this case there\
+          \ are no pre-processing errors. However, it is good practice to pass the\
+          \ sampling rate to prevent silent errors, as is done on the update codesnippet.</p>\n"
+        raw: 'Hey @yourex! You''re correct in that the code-snippet is broken. I''ve
+          opened a PR to correct the codesnippet and activate batching here: #10 (and
+          for the large model here: [PR 4](https://huggingface.co/facebook/wav2vec2-large-960h/discussions/4),
+          and self-trained model here: [PR 6](https://huggingface.co/facebook/wav2vec2-large-960h-lv60-self/discussions/6)).
+          Perhaps @patrickvonplaten could merge these PRs? (Wav2Vec2 is maintained
+          entirely by HF on the Hub)
+
+
+          The WER you calculated with your modified codesnippet is entirely correct.
+          You obtained a WER of 0.03385, or 3.4%, which matches the expected results
+          (see bottom of section on [evaluation](https://huggingface.co/facebook/wav2vec2-base-960h#evaluation)).
+          The sampling rate of LibriSpeech is 16kHz, which matches the sampling rate
+          of the Wav2Vec2 feature extractor, so in this case there are no pre-processing
+          errors. However, it is good practice to pass the sampling rate to prevent
+          silent errors, as is done on the update codesnippet.'
+        updatedAt: '2023-09-19T18:03:43.729Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - yourex
+    id: 6509e27fd95f30b9dce7d9a2
+    type: comment
+  author: sanchit-gandhi
+  content: 'Hey @yourex! You''re correct in that the code-snippet is broken. I''ve
+    opened a PR to correct the codesnippet and activate batching here: #10 (and for
+    the large model here: [PR 4](https://huggingface.co/facebook/wav2vec2-large-960h/discussions/4),
+    and self-trained model here: [PR 6](https://huggingface.co/facebook/wav2vec2-large-960h-lv60-self/discussions/6)).
+    Perhaps @patrickvonplaten could merge these PRs? (Wav2Vec2 is maintained entirely
+    by HF on the Hub)
+
+
+    The WER you calculated with your modified codesnippet is entirely correct. You
+    obtained a WER of 0.03385, or 3.4%, which matches the expected results (see bottom
+    of section on [evaluation](https://huggingface.co/facebook/wav2vec2-base-960h#evaluation)).
+    The sampling rate of LibriSpeech is 16kHz, which matches the sampling rate of
+    the Wav2Vec2 feature extractor, so in this case there are no pre-processing errors.
+    However, it is good practice to pass the sampling rate to prevent silent errors,
+    as is done on the update codesnippet.'
+  created_at: 2023-09-19 17:03:43+00:00
+  edited: false
+  hidden: false
+  id: 6509e27fd95f30b9dce7d9a2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d98f607582f6ef640cba259921e529b0.svg
+      fullname: wc
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: yourex
+      type: user
+    createdAt: '2023-09-24T19:36:01.000Z'
+    data:
+      status: closed
+    id: 65108fa1c305ec67e63f73f8
+    type: status-change
+  author: yourex
+  created_at: 2023-09-24 18:36:01+00:00
+  id: 65108fa1c305ec67e63f73f8
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: facebook/wav2vec2-base-960h
+repo_type: model
+status: closed
+target_branch: null
+title: Mismatching WER and samll BUGs

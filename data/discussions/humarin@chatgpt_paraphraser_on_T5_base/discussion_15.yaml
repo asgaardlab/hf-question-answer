@@ -1,0 +1,368 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Drudkh
+conflicting_files: null
+created_at: 2023-11-20 05:13:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1b1f0a5dacb860fd72858afcb8f7b23.svg
+      fullname: Drudkh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Drudkh
+      type: user
+    createdAt: '2023-11-20T05:13:07.000Z'
+    data:
+      edited: false
+      editors:
+      - Drudkh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4617960453033447
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1b1f0a5dacb860fd72858afcb8f7b23.svg
+          fullname: Drudkh
+          isHf: false
+          isPro: false
+          name: Drudkh
+          type: user
+        html: "<p>Hi,</p>\n<p>I need help with this error and have tried the following:</p>\n\
+          <pre><code>device = \"cuda:0\"\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+          humarin/chatgpt_paraphraser_on_T5_base\").to('cuda:0' if torch.cuda.is_available()\
+          \ else 'cpu')\n</code></pre>\n<p>Here's the error:</p>\n<pre><code>(paraphraser)\
+          \ user@sn01:~/paraphraser$ python ./test.py\n/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:381:\
+          \ UserWarning: `do_sample` is set to `False`. However, `temperature` is\
+          \ set to `0.7` -- this flag is only used in sample-based generation modes.\
+          \ You should set `do_sample=True` or unset `temperature`.\n  warnings.warn(\n\
+          Traceback (most recent call last):\n  File \"/home/user/paraphraser/./test.py\"\
+          , line 38, in &lt;module&gt;\n    paraphrase(\"Should I go to church this\
+          \ Sunday?\")\n  File \"/home/user/paraphraser/./test.py\", line 27, in paraphrase\n\
+          \    outputs = model.generate(\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1548, in generate\n    model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(\n\
+          \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 661, in _prepare_encoder_decoder_kwargs_for_generation\n    model_kwargs[\"\
+          encoder_outputs\"]: ModelOutput = encoder(**encoder_kwargs)\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1518, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n\
+          \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1527, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\"\
+          , line 1016, in forward\n    inputs_embeds = self.embed_tokens(input_ids)\n\
+          \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1518, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n\
+          \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1527, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/sparse.py\"\
+          , line 162, in forward\n    return F.embedding(\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/functional.py\"\
+          , line 2233, in embedding\n    return torch.embedding(weight, input, padding_idx,\
+          \ scale_grad_by_freq, sparse)\nRuntimeError: Expected all tensors to be\
+          \ on the same device, but found at least two devices, cuda:0 and cpu! (when\
+          \ checking argument for argument index in method wrapper_CUDA__index_select)\n\
+          </code></pre>\n<p>Here's my python script:</p>\n<pre><code>from transformers\
+          \ import AutoTokenizer, AutoModelForSeq2SeqLM\ndevice = \"cuda\"\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          )\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          ).to(device)\n\ndef paraphrase(\n    question,\n    num_beams=5,\n    num_beam_groups=5,\n\
+          \    num_return_sequences=5,\n    repetition_penalty=10.0,\n    diversity_penalty=3.0,\n\
+          \    no_repeat_ngram_size=2,\n    temperature=0.7,\n    max_length=128\n\
+          ):\n    input_ids = tokenizer(\n        f'paraphrase: {question}',\n   \
+          \     return_tensors=\"pt\", padding=\"longest\",\n        max_length=max_length,\n\
+          \        truncation=True,\n    ).input_ids\n\n    outputs = model.generate(\n\
+          \        input_ids, temperature=temperature, repetition_penalty=repetition_penalty,\n\
+          \        num_return_sequences=num_return_sequences, no_repeat_ngram_size=no_repeat_ngram_size,\n\
+          \        num_beams=num_beams, num_beam_groups=num_beam_groups,\n       \
+          \ max_length=max_length, diversity_penalty=diversity_penalty\n    )\n\n\
+          \    res = tokenizer.batch_decode(outputs, skip_special_tokens=True)\n\n\
+          \    return res\n\nparaphrase(\"Should I go to church this Sunday?\")\n\
+          </code></pre>\n"
+        raw: "Hi,\r\n\r\nI need help with this error and have tried the following:\r\
+          \n```\r\ndevice = \"cuda:0\"\r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+          humarin/chatgpt_paraphraser_on_T5_base\").to('cuda:0' if torch.cuda.is_available()\
+          \ else 'cpu')\r\n```\r\nHere's the error:\r\n```\r\n(paraphraser) user@sn01:~/paraphraser$\
+          \ python ./test.py\r\n/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:381:\
+          \ UserWarning: `do_sample` is set to `False`. However, `temperature` is\
+          \ set to `0.7` -- this flag is only used in sample-based generation modes.\
+          \ You should set `do_sample=True` or unset `temperature`.\r\n  warnings.warn(\r\
+          \nTraceback (most recent call last):\r\n  File \"/home/user/paraphraser/./test.py\"\
+          , line 38, in <module>\r\n    paraphrase(\"Should I go to church this Sunday?\"\
+          )\r\n  File \"/home/user/paraphraser/./test.py\", line 27, in paraphrase\r\
+          \n    outputs = model.generate(\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n\
+          \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1548, in generate\r\n    model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(\r\
+          \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 661, in _prepare_encoder_decoder_kwargs_for_generation\r\n    model_kwargs[\"\
+          encoder_outputs\"]: ModelOutput = encoder(**encoder_kwargs)\r\n  File \"\
+          /home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1518, in _wrapped_call_impl\r\n    return self._call_impl(*args,\
+          \ **kwargs)\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1527, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\"\
+          , line 1016, in forward\r\n    inputs_embeds = self.embed_tokens(input_ids)\r\
+          \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1518, in _wrapped_call_impl\r\n    return self._call_impl(*args,\
+          \ **kwargs)\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1527, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/sparse.py\"\
+          , line 162, in forward\r\n    return F.embedding(\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/functional.py\"\
+          , line 2233, in embedding\r\n    return torch.embedding(weight, input, padding_idx,\
+          \ scale_grad_by_freq, sparse)\r\nRuntimeError: Expected all tensors to be\
+          \ on the same device, but found at least two devices, cuda:0 and cpu! (when\
+          \ checking argument for argument index in method wrapper_CUDA__index_select)\r\
+          \n```\r\n\r\nHere's my python script:\r\n```\r\nfrom transformers import\
+          \ AutoTokenizer, AutoModelForSeq2SeqLM\r\ndevice = \"cuda\"\r\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          )\r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          ).to(device)\r\n\r\ndef paraphrase(\r\n    question,\r\n    num_beams=5,\r\
+          \n    num_beam_groups=5,\r\n    num_return_sequences=5,\r\n    repetition_penalty=10.0,\r\
+          \n    diversity_penalty=3.0,\r\n    no_repeat_ngram_size=2,\r\n    temperature=0.7,\r\
+          \n    max_length=128\r\n):\r\n    input_ids = tokenizer(\r\n        f'paraphrase:\
+          \ {question}',\r\n        return_tensors=\"pt\", padding=\"longest\",\r\n\
+          \        max_length=max_length,\r\n        truncation=True,\r\n    ).input_ids\r\
+          \n\r\n    outputs = model.generate(\r\n        input_ids, temperature=temperature,\
+          \ repetition_penalty=repetition_penalty,\r\n        num_return_sequences=num_return_sequences,\
+          \ no_repeat_ngram_size=no_repeat_ngram_size,\r\n        num_beams=num_beams,\
+          \ num_beam_groups=num_beam_groups,\r\n        max_length=max_length, diversity_penalty=diversity_penalty\r\
+          \n    )\r\n\r\n    res = tokenizer.batch_decode(outputs, skip_special_tokens=True)\r\
+          \n\r\n    return res\r\n\r\nparaphrase(\"Should I go to church this Sunday?\"\
+          )\r\n```"
+        updatedAt: '2023-11-20T05:13:07.439Z'
+      numEdits: 0
+      reactions: []
+    id: 655aeae37b098f9cb53897da
+    type: comment
+  author: Drudkh
+  content: "Hi,\r\n\r\nI need help with this error and have tried the following:\r\
+    \n```\r\ndevice = \"cuda:0\"\r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+    humarin/chatgpt_paraphraser_on_T5_base\").to('cuda:0' if torch.cuda.is_available()\
+    \ else 'cpu')\r\n```\r\nHere's the error:\r\n```\r\n(paraphraser) user@sn01:~/paraphraser$\
+    \ python ./test.py\r\n/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:381:\
+    \ UserWarning: `do_sample` is set to `False`. However, `temperature` is set to\
+    \ `0.7` -- this flag is only used in sample-based generation modes. You should\
+    \ set `do_sample=True` or unset `temperature`.\r\n  warnings.warn(\r\nTraceback\
+    \ (most recent call last):\r\n  File \"/home/user/paraphraser/./test.py\", line\
+    \ 38, in <module>\r\n    paraphrase(\"Should I go to church this Sunday?\")\r\n\
+    \  File \"/home/user/paraphraser/./test.py\", line 27, in paraphrase\r\n    outputs\
+    \ = model.generate(\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File\
+    \ \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 1548, in generate\r\n    model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(\r\
+    \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 661, in _prepare_encoder_decoder_kwargs_for_generation\r\n    model_kwargs[\"\
+    encoder_outputs\"]: ModelOutput = encoder(**encoder_kwargs)\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1518, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\
+    \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1527, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/transformers/models/t5/modeling_t5.py\"\
+    , line 1016, in forward\r\n    inputs_embeds = self.embed_tokens(input_ids)\r\n\
+    \  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1518, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\
+    \n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1527, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/modules/sparse.py\"\
+    , line 162, in forward\r\n    return F.embedding(\r\n  File \"/home/user/miniconda3/envs/paraphraser/lib/python3.10/site-packages/torch/nn/functional.py\"\
+    , line 2233, in embedding\r\n    return torch.embedding(weight, input, padding_idx,\
+    \ scale_grad_by_freq, sparse)\r\nRuntimeError: Expected all tensors to be on the\
+    \ same device, but found at least two devices, cuda:0 and cpu! (when checking\
+    \ argument for argument index in method wrapper_CUDA__index_select)\r\n```\r\n\
+    \r\nHere's my python script:\r\n```\r\nfrom transformers import AutoTokenizer,\
+    \ AutoModelForSeq2SeqLM\r\ndevice = \"cuda\"\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+    humarin/chatgpt_paraphraser_on_T5_base\")\r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+    humarin/chatgpt_paraphraser_on_T5_base\").to(device)\r\n\r\ndef paraphrase(\r\n\
+    \    question,\r\n    num_beams=5,\r\n    num_beam_groups=5,\r\n    num_return_sequences=5,\r\
+    \n    repetition_penalty=10.0,\r\n    diversity_penalty=3.0,\r\n    no_repeat_ngram_size=2,\r\
+    \n    temperature=0.7,\r\n    max_length=128\r\n):\r\n    input_ids = tokenizer(\r\
+    \n        f'paraphrase: {question}',\r\n        return_tensors=\"pt\", padding=\"\
+    longest\",\r\n        max_length=max_length,\r\n        truncation=True,\r\n \
+    \   ).input_ids\r\n\r\n    outputs = model.generate(\r\n        input_ids, temperature=temperature,\
+    \ repetition_penalty=repetition_penalty,\r\n        num_return_sequences=num_return_sequences,\
+    \ no_repeat_ngram_size=no_repeat_ngram_size,\r\n        num_beams=num_beams, num_beam_groups=num_beam_groups,\r\
+    \n        max_length=max_length, diversity_penalty=diversity_penalty\r\n    )\r\
+    \n\r\n    res = tokenizer.batch_decode(outputs, skip_special_tokens=True)\r\n\r\
+    \n    return res\r\n\r\nparaphrase(\"Should I go to church this Sunday?\")\r\n\
+    ```"
+  created_at: 2023-11-20 05:13:07+00:00
+  edited: false
+  hidden: false
+  id: 655aeae37b098f9cb53897da
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4689eb282088fa0fe0ec5de5349032b0.svg
+      fullname: Yashkumar Patel
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: whizzkid-yash
+      type: user
+    createdAt: '2023-11-20T05:22:07.000Z'
+    data:
+      edited: false
+      editors:
+      - whizzkid-yash
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3817346394062042
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4689eb282088fa0fe0ec5de5349032b0.svg
+          fullname: Yashkumar Patel
+          isHf: false
+          isPro: false
+          name: whizzkid-yash
+          type: user
+        html: "<p>You can follow below code and it will be working fine.</p>\n<p>from\
+          \ transformers import AutoTokenizer, AutoModelForSeq2SeqLM<br>import torch</p>\n\
+          <p>device = \"cuda\" if torch.cuda.is_available() else \"cpu\"<br>tokenizer\
+          \ = AutoTokenizer.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          )<br>model = AutoModelForSeq2SeqLM.from_pretrained(\"humarin/chatgpt_paraphraser_on_T5_base\"\
+          ).to(device)</p>\n<p>def paraphrase(<br>    question,<br>    num_beams=5,<br>\
+          \    num_beam_groups=5,<br>    num_return_sequences=5,<br>    repetition_penalty=10.0,<br>\
+          \    diversity_penalty=3.0,<br>    no_repeat_ngram_size=2,<br>    temperature=0.7,<br>\
+          \    max_length=128<br>):<br>    input_ids = tokenizer(<br>        f'paraphrase:\
+          \ {question}',<br>        return_tensors=\"pt\", padding=\"longest\",<br>\
+          \        max_length=max_length,<br>        truncation=True,<br>    ).input_ids.to(device)</p>\n\
+          <pre><code>outputs = model.generate(\n    input_ids, temperature=temperature,\
+          \ repetition_penalty=repetition_penalty,\n    num_return_sequences=num_return_sequences,\
+          \ no_repeat_ngram_size=no_repeat_ngram_size,\n    num_beams=num_beams, num_beam_groups=num_beam_groups,\n\
+          \    max_length=max_length, diversity_penalty=diversity_penalty\n)\n\nres\
+          \ = tokenizer.batch_decode(outputs, skip_special_tokens=True)\n\nreturn\
+          \ res\n</code></pre>\n<p>paraphrase(\"Should I go to church this Sunday?\"\
+          )</p>\n"
+        raw: "You can follow below code and it will be working fine.\n\n\nfrom transformers\
+          \ import AutoTokenizer, AutoModelForSeq2SeqLM\nimport torch\n\ndevice =\
+          \ \"cuda\" if torch.cuda.is_available() else \"cpu\"\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          humarin/chatgpt_paraphraser_on_T5_base\")\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+          humarin/chatgpt_paraphraser_on_T5_base\").to(device)\n\ndef paraphrase(\n\
+          \    question,\n    num_beams=5,\n    num_beam_groups=5,\n    num_return_sequences=5,\n\
+          \    repetition_penalty=10.0,\n    diversity_penalty=3.0,\n    no_repeat_ngram_size=2,\n\
+          \    temperature=0.7,\n    max_length=128\n):\n    input_ids = tokenizer(\n\
+          \        f'paraphrase: {question}',\n        return_tensors=\"pt\", padding=\"\
+          longest\",\n        max_length=max_length,\n        truncation=True,\n \
+          \   ).input_ids.to(device)\n\n    outputs = model.generate(\n        input_ids,\
+          \ temperature=temperature, repetition_penalty=repetition_penalty,\n    \
+          \    num_return_sequences=num_return_sequences, no_repeat_ngram_size=no_repeat_ngram_size,\n\
+          \        num_beams=num_beams, num_beam_groups=num_beam_groups,\n       \
+          \ max_length=max_length, diversity_penalty=diversity_penalty\n    )\n\n\
+          \    res = tokenizer.batch_decode(outputs, skip_special_tokens=True)\n\n\
+          \    return res\n\nparaphrase(\"Should I go to church this Sunday?\")\n"
+        updatedAt: '2023-11-20T05:22:07.570Z'
+      numEdits: 0
+      reactions: []
+    id: 655aecff04a63a0dfb2a7a2f
+    type: comment
+  author: whizzkid-yash
+  content: "You can follow below code and it will be working fine.\n\n\nfrom transformers\
+    \ import AutoTokenizer, AutoModelForSeq2SeqLM\nimport torch\n\ndevice = \"cuda\"\
+    \ if torch.cuda.is_available() else \"cpu\"\ntokenizer = AutoTokenizer.from_pretrained(\"\
+    humarin/chatgpt_paraphraser_on_T5_base\")\nmodel = AutoModelForSeq2SeqLM.from_pretrained(\"\
+    humarin/chatgpt_paraphraser_on_T5_base\").to(device)\n\ndef paraphrase(\n    question,\n\
+    \    num_beams=5,\n    num_beam_groups=5,\n    num_return_sequences=5,\n    repetition_penalty=10.0,\n\
+    \    diversity_penalty=3.0,\n    no_repeat_ngram_size=2,\n    temperature=0.7,\n\
+    \    max_length=128\n):\n    input_ids = tokenizer(\n        f'paraphrase: {question}',\n\
+    \        return_tensors=\"pt\", padding=\"longest\",\n        max_length=max_length,\n\
+    \        truncation=True,\n    ).input_ids.to(device)\n\n    outputs = model.generate(\n\
+    \        input_ids, temperature=temperature, repetition_penalty=repetition_penalty,\n\
+    \        num_return_sequences=num_return_sequences, no_repeat_ngram_size=no_repeat_ngram_size,\n\
+    \        num_beams=num_beams, num_beam_groups=num_beam_groups,\n        max_length=max_length,\
+    \ diversity_penalty=diversity_penalty\n    )\n\n    res = tokenizer.batch_decode(outputs,\
+    \ skip_special_tokens=True)\n\n    return res\n\nparaphrase(\"Should I go to church\
+    \ this Sunday?\")\n"
+  created_at: 2023-11-20 05:22:07+00:00
+  edited: false
+  hidden: false
+  id: 655aecff04a63a0dfb2a7a2f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1b1f0a5dacb860fd72858afcb8f7b23.svg
+      fullname: Drudkh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Drudkh
+      type: user
+    createdAt: '2023-11-20T05:53:02.000Z'
+    data:
+      edited: false
+      editors:
+      - Drudkh
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3768255114555359
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1b1f0a5dacb860fd72858afcb8f7b23.svg
+          fullname: Drudkh
+          isHf: false
+          isPro: false
+          name: Drudkh
+          type: user
+        html: '<p>Yes!<br>Thank you  so much!</p>
+
+          '
+        raw: 'Yes!
+
+          Thank you  so much!'
+        updatedAt: '2023-11-20T05:53:02.384Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 655af43e6412aaeed690ec55
+    id: 655af43e6412aaeed690ec4f
+    type: comment
+  author: Drudkh
+  content: 'Yes!
+
+    Thank you  so much!'
+  created_at: 2023-11-20 05:53:02+00:00
+  edited: false
+  hidden: false
+  id: 655af43e6412aaeed690ec4f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d1b1f0a5dacb860fd72858afcb8f7b23.svg
+      fullname: Drudkh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Drudkh
+      type: user
+    createdAt: '2023-11-20T05:53:02.000Z'
+    data:
+      status: closed
+    id: 655af43e6412aaeed690ec55
+    type: status-change
+  author: Drudkh
+  created_at: 2023-11-20 05:53:02+00:00
+  id: 655af43e6412aaeed690ec55
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 15
+repo_id: humarin/chatgpt_paraphraser_on_T5_base
+repo_type: model
+status: closed
+target_branch: null
+title: Expected all tensors to be on the same device, but found at least two devices,
+  cuda:0 and cpu!

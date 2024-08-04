@@ -1,0 +1,4 @@
+## https://huggingface.co/SYNLP/ChiMed-GPT-1.0/discussions/1
+
+contains_question: yes
+question_part: We as citizens of the world would like to try and use it and we have a great barrier in the fact that we do not know chinese language :( . Can you please redo your work using as base model Zephyr 7b beta (https://huggingface.co/HuggingFaceH4/zephyr-7b-beta  because it was trained as a multilingual model from the start) , and if you can finetune the model with Chinese and English data so that it can be used by people all around the world ?!? Theoretically it should be able to do some zero shot learning and when questioned in other language than the one in which was finetuned to answer in that language .

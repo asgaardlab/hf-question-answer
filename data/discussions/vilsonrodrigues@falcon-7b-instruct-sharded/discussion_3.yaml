@@ -1,0 +1,652 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: pranavnerurkar
+conflicting_files: null
+created_at: 2023-07-12 12:28:32+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a5b6fcf3ed718471c05c237a1651622e.svg
+      fullname: pranav nerurkar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pranavnerurkar
+      type: user
+    createdAt: '2023-07-12T13:28:32.000Z'
+    data:
+      edited: false
+      editors:
+      - pranavnerurkar
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4217976927757263
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a5b6fcf3ed718471c05c237a1651622e.svg
+          fullname: pranav nerurkar
+          isHf: false
+          isPro: false
+          name: pranavnerurkar
+          type: user
+        html: '<p>Running on a Mac with no GPU<br>Getting below error</p>
+
+          <p>I added llm_int8_enable_fp32_cpu_offload=True<br>to<br>quantization_config
+          </p>
+
+          <p>used a custom device map<br>device_maps = {<br>    "transformer.word_embeddings":
+          "cpu",<br>    "transformer.word_embeddings_layernorm": "cpu",<br>    "lm_head":
+          "cpu",<br>    "transformer.h": "cpu",<br>    "transformer.ln_f": "cpu",<br>}</p>
+
+          <p>I downloaded your entire model to my laptop<br>model_id = "/Users/falcon-7b-instruct-sharded"</p>
+
+          <p>model_4bit = AutoModelForCausalLM.from_pretrained(<br>        model_id,<br>        device_map=device_maps,<br>        quantization_config=quantization_config,<br>        trust_remote_code=True)<br>tokenizer
+          = AutoTokenizer.from_pretrained(model_id)</p>
+
+          <p>Getting error for below line</p>
+
+          <p>sequences = pipeline(<br>   "Girafatron is obsessed with giraffes, the
+          most glorious animal on the face of this Earth. Giraftron believes all other
+          animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel:
+          Hello, Girafatron!\nGirafatron:")</p>
+
+          <hr>
+
+          <p>RuntimeError                              Traceback (most recent call
+          last)<br>Cell In[23], line 1<br>----&gt; 1 sequences = pipeline(<br>      2    "Girafatron
+          is obsessed with giraffes, the most glorious animal on the face of this
+          Earth. Giraftron believes all other animals are irrelevant when compared
+          to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:")</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:200,
+          in TextGenerationPipeline.<strong>call</strong>(self, text_inputs, **kwargs)<br>    159
+          def <strong>call</strong>(self, text_inputs, **kwargs):<br>    160     """<br>    161     Complete
+          the prompt(s) given as inputs.<br>    162<br>   (...)<br>    198           ids
+          of the generated text.<br>    199     """<br>--&gt; 200     return super().<strong>call</strong>(text_inputs,
+          **kwargs)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1122,
+          in Pipeline.<strong>call</strong>(self, inputs, num_workers, batch_size,
+          *args, **kwargs)<br>   1114     return next(<br>   1115         iter(<br>   1116             self.get_iterator(<br>   (...)<br>   1119         )<br>   1120     )<br>   1121
+          else:<br>-&gt; 1122     return self.run_single(inputs, preprocess_params,
+          forward_params, postprocess_params)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1129,
+          in Pipeline.run_single(self, inputs, preprocess_params, forward_params,
+          postprocess_params)<br>   1127 def run_single(self, inputs, preprocess_params,
+          forward_params, postprocess_params):<br>   1128     model_inputs = self.preprocess(inputs,
+          **preprocess_params)<br>-&gt; 1129     model_outputs = self.forward(model_inputs,
+          **forward_params)<br>   1130     outputs = self.postprocess(model_outputs,
+          **postprocess_params)<br>   1131     return outputs</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1028,
+          in Pipeline.forward(self, model_inputs, **forward_params)<br>   1026     with
+          inference_context():<br>   1027         model_inputs = self._ensure_tensor_on_device(model_inputs,
+          device=self.device)<br>-&gt; 1028         model_outputs = self._forward(model_inputs,
+          **forward_params)<br>   1029         model_outputs = self._ensure_tensor_on_device(model_outputs,
+          device=torch.device("cpu"))<br>   1030 else:</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:261,
+          in TextGenerationPipeline._forward(self, model_inputs, **generate_kwargs)<br>    258         generate_kwargs["min_length"]
+          += prefix_length<br>    260 # BS x SL<br>--&gt; 261 generated_sequence =
+          self.model.generate(input_ids=input_ids, attention_mask=attention_mask,
+          **generate_kwargs)<br>    262 out_b = generated_sequence.shape[0]<br>    263
+          if self.framework == "pt":</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,
+          in context_decorator..decorate_context(*args, **kwargs)<br>    112 @functools.wraps(func)<br>    113
+          def decorate_context(*args, **kwargs):<br>    114     with ctx_factory():<br>--&gt;
+          115         return func(*args, **kwargs)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:1588,
+          in GenerationMixin.generate(self, inputs, generation_config, logits_processor,
+          stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,
+          streamer, **kwargs)<br>   1580     input_ids, model_kwargs = self._expand_inputs_for_generation(<br>   1581         input_ids=input_ids,<br>   1582         expand_size=generation_config.num_return_sequences,<br>   1583         is_encoder_decoder=self.config.is_encoder_decoder,<br>   1584         **model_kwargs,<br>   1585     )<br>   1587     #
+          13. run sample<br>-&gt; 1588     return self.sample(<br>   1589         input_ids,<br>   1590         logits_processor=logits_processor,<br>   1591         logits_warper=logits_warper,<br>   1592         stopping_criteria=stopping_criteria,<br>   1593         pad_token_id=generation_config.pad_token_id,<br>   1594         eos_token_id=generation_config.eos_token_id,<br>   1595         output_scores=generation_config.output_scores,<br>   1596         return_dict_in_generate=generation_config.return_dict_in_generate,<br>   1597         synced_gpus=synced_gpus,<br>   1598         streamer=streamer,<br>   1599         **model_kwargs,<br>   1600     )<br>   1602
+          elif is_beam_gen_mode:<br>   1603     if generation_config.num_return_sequences
+          &gt; generation_config.num_beams:</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:2642,
+          in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,
+          logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,
+          output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,
+          streamer, **model_kwargs)<br>   2639 model_inputs = self.prepare_inputs_for_generation(input_ids,
+          **model_kwargs)<br>   2641 # forward pass to get next token<br>-&gt; 2642
+          outputs = self(<br>   2643     **model_inputs,<br>   2644     return_dict=True,<br>   2645     output_attentions=output_attentions,<br>   2646     output_hidden_states=output_hidden_states,<br>   2647
+          )<br>   2649 if synced_gpus and this_peer_finished:<br>   2650     continue  #
+          don''t waste resources running the code we don''t need</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,
+          in Module._call_impl(self, *args, **kwargs)<br>   1496 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1497 # this function,
+          and just call forward.<br>   1498 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1499         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1500         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1501     return
+          forward_call(*args, **kwargs)<br>   1502 # Do not call functions when jit
+          is used<br>   1503 full_backward_hooks, non_full_backward_hooks = [], []</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,
+          in add_hook_to_module..new_forward(*args, **kwargs)<br>    163         output
+          = old_forward(*args, **kwargs)<br>    164 else:<br>--&gt; 165     output
+          = old_forward(*args, **kwargs)<br>    166 return module._hf_hook.post_forward(module,
+          output)</p>
+
+          <p>File ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:753,
+          in RWForCausalLM.forward(self, input_ids, past_key_values, attention_mask,
+          head_mask, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states,
+          return_dict, **deprecated_arguments)<br>    749     raise ValueError(f"Got
+          unexpected arguments: {deprecated_arguments}")<br>    751 return_dict =
+          return_dict if return_dict is not None else self.config.use_return_dict<br>--&gt;
+          753 transformer_outputs = self.transformer(<br>    754     input_ids,<br>    755     past_key_values=past_key_values,<br>    756     attention_mask=attention_mask,<br>    757     head_mask=head_mask,<br>    758     inputs_embeds=inputs_embeds,<br>    759     use_cache=use_cache,<br>    760     output_attentions=output_attentions,<br>    761     output_hidden_states=output_hidden_states,<br>    762     return_dict=return_dict,<br>    763
+          )<br>    764 hidden_states = transformer_outputs[0]<br>    766 lm_logits
+          = self.lm_head(hidden_states)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,
+          in Module._call_impl(self, *args, **kwargs)<br>   1496 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1497 # this function,
+          and just call forward.<br>   1498 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1499         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1500         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1501     return
+          forward_call(*args, **kwargs)<br>   1502 # Do not call functions when jit
+          is used<br>   1503 full_backward_hooks, non_full_backward_hooks = [], []</p>
+
+          <p>File ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:648,
+          in RWModel.forward(self, input_ids, past_key_values, attention_mask, head_mask,
+          inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict,
+          **deprecated_arguments)<br>    640     outputs = torch.utils.checkpoint.checkpoint(<br>    641         create_custom_forward(block),<br>    642         hidden_states,<br>   (...)<br>    645         head_mask[i],<br>    646     )<br>    647
+          else:<br>--&gt; 648     outputs = block(<br>    649         hidden_states,<br>    650         layer_past=layer_past,<br>    651         attention_mask=causal_mask,<br>    652         head_mask=head_mask[i],<br>    653         use_cache=use_cache,<br>    654         output_attentions=output_attentions,<br>    655         alibi=alibi,<br>    656     )<br>    658
+          hidden_states = outputs[0]<br>    659 if use_cache is True:</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,
+          in Module._call_impl(self, *args, **kwargs)<br>   1496 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1497 # this function,
+          and just call forward.<br>   1498 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1499         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1500         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1501     return
+          forward_call(*args, **kwargs)<br>   1502 # Do not call functions when jit
+          is used<br>   1503 full_backward_hooks, non_full_backward_hooks = [], []</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,
+          in add_hook_to_module..new_forward(*args, **kwargs)<br>    163         output
+          = old_forward(*args, **kwargs)<br>    164 else:<br>--&gt; 165     output
+          = old_forward(*args, **kwargs)<br>    166 return module._hf_hook.post_forward(module,
+          output)</p>
+
+          <p>File ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:381,
+          in DecoderLayer.forward(self, hidden_states, alibi, attention_mask, layer_past,
+          head_mask, use_cache, output_attentions)<br>    370 def forward(<br>    371     self,<br>    372     hidden_states:
+          torch.Tensor,<br>   (...)<br>    378     output_attentions: bool = False,<br>    379
+          ):<br>--&gt; 381     layernorm_output = self.input_layernorm(hidden_states)<br>    382     residual
+          = hidden_states<br>    384     # Self attention.</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,
+          in Module._call_impl(self, *args, **kwargs)<br>   1496 # If we don''t have
+          any hooks, we want to skip the rest of the logic in<br>   1497 # this function,
+          and just call forward.<br>   1498 if not (self._backward_hooks or self._backward_pre_hooks
+          or self._forward_hooks or self._forward_pre_hooks<br>   1499         or
+          _global_backward_pre_hooks or _global_backward_hooks<br>   1500         or
+          _global_forward_hooks or _global_forward_pre_hooks):<br>-&gt; 1501     return
+          forward_call(*args, **kwargs)<br>   1502 # Do not call functions when jit
+          is used<br>   1503 full_backward_hooks, non_full_backward_hooks = [], []</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,
+          in add_hook_to_module..new_forward(*args, **kwargs)<br>    163         output
+          = old_forward(*args, **kwargs)<br>    164 else:<br>--&gt; 165     output
+          = old_forward(*args, **kwargs)<br>    166 return module._hf_hook.post_forward(module,
+          output)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/normalization.py:190,
+          in LayerNorm.forward(self, input)<br>    189 def forward(self, input: Tensor)
+          -&gt; Tensor:<br>--&gt; 190     return F.layer_norm(<br>    191         input,
+          self.normalized_shape, self.weight, self.bias, self.eps)</p>
+
+          <p>File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/functional.py:2515,
+          in layer_norm(input, normalized_shape, weight, bias, eps)<br>   2511 if
+          has_torch_function_variadic(input, weight, bias):<br>   2512     return
+          handle_torch_function(<br>   2513         layer_norm, (input, weight, bias),
+          input, normalized_shape, weight=weight, bias=bias, eps=eps<br>   2514     )<br>-&gt;
+          2515 return torch.layer_norm(input, normalized_shape, weight, bias, eps,
+          torch.backends.cudnn.enabled)</p>
+
+          <p>RuntimeError: "LayerNormKernelImpl" not implemented for ''Half''</p>
+
+          '
+        raw: "Running on a Mac with no GPU \r\nGetting below error\r\n\r\nI added\
+          \ llm_int8_enable_fp32_cpu_offload=True\r\nto\r\nquantization_config \r\n\
+          \r\nused a custom device map\r\ndevice_maps = {\r\n    \"transformer.word_embeddings\"\
+          : \"cpu\",\r\n    \"transformer.word_embeddings_layernorm\": \"cpu\",\r\n\
+          \    \"lm_head\": \"cpu\",\r\n    \"transformer.h\": \"cpu\",\r\n    \"\
+          transformer.ln_f\": \"cpu\",\r\n}\r\n\r\nI downloaded your entire model\
+          \ to my laptop\r\nmodel_id = \"/Users/falcon-7b-instruct-sharded\"\r\n\r\
+          \nmodel_4bit = AutoModelForCausalLM.from_pretrained(\r\n        model_id,\r\
+          \n        device_map=device_maps,\r\n        quantization_config=quantization_config,\r\
+          \n        trust_remote_code=True)\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+          \n\r\nGetting error for below line\r\n\r\n\r\nsequences = pipeline(\r\n\
+          \   \"Girafatron is obsessed with giraffes, the most glorious animal on\
+          \ the face of this Earth. Giraftron believes all other animals are irrelevant\
+          \ when compared to the glorious majesty of the giraffe.\\nDaniel: Hello,\
+          \ Girafatron!\\nGirafatron:\")\r\n\r\n\r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\nCell In[23], line 1\r\n----> 1 sequences = pipeline(\r\n    \
+          \  2    \"Girafatron is obsessed with giraffes, the most glorious animal\
+          \ on the face of this Earth. Giraftron believes all other animals are irrelevant\
+          \ when compared to the glorious majesty of the giraffe.\\nDaniel: Hello,\
+          \ Girafatron!\\nGirafatron:\")\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:200,\
+          \ in TextGenerationPipeline.__call__(self, text_inputs, **kwargs)\r\n  \
+          \  159 def __call__(self, text_inputs, **kwargs):\r\n    160     \"\"\"\r\
+          \n    161     Complete the prompt(s) given as inputs.\r\n    162 \r\n  \
+          \ (...)\r\n    198           ids of the generated text.\r\n    199     \"\
+          \"\"\r\n--> 200     return super().__call__(text_inputs, **kwargs)\r\n\r\
+          \nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1122,\
+          \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\r\
+          \n   1114     return next(\r\n   1115         iter(\r\n   1116         \
+          \    self.get_iterator(\r\n   (...)\r\n   1119         )\r\n   1120    \
+          \ )\r\n   1121 else:\r\n-> 1122     return self.run_single(inputs, preprocess_params,\
+          \ forward_params, postprocess_params)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1129,\
+          \ in Pipeline.run_single(self, inputs, preprocess_params, forward_params,\
+          \ postprocess_params)\r\n   1127 def run_single(self, inputs, preprocess_params,\
+          \ forward_params, postprocess_params):\r\n   1128     model_inputs = self.preprocess(inputs,\
+          \ **preprocess_params)\r\n-> 1129     model_outputs = self.forward(model_inputs,\
+          \ **forward_params)\r\n   1130     outputs = self.postprocess(model_outputs,\
+          \ **postprocess_params)\r\n   1131     return outputs\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1028,\
+          \ in Pipeline.forward(self, model_inputs, **forward_params)\r\n   1026 \
+          \    with inference_context():\r\n   1027         model_inputs = self._ensure_tensor_on_device(model_inputs,\
+          \ device=self.device)\r\n-> 1028         model_outputs = self._forward(model_inputs,\
+          \ **forward_params)\r\n   1029         model_outputs = self._ensure_tensor_on_device(model_outputs,\
+          \ device=torch.device(\"cpu\"))\r\n   1030 else:\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:261,\
+          \ in TextGenerationPipeline._forward(self, model_inputs, **generate_kwargs)\r\
+          \n    258         generate_kwargs[\"min_length\"] += prefix_length\r\n \
+          \   260 # BS x SL\r\n--> 261 generated_sequence = self.model.generate(input_ids=input_ids,\
+          \ attention_mask=attention_mask, **generate_kwargs)\r\n    262 out_b = generated_sequence.shape[0]\r\
+          \n    263 if self.framework == \"pt\":\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\r\n  \
+          \  112 @functools.wraps(func)\r\n    113 def decorate_context(*args, **kwargs):\r\
+          \n    114     with ctx_factory():\r\n--> 115         return func(*args,\
+          \ **kwargs)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:1588,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\r\n   1580     input_ids, model_kwargs = self._expand_inputs_for_generation(\r\
+          \n   1581         input_ids=input_ids,\r\n   1582         expand_size=generation_config.num_return_sequences,\r\
+          \n   1583         is_encoder_decoder=self.config.is_encoder_decoder,\r\n\
+          \   1584         **model_kwargs,\r\n   1585     )\r\n   1587     # 13. run\
+          \ sample\r\n-> 1588     return self.sample(\r\n   1589         input_ids,\r\
+          \n   1590         logits_processor=logits_processor,\r\n   1591        \
+          \ logits_warper=logits_warper,\r\n   1592         stopping_criteria=stopping_criteria,\r\
+          \n   1593         pad_token_id=generation_config.pad_token_id,\r\n   1594\
+          \         eos_token_id=generation_config.eos_token_id,\r\n   1595      \
+          \   output_scores=generation_config.output_scores,\r\n   1596         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+          \n   1597         synced_gpus=synced_gpus,\r\n   1598         streamer=streamer,\r\
+          \n   1599         **model_kwargs,\r\n   1600     )\r\n   1602 elif is_beam_gen_mode:\r\
+          \n   1603     if generation_config.num_return_sequences > generation_config.num_beams:\r\
+          \n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:2642,\
+          \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+          \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions,\
+          \ output_hidden_states, output_scores, return_dict_in_generate, synced_gpus,\
+          \ streamer, **model_kwargs)\r\n   2639 model_inputs = self.prepare_inputs_for_generation(input_ids,\
+          \ **model_kwargs)\r\n   2641 # forward pass to get next token\r\n-> 2642\
+          \ outputs = self(\r\n   2643     **model_inputs,\r\n   2644     return_dict=True,\r\
+          \n   2645     output_attentions=output_attentions,\r\n   2646     output_hidden_states=output_hidden_states,\r\
+          \n   2647 )\r\n   2649 if synced_gpus and this_peer_finished:\r\n   2650\
+          \     continue  # don't waste resources running the code we don't need\r\
+          \n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:753,\
+          \ in RWForCausalLM.forward(self, input_ids, past_key_values, attention_mask,\
+          \ head_mask, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states,\
+          \ return_dict, **deprecated_arguments)\r\n    749     raise ValueError(f\"\
+          Got unexpected arguments: {deprecated_arguments}\")\r\n    751 return_dict\
+          \ = return_dict if return_dict is not None else self.config.use_return_dict\r\
+          \n--> 753 transformer_outputs = self.transformer(\r\n    754     input_ids,\r\
+          \n    755     past_key_values=past_key_values,\r\n    756     attention_mask=attention_mask,\r\
+          \n    757     head_mask=head_mask,\r\n    758     inputs_embeds=inputs_embeds,\r\
+          \n    759     use_cache=use_cache,\r\n    760     output_attentions=output_attentions,\r\
+          \n    761     output_hidden_states=output_hidden_states,\r\n    762    \
+          \ return_dict=return_dict,\r\n    763 )\r\n    764 hidden_states = transformer_outputs[0]\r\
+          \n    766 lm_logits = self.lm_head(hidden_states)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:648,\
+          \ in RWModel.forward(self, input_ids, past_key_values, attention_mask, head_mask,\
+          \ inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict,\
+          \ **deprecated_arguments)\r\n    640     outputs = torch.utils.checkpoint.checkpoint(\r\
+          \n    641         create_custom_forward(block),\r\n    642         hidden_states,\r\
+          \n   (...)\r\n    645         head_mask[i],\r\n    646     )\r\n    647\
+          \ else:\r\n--> 648     outputs = block(\r\n    649         hidden_states,\r\
+          \n    650         layer_past=layer_past,\r\n    651         attention_mask=causal_mask,\r\
+          \n    652         head_mask=head_mask[i],\r\n    653         use_cache=use_cache,\r\
+          \n    654         output_attentions=output_attentions,\r\n    655      \
+          \   alibi=alibi,\r\n    656     )\r\n    658 hidden_states = outputs[0]\r\
+          \n    659 if use_cache is True:\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:381,\
+          \ in DecoderLayer.forward(self, hidden_states, alibi, attention_mask, layer_past,\
+          \ head_mask, use_cache, output_attentions)\r\n    370 def forward(\r\n \
+          \   371     self,\r\n    372     hidden_states: torch.Tensor,\r\n   (...)\r\
+          \n    378     output_attentions: bool = False,\r\n    379 ):\r\n--> 381\
+          \     layernorm_output = self.input_layernorm(hidden_states)\r\n    382\
+          \     residual = hidden_states\r\n    384     # Self attention.\r\n\r\n\
+          File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+          \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\r\n   1497 # this\
+          \ function, and just call forward.\r\n   1498 if not (self._backward_hooks\
+          \ or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks\r\
+          \n   1499         or _global_backward_pre_hooks or _global_backward_hooks\r\
+          \n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call\
+          \ functions when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+          \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163\
+          \         output = old_forward(*args, **kwargs)\r\n    164 else:\r\n-->\
+          \ 165     output = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+          \ output)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/normalization.py:190,\
+          \ in LayerNorm.forward(self, input)\r\n    189 def forward(self, input:\
+          \ Tensor) -> Tensor:\r\n--> 190     return F.layer_norm(\r\n    191    \
+          \     input, self.normalized_shape, self.weight, self.bias, self.eps)\r\n\
+          \r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/functional.py:2515,\
+          \ in layer_norm(input, normalized_shape, weight, bias, eps)\r\n   2511 if\
+          \ has_torch_function_variadic(input, weight, bias):\r\n   2512     return\
+          \ handle_torch_function(\r\n   2513         layer_norm, (input, weight,\
+          \ bias), input, normalized_shape, weight=weight, bias=bias, eps=eps\r\n\
+          \   2514     )\r\n-> 2515 return torch.layer_norm(input, normalized_shape,\
+          \ weight, bias, eps, torch.backends.cudnn.enabled)\r\n\r\nRuntimeError:\
+          \ \"LayerNormKernelImpl\" not implemented for 'Half'"
+        updatedAt: '2023-07-12T13:28:32.005Z'
+      numEdits: 0
+      reactions: []
+    id: 64aeaa80e1a1a94474c1539d
+    type: comment
+  author: pranavnerurkar
+  content: "Running on a Mac with no GPU \r\nGetting below error\r\n\r\nI added llm_int8_enable_fp32_cpu_offload=True\r\
+    \nto\r\nquantization_config \r\n\r\nused a custom device map\r\ndevice_maps =\
+    \ {\r\n    \"transformer.word_embeddings\": \"cpu\",\r\n    \"transformer.word_embeddings_layernorm\"\
+    : \"cpu\",\r\n    \"lm_head\": \"cpu\",\r\n    \"transformer.h\": \"cpu\",\r\n\
+    \    \"transformer.ln_f\": \"cpu\",\r\n}\r\n\r\nI downloaded your entire model\
+    \ to my laptop\r\nmodel_id = \"/Users/falcon-7b-instruct-sharded\"\r\n\r\nmodel_4bit\
+    \ = AutoModelForCausalLM.from_pretrained(\r\n        model_id,\r\n        device_map=device_maps,\r\
+    \n        quantization_config=quantization_config,\r\n        trust_remote_code=True)\r\
+    \ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\n\r\nGetting error for\
+    \ below line\r\n\r\n\r\nsequences = pipeline(\r\n   \"Girafatron is obsessed with\
+    \ giraffes, the most glorious animal on the face of this Earth. Giraftron believes\
+    \ all other animals are irrelevant when compared to the glorious majesty of the\
+    \ giraffe.\\nDaniel: Hello, Girafatron!\\nGirafatron:\")\r\n\r\n\r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \nCell In[23], line 1\r\n----> 1 sequences = pipeline(\r\n      2    \"Girafatron\
+    \ is obsessed with giraffes, the most glorious animal on the face of this Earth.\
+    \ Giraftron believes all other animals are irrelevant when compared to the glorious\
+    \ majesty of the giraffe.\\nDaniel: Hello, Girafatron!\\nGirafatron:\")\r\n\r\n\
+    File ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:200,\
+    \ in TextGenerationPipeline.__call__(self, text_inputs, **kwargs)\r\n    159 def\
+    \ __call__(self, text_inputs, **kwargs):\r\n    160     \"\"\"\r\n    161    \
+    \ Complete the prompt(s) given as inputs.\r\n    162 \r\n   (...)\r\n    198 \
+    \          ids of the generated text.\r\n    199     \"\"\"\r\n--> 200     return\
+    \ super().__call__(text_inputs, **kwargs)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1122,\
+    \ in Pipeline.__call__(self, inputs, num_workers, batch_size, *args, **kwargs)\r\
+    \n   1114     return next(\r\n   1115         iter(\r\n   1116             self.get_iterator(\r\
+    \n   (...)\r\n   1119         )\r\n   1120     )\r\n   1121 else:\r\n-> 1122 \
+    \    return self.run_single(inputs, preprocess_params, forward_params, postprocess_params)\r\
+    \n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1129,\
+    \ in Pipeline.run_single(self, inputs, preprocess_params, forward_params, postprocess_params)\r\
+    \n   1127 def run_single(self, inputs, preprocess_params, forward_params, postprocess_params):\r\
+    \n   1128     model_inputs = self.preprocess(inputs, **preprocess_params)\r\n\
+    -> 1129     model_outputs = self.forward(model_inputs, **forward_params)\r\n \
+    \  1130     outputs = self.postprocess(model_outputs, **postprocess_params)\r\n\
+    \   1131     return outputs\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/base.py:1028,\
+    \ in Pipeline.forward(self, model_inputs, **forward_params)\r\n   1026     with\
+    \ inference_context():\r\n   1027         model_inputs = self._ensure_tensor_on_device(model_inputs,\
+    \ device=self.device)\r\n-> 1028         model_outputs = self._forward(model_inputs,\
+    \ **forward_params)\r\n   1029         model_outputs = self._ensure_tensor_on_device(model_outputs,\
+    \ device=torch.device(\"cpu\"))\r\n   1030 else:\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/pipelines/text_generation.py:261,\
+    \ in TextGenerationPipeline._forward(self, model_inputs, **generate_kwargs)\r\n\
+    \    258         generate_kwargs[\"min_length\"] += prefix_length\r\n    260 #\
+    \ BS x SL\r\n--> 261 generated_sequence = self.model.generate(input_ids=input_ids,\
+    \ attention_mask=attention_mask, **generate_kwargs)\r\n    262 out_b = generated_sequence.shape[0]\r\
+    \n    263 if self.framework == \"pt\":\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,\
+    \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\r\n    112 @functools.wraps(func)\r\
+    \n    113 def decorate_context(*args, **kwargs):\r\n    114     with ctx_factory():\r\
+    \n--> 115         return func(*args, **kwargs)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:1588,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ **kwargs)\r\n   1580     input_ids, model_kwargs = self._expand_inputs_for_generation(\r\
+    \n   1581         input_ids=input_ids,\r\n   1582         expand_size=generation_config.num_return_sequences,\r\
+    \n   1583         is_encoder_decoder=self.config.is_encoder_decoder,\r\n   1584\
+    \         **model_kwargs,\r\n   1585     )\r\n   1587     # 13. run sample\r\n\
+    -> 1588     return self.sample(\r\n   1589         input_ids,\r\n   1590     \
+    \    logits_processor=logits_processor,\r\n   1591         logits_warper=logits_warper,\r\
+    \n   1592         stopping_criteria=stopping_criteria,\r\n   1593         pad_token_id=generation_config.pad_token_id,\r\
+    \n   1594         eos_token_id=generation_config.eos_token_id,\r\n   1595    \
+    \     output_scores=generation_config.output_scores,\r\n   1596         return_dict_in_generate=generation_config.return_dict_in_generate,\r\
+    \n   1597         synced_gpus=synced_gpus,\r\n   1598         streamer=streamer,\r\
+    \n   1599         **model_kwargs,\r\n   1600     )\r\n   1602 elif is_beam_gen_mode:\r\
+    \n   1603     if generation_config.num_return_sequences > generation_config.num_beams:\r\
+    \n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/transformers/generation/utils.py:2642,\
+    \ in GenerationMixin.sample(self, input_ids, logits_processor, stopping_criteria,\
+    \ logits_warper, max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+    \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\r\
+    \n   2639 model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)\r\
+    \n   2641 # forward pass to get next token\r\n-> 2642 outputs = self(\r\n   2643\
+    \     **model_inputs,\r\n   2644     return_dict=True,\r\n   2645     output_attentions=output_attentions,\r\
+    \n   2646     output_hidden_states=output_hidden_states,\r\n   2647 )\r\n   2649\
+    \ if synced_gpus and this_peer_finished:\r\n   2650     continue  # don't waste\
+    \ resources running the code we don't need\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:753,\
+    \ in RWForCausalLM.forward(self, input_ids, past_key_values, attention_mask, head_mask,\
+    \ inputs_embeds, labels, use_cache, output_attentions, output_hidden_states, return_dict,\
+    \ **deprecated_arguments)\r\n    749     raise ValueError(f\"Got unexpected arguments:\
+    \ {deprecated_arguments}\")\r\n    751 return_dict = return_dict if return_dict\
+    \ is not None else self.config.use_return_dict\r\n--> 753 transformer_outputs\
+    \ = self.transformer(\r\n    754     input_ids,\r\n    755     past_key_values=past_key_values,\r\
+    \n    756     attention_mask=attention_mask,\r\n    757     head_mask=head_mask,\r\
+    \n    758     inputs_embeds=inputs_embeds,\r\n    759     use_cache=use_cache,\r\
+    \n    760     output_attentions=output_attentions,\r\n    761     output_hidden_states=output_hidden_states,\r\
+    \n    762     return_dict=return_dict,\r\n    763 )\r\n    764 hidden_states =\
+    \ transformer_outputs[0]\r\n    766 lm_logits = self.lm_head(hidden_states)\r\n\
+    \r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:648,\
+    \ in RWModel.forward(self, input_ids, past_key_values, attention_mask, head_mask,\
+    \ inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict,\
+    \ **deprecated_arguments)\r\n    640     outputs = torch.utils.checkpoint.checkpoint(\r\
+    \n    641         create_custom_forward(block),\r\n    642         hidden_states,\r\
+    \n   (...)\r\n    645         head_mask[i],\r\n    646     )\r\n    647 else:\r\
+    \n--> 648     outputs = block(\r\n    649         hidden_states,\r\n    650  \
+    \       layer_past=layer_past,\r\n    651         attention_mask=causal_mask,\r\
+    \n    652         head_mask=head_mask[i],\r\n    653         use_cache=use_cache,\r\
+    \n    654         output_attentions=output_attentions,\r\n    655         alibi=alibi,\r\
+    \n    656     )\r\n    658 hidden_states = outputs[0]\r\n    659 if use_cache\
+    \ is True:\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/.cache/huggingface/modules/transformers_modules/tiiuae/falcon-7b-instruct/c7f670a03d987254220f343c6b026ea0c5147185/modelling_RW.py:381,\
+    \ in DecoderLayer.forward(self, hidden_states, alibi, attention_mask, layer_past,\
+    \ head_mask, use_cache, output_attentions)\r\n    370 def forward(\r\n    371\
+    \     self,\r\n    372     hidden_states: torch.Tensor,\r\n   (...)\r\n    378\
+    \     output_attentions: bool = False,\r\n    379 ):\r\n--> 381     layernorm_output\
+    \ = self.input_layernorm(hidden_states)\r\n    382     residual = hidden_states\r\
+    \n    384     # Self attention.\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/module.py:1501,\
+    \ in Module._call_impl(self, *args, **kwargs)\r\n   1496 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1497 # this function,\
+    \ and just call forward.\r\n   1498 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\r\n   1499         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\r\n   1500         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+    \n-> 1501     return forward_call(*args, **kwargs)\r\n   1502 # Do not call functions\
+    \ when jit is used\r\n   1503 full_backward_hooks, non_full_backward_hooks = [],\
+    \ []\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/accelerate/hooks.py:165,\
+    \ in add_hook_to_module.<locals>.new_forward(*args, **kwargs)\r\n    163     \
+    \    output = old_forward(*args, **kwargs)\r\n    164 else:\r\n--> 165     output\
+    \ = old_forward(*args, **kwargs)\r\n    166 return module._hf_hook.post_forward(module,\
+    \ output)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/modules/normalization.py:190,\
+    \ in LayerNorm.forward(self, input)\r\n    189 def forward(self, input: Tensor)\
+    \ -> Tensor:\r\n--> 190     return F.layer_norm(\r\n    191         input, self.normalized_shape,\
+    \ self.weight, self.bias, self.eps)\r\n\r\nFile ~/opt/anaconda3/envs/LLM/lib/python3.11/site-packages/torch/nn/functional.py:2515,\
+    \ in layer_norm(input, normalized_shape, weight, bias, eps)\r\n   2511 if has_torch_function_variadic(input,\
+    \ weight, bias):\r\n   2512     return handle_torch_function(\r\n   2513     \
+    \    layer_norm, (input, weight, bias), input, normalized_shape, weight=weight,\
+    \ bias=bias, eps=eps\r\n   2514     )\r\n-> 2515 return torch.layer_norm(input,\
+    \ normalized_shape, weight, bias, eps, torch.backends.cudnn.enabled)\r\n\r\nRuntimeError:\
+    \ \"LayerNormKernelImpl\" not implemented for 'Half'"
+  created_at: 2023-07-12 12:28:32+00:00
+  edited: false
+  hidden: false
+  id: 64aeaa80e1a1a94474c1539d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/2ad957ed2b9bb6f4cdb9531d72175c73.svg
+      fullname: vilson
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: vilsonrodrigues
+      type: user
+    createdAt: '2023-07-12T22:16:17.000Z'
+    data:
+      edited: false
+      editors:
+      - vilsonrodrigues
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8980069756507874
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/2ad957ed2b9bb6f4cdb9531d72175c73.svg
+          fullname: vilson
+          isHf: false
+          isPro: false
+          name: vilsonrodrigues
+          type: user
+        html: '<p>Your problem is that CPU does not support bnb quantization. The
+          tutorial teaches is to take some layers and unload them on the CPU, but
+          it will not keep these weights quantized</p>
+
+          <p>you should remove quantization and use device="auto" (auto detect backend
+          using Accelerate, to use CPU in your case)</p>
+
+          <p><a href="https://huggingface.co/docs/transformers/main_classes/quantization">https://huggingface.co/docs/transformers/main_classes/quantization</a></p>
+
+          '
+        raw: 'Your problem is that CPU does not support bnb quantization. The tutorial
+          teaches is to take some layers and unload them on the CPU, but it will not
+          keep these weights quantized
+
+
+          you should remove quantization and use device="auto" (auto detect backend
+          using Accelerate, to use CPU in your case)
+
+
+          https://huggingface.co/docs/transformers/main_classes/quantization'
+        updatedAt: '2023-07-12T22:16:17.074Z'
+      numEdits: 0
+      reactions: []
+    id: 64af2631ce8ec1e1886dbf42
+    type: comment
+  author: vilsonrodrigues
+  content: 'Your problem is that CPU does not support bnb quantization. The tutorial
+    teaches is to take some layers and unload them on the CPU, but it will not keep
+    these weights quantized
+
+
+    you should remove quantization and use device="auto" (auto detect backend using
+    Accelerate, to use CPU in your case)
+
+
+    https://huggingface.co/docs/transformers/main_classes/quantization'
+  created_at: 2023-07-12 21:16:17+00:00
+  edited: false
+  hidden: false
+  id: 64af2631ce8ec1e1886dbf42
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/2ad957ed2b9bb6f4cdb9531d72175c73.svg
+      fullname: vilson
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: vilsonrodrigues
+      type: user
+    createdAt: '2023-07-12T22:16:21.000Z'
+    data:
+      status: closed
+    id: 64af263570277aca903c5b1d
+    type: status-change
+  author: vilsonrodrigues
+  created_at: 2023-07-12 21:16:21+00:00
+  id: 64af263570277aca903c5b1d
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: vilsonrodrigues/falcon-7b-instruct-sharded
+repo_type: model
+status: closed
+target_branch: null
+title: 'RuntimeError: "LayerNormKernelImpl" not implemented for ''Half'''

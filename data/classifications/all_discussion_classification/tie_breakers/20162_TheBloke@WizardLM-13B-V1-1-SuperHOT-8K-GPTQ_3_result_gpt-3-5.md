@@ -1,0 +1,5 @@
+## https://huggingface.co/TheBloke/WizardLM-13B-V1-1-SuperHOT-8K-GPTQ/discussions/3
+
+contains_question: yes
+
+question_part: always get error when starting the model with exllama in text gen UI: text-generation-webui\modules\exllama.py”, line 59, in from_pretrained config.calculate_rotary_embedding_base() AttributeError: ‘ExLlamaConfig’ object has no attribute ‘calculate_rotary_embedding_base’ no clue where or what to change. I have no idea what this error message means nor the slightest idea how to solve it. Not even know where to start to figure it out. Looking for that in google only brings me to pages with code which I don't understand and where I have no idea where I can change it :D pls help me or give me a hint how to tackle this....same for "trust_remot_code=fals/true"...don't even know where I can change it :D

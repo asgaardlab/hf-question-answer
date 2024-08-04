@@ -1,0 +1,4 @@
+## https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5
+
+contains_question: yes
+question_part: I was looking at the Meta github page of LLama (https://github.com/facebookresearch/llama#fine-tuned-chat-models), and it says the following: The fine-tuned models were trained for dialogue applications. To get the expected features and performance for them, a specific formatting defined in chat_completion needs to be followed, including the INST and <<SYS>> tags, BOS and EOS tokens, and the whitespaces and breaklines in between (we recommend calling strip() on inputs to avoid double-spaces). I'm just a bit confused

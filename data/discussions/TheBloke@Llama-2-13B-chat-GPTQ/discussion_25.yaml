@@ -1,0 +1,295 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: RonanMcGovern
+conflicting_files: null
+created_at: 2023-08-01 11:27:11+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-08-01T12:27:11.000Z'
+    data:
+      edited: true
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6877217888832092
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: "<ol>\n<li><p>What are the key differences between GPTQ and NF4 quantisation\
+          \ with bitsandbytes? Are there reasons to expect advantages with one over\
+          \ the other?</p>\n</li>\n<li><p>I notice that there is no quantisation config\
+          \ recommended for inference in the ReadMe:</p>\n</li>\n</ol>\n<pre><code>model\
+          \ = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n        model_basename=model_basename,\n\
+          \        use_safetensors=True,\n        trust_remote_code=True,\n      \
+          \  device=\"cuda:0\",\n        use_triton=use_triton,\n        quantize_config=None)\n\
+          </code></pre>\n<p>Is that because there is little benefit during inference?\
+          \ Or is it simply because AutoGPTQForCausalLM has quantisation in-built?</p>\n\
+          <ol start=\"3\">\n<li><p>Any reason not to use os.environ[\"SAFETENSORS_FAST_GPU\"\
+          ] = \"1\" for inference ?</p>\n</li>\n<li><p>Any reason I couldn't use peft\
+          \ and lora to fine tune this model?</p>\n</li>\n</ol>\n<pre><code>from peft\
+          \ import prepare_model_for_kbit_training\n\nmodel.gradient_checkpointing_enable()\n\
+          model = prepare_model_for_kbit_training(model)\n</code></pre>\n<p>~~~<br>I've\
+          \ been running GPTQ versus bitsandbytes with NF4 . See below for some data.</p>\n\
+          <h3 id=\"perplexity-results\">Perplexity Results</h3>\n<p>fLlama-7B (2GB\
+          \ shards) nf4 bitsandbytes quantisation:</p>\n<ul>\n<li>PPL: 8.8, GPU Mem:\
+          \ 4.7 GB, 12.2 toks.</li>\n</ul>\n<p>Llama-7B-GPTQ-4bit-128:</p>\n<ul>\n\
+          <li>PPL: 9.3, GPU Mem: 4.8 GB, 21.4 toks.</li>\n</ul>\n<p>fLlama-13B (4GB\
+          \ shards) nf4 bitsandbytes quantisation:</p>\n<ul>\n<li>PPL: 8.0, GPU Mem:\
+          \ 8.2 GB, 7.9 toks.</li>\n</ul>\n<p>Llama-13B-GPTQ-4bit-128:</p>\n<ul>\n\
+          <li>PPL: 7.8, GPU Mem: 8.5 GB, 15 toks.</li>\n</ul>\n<p>and here is my bnb\
+          \ config:</p>\n<pre><code>bnb_config = BitsAndBytesConfig(\n        load_in_4bit=True,\n\
+          \        bnb_4bit_use_double_quant=True, #adds speed with minimal loss of\
+          \ quality.\n        bnb_4bit_quant_type=\"nf4\",\n        bnb_4bit_compute_dtype=torch.bfloat16,\n\
+          \    )\n    model = AutoModelForCausalLM.from_pretrained(\n        model_id,\n\
+          \        quantization_config=bnb_config,\n        device_map='auto', # for\
+          \ inference use 'auto', for training use device_map={\"\":0}\n        trust_remote_code=True,\n\
+          \        cache_dir=cache_dir)\n</code></pre>\n"
+        raw: "1. What are the key differences between GPTQ and NF4 quantisation with\
+          \ bitsandbytes? Are there reasons to expect advantages with one over the\
+          \ other?\n\n2. I notice that there is no quantisation config recommended\
+          \ for inference in the ReadMe:\n```\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        model_basename=model_basename,\n        use_safetensors=True,\n\
+          \        trust_remote_code=True,\n        device=\"cuda:0\",\n        use_triton=use_triton,\n\
+          \        quantize_config=None)\n```\n\nIs that because there is little benefit\
+          \ during inference? Or is it simply because AutoGPTQForCausalLM has quantisation\
+          \ in-built?\n\n3. Any reason not to use os.environ[\"SAFETENSORS_FAST_GPU\"\
+          ] = \"1\" for inference ?\n\n4. Any reason I couldn't use peft and lora\
+          \ to fine tune this model?\n```\nfrom peft import prepare_model_for_kbit_training\n\
+          \nmodel.gradient_checkpointing_enable()\nmodel = prepare_model_for_kbit_training(model)\n\
+          ```\n\n~~~\nI've been running GPTQ versus bitsandbytes with NF4 . See below\
+          \ for some data.\n\n### Perplexity Results\nfLlama-7B (2GB shards) nf4 bitsandbytes\
+          \ quantisation:\n- PPL: 8.8, GPU Mem: 4.7 GB, 12.2 toks.\n\nLlama-7B-GPTQ-4bit-128:\n\
+          - PPL: 9.3, GPU Mem: 4.8 GB, 21.4 toks.\n\nfLlama-13B (4GB shards) nf4 bitsandbytes\
+          \ quantisation:\n- PPL: 8.0, GPU Mem: 8.2 GB, 7.9 toks.\n\nLlama-13B-GPTQ-4bit-128:\n\
+          - PPL: 7.8, GPU Mem: 8.5 GB, 15 toks.\n\nand here is my bnb config:\n```\n\
+          bnb_config = BitsAndBytesConfig(\n        load_in_4bit=True,\n        bnb_4bit_use_double_quant=True,\
+          \ #adds speed with minimal loss of quality.\n        bnb_4bit_quant_type=\"\
+          nf4\",\n        bnb_4bit_compute_dtype=torch.bfloat16,\n    )\n    model\
+          \ = AutoModelForCausalLM.from_pretrained(\n        model_id,\n        quantization_config=bnb_config,\n\
+          \        device_map='auto', # for inference use 'auto', for training use\
+          \ device_map={\"\":0}\n        trust_remote_code=True,\n        cache_dir=cache_dir)\n\
+          ```"
+        updatedAt: '2023-08-01T18:05:31.419Z'
+      numEdits: 4
+      reactions: []
+    id: 64c8fa1fc864d962ed01be9c
+    type: comment
+  author: RonanMcGovern
+  content: "1. What are the key differences between GPTQ and NF4 quantisation with\
+    \ bitsandbytes? Are there reasons to expect advantages with one over the other?\n\
+    \n2. I notice that there is no quantisation config recommended for inference in\
+    \ the ReadMe:\n```\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+    \        model_basename=model_basename,\n        use_safetensors=True,\n     \
+    \   trust_remote_code=True,\n        device=\"cuda:0\",\n        use_triton=use_triton,\n\
+    \        quantize_config=None)\n```\n\nIs that because there is little benefit\
+    \ during inference? Or is it simply because AutoGPTQForCausalLM has quantisation\
+    \ in-built?\n\n3. Any reason not to use os.environ[\"SAFETENSORS_FAST_GPU\"] =\
+    \ \"1\" for inference ?\n\n4. Any reason I couldn't use peft and lora to fine\
+    \ tune this model?\n```\nfrom peft import prepare_model_for_kbit_training\n\n\
+    model.gradient_checkpointing_enable()\nmodel = prepare_model_for_kbit_training(model)\n\
+    ```\n\n~~~\nI've been running GPTQ versus bitsandbytes with NF4 . See below for\
+    \ some data.\n\n### Perplexity Results\nfLlama-7B (2GB shards) nf4 bitsandbytes\
+    \ quantisation:\n- PPL: 8.8, GPU Mem: 4.7 GB, 12.2 toks.\n\nLlama-7B-GPTQ-4bit-128:\n\
+    - PPL: 9.3, GPU Mem: 4.8 GB, 21.4 toks.\n\nfLlama-13B (4GB shards) nf4 bitsandbytes\
+    \ quantisation:\n- PPL: 8.0, GPU Mem: 8.2 GB, 7.9 toks.\n\nLlama-13B-GPTQ-4bit-128:\n\
+    - PPL: 7.8, GPU Mem: 8.5 GB, 15 toks.\n\nand here is my bnb config:\n```\nbnb_config\
+    \ = BitsAndBytesConfig(\n        load_in_4bit=True,\n        bnb_4bit_use_double_quant=True,\
+    \ #adds speed with minimal loss of quality.\n        bnb_4bit_quant_type=\"nf4\"\
+    ,\n        bnb_4bit_compute_dtype=torch.bfloat16,\n    )\n    model = AutoModelForCausalLM.from_pretrained(\n\
+    \        model_id,\n        quantization_config=bnb_config,\n        device_map='auto',\
+    \ # for inference use 'auto', for training use device_map={\"\":0}\n        trust_remote_code=True,\n\
+    \        cache_dir=cache_dir)\n```"
+  created_at: 2023-08-01 11:27:11+00:00
+  edited: true
+  hidden: false
+  id: 64c8fa1fc864d962ed01be9c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-08-02T16:59:34.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9196482300758362
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: '<p>Any insights here? Thanks </p>
+
+          '
+        raw: 'Any insights here? Thanks '
+        updatedAt: '2023-08-02T16:59:34.250Z'
+      numEdits: 0
+      reactions: []
+    id: 64ca8b760d249f4ad27d6901
+    type: comment
+  author: RonanMcGovern
+  content: 'Any insights here? Thanks '
+  created_at: 2023-08-02 15:59:34+00:00
+  edited: false
+  hidden: false
+  id: 64ca8b760d249f4ad27d6901
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-08-08T10:38:08.000Z'
+    data:
+      edited: false
+      editors:
+      - RonanMcGovern
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9188928008079529
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+          fullname: Ronan McGovern
+          isHf: false
+          isPro: false
+          name: RonanMcGovern
+          type: user
+        html: '<p>Self-answering as I''ve found some links:</p>
+
+          <h2 id="normal-float-4-nf4">Normal Float 4 (NF4)</h2>
+
+          <p>a 4-bit method that is information optimal. The bitsandbytes library
+          supports it and it''s integrated in transformers. <a rel="nofollow" href="https://github.com/huggingface/blog/blob/main/4bit-transformers-bitsandbytes.md">https://github.com/huggingface/blog/blob/main/4bit-transformers-bitsandbytes.md</a></p>
+
+          <h2 id="ggml">ggml</h2>
+
+          <p>this is the gerganov work to put models on laptops. He has has some 2,3,4,5,6
+          bit quantisations - this is more done empirically - although he uses rules
+          of thumb to do mixed quantisation (i.e. keep more accuracy for certain parts
+          of the llm). <a rel="nofollow" href="https://github.com/ggerganov/llama.cpp/pull/1684">https://github.com/ggerganov/llama.cpp/pull/1684</a></p>
+
+          <h2 id="gptq">GPTQ</h2>
+
+          <p>This is kind of an active quantisation method. Basically you quantise,
+          but then you correct some other weights to keep the loss function a similar
+          shape - doing that requires you to have some training data for quantisation).
+          <a rel="nofollow" href="https://arxiv.org/abs/2210.17323">https://arxiv.org/abs/2210.17323</a></p>
+
+          <p>There is limited data on relative performance and a lot of factors influence
+          speed and precision. My limited testing in colab finds that GPTQ is faster
+          than NF4 with bitsandbytes - with similar perplexity. I need to do more
+          work testing ggml in colab.</p>
+
+          '
+        raw: "Self-answering as I've found some links:\n\n## Normal Float 4 (NF4)\n\
+          a 4-bit method that is information optimal. The bitsandbytes library supports\
+          \ it and it's integrated in transformers. https://github.com/huggingface/blog/blob/main/4bit-transformers-bitsandbytes.md\n\
+          \n## ggml\nthis is the gerganov work to put models on laptops. He has has\
+          \ some 2,3,4,5,6 bit quantisations - this is more done empirically - although\
+          \ he uses rules of thumb to do mixed quantisation (i.e. keep more accuracy\
+          \ for certain parts of the llm). https://github.com/ggerganov/llama.cpp/pull/1684\n\
+          \n##\_GPTQ\nThis is kind of an active quantisation method. Basically you\
+          \ quantise, but then you correct some other weights to keep the loss function\
+          \ a similar shape - doing that requires you to have some training data for\
+          \ quantisation). https://arxiv.org/abs/2210.17323\n\nThere is limited data\
+          \ on relative performance and a lot of factors influence speed and precision.\
+          \ My limited testing in colab finds that GPTQ is faster than NF4 with bitsandbytes\
+          \ - with similar perplexity. I need to do more work testing ggml in colab.\n"
+        updatedAt: '2023-08-08T10:38:08.511Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64d21b101c6337119e7bea23
+    id: 64d21b101c6337119e7bea22
+    type: comment
+  author: RonanMcGovern
+  content: "Self-answering as I've found some links:\n\n## Normal Float 4 (NF4)\n\
+    a 4-bit method that is information optimal. The bitsandbytes library supports\
+    \ it and it's integrated in transformers. https://github.com/huggingface/blog/blob/main/4bit-transformers-bitsandbytes.md\n\
+    \n## ggml\nthis is the gerganov work to put models on laptops. He has has some\
+    \ 2,3,4,5,6 bit quantisations - this is more done empirically - although he uses\
+    \ rules of thumb to do mixed quantisation (i.e. keep more accuracy for certain\
+    \ parts of the llm). https://github.com/ggerganov/llama.cpp/pull/1684\n\n##\_\
+    GPTQ\nThis is kind of an active quantisation method. Basically you quantise, but\
+    \ then you correct some other weights to keep the loss function a similar shape\
+    \ - doing that requires you to have some training data for quantisation). https://arxiv.org/abs/2210.17323\n\
+    \nThere is limited data on relative performance and a lot of factors influence\
+    \ speed and precision. My limited testing in colab finds that GPTQ is faster than\
+    \ NF4 with bitsandbytes - with similar perplexity. I need to do more work testing\
+    \ ggml in colab.\n"
+  created_at: 2023-08-08 09:38:08+00:00
+  edited: false
+  hidden: false
+  id: 64d21b101c6337119e7bea22
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/noauth/-6Yq7oM_Ju6Zi2GEvobvb.jpeg?w=200&h=200&f=face
+      fullname: Ronan McGovern
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: RonanMcGovern
+      type: user
+    createdAt: '2023-08-08T10:38:08.000Z'
+    data:
+      status: closed
+    id: 64d21b101c6337119e7bea23
+    type: status-change
+  author: RonanMcGovern
+  created_at: 2023-08-08 09:38:08+00:00
+  id: 64d21b101c6337119e7bea23
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 25
+repo_id: TheBloke/Llama-2-13B-chat-GPTQ
+repo_type: model
+status: closed
+target_branch: null
+title: GPTQ versus bitsandbytes

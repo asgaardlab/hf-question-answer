@@ -1,0 +1,350 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: DarvinDelray
+conflicting_files: null
+created_at: 2023-06-09 01:35:49+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/54b0c828b2210d23a8bfd2bd8b299b56.svg
+      fullname: Vinh Nguyen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: DarvinDelray
+      type: user
+    createdAt: '2023-06-09T02:35:49.000Z'
+    data:
+      edited: false
+      editors:
+      - DarvinDelray
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4042971432209015
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/54b0c828b2210d23a8bfd2bd8b299b56.svg
+          fullname: Vinh Nguyen
+          isHf: false
+          isPro: false
+          name: DarvinDelray
+          type: user
+        html: '<p>Hello,</p>
+
+          <p>I was attempting to load the model on Collab, however, I encounter an
+          problem, and after an little searching, I was able to find another means
+          of uploading the GPTQ model, shown below.</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/VV81ax9rpQ3KTpwgSkFMm.png"><img
+          alt="issue6-8-2023-3.png" src="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/VV81ax9rpQ3KTpwgSkFMm.png"></a></p>
+
+          <p>However, I still end up with an similar problem:<br><a rel="nofollow"
+          href="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/mFt3eG3jDD5dr-EhHfHNF.png"><img
+          alt="issue6-8-2023-3b.png" src="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/mFt3eG3jDD5dr-EhHfHNF.png"></a></p>
+
+          <p>I''m at an near loss of what to do, as I''ve attempted another method
+          mentioned:</p>
+
+          <p>from transformers import AutoTokenizer, pipeline, logging<br>from auto_gptq
+          import AutoGPTQForCausalLM, BaseQuantizeConfig<br>import argparse</p>
+
+          <p>parser = argparse.ArgumentParser(description=''Simple AutoGPTQ example'')<br>parser.add_argument(''model_name_or_path'',
+          type=str, help=''Model folder or repo'')<br>parser.add_argument(''--model_basename'',
+          type=str, help=''Model file basename if model is not named gptq_model-Xb-Ygr'')<br>parser.add_argument(''--use_slow'',
+          action="store_true", help=''Use slow tokenizer'')<br>parser.add_argument(''--use_safetensors'',
+          action="store_true", help=''Model file basename if model is not named gptq_model-Xb-Ygr'')<br>parser.add_argument(''--use_triton'',
+          action="store_true", help=''Use Triton for inference?'')<br>parser.add_argument(''--bits'',
+          type=int, default=4, help=''Specify GPTQ bits. Only needed if no quantize_config.json
+          is provided'')<br>parser.add_argument(''--group_size'', type=int, default=128,
+          help=''Specify GPTQ group_size. Only needed if no quantize_config.json is
+          provided'')<br>parser.add_argument(''--desc_act'', action="store_true",
+          help=''Specify GPTQ desc_act. Only needed if no quantize_config.json is
+          provided'')</p>
+
+          <p>args = parser.parse_args()</p>
+
+          <p>quantized_model_dir = args.model_name_or_path</p>
+
+          <p>tokenizer = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=not
+          args.use_slow)</p>
+
+          <p>try:<br>   quantize_config = BaseQuantizeConfig.from_pretrained(quantized_model_dir)<br>except:<br>    quantize_config
+          = BaseQuantizeConfig(<br>            bits=args.bits,<br>            group_size=args.group_size,<br>            desc_act=args.desc_act<br>        )</p>
+
+          <p>model = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,<br>        use_safetensors=True,<br>        model_basename=args.model_basename,<br>        device="cuda:0",<br>        use_triton=args.use_triton,<br>        quantize_config=quantize_config)</p>
+
+          <p>logging.set_verbosity(logging.CRITICAL)</p>
+
+          <p>prompt = "Tell me about AI"<br>prompt_template=f''''''<br>Human: {prompt}<br>Assistant:
+          .''''''</p>
+
+          <p>print("*** Pipeline:")<br>pipe = pipeline(<br>    "text-generation",<br>    model=model,<br>    tokenizer=tokenizer,<br>    max_new_tokens=512,<br>    temperature=0.7,<br>    top_p=0.95,<br>    repetition_penalty=1.15<br>)</p>
+
+          <p>print(pipe(prompt_template)[0][''generated_text''])</p>
+
+          <p>print("\n\n*** Generate:")</p>
+
+          <p>input_ids = tokenizer(prompt_template, return_tensors=''pt'').input_ids.cuda()<br>output
+          = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)<br>print(tokenizer.decode(output[0]))</p>
+
+          <p>and end up with this:</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/RBueHqsLAG1ibkijshXff.png"><img
+          alt="issue6-8-2023-3c.png" src="https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/RBueHqsLAG1ibkijshXff.png"></a></p>
+
+          '
+        raw: "Hello,\r\n\r\nI was attempting to load the model on Collab, however,\
+          \ I encounter an problem, and after an little searching, I was able to find\
+          \ another means of uploading the GPTQ model, shown below.\r\n\r\n![issue6-8-2023-3.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/VV81ax9rpQ3KTpwgSkFMm.png)\r\
+          \n\r\nHowever, I still end up with an similar problem:\r\n![issue6-8-2023-3b.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/mFt3eG3jDD5dr-EhHfHNF.png)\r\
+          \n\r\nI'm at an near loss of what to do, as I've attempted another method\
+          \ mentioned:\r\n\r\nfrom transformers import AutoTokenizer, pipeline, logging\r\
+          \nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\r\nimport\
+          \ argparse\r\n\r\nparser = argparse.ArgumentParser(description='Simple AutoGPTQ\
+          \ example')\r\nparser.add_argument('model_name_or_path', type=str, help='Model\
+          \ folder or repo')\r\nparser.add_argument('--model_basename', type=str,\
+          \ help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\n\
+          parser.add_argument('--use_slow', action=\"store_true\", help='Use slow\
+          \ tokenizer')\r\nparser.add_argument('--use_safetensors', action=\"store_true\"\
+          , help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\n\
+          parser.add_argument('--use_triton', action=\"store_true\", help='Use Triton\
+          \ for inference?')\r\nparser.add_argument('--bits', type=int, default=4,\
+          \ help='Specify GPTQ bits. Only needed if no quantize_config.json is provided')\r\
+          \nparser.add_argument('--group_size', type=int, default=128, help='Specify\
+          \ GPTQ group_size. Only needed if no quantize_config.json is provided')\r\
+          \nparser.add_argument('--desc_act', action=\"store_true\", help='Specify\
+          \ GPTQ desc_act. Only needed if no quantize_config.json is provided')\r\n\
+          \r\nargs = parser.parse_args()\r\n\r\nquantized_model_dir = args.model_name_or_path\r\
+          \n\r\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=not\
+          \ args.use_slow)\r\n\r\ntry:\r\n   quantize_config = BaseQuantizeConfig.from_pretrained(quantized_model_dir)\r\
+          \nexcept:\r\n    quantize_config = BaseQuantizeConfig(\r\n            bits=args.bits,\r\
+          \n            group_size=args.group_size,\r\n            desc_act=args.desc_act\r\
+          \n        )\r\n\r\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\r\
+          \n        use_safetensors=True,\r\n        model_basename=args.model_basename,\r\
+          \n        device=\"cuda:0\",\r\n        use_triton=args.use_triton,\r\n\
+          \        quantize_config=quantize_config)\r\n\r\n\r\nlogging.set_verbosity(logging.CRITICAL)\r\
+          \n\r\nprompt = \"Tell me about AI\"\r\nprompt_template=f'''\r\nHuman: {prompt}\
+          \ \r\nAssistant: .'''\r\n\r\nprint(\"*** Pipeline:\")\r\npipe = pipeline(\r\
+          \n    \"text-generation\",\r\n    model=model,\r\n    tokenizer=tokenizer,\r\
+          \n    max_new_tokens=512,\r\n    temperature=0.7,\r\n    top_p=0.95,\r\n\
+          \    repetition_penalty=1.15\r\n)\r\n\r\nprint(pipe(prompt_template)[0]['generated_text'])\r\
+          \n\r\nprint(\"\\n\\n*** Generate:\")\r\n\r\ninput_ids = tokenizer(prompt_template,\
+          \ return_tensors='pt').input_ids.cuda()\r\noutput = model.generate(inputs=input_ids,\
+          \ temperature=0.7, max_new_tokens=512)\r\nprint(tokenizer.decode(output[0]))\r\
+          \n\r\nand end up with this:\r\n\r\n![issue6-8-2023-3c.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/RBueHqsLAG1ibkijshXff.png)\r\
+          \n"
+        updatedAt: '2023-06-09T02:35:49.258Z'
+      numEdits: 0
+      reactions: []
+    id: 6482900510cd9ffea8b78a81
+    type: comment
+  author: DarvinDelray
+  content: "Hello,\r\n\r\nI was attempting to load the model on Collab, however, I\
+    \ encounter an problem, and after an little searching, I was able to find another\
+    \ means of uploading the GPTQ model, shown below.\r\n\r\n![issue6-8-2023-3.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/VV81ax9rpQ3KTpwgSkFMm.png)\r\
+    \n\r\nHowever, I still end up with an similar problem:\r\n![issue6-8-2023-3b.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/mFt3eG3jDD5dr-EhHfHNF.png)\r\
+    \n\r\nI'm at an near loss of what to do, as I've attempted another method mentioned:\r\
+    \n\r\nfrom transformers import AutoTokenizer, pipeline, logging\r\nfrom auto_gptq\
+    \ import AutoGPTQForCausalLM, BaseQuantizeConfig\r\nimport argparse\r\n\r\nparser\
+    \ = argparse.ArgumentParser(description='Simple AutoGPTQ example')\r\nparser.add_argument('model_name_or_path',\
+    \ type=str, help='Model folder or repo')\r\nparser.add_argument('--model_basename',\
+    \ type=str, help='Model file basename if model is not named gptq_model-Xb-Ygr')\r\
+    \nparser.add_argument('--use_slow', action=\"store_true\", help='Use slow tokenizer')\r\
+    \nparser.add_argument('--use_safetensors', action=\"store_true\", help='Model\
+    \ file basename if model is not named gptq_model-Xb-Ygr')\r\nparser.add_argument('--use_triton',\
+    \ action=\"store_true\", help='Use Triton for inference?')\r\nparser.add_argument('--bits',\
+    \ type=int, default=4, help='Specify GPTQ bits. Only needed if no quantize_config.json\
+    \ is provided')\r\nparser.add_argument('--group_size', type=int, default=128,\
+    \ help='Specify GPTQ group_size. Only needed if no quantize_config.json is provided')\r\
+    \nparser.add_argument('--desc_act', action=\"store_true\", help='Specify GPTQ\
+    \ desc_act. Only needed if no quantize_config.json is provided')\r\n\r\nargs =\
+    \ parser.parse_args()\r\n\r\nquantized_model_dir = args.model_name_or_path\r\n\
+    \r\ntokenizer = AutoTokenizer.from_pretrained(quantized_model_dir, use_fast=not\
+    \ args.use_slow)\r\n\r\ntry:\r\n   quantize_config = BaseQuantizeConfig.from_pretrained(quantized_model_dir)\r\
+    \nexcept:\r\n    quantize_config = BaseQuantizeConfig(\r\n            bits=args.bits,\r\
+    \n            group_size=args.group_size,\r\n            desc_act=args.desc_act\r\
+    \n        )\r\n\r\nmodel = AutoGPTQForCausalLM.from_quantized(quantized_model_dir,\r\
+    \n        use_safetensors=True,\r\n        model_basename=args.model_basename,\r\
+    \n        device=\"cuda:0\",\r\n        use_triton=args.use_triton,\r\n      \
+    \  quantize_config=quantize_config)\r\n\r\n\r\nlogging.set_verbosity(logging.CRITICAL)\r\
+    \n\r\nprompt = \"Tell me about AI\"\r\nprompt_template=f'''\r\nHuman: {prompt}\
+    \ \r\nAssistant: .'''\r\n\r\nprint(\"*** Pipeline:\")\r\npipe = pipeline(\r\n\
+    \    \"text-generation\",\r\n    model=model,\r\n    tokenizer=tokenizer,\r\n\
+    \    max_new_tokens=512,\r\n    temperature=0.7,\r\n    top_p=0.95,\r\n    repetition_penalty=1.15\r\
+    \n)\r\n\r\nprint(pipe(prompt_template)[0]['generated_text'])\r\n\r\nprint(\"\\\
+    n\\n*** Generate:\")\r\n\r\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\r\
+    \noutput = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\r\
+    \nprint(tokenizer.decode(output[0]))\r\n\r\nand end up with this:\r\n\r\n![issue6-8-2023-3c.png](https://cdn-uploads.huggingface.co/production/uploads/6412521ee752b7b4c20c80c5/RBueHqsLAG1ibkijshXff.png)\r\
+    \n"
+  created_at: 2023-06-09 01:35:49+00:00
+  edited: false
+  hidden: false
+  id: 6482900510cd9ffea8b78a81
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/419b958350ade0c31a12f005304fc984.svg
+      fullname: gregoire
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: VirtualCorn
+      type: user
+    createdAt: '2023-06-09T16:59:55.000Z'
+    data:
+      edited: false
+      editors:
+      - VirtualCorn
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.37947171926498413
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/419b958350ade0c31a12f005304fc984.svg
+          fullname: gregoire
+          isHf: false
+          isPro: false
+          name: VirtualCorn
+          type: user
+        html: "<p>Hi!</p>\n<p>Try this :</p>\n<pre><code class=\"language-py\"><span\
+          \ class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoModelForCausalLM, AutoTokenizer\n<span class=\"hljs-keyword\"\
+          >from</span> auto_gptq <span class=\"hljs-keyword\">import</span> AutoGPTQForCausalLM,\
+          \ BaseQuantizeConfig\n\nmodel_name = <span class=\"hljs-string\">\"TheBloke/Wizard-Vicuna-13B-Uncensored-GPTQ\"\
+          </span>\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nquantize_config\
+          \ = BaseQuantizeConfig.from_pretrained(model_name)\nmodel = AutoGPTQForCausalLM.from_quantized(model_name,\n\
+          \                                           use_safetensors=<span class=\"\
+          hljs-literal\">True</span>,\n                                          \
+          \ model_basename=<span class=\"hljs-string\">\"Wizard-Vicuna-13B-Uncensored-GPTQ-4bit-128g.compat.no-act-order\"\
+          </span>,\n                                           device=<span class=\"\
+          hljs-string\">\"cuda:0\"</span>,\n                                     \
+          \      use_triton=<span class=\"hljs-literal\">False</span>, <span class=\"\
+          hljs-comment\"># True or False</span>\n                                \
+          \           quantize_config=quantize_config)\n</code></pre>\n<p>You should\
+          \ then be able use the model like that :</p>\n<pre><code class=\"language-py\"\
+          >prompt = <span class=\"hljs-string\">\"Ask Something here\"</span>\nprompt_model\
+          \ = <span class=\"hljs-string\">f'''### Human: <span class=\"hljs-subst\"\
+          >{prompt}</span></span>\n<span class=\"hljs-string\">### Assistant:'''</span>\n\
+          input_ids = tokenizer(prompt_model, return_tensors=<span class=\"hljs-string\"\
+          >\"pt\"</span>).input_ids.cuda()\noutput = model.generate(inputs=input_ids,\
+          \ temperature=<span class=\"hljs-number\">0.7</span>, max_new_tokens=<span\
+          \ class=\"hljs-number\">512</span>)\n\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"*** Output ***\"</span>)\n<span class=\"hljs-built_in\"\
+          >print</span>(tokenizer.decode(output[<span class=\"hljs-number\">0</span>]))\n\
+          <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">\"\
+          **************\"</span>)\n</code></pre>\n"
+        raw: "Hi!\n\nTry this :\n\n```py\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer\nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+          \nmodel_name = \"TheBloke/Wizard-Vicuna-13B-Uncensored-GPTQ\"\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(model_name)\nquantize_config = BaseQuantizeConfig.from_pretrained(model_name)\n\
+          model = AutoGPTQForCausalLM.from_quantized(model_name,\n               \
+          \                            use_safetensors=True,\n                   \
+          \                        model_basename=\"Wizard-Vicuna-13B-Uncensored-GPTQ-4bit-128g.compat.no-act-order\"\
+          ,\n                                           device=\"cuda:0\",\n     \
+          \                                      use_triton=False, # True or False\n\
+          \                                           quantize_config=quantize_config)\n\
+          ```\n\nYou should then be able use the model like that :\n\n```py\nprompt\
+          \ = \"Ask Something here\"\nprompt_model = f'''### Human: {prompt}\n###\
+          \ Assistant:'''\ninput_ids = tokenizer(prompt_model, return_tensors=\"pt\"\
+          ).input_ids.cuda()\noutput = model.generate(inputs=input_ids, temperature=0.7,\
+          \ max_new_tokens=512)\n\nprint(\"*** Output ***\")\nprint(tokenizer.decode(output[0]))\n\
+          print(\"**************\")\n```"
+        updatedAt: '2023-06-09T16:59:55.152Z'
+      numEdits: 0
+      reactions: []
+    id: 64835a8b0087ddd1262918a6
+    type: comment
+  author: VirtualCorn
+  content: "Hi!\n\nTry this :\n\n```py\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoTokenizer\nfrom auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig\n\
+    \nmodel_name = \"TheBloke/Wizard-Vicuna-13B-Uncensored-GPTQ\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\n\
+    quantize_config = BaseQuantizeConfig.from_pretrained(model_name)\nmodel = AutoGPTQForCausalLM.from_quantized(model_name,\n\
+    \                                           use_safetensors=True,\n          \
+    \                                 model_basename=\"Wizard-Vicuna-13B-Uncensored-GPTQ-4bit-128g.compat.no-act-order\"\
+    ,\n                                           device=\"cuda:0\",\n           \
+    \                                use_triton=False, # True or False\n         \
+    \                                  quantize_config=quantize_config)\n```\n\nYou\
+    \ should then be able use the model like that :\n\n```py\nprompt = \"Ask Something\
+    \ here\"\nprompt_model = f'''### Human: {prompt}\n### Assistant:'''\ninput_ids\
+    \ = tokenizer(prompt_model, return_tensors=\"pt\").input_ids.cuda()\noutput =\
+    \ model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\nprint(\"\
+    *** Output ***\")\nprint(tokenizer.decode(output[0]))\nprint(\"**************\"\
+    )\n```"
+  created_at: 2023-06-09 15:59:55+00:00
+  edited: false
+  hidden: false
+  id: 64835a8b0087ddd1262918a6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6f193c6fa4d9633b1d16b6744497a532.svg
+      fullname: teo pap
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: teopaphugging
+      type: user
+    createdAt: '2023-07-19T10:38:44.000Z'
+    data:
+      edited: false
+      editors:
+      - teopaphugging
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7906773686408997
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/6f193c6fa4d9633b1d16b6744497a532.svg
+          fullname: teo pap
+          isHf: false
+          isPro: false
+          name: teopaphugging
+          type: user
+        html: '<p>hey, I am getting an error: NameError: name ''autogptq_cuda_256''
+          is not defined</p>
+
+          <p>any idea what is happening?</p>
+
+          '
+        raw: 'hey, I am getting an error: NameError: name ''autogptq_cuda_256'' is
+          not defined
+
+
+          any idea what is happening?'
+        updatedAt: '2023-07-19T10:38:44.421Z'
+      numEdits: 0
+      reactions: []
+    id: 64b7bd344a9cafaab5ad4f21
+    type: comment
+  author: teopaphugging
+  content: 'hey, I am getting an error: NameError: name ''autogptq_cuda_256'' is not
+    defined
+
+
+    any idea what is happening?'
+  created_at: 2023-07-19 09:38:44+00:00
+  edited: false
+  hidden: false
+  id: 64b7bd344a9cafaab5ad4f21
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 11
+repo_id: TheBloke/Wizard-Vicuna-13B-Uncensored-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: Unable to load GPTQ model, despite utilizing autoGPTQ

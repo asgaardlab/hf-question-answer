@@ -1,0 +1,322 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: emra
+conflicting_files: null
+created_at: 2023-11-04 15:52:18+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d67c381b15b801066dafa21c4b8bf296.svg
+      fullname: kayu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: emra
+      type: user
+    createdAt: '2023-11-04T16:52:18.000Z'
+    data:
+      edited: true
+      editors:
+      - emra
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.42434054613113403
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d67c381b15b801066dafa21c4b8bf296.svg
+          fullname: kayu
+          isHf: false
+          isPro: false
+          name: emra
+          type: user
+        html: "<p>I modifies the example code so it can use bitsandbytes quantization\
+          \ and also load models one by one so it doesn't OOM, its a bit slower of\
+          \ course. (You may add this to readme.md if you like)<br>(btw if you want\
+          \ load quantized models at the beggining and not free the memory, you need\
+          \ to move <code>load_model</code> function out of while: and delete the\
+          \ added <code>model_regenerator.cpu() del model_critic     gc.collect()\
+          \     torch.cuda.empty_cache()</code> lines)</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >import</span> gc\n<span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoModelForCausalLM, AutoTokenizer\n\
+          <span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> BitsAndBytesConfig\n\nmodel_path_actor = <span class=\"hljs-string\"\
+          >\"/home/ubuntu/llm/HelixNet/actor\"</span>\nmodel_path_critic = <span class=\"\
+          hljs-string\">\"/home/ubuntu/llm/HelixNet/critic\"</span>\nmodel_path_regenerator\
+          \ = <span class=\"hljs-string\">\"/home/ubuntu/llm/HelixNet/regenerator\"\
+          </span>\n\nnf4_config = BitsAndBytesConfig(\n   load_in_8bit=<span class=\"\
+          hljs-literal\">False</span>,\n   bnb_4bit_quant_type=<span class=\"hljs-string\"\
+          >\"nf4\"</span>,\n   bnb_4bit_use_double_quant=<span class=\"hljs-literal\"\
+          >True</span>,\n   bnb_4bit_compute_dtype=torch.bfloat16\n)\n\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">load_model_quant</span>(<span\
+          \ class=\"hljs-params\">model_path</span>):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        quantization_config=nf4_config\n    )\n  \
+          \  <span class=\"hljs-keyword\">return</span> model\n\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">load_model</span>(<span\
+          \ class=\"hljs-params\">model_path</span>):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        torch_dtype=torch.float16,\n        device_map=<span\
+          \ class=\"hljs-string\">\"cuda\"</span>,\n        load_in_4bit=<span class=\"\
+          hljs-literal\">False</span>,\n        trust_remote_code=<span class=\"hljs-literal\"\
+          >True</span>,\n    )\n    <span class=\"hljs-keyword\">return</span> model\n\
+          \n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >load_tokenizer</span>(<span class=\"hljs-params\">model_path</span>):\n\
+          \    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>)\n    <span class=\"hljs-keyword\"\
+          >return</span> tokenizer\n\n\ntokenizer_actor = load_tokenizer(model_path_actor)\n\
+          tokenizer_critic = load_tokenizer(model_path_critic)\ntokenizer_regenerator\
+          \ = load_tokenizer(model_path_regenerator)\n\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">generate_text</span>(<span\
+          \ class=\"hljs-params\">instruction, model, tokenizer</span>):\n    tokens\
+          \ = tokenizer.encode(instruction)\n    tokens = torch.LongTensor(tokens).unsqueeze(<span\
+          \ class=\"hljs-number\">0</span>)\n    tokens = tokens.to(<span class=\"\
+          hljs-string\">\"cuda\"</span>)\n\n    instance = {\n        <span class=\"\
+          hljs-string\">\"input_ids\"</span>: tokens,\n        <span class=\"hljs-string\"\
+          >\"top_p\"</span>: <span class=\"hljs-number\">0.3</span>,\n        <span\
+          \ class=\"hljs-string\">\"temperature\"</span>: <span class=\"hljs-number\"\
+          >0.75</span>,\n        <span class=\"hljs-string\">\"generate_len\"</span>:\
+          \ <span class=\"hljs-number\">1024</span>,\n        <span class=\"hljs-string\"\
+          >\"top_k\"</span>: <span class=\"hljs-number\">50</span>,\n    }\n\n   \
+          \ length = <span class=\"hljs-built_in\">len</span>(tokens[<span class=\"\
+          hljs-number\">0</span>])\n    <span class=\"hljs-keyword\">with</span> torch.no_grad():\n\
+          \        rest = model.generate(\n            input_ids=tokens,\n       \
+          \     max_length=length + instance[<span class=\"hljs-string\">\"generate_len\"\
+          </span>],\n            use_cache=<span class=\"hljs-literal\">True</span>,\n\
+          \            do_sample=<span class=\"hljs-literal\">True</span>,\n     \
+          \       top_p=instance[<span class=\"hljs-string\">\"top_p\"</span>],\n\
+          \            temperature=instance[<span class=\"hljs-string\">\"temperature\"\
+          </span>],\n            top_k=instance[<span class=\"hljs-string\">\"top_k\"\
+          </span>],\n            num_return_sequences=<span class=\"hljs-number\"\
+          >1</span>,\n            pad_token_id=tokenizer.eos_token_id\n        )\n\
+          \    output = rest[<span class=\"hljs-number\">0</span>][length:]\n    string\
+          \ = tokenizer.decode(output, skip_special_tokens=<span class=\"hljs-literal\"\
+          >True</span>)\n    <span class=\"hljs-keyword\">return</span> <span class=\"\
+          hljs-string\">f\"<span class=\"hljs-subst\">{string}</span>\"</span>\n\n\
+          system_prompt = <span class=\"hljs-string\">\"You are HelixNet. Elaborate\
+          \ on the topic using a Tree of Thoughts and backtrack when necessary to\
+          \ construct a clear, cohesive Chain of Thought reasoning. Always answer\
+          \ without hesitation.\"</span>\n  \n\n<span class=\"hljs-keyword\">while</span>\
+          \ <span class=\"hljs-literal\">True</span>:\n    user_input = <span class=\"\
+          hljs-built_in\">input</span>(<span class=\"hljs-string\">\"You: \"</span>)\n\
+          \    \n    model_actor = load_model(model_path_actor)\n    prompt_actor\
+          \ = <span class=\"hljs-string\">f\"SYSTEM: <span class=\"hljs-subst\">{system_prompt}</span>\
+          \ \\nUSER: <span class=\"hljs-subst\">{user_input}</span> \\nASSISTANT:\
+          \ \"</span>\n    actor_response = generate_text(prompt_actor, model_actor,\
+          \ tokenizer_actor)\n    <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">f\"ACTOR: <span class=\"hljs-subst\">{actor_response}</span>\\\
+          n\\n\"</span>)\n    model_actor.cpu()\n    <span class=\"hljs-keyword\"\
+          >del</span> model_actor\n    gc.collect()\n    torch.cuda.empty_cache()\n\
+          \   \n    model_critic = load_model(model_path_critic)\n    prompt_critic\
+          \ = <span class=\"hljs-string\">f\"SYSTEM: <span class=\"hljs-subst\">{system_prompt}</span>\
+          \ \\nUSER: <span class=\"hljs-subst\">{user_input}</span> \\nRESPONSE: <span\
+          \ class=\"hljs-subst\">{actor_response}</span> \\nCRITIQUE:\"</span>\n \
+          \   critic_response = generate_text(prompt_critic, model_critic, tokenizer_critic)\n\
+          \    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"CRITIQUE: <span class=\"hljs-subst\">{critic_response}</span>\\n\\n\"\
+          </span>)\n    model_critic.cpu()\n    <span class=\"hljs-keyword\">del</span>\
+          \ model_critic\n    gc.collect()\n    torch.cuda.empty_cache()\n\n    model_regenerator\
+          \ = load_model(model_path_regenerator)\n    prompt_regenerator = <span class=\"\
+          hljs-string\">f\"SYSTEM: <span class=\"hljs-subst\">{system_prompt}</span>\
+          \ \\nUSER: <span class=\"hljs-subst\">{user_input}</span> \\nRESPONSE: <span\
+          \ class=\"hljs-subst\">{actor_response}</span> \\nCRITIQUE: <span class=\"\
+          hljs-subst\">{critic_response}</span> \\nREGENERATOR:\"</span>\n    regenerator_response\
+          \ = generate_text(prompt_regenerator, model_regenerator, tokenizer_regenerator)\n\
+          \    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"REGENERATION: <span class=\"hljs-subst\">{regenerator_response}</span>\"\
+          </span>)\n    model_regenerator.cpu()\n    <span class=\"hljs-keyword\"\
+          >del</span> model_regenerator\n    gc.collect()\n    torch.cuda.empty_cache()\n\
+          </code></pre>\n"
+        raw: "I modifies the example code so it can use bitsandbytes quantization\
+          \ and also load models one by one so it doesn't OOM, its a bit slower of\
+          \ course. (You may add this to readme.md if you like)\n(btw if you want\
+          \ load quantized models at the beggining and not free the memory, you need\
+          \ to move `load_model` function out of while: and delete the added `model_regenerator.cpu()\
+          \ del model_critic\n    gc.collect()\n    torch.cuda.empty_cache()` lines)\n\
+          \n```python\nimport torch\nimport gc\nfrom transformers import AutoModelForCausalLM,\
+          \ AutoTokenizer\nfrom transformers import BitsAndBytesConfig\n\nmodel_path_actor\
+          \ = \"/home/ubuntu/llm/HelixNet/actor\"\nmodel_path_critic = \"/home/ubuntu/llm/HelixNet/critic\"\
+          \nmodel_path_regenerator = \"/home/ubuntu/llm/HelixNet/regenerator\"\n\n\
+          nf4_config = BitsAndBytesConfig(\n   load_in_8bit=False,\n   bnb_4bit_quant_type=\"\
+          nf4\",\n   bnb_4bit_use_double_quant=True,\n   bnb_4bit_compute_dtype=torch.bfloat16\n\
+          )\n\ndef load_model_quant(model_path):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        quantization_config=nf4_config\n    )\n  \
+          \  return model\n\ndef load_model(model_path):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        torch_dtype=torch.float16,\n        device_map=\"\
+          cuda\",\n        load_in_4bit=False,\n        trust_remote_code=True,\n\
+          \    )\n    return model\n\ndef load_tokenizer(model_path):\n    tokenizer\
+          \ = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)\n\
+          \    return tokenizer\n\n\ntokenizer_actor = load_tokenizer(model_path_actor)\n\
+          tokenizer_critic = load_tokenizer(model_path_critic)\ntokenizer_regenerator\
+          \ = load_tokenizer(model_path_regenerator)\n\ndef generate_text(instruction,\
+          \ model, tokenizer):\n    tokens = tokenizer.encode(instruction)\n    tokens\
+          \ = torch.LongTensor(tokens).unsqueeze(0)\n    tokens = tokens.to(\"cuda\"\
+          )\n\n    instance = {\n        \"input_ids\": tokens,\n        \"top_p\"\
+          : 0.3,\n        \"temperature\": 0.75,\n        \"generate_len\": 1024,\n\
+          \        \"top_k\": 50,\n    }\n\n    length = len(tokens[0])\n    with\
+          \ torch.no_grad():\n        rest = model.generate(\n            input_ids=tokens,\n\
+          \            max_length=length + instance[\"generate_len\"],\n         \
+          \   use_cache=True,\n            do_sample=True,\n            top_p=instance[\"\
+          top_p\"],\n            temperature=instance[\"temperature\"],\n        \
+          \    top_k=instance[\"top_k\"],\n            num_return_sequences=1,\n \
+          \           pad_token_id=tokenizer.eos_token_id\n        )\n    output =\
+          \ rest[0][length:]\n    string = tokenizer.decode(output, skip_special_tokens=True)\n\
+          \    return f\"{string}\"\n\nsystem_prompt = \"You are HelixNet. Elaborate\
+          \ on the topic using a Tree of Thoughts and backtrack when necessary to\
+          \ construct a clear, cohesive Chain of Thought reasoning. Always answer\
+          \ without hesitation.\"\n  \n\nwhile True:\n    user_input = input(\"You:\
+          \ \")\n    \n    model_actor = load_model(model_path_actor)\n    prompt_actor\
+          \ = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nASSISTANT: \"\n\
+          \    actor_response = generate_text(prompt_actor, model_actor, tokenizer_actor)\n\
+          \    print(f\"ACTOR: {actor_response}\\n\\n\")\n    model_actor.cpu()\n\
+          \    del model_actor\n    gc.collect()\n    torch.cuda.empty_cache()\n \
+          \  \n    model_critic = load_model(model_path_critic)\n    prompt_critic\
+          \ = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nRESPONSE: {actor_response}\
+          \ \\nCRITIQUE:\"\n    critic_response = generate_text(prompt_critic, model_critic,\
+          \ tokenizer_critic)\n    print(f\"CRITIQUE: {critic_response}\\n\\n\")\n\
+          \    model_critic.cpu()\n    del model_critic\n    gc.collect()\n    torch.cuda.empty_cache()\n\
+          \n    model_regenerator = load_model(model_path_regenerator)\n    prompt_regenerator\
+          \ = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nRESPONSE: {actor_response}\
+          \ \\nCRITIQUE: {critic_response} \\nREGENERATOR:\"\n    regenerator_response\
+          \ = generate_text(prompt_regenerator, model_regenerator, tokenizer_regenerator)\n\
+          \    print(f\"REGENERATION: {regenerator_response}\")\n    model_regenerator.cpu()\n\
+          \    del model_regenerator\n    gc.collect()\n    torch.cuda.empty_cache()\n\
+          ```"
+        updatedAt: '2023-11-04T17:26:48.960Z'
+      numEdits: 4
+      reactions: []
+    id: 654676c24d1931dc93dd9705
+    type: comment
+  author: emra
+  content: "I modifies the example code so it can use bitsandbytes quantization and\
+    \ also load models one by one so it doesn't OOM, its a bit slower of course. (You\
+    \ may add this to readme.md if you like)\n(btw if you want load quantized models\
+    \ at the beggining and not free the memory, you need to move `load_model` function\
+    \ out of while: and delete the added `model_regenerator.cpu() del model_critic\n\
+    \    gc.collect()\n    torch.cuda.empty_cache()` lines)\n\n```python\nimport torch\n\
+    import gc\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\nfrom\
+    \ transformers import BitsAndBytesConfig\n\nmodel_path_actor = \"/home/ubuntu/llm/HelixNet/actor\"\
+    \nmodel_path_critic = \"/home/ubuntu/llm/HelixNet/critic\"\nmodel_path_regenerator\
+    \ = \"/home/ubuntu/llm/HelixNet/regenerator\"\n\nnf4_config = BitsAndBytesConfig(\n\
+    \   load_in_8bit=False,\n   bnb_4bit_quant_type=\"nf4\",\n   bnb_4bit_use_double_quant=True,\n\
+    \   bnb_4bit_compute_dtype=torch.bfloat16\n)\n\ndef load_model_quant(model_path):\n\
+    \    model = AutoModelForCausalLM.from_pretrained(\n        model_path,\n    \
+    \    quantization_config=nf4_config\n    )\n    return model\n\ndef load_model(model_path):\n\
+    \    model = AutoModelForCausalLM.from_pretrained(\n        model_path,\n    \
+    \    torch_dtype=torch.float16,\n        device_map=\"cuda\",\n        load_in_4bit=False,\n\
+    \        trust_remote_code=True,\n    )\n    return model\n\ndef load_tokenizer(model_path):\n\
+    \    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)\n\
+    \    return tokenizer\n\n\ntokenizer_actor = load_tokenizer(model_path_actor)\n\
+    tokenizer_critic = load_tokenizer(model_path_critic)\ntokenizer_regenerator =\
+    \ load_tokenizer(model_path_regenerator)\n\ndef generate_text(instruction, model,\
+    \ tokenizer):\n    tokens = tokenizer.encode(instruction)\n    tokens = torch.LongTensor(tokens).unsqueeze(0)\n\
+    \    tokens = tokens.to(\"cuda\")\n\n    instance = {\n        \"input_ids\":\
+    \ tokens,\n        \"top_p\": 0.3,\n        \"temperature\": 0.75,\n        \"\
+    generate_len\": 1024,\n        \"top_k\": 50,\n    }\n\n    length = len(tokens[0])\n\
+    \    with torch.no_grad():\n        rest = model.generate(\n            input_ids=tokens,\n\
+    \            max_length=length + instance[\"generate_len\"],\n            use_cache=True,\n\
+    \            do_sample=True,\n            top_p=instance[\"top_p\"],\n       \
+    \     temperature=instance[\"temperature\"],\n            top_k=instance[\"top_k\"\
+    ],\n            num_return_sequences=1,\n            pad_token_id=tokenizer.eos_token_id\n\
+    \        )\n    output = rest[0][length:]\n    string = tokenizer.decode(output,\
+    \ skip_special_tokens=True)\n    return f\"{string}\"\n\nsystem_prompt = \"You\
+    \ are HelixNet. Elaborate on the topic using a Tree of Thoughts and backtrack\
+    \ when necessary to construct a clear, cohesive Chain of Thought reasoning. Always\
+    \ answer without hesitation.\"\n  \n\nwhile True:\n    user_input = input(\"You:\
+    \ \")\n    \n    model_actor = load_model(model_path_actor)\n    prompt_actor\
+    \ = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nASSISTANT: \"\n    actor_response\
+    \ = generate_text(prompt_actor, model_actor, tokenizer_actor)\n    print(f\"ACTOR:\
+    \ {actor_response}\\n\\n\")\n    model_actor.cpu()\n    del model_actor\n    gc.collect()\n\
+    \    torch.cuda.empty_cache()\n   \n    model_critic = load_model(model_path_critic)\n\
+    \    prompt_critic = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nRESPONSE:\
+    \ {actor_response} \\nCRITIQUE:\"\n    critic_response = generate_text(prompt_critic,\
+    \ model_critic, tokenizer_critic)\n    print(f\"CRITIQUE: {critic_response}\\\
+    n\\n\")\n    model_critic.cpu()\n    del model_critic\n    gc.collect()\n    torch.cuda.empty_cache()\n\
+    \n    model_regenerator = load_model(model_path_regenerator)\n    prompt_regenerator\
+    \ = f\"SYSTEM: {system_prompt} \\nUSER: {user_input} \\nRESPONSE: {actor_response}\
+    \ \\nCRITIQUE: {critic_response} \\nREGENERATOR:\"\n    regenerator_response =\
+    \ generate_text(prompt_regenerator, model_regenerator, tokenizer_regenerator)\n\
+    \    print(f\"REGENERATION: {regenerator_response}\")\n    model_regenerator.cpu()\n\
+    \    del model_regenerator\n    gc.collect()\n    torch.cuda.empty_cache()\n```"
+  created_at: 2023-11-04 15:52:18+00:00
+  edited: true
+  hidden: false
+  id: 654676c24d1931dc93dd9705
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647a6317555b5e199cffd5a2/TykMo31XdtmLTa8uOshGn.jpeg?w=200&h=200&f=face
+      fullname: Migel Tissera
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: migtissera
+      type: user
+    createdAt: '2023-11-04T17:15:39.000Z'
+    data:
+      edited: false
+      editors:
+      - migtissera
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.909744381904602
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647a6317555b5e199cffd5a2/TykMo31XdtmLTa8uOshGn.jpeg?w=200&h=200&f=face
+          fullname: Migel Tissera
+          isHf: false
+          isPro: false
+          name: migtissera
+          type: user
+        html: '<p> Nice one! Thanks for sharing!</p>
+
+          '
+        raw: ' Nice one! Thanks for sharing!'
+        updatedAt: '2023-11-04T17:15:39.808Z'
+      numEdits: 0
+      reactions: []
+    id: 65467c3b407bb19ff568b14e
+    type: comment
+  author: migtissera
+  content: ' Nice one! Thanks for sharing!'
+  created_at: 2023-11-04 16:15:39+00:00
+  edited: false
+  hidden: false
+  id: 65467c3b407bb19ff568b14e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/647a6317555b5e199cffd5a2/TykMo31XdtmLTa8uOshGn.jpeg?w=200&h=200&f=face
+      fullname: Migel Tissera
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: migtissera
+      type: user
+    createdAt: '2023-11-06T05:25:18.000Z'
+    data:
+      status: closed
+    id: 654878be6c818bb7b5e807a2
+    type: status-change
+  author: migtissera
+  created_at: 2023-11-06 05:25:18+00:00
+  id: 654878be6c818bb7b5e807a2
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: migtissera/HelixNet
+repo_type: model
+status: closed
+target_branch: null
+title: Modification of example code for quantization and load models one by one

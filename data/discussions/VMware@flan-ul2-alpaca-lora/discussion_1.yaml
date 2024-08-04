@@ -1,0 +1,709 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cyt79
+conflicting_files: null
+created_at: 2023-04-28 05:21:56+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-28T06:21:56.000Z'
+    data:
+      edited: false
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hi there,</p>\n<p>I'm also trying to finetune flan-ul2 (google/flan-ul2)\
+          \ using LoRA and I have few questions if you don't mind: </p>\n<p>I'm trying\
+          \ to do this on a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory\
+          \ each).  I follow this blog post (<a rel=\"nofollow\" href=\"https://www.philschmid.de/fine-tune-flan-t5-peft\"\
+          >https://www.philschmid.de/fine-tune-flan-t5-peft</a>) which is written\
+          \ for finetuning t5-xxl with lora.  When I use more than one GPU, I'm getting\
+          \ this error: </p>\n<p><code>RuntimeError: module must have its parameters\
+          \ and buffers on device cuda:0 (device_ids[0]) but found one of them on\
+          \ device: cuda:2</code></p>\n<p>Therefore, I try to finetune flan-ul2 using\
+          \ only one of the 8 GPUs but it doesn't help me either because this time\
+          \ I got: </p>\n<p><code>RuntimeError: No executable batch size found, reached\
+          \ zero.</code> </p>\n<p>which doesn't make sense at all because I didn't\
+          \ change anything related to the data processing. </p>\n<p>So, my questions\
+          \ are:</p>\n<ol>\n<li>Did you load the mode in 8 bit while fine-tuning (i.e.\
+          \ set load_in_8bit=True)? </li>\n<li>Were you using multi-GPU for fine-tuning?</li>\n\
+          <li>Did you encounter any of these errors when you're fine-tuning? If so,\
+          \ could you please share with me how did you fix them?</li>\n</ol>\n<p>In\
+          \ case you're wondering what I've tried to do to fine-tune flan-ul2 using\
+          \ LoRA, I didn't change too many things on the blog post. All I did was\
+          \ to change the model name actually: </p>\n<pre><code>from transformers\
+          \ import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom transformers import\
+          \ DataCollatorForSeq2Seq\n\n#model_id=\"google/flan-t5-xxl\"\nmodel_id=\"\
+          google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\n</code></pre>\n<p>Then I run the trainer as\
+          \ shown below: </p>\n<pre><code>from transformers import Seq2SeqTrainer,\
+          \ Seq2SeqTrainingArguments\n\n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    output_dir=output_dir,\n    auto_find_batch_size=True,\n    learning_rate=1e-3,\
+          \ # higher learning rate\n    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\"\
+          ,\n    logging_strategy=\"steps\",\n    logging_steps=500,\n    save_strategy=\"\
+          no\",\n    report_to=\"tensorboard\",\n)\n\n# Create Trainer instance\n\
+          trainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n \
+          \   data_collator=data_collator,\n    train_dataset=tokenized_dataset[\"\
+          train\"],\n)\n</code></pre>\n"
+        raw: "Hi there,\r\n\r\nI'm also trying to finetune flan-ul2 (google/flan-ul2)\
+          \ using LoRA and I have few questions if you don't mind: \r\n\r\nI'm trying\
+          \ to do this on a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory\
+          \ each).  I follow this blog post (https://www.philschmid.de/fine-tune-flan-t5-peft)\
+          \ which is written for finetuning t5-xxl with lora.  When I use more than\
+          \ one GPU, I'm getting this error: \r\n\r\n```RuntimeError: module must\
+          \ have its parameters and buffers on device cuda:0 (device_ids[0]) but found\
+          \ one of them on device: cuda:2```\r\n\r\nTherefore, I try to finetune flan-ul2\
+          \ using only one of the 8 GPUs but it doesn't help me either because this\
+          \ time I got: \r\n\r\n``` RuntimeError: No executable batch size found,\
+          \ reached zero. ``` \r\n\r\nwhich doesn't make sense at all because I didn't\
+          \ change anything related to the data processing. \r\n\r\nSo, my questions\
+          \ are:\r\n1) Did you load the mode in 8 bit while fine-tuning (i.e. set\
+          \ load_in_8bit=True)? \r\n1) Were you using multi-GPU for fine-tuning?\r\
+          \n2)  Did you encounter any of these errors when you're fine-tuning? If\
+          \ so, could you please share with me how did you fix them? \r\n\r\nIn case\
+          \ you're wondering what I've tried to do to fine-tune flan-ul2 using LoRA,\
+          \ I didn't change too many things on the blog post. All I did was to change\
+          \ the model name actually: \r\n```\r\nfrom transformers import AutoTokenizer,\
+          \ AutoModelForSeq2SeqLM\r\nfrom transformers import DataCollatorForSeq2Seq\r\
+          \n\r\n#model_id=\"google/flan-t5-xxl\"\r\nmodel_id=\"google/flan-ul2\"\r\
+          \ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\n\r\n#model_id =\
+          \ \"philschmid/flan-t5-xxl-sharded-fp16\"\r\nmodel_id = \"google/flan-ul2\"\
+          \r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\r\n```\r\nThen I run the trainer as shown below:\
+          \ \r\n\r\n```\r\nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\r\
+          \n\r\n# Define training args\r\ntraining_args = Seq2SeqTrainingArguments(\r\
+          \n    output_dir=output_dir,\r\n\tauto_find_batch_size=True,\r\n    learning_rate=1e-3,\
+          \ # higher learning rate\r\n    num_train_epochs=5,\r\n    logging_dir=f\"\
+          {output_dir}/logs\",\r\n    logging_strategy=\"steps\",\r\n    logging_steps=500,\r\
+          \n    save_strategy=\"no\",\r\n    report_to=\"tensorboard\",\r\n)\r\n\r\
+          \n# Create Trainer instance\r\ntrainer = Seq2SeqTrainer(\r\n    model=model,\r\
+          \n    args=training_args,\r\n    data_collator=data_collator,\r\n    train_dataset=tokenized_dataset[\"\
+          train\"],\r\n)\r\n```"
+        updatedAt: '2023-04-28T06:21:56.961Z'
+      numEdits: 0
+      reactions: []
+    id: 644b66046e07376abbb9ae95
+    type: comment
+  author: cyt79
+  content: "Hi there,\r\n\r\nI'm also trying to finetune flan-ul2 (google/flan-ul2)\
+    \ using LoRA and I have few questions if you don't mind: \r\n\r\nI'm trying to\
+    \ do this on a  p3dn.24xlarge\tinstance (8 GPUs with 32 GB gpu memory each). \
+    \ I follow this blog post (https://www.philschmid.de/fine-tune-flan-t5-peft) which\
+    \ is written for finetuning t5-xxl with lora.  When I use more than one GPU, I'm\
+    \ getting this error: \r\n\r\n```RuntimeError: module must have its parameters\
+    \ and buffers on device cuda:0 (device_ids[0]) but found one of them on device:\
+    \ cuda:2```\r\n\r\nTherefore, I try to finetune flan-ul2 using only one of the\
+    \ 8 GPUs but it doesn't help me either because this time I got: \r\n\r\n``` RuntimeError:\
+    \ No executable batch size found, reached zero. ``` \r\n\r\nwhich doesn't make\
+    \ sense at all because I didn't change anything related to the data processing.\
+    \ \r\n\r\nSo, my questions are:\r\n1) Did you load the mode in 8 bit while fine-tuning\
+    \ (i.e. set load_in_8bit=True)? \r\n1) Were you using multi-GPU for fine-tuning?\r\
+    \n2)  Did you encounter any of these errors when you're fine-tuning? If so, could\
+    \ you please share with me how did you fix them? \r\n\r\nIn case you're wondering\
+    \ what I've tried to do to fine-tune flan-ul2 using LoRA, I didn't change too\
+    \ many things on the blog post. All I did was to change the model name actually:\
+    \ \r\n```\r\nfrom transformers import AutoTokenizer, AutoModelForSeq2SeqLM\r\n\
+    from transformers import DataCollatorForSeq2Seq\r\n\r\n#model_id=\"google/flan-t5-xxl\"\
+    \r\nmodel_id=\"google/flan-ul2\"\r\ntokenizer = AutoTokenizer.from_pretrained(model_id)\r\
+    \n\r\n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\r\nmodel_id = \"google/flan-ul2\"\
+    \r\nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"auto\"\
+    , load_in_8bit=True)\r\n```\r\nThen I run the trainer as shown below: \r\n\r\n\
+    ```\r\nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\r\n\r\
+    \n# Define training args\r\ntraining_args = Seq2SeqTrainingArguments(\r\n    output_dir=output_dir,\r\
+    \n\tauto_find_batch_size=True,\r\n    learning_rate=1e-3, # higher learning rate\r\
+    \n    num_train_epochs=5,\r\n    logging_dir=f\"{output_dir}/logs\",\r\n    logging_strategy=\"\
+    steps\",\r\n    logging_steps=500,\r\n    save_strategy=\"no\",\r\n    report_to=\"\
+    tensorboard\",\r\n)\r\n\r\n# Create Trainer instance\r\ntrainer = Seq2SeqTrainer(\r\
+    \n    model=model,\r\n    args=training_args,\r\n    data_collator=data_collator,\r\
+    \n    train_dataset=tokenized_dataset[\"train\"],\r\n)\r\n```"
+  created_at: 2023-04-28 05:21:56+00:00
+  edited: false
+  hidden: false
+  id: 644b66046e07376abbb9ae95
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+      fullname: Teja Gollapudi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Teja-Gollapudi
+      type: user
+    createdAt: '2023-04-28T07:14:48.000Z'
+    data:
+      edited: true
+      editors:
+      - Teja-Gollapudi
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+          fullname: Teja Gollapudi
+          isHf: false
+          isPro: false
+          name: Teja-Gollapudi
+          type: user
+        html: '<p>Hi, I didn''t use that code, but I think it might be running out
+          of memory. 32 GB machines aren''t large enough to fit a single UL2 model
+          even in bf16 or fp16 precision. </p>
+
+          <p>We trained it in full precision cause v100s don''t support bf16. We had
+          to use Deepspeed''s CPU offloading to train it. It takes quite a lot of
+          time to train. </p>
+
+          <p><a rel="nofollow" href="https://medium.com/vmware-data-ml-blog/lora-finetunning-of-ul-2-and-t5-models-35a08863593d">https://medium.com/vmware-data-ml-blog/lora-finetunning-of-ul-2-and-t5-models-35a08863593d</a><br>You
+          can find the code and the details we used for fine-tuning in the above blog.</p>
+
+          '
+        raw: "Hi, I didn't use that code, but I think it might be running out of memory.\
+          \ 32 GB machines aren't large enough to fit a single UL2 model even in bf16\
+          \ or fp16 precision. \n\nWe trained it in full precision cause v100s don't\
+          \ support bf16. We had to use Deepspeed's CPU offloading to train it. It\
+          \ takes quite a lot of time to train. \n\nhttps://medium.com/vmware-data-ml-blog/lora-finetunning-of-ul-2-and-t5-models-35a08863593d\n\
+          You can find the code and the details we used for fine-tuning in the above\
+          \ blog."
+        updatedAt: '2023-04-28T07:15:17.564Z'
+      numEdits: 1
+      reactions: []
+    id: 644b7268db3a59aba0823267
+    type: comment
+  author: Teja-Gollapudi
+  content: "Hi, I didn't use that code, but I think it might be running out of memory.\
+    \ 32 GB machines aren't large enough to fit a single UL2 model even in bf16 or\
+    \ fp16 precision. \n\nWe trained it in full precision cause v100s don't support\
+    \ bf16. We had to use Deepspeed's CPU offloading to train it. It takes quite a\
+    \ lot of time to train. \n\nhttps://medium.com/vmware-data-ml-blog/lora-finetunning-of-ul-2-and-t5-models-35a08863593d\n\
+    You can find the code and the details we used for fine-tuning in the above blog."
+  created_at: 2023-04-28 06:14:48+00:00
+  edited: true
+  hidden: false
+  id: 644b7268db3a59aba0823267
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-28T08:29:41.000Z'
+    data:
+      edited: false
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: '<p>Many thanks for your reply, and also sharing the blog post! I''ll
+          have a look at it and see if I can manage to fine-tune it as well.</p>
+
+          '
+        raw: Many thanks for your reply, and also sharing the blog post! I'll have
+          a look at it and see if I can manage to fine-tune it as well.
+        updatedAt: '2023-04-28T08:29:41.379Z'
+      numEdits: 0
+      reactions: []
+    id: 644b83f5d873cbc8cc2951d9
+    type: comment
+  author: cyt79
+  content: Many thanks for your reply, and also sharing the blog post! I'll have a
+    look at it and see if I can manage to fine-tune it as well.
+  created_at: 2023-04-28 07:29:41+00:00
+  edited: false
+  hidden: false
+  id: 644b83f5d873cbc8cc2951d9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-28T12:36:19.000Z'
+    data:
+      edited: true
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Teja-Gollapudi&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Teja-Gollapudi\"\
+          >@<span class=\"underline\">Teja-Gollapudi</span></a></span>\n\n\t</span></span>\
+          \ ,  </p>\n<p>I went through the medium article, thanks again for sharing\
+          \ it! I have just three follow up questions, if possible: </p>\n<ol>\n<li><p>Through\
+          \ the blog post, it says the model has been trained on 3 GPUs, but in the\
+          \ screenshot in step-2, I see that the answer to \"How many GPU(s) should\
+          \ be used for distributed training?\" is set to 2. Are these two things\
+          \ different? Also,  would it be possible to share the launcher_config.yaml\
+          \  file as well? </p>\n</li>\n<li><p>Once fine-tuning is done, would it\
+          \ be possible to load model in 8bit (i.e. setting load_in_8bit=True in from_pretrained()\
+          \ method) and do inference?</p>\n</li>\n<li><p>I have 8 V100 GPUs. Which\
+          \ parameters in the yaml files do you recommend to change in this case?\
+          \ For example, should I still keep how many GPU(s) should be used for distributed\
+          \ training to 8-1=7 ?(becase in your case training was done in 3 gpus and\
+          \ this parameter was set to 2.)</p>\n</li>\n</ol>\n"
+        raw: "Hi @Teja-Gollapudi ,  \n\nI went through the medium article, thanks\
+          \ again for sharing it! I have just three follow up questions, if possible:\
+          \ \n\n1. Through the blog post, it says the model has been trained on 3\
+          \ GPUs, but in the screenshot in step-2, I see that the answer to \"How\
+          \ many GPU(s) should be used for distributed training?\" is set to 2. Are\
+          \ these two things different? Also,  would it be possible to share the launcher_config.yaml\
+          \  file as well? \n\n2. Once fine-tuning is done, would it be possible to\
+          \ load model in 8bit (i.e. setting load_in_8bit=True in from_pretrained()\
+          \ method) and do inference?\n\n3. I have 8 V100 GPUs. Which parameters in\
+          \ the yaml files do you recommend to change in this case? For example, should\
+          \ I still keep how many GPU(s) should be used for distributed training to\
+          \ 8-1=7 ?(becase in your case training was done in 3 gpus and this parameter\
+          \ was set to 2.)"
+        updatedAt: '2023-04-28T13:16:20.699Z'
+      numEdits: 1
+      reactions: []
+    id: 644bbdc363cec2d7592191c2
+    type: comment
+  author: cyt79
+  content: "Hi @Teja-Gollapudi ,  \n\nI went through the medium article, thanks again\
+    \ for sharing it! I have just three follow up questions, if possible: \n\n1. Through\
+    \ the blog post, it says the model has been trained on 3 GPUs, but in the screenshot\
+    \ in step-2, I see that the answer to \"How many GPU(s) should be used for distributed\
+    \ training?\" is set to 2. Are these two things different? Also,  would it be\
+    \ possible to share the launcher_config.yaml  file as well? \n\n2. Once fine-tuning\
+    \ is done, would it be possible to load model in 8bit (i.e. setting load_in_8bit=True\
+    \ in from_pretrained() method) and do inference?\n\n3. I have 8 V100 GPUs. Which\
+    \ parameters in the yaml files do you recommend to change in this case? For example,\
+    \ should I still keep how many GPU(s) should be used for distributed training\
+    \ to 8-1=7 ?(becase in your case training was done in 3 gpus and this parameter\
+    \ was set to 2.)"
+  created_at: 2023-04-28 11:36:19+00:00
+  edited: true
+  hidden: false
+  id: 644bbdc363cec2d7592191c2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+      fullname: Teja Gollapudi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Teja-Gollapudi
+      type: user
+    createdAt: '2023-04-28T15:44:19.000Z'
+    data:
+      edited: true
+      editors:
+      - Teja-Gollapudi
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+          fullname: Teja Gollapudi
+          isHf: false
+          isPro: false
+          name: Teja-Gollapudi
+          type: user
+        html: '<p>Hi,</p>
+
+          <ol>
+
+          <li>Thanks for pointing it out. I didn''t notice the screenshot, I''ll fix
+          it. It should be set to 3 not 2 to use with 3 GPUs.</li>
+
+          <li>It should be doable but I think you would have to tweak the transformers
+          / Cuda toolkit library versions to make it work. It might not yield significant
+          speed up though ((<a href="https://huggingface.co/blog/hf-bitsandbytes-integration#is-it-faster-than-native-models">https://huggingface.co/blog/hf-bitsandbytes-integration#is-it-faster-than-native-models</a>)</li>
+
+          <li>I would recommend you change the gradient accumulation steps based on
+          the formula int(desired_batch_size/(num-GPUs* per device batch size)) and
+          set the number of GPUs to 8, not 7.</li>
+
+          </ol>
+
+          <p>I also recommend you play around with the learning rate (something between
+          1e-5 to 1e-4 to stick with the UL2 paper LRs), per_device_batch_size, and
+          source/ target length parameters for training. ( If you increase the target
+          length beyond 256, you might have to use a batch size of 1, etc).</p>
+
+          '
+        raw: 'Hi,
+
+
+          1. Thanks for pointing it out. I didn''t notice the screenshot, I''ll fix
+          it. It should be set to 3 not 2 to use with 3 GPUs.
+
+          2. It should be doable but I think you would have to tweak the transformers
+          / Cuda toolkit library versions to make it work. It might not yield significant
+          speed up though ((https://huggingface.co/blog/hf-bitsandbytes-integration#is-it-faster-than-native-models)
+
+          3. I would recommend you change the gradient accumulation steps based on
+          the formula int(desired_batch_size/(num-GPUs* per device batch size)) and
+          set the number of GPUs to 8, not 7.
+
+
+          I also recommend you play around with the learning rate (something between
+          1e-5 to 1e-4 to stick with the UL2 paper LRs), per_device_batch_size, and
+          source/ target length parameters for training. ( If you increase the target
+          length beyond 256, you might have to use a batch size of 1, etc).'
+        updatedAt: '2023-04-29T06:56:20.228Z'
+      numEdits: 2
+      reactions: []
+    id: 644be9d345e79023c7d8474a
+    type: comment
+  author: Teja-Gollapudi
+  content: 'Hi,
+
+
+    1. Thanks for pointing it out. I didn''t notice the screenshot, I''ll fix it.
+    It should be set to 3 not 2 to use with 3 GPUs.
+
+    2. It should be doable but I think you would have to tweak the transformers /
+    Cuda toolkit library versions to make it work. It might not yield significant
+    speed up though ((https://huggingface.co/blog/hf-bitsandbytes-integration#is-it-faster-than-native-models)
+
+    3. I would recommend you change the gradient accumulation steps based on the formula
+    int(desired_batch_size/(num-GPUs* per device batch size)) and set the number of
+    GPUs to 8, not 7.
+
+
+    I also recommend you play around with the learning rate (something between 1e-5
+    to 1e-4 to stick with the UL2 paper LRs), per_device_batch_size, and source/ target
+    length parameters for training. ( If you increase the target length beyond 256,
+    you might have to use a batch size of 1, etc).'
+  created_at: 2023-04-28 14:44:19+00:00
+  edited: true
+  hidden: false
+  id: 644be9d345e79023c7d8474a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-05-02T09:35:19.000Z'
+    data:
+      edited: false
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hey <span data-props=\"{&quot;user&quot;:&quot;Teja-Gollapudi&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Teja-Gollapudi\"\
+          >@<span class=\"underline\">Teja-Gollapudi</span></a></span>\n\n\t</span></span>\
+          \ . Thanks for the tips! There is one more thing I'm wondering: Did you\
+          \ compare the performance of the base and fine-tuned models on a dataset?\
+          \ I'm just wondering how much the finu-tuning improved the results?</p>\n"
+        raw: 'Hey @Teja-Gollapudi . Thanks for the tips! There is one more thing I''m
+          wondering: Did you compare the performance of the base and fine-tuned models
+          on a dataset? I''m just wondering how much the finu-tuning improved the
+          results?'
+        updatedAt: '2023-05-02T09:35:19.262Z'
+      numEdits: 0
+      reactions: []
+    id: 6450d9578c5830e111d94bd5
+    type: comment
+  author: cyt79
+  content: 'Hey @Teja-Gollapudi . Thanks for the tips! There is one more thing I''m
+    wondering: Did you compare the performance of the base and fine-tuned models on
+    a dataset? I''m just wondering how much the finu-tuning improved the results?'
+  created_at: 2023-05-02 08:35:19+00:00
+  edited: false
+  hidden: false
+  id: 6450d9578c5830e111d94bd5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+      fullname: Teja Gollapudi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Teja-Gollapudi
+      type: user
+    createdAt: '2023-05-02T15:22:43.000Z'
+    data:
+      edited: false
+      editors:
+      - Teja-Gollapudi
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+          fullname: Teja Gollapudi
+          isHf: false
+          isPro: false
+          name: Teja-Gollapudi
+          type: user
+        html: '<p>We haven''t performed any benchmarking, mainly because we lack benchamrks
+          for what we were trying to achieve.</p>
+
+          <p>We were trying to get Flan-Ul2 to follow more free form instructions
+          , not just the flan template instructions.  When we compared its outputs
+          to the plain flan-ul2 model on a few free form instructions , it seemed
+          to do better but we don''t have any quantifiable evaluation metric to compare.  We
+          didn''t do any hyper-parameter search either. </p>
+
+          <p>Alpaca dataset has its own limitations which were later addressed by
+          the alpaca-cleaned dataset. Using the the newer instruction datasets might
+          yield better results.</p>
+
+          '
+        raw: "We haven't performed any benchmarking, mainly because we lack benchamrks\
+          \ for what we were trying to achieve.\n\nWe were trying to get Flan-Ul2\
+          \ to follow more free form instructions , not just the flan template instructions.\
+          \  When we compared its outputs to the plain flan-ul2 model on a few free\
+          \ form instructions , it seemed to do better but we don't have any quantifiable\
+          \ evaluation metric to compare.  We didn't do any hyper-parameter search\
+          \ either. \n\nAlpaca dataset has its own limitations which were later addressed\
+          \ by the alpaca-cleaned dataset. Using the the newer instruction datasets\
+          \ might yield better results."
+        updatedAt: '2023-05-02T15:22:43.316Z'
+      numEdits: 0
+      reactions: []
+    id: 64512ac39d916c596e2a8a39
+    type: comment
+  author: Teja-Gollapudi
+  content: "We haven't performed any benchmarking, mainly because we lack benchamrks\
+    \ for what we were trying to achieve.\n\nWe were trying to get Flan-Ul2 to follow\
+    \ more free form instructions , not just the flan template instructions.  When\
+    \ we compared its outputs to the plain flan-ul2 model on a few free form instructions\
+    \ , it seemed to do better but we don't have any quantifiable evaluation metric\
+    \ to compare.  We didn't do any hyper-parameter search either. \n\nAlpaca dataset\
+    \ has its own limitations which were later addressed by the alpaca-cleaned dataset.\
+    \ Using the the newer instruction datasets might yield better results."
+  created_at: 2023-05-02 14:22:43+00:00
+  edited: false
+  hidden: false
+  id: 64512ac39d916c596e2a8a39
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-05-02T15:43:47.000Z'
+    data:
+      edited: true
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Got it, thanks <span data-props=\"{&quot;user&quot;:&quot;Teja-Gollapudi&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Teja-Gollapudi\"\
+          >@<span class=\"underline\">Teja-Gollapudi</span></a></span>\n\n\t</span></span>\
+          \ ! One last thing: Did you try doing inference by setting <code>load_in_8bit</code>\
+          \  to <code>True</code> after finetuning the model? It seems like I can\
+          \ perform inference on float16 on GPU or on CPU but when I try to do 8bit\
+          \ inference, I got <code>r: probability tensor contains either inf, nan\
+          \ or element &lt; 0</code>  error.  Here is what I'm doing for inference:</p>\n\
+          <pre><code>merged_model ='directory where merged model is stored' (output\
+          \ of  merge_weights.py file)\nmodel = AutoModelForSeq2SeqLM.from_pretrained(merged_model,load_in_8bit=True,device_map='auto')\n\
+          tokenizer= AutoTokenizer.from_pretrained('google/flan-ul2)\n\nprompt_template\
+          \ = \"Below is an instruction that describes a task. Write a response that\
+          \ appropriately completes the request.\\n\\n### Instruction:\\n{instruction}\\\
+          n\\n### Response:\"\nprompt = \"Draft me an introduction section of a medium\
+          \ article on the topic 'Efficient Fine-tuning of UL-2 and T5 Models Using\
+          \ LoRA on Limited Compute\"\n\ninput = prompt_template.format(instruction=prompt)\n\
+          input_ids = tokenizer(input, return_tensors=\"pt\", truncation=True).input_ids.cuda()\n\
+          outputs = model.generate(input_ids=input_ids,max_new_tokens=128)\n</code></pre>\n\
+          <p>Full error log:</p>\n<pre><code>Traceback (most recent call last):\n\
+          \  File \"&lt;stdin&gt;\", line 1, in &lt;module&gt;\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+          , line 1452, in generate\n    return self.sample(\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+          , line 2504, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          RuntimeError: probability tensor contains either `inf`, `nan` or element\
+          \ &lt; 0\n</code></pre>\n"
+        raw: "Got it, thanks @Teja-Gollapudi ! One last thing: Did you try doing inference\
+          \ by setting ```load_in_8bit```  to ```True``` after finetuning the model?\
+          \ It seems like I can perform inference on float16 on GPU or on CPU but\
+          \ when I try to do 8bit inference, I got ``` r: probability tensor contains\
+          \ either inf, nan or element < 0 ```  error.  Here is what I'm doing for\
+          \ inference:\n\n```\nmerged_model ='directory where merged model is stored'\
+          \ (output of  merge_weights.py file)\nmodel = AutoModelForSeq2SeqLM.from_pretrained(merged_model,load_in_8bit=True,device_map='auto')\n\
+          tokenizer= AutoTokenizer.from_pretrained('google/flan-ul2)\n\nprompt_template\
+          \ = \"Below is an instruction that describes a task. Write a response that\
+          \ appropriately completes the request.\\n\\n### Instruction:\\n{instruction}\\\
+          n\\n### Response:\"\nprompt = \"Draft me an introduction section of a medium\
+          \ article on the topic 'Efficient Fine-tuning of UL-2 and T5 Models Using\
+          \ LoRA on Limited Compute\"\n\ninput = prompt_template.format(instruction=prompt)\n\
+          input_ids = tokenizer(input, return_tensors=\"pt\", truncation=True).input_ids.cuda()\n\
+          outputs = model.generate(input_ids=input_ids,max_new_tokens=128)\n```\n\n\
+          Full error log:\n```\nTraceback (most recent call last):\n  File \"<stdin>\"\
+          , line 1, in <module>\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+          , line 1452, in generate\n    return self.sample(\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+          , line 2504, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+          RuntimeError: probability tensor contains either `inf`, `nan` or element\
+          \ < 0\n```"
+        updatedAt: '2023-05-02T15:44:26.515Z'
+      numEdits: 1
+      reactions: []
+    id: 64512fb39d916c596e2b2c89
+    type: comment
+  author: cyt79
+  content: "Got it, thanks @Teja-Gollapudi ! One last thing: Did you try doing inference\
+    \ by setting ```load_in_8bit```  to ```True``` after finetuning the model? It\
+    \ seems like I can perform inference on float16 on GPU or on CPU but when I try\
+    \ to do 8bit inference, I got ``` r: probability tensor contains either inf, nan\
+    \ or element < 0 ```  error.  Here is what I'm doing for inference:\n\n```\nmerged_model\
+    \ ='directory where merged model is stored' (output of  merge_weights.py file)\n\
+    model = AutoModelForSeq2SeqLM.from_pretrained(merged_model,load_in_8bit=True,device_map='auto')\n\
+    tokenizer= AutoTokenizer.from_pretrained('google/flan-ul2)\n\nprompt_template\
+    \ = \"Below is an instruction that describes a task. Write a response that appropriately\
+    \ completes the request.\\n\\n### Instruction:\\n{instruction}\\n\\n### Response:\"\
+    \nprompt = \"Draft me an introduction section of a medium article on the topic\
+    \ 'Efficient Fine-tuning of UL-2 and T5 Models Using LoRA on Limited Compute\"\
+    \n\ninput = prompt_template.format(instruction=prompt)\ninput_ids = tokenizer(input,\
+    \ return_tensors=\"pt\", truncation=True).input_ids.cuda()\noutputs = model.generate(input_ids=input_ids,max_new_tokens=128)\n\
+    ```\n\nFull error log:\n```\nTraceback (most recent call last):\n  File \"<stdin>\"\
+    , line 1, in <module>\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+    , line 1452, in generate\n    return self.sample(\n  File \"/home/ubuntu/miniconda3/envs/lora_training/lib/python3.8/site-packages/transformers/generation/utils.py\"\
+    , line 2504, in sample\n    next_tokens = torch.multinomial(probs, num_samples=1).squeeze(1)\n\
+    RuntimeError: probability tensor contains either `inf`, `nan` or element < 0\n\
+    ```"
+  created_at: 2023-05-02 14:43:47+00:00
+  edited: true
+  hidden: false
+  id: 64512fb39d916c596e2b2c89
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+      fullname: Teja Gollapudi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Teja-Gollapudi
+      type: user
+    createdAt: '2023-05-02T16:03:32.000Z'
+    data:
+      edited: false
+      editors:
+      - Teja-Gollapudi
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62bcdae6e75a73c22a18b031/2jkNvSxIzXtpfMNfFaj9i.png?w=200&h=200&f=face
+          fullname: Teja Gollapudi
+          isHf: false
+          isPro: false
+          name: Teja-Gollapudi
+          type: user
+        html: '<p>Sorry, never tried 8 bit inference with bitsandbytes.</p>
+
+          '
+        raw: Sorry, never tried 8 bit inference with bitsandbytes.
+        updatedAt: '2023-05-02T16:03:32.124Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - cyt79
+    id: 64513454b3f75261a7d62577
+    type: comment
+  author: Teja-Gollapudi
+  content: Sorry, never tried 8 bit inference with bitsandbytes.
+  created_at: 2023-05-02 15:03:32+00:00
+  edited: false
+  hidden: false
+  id: 64513454b3f75261a7d62577
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: VMware/flan-ul2-alpaca-lora
+repo_type: model
+status: open
+target_branch: null
+title: Question about fine-tuning flan-ul2 with LoRA

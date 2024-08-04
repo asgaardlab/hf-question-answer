@@ -1,0 +1,341 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: bofenghuang
+conflicting_files: []
+created_at: 2023-09-12 17:14:30+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ea3c8a9f178dfc1df3f75d71ecbe39dd.svg
+      fullname: bofeng huang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bofenghuang
+      type: user
+    createdAt: '2023-09-12T18:14:30.000Z'
+    data:
+      edited: true
+      editors:
+      - bofenghuang
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5341525673866272
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ea3c8a9f178dfc1df3f75d71ecbe39dd.svg
+          fullname: bofeng huang
+          isHf: false
+          isPro: false
+          name: bofenghuang
+          type: user
+        html: "<p>Hi!</p>\n<p>I've tried to load the model using the following code\
+          \ snippet</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >import</span> nemo.collections.asr <span class=\"hljs-keyword\">as</span>\
+          \ nemo_asr\nasr_model = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.from_pretrained(model_name=<span\
+          \ class=\"hljs-string\">\"nvidia/stt_fr_fastconformer_hybrid_large_pc\"\
+          </span>)\n</code></pre>\n<p>However, I got the following error</p>\n<pre><code>File\
+          \ ~/asr/NeMo/nemo/collections/asr/models/rnnt_models.py:56, in EncDecRNNTModel.__init__(self,\
+          \ cfg, trainer)\n     54 # Initialize components\n     55 self.preprocessor\
+          \ = EncDecRNNTModel.from_config_dict(self.cfg.preprocessor)\n---&gt; 56\
+          \ self.encoder = EncDecRNNTModel.from_config_dict(self.cfg.encoder)\n  \
+          \   58 # Update config values required by components dynamically\n     59\
+          \ with open_dict(self.cfg.decoder):\n\nFile ~/asr/NeMo/nemo/core/classes/common.py:468,\
+          \ in Serialization.from_config_dict(cls, config, trainer)\n    465 # Hydra\
+          \ 1.x API\n    466 elif '_target_' in config and _HAS_HYDRA:\n    467  \
+          \   # regular hydra-based instantiation\n--&gt; 468     instance = hydra.utils.instantiate(config=config)\n\
+          \    469 else:\n    470     instance = None\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:226,\
+          \ in instantiate(config, *args, **kwargs)\n    223     _convert_ = config.pop(_Keys.CONVERT,\
+          \ ConvertMode.NONE)\n    224     _partial_ = config.pop(_Keys.PARTIAL, False)\n\
+          --&gt; 226     return instantiate_node(\n    227         config, *args,\
+          \ recursive=_recursive_, convert=_convert_, partial=_partial_\n    228 \
+          \    )\n    229 elif OmegaConf.is_list(config):\n    230     # Finalize\
+          \ config (convert targets to strings, merge with kwargs)\n    231     config_copy\
+          \ = copy.deepcopy(config)\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:347,\
+          \ in instantiate_node(node, convert, recursive, partial, *args)\n    342\
+          \                 value = instantiate_node(\n    343                   \
+          \  value, convert=convert, recursive=recursive\n    344                \
+          \ )\n    345             kwargs[key] = _convert_node(value, convert)\n--&gt;\
+          \ 347     return _call_target(_target_, partial, args, kwargs, full_key)\n\
+          \    348 else:\n    349     # If ALL or PARTIAL non structured or OBJECT\
+          \ non structured,\n    350     # instantiate in dict and resolve interpolations\
+          \ eagerly.\n    351     if convert == ConvertMode.ALL or (\n    352    \
+          \     convert in (ConvertMode.PARTIAL, ConvertMode.OBJECT)\n    353    \
+          \     and node._metadata.object_type in (None, dict)\n    354     ):\n\n\
+          File ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:97,\
+          \ in _call_target(_target_, _partial_, args, kwargs, full_key)\n     95\
+          \ if full_key:\n     96     msg += f\"\\nfull_key: {full_key}\"\n---&gt;\
+          \ 97 raise InstantiationException(msg) from e\n\nInstantiationException:\
+          \ Error in call to target 'nemo.collections.asr.modules.conformer_encoder.ConformerEncoder':\n\
+          TypeError(\"__init__() got an unexpected keyword argument 'conv_pointwise_type'\"\
+          )\n</code></pre>\n<p>It seems like the <code>conv_pointwise_type</code>\
+          \ attribute is not compatible with the current version which I've installed\
+          \ from the main branch.</p>\n<p>I've removed the relevant attribute in <code>model_config.yaml</code>\
+          \ and then repacked to the .nemo file using</p>\n<pre><code class=\"language-python\"\
+          >asr_model.save_to(<span class=\"hljs-string\">\"stt_fr_fastconformer_hybrid_large_pc.nemo\"\
+          </span>)\n</code></pre>\n<p>Then I can successfully load the model using</p>\n\
+          <pre><code class=\"language-python\">asr_model = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.restore_from(<span\
+          \ class=\"hljs-string\">\"stt_fr_fastconformer_hybrid_large_pc.nemo\"</span>)\n\
+          </code></pre>\n<p>Finally, I would like to submit this PR to modify the\
+          \ online version, so that users can seamlessly load it from the Hugging\
+          \ Face Hub using <code>from_pretrained</code> function.</p>\n<p>Thanks in\
+          \ advance!</p>\n"
+        raw: "Hi!\n\nI've tried to load the model using the following code snippet\n\
+          \n```python\nimport nemo.collections.asr as nemo_asr\nasr_model = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.from_pretrained(model_name=\"\
+          nvidia/stt_fr_fastconformer_hybrid_large_pc\")\n```\n\nHowever, I got the\
+          \ following error\n\n```\nFile ~/asr/NeMo/nemo/collections/asr/models/rnnt_models.py:56,\
+          \ in EncDecRNNTModel.__init__(self, cfg, trainer)\n     54 # Initialize\
+          \ components\n     55 self.preprocessor = EncDecRNNTModel.from_config_dict(self.cfg.preprocessor)\n\
+          ---> 56 self.encoder = EncDecRNNTModel.from_config_dict(self.cfg.encoder)\n\
+          \     58 # Update config values required by components dynamically\n   \
+          \  59 with open_dict(self.cfg.decoder):\n\nFile ~/asr/NeMo/nemo/core/classes/common.py:468,\
+          \ in Serialization.from_config_dict(cls, config, trainer)\n    465 # Hydra\
+          \ 1.x API\n    466 elif '_target_' in config and _HAS_HYDRA:\n    467  \
+          \   # regular hydra-based instantiation\n--> 468     instance = hydra.utils.instantiate(config=config)\n\
+          \    469 else:\n    470     instance = None\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:226,\
+          \ in instantiate(config, *args, **kwargs)\n    223     _convert_ = config.pop(_Keys.CONVERT,\
+          \ ConvertMode.NONE)\n    224     _partial_ = config.pop(_Keys.PARTIAL, False)\n\
+          --> 226     return instantiate_node(\n    227         config, *args, recursive=_recursive_,\
+          \ convert=_convert_, partial=_partial_\n    228     )\n    229 elif OmegaConf.is_list(config):\n\
+          \    230     # Finalize config (convert targets to strings, merge with kwargs)\n\
+          \    231     config_copy = copy.deepcopy(config)\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:347,\
+          \ in instantiate_node(node, convert, recursive, partial, *args)\n    342\
+          \                 value = instantiate_node(\n    343                   \
+          \  value, convert=convert, recursive=recursive\n    344                \
+          \ )\n    345             kwargs[key] = _convert_node(value, convert)\n-->\
+          \ 347     return _call_target(_target_, partial, args, kwargs, full_key)\n\
+          \    348 else:\n    349     # If ALL or PARTIAL non structured or OBJECT\
+          \ non structured,\n    350     # instantiate in dict and resolve interpolations\
+          \ eagerly.\n    351     if convert == ConvertMode.ALL or (\n    352    \
+          \     convert in (ConvertMode.PARTIAL, ConvertMode.OBJECT)\n    353    \
+          \     and node._metadata.object_type in (None, dict)\n    354     ):\n\n\
+          File ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:97,\
+          \ in _call_target(_target_, _partial_, args, kwargs, full_key)\n     95\
+          \ if full_key:\n     96     msg += f\"\\nfull_key: {full_key}\"\n---> 97\
+          \ raise InstantiationException(msg) from e\n\nInstantiationException: Error\
+          \ in call to target 'nemo.collections.asr.modules.conformer_encoder.ConformerEncoder':\n\
+          TypeError(\"__init__() got an unexpected keyword argument 'conv_pointwise_type'\"\
+          )\n```\n\nIt seems like the `conv_pointwise_type` attribute is not compatible\
+          \ with the current version which I've installed from the main branch.\n\n\
+          I've removed the relevant attribute in `model_config.yaml` and then repacked\
+          \ to the .nemo file using\n\n```python\nasr_model.save_to(\"stt_fr_fastconformer_hybrid_large_pc.nemo\"\
+          )\n```\n\nThen I can successfully load the model using\n\n```python\nasr_model\
+          \ = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.restore_from(\"stt_fr_fastconformer_hybrid_large_pc.nemo\"\
+          )\n```\n\nFinally, I would like to submit this PR to modify the online version,\
+          \ so that users can seamlessly load it from the Hugging Face Hub using `from_pretrained`\
+          \ function.\n\nThanks in advance!"
+        updatedAt: '2023-09-12T18:26:44.581Z'
+      numEdits: 1
+      reactions: []
+    id: 6500aa8668c6cc778cedca43
+    type: comment
+  author: bofenghuang
+  content: "Hi!\n\nI've tried to load the model using the following code snippet\n\
+    \n```python\nimport nemo.collections.asr as nemo_asr\nasr_model = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.from_pretrained(model_name=\"\
+    nvidia/stt_fr_fastconformer_hybrid_large_pc\")\n```\n\nHowever, I got the following\
+    \ error\n\n```\nFile ~/asr/NeMo/nemo/collections/asr/models/rnnt_models.py:56,\
+    \ in EncDecRNNTModel.__init__(self, cfg, trainer)\n     54 # Initialize components\n\
+    \     55 self.preprocessor = EncDecRNNTModel.from_config_dict(self.cfg.preprocessor)\n\
+    ---> 56 self.encoder = EncDecRNNTModel.from_config_dict(self.cfg.encoder)\n  \
+    \   58 # Update config values required by components dynamically\n     59 with\
+    \ open_dict(self.cfg.decoder):\n\nFile ~/asr/NeMo/nemo/core/classes/common.py:468,\
+    \ in Serialization.from_config_dict(cls, config, trainer)\n    465 # Hydra 1.x\
+    \ API\n    466 elif '_target_' in config and _HAS_HYDRA:\n    467     # regular\
+    \ hydra-based instantiation\n--> 468     instance = hydra.utils.instantiate(config=config)\n\
+    \    469 else:\n    470     instance = None\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:226,\
+    \ in instantiate(config, *args, **kwargs)\n    223     _convert_ = config.pop(_Keys.CONVERT,\
+    \ ConvertMode.NONE)\n    224     _partial_ = config.pop(_Keys.PARTIAL, False)\n\
+    --> 226     return instantiate_node(\n    227         config, *args, recursive=_recursive_,\
+    \ convert=_convert_, partial=_partial_\n    228     )\n    229 elif OmegaConf.is_list(config):\n\
+    \    230     # Finalize config (convert targets to strings, merge with kwargs)\n\
+    \    231     config_copy = copy.deepcopy(config)\n\nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:347,\
+    \ in instantiate_node(node, convert, recursive, partial, *args)\n    342     \
+    \            value = instantiate_node(\n    343                     value, convert=convert,\
+    \ recursive=recursive\n    344                 )\n    345             kwargs[key]\
+    \ = _convert_node(value, convert)\n--> 347     return _call_target(_target_, partial,\
+    \ args, kwargs, full_key)\n    348 else:\n    349     # If ALL or PARTIAL non\
+    \ structured or OBJECT non structured,\n    350     # instantiate in dict and\
+    \ resolve interpolations eagerly.\n    351     if convert == ConvertMode.ALL or\
+    \ (\n    352         convert in (ConvertMode.PARTIAL, ConvertMode.OBJECT)\n  \
+    \  353         and node._metadata.object_type in (None, dict)\n    354     ):\n\
+    \nFile ~/anaconda3/envs/nemo/lib/python3.9/site-packages/hydra/_internal/instantiate/_instantiate2.py:97,\
+    \ in _call_target(_target_, _partial_, args, kwargs, full_key)\n     95 if full_key:\n\
+    \     96     msg += f\"\\nfull_key: {full_key}\"\n---> 97 raise InstantiationException(msg)\
+    \ from e\n\nInstantiationException: Error in call to target 'nemo.collections.asr.modules.conformer_encoder.ConformerEncoder':\n\
+    TypeError(\"__init__() got an unexpected keyword argument 'conv_pointwise_type'\"\
+    )\n```\n\nIt seems like the `conv_pointwise_type` attribute is not compatible\
+    \ with the current version which I've installed from the main branch.\n\nI've\
+    \ removed the relevant attribute in `model_config.yaml` and then repacked to the\
+    \ .nemo file using\n\n```python\nasr_model.save_to(\"stt_fr_fastconformer_hybrid_large_pc.nemo\"\
+    )\n```\n\nThen I can successfully load the model using\n\n```python\nasr_model\
+    \ = nemo_asr.models.EncDecHybridRNNTCTCBPEModel.restore_from(\"stt_fr_fastconformer_hybrid_large_pc.nemo\"\
+    )\n```\n\nFinally, I would like to submit this PR to modify the online version,\
+    \ so that users can seamlessly load it from the Hugging Face Hub using `from_pretrained`\
+    \ function.\n\nThanks in advance!"
+  created_at: 2023-09-12 17:14:30+00:00
+  edited: true
+  hidden: false
+  id: 6500aa8668c6cc778cedca43
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/ea3c8a9f178dfc1df3f75d71ecbe39dd.svg
+      fullname: bofeng huang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bofenghuang
+      type: user
+    createdAt: '2023-09-12T18:14:30.000Z'
+    data:
+      oid: 4e5f717237449042735104990164da0ce2987ea6
+      parents:
+      - e7f1a2d48985f8c3121d15b11bc1842a42463788
+      subject: Remove the incompatible attribute `conv_pointwise_type` from the `model_config.yaml`
+        file
+    id: 6500aa860000000000000000
+    type: commit
+  author: bofenghuang
+  created_at: 2023-09-12 17:14:30+00:00
+  id: 6500aa860000000000000000
+  oid: 4e5f717237449042735104990164da0ce2987ea6
+  summary: Remove the incompatible attribute `conv_pointwise_type` from the `model_config.yaml`
+    file
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ea3c8a9f178dfc1df3f75d71ecbe39dd.svg
+      fullname: bofeng huang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bofenghuang
+      type: user
+    createdAt: '2023-09-12T18:17:31.000Z'
+    data:
+      edited: false
+      editors:
+      - bofenghuang
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8448587656021118
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ea3c8a9f178dfc1df3f75d71ecbe39dd.svg
+          fullname: bofeng huang
+          isHf: false
+          isPro: false
+          name: bofenghuang
+          type: user
+        html: "<p>Kindly ping <span data-props=\"{&quot;user&quot;:&quot;smajumdar94&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/smajumdar94\"\
+          >@<span class=\"underline\">smajumdar94</span></a></span>\n\n\t</span></span>\
+          \ for review :)</p>\n"
+        raw: Kindly ping @smajumdar94 for review :)
+        updatedAt: '2023-09-12T18:17:31.142Z'
+      numEdits: 0
+      reactions: []
+    id: 6500ab3bea5699b59aa36a69
+    type: comment
+  author: bofenghuang
+  content: Kindly ping @smajumdar94 for review :)
+  created_at: 2023-09-12 17:17:31+00:00
+  edited: false
+  hidden: false
+  id: 6500ab3bea5699b59aa36a69
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1649899774659-6254f8e5d21e4cc386b881ad.jpeg?w=200&h=200&f=face
+      fullname: Somshubra Majumdar
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: smajumdar94
+      type: user
+    createdAt: '2023-09-12T19:05:42.000Z'
+    data:
+      edited: false
+      editors:
+      - smajumdar94
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9597147703170776
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1649899774659-6254f8e5d21e4cc386b881ad.jpeg?w=200&h=200&f=face
+          fullname: Somshubra Majumdar
+          isHf: false
+          isPro: false
+          name: smajumdar94
+          type: user
+        html: '<p>This is fantastic ! Thanks you for taking the effort to patch the
+          model !</p>
+
+          '
+        raw: This is fantastic ! Thanks you for taking the effort to patch the model
+          !
+        updatedAt: '2023-09-12T19:05:42.880Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - bofenghuang
+      relatedEventId: 6500b6867f91f940400d4ed7
+    id: 6500b6867f91f940400d4ed5
+    type: comment
+  author: smajumdar94
+  content: This is fantastic ! Thanks you for taking the effort to patch the model
+    !
+  created_at: 2023-09-12 18:05:42+00:00
+  edited: false
+  hidden: false
+  id: 6500b6867f91f940400d4ed5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1649899774659-6254f8e5d21e4cc386b881ad.jpeg?w=200&h=200&f=face
+      fullname: Somshubra Majumdar
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: smajumdar94
+      type: user
+    createdAt: '2023-09-12T19:05:42.000Z'
+    data:
+      status: merged
+    id: 6500b6867f91f940400d4ed7
+    type: status-change
+  author: smajumdar94
+  created_at: 2023-09-12 18:05:42+00:00
+  id: 6500b6867f91f940400d4ed7
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: 4d45207544e295b077bf956e807b973f7fc428dc
+num: 1
+repo_id: nvidia/stt_fr_fastconformer_hybrid_large_pc
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: Remove the incompatible attribute `conv_pointwise_type` from the `model_config.yaml`
+  file

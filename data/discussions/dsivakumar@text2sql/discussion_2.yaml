@@ -1,0 +1,200 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: dsivakumar
+conflicting_files: null
+created_at: 2022-07-10 07:43:30+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0a06ea6c07ef5acafc05ba7fa828d213.svg
+      fullname: Sivakumar D
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: dsivakumar
+      type: user
+    createdAt: '2022-07-10T08:43:30.000Z'
+    data:
+      edited: true
+      editors:
+      - dsivakumar
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0a06ea6c07ef5acafc05ba7fa828d213.svg
+          fullname: Sivakumar D
+          isHf: false
+          isPro: false
+          name: dsivakumar
+          type: user
+        html: "<p>Thanks to Shivanandroy,  this <a rel=\"nofollow\" href=\"https://github.com/Shivanandroy/T5-Finetuning-PyTorch/blob/main/notebook/T5_Fine_tuning_with_PyTorch.ipynb\"\
+          >https://github.com/Shivanandroy/T5-Finetuning-PyTorch/blob/main/notebook/T5_Fine_tuning_with_PyTorch.ipynb</a>,\
+          \ helped to understand and adapt it to text 2 SQL</p>\n<p>Only change or\
+          \ major changes is Dataloader, and the wiki dataset I converted it into,\
+          \ just two columns,  inputs as 'qurey' and targets as 'sql' </p>\n<pre><code>\
+          \                                        Sample Data                   \
+          \                      \n+-------------------------------------------------------------------------------------------+\n\
+          |                source_text                  |                 target_text\
+          \                 |\n|---------------------------------------------+---------------------------------------------|\n\
+          | What is the season year where the rank is   |      SELECT tv season WHERE\
+          \ rank EQL 39     |\n|                    39?                      |   \
+          \                                          |\n|What is the number of season\
+          \ premieres were  | SELECT count(season premiere) WHERE viewers |\n|   \
+          \        10.17 people watched?             |             (millions) EQL\
+          \ 10.17            |\n+-------------------------------------------------------------------------------------------+\n\
+          </code></pre>\n<p>Dataset class</p>\n<pre><code>class CSQLSetClass(Dataset):\n\
+          \  \"\"\"\n Using wikiSQL dataset for reading the dataset and \n  loading\
+          \ it into the dataloader to pass it to the neural network for finetuning\
+          \ the model\n\n  \"\"\"\n\n  def __init__(self, dataframe, tokenizer, source_len,\
+          \ target_len, source_text, target_text):\n    self.tokenizer = tokenizer\n\
+          \    self.data = dataframe\n    self.source_len = source_len\n    self.summ_len\
+          \ = target_len\n    self.target_text = self.data[target_text]\n    self.source_text\
+          \ = self.data[source_text]\n\n    self.data[\"query\"] = \"English to SQL:\
+          \ \"+self.data[\"query\"]\n    self.data[\"sql\"] = \"&lt;pad&gt;\" + self.data[\"\
+          sql\"] + \"&lt;/s&gt;\"\n    \n  def __len__(self):\n    return len(self.target_text)\n\
+          \n  def __getitem__(self, index):\n    source_text = str(self.source_text[index])\n\
+          \    target_text = str(self.target_text[index])\n\n    #cleaning data so\
+          \ as to ensure data is in string type\n    source_text = ' '.join(source_text.split())\n\
+          \    target_text = ' '.join(target_text.split())\n\n    source = self.tokenizer.batch_encode_plus([source_text],\
+          \ max_length= self.source_len, pad_to_max_length=True, truncation=True,\
+          \ padding=\"max_length\", return_tensors='pt')\n    target = self.tokenizer.batch_encode_plus([target_text],\
+          \ max_length= self.summ_len, pad_to_max_length=True, truncation=True, padding=\"\
+          max_length\", return_tensors='pt')\n\n    source_ids = source['input_ids'].squeeze()\n\
+          \    source_mask = source['attention_mask'].squeeze()\n    target_ids =\
+          \ target['input_ids'].squeeze()\n    target_mask = target['attention_mask'].squeeze()\n\
+          \n    return {\n        'source_ids': source_ids.to(dtype=torch.long), \n\
+          \        'source_mask': source_mask.to(dtype=torch.long), \n        'target_ids':\
+          \ target_ids.to(dtype=torch.long),\n        'target_ids_y': target_ids.to(dtype=torch.long)\n\
+          \    }\n</code></pre>\n<p>Prediction function takes a plain English question</p>\n\
+          <pre><code>#Predict function \ndef get_sql(query,tokenizer,model):\n   \
+          \ source_text= \"English to SQL: \"+query\n    source_text = ' '.join(source_text.split())\n\
+          \    source = tokenizer.batch_encode_plus([source_text],max_length= 128,\
+          \ pad_to_max_length=True, truncation=True, padding=\"max_length\", return_tensors='pt')\n\
+          \    source_ids = source['input_ids'] #.squeeze()\n    source_mask = source['attention_mask']#.squeeze()\n\
+          \    generated_ids = model.generate(\n      input_ids = source_ids.to(dtype=torch.long),\n\
+          \      attention_mask = source_mask.to(dtype=torch.long), \n      max_length=150,\
+          \ \n      num_beams=2,\n      repetition_penalty=2.5, \n      length_penalty=1.0,\
+          \ \n      early_stopping=True\n      )\n    preds = [tokenizer.decode(g,\
+          \ skip_special_tokens=True, clean_up_tokenization_spaces=True) for g in\
+          \ generated_ids]\n    return preds\n</code></pre>\n"
+        raw: "Thanks to Shivanandroy,  this https://github.com/Shivanandroy/T5-Finetuning-PyTorch/blob/main/notebook/T5_Fine_tuning_with_PyTorch.ipynb,\
+          \ helped to understand and adapt it to text 2 SQL\n\nOnly change or major\
+          \ changes is Dataloader, and the wiki dataset I converted it into, just\
+          \ two columns,  inputs as 'qurey' and targets as 'sql' \n```\n         \
+          \                               Sample Data                            \
+          \             \n+-------------------------------------------------------------------------------------------+\n\
+          |                source_text                  |                 target_text\
+          \                 |\n|---------------------------------------------+---------------------------------------------|\n\
+          | What is the season year where the rank is   |      SELECT tv season WHERE\
+          \ rank EQL 39     |\n|                    39?                      |   \
+          \                                          |\n|What is the number of season\
+          \ premieres were  | SELECT count(season premiere) WHERE viewers |\n|   \
+          \        10.17 people watched?             |             (millions) EQL\
+          \ 10.17            |\n+-------------------------------------------------------------------------------------------+\n\
+          ```\nDataset class\n```\nclass CSQLSetClass(Dataset):\n  \"\"\"\n Using\
+          \ wikiSQL dataset for reading the dataset and \n  loading it into the dataloader\
+          \ to pass it to the neural network for finetuning the model\n\n  \"\"\"\n\
+          \n  def __init__(self, dataframe, tokenizer, source_len, target_len, source_text,\
+          \ target_text):\n    self.tokenizer = tokenizer\n    self.data = dataframe\n\
+          \    self.source_len = source_len\n    self.summ_len = target_len\n    self.target_text\
+          \ = self.data[target_text]\n    self.source_text = self.data[source_text]\n\
+          \n    self.data[\"query\"] = \"English to SQL: \"+self.data[\"query\"]\n\
+          \    self.data[\"sql\"] = \"<pad>\" + self.data[\"sql\"] + \"</s>\"\n  \
+          \  \n  def __len__(self):\n    return len(self.target_text)\n\n  def __getitem__(self,\
+          \ index):\n    source_text = str(self.source_text[index])\n    target_text\
+          \ = str(self.target_text[index])\n\n    #cleaning data so as to ensure data\
+          \ is in string type\n    source_text = ' '.join(source_text.split())\n \
+          \   target_text = ' '.join(target_text.split())\n\n    source = self.tokenizer.batch_encode_plus([source_text],\
+          \ max_length= self.source_len, pad_to_max_length=True, truncation=True,\
+          \ padding=\"max_length\", return_tensors='pt')\n    target = self.tokenizer.batch_encode_plus([target_text],\
+          \ max_length= self.summ_len, pad_to_max_length=True, truncation=True, padding=\"\
+          max_length\", return_tensors='pt')\n\n    source_ids = source['input_ids'].squeeze()\n\
+          \    source_mask = source['attention_mask'].squeeze()\n    target_ids =\
+          \ target['input_ids'].squeeze()\n    target_mask = target['attention_mask'].squeeze()\n\
+          \n    return {\n        'source_ids': source_ids.to(dtype=torch.long), \n\
+          \        'source_mask': source_mask.to(dtype=torch.long), \n        'target_ids':\
+          \ target_ids.to(dtype=torch.long),\n        'target_ids_y': target_ids.to(dtype=torch.long)\n\
+          \    }\n\n```\nPrediction function takes a plain English question\n```\n\
+          #Predict function \ndef get_sql(query,tokenizer,model):\n    source_text=\
+          \ \"English to SQL: \"+query\n    source_text = ' '.join(source_text.split())\n\
+          \    source = tokenizer.batch_encode_plus([source_text],max_length= 128,\
+          \ pad_to_max_length=True, truncation=True, padding=\"max_length\", return_tensors='pt')\n\
+          \    source_ids = source['input_ids'] #.squeeze()\n    source_mask = source['attention_mask']#.squeeze()\n\
+          \    generated_ids = model.generate(\n      input_ids = source_ids.to(dtype=torch.long),\n\
+          \      attention_mask = source_mask.to(dtype=torch.long), \n      max_length=150,\
+          \ \n      num_beams=2,\n      repetition_penalty=2.5, \n      length_penalty=1.0,\
+          \ \n      early_stopping=True\n      )\n    preds = [tokenizer.decode(g,\
+          \ skip_special_tokens=True, clean_up_tokenization_spaces=True) for g in\
+          \ generated_ids]\n    return preds\n```"
+        updatedAt: '2022-07-10T08:51:27.091Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - jrreda
+    id: 62ca91326696b7a599ba9496
+    type: comment
+  author: dsivakumar
+  content: "Thanks to Shivanandroy,  this https://github.com/Shivanandroy/T5-Finetuning-PyTorch/blob/main/notebook/T5_Fine_tuning_with_PyTorch.ipynb,\
+    \ helped to understand and adapt it to text 2 SQL\n\nOnly change or major changes\
+    \ is Dataloader, and the wiki dataset I converted it into, just two columns, \
+    \ inputs as 'qurey' and targets as 'sql' \n```\n                             \
+    \           Sample Data                                         \n+-------------------------------------------------------------------------------------------+\n\
+    |                source_text                  |                 target_text  \
+    \               |\n|---------------------------------------------+---------------------------------------------|\n\
+    | What is the season year where the rank is   |      SELECT tv season WHERE rank\
+    \ EQL 39     |\n|                    39?                      |              \
+    \                               |\n|What is the number of season premieres were\
+    \  | SELECT count(season premiere) WHERE viewers |\n|           10.17 people watched?\
+    \             |             (millions) EQL 10.17            |\n+-------------------------------------------------------------------------------------------+\n\
+    ```\nDataset class\n```\nclass CSQLSetClass(Dataset):\n  \"\"\"\n Using wikiSQL\
+    \ dataset for reading the dataset and \n  loading it into the dataloader to pass\
+    \ it to the neural network for finetuning the model\n\n  \"\"\"\n\n  def __init__(self,\
+    \ dataframe, tokenizer, source_len, target_len, source_text, target_text):\n \
+    \   self.tokenizer = tokenizer\n    self.data = dataframe\n    self.source_len\
+    \ = source_len\n    self.summ_len = target_len\n    self.target_text = self.data[target_text]\n\
+    \    self.source_text = self.data[source_text]\n\n    self.data[\"query\"] = \"\
+    English to SQL: \"+self.data[\"query\"]\n    self.data[\"sql\"] = \"<pad>\" +\
+    \ self.data[\"sql\"] + \"</s>\"\n    \n  def __len__(self):\n    return len(self.target_text)\n\
+    \n  def __getitem__(self, index):\n    source_text = str(self.source_text[index])\n\
+    \    target_text = str(self.target_text[index])\n\n    #cleaning data so as to\
+    \ ensure data is in string type\n    source_text = ' '.join(source_text.split())\n\
+    \    target_text = ' '.join(target_text.split())\n\n    source = self.tokenizer.batch_encode_plus([source_text],\
+    \ max_length= self.source_len, pad_to_max_length=True, truncation=True, padding=\"\
+    max_length\", return_tensors='pt')\n    target = self.tokenizer.batch_encode_plus([target_text],\
+    \ max_length= self.summ_len, pad_to_max_length=True, truncation=True, padding=\"\
+    max_length\", return_tensors='pt')\n\n    source_ids = source['input_ids'].squeeze()\n\
+    \    source_mask = source['attention_mask'].squeeze()\n    target_ids = target['input_ids'].squeeze()\n\
+    \    target_mask = target['attention_mask'].squeeze()\n\n    return {\n      \
+    \  'source_ids': source_ids.to(dtype=torch.long), \n        'source_mask': source_mask.to(dtype=torch.long),\
+    \ \n        'target_ids': target_ids.to(dtype=torch.long),\n        'target_ids_y':\
+    \ target_ids.to(dtype=torch.long)\n    }\n\n```\nPrediction function takes a plain\
+    \ English question\n```\n#Predict function \ndef get_sql(query,tokenizer,model):\n\
+    \    source_text= \"English to SQL: \"+query\n    source_text = ' '.join(source_text.split())\n\
+    \    source = tokenizer.batch_encode_plus([source_text],max_length= 128, pad_to_max_length=True,\
+    \ truncation=True, padding=\"max_length\", return_tensors='pt')\n    source_ids\
+    \ = source['input_ids'] #.squeeze()\n    source_mask = source['attention_mask']#.squeeze()\n\
+    \    generated_ids = model.generate(\n      input_ids = source_ids.to(dtype=torch.long),\n\
+    \      attention_mask = source_mask.to(dtype=torch.long), \n      max_length=150,\
+    \ \n      num_beams=2,\n      repetition_penalty=2.5, \n      length_penalty=1.0,\
+    \ \n      early_stopping=True\n      )\n    preds = [tokenizer.decode(g, skip_special_tokens=True,\
+    \ clean_up_tokenization_spaces=True) for g in generated_ids]\n    return preds\n\
+    ```"
+  created_at: 2022-07-10 07:43:30+00:00
+  edited: true
+  hidden: false
+  id: 62ca91326696b7a599ba9496
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: dsivakumar/text2sql
+repo_type: model
+status: open
+target_branch: null
+title: How did I finetune t5 using wikisql dataset?

@@ -1,0 +1,753 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: rubenjanss
+conflicting_files: null
+created_at: 2023-02-06 17:01:16+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-02-06T17:01:16.000Z'
+    data:
+      edited: true
+      editors:
+      - nielsr
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: "<p>Hi,</p>\n<p>I'm trying to fine-tune this model on my own dataset\
+          \ using the Huggingface Trainer, but I get the following error in the training\
+          \ step: <code>ValueError: The model did not return a loss from the inputs,\
+          \ only the following keys: logits,past_key_values. For reference, the inputs\
+          \ it received are input_ids,attention_mask,pixel_values.</code>.</p>\n<p>I'm\
+          \ using the following code:</p>\n<pre><code>from transformers import GitForCausalLM\n\
+          model = GitForCausalLM.from_pretrained(\"microsoft/git-large-coco\")\n\n\
+          import torch\nfrom torch.utils.data import Dataset\nfrom PIL import Image\n\
+          \nclass VCSDatasetProcessor(Dataset):\n    def __init__(self, root_dir,\
+          \ df, processor, max_target_length=128):\n        self.root_dir = root_dir\n\
+          \        self.df = df\n        self.processor = processor\n        self.max_target_length\
+          \ = max_target_length\n\n    def __len__(self):\n        return len(self.df)\n\
+          \n    def __getitem__(self, idx):\n        # get file name + text \n   \
+          \     file_name = self.df[\"image_id\"][idx]\n        text = self.df[\"\
+          question\"][idx]\n        # prepare image (i.e. resize + normalize)\n  \
+          \      image = Image.open(self.root_dir + file_name).convert(\"RGB\")\n\n\
+          \        encoding = self.processor(images=image, text=text, padding=\"max_length\"\
+          , return_tensors=\"pt\", max_length=self.max_target_length)\n        \n\
+          \        encoding = {k:v.squeeze() for k,v in encoding.items()}\n      \
+          \  \n        return encoding\n\nfrom transformers import AutoProcessor\n\
+          \nprocessor = AutoProcessor.from_pretrained(\"microsoft/git-large-coco\"\
+          )\n\ntrain_set = VCSDatasetProcessor(root_dir=\"data/images/\", df=train_df,\
+          \ processor=processor)\nvalid_set = VCSDatasetProcessor(root_dir=\"data/images/\"\
+          , df=valid_df, processor=processor)\n\nfrom transformers import Seq2SeqTrainer,\
+          \ Seq2SeqTrainingArguments\n\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    predict_with_generate=True,\n    evaluation_strategy=\"steps\",\n \
+          \   per_device_train_batch_size=4,\n    per_device_eval_batch_size=4,\n\
+          \    fp16=False, \n    output_dir=\"./git-hf/\",\n    logging_steps=200,\n\
+          \    save_strategy=\"epoch\",\n    eval_steps=200,\n    num_train_epochs=4,\n\
+          )\n\ndef compute_metrics(pred):\n    labels_ids = pred.label_ids\n    pred_ids\
+          \ = pred.predictions\n\n    pred_str = tokenizer.batch_decode(pred_ids,\
+          \ skip_special_tokens=True)\n    labels_ids[labels_ids == -100] = tokenizer.pad_token_id\n\
+          \    label_str = tokenizer.batch_decode(labels_ids, skip_special_tokens=True)\n\
+          \n    rouge = rouge_metric.compute(predictions=pred_str, references=label_str)\n\
+          \n    return {\"rouge\": rouge[\"rougeL\"].mid.fmeasure}\n\nfrom transformers\
+          \ import default_data_collator\n\n# instantiate trainer\ntrainer = Seq2SeqTrainer(\n\
+          \    model=model,\n    tokenizer=processor,\n    args=training_args,\n \
+          \   #compute_metrics=compute_metrics,\n    train_dataset=train_set,\n  \
+          \  eval_dataset=valid_set,\n    data_collator=default_data_collator,\n)\n\
+          \ntrainer.train()\n</code></pre>\n<p>The full error trace is the following:</p>\n\
+          <pre><code>***** Running training *****\n  Num examples = 8886\n  Num Epochs\
+          \ = 4\n  Instantaneous batch size per device = 4\n  Total train batch size\
+          \ (w. parallel, distributed &amp; accumulation) = 4\n  Gradient Accumulation\
+          \ steps = 1\n  Total optimization steps = 8888\n  Number of trainable parameters\
+          \ = 394196026\nvision_config is None. initializing the GitVisionConfig with\
+          \ default values.\n\n---------------------------------------------------------------------------\n\
+          ValueError                                Traceback (most recent call last)\n\
+          Cell In [26], line 1\n----&gt; 1 trainer.train()\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1570,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1565     self.model_wrapped = self.model\n   1567 inner_training_loop\
+          \ = find_executable_batch_size(\n   1568     self._inner_training_loop,\
+          \ self._train_batch_size, args.auto_find_batch_size\n   1569 )\n-&gt; 1570\
+          \ return inner_training_loop(\n   1571     args=args,\n   1572     resume_from_checkpoint=resume_from_checkpoint,\n\
+          \   1573     trial=trial,\n   1574     ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1575 )\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1835,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1833         tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1834 else:\n-&gt; 1835     tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1837 if (\n   1838     args.logging_nan_inf_filter\n   1839\
+          \     and not is_torch_tpu_available()\n   1840     and (torch.isnan(tr_loss_step)\
+          \ or torch.isinf(tr_loss_step))\n   1841 ):\n   1842     # if loss is nan\
+          \ or inf simply add the average of previous logged losses\n   1843     tr_loss\
+          \ += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\n\
+          \nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2583,\
+          \ in Trainer.training_step(self, model, inputs)\n   2580     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2582 with self.compute_loss_context_manager():\n-&gt; 2583     loss\
+          \ = self.compute_loss(model, inputs)\n   2585 if self.args.n_gpu &gt; 1:\n\
+          \   2586     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2628,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2626\
+          \ else:\n   2627     if isinstance(outputs, dict) and \"loss\" not in outputs:\n\
+          -&gt; 2628         raise ValueError(\n   2629             \"The model did\
+          \ not return a loss from the inputs, only the following keys: \"\n   2630\
+          \             f\"{','.join(outputs.keys())}. For reference, the inputs it\
+          \ received are {','.join(inputs.keys())}.\"\n   2631         )\n   2632\
+          \     # We don't use .loss here since the model may return tuples instead\
+          \ of ModelOutput.\n   2633     loss = outputs[\"loss\"] if isinstance(outputs,\
+          \ dict) else outputs[0]\n\nValueError: The model did not return a loss from\
+          \ the inputs, only the following keys: logits,past_key_values. For reference,\
+          \ the inputs it received are input_ids,attention_mask,pixel_values.\n</code></pre>\n\
+          <p>I've also tried to fine-tune the model using the code in this tutorial:\
+          \ <a rel=\"nofollow\" href=\"https://colab.research.google.com/drive/1HLxgrG7xZJ9FvXckNG61J72FkyrbqKAA\"\
+          >https://colab.research.google.com/drive/1HLxgrG7xZJ9FvXckNG61J72FkyrbqKAA</a>.\
+          \ That seemed to work, but when I tried to save a checkpoint every epoch,\
+          \ those checkpoints produced strange output on my test set (the model gave\
+          \ the same output for each input image), and the output of the last checkpoint\
+          \ was different to that of the final model that was in memory after conclusion\
+          \ of the training loop (that one actually produced different output for\
+          \ different images), so something seemed to go wrong there. </p>\n<p>I used\
+          \ the same code as in thet tutorial, it was only different here:</p>\n<pre><code>import\
+          \ torch\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)\n\n\
+          device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\nmodel.to(device)\n\
+          \nmodel.train()\n\nfor epoch in range(10):\n    print(\"Epoch:\", epoch)\n\
+          \    for idx, batch in enumerate(train_dataloader):\n        input_ids =\
+          \ batch.pop(\"input_ids\").to(device)\n        pixel_values = batch.pop(\"\
+          pixel_values\").to(device)\n\n        outputs = model(input_ids=input_ids,\n\
+          \                        pixel_values=pixel_values,\n                  \
+          \      labels=input_ids)\n\n        loss = outputs.loss\n\n        if idx\
+          \ % 100 == 0:\n            print(str(idx) + \"/ \" + str(len(train_dataloader))\
+          \ + \" Loss:\", loss.item())\n\n        loss.backward()\n\n        optimizer.step()\n\
+          \        optimizer.zero_grad()\n        \n    model.save_pretrained(\"git2/checkpoint-\"\
+          +str(epoch))\n</code></pre>\n<p>Can you help me with these problems, or\
+          \ at least with one of the two of them? :)</p>\n<p>Best wishes</p>\n"
+        raw: "Hi,\n\nI'm trying to fine-tune this model on my own dataset using the\
+          \ Huggingface Trainer, but I get the following error in the training step:\
+          \ ```ValueError: The model did not return a loss from the inputs, only the\
+          \ following keys: logits,past_key_values. For reference, the inputs it received\
+          \ are input_ids,attention_mask,pixel_values.```.\n\nI'm using the following\
+          \ code:\n\n```\nfrom transformers import GitForCausalLM\nmodel = GitForCausalLM.from_pretrained(\"\
+          microsoft/git-large-coco\")\n\nimport torch\nfrom torch.utils.data import\
+          \ Dataset\nfrom PIL import Image\n\nclass VCSDatasetProcessor(Dataset):\n\
+          \    def __init__(self, root_dir, df, processor, max_target_length=128):\n\
+          \        self.root_dir = root_dir\n        self.df = df\n        self.processor\
+          \ = processor\n        self.max_target_length = max_target_length\n\n  \
+          \  def __len__(self):\n        return len(self.df)\n\n    def __getitem__(self,\
+          \ idx):\n        # get file name + text \n        file_name = self.df[\"\
+          image_id\"][idx]\n        text = self.df[\"question\"][idx]\n        # prepare\
+          \ image (i.e. resize + normalize)\n        image = Image.open(self.root_dir\
+          \ + file_name).convert(\"RGB\")\n\n        encoding = self.processor(images=image,\
+          \ text=text, padding=\"max_length\", return_tensors=\"pt\", max_length=self.max_target_length)\n\
+          \        \n        encoding = {k:v.squeeze() for k,v in encoding.items()}\n\
+          \        \n        return encoding\n\nfrom transformers import AutoProcessor\n\
+          \nprocessor = AutoProcessor.from_pretrained(\"microsoft/git-large-coco\"\
+          )\n\ntrain_set = VCSDatasetProcessor(root_dir=\"data/images/\", df=train_df,\
+          \ processor=processor)\nvalid_set = VCSDatasetProcessor(root_dir=\"data/images/\"\
+          , df=valid_df, processor=processor)\n\nfrom transformers import Seq2SeqTrainer,\
+          \ Seq2SeqTrainingArguments\n\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    predict_with_generate=True,\n    evaluation_strategy=\"steps\",\n \
+          \   per_device_train_batch_size=4,\n    per_device_eval_batch_size=4,\n\
+          \    fp16=False, \n    output_dir=\"./git-hf/\",\n    logging_steps=200,\n\
+          \    save_strategy=\"epoch\",\n    eval_steps=200,\n    num_train_epochs=4,\n\
+          )\n\ndef compute_metrics(pred):\n    labels_ids = pred.label_ids\n    pred_ids\
+          \ = pred.predictions\n\n    pred_str = tokenizer.batch_decode(pred_ids,\
+          \ skip_special_tokens=True)\n    labels_ids[labels_ids == -100] = tokenizer.pad_token_id\n\
+          \    label_str = tokenizer.batch_decode(labels_ids, skip_special_tokens=True)\n\
+          \n    rouge = rouge_metric.compute(predictions=pred_str, references=label_str)\n\
+          \n    return {\"rouge\": rouge[\"rougeL\"].mid.fmeasure}\n\nfrom transformers\
+          \ import default_data_collator\n\n# instantiate trainer\ntrainer = Seq2SeqTrainer(\n\
+          \    model=model,\n    tokenizer=processor,\n    args=training_args,\n \
+          \   #compute_metrics=compute_metrics,\n    train_dataset=train_set,\n  \
+          \  eval_dataset=valid_set,\n    data_collator=default_data_collator,\n)\n\
+          \ntrainer.train()\n```\n\nThe full error trace is the following:\n\n```\n\
+          ***** Running training *****\n  Num examples = 8886\n  Num Epochs = 4\n\
+          \  Instantaneous batch size per device = 4\n  Total train batch size (w.\
+          \ parallel, distributed & accumulation) = 4\n  Gradient Accumulation steps\
+          \ = 1\n  Total optimization steps = 8888\n  Number of trainable parameters\
+          \ = 394196026\nvision_config is None. initializing the GitVisionConfig with\
+          \ default values.\n\n---------------------------------------------------------------------------\n\
+          ValueError                                Traceback (most recent call last)\n\
+          Cell In [26], line 1\n----> 1 trainer.train()\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1570,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1565     self.model_wrapped = self.model\n   1567 inner_training_loop\
+          \ = find_executable_batch_size(\n   1568     self._inner_training_loop,\
+          \ self._train_batch_size, args.auto_find_batch_size\n   1569 )\n-> 1570\
+          \ return inner_training_loop(\n   1571     args=args,\n   1572     resume_from_checkpoint=resume_from_checkpoint,\n\
+          \   1573     trial=trial,\n   1574     ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1575 )\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1835,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1833         tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1834 else:\n-> 1835     tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1837 if (\n   1838     args.logging_nan_inf_filter\n   1839\
+          \     and not is_torch_tpu_available()\n   1840     and (torch.isnan(tr_loss_step)\
+          \ or torch.isinf(tr_loss_step))\n   1841 ):\n   1842     # if loss is nan\
+          \ or inf simply add the average of previous logged losses\n   1843     tr_loss\
+          \ += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\n\
+          \nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2583,\
+          \ in Trainer.training_step(self, model, inputs)\n   2580     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2582 with self.compute_loss_context_manager():\n-> 2583     loss = self.compute_loss(model,\
+          \ inputs)\n   2585 if self.args.n_gpu > 1:\n   2586     loss = loss.mean()\
+          \  # mean() to average on multi-gpu parallel training\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2628,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2626\
+          \ else:\n   2627     if isinstance(outputs, dict) and \"loss\" not in outputs:\n\
+          -> 2628         raise ValueError(\n   2629             \"The model did not\
+          \ return a loss from the inputs, only the following keys: \"\n   2630  \
+          \           f\"{','.join(outputs.keys())}. For reference, the inputs it\
+          \ received are {','.join(inputs.keys())}.\"\n   2631         )\n   2632\
+          \     # We don't use .loss here since the model may return tuples instead\
+          \ of ModelOutput.\n   2633     loss = outputs[\"loss\"] if isinstance(outputs,\
+          \ dict) else outputs[0]\n\nValueError: The model did not return a loss from\
+          \ the inputs, only the following keys: logits,past_key_values. For reference,\
+          \ the inputs it received are input_ids,attention_mask,pixel_values.\n```\n\
+          I've also tried to fine-tune the model using the code in this tutorial:\
+          \ https://colab.research.google.com/drive/1HLxgrG7xZJ9FvXckNG61J72FkyrbqKAA.\
+          \ That seemed to work, but when I tried to save a checkpoint every epoch,\
+          \ those checkpoints produced strange output on my test set (the model gave\
+          \ the same output for each input image), and the output of the last checkpoint\
+          \ was different to that of the final model that was in memory after conclusion\
+          \ of the training loop (that one actually produced different output for\
+          \ different images), so something seemed to go wrong there. \n\nI used the\
+          \ same code as in thet tutorial, it was only different here:\n\n```\nimport\
+          \ torch\n\noptimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)\n\n\
+          device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\nmodel.to(device)\n\
+          \nmodel.train()\n\nfor epoch in range(10):\n    print(\"Epoch:\", epoch)\n\
+          \    for idx, batch in enumerate(train_dataloader):\n        input_ids =\
+          \ batch.pop(\"input_ids\").to(device)\n        pixel_values = batch.pop(\"\
+          pixel_values\").to(device)\n\n        outputs = model(input_ids=input_ids,\n\
+          \                        pixel_values=pixel_values,\n                  \
+          \      labels=input_ids)\n\n        loss = outputs.loss\n\n        if idx\
+          \ % 100 == 0:\n            print(str(idx) + \"/ \" + str(len(train_dataloader))\
+          \ + \" Loss:\", loss.item())\n\n        loss.backward()\n\n        optimizer.step()\n\
+          \        optimizer.zero_grad()\n        \n    model.save_pretrained(\"git2/checkpoint-\"\
+          +str(epoch))\n```\n\nCan you help me with these problems, or at least with\
+          \ one of the two of them? :)\n\nBest wishes"
+        updatedAt: '2023-02-06T17:33:34.748Z'
+      numEdits: 1
+      reactions: []
+    id: 63e1325c55a963bd086743bc
+    type: comment
+  author: rubenjanss
+  content: "Hi,\n\nI'm trying to fine-tune this model on my own dataset using the\
+    \ Huggingface Trainer, but I get the following error in the training step: ```ValueError:\
+    \ The model did not return a loss from the inputs, only the following keys: logits,past_key_values.\
+    \ For reference, the inputs it received are input_ids,attention_mask,pixel_values.```.\n\
+    \nI'm using the following code:\n\n```\nfrom transformers import GitForCausalLM\n\
+    model = GitForCausalLM.from_pretrained(\"microsoft/git-large-coco\")\n\nimport\
+    \ torch\nfrom torch.utils.data import Dataset\nfrom PIL import Image\n\nclass\
+    \ VCSDatasetProcessor(Dataset):\n    def __init__(self, root_dir, df, processor,\
+    \ max_target_length=128):\n        self.root_dir = root_dir\n        self.df =\
+    \ df\n        self.processor = processor\n        self.max_target_length = max_target_length\n\
+    \n    def __len__(self):\n        return len(self.df)\n\n    def __getitem__(self,\
+    \ idx):\n        # get file name + text \n        file_name = self.df[\"image_id\"\
+    ][idx]\n        text = self.df[\"question\"][idx]\n        # prepare image (i.e.\
+    \ resize + normalize)\n        image = Image.open(self.root_dir + file_name).convert(\"\
+    RGB\")\n\n        encoding = self.processor(images=image, text=text, padding=\"\
+    max_length\", return_tensors=\"pt\", max_length=self.max_target_length)\n    \
+    \    \n        encoding = {k:v.squeeze() for k,v in encoding.items()}\n      \
+    \  \n        return encoding\n\nfrom transformers import AutoProcessor\n\nprocessor\
+    \ = AutoProcessor.from_pretrained(\"microsoft/git-large-coco\")\n\ntrain_set =\
+    \ VCSDatasetProcessor(root_dir=\"data/images/\", df=train_df, processor=processor)\n\
+    valid_set = VCSDatasetProcessor(root_dir=\"data/images/\", df=valid_df, processor=processor)\n\
+    \nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\ntraining_args\
+    \ = Seq2SeqTrainingArguments(\n    predict_with_generate=True,\n    evaluation_strategy=\"\
+    steps\",\n    per_device_train_batch_size=4,\n    per_device_eval_batch_size=4,\n\
+    \    fp16=False, \n    output_dir=\"./git-hf/\",\n    logging_steps=200,\n   \
+    \ save_strategy=\"epoch\",\n    eval_steps=200,\n    num_train_epochs=4,\n)\n\n\
+    def compute_metrics(pred):\n    labels_ids = pred.label_ids\n    pred_ids = pred.predictions\n\
+    \n    pred_str = tokenizer.batch_decode(pred_ids, skip_special_tokens=True)\n\
+    \    labels_ids[labels_ids == -100] = tokenizer.pad_token_id\n    label_str =\
+    \ tokenizer.batch_decode(labels_ids, skip_special_tokens=True)\n\n    rouge =\
+    \ rouge_metric.compute(predictions=pred_str, references=label_str)\n\n    return\
+    \ {\"rouge\": rouge[\"rougeL\"].mid.fmeasure}\n\nfrom transformers import default_data_collator\n\
+    \n# instantiate trainer\ntrainer = Seq2SeqTrainer(\n    model=model,\n    tokenizer=processor,\n\
+    \    args=training_args,\n    #compute_metrics=compute_metrics,\n    train_dataset=train_set,\n\
+    \    eval_dataset=valid_set,\n    data_collator=default_data_collator,\n)\n\n\
+    trainer.train()\n```\n\nThe full error trace is the following:\n\n```\n***** Running\
+    \ training *****\n  Num examples = 8886\n  Num Epochs = 4\n  Instantaneous batch\
+    \ size per device = 4\n  Total train batch size (w. parallel, distributed & accumulation)\
+    \ = 4\n  Gradient Accumulation steps = 1\n  Total optimization steps = 8888\n\
+    \  Number of trainable parameters = 394196026\nvision_config is None. initializing\
+    \ the GitVisionConfig with default values.\n\n---------------------------------------------------------------------------\n\
+    ValueError                                Traceback (most recent call last)\n\
+    Cell In [26], line 1\n----> 1 trainer.train()\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1570,\
+    \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\n   1565     self.model_wrapped = self.model\n   1567 inner_training_loop\
+    \ = find_executable_batch_size(\n   1568     self._inner_training_loop, self._train_batch_size,\
+    \ args.auto_find_batch_size\n   1569 )\n-> 1570 return inner_training_loop(\n\
+    \   1571     args=args,\n   1572     resume_from_checkpoint=resume_from_checkpoint,\n\
+    \   1573     trial=trial,\n   1574     ignore_keys_for_eval=ignore_keys_for_eval,\n\
+    \   1575 )\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1835,\
+    \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+    \ trial, ignore_keys_for_eval)\n   1833         tr_loss_step = self.training_step(model,\
+    \ inputs)\n   1834 else:\n-> 1835     tr_loss_step = self.training_step(model,\
+    \ inputs)\n   1837 if (\n   1838     args.logging_nan_inf_filter\n   1839    \
+    \ and not is_torch_tpu_available()\n   1840     and (torch.isnan(tr_loss_step)\
+    \ or torch.isinf(tr_loss_step))\n   1841 ):\n   1842     # if loss is nan or inf\
+    \ simply add the average of previous logged losses\n   1843     tr_loss += tr_loss\
+    \ / (1 + self.state.global_step - self._globalstep_last_logged)\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2583,\
+    \ in Trainer.training_step(self, model, inputs)\n   2580     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+    \   2582 with self.compute_loss_context_manager():\n-> 2583     loss = self.compute_loss(model,\
+    \ inputs)\n   2585 if self.args.n_gpu > 1:\n   2586     loss = loss.mean()  #\
+    \ mean() to average on multi-gpu parallel training\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2628,\
+    \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2626 else:\n\
+    \   2627     if isinstance(outputs, dict) and \"loss\" not in outputs:\n-> 2628\
+    \         raise ValueError(\n   2629             \"The model did not return a\
+    \ loss from the inputs, only the following keys: \"\n   2630             f\"{','.join(outputs.keys())}.\
+    \ For reference, the inputs it received are {','.join(inputs.keys())}.\"\n   2631\
+    \         )\n   2632     # We don't use .loss here since the model may return\
+    \ tuples instead of ModelOutput.\n   2633     loss = outputs[\"loss\"] if isinstance(outputs,\
+    \ dict) else outputs[0]\n\nValueError: The model did not return a loss from the\
+    \ inputs, only the following keys: logits,past_key_values. For reference, the\
+    \ inputs it received are input_ids,attention_mask,pixel_values.\n```\nI've also\
+    \ tried to fine-tune the model using the code in this tutorial: https://colab.research.google.com/drive/1HLxgrG7xZJ9FvXckNG61J72FkyrbqKAA.\
+    \ That seemed to work, but when I tried to save a checkpoint every epoch, those\
+    \ checkpoints produced strange output on my test set (the model gave the same\
+    \ output for each input image), and the output of the last checkpoint was different\
+    \ to that of the final model that was in memory after conclusion of the training\
+    \ loop (that one actually produced different output for different images), so\
+    \ something seemed to go wrong there. \n\nI used the same code as in thet tutorial,\
+    \ it was only different here:\n\n```\nimport torch\n\noptimizer = torch.optim.AdamW(model.parameters(),\
+    \ lr=5e-5)\n\ndevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"\nmodel.to(device)\n\
+    \nmodel.train()\n\nfor epoch in range(10):\n    print(\"Epoch:\", epoch)\n   \
+    \ for idx, batch in enumerate(train_dataloader):\n        input_ids = batch.pop(\"\
+    input_ids\").to(device)\n        pixel_values = batch.pop(\"pixel_values\").to(device)\n\
+    \n        outputs = model(input_ids=input_ids,\n                        pixel_values=pixel_values,\n\
+    \                        labels=input_ids)\n\n        loss = outputs.loss\n\n\
+    \        if idx % 100 == 0:\n            print(str(idx) + \"/ \" + str(len(train_dataloader))\
+    \ + \" Loss:\", loss.item())\n\n        loss.backward()\n\n        optimizer.step()\n\
+    \        optimizer.zero_grad()\n        \n    model.save_pretrained(\"git2/checkpoint-\"\
+    +str(epoch))\n```\n\nCan you help me with these problems, or at least with one\
+    \ of the two of them? :)\n\nBest wishes"
+  created_at: 2023-02-06 17:01:16+00:00
+  edited: true
+  hidden: false
+  id: 63e1325c55a963bd086743bc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+      fullname: Niels Rogge
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: nielsr
+      type: user
+    createdAt: '2023-02-06T17:09:53.000Z'
+    data:
+      edited: false
+      editors:
+      - nielsr
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: '<p>Hi,</p>
+
+          <p>Thanks for your interest in GIT!</p>
+
+          <p>You don''t need to use the Seq2SeqTrainer for a decoder-only model like
+          GIT.</p>
+
+          <p>Seq2SeqTrainer is only meant for Seq2Seq models like T5, BART, PEGASUS,
+          etc.</p>
+
+          '
+        raw: 'Hi,
+
+
+          Thanks for your interest in GIT!
+
+
+          You don''t need to use the Seq2SeqTrainer for a decoder-only model like
+          GIT.
+
+
+          Seq2SeqTrainer is only meant for Seq2Seq models like T5, BART, PEGASUS,
+          etc.'
+        updatedAt: '2023-02-06T17:09:53.038Z'
+      numEdits: 0
+      reactions: []
+    id: 63e13461f3c955e23c97db25
+    type: comment
+  author: nielsr
+  content: 'Hi,
+
+
+    Thanks for your interest in GIT!
+
+
+    You don''t need to use the Seq2SeqTrainer for a decoder-only model like GIT.
+
+
+    Seq2SeqTrainer is only meant for Seq2Seq models like T5, BART, PEGASUS, etc.'
+  created_at: 2023-02-06 17:09:53+00:00
+  edited: false
+  hidden: false
+  id: 63e13461f3c955e23c97db25
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-02-06T17:13:50.000Z'
+    data:
+      edited: false
+      editors:
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+          fullname: Ruben Janssens
+          isHf: false
+          isPro: false
+          name: rubenjanss
+          type: user
+        html: '<p>Hi Niels,</p>
+
+          <p>Thanks for the quick reply. With the regular Trainer and TrainingArguments,
+          I get the same problem. How should I use them differently?</p>
+
+          '
+        raw: 'Hi Niels,
+
+
+          Thanks for the quick reply. With the regular Trainer and TrainingArguments,
+          I get the same problem. How should I use them differently?'
+        updatedAt: '2023-02-06T17:13:50.673Z'
+      numEdits: 0
+      reactions: []
+    id: 63e1354ee17c1192ecaad1fa
+    type: comment
+  author: rubenjanss
+  content: 'Hi Niels,
+
+
+    Thanks for the quick reply. With the regular Trainer and TrainingArguments, I
+    get the same problem. How should I use them differently?'
+  created_at: 2023-02-06 17:13:50+00:00
+  edited: false
+  hidden: false
+  id: 63e1354ee17c1192ecaad1fa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+      fullname: Niels Rogge
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: nielsr
+      type: user
+    createdAt: '2023-02-06T17:43:51.000Z'
+    data:
+      edited: true
+      editors:
+      - nielsr
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: '<p>I see that you''re not preparing any labels for the model. Hence
+          it will be difficult for the model to train ;)</p>
+
+          <p>In your PyTorch Dataset, you prepare each image + text pair using the
+          processor, which is great. However you also need to add a <code>labels</code>
+          key to the <code>encoding</code> dictionary, as the model requires <code>pixel_values</code>,
+          <code>input_ids</code>  (the prepared image + text pair) and <code>labels</code>(the
+          ground truth targets to produce) to compute a loss. The <code>labels</code>
+          are simply a copy of the  <code>input_ids</code>:</p>
+
+          <pre><code>encoding["labels"] = input_ids.copy()
+
+          </code></pre>
+
+          <p>as the model internally will shift them one position to compute the cross-entropy
+          loss.</p>
+
+          '
+        raw: 'I see that you''re not preparing any labels for the model. Hence it
+          will be difficult for the model to train ;)
+
+
+          In your PyTorch Dataset, you prepare each image + text pair using the processor,
+          which is great. However you also need to add a `labels` key to the `encoding`
+          dictionary, as the model requires `pixel_values`, `input_ids`  (the prepared
+          image + text pair) and `labels`(the ground truth targets to produce) to
+          compute a loss. The `labels` are simply a copy of the  `input_ids`:
+
+          ```
+
+          encoding["labels"] = input_ids.copy()
+
+          ```
+
+          as the model internally will shift them one position to compute the cross-entropy
+          loss.'
+        updatedAt: '2023-02-06T17:44:18.617Z'
+      numEdits: 1
+      reactions: []
+    id: 63e13c57f3c955e23c98cd30
+    type: comment
+  author: nielsr
+  content: 'I see that you''re not preparing any labels for the model. Hence it will
+    be difficult for the model to train ;)
+
+
+    In your PyTorch Dataset, you prepare each image + text pair using the processor,
+    which is great. However you also need to add a `labels` key to the `encoding`
+    dictionary, as the model requires `pixel_values`, `input_ids`  (the prepared image
+    + text pair) and `labels`(the ground truth targets to produce) to compute a loss.
+    The `labels` are simply a copy of the  `input_ids`:
+
+    ```
+
+    encoding["labels"] = input_ids.copy()
+
+    ```
+
+    as the model internally will shift them one position to compute the cross-entropy
+    loss.'
+  created_at: 2023-02-06 17:43:51+00:00
+  edited: true
+  hidden: false
+  id: 63e13c57f3c955e23c98cd30
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-02-07T16:33:24.000Z'
+    data:
+      edited: false
+      editors:
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+          fullname: Ruben Janssens
+          isHf: false
+          isPro: false
+          name: rubenjanss
+          type: user
+        html: '<p>Ah, that makes a lot of sense and works much better, thank you!</p>
+
+          <p>However, now I''m wondering, does this conceptually mean that the model
+          is trained to expect an (image, text) pair as input? Because the "text"
+          in this pair is the ground truth caption. It works fine now at inference
+          time (with only the image as input), but I''m just trying to see if I understand
+          the concepts correctly. I''m especially confused because I already trained
+          the BlipModelForConditionalGeneration in the same way, without providing
+          labels, and this seemed to work fine. How is that possible?</p>
+
+          '
+        raw: 'Ah, that makes a lot of sense and works much better, thank you!
+
+
+          However, now I''m wondering, does this conceptually mean that the model
+          is trained to expect an (image, text) pair as input? Because the "text"
+          in this pair is the ground truth caption. It works fine now at inference
+          time (with only the image as input), but I''m just trying to see if I understand
+          the concepts correctly. I''m especially confused because I already trained
+          the BlipModelForConditionalGeneration in the same way, without providing
+          labels, and this seemed to work fine. How is that possible?'
+        updatedAt: '2023-02-07T16:33:24.696Z'
+      numEdits: 0
+      reactions: []
+    id: 63e27d54a96db6aee5361e8c
+    type: comment
+  author: rubenjanss
+  content: 'Ah, that makes a lot of sense and works much better, thank you!
+
+
+    However, now I''m wondering, does this conceptually mean that the model is trained
+    to expect an (image, text) pair as input? Because the "text" in this pair is the
+    ground truth caption. It works fine now at inference time (with only the image
+    as input), but I''m just trying to see if I understand the concepts correctly.
+    I''m especially confused because I already trained the BlipModelForConditionalGeneration
+    in the same way, without providing labels, and this seemed to work fine. How is
+    that possible?'
+  created_at: 2023-02-07 16:33:24+00:00
+  edited: false
+  hidden: false
+  id: 63e27d54a96db6aee5361e8c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+      fullname: Niels Rogge
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: nielsr
+      type: user
+    createdAt: '2023-02-08T09:07:36.000Z'
+    data:
+      edited: true
+      editors:
+      - nielsr
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: '<p>That''s a good point, that''s because of <a rel="nofollow" href="https://github.com/huggingface/transformers/blob/5b67ab9924cf7587b39b59eb0bf0abd3d099e8b9/src/transformers/models/blip/modeling_blip.py#L1008-L1009">these
+          lines of code</a> which automatically compute the labels for BLIP in case
+          the user doesn''t provide them.</p>
+
+          <p>Opened an issue here to remove this unexpected behaviour: <a rel="nofollow"
+          href="https://github.com/huggingface/transformers/issues/21510">https://github.com/huggingface/transformers/issues/21510</a></p>
+
+          '
+        raw: 'That''s a good point, that''s because of [these lines of code](https://github.com/huggingface/transformers/blob/5b67ab9924cf7587b39b59eb0bf0abd3d099e8b9/src/transformers/models/blip/modeling_blip.py#L1008-L1009)
+          which automatically compute the labels for BLIP in case the user doesn''t
+          provide them.
+
+
+          Opened an issue here to remove this unexpected behaviour: https://github.com/huggingface/transformers/issues/21510'
+        updatedAt: '2023-02-08T09:10:26.425Z'
+      numEdits: 2
+      reactions: []
+    id: 63e36658faabb631a8952814
+    type: comment
+  author: nielsr
+  content: 'That''s a good point, that''s because of [these lines of code](https://github.com/huggingface/transformers/blob/5b67ab9924cf7587b39b59eb0bf0abd3d099e8b9/src/transformers/models/blip/modeling_blip.py#L1008-L1009)
+    which automatically compute the labels for BLIP in case the user doesn''t provide
+    them.
+
+
+    Opened an issue here to remove this unexpected behaviour: https://github.com/huggingface/transformers/issues/21510'
+  created_at: 2023-02-08 09:07:36+00:00
+  edited: true
+  hidden: false
+  id: 63e36658faabb631a8952814
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-02-14T10:17:36.000Z'
+    data:
+      edited: false
+      editors:
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+          fullname: Ruben Janssens
+          isHf: false
+          isPro: false
+          name: rubenjanss
+          type: user
+        html: '<p>Thank you! That explained a lot for me. Closing this issue now as
+          it''s resolved!</p>
+
+          '
+        raw: Thank you! That explained a lot for me. Closing this issue now as it's
+          resolved!
+        updatedAt: '2023-02-14T10:17:36.542Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 63eb5fc0e9c64d757d43cb61
+    id: 63eb5fc0e9c64d757d43cb60
+    type: comment
+  author: rubenjanss
+  content: Thank you! That explained a lot for me. Closing this issue now as it's
+    resolved!
+  created_at: 2023-02-14 10:17:36+00:00
+  edited: false
+  hidden: false
+  id: 63eb5fc0e9c64d757d43cb60
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-02-14T10:17:36.000Z'
+    data:
+      status: closed
+    id: 63eb5fc0e9c64d757d43cb61
+    type: status-change
+  author: rubenjanss
+  created_at: 2023-02-14 10:17:36+00:00
+  id: 63eb5fc0e9c64d757d43cb61
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: microsoft/git-large-coco
+repo_type: model
+status: closed
+target_branch: null
+title: Fine-tuning model with Huggingface Trainer

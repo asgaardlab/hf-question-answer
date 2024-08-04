@@ -1,0 +1,1196 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: airtable
+conflicting_files: null
+created_at: 2023-05-27 08:17:36+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+      fullname: Air Table
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: airtable
+      type: user
+    createdAt: '2023-05-27T09:17:36.000Z'
+    data:
+      edited: false
+      editors:
+      - airtable
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+          fullname: Air Table
+          isHf: false
+          isPro: false
+          name: airtable
+          type: user
+        html: "<p>I am using langchain to load falcon-40b on an H100 GPU machine but\
+          \ I get this and nothing is generated when I pass a context to it using\
+          \ <code>FAISS</code></p>\n<pre><code>The model 'RWForCausalLM' is not supported\
+          \ for text-generation. Supported models are\n ['BartForCausalLM', 'BertLMHeadModel',\
+          \ 'BertGenerationDecoder', 'BigBirdForCausalLM', 'BigBirdPegasusForCausalLM',\
+          \ 'BioGptForCausalLM', \n\n'BlenderbotForCausalLM', 'BlenderbotSmallForCausalLM',\
+          \ 'BloomForCausalLM', 'CamembertForCausalLM', 'CodeGenForCausalLM', 'CpmAntForCausalLM',\
+          \ \n\n'CTRLLMHeadModel', 'Data2VecTextForCausalLM', 'ElectraForCausalLM',\
+          \ 'ErnieForCausalLM', 'GitForCausalLM', 'GPT2LMHeadModel', 'GPT2LMHeadModel',\
+          \ 'GPTBigCodeForCausalLM', 'GPTNeoForCausalLM', 'GPTNeoXForCausalLM', 'GPTNeoXJapaneseForCausalLM',\
+          \ 'GPTJForCausalLM', 'LlamaForCausalLM', \n\n'MarianForCausalLM', 'MBartForCausalLM',\
+          \ 'MegaForCausalLM', 'MegatronBertForCausalLM', 'MvpForCausalLM', 'OpenLlamaForCausalLM',\
+          \ 'OpenAIGPTLMHeadModel', 'OPTForCausalLM', 'PegasusForCausalLM', 'PLBartForCausalLM',\
+          \ 'ProphetNetForCausalLM', 'QDQBertLMHeadModel', \n\n'ReformerModelWithLMHead',\
+          \ 'RemBertForCausalLM', 'RobertaForCausalLM', 'RobertaPreLayerNormForCausalLM',\
+          \ 'RoCBertForCausalLM', \n'RoFormerForCausalLM', 'RwkvForCausalLM', 'Speech2Text2ForCausalLM',\
+          \ 'TransfoXLLMHeadModel', 'TrOCRForCausalLM', 'XGLMForCausalLM', \n\n'XLMWithLMHeadModel',\
+          \ 'XLMProphetNetForCausalLM', 'XLMRobertaForCausalLM', 'XLMRobertaXLForCausalLM',\
+          \ 'XLNetLMHeadModel', 'XmodForCausalLM'].\n</code></pre>\n<p>This is how\
+          \ I am loading the model and providing <code>FAISS</code> embeddings to\
+          \ it</p>\n<pre><code>def load_embeddings(sotre_name, path):\n    with open(f\"\
+          {path}/faiss_{sotre_name}.pkl\", \"rb\") as f:\n        VectorStore = pickle.load(f)\n\
+          \    return VectorStore\n\nEmbedding_store_path = f\"./dbfs\"\n\n\n# hf_embed\
+          \ = load_embeddings(sotre_name='huggingface_fm_lambdalabs_faiss', \nhf_embed\
+          \ = load_embeddings(sotre_name='store_template', \n                    \
+          \                path=Embedding_store_path)\n\ndef get_similar_docs(question,\
+          \ similar_doc_count):\n  return hf_embed.similarity_search(question, k=similar_doc_count)\n\
+          \ndef build_qa_chain():\n  torch.cuda.empty_cache()\n  model_name = \"tiiuae/falcon-40b\"\
+          \n \n  tokenizer = AutoTokenizer.from_pretrained(model_name)\n  instruct_pipeline\
+          \ = pipeline(model=model_name, tokenizer=tokenizer, torch_dtype=torch.bfloat16,\
+          \ trust_remote_code=True, device_map=\"auto\", \n                      \
+          \         return_full_text=True, max_new_tokens=256, top_p=0.95, top_k=50)\n\
+          \ \n  # Defining our prompt content.\n  # langchain will load our similar\
+          \ documents as {context}\n  template = \"\"\"Below is an instruction that\
+          \ describes a task. Write a response that appropriately completes the request.\n\
+          \ \n  Instruction: \n  You are an experienced in .. and your job is to help\
+          \ providing the best answer related to .... \n  Use only information in\
+          \ the following paragraphs to answer the question at the end. Explain the\
+          \ answer with reference to these paragraphs. If you don't know, say that\
+          \ you do not know.\n \n  {context}\n \n  Question: {question}\n \n  Response:\n\
+          \  \"\"\"\n  prompt = PromptTemplate(input_variables=['context', 'question'],\
+          \ template=template)\n \n  hf_pipe = HuggingFacePipeline(pipeline=instruct_pipeline)\n\
+          \  # Set verbose=True to see the full prompt:\n  return load_qa_chain(llm=hf_pipe,\
+          \ chain_type=\"stuff\", prompt=prompt, verbose=True)\n\nqa_chain = build_qa_chain()\n\
+          \ndef answer_question(question):\n  similar_docs = get_similar_docs(question,\
+          \ similar_doc_count=1)\n  result = qa_chain({\"input_documents\": similar_docs,\
+          \ \"question\": question})\n  \n  print(\"question: \" + question)\n  print(\"\
+          \ \")\n  print(\"Answer: \")\n  print(result['output_text'])\n  print(\"\
+          \ \")  \n  print(\"Sources\")\n  print(\" \")\n  for d in result[\"input_documents\"\
+          ]:\n    source_id = d.metadata[\"source\"]\n    print(d.page_content)\n\
+          \    print(\"Source \" + source_id)\n    print(\" \")\n    \nanswer_question(\"\
+          &lt;question&gt;?\")\nwhile True:\n    query = input(\"\\nEnter a query:\
+          \ \")\n    if query == \"exit\":\n        break\n\n    # Get the answer\
+          \ from the chain\n    answer_question(query)\n</code></pre>\n"
+        raw: "I am using langchain to load falcon-40b on an H100 GPU machine but I\
+          \ get this and nothing is generated when I pass a context to it using `FAISS`\r\
+          \n\r\n```\r\nThe model 'RWForCausalLM' is not supported for text-generation.\
+          \ Supported models are\r\n ['BartForCausalLM', 'BertLMHeadModel', 'BertGenerationDecoder',\
+          \ 'BigBirdForCausalLM', 'BigBirdPegasusForCausalLM', 'BioGptForCausalLM',\
+          \ \r\n\r\n'BlenderbotForCausalLM', 'BlenderbotSmallForCausalLM', 'BloomForCausalLM',\
+          \ 'CamembertForCausalLM', 'CodeGenForCausalLM', 'CpmAntForCausalLM', \r\n\
+          \r\n'CTRLLMHeadModel', 'Data2VecTextForCausalLM', 'ElectraForCausalLM',\
+          \ 'ErnieForCausalLM', 'GitForCausalLM', 'GPT2LMHeadModel', 'GPT2LMHeadModel',\
+          \ 'GPTBigCodeForCausalLM', 'GPTNeoForCausalLM', 'GPTNeoXForCausalLM', 'GPTNeoXJapaneseForCausalLM',\
+          \ 'GPTJForCausalLM', 'LlamaForCausalLM', \r\n\r\n'MarianForCausalLM', 'MBartForCausalLM',\
+          \ 'MegaForCausalLM', 'MegatronBertForCausalLM', 'MvpForCausalLM', 'OpenLlamaForCausalLM',\
+          \ 'OpenAIGPTLMHeadModel', 'OPTForCausalLM', 'PegasusForCausalLM', 'PLBartForCausalLM',\
+          \ 'ProphetNetForCausalLM', 'QDQBertLMHeadModel', \r\n\r\n'ReformerModelWithLMHead',\
+          \ 'RemBertForCausalLM', 'RobertaForCausalLM', 'RobertaPreLayerNormForCausalLM',\
+          \ 'RoCBertForCausalLM', \r\n'RoFormerForCausalLM', 'RwkvForCausalLM', 'Speech2Text2ForCausalLM',\
+          \ 'TransfoXLLMHeadModel', 'TrOCRForCausalLM', 'XGLMForCausalLM', \r\n\r\n\
+          'XLMWithLMHeadModel', 'XLMProphetNetForCausalLM', 'XLMRobertaForCausalLM',\
+          \ 'XLMRobertaXLForCausalLM', 'XLNetLMHeadModel', 'XmodForCausalLM'].\r\n\
+          \r\n```\r\n\r\nThis is how I am loading the model and providing `FAISS`\
+          \ embeddings to it\r\n\r\n```\r\ndef load_embeddings(sotre_name, path):\r\
+          \n    with open(f\"{path}/faiss_{sotre_name}.pkl\", \"rb\") as f:\r\n  \
+          \      VectorStore = pickle.load(f)\r\n    return VectorStore\r\n\r\nEmbedding_store_path\
+          \ = f\"./dbfs\"\r\n\r\n\r\n# hf_embed = load_embeddings(sotre_name='huggingface_fm_lambdalabs_faiss',\
+          \ \r\nhf_embed = load_embeddings(sotre_name='store_template', \r\n     \
+          \                               path=Embedding_store_path)\r\n\r\ndef get_similar_docs(question,\
+          \ similar_doc_count):\r\n  return hf_embed.similarity_search(question, k=similar_doc_count)\r\
+          \n\r\ndef build_qa_chain():\r\n  torch.cuda.empty_cache()\r\n  model_name\
+          \ = \"tiiuae/falcon-40b\"\r\n \r\n  tokenizer = AutoTokenizer.from_pretrained(model_name)\r\
+          \n  instruct_pipeline = pipeline(model=model_name, tokenizer=tokenizer,\
+          \ torch_dtype=torch.bfloat16, trust_remote_code=True, device_map=\"auto\"\
+          , \r\n                               return_full_text=True, max_new_tokens=256,\
+          \ top_p=0.95, top_k=50)\r\n \r\n  # Defining our prompt content.\r\n  #\
+          \ langchain will load our similar documents as {context}\r\n  template =\
+          \ \"\"\"Below is an instruction that describes a task. Write a response\
+          \ that appropriately completes the request.\r\n \r\n  Instruction: \r\n\
+          \  You are an experienced in .. and your job is to help providing the best\
+          \ answer related to .... \r\n  Use only information in the following paragraphs\
+          \ to answer the question at the end. Explain the answer with reference to\
+          \ these paragraphs. If you don't know, say that you do not know.\r\n \r\n\
+          \  {context}\r\n \r\n  Question: {question}\r\n \r\n  Response:\r\n  \"\"\
+          \"\r\n  prompt = PromptTemplate(input_variables=['context', 'question'],\
+          \ template=template)\r\n \r\n  hf_pipe = HuggingFacePipeline(pipeline=instruct_pipeline)\r\
+          \n  # Set verbose=True to see the full prompt:\r\n  return load_qa_chain(llm=hf_pipe,\
+          \ chain_type=\"stuff\", prompt=prompt, verbose=True)\r\n\r\nqa_chain = build_qa_chain()\r\
+          \n\r\ndef answer_question(question):\r\n  similar_docs = get_similar_docs(question,\
+          \ similar_doc_count=1)\r\n  result = qa_chain({\"input_documents\": similar_docs,\
+          \ \"question\": question})\r\n  \r\n  print(\"question: \" + question)\r\
+          \n  print(\" \")\r\n  print(\"Answer: \")\r\n  print(result['output_text'])\r\
+          \n  print(\" \")  \r\n  print(\"Sources\")\r\n  print(\" \")\r\n  for d\
+          \ in result[\"input_documents\"]:\r\n    source_id = d.metadata[\"source\"\
+          ]\r\n    print(d.page_content)\r\n    print(\"Source \" + source_id)\r\n\
+          \    print(\" \")\r\n    \r\nanswer_question(\"<question>?\")\r\nwhile True:\r\
+          \n    query = input(\"\\nEnter a query: \")\r\n    if query == \"exit\"\
+          :\r\n        break\r\n\r\n    # Get the answer from the chain\r\n    answer_question(query)\r\
+          \n\r\n```"
+        updatedAt: '2023-05-27T09:17:36.882Z'
+      numEdits: 0
+      reactions:
+      - count: 6
+        reaction: "\U0001F44D"
+        users:
+        - manuelrech
+        - xebian
+        - adnanahmad
+        - koshinryuu
+        - neoneye
+        - rustamg
+    id: 6471cab0609ae9f563693c48
+    type: comment
+  author: airtable
+  content: "I am using langchain to load falcon-40b on an H100 GPU machine but I get\
+    \ this and nothing is generated when I pass a context to it using `FAISS`\r\n\r\
+    \n```\r\nThe model 'RWForCausalLM' is not supported for text-generation. Supported\
+    \ models are\r\n ['BartForCausalLM', 'BertLMHeadModel', 'BertGenerationDecoder',\
+    \ 'BigBirdForCausalLM', 'BigBirdPegasusForCausalLM', 'BioGptForCausalLM', \r\n\
+    \r\n'BlenderbotForCausalLM', 'BlenderbotSmallForCausalLM', 'BloomForCausalLM',\
+    \ 'CamembertForCausalLM', 'CodeGenForCausalLM', 'CpmAntForCausalLM', \r\n\r\n\
+    'CTRLLMHeadModel', 'Data2VecTextForCausalLM', 'ElectraForCausalLM', 'ErnieForCausalLM',\
+    \ 'GitForCausalLM', 'GPT2LMHeadModel', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM',\
+    \ 'GPTNeoForCausalLM', 'GPTNeoXForCausalLM', 'GPTNeoXJapaneseForCausalLM', 'GPTJForCausalLM',\
+    \ 'LlamaForCausalLM', \r\n\r\n'MarianForCausalLM', 'MBartForCausalLM', 'MegaForCausalLM',\
+    \ 'MegatronBertForCausalLM', 'MvpForCausalLM', 'OpenLlamaForCausalLM', 'OpenAIGPTLMHeadModel',\
+    \ 'OPTForCausalLM', 'PegasusForCausalLM', 'PLBartForCausalLM', 'ProphetNetForCausalLM',\
+    \ 'QDQBertLMHeadModel', \r\n\r\n'ReformerModelWithLMHead', 'RemBertForCausalLM',\
+    \ 'RobertaForCausalLM', 'RobertaPreLayerNormForCausalLM', 'RoCBertForCausalLM',\
+    \ \r\n'RoFormerForCausalLM', 'RwkvForCausalLM', 'Speech2Text2ForCausalLM', 'TransfoXLLMHeadModel',\
+    \ 'TrOCRForCausalLM', 'XGLMForCausalLM', \r\n\r\n'XLMWithLMHeadModel', 'XLMProphetNetForCausalLM',\
+    \ 'XLMRobertaForCausalLM', 'XLMRobertaXLForCausalLM', 'XLNetLMHeadModel', 'XmodForCausalLM'].\r\
+    \n\r\n```\r\n\r\nThis is how I am loading the model and providing `FAISS` embeddings\
+    \ to it\r\n\r\n```\r\ndef load_embeddings(sotre_name, path):\r\n    with open(f\"\
+    {path}/faiss_{sotre_name}.pkl\", \"rb\") as f:\r\n        VectorStore = pickle.load(f)\r\
+    \n    return VectorStore\r\n\r\nEmbedding_store_path = f\"./dbfs\"\r\n\r\n\r\n\
+    # hf_embed = load_embeddings(sotre_name='huggingface_fm_lambdalabs_faiss', \r\n\
+    hf_embed = load_embeddings(sotre_name='store_template', \r\n                 \
+    \                   path=Embedding_store_path)\r\n\r\ndef get_similar_docs(question,\
+    \ similar_doc_count):\r\n  return hf_embed.similarity_search(question, k=similar_doc_count)\r\
+    \n\r\ndef build_qa_chain():\r\n  torch.cuda.empty_cache()\r\n  model_name = \"\
+    tiiuae/falcon-40b\"\r\n \r\n  tokenizer = AutoTokenizer.from_pretrained(model_name)\r\
+    \n  instruct_pipeline = pipeline(model=model_name, tokenizer=tokenizer, torch_dtype=torch.bfloat16,\
+    \ trust_remote_code=True, device_map=\"auto\", \r\n                          \
+    \     return_full_text=True, max_new_tokens=256, top_p=0.95, top_k=50)\r\n \r\n\
+    \  # Defining our prompt content.\r\n  # langchain will load our similar documents\
+    \ as {context}\r\n  template = \"\"\"Below is an instruction that describes a\
+    \ task. Write a response that appropriately completes the request.\r\n \r\n  Instruction:\
+    \ \r\n  You are an experienced in .. and your job is to help providing the best\
+    \ answer related to .... \r\n  Use only information in the following paragraphs\
+    \ to answer the question at the end. Explain the answer with reference to these\
+    \ paragraphs. If you don't know, say that you do not know.\r\n \r\n  {context}\r\
+    \n \r\n  Question: {question}\r\n \r\n  Response:\r\n  \"\"\"\r\n  prompt = PromptTemplate(input_variables=['context',\
+    \ 'question'], template=template)\r\n \r\n  hf_pipe = HuggingFacePipeline(pipeline=instruct_pipeline)\r\
+    \n  # Set verbose=True to see the full prompt:\r\n  return load_qa_chain(llm=hf_pipe,\
+    \ chain_type=\"stuff\", prompt=prompt, verbose=True)\r\n\r\nqa_chain = build_qa_chain()\r\
+    \n\r\ndef answer_question(question):\r\n  similar_docs = get_similar_docs(question,\
+    \ similar_doc_count=1)\r\n  result = qa_chain({\"input_documents\": similar_docs,\
+    \ \"question\": question})\r\n  \r\n  print(\"question: \" + question)\r\n  print(\"\
+    \ \")\r\n  print(\"Answer: \")\r\n  print(result['output_text'])\r\n  print(\"\
+    \ \")  \r\n  print(\"Sources\")\r\n  print(\" \")\r\n  for d in result[\"input_documents\"\
+    ]:\r\n    source_id = d.metadata[\"source\"]\r\n    print(d.page_content)\r\n\
+    \    print(\"Source \" + source_id)\r\n    print(\" \")\r\n    \r\nanswer_question(\"\
+    <question>?\")\r\nwhile True:\r\n    query = input(\"\\nEnter a query: \")\r\n\
+    \    if query == \"exit\":\r\n        break\r\n\r\n    # Get the answer from the\
+    \ chain\r\n    answer_question(query)\r\n\r\n```"
+  created_at: 2023-05-27 08:17:36+00:00
+  edited: false
+  hidden: false
+  id: 6471cab0609ae9f563693c48
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+      fullname: Air Table
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: airtable
+      type: user
+    createdAt: '2023-05-27T09:33:27.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+          fullname: Air Table
+          isHf: false
+          isPro: false
+          name: airtable
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-05-27T11:34:02.439Z'
+      numEdits: 0
+      reactions: []
+    id: 6471ce6797a75cc77aa73e64
+    type: comment
+  author: airtable
+  content: This comment has been hidden
+  created_at: 2023-05-27 08:33:27+00:00
+  edited: true
+  hidden: true
+  id: 6471ce6797a75cc77aa73e64
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/75c5daf2916704578c24400cc5a3b608.svg
+      fullname: Lucas B
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: beothorn
+      type: user
+    createdAt: '2023-05-27T21:33:28.000Z'
+    data:
+      edited: false
+      editors:
+      - beothorn
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/75c5daf2916704578c24400cc5a3b608.svg
+          fullname: Lucas B
+          isHf: false
+          isPro: false
+          name: beothorn
+          type: user
+        html: '<p>I get the same error only by running the "How to Get Started with
+          the Model"</p>
+
+          '
+        raw: I get the same error only by running the "How to Get Started with the
+          Model"
+        updatedAt: '2023-05-27T21:33:28.852Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - rustamg
+        - cr00
+        - chrislemke
+    id: 647277285afd6a69658c45dd
+    type: comment
+  author: beothorn
+  content: I get the same error only by running the "How to Get Started with the Model"
+  created_at: 2023-05-27 20:33:28+00:00
+  edited: false
+  hidden: false
+  id: 647277285afd6a69658c45dd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/5581016aa6fc1f9e3721199eb124899b.svg
+      fullname: Bharat Venkat
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bharven
+      type: user
+    createdAt: '2023-05-27T23:46:02.000Z'
+    data:
+      edited: false
+      editors:
+      - bharven
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/5581016aa6fc1f9e3721199eb124899b.svg
+          fullname: Bharat Venkat
+          isHf: false
+          isPro: false
+          name: bharven
+          type: user
+        html: '<p>+1 I also get this error</p>
+
+          '
+        raw: +1 I also get this error
+        updatedAt: '2023-05-27T23:46:02.525Z'
+      numEdits: 0
+      reactions: []
+    id: 6472963ac27f74a0ebaddcb4
+    type: comment
+  author: bharven
+  content: +1 I also get this error
+  created_at: 2023-05-27 22:46:02+00:00
+  edited: false
+  hidden: false
+  id: 6472963ac27f74a0ebaddcb4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+      fullname: "\u5357\u6816"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Minami-su
+      type: user
+    createdAt: '2023-05-28T04:39:19.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+          fullname: "\u5357\u6816"
+          isHf: false
+          isPro: false
+          name: Minami-su
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-08-10T07:19:08.201Z'
+      numEdits: 0
+      reactions: []
+    id: 6472daf75afd6a696594bd59
+    type: comment
+  author: Minami-su
+  content: This comment has been hidden
+  created_at: 2023-05-28 03:39:19+00:00
+  edited: true
+  hidden: true
+  id: 6472daf75afd6a696594bd59
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f7d285f327fa48775d2f504f5b9dd04b.svg
+      fullname: Talha Anwar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Talha
+      type: user
+    createdAt: '2023-05-28T06:35:21.000Z'
+    data:
+      edited: false
+      editors:
+      - Talha
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f7d285f327fa48775d2f504f5b9dd04b.svg
+          fullname: Talha Anwar
+          isHf: false
+          isPro: false
+          name: Talha
+          type: user
+        html: '<p>me too</p>
+
+          '
+        raw: me too
+        updatedAt: '2023-05-28T06:35:21.355Z'
+      numEdits: 0
+      reactions: []
+    id: 6472f6296cff2f8672fcbeb5
+    type: comment
+  author: Talha
+  content: me too
+  created_at: 2023-05-28 05:35:21+00:00
+  edited: false
+  hidden: false
+  id: 6472f6296cff2f8672fcbeb5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/75c5daf2916704578c24400cc5a3b608.svg
+      fullname: Lucas B
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: beothorn
+      type: user
+    createdAt: '2023-05-28T06:52:24.000Z'
+    data:
+      edited: false
+      editors:
+      - beothorn
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/75c5daf2916704578c24400cc5a3b608.svg
+          fullname: Lucas B
+          isHf: false
+          isPro: false
+          name: beothorn
+          type: user
+        html: '<p>@Seledorn :)</p>
+
+          '
+        raw: '@Seledorn :)'
+        updatedAt: '2023-05-28T06:52:24.932Z'
+      numEdits: 0
+      reactions: []
+    id: 6472fa2863001a0002c3e65e
+    type: comment
+  author: beothorn
+  content: '@Seledorn :)'
+  created_at: 2023-05-28 05:52:24+00:00
+  edited: false
+  hidden: false
+  id: 6472fa2863001a0002c3e65e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+      fullname: "\u5357\u6816"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Minami-su
+      type: user
+    createdAt: '2023-05-28T07:19:07.000Z'
+    data:
+      edited: false
+      editors:
+      - Minami-su
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+          fullname: "\u5357\u6816"
+          isHf: false
+          isPro: false
+          name: Minami-su
+          type: user
+        html: "<p>and this\uFF1A<br>File ~/.cache/huggingface/modules/transformers_modules/falcon40b/modelling_RW.py:32,\
+          \ in Linear.forward(self, input)<br>     31 def forward(self, input: torch.Tensor)\
+          \ -&gt; torch.Tensor:<br>---&gt; 32     ret = input @ self.weight.T<br>\
+          \     33     if self.bias is None:<br>     34         return ret</p>\n<p>RuntimeError:\
+          \ CUDA error: CUBLAS_STATUS_NOT_INITIALIZED when calling <code>cublasCreate(handle)</code></p>\n"
+        raw: "and this\uFF1A\nFile ~/.cache/huggingface/modules/transformers_modules/falcon40b/modelling_RW.py:32,\
+          \ in Linear.forward(self, input)\n     31 def forward(self, input: torch.Tensor)\
+          \ -> torch.Tensor:\n---> 32     ret = input @ self.weight.T\n     33   \
+          \  if self.bias is None:\n     34         return ret\n\nRuntimeError: CUDA\
+          \ error: CUBLAS_STATUS_NOT_INITIALIZED when calling `cublasCreate(handle)`"
+        updatedAt: '2023-05-28T07:19:07.921Z'
+      numEdits: 0
+      reactions: []
+    id: 6473006b6cff2f8672fddc5e
+    type: comment
+  author: Minami-su
+  content: "and this\uFF1A\nFile ~/.cache/huggingface/modules/transformers_modules/falcon40b/modelling_RW.py:32,\
+    \ in Linear.forward(self, input)\n     31 def forward(self, input: torch.Tensor)\
+    \ -> torch.Tensor:\n---> 32     ret = input @ self.weight.T\n     33     if self.bias\
+    \ is None:\n     34         return ret\n\nRuntimeError: CUDA error: CUBLAS_STATUS_NOT_INITIALIZED\
+    \ when calling `cublasCreate(handle)`"
+  created_at: 2023-05-28 06:19:07+00:00
+  edited: false
+  hidden: false
+  id: 6473006b6cff2f8672fddc5e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/6c9ff3623a1cdeebdee67c0a2d531e56.svg
+      fullname: Wajih Ullah Baig
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: WajihUllahBaig
+      type: user
+    createdAt: '2023-05-28T12:00:11.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/6c9ff3623a1cdeebdee67c0a2d531e56.svg
+          fullname: Wajih Ullah Baig
+          isHf: false
+          isPro: false
+          name: WajihUllahBaig
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-05-28T12:01:02.655Z'
+      numEdits: 0
+      reactions: []
+    id: 6473424b352c94a20dd2acff
+    type: comment
+  author: WajihUllahBaig
+  content: This comment has been hidden
+  created_at: 2023-05-28 11:00:11+00:00
+  edited: true
+  hidden: true
+  id: 6473424b352c94a20dd2acff
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/72c0c112b2b13944f1c54eb306569306.svg
+      fullname: Israa
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: isrouush
+      type: user
+    createdAt: '2023-05-28T18:45:46.000Z'
+    data:
+      edited: false
+      editors:
+      - isrouush
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/72c0c112b2b13944f1c54eb306569306.svg
+          fullname: Israa
+          isHf: false
+          isPro: false
+          name: isrouush
+          type: user
+        html: '<p>same problem here!</p>
+
+          '
+        raw: same problem here!
+        updatedAt: '2023-05-28T18:45:46.279Z'
+      numEdits: 0
+      reactions: []
+    id: 6473a15a2a74fb43cce1c9b2
+    type: comment
+  author: isrouush
+  content: same problem here!
+  created_at: 2023-05-28 17:45:46+00:00
+  edited: false
+  hidden: false
+  id: 6473a15a2a74fb43cce1c9b2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/be4216f188baccc8bdfa7687ae030691.svg
+      fullname: Manuel Rech
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: manuelrech
+      type: user
+    createdAt: '2023-05-29T16:25:51.000Z'
+    data:
+      edited: false
+      editors:
+      - manuelrech
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/be4216f188baccc8bdfa7687ae030691.svg
+          fullname: Manuel Rech
+          isHf: false
+          isPro: false
+          name: manuelrech
+          type: user
+        html: '<p>same here with the how to get started<br>model: tiiuae/falcon-7b-instruct</p>
+
+          '
+        raw: 'same here with the how to get started
+
+          model: tiiuae/falcon-7b-instruct'
+        updatedAt: '2023-05-29T16:25:51.876Z'
+      numEdits: 0
+      reactions:
+      - count: 6
+        reaction: "\U0001F44D"
+        users:
+        - koshinryuu
+        - yarivv
+        - neoneye
+        - rustamg
+        - ahans1
+        - cyt79
+    id: 6474d20f82907acdddf074cb
+    type: comment
+  author: manuelrech
+  content: 'same here with the how to get started
+
+    model: tiiuae/falcon-7b-instruct'
+  created_at: 2023-05-29 15:25:51+00:00
+  edited: false
+  hidden: false
+  id: 6474d20f82907acdddf074cb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6471c2c76facfb01d8ac3278/ii7e_5o4jBoK3pS8WMaWK.png?w=200&h=200&f=face
+      fullname: Falcon LLM TII UAE
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: FalconLLM
+      type: user
+    createdAt: '2023-05-30T05:59:17.000Z'
+    data:
+      edited: false
+      editors:
+      - FalconLLM
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6471c2c76facfb01d8ac3278/ii7e_5o4jBoK3pS8WMaWK.png?w=200&h=200&f=face
+          fullname: Falcon LLM TII UAE
+          isHf: false
+          isPro: false
+          name: FalconLLM
+          type: user
+        html: '<p>Sorry about the delay, the <code>The model ''RWForCausalLM'' is
+          not supported for text-generation</code> comes from the model not being
+          integrated into the core part of the transformers library yet. It''s just
+          a warning, and generation should follow afterwards.  See for example: <a
+          rel="nofollow" href="https://twitter.com/camenduru/status/1662225039352283137?s=20">https://twitter.com/camenduru/status/1662225039352283137?s=20</a>
+          of a video where it is working correctly. </p>
+
+          <p>It will take a little bit of time to integrate the model fully into the
+          transformers library, but hopefully in a couple of weeks this warning will
+          go away.</p>
+
+          '
+        raw: "Sorry about the delay, the `The model 'RWForCausalLM' is not supported\
+          \ for text-generation` comes from the model not being integrated into the\
+          \ core part of the transformers library yet. It's just a warning, and generation\
+          \ should follow afterwards.  See for example: https://twitter.com/camenduru/status/1662225039352283137?s=20\
+          \ of a video where it is working correctly. \n\nIt will take a little bit\
+          \ of time to integrate the model fully into the transformers library, but\
+          \ hopefully in a couple of weeks this warning will go away."
+        updatedAt: '2023-05-30T05:59:17.897Z'
+      numEdits: 0
+      reactions:
+      - count: 15
+        reaction: "\u2764\uFE0F"
+        users:
+        - beothorn
+        - the-uns
+        - jithinrocs
+        - watsot
+        - bitflipd
+        - Talha
+        - cr00
+        - martinnovak
+        - isomorphist
+        - orestis22
+        - mwgupta
+        - HaitaoZ
+        - HappSyon
+        - roger0426
+        - Kuchiriel
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - 907Resident
+    id: 647590b5d56974d0c06c9858
+    type: comment
+  author: FalconLLM
+  content: "Sorry about the delay, the `The model 'RWForCausalLM' is not supported\
+    \ for text-generation` comes from the model not being integrated into the core\
+    \ part of the transformers library yet. It's just a warning, and generation should\
+    \ follow afterwards.  See for example: https://twitter.com/camenduru/status/1662225039352283137?s=20\
+    \ of a video where it is working correctly. \n\nIt will take a little bit of time\
+    \ to integrate the model fully into the transformers library, but hopefully in\
+    \ a couple of weeks this warning will go away."
+  created_at: 2023-05-30 04:59:17+00:00
+  edited: false
+  hidden: false
+  id: 647590b5d56974d0c06c9858
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6471c2c76facfb01d8ac3278/ii7e_5o4jBoK3pS8WMaWK.png?w=200&h=200&f=face
+      fullname: Falcon LLM TII UAE
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: FalconLLM
+      type: user
+    createdAt: '2023-05-30T07:01:07.000Z'
+    data:
+      status: closed
+    id: 64759f33e9b57ce0caa10a8d
+    type: status-change
+  author: FalconLLM
+  created_at: 2023-05-30 06:01:07+00:00
+  id: 64759f33e9b57ce0caa10a8d
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+      fullname: Air Table
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: airtable
+      type: user
+    createdAt: '2023-05-30T09:40:19.000Z'
+    data:
+      edited: false
+      editors:
+      - airtable
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/62ec05a0857bc02b8d060e2c71b8eb53.svg
+          fullname: Air Table
+          isHf: false
+          isPro: false
+          name: airtable
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;FalconLLM&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/FalconLLM\">@<span class=\"\
+          underline\">FalconLLM</span></a></span>\n\n\t</span></span> Thanks, Falcon-7B\
+          \ is generating data but I am unable to load Falcon-40B on a 1xNvidia H100\
+          \ GPU with 80 VRAM, opening a separate issue</p>\n"
+        raw: '@FalconLLM Thanks, Falcon-7B is generating data but I am unable to load
+          Falcon-40B on a 1xNvidia H100 GPU with 80 VRAM, opening a separate issue'
+        updatedAt: '2023-05-30T09:40:19.186Z'
+      numEdits: 0
+      reactions: []
+    id: 6475c483c894b5c9cf7254b8
+    type: comment
+  author: airtable
+  content: '@FalconLLM Thanks, Falcon-7B is generating data but I am unable to load
+    Falcon-40B on a 1xNvidia H100 GPU with 80 VRAM, opening a separate issue'
+  created_at: 2023-05-30 08:40:19+00:00
+  edited: false
+  hidden: false
+  id: 6475c483c894b5c9cf7254b8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/bce974ef60c507d22702cc7662033b28.svg
+      fullname: Yann Dubois
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: YannDubs
+      type: user
+    createdAt: '2023-07-05T15:43:56.000Z'
+    data:
+      edited: false
+      editors:
+      - YannDubs
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.736193060874939
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/bce974ef60c507d22702cc7662033b28.svg
+          fullname: Yann Dubois
+          isHf: false
+          isPro: false
+          name: YannDubs
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;FalconLLM&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/FalconLLM\">@<span class=\"\
+          underline\">FalconLLM</span></a></span>\n\n\t</span></span> any updates\
+          \ on this issue?</p>\n"
+        raw: '@FalconLLM any updates on this issue?
+
+          '
+        updatedAt: '2023-07-05T15:43:56.990Z'
+      numEdits: 0
+      reactions: []
+    id: 64a58fbc20b7f237b472353e
+    type: comment
+  author: YannDubs
+  content: '@FalconLLM any updates on this issue?
+
+    '
+  created_at: 2023-07-05 14:43:56+00:00
+  edited: false
+  hidden: false
+  id: 64a58fbc20b7f237b472353e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/574d055ca3ee7ecab70385e44b8944ef.svg
+      fullname: neural_worm
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: neuralworm
+      type: user
+    createdAt: '2023-07-18T10:42:36.000Z'
+    data:
+      edited: false
+      editors:
+      - neuralworm
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9021247029304504
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/574d055ca3ee7ecab70385e44b8944ef.svg
+          fullname: neural_worm
+          isHf: false
+          isPro: false
+          name: neuralworm
+          type: user
+        html: '<p>For me it was resolved with <code>pip install git+<a rel="nofollow"
+          href="https://github.com/huggingface/transformers">https://github.com/huggingface/transformers</a></code></p>
+
+          '
+        raw: For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+        updatedAt: '2023-07-18T10:42:36.801Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - matheusalb
+        - Dehmax
+    id: 64b66c9c8f786f4bbeec0788
+    type: comment
+  author: neuralworm
+  content: For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+  created_at: 2023-07-18 09:42:36+00:00
+  edited: false
+  hidden: false
+  id: 64b66c9c8f786f4bbeec0788
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d86b6726933d0da229afd01fac85ef35.svg
+      fullname: Matheus Viana Coelho
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: matheusalb
+      type: user
+    createdAt: '2023-08-04T06:07:43.000Z'
+    data:
+      edited: false
+      editors:
+      - matheusalb
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9665132761001587
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d86b6726933d0da229afd01fac85ef35.svg
+          fullname: Matheus Viana Coelho
+          isHf: false
+          isPro: false
+          name: matheusalb
+          type: user
+        html: '<blockquote>
+
+          <p>For me it was resolved with <code>pip install git+<a rel="nofollow" href="https://github.com/huggingface/transformers">https://github.com/huggingface/transformers</a></code></p>
+
+          </blockquote>
+
+          <p>It worked for me as well. Thanks!!</p>
+
+          '
+        raw: '> For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+          It worked for me as well. Thanks!!'
+        updatedAt: '2023-08-04T06:07:43.706Z'
+      numEdits: 0
+      reactions: []
+    id: 64cc95af78fad0f5b6a8ab6b
+    type: comment
+  author: matheusalb
+  content: '> For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+    It worked for me as well. Thanks!!'
+  created_at: 2023-08-04 05:07:43+00:00
+  edited: false
+  hidden: false
+  id: 64cc95af78fad0f5b6a8ab6b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ee20e432f5b737c17d3f05dd7c8bbb72.svg
+      fullname: eric
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: audioscavenger
+      type: user
+    createdAt: '2023-08-07T02:52:07.000Z'
+    data:
+      edited: false
+      editors:
+      - audioscavenger
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.920792818069458
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ee20e432f5b737c17d3f05dd7c8bbb72.svg
+          fullname: eric
+          isHf: false
+          isPro: false
+          name: audioscavenger
+          type: user
+        html: '<p>same here. thanks</p>
+
+          <blockquote>
+
+          <p>For me it was resolved with <code>pip install git+<a rel="nofollow" href="https://github.com/huggingface/transformers">https://github.com/huggingface/transformers</a></code></p>
+
+          </blockquote>
+
+          '
+        raw: 'same here. thanks
+
+          > For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+          '
+        updatedAt: '2023-08-07T02:52:07.245Z'
+      numEdits: 0
+      reactions: []
+    id: 64d05c5744d373d706409342
+    type: comment
+  author: audioscavenger
+  content: 'same here. thanks
+
+    > For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+    '
+  created_at: 2023-08-07 01:52:07+00:00
+  edited: false
+  hidden: false
+  id: 64d05c5744d373d706409342
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c3544de921e680e00dc67e92cc8bb9dd.svg
+      fullname: Julian Laue
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Dehmax
+      type: user
+    createdAt: '2023-08-08T08:17:38.000Z'
+    data:
+      edited: false
+      editors:
+      - Dehmax
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9194862842559814
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c3544de921e680e00dc67e92cc8bb9dd.svg
+          fullname: Julian Laue
+          isHf: false
+          isPro: false
+          name: Dehmax
+          type: user
+        html: '<blockquote>
+
+          <p>For me it was resolved with <code>pip install git+<a rel="nofollow" href="https://github.com/huggingface/transformers">https://github.com/huggingface/transformers</a></code></p>
+
+          </blockquote>
+
+          <p>Same for me. It also speed up inference drastically for the 7b-instruct
+          model. Thanks a lot! </p>
+
+          '
+        raw: '> For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+          Same for me. It also speed up inference drastically for the 7b-instruct
+          model. Thanks a lot! '
+        updatedAt: '2023-08-08T08:17:38.752Z'
+      numEdits: 0
+      reactions: []
+    id: 64d1fa22e9cac0020be557d4
+    type: comment
+  author: Dehmax
+  content: '> For me it was resolved with <code>pip install git+https://github.com/huggingface/transformers</code>
+
+
+    Same for me. It also speed up inference drastically for the 7b-instruct model.
+    Thanks a lot! '
+  created_at: 2023-08-08 07:17:38+00:00
+  edited: false
+  hidden: false
+  id: 64d1fa22e9cac0020be557d4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/464bdd1958cdd98a3026af5e081d8714.svg
+      fullname: "Alysson Guimar\xE3es"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: k3ybladewielder
+      type: user
+    createdAt: '2023-08-14T23:46:30.000Z'
+    data:
+      edited: false
+      editors:
+      - k3ybladewielder
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8915685415267944
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/464bdd1958cdd98a3026af5e081d8714.svg
+          fullname: "Alysson Guimar\xE3es"
+          isHf: false
+          isPro: false
+          name: k3ybladewielder
+          type: user
+        html: '<p>Still getting this issue</p>
+
+          '
+        raw: Still getting this issue
+        updatedAt: '2023-08-14T23:46:30.576Z'
+      numEdits: 0
+      reactions: []
+    id: 64dabcd67f8116a6ab34224d
+    type: comment
+  author: k3ybladewielder
+  content: Still getting this issue
+  created_at: 2023-08-14 22:46:30+00:00
+  edited: false
+  hidden: false
+  id: 64dabcd67f8116a6ab34224d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/888fdf47fc28940d7e945b0d76c3a712.svg
+      fullname: Amarah
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: amarahiqbal
+      type: user
+    createdAt: '2023-09-28T09:44:27.000Z'
+    data:
+      edited: false
+      editors:
+      - amarahiqbal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7674544453620911
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/888fdf47fc28940d7e945b0d76c3a712.svg
+          fullname: Amarah
+          isHf: false
+          isPro: false
+          name: amarahiqbal
+          type: user
+        html: '<p>Its not working for text generation. It says AttributeError: module
+          transformers has no attribute RWForCausalLM</p>
+
+          '
+        raw: 'Its not working for text generation. It says AttributeError: module
+          transformers has no attribute RWForCausalLM
+
+          '
+        updatedAt: '2023-09-28T09:44:27.881Z'
+      numEdits: 0
+      reactions: []
+    id: 65154afbeca347cc8d55e4f1
+    type: comment
+  author: amarahiqbal
+  content: 'Its not working for text generation. It says AttributeError: module transformers
+    has no attribute RWForCausalLM
+
+    '
+  created_at: 2023-09-28 08:44:27+00:00
+  edited: false
+  hidden: false
+  id: 65154afbeca347cc8d55e4f1
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: tiiuae/falcon-40b
+repo_type: model
+status: closed
+target_branch: null
+title: 'When query model for text generation I get this - The model ''RWForCausalLM''
+  is not supported for text-generation. '

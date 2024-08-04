@@ -1,0 +1,478 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: np05
+conflicting_files: null
+created_at: 2023-07-11 00:57:36+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+      fullname: Nandan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: np05
+      type: user
+    createdAt: '2023-07-11T01:57:36.000Z'
+    data:
+      edited: false
+      editors:
+      - np05
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.399188756942749
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+          fullname: Nandan
+          isHf: false
+          isPro: false
+          name: np05
+          type: user
+        html: '<p>Hello,</p>
+
+          <ol>
+
+          <li><p>I have been trying to deploy Falcon 7b instruct model on AWS Sagemaker.
+          I followed the steps listed in the blog post : <a rel="nofollow" href="https://www.philschmid.de/sagemaker-falcon-llm">https://www.philschmid.de/sagemaker-falcon-llm</a>.</p>
+
+          </li>
+
+          <li><p>My configuration is as follows:<br>import json<br>from sagemaker.huggingface
+          import HuggingFaceModel</p>
+
+          <p> #sagemaker config#<br> instance_type = "ml.g5.12xlarge"<br> number_of_gpu
+          = 4<br> health_check_timeout = 300</p>
+
+          <p>#TGI config#<br>config = {<br>  ''HF_MODEL_ID'': "tiiuae/falcon-7b-instruct",
+          # model_id from hf.co/models<br>   ''SM_NUM_GPUS'': json.dumps(number_of_gpu),
+          # Number of GPU used per replica<br>   ''MAX_INPUT_LENGTH'': json.dumps(500),  #
+          Max length of input text<br>   ''MAX_TOTAL_TOKENS'': json.dumps(1000),  #
+          Max length of the generation (including input text)<br>   #''HF_MODEL_QUANTIZE'':
+          "bitsandbytes", # comment in to quantize<br>  }</p>
+
+          <p>#create HuggingFaceModel<br> llm_model = HuggingFaceModel(<br> role=role,<br>
+          image_uri=llm_image,<br> env=config<br>)</p>
+
+          </li>
+
+          <li><p>Deploy the model to an endpoint<br>#<a rel="nofollow" href="https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy">https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy</a><br>llm
+          = llm_model.deploy(<br>  initial_instance_count=1,<br>  instance_type=instance_type,<br>  #volume_size=400,
+          # If using an instance with local SSD storage, volume_size must be None,
+          e.g. p4 but not p3<br>  container_startup_health_check_timeout=health_check_timeout,
+          # 10 minutes to be able to load the model</p>
+
+          <h1 id="">)</h1>
+
+          </li>
+
+          <li><p>Please see the error I get as below:</p>
+
+          </li>
+
+          </ol>
+
+          <hr>
+
+          <p>UnexpectedStatusException                 Traceback (most recent call
+          last)<br>Cell In[6], line 3<br>      1 # Deploy model to an endpoint<br>      2
+          # <a rel="nofollow" href="https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy">https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy</a><br>----&gt;
+          3 llm = llm_model.deploy(<br>      4   initial_instance_count=1,<br>      5   instance_type=instance_type,<br>      6   #
+          volume_size=400, # If using an instance with local SSD storage, volume_size
+          must be None, e.g. p4 but not p3<br>      7   container_startup_health_check_timeout=health_check_timeout,
+          # 10 minutes to be able to load the model<br>      8 )</p>
+
+          <p>File ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/huggingface/model.py:311,
+          in HuggingFaceModel.deploy(self, initial_instance_count, instance_type,
+          serializer, deserializer, accelerator_type, endpoint_name, tags, kms_key,
+          wait, data_capture_config, async_inference_config, serverless_inference_config,
+          volume_size, model_data_download_timeout, container_startup_health_check_timeout,
+          inference_recommendation_id, explainer_config, **kwargs)<br>    305 if not
+          self.image_uri and instance_type is not None and instance_type.startswith("ml.inf"):<br>    306     self.image_uri
+          = self.serving_image_uri(<br>    307         region_name=self.sagemaker_session.boto_session.region_name,<br>    308         instance_type=instance_type,<br>    309     )<br>--&gt;
+          311 return super(HuggingFaceModel, self).deploy(<br>    312     initial_instance_count,<br>    313     instance_type,<br>    314     serializer,<br>    315     deserializer,<br>    316     accelerator_type,<br>    317     endpoint_name,<br>    318     tags,<br>    319     kms_key,<br>    320     wait,<br>    321     data_capture_config,<br>    322     async_inference_config,<br>    323     serverless_inference_config,<br>    324     volume_size=volume_size,<br>    325     model_data_download_timeout=model_data_download_timeout,<br>    326     container_startup_health_check_timeout=container_startup_health_check_timeout,<br>    327     inference_recommendation_id=inference_recommendation_id,<br>    328     explainer_config=explainer_config,<br>    329
+          )</p>
+
+          <p>File ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/model.py:1328,
+          in Model.deploy(self, initial_instance_count, instance_type, serializer,
+          deserializer, accelerator_type, endpoint_name, tags, kms_key, wait, data_capture_config,
+          async_inference_config, serverless_inference_config, volume_size, model_data_download_timeout,
+          container_startup_health_check_timeout, inference_recommendation_id, explainer_config,
+          **kwargs)<br>   1325 if is_explainer_enabled:<br>   1326     explainer_config_dict
+          = explainer_config._to_request_dict()<br>-&gt; 1328 self.sagemaker_session.endpoint_from_production_variants(<br>   1329     name=self.endpoint_name,<br>   1330     production_variants=[production_variant],<br>   1331     tags=tags,<br>   1332     kms_key=kms_key,<br>   1333     wait=wait,<br>   1334     data_capture_config_dict=data_capture_config_dict,<br>   1335     explainer_config_dict=explainer_config_dict,<br>   1336     async_inference_config_dict=async_inference_config_dict,<br>   1337
+          )<br>   1339 if self.predictor_cls:<br>   1340     predictor = self.predictor_cls(self.endpoint_name,
+          self.sagemaker_session)</p>
+
+          <p>File ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4577,
+          in Session.endpoint_from_production_variants(self, name, production_variants,
+          tags, kms_key, wait, data_capture_config_dict, async_inference_config_dict,
+          explainer_config_dict)<br>   4574 LOGGER.info("Creating endpoint-config
+          with name %s", name)<br>   4575 self.sagemaker_client.create_endpoint_config(**config_options)<br>-&gt;
+          4577 return self.create_endpoint(endpoint_name=name, config_name=name, tags=tags,
+          wait=wait)</p>
+
+          <p>File ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:3970,
+          in Session.create_endpoint(self, endpoint_name, config_name, tags, wait)<br>   3966
+          self.sagemaker_client.create_endpoint(<br>   3967     EndpointName=endpoint_name,
+          EndpointConfigName=config_name, Tags=tags<br>   3968 )<br>   3969 if wait:<br>-&gt;
+          3970     self.wait_for_endpoint(endpoint_name)<br>   3971 return endpoint_name</p>
+
+          <p>File ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4322,
+          in Session.wait_for_endpoint(self, endpoint, poll)<br>   4316     if "CapacityError"
+          in str(reason):<br>   4317         raise exceptions.CapacityError(<br>   4318             message=message,<br>   4319             allowed_statuses=["InService"],<br>   4320             actual_status=status,<br>   4321         )<br>-&gt;
+          4322     raise exceptions.UnexpectedStatusException(<br>   4323         message=message,<br>   4324         allowed_statuses=["InService"],<br>   4325         actual_status=status,<br>   4326     )<br>   4327
+          return desc</p>
+
+          <p>UnexpectedStatusException: Error hosting endpoint huggingface-pytorch-tgi-inference-2023-07-11-00-28-36-511:
+          Failed. Reason: The primary container for production variant AllTraffic
+          did not pass the ping health check. Please check CloudWatch logs for this
+          endpoint..</p>
+
+          '
+        raw: "Hello,\r\n1) I have been trying to deploy Falcon 7b instruct model on\
+          \ AWS Sagemaker. I followed the steps listed in the blog post : https://www.philschmid.de/sagemaker-falcon-llm.\r\
+          \n\r\n2) My configuration is as follows:\r\nimport json\r\nfrom sagemaker.huggingface\
+          \ import HuggingFaceModel\r\n\r\n    #sagemaker config#\r\n    instance_type\
+          \ = \"ml.g5.12xlarge\"\r\n    number_of_gpu = 4\r\n    health_check_timeout\
+          \ = 300\r\n\r\n   #TGI config#\r\n   config = {\r\n     'HF_MODEL_ID': \"\
+          tiiuae/falcon-7b-instruct\", # model_id from hf.co/models\r\n      'SM_NUM_GPUS':\
+          \ json.dumps(number_of_gpu), # Number of GPU used per replica\r\n      'MAX_INPUT_LENGTH':\
+          \ json.dumps(500),  # Max length of input text\r\n      'MAX_TOTAL_TOKENS':\
+          \ json.dumps(1000),  # Max length of the generation (including input text)\r\
+          \n      #'HF_MODEL_QUANTIZE': \"bitsandbytes\", # comment in to quantize\r\
+          \n     }\r\n\r\n   #create HuggingFaceModel\r\n    llm_model = HuggingFaceModel(\r\
+          \n    role=role,\r\n    image_uri=llm_image,\r\n    env=config\r\n   )\r\
+          \n3) Deploy the model to an endpoint\r\n#https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy\r\
+          \nllm = llm_model.deploy(\r\n  initial_instance_count=1,\r\n  instance_type=instance_type,\r\
+          \n  #volume_size=400, # If using an instance with local SSD storage, volume_size\
+          \ must be None, e.g. p4 but not p3\r\n  container_startup_health_check_timeout=health_check_timeout,\
+          \ # 10 minutes to be able to load the model\r\n)\r\n====================================================================================================================================\r\
+          \n\r\n4)  Please see the error I get as below:\r\n\r\n\r\n---------------------------------------------------------------------------\r\
+          \nUnexpectedStatusException                 Traceback (most recent call\
+          \ last)\r\nCell In[6], line 3\r\n      1 # Deploy model to an endpoint\r\
+          \n      2 # https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy\r\
+          \n----> 3 llm = llm_model.deploy(\r\n      4   initial_instance_count=1,\r\
+          \n      5   instance_type=instance_type,\r\n      6   # volume_size=400,\
+          \ # If using an instance with local SSD storage, volume_size must be None,\
+          \ e.g. p4 but not p3\r\n      7   container_startup_health_check_timeout=health_check_timeout,\
+          \ # 10 minutes to be able to load the model\r\n      8 )\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/huggingface/model.py:311,\
+          \ in HuggingFaceModel.deploy(self, initial_instance_count, instance_type,\
+          \ serializer, deserializer, accelerator_type, endpoint_name, tags, kms_key,\
+          \ wait, data_capture_config, async_inference_config, serverless_inference_config,\
+          \ volume_size, model_data_download_timeout, container_startup_health_check_timeout,\
+          \ inference_recommendation_id, explainer_config, **kwargs)\r\n    305 if\
+          \ not self.image_uri and instance_type is not None and instance_type.startswith(\"\
+          ml.inf\"):\r\n    306     self.image_uri = self.serving_image_uri(\r\n \
+          \   307         region_name=self.sagemaker_session.boto_session.region_name,\r\
+          \n    308         instance_type=instance_type,\r\n    309     )\r\n--> 311\
+          \ return super(HuggingFaceModel, self).deploy(\r\n    312     initial_instance_count,\r\
+          \n    313     instance_type,\r\n    314     serializer,\r\n    315     deserializer,\r\
+          \n    316     accelerator_type,\r\n    317     endpoint_name,\r\n    318\
+          \     tags,\r\n    319     kms_key,\r\n    320     wait,\r\n    321    \
+          \ data_capture_config,\r\n    322     async_inference_config,\r\n    323\
+          \     serverless_inference_config,\r\n    324     volume_size=volume_size,\r\
+          \n    325     model_data_download_timeout=model_data_download_timeout,\r\
+          \n    326     container_startup_health_check_timeout=container_startup_health_check_timeout,\r\
+          \n    327     inference_recommendation_id=inference_recommendation_id,\r\
+          \n    328     explainer_config=explainer_config,\r\n    329 )\r\n\r\nFile\
+          \ ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/model.py:1328,\
+          \ in Model.deploy(self, initial_instance_count, instance_type, serializer,\
+          \ deserializer, accelerator_type, endpoint_name, tags, kms_key, wait, data_capture_config,\
+          \ async_inference_config, serverless_inference_config, volume_size, model_data_download_timeout,\
+          \ container_startup_health_check_timeout, inference_recommendation_id, explainer_config,\
+          \ **kwargs)\r\n   1325 if is_explainer_enabled:\r\n   1326     explainer_config_dict\
+          \ = explainer_config._to_request_dict()\r\n-> 1328 self.sagemaker_session.endpoint_from_production_variants(\r\
+          \n   1329     name=self.endpoint_name,\r\n   1330     production_variants=[production_variant],\r\
+          \n   1331     tags=tags,\r\n   1332     kms_key=kms_key,\r\n   1333    \
+          \ wait=wait,\r\n   1334     data_capture_config_dict=data_capture_config_dict,\r\
+          \n   1335     explainer_config_dict=explainer_config_dict,\r\n   1336  \
+          \   async_inference_config_dict=async_inference_config_dict,\r\n   1337\
+          \ )\r\n   1339 if self.predictor_cls:\r\n   1340     predictor = self.predictor_cls(self.endpoint_name,\
+          \ self.sagemaker_session)\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4577,\
+          \ in Session.endpoint_from_production_variants(self, name, production_variants,\
+          \ tags, kms_key, wait, data_capture_config_dict, async_inference_config_dict,\
+          \ explainer_config_dict)\r\n   4574 LOGGER.info(\"Creating endpoint-config\
+          \ with name %s\", name)\r\n   4575 self.sagemaker_client.create_endpoint_config(**config_options)\r\
+          \n-> 4577 return self.create_endpoint(endpoint_name=name, config_name=name,\
+          \ tags=tags, wait=wait)\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:3970,\
+          \ in Session.create_endpoint(self, endpoint_name, config_name, tags, wait)\r\
+          \n   3966 self.sagemaker_client.create_endpoint(\r\n   3967     EndpointName=endpoint_name,\
+          \ EndpointConfigName=config_name, Tags=tags\r\n   3968 )\r\n   3969 if wait:\r\
+          \n-> 3970     self.wait_for_endpoint(endpoint_name)\r\n   3971 return endpoint_name\r\
+          \n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4322,\
+          \ in Session.wait_for_endpoint(self, endpoint, poll)\r\n   4316     if \"\
+          CapacityError\" in str(reason):\r\n   4317         raise exceptions.CapacityError(\r\
+          \n   4318             message=message,\r\n   4319             allowed_statuses=[\"\
+          InService\"],\r\n   4320             actual_status=status,\r\n   4321  \
+          \       )\r\n-> 4322     raise exceptions.UnexpectedStatusException(\r\n\
+          \   4323         message=message,\r\n   4324         allowed_statuses=[\"\
+          InService\"],\r\n   4325         actual_status=status,\r\n   4326     )\r\
+          \n   4327 return desc\r\n\r\nUnexpectedStatusException: Error hosting endpoint\
+          \ huggingface-pytorch-tgi-inference-2023-07-11-00-28-36-511: Failed. Reason:\
+          \ The primary container for production variant AllTraffic did not pass the\
+          \ ping health check. Please check CloudWatch logs for this endpoint.."
+        updatedAt: '2023-07-11T01:57:36.063Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - ykerus
+        - ashadruk
+        - meherabhishk
+    id: 64acb710ad6218d51afc1c56
+    type: comment
+  author: np05
+  content: "Hello,\r\n1) I have been trying to deploy Falcon 7b instruct model on\
+    \ AWS Sagemaker. I followed the steps listed in the blog post : https://www.philschmid.de/sagemaker-falcon-llm.\r\
+    \n\r\n2) My configuration is as follows:\r\nimport json\r\nfrom sagemaker.huggingface\
+    \ import HuggingFaceModel\r\n\r\n    #sagemaker config#\r\n    instance_type =\
+    \ \"ml.g5.12xlarge\"\r\n    number_of_gpu = 4\r\n    health_check_timeout = 300\r\
+    \n\r\n   #TGI config#\r\n   config = {\r\n     'HF_MODEL_ID': \"tiiuae/falcon-7b-instruct\"\
+    , # model_id from hf.co/models\r\n      'SM_NUM_GPUS': json.dumps(number_of_gpu),\
+    \ # Number of GPU used per replica\r\n      'MAX_INPUT_LENGTH': json.dumps(500),\
+    \  # Max length of input text\r\n      'MAX_TOTAL_TOKENS': json.dumps(1000), \
+    \ # Max length of the generation (including input text)\r\n      #'HF_MODEL_QUANTIZE':\
+    \ \"bitsandbytes\", # comment in to quantize\r\n     }\r\n\r\n   #create HuggingFaceModel\r\
+    \n    llm_model = HuggingFaceModel(\r\n    role=role,\r\n    image_uri=llm_image,\r\
+    \n    env=config\r\n   )\r\n3) Deploy the model to an endpoint\r\n#https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy\r\
+    \nllm = llm_model.deploy(\r\n  initial_instance_count=1,\r\n  instance_type=instance_type,\r\
+    \n  #volume_size=400, # If using an instance with local SSD storage, volume_size\
+    \ must be None, e.g. p4 but not p3\r\n  container_startup_health_check_timeout=health_check_timeout,\
+    \ # 10 minutes to be able to load the model\r\n)\r\n====================================================================================================================================\r\
+    \n\r\n4)  Please see the error I get as below:\r\n\r\n\r\n---------------------------------------------------------------------------\r\
+    \nUnexpectedStatusException                 Traceback (most recent call last)\r\
+    \nCell In[6], line 3\r\n      1 # Deploy model to an endpoint\r\n      2 # https://sagemaker.readthedocs.io/en/stable/api/inference/model.html#sagemaker.model.Model.deploy\r\
+    \n----> 3 llm = llm_model.deploy(\r\n      4   initial_instance_count=1,\r\n \
+    \     5   instance_type=instance_type,\r\n      6   # volume_size=400, # If using\
+    \ an instance with local SSD storage, volume_size must be None, e.g. p4 but not\
+    \ p3\r\n      7   container_startup_health_check_timeout=health_check_timeout,\
+    \ # 10 minutes to be able to load the model\r\n      8 )\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/huggingface/model.py:311,\
+    \ in HuggingFaceModel.deploy(self, initial_instance_count, instance_type, serializer,\
+    \ deserializer, accelerator_type, endpoint_name, tags, kms_key, wait, data_capture_config,\
+    \ async_inference_config, serverless_inference_config, volume_size, model_data_download_timeout,\
+    \ container_startup_health_check_timeout, inference_recommendation_id, explainer_config,\
+    \ **kwargs)\r\n    305 if not self.image_uri and instance_type is not None and\
+    \ instance_type.startswith(\"ml.inf\"):\r\n    306     self.image_uri = self.serving_image_uri(\r\
+    \n    307         region_name=self.sagemaker_session.boto_session.region_name,\r\
+    \n    308         instance_type=instance_type,\r\n    309     )\r\n--> 311 return\
+    \ super(HuggingFaceModel, self).deploy(\r\n    312     initial_instance_count,\r\
+    \n    313     instance_type,\r\n    314     serializer,\r\n    315     deserializer,\r\
+    \n    316     accelerator_type,\r\n    317     endpoint_name,\r\n    318     tags,\r\
+    \n    319     kms_key,\r\n    320     wait,\r\n    321     data_capture_config,\r\
+    \n    322     async_inference_config,\r\n    323     serverless_inference_config,\r\
+    \n    324     volume_size=volume_size,\r\n    325     model_data_download_timeout=model_data_download_timeout,\r\
+    \n    326     container_startup_health_check_timeout=container_startup_health_check_timeout,\r\
+    \n    327     inference_recommendation_id=inference_recommendation_id,\r\n   \
+    \ 328     explainer_config=explainer_config,\r\n    329 )\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/model.py:1328,\
+    \ in Model.deploy(self, initial_instance_count, instance_type, serializer, deserializer,\
+    \ accelerator_type, endpoint_name, tags, kms_key, wait, data_capture_config, async_inference_config,\
+    \ serverless_inference_config, volume_size, model_data_download_timeout, container_startup_health_check_timeout,\
+    \ inference_recommendation_id, explainer_config, **kwargs)\r\n   1325 if is_explainer_enabled:\r\
+    \n   1326     explainer_config_dict = explainer_config._to_request_dict()\r\n\
+    -> 1328 self.sagemaker_session.endpoint_from_production_variants(\r\n   1329 \
+    \    name=self.endpoint_name,\r\n   1330     production_variants=[production_variant],\r\
+    \n   1331     tags=tags,\r\n   1332     kms_key=kms_key,\r\n   1333     wait=wait,\r\
+    \n   1334     data_capture_config_dict=data_capture_config_dict,\r\n   1335  \
+    \   explainer_config_dict=explainer_config_dict,\r\n   1336     async_inference_config_dict=async_inference_config_dict,\r\
+    \n   1337 )\r\n   1339 if self.predictor_cls:\r\n   1340     predictor = self.predictor_cls(self.endpoint_name,\
+    \ self.sagemaker_session)\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4577,\
+    \ in Session.endpoint_from_production_variants(self, name, production_variants,\
+    \ tags, kms_key, wait, data_capture_config_dict, async_inference_config_dict,\
+    \ explainer_config_dict)\r\n   4574 LOGGER.info(\"Creating endpoint-config with\
+    \ name %s\", name)\r\n   4575 self.sagemaker_client.create_endpoint_config(**config_options)\r\
+    \n-> 4577 return self.create_endpoint(endpoint_name=name, config_name=name, tags=tags,\
+    \ wait=wait)\r\n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:3970,\
+    \ in Session.create_endpoint(self, endpoint_name, config_name, tags, wait)\r\n\
+    \   3966 self.sagemaker_client.create_endpoint(\r\n   3967     EndpointName=endpoint_name,\
+    \ EndpointConfigName=config_name, Tags=tags\r\n   3968 )\r\n   3969 if wait:\r\
+    \n-> 3970     self.wait_for_endpoint(endpoint_name)\r\n   3971 return endpoint_name\r\
+    \n\r\nFile ~/anaconda3/envs/pytorch_p310/lib/python3.10/site-packages/sagemaker/session.py:4322,\
+    \ in Session.wait_for_endpoint(self, endpoint, poll)\r\n   4316     if \"CapacityError\"\
+    \ in str(reason):\r\n   4317         raise exceptions.CapacityError(\r\n   4318\
+    \             message=message,\r\n   4319             allowed_statuses=[\"InService\"\
+    ],\r\n   4320             actual_status=status,\r\n   4321         )\r\n-> 4322\
+    \     raise exceptions.UnexpectedStatusException(\r\n   4323         message=message,\r\
+    \n   4324         allowed_statuses=[\"InService\"],\r\n   4325         actual_status=status,\r\
+    \n   4326     )\r\n   4327 return desc\r\n\r\nUnexpectedStatusException: Error\
+    \ hosting endpoint huggingface-pytorch-tgi-inference-2023-07-11-00-28-36-511:\
+    \ Failed. Reason: The primary container for production variant AllTraffic did\
+    \ not pass the ping health check. Please check CloudWatch logs for this endpoint.."
+  created_at: 2023-07-11 00:57:36+00:00
+  edited: false
+  hidden: false
+  id: 64acb710ad6218d51afc1c56
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a5b6fcf3ed718471c05c237a1651622e.svg
+      fullname: pranav nerurkar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pranavnerurkar
+      type: user
+    createdAt: '2023-07-12T09:18:03.000Z'
+    data:
+      edited: false
+      editors:
+      - pranavnerurkar
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9744654297828674
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a5b6fcf3ed718471c05c237a1651622e.svg
+          fullname: pranav nerurkar
+          isHf: false
+          isPro: false
+          name: pranavnerurkar
+          type: user
+        html: '<p>hi I am getting the same error<br>did u solve it?</p>
+
+          '
+        raw: 'hi I am getting the same error
+
+          did u solve it?
+
+          '
+        updatedAt: '2023-07-12T09:18:03.916Z'
+      numEdits: 0
+      reactions: []
+    id: 64ae6fcb1c0d80246310232e
+    type: comment
+  author: pranavnerurkar
+  content: 'hi I am getting the same error
+
+    did u solve it?
+
+    '
+  created_at: 2023-07-12 08:18:03+00:00
+  edited: false
+  hidden: false
+  id: 64ae6fcb1c0d80246310232e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+      fullname: Nandan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: np05
+      type: user
+    createdAt: '2023-07-12T12:35:15.000Z'
+    data:
+      edited: false
+      editors:
+      - np05
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6319963932037354
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+          fullname: Nandan
+          isHf: false
+          isPro: false
+          name: np05
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;pranavnerurkar&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/pranavnerurkar\"\
+          >@<span class=\"underline\">pranavnerurkar</span></a></span>\n\n\t</span></span>:\
+          \ nope it is not solved</p>\n"
+        raw: '@pranavnerurkar: nope it is not solved'
+        updatedAt: '2023-07-12T12:35:15.606Z'
+      numEdits: 0
+      reactions: []
+    id: 64ae9e0318aaae04fb31cd6e
+    type: comment
+  author: np05
+  content: '@pranavnerurkar: nope it is not solved'
+  created_at: 2023-07-12 11:35:15+00:00
+  edited: false
+  hidden: false
+  id: 64ae9e0318aaae04fb31cd6e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+      fullname: Nandan
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: np05
+      type: user
+    createdAt: '2023-07-13T14:28:02.000Z'
+    data:
+      edited: false
+      editors:
+      - np05
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7919378876686096
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/39f434d44c6e6b03d0727abb2374e956.svg
+          fullname: Nandan
+          isHf: false
+          isPro: false
+          name: np05
+          type: user
+        html: "<p>I was able to deploy an endpoint referring to this article on AWS.\
+          \ <a rel=\"nofollow\" href=\"https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/text-generation-falcon.ipynb\"\
+          >https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/text-generation-falcon.ipynb</a>.</p>\n\
+          <p><span data-props=\"{&quot;user&quot;:&quot;pranavnerurkar&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/pranavnerurkar\">@<span\
+          \ class=\"underline\">pranavnerurkar</span></a></span>\n\n\t</span></span>\
+          \ : FYI</p>\n"
+        raw: 'I was able to deploy an endpoint referring to this article on AWS. https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/text-generation-falcon.ipynb.
+
+
+          @pranavnerurkar : FYI'
+        updatedAt: '2023-07-13T14:28:02.261Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - pranavnerurkar
+    id: 64b009f26fa55c6ba9aa936e
+    type: comment
+  author: np05
+  content: 'I was able to deploy an endpoint referring to this article on AWS. https://github.com/aws/amazon-sagemaker-examples/blob/main/introduction_to_amazon_algorithms/jumpstart-foundation-models/text-generation-falcon.ipynb.
+
+
+    @pranavnerurkar : FYI'
+  created_at: 2023-07-13 13:28:02+00:00
+  edited: false
+  hidden: false
+  id: 64b009f26fa55c6ba9aa936e
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 59
+repo_id: tiiuae/falcon-7b-instruct
+repo_type: model
+status: open
+target_branch: null
+title: Help! Unable to deploy Falcon 7b Instruct on AWS Sagemaker

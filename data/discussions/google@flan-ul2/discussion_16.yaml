@@ -1,0 +1,313 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cyt79
+conflicting_files: null
+created_at: 2023-04-27 13:51:05+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-27T14:51:05.000Z'
+    data:
+      edited: true
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p>Hi there,</p>\n<p>I'm trying to finetune flan-ul2 model with LoRA\
+          \ as explained here (<a rel=\"nofollow\" href=\"https://www.philschmid.de/fine-tune-flan-t5-peft\"\
+          >https://www.philschmid.de/fine-tune-flan-t5-peft</a>) . First I walked\
+          \ through the blog post without changing anything and I could finetune flan-t5-xxl\
+          \ model. Then, I tried to do same with flan-ul2. All I did was to change\
+          \ model and tokenizer initialization lines as follows:</p>\n<pre><code>from\
+          \ transformers import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom transformers\
+          \ import DataCollatorForSeq2Seq\n\n#model_id=\"google/flan-t5-xxl\"\nmodel_id=\"\
+          google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\n</code></pre>\n<p>Then I run the trainer as\
+          \ shown below: </p>\n<pre><code>from transformers import Seq2SeqTrainer,\
+          \ Seq2SeqTrainingArguments\n\n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    output_dir=output_dir,\n    auto_find_batch_size=True,\n    learning_rate=1e-3,\
+          \ # higher learning rate\n    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\"\
+          ,\n    logging_strategy=\"steps\",\n    logging_steps=500,\n    save_strategy=\"\
+          no\",\n    report_to=\"tensorboard\",\n)\n\n# Create Trainer instance\n\
+          trainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n \
+          \   data_collator=data_collator,\n    train_dataset=tokenized_dataset[\"\
+          train\"],\n)\n</code></pre>\n<p>When I run trainer.train() with the above\
+          \ setup, I got the following error:</p>\n<pre><code>Traceback (most recent\
+          \ call last):                                                          \
+          \                                                                      \
+          \                                                                      \
+          \                                                            | 0/73660 [00:00&lt;?,\
+          \ ?it/s]\n  File \"peft_finetuning_flan-ul2.py\", line 145, in &lt;module&gt;\n\
+          \    trainer.train()\n  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/transformers/trainer.py\"\
+          , line 1633, in train\n    return inner_training_loop(\n  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/accelerate/utils/memory.py\"\
+          , line 122, in decorator\n    raise RuntimeError(\"No executable batch size\
+          \ found, reached zero.\")\nRuntimeError: No executable batch size found,\
+          \ reached zero.\n</code></pre>\n<p>So I wonder if there is something special\
+          \ about the flan-ul2 model that would prevent me from using it in this way.\
+          \  Would that be because  <code>Seq2SeqTrainer</code>, and <code>Seq2SeqTrainingArguments</code>not\
+          \ the correct Trainer and TrainingArg classes to use with flan-ul2?  (I've\
+          \ tried the regular Trainer and TrainingArguments classes as well but I\
+          \ got the same error) If so, could you please assist me on the correct ones?</p>\n"
+        raw: "Hi there,\n\nI'm trying to finetune flan-ul2 model with LoRA as explained\
+          \ here (https://www.philschmid.de/fine-tune-flan-t5-peft) . First I walked\
+          \ through the blog post without changing anything and I could finetune flan-t5-xxl\
+          \ model. Then, I tried to do same with flan-ul2. All I did was to change\
+          \ model and tokenizer initialization lines as follows:\n\n```\nfrom transformers\
+          \ import AutoTokenizer, AutoModelForSeq2SeqLM\nfrom transformers import\
+          \ DataCollatorForSeq2Seq\n\n#model_id=\"google/flan-t5-xxl\"\nmodel_id=\"\
+          google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+          \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+          \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"\
+          auto\", load_in_8bit=True)\n```\nThen I run the trainer as shown below:\
+          \ \n\n```\nfrom transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\
+          \n# Define training args\ntraining_args = Seq2SeqTrainingArguments(\n  \
+          \  output_dir=output_dir,\n\tauto_find_batch_size=True,\n    learning_rate=1e-3,\
+          \ # higher learning rate\n    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\"\
+          ,\n    logging_strategy=\"steps\",\n    logging_steps=500,\n    save_strategy=\"\
+          no\",\n    report_to=\"tensorboard\",\n)\n\n# Create Trainer instance\n\
+          trainer = Seq2SeqTrainer(\n    model=model,\n    args=training_args,\n \
+          \   data_collator=data_collator,\n    train_dataset=tokenized_dataset[\"\
+          train\"],\n)\n```\n\nWhen I run trainer.train() with the above setup, I\
+          \ got the following error:\n\n```\nTraceback (most recent call last):  \
+          \                                                                      \
+          \                                                                      \
+          \                                                                      \
+          \                                              | 0/73660 [00:00<?, ?it/s]\n\
+          \  File \"peft_finetuning_flan-ul2.py\", line 145, in <module>\n    trainer.train()\n\
+          \  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/transformers/trainer.py\"\
+          , line 1633, in train\n    return inner_training_loop(\n  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/accelerate/utils/memory.py\"\
+          , line 122, in decorator\n    raise RuntimeError(\"No executable batch size\
+          \ found, reached zero.\")\nRuntimeError: No executable batch size found,\
+          \ reached zero.\n ```\n\nSo I wonder if there is something special about\
+          \ the flan-ul2 model that would prevent me from using it in this way.  Would\
+          \ that be because  ```Seq2SeqTrainer```, and ``` Seq2SeqTrainingArguments\
+          \ ```not the correct Trainer and TrainingArg classes to use with flan-ul2?\
+          \  (I've tried the regular Trainer and TrainingArguments classes as well\
+          \ but I got the same error) If so, could you please assist me on the correct\
+          \ ones?"
+        updatedAt: '2023-04-27T15:03:07.647Z'
+      numEdits: 1
+      reactions: []
+    id: 644a8bd9d88e725dd4e8a013
+    type: comment
+  author: cyt79
+  content: "Hi there,\n\nI'm trying to finetune flan-ul2 model with LoRA as explained\
+    \ here (https://www.philschmid.de/fine-tune-flan-t5-peft) . First I walked through\
+    \ the blog post without changing anything and I could finetune flan-t5-xxl model.\
+    \ Then, I tried to do same with flan-ul2. All I did was to change model and tokenizer\
+    \ initialization lines as follows:\n\n```\nfrom transformers import AutoTokenizer,\
+    \ AutoModelForSeq2SeqLM\nfrom transformers import DataCollatorForSeq2Seq\n\n#model_id=\"\
+    google/flan-t5-xxl\"\nmodel_id=\"google/flan-ul2\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\
+    \n#model_id = \"philschmid/flan-t5-xxl-sharded-fp16\"\nmodel_id = \"google/flan-ul2\"\
+    \nmodel = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map=\"auto\"\
+    , load_in_8bit=True)\n```\nThen I run the trainer as shown below: \n\n```\nfrom\
+    \ transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\n# Define training\
+    \ args\ntraining_args = Seq2SeqTrainingArguments(\n    output_dir=output_dir,\n\
+    \tauto_find_batch_size=True,\n    learning_rate=1e-3, # higher learning rate\n\
+    \    num_train_epochs=5,\n    logging_dir=f\"{output_dir}/logs\",\n    logging_strategy=\"\
+    steps\",\n    logging_steps=500,\n    save_strategy=\"no\",\n    report_to=\"\
+    tensorboard\",\n)\n\n# Create Trainer instance\ntrainer = Seq2SeqTrainer(\n  \
+    \  model=model,\n    args=training_args,\n    data_collator=data_collator,\n \
+    \   train_dataset=tokenized_dataset[\"train\"],\n)\n```\n\nWhen I run trainer.train()\
+    \ with the above setup, I got the following error:\n\n```\nTraceback (most recent\
+    \ call last):                                                                \
+    \                                                                            \
+    \                                                                            \
+    \                                          | 0/73660 [00:00<?, ?it/s]\n  File\
+    \ \"peft_finetuning_flan-ul2.py\", line 145, in <module>\n    trainer.train()\n\
+    \  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/transformers/trainer.py\"\
+    , line 1633, in train\n    return inner_training_loop(\n  File \"/home/ubuntu/miniconda3/envs/finetuning/lib/python3.10/site-packages/accelerate/utils/memory.py\"\
+    , line 122, in decorator\n    raise RuntimeError(\"No executable batch size found,\
+    \ reached zero.\")\nRuntimeError: No executable batch size found, reached zero.\n\
+    \ ```\n\nSo I wonder if there is something special about the flan-ul2 model that\
+    \ would prevent me from using it in this way.  Would that be because  ```Seq2SeqTrainer```,\
+    \ and ``` Seq2SeqTrainingArguments ```not the correct Trainer and TrainingArg\
+    \ classes to use with flan-ul2?  (I've tried the regular Trainer and TrainingArguments\
+    \ classes as well but I got the same error) If so, could you please assist me\
+    \ on the correct ones?"
+  created_at: 2023-04-27 13:51:05+00:00
+  edited: true
+  hidden: false
+  id: 644a8bd9d88e725dd4e8a013
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+      fullname: coyote79
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cyt79
+      type: user
+    createdAt: '2023-04-27T15:11:02.000Z'
+    data:
+      edited: true
+      editors:
+      - cyt79
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3ac32bd6191b55bc71d2d6294f000a39.svg
+          fullname: coyote79
+          isHf: false
+          isPro: false
+          name: cyt79
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ybelkada&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ybelkada\">@<span class=\"\
+          underline\">ybelkada</span></a></span>\n\n\t</span></span>  or <span data-props=\"\
+          {&quot;user&quot;:&quot;stas&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/stas\">@<span class=\"underline\">stas</span></a></span>\n\
+          \n\t</span></span>  do you have any idea about this?</p>\n"
+        raw: '@ybelkada  or @stas  do you have any idea about this?'
+        updatedAt: '2023-04-27T15:28:58.852Z'
+      numEdits: 1
+      reactions: []
+    id: 644a9086af97dfd24c0c2abd
+    type: comment
+  author: cyt79
+  content: '@ybelkada  or @stas  do you have any idea about this?'
+  created_at: 2023-04-27 14:11:02+00:00
+  edited: true
+  hidden: false
+  id: 644a9086af97dfd24c0c2abd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641744462372-noauth.jpeg?w=200&h=200&f=face
+      fullname: YupeiWong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: LemonadeXyz
+      type: user
+    createdAt: '2023-07-12T13:05:22.000Z'
+    data:
+      edited: false
+      editors:
+      - LemonadeXyz
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9790616631507874
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1641744462372-noauth.jpeg?w=200&h=200&f=face
+          fullname: YupeiWong
+          isHf: false
+          isPro: true
+          name: LemonadeXyz
+          type: user
+        html: '<p>Hey! Do you solve it now?</p>
+
+          '
+        raw: Hey! Do you solve it now?
+        updatedAt: '2023-07-12T13:05:22.446Z'
+      numEdits: 0
+      reactions: []
+    id: 64aea512efcd81e61e0f05d8
+    type: comment
+  author: LemonadeXyz
+  content: Hey! Do you solve it now?
+  created_at: 2023-07-12 12:05:22+00:00
+  edited: false
+  hidden: false
+  id: 64aea512efcd81e61e0f05d8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7f4d1aa4f0871d4f99610528c2437b1e.svg
+      fullname: HITHESH SANKARARAMAN
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: HITHESHSANKARARAMAN
+      type: user
+    createdAt: '2023-08-01T08:09:19.000Z'
+    data:
+      edited: false
+      editors:
+      - HITHESHSANKARARAMAN
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7381986975669861
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7f4d1aa4f0871d4f99610528c2437b1e.svg
+          fullname: HITHESH SANKARARAMAN
+          isHf: false
+          isPro: false
+          name: HITHESHSANKARARAMAN
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cyt79&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cyt79\">@<span class=\"\
+          underline\">cyt79</span></a></span>\n\n\t</span></span><br>auto_find_batch_size=True\
+          \ is responsible for this error.<br>Make auto_find_batch_size=False.<br>Manually\
+          \ give per_device_train_batch_size=8 and  per_device_eval_batch_size=8.<br>If\
+          \ per_device_train_batch_size=8 throws cuda error , reduce the batch size\
+          \ until cuda error doesnt occur.</p>\n"
+        raw: "@cyt79 \nauto_find_batch_size=True is responsible for this error.\n\
+          Make auto_find_batch_size=False.\nManually give per_device_train_batch_size=8\
+          \ and  per_device_eval_batch_size=8.\nIf per_device_train_batch_size=8 throws\
+          \ cuda error , reduce the batch size until cuda error doesnt occur.\n"
+        updatedAt: '2023-08-01T08:09:19.095Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - konradwoj
+    id: 64c8bdaf4cc48498134a0271
+    type: comment
+  author: HITHESHSANKARARAMAN
+  content: "@cyt79 \nauto_find_batch_size=True is responsible for this error.\nMake\
+    \ auto_find_batch_size=False.\nManually give per_device_train_batch_size=8 and\
+    \  per_device_eval_batch_size=8.\nIf per_device_train_batch_size=8 throws cuda\
+    \ error , reduce the batch size until cuda error doesnt occur.\n"
+  created_at: 2023-08-01 07:09:19+00:00
+  edited: false
+  hidden: false
+  id: 64c8bdaf4cc48498134a0271
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: google/flan-ul2
+repo_type: model
+status: open
+target_branch: null
+title: 'getting RuntimeError: No executable batch size found, reached zero. erorr
+  when trying to fine-tuning flan-ul2 model.'

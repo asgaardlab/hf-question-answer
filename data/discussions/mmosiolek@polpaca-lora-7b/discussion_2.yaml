@@ -1,0 +1,196 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: tprochenka
+conflicting_files: null
+created_at: 2023-07-26 14:46:12+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8aaa78c3dd83b6ee6b701f7ee09c8124.svg
+      fullname: Tomasz Prochenka
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: tprochenka
+      type: user
+    createdAt: '2023-07-26T15:46:12.000Z'
+    data:
+      edited: false
+      editors:
+      - tprochenka
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7003206610679626
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8aaa78c3dd83b6ee6b701f7ee09c8124.svg
+          fullname: Tomasz Prochenka
+          isHf: false
+          isPro: false
+          name: tprochenka
+          type: user
+        html: "<p>Hi, I've read your blog post, results seem to be quite promisting.\
+          \ I have 2 questions:</p>\n<ol>\n<li>On what machine have you run your tests\
+          \ (inference and fine-tunning)? I tried inference on aws g5.2xlarge (24GB\
+          \ GPU RAM) and it was still not enough so I needed to put model on cpu.</li>\n\
+          <li>Have you been able to get such good results in a consistent manner because\
+          \ mine look much worse. Maybe I'm missing sth. Could you please take a look?</li>\n\
+          </ol>\n<pre><code>\nfrom transformers import LlamaTokenizer, LlamaForCausalLM\n\
+          from peft import PeftModel\n# import bitsandbytes as bnb\n\ndevice = \"\
+          cpu\"\n\nbase = \"decapoda-research/llama-7b-hf\"\nfinetuned = \"mmosiolek/polpaca-lora-7b\"\
+          \n\ntokenizer = LlamaTokenizer.from_pretrained(base)\ntokenizer.pad_token_id\
+          \ = 0\ntokenizer.padding_side = \"left\"\n\nmodel = LlamaForCausalLM.from_pretrained(base)\n\
+          model = PeftModel.from_pretrained(model, finetuned).to(device)\n\nfrom transformers\
+          \ import GenerationConfig\nimport torch\n\nconfig = GenerationConfig(\n\
+          \  temperature=0.1,\n  top_p=0.5,\n  top_k=40,\n  num_beams=4,\n  max_new_tokens=128,\n\
+          \  repetition_penalty=1.2\n)\n\ndef run(instruction, model, tokenizer, config,\
+          \ device):\n    encodings = tokenizer(instruction, padding=True, return_tensors=\"\
+          pt\").to(device)\n    generated_ids = model.generate(\n        **encodings,\n\
+          \        generation_config=config,\n    )\n    decoded = tokenizer.batch_decode(generated_ids)\n\
+          \    del encodings, generated_ids\n    torch.cuda.empty_cache()\n    return\
+          \ decoded[0].split(\"\\n\")[-1]\n\nrun(\"Wymy\u015Bl kilka zapyta\u0144\
+          \ w google na temat kodowania.\", model, tokenizer, config, device)\n</code></pre>\n\
+          <p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/62a83a6f8e308a07d22ebd24/B9p70o0rxI_cFepxqMCQq.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/62a83a6f8e308a07d22ebd24/B9p70o0rxI_cFepxqMCQq.png\"\
+          ></a></p>\n<p>Thanks<br>Tomek</p>\n"
+        raw: "Hi, I've read your blog post, results seem to be quite promisting. I\
+          \ have 2 questions:\r\n1. On what machine have you run your tests (inference\
+          \ and fine-tunning)? I tried inference on aws g5.2xlarge (24GB GPU RAM)\
+          \ and it was still not enough so I needed to put model on cpu.\r\n2. Have\
+          \ you been able to get such good results in a consistent manner because\
+          \ mine look much worse. Maybe I'm missing sth. Could you please take a look?\r\
+          \n```\r\n\r\nfrom transformers import LlamaTokenizer, LlamaForCausalLM\r\
+          \nfrom peft import PeftModel\r\n# import bitsandbytes as bnb\r\n\r\ndevice\
+          \ = \"cpu\"\r\n\r\nbase = \"decapoda-research/llama-7b-hf\"\r\nfinetuned\
+          \ = \"mmosiolek/polpaca-lora-7b\"\r\n\r\ntokenizer = LlamaTokenizer.from_pretrained(base)\r\
+          \ntokenizer.pad_token_id = 0\r\ntokenizer.padding_side = \"left\"\r\n\r\n\
+          model = LlamaForCausalLM.from_pretrained(base)\r\nmodel = PeftModel.from_pretrained(model,\
+          \ finetuned).to(device)\r\n\r\nfrom transformers import GenerationConfig\r\
+          \nimport torch\r\n\r\nconfig = GenerationConfig(\r\n  temperature=0.1,\r\
+          \n  top_p=0.5,\r\n  top_k=40,\r\n  num_beams=4,\r\n  max_new_tokens=128,\r\
+          \n  repetition_penalty=1.2\r\n)\r\n\r\ndef run(instruction, model, tokenizer,\
+          \ config, device):\r\n    encodings = tokenizer(instruction, padding=True,\
+          \ return_tensors=\"pt\").to(device)\r\n    generated_ids = model.generate(\r\
+          \n        **encodings,\r\n        generation_config=config,\r\n    )\r\n\
+          \    decoded = tokenizer.batch_decode(generated_ids)\r\n    del encodings,\
+          \ generated_ids\r\n    torch.cuda.empty_cache()\r\n    return decoded[0].split(\"\
+          \\n\")[-1]\r\n\r\nrun(\"Wymy\u015Bl kilka zapyta\u0144 w google na temat\
+          \ kodowania.\", model, tokenizer, config, device)\r\n```\r\n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/62a83a6f8e308a07d22ebd24/B9p70o0rxI_cFepxqMCQq.png)\r\
+          \n\r\nThanks\r\nTomek"
+        updatedAt: '2023-07-26T15:46:12.195Z'
+      numEdits: 0
+      reactions: []
+    id: 64c13fc4f149752445c6c9c4
+    type: comment
+  author: tprochenka
+  content: "Hi, I've read your blog post, results seem to be quite promisting. I have\
+    \ 2 questions:\r\n1. On what machine have you run your tests (inference and fine-tunning)?\
+    \ I tried inference on aws g5.2xlarge (24GB GPU RAM) and it was still not enough\
+    \ so I needed to put model on cpu.\r\n2. Have you been able to get such good results\
+    \ in a consistent manner because mine look much worse. Maybe I'm missing sth.\
+    \ Could you please take a look?\r\n```\r\n\r\nfrom transformers import LlamaTokenizer,\
+    \ LlamaForCausalLM\r\nfrom peft import PeftModel\r\n# import bitsandbytes as bnb\r\
+    \n\r\ndevice = \"cpu\"\r\n\r\nbase = \"decapoda-research/llama-7b-hf\"\r\nfinetuned\
+    \ = \"mmosiolek/polpaca-lora-7b\"\r\n\r\ntokenizer = LlamaTokenizer.from_pretrained(base)\r\
+    \ntokenizer.pad_token_id = 0\r\ntokenizer.padding_side = \"left\"\r\n\r\nmodel\
+    \ = LlamaForCausalLM.from_pretrained(base)\r\nmodel = PeftModel.from_pretrained(model,\
+    \ finetuned).to(device)\r\n\r\nfrom transformers import GenerationConfig\r\nimport\
+    \ torch\r\n\r\nconfig = GenerationConfig(\r\n  temperature=0.1,\r\n  top_p=0.5,\r\
+    \n  top_k=40,\r\n  num_beams=4,\r\n  max_new_tokens=128,\r\n  repetition_penalty=1.2\r\
+    \n)\r\n\r\ndef run(instruction, model, tokenizer, config, device):\r\n    encodings\
+    \ = tokenizer(instruction, padding=True, return_tensors=\"pt\").to(device)\r\n\
+    \    generated_ids = model.generate(\r\n        **encodings,\r\n        generation_config=config,\r\
+    \n    )\r\n    decoded = tokenizer.batch_decode(generated_ids)\r\n    del encodings,\
+    \ generated_ids\r\n    torch.cuda.empty_cache()\r\n    return decoded[0].split(\"\
+    \\n\")[-1]\r\n\r\nrun(\"Wymy\u015Bl kilka zapyta\u0144 w google na temat kodowania.\"\
+    , model, tokenizer, config, device)\r\n```\r\n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/62a83a6f8e308a07d22ebd24/B9p70o0rxI_cFepxqMCQq.png)\r\
+    \n\r\nThanks\r\nTomek"
+  created_at: 2023-07-26 14:46:12+00:00
+  edited: false
+  hidden: false
+  id: 64c13fc4f149752445c6c9c4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6423f65c3fa01ecba6fccda4/yCv9Lbv337H70kIguvyLm.jpeg?w=200&h=200&f=face
+      fullname: Marcin Mosiolek
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: mmosiolek
+      type: user
+    createdAt: '2023-07-27T07:21:30.000Z'
+    data:
+      edited: false
+      editors:
+      - mmosiolek
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9695278406143188
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6423f65c3fa01ecba6fccda4/yCv9Lbv337H70kIguvyLm.jpeg?w=200&h=200&f=face
+          fullname: Marcin Mosiolek
+          isHf: false
+          isPro: false
+          name: mmosiolek
+          type: user
+        html: '<p>Hey, </p>
+
+          <p>here are the answers:</p>
+
+          <ol>
+
+          <li>I run the training + evaluation on RTX 4090.</li>
+
+          <li>Please don''t expect consistent results from this kind of toy experiment.
+          It''s more to play with and understand the limitations of the approach I''ve
+          taken. However, what I''d suggest in your case is to adjust the temperature
+          - try increasing it. It should give more meaningful results than simply
+          repeating the input.</li>
+
+          </ol>
+
+          <p>I hope it helps! :) </p>
+
+          '
+        raw: "Hey, \n\nhere are the answers:\n\n1. I run the training + evaluation\
+          \ on RTX 4090.\n2. Please don't expect consistent results from this kind\
+          \ of toy experiment. It's more to play with and understand the limitations\
+          \ of the approach I've taken. However, what I'd suggest in your case is\
+          \ to adjust the temperature - try increasing it. It should give more meaningful\
+          \ results than simply repeating the input.\n\nI hope it helps! :) "
+        updatedAt: '2023-07-27T07:21:30.486Z'
+      numEdits: 0
+      reactions: []
+    id: 64c21afad872858a39e83099
+    type: comment
+  author: mmosiolek
+  content: "Hey, \n\nhere are the answers:\n\n1. I run the training + evaluation on\
+    \ RTX 4090.\n2. Please don't expect consistent results from this kind of toy experiment.\
+    \ It's more to play with and understand the limitations of the approach I've taken.\
+    \ However, what I'd suggest in your case is to adjust the temperature - try increasing\
+    \ it. It should give more meaningful results than simply repeating the input.\n\
+    \nI hope it helps! :) "
+  created_at: 2023-07-27 06:21:30+00:00
+  edited: false
+  hidden: false
+  id: 64c21afad872858a39e83099
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: mmosiolek/polpaca-lora-7b
+repo_type: model
+status: open
+target_branch: null
+title: Reproducibility of results

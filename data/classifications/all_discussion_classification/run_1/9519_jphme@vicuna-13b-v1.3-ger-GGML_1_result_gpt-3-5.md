@@ -1,0 +1,5 @@
+## https://huggingface.co/jphme/vicuna-13b-v1.3-ger-GGML/discussions/1
+
+contains_question: yes
+
+question_part: I can not find any information regarding the data set you used for fine tuning or any information regarding your training / fine tuning approach with german language?

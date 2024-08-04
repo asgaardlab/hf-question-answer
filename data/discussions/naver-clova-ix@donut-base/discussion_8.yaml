@@ -1,0 +1,178 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: DieseKartoffel
+conflicting_files: null
+created_at: 2023-10-26 07:39:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/4b4642aed5d44e25ae0535f2e31d4068.svg
+      fullname: Diese Kartoffel
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: DieseKartoffel
+      type: user
+    createdAt: '2023-10-26T08:39:03.000Z'
+    data:
+      edited: true
+      editors:
+      - DieseKartoffel
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.767024040222168
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/4b4642aed5d44e25ae0535f2e31d4068.svg
+          fullname: Diese Kartoffel
+          isHf: false
+          isPro: false
+          name: DieseKartoffel
+          type: user
+        html: "<p>Hi there,</p>\n<p>as per our understanding of DONUT, it uses a pre-trained\
+          \ BART as the decoder. Specifically the <a href=\"https://huggingface.co/hyunwoongko/asian-bart-ecjk\"\
+          >asian-bart-ecjk</a> model, which is mentioned in the <a rel=\"nofollow\"\
+          \ href=\"https://arxiv.org/pdf/2111.15664.pdf\">paper</a> on page 5. However,\
+          \ we noticed that the vocabulary in <a href=\"https://huggingface.co/naver-clova-ix/donut-base/blob/main/tokenizer.json\"\
+          >DONUT's tokenizer.json</a> does not match the list of possible output tokens\
+          \ from the original <a href=\"https://huggingface.co/hyunwoongko/asian-bart-ecjk/blob/main/tokenizer.json\"\
+          >asian-bart-ecjk tokenizer.json</a>. Can someone explain why that is exactly?\
+          \ Where does the vocabulary of the donut-decoder come from if it has been\
+          \ pre-trained?</p>\n<p>In addition, we found that there is no valid token\
+          \ id for the character <code>\"1\"</code>. In practise that means, whenever\
+          \ a result from a Donut models contains a <code>\"1\"</code> that can not\
+          \ be tokenized into a larger token (ie something like <code>\"15\"</code>)\
+          \ it will decode into token-id 3: <code>\"&lt;unk&gt;\"</code>, which we\
+          \ observe regulary and are currently fixing manually in post-processing.</p>\n\
+          <p>Here is a code sample to show what I am talking about:</p>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoTokenizer\n\ndonut_tokenizer\
+          \ = AutoTokenizer.from_pretrained(<span class=\"hljs-string\">\"naver-clova-ix/donut-base\"\
+          </span>)\n\ntext = <span class=\"hljs-string\">\"ABC1QRF7\"</span>\nencoded\
+          \ = donut_tokenizer.encode(text)\ndecoded = donut_tokenizer.decode(encoded,\
+          \ skip_special_tokens=<span class=\"hljs-literal\">False</span>) \n<span\
+          \ class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\">f\"Decoded\
+          \ String: <span class=\"hljs-subst\">{decoded}</span>\"</span>) \n</code></pre>\n\
+          <p>This will result in: <code>&lt;s&gt;ABC&lt;unk&gt;QRF7&lt;/s&gt;</code></p>\n\
+          <p>Here is sample code to show that the vocabulary differs from the BART\
+          \ model referenced by the authors:</p>\n<pre><code class=\"language-python\"\
+          >donut_donut_tokenizer = AutoTokenizer.from_pretrained(<span class=\"hljs-string\"\
+          >\"naver-clova-ix/donut-base\"</span>)\ndonut_vocab = donut_tokenizer.get_vocab()\n\
+          bart_tokenizer = AutoTokenizer.from_pretrained(<span class=\"hljs-string\"\
+          >\"hyunwoongko/asian-bart-ecjk\"</span>)\nbart_vocab = bart_tokenizer.get_vocab()\n\
+          \n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"Donut Vocabulary size: <span class=\"hljs-subst\">{<span class=\"hljs-built_in\"\
+          >len</span>(donut_vocab)}</span>\"</span>) <span class=\"hljs-comment\"\
+          ># 57525</span>\n<span class=\"hljs-built_in\">print</span>(<span class=\"\
+          hljs-string\">f\"Bart Vocabulary size: <span class=\"hljs-subst\">{<span\
+          \ class=\"hljs-built_in\">len</span>(bart_vocab)}</span>\"</span>) <span\
+          \ class=\"hljs-comment\"># 57547</span>\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Tokens in Donut, not in Bart:\"</span>, <span\
+          \ class=\"hljs-built_in\">len</span>(<span class=\"hljs-built_in\">set</span>(donut_vocab)\
+          \ - <span class=\"hljs-built_in\">set</span>(bart_vocab))) <span class=\"\
+          hljs-comment\"># 18601</span>\n<span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">\"Tokens in Bart, not in Donut:\"</span>, <span\
+          \ class=\"hljs-built_in\">len</span>(<span class=\"hljs-built_in\">set</span>(bart_vocab)\
+          \ - <span class=\"hljs-built_in\">set</span>(donut_vocab))) <span class=\"\
+          hljs-comment\"># 18623</span>\n\n<span class=\"hljs-keyword\">assert</span>\
+          \ <span class=\"hljs-string\">\"1\"</span> <span class=\"hljs-keyword\"\
+          >in</span> bart_vocab <span class=\"hljs-comment\"># works fine</span>\n\
+          <span class=\"hljs-keyword\">assert</span> <span class=\"hljs-string\">\"\
+          1\"</span> <span class=\"hljs-keyword\">in</span> donut_vocab <span class=\"\
+          hljs-comment\"># AssertionError</span>\n</code></pre>\n<p>We would love\
+          \ to better our understanding of where the donut vocabulary comes from and\
+          \ if anyone else ran into this problem or found a better fix.</p>\n<p>Thanks!</p>\n"
+        raw: "Hi there,\n\nas per our understanding of DONUT, it uses a pre-trained\
+          \ BART as the decoder. Specifically the [asian-bart-ecjk](https://huggingface.co/hyunwoongko/asian-bart-ecjk)\
+          \ model, which is mentioned in the [paper](https://arxiv.org/pdf/2111.15664.pdf)\
+          \ on page 5. However, we noticed that the vocabulary in [DONUT's tokenizer.json](https://huggingface.co/naver-clova-ix/donut-base/blob/main/tokenizer.json)\
+          \ does not match the list of possible output tokens from the original [asian-bart-ecjk\
+          \ tokenizer.json](https://huggingface.co/hyunwoongko/asian-bart-ecjk/blob/main/tokenizer.json).\
+          \ Can someone explain why that is exactly? Where does the vocabulary of\
+          \ the donut-decoder come from if it has been pre-trained?\n\nIn addition,\
+          \ we found that there is no valid token id for the character `\"1\"`. In\
+          \ practise that means, whenever a result from a Donut models contains a\
+          \ `\"1\"` that can not be tokenized into a larger token (ie something like\
+          \ `\"15\"`) it will decode into token-id 3: `\"<unk>\"`, which we observe\
+          \ regulary and are currently fixing manually in post-processing.\n\nHere\
+          \ is a code sample to show what I am talking about:\n```python\nfrom transformers\
+          \ import AutoTokenizer\n\ndonut_tokenizer = AutoTokenizer.from_pretrained(\"\
+          naver-clova-ix/donut-base\")\n\ntext = \"ABC1QRF7\"\nencoded = donut_tokenizer.encode(text)\n\
+          decoded = donut_tokenizer.decode(encoded, skip_special_tokens=False) \n\
+          print(f\"Decoded String: {decoded}\") \n```\n\nThis will result in: `<s>ABC<unk>QRF7</s>`\n\
+          \nHere is sample code to show that the vocabulary differs from the BART\
+          \ model referenced by the authors:\n```python\ndonut_donut_tokenizer = AutoTokenizer.from_pretrained(\"\
+          naver-clova-ix/donut-base\")\ndonut_vocab = donut_tokenizer.get_vocab()\n\
+          bart_tokenizer = AutoTokenizer.from_pretrained(\"hyunwoongko/asian-bart-ecjk\"\
+          )\nbart_vocab = bart_tokenizer.get_vocab()\n\nprint(f\"Donut Vocabulary\
+          \ size: {len(donut_vocab)}\") # 57525\nprint(f\"Bart Vocabulary size: {len(bart_vocab)}\"\
+          ) # 57547\nprint(\"Tokens in Donut, not in Bart:\", len(set(donut_vocab)\
+          \ - set(bart_vocab))) # 18601\nprint(\"Tokens in Bart, not in Donut:\",\
+          \ len(set(bart_vocab) - set(donut_vocab))) # 18623\n\nassert \"1\" in bart_vocab\
+          \ # works fine\nassert \"1\" in donut_vocab # AssertionError\n```\n\nWe\
+          \ would love to better our understanding of where the donut vocabulary comes\
+          \ from and if anyone else ran into this problem or found a better fix.\n\
+          \nThanks!"
+        updatedAt: '2023-10-26T08:46:41.208Z'
+      numEdits: 6
+      reactions:
+      - count: 7
+        reaction: "\U0001F44D"
+        users:
+        - ewfian
+        - ybm11
+        - domdom
+        - Ilde
+        - amellou
+        - menbom
+        - DieseKartoffel
+    id: 653a25a7341143f777446b2f
+    type: comment
+  author: DieseKartoffel
+  content: "Hi there,\n\nas per our understanding of DONUT, it uses a pre-trained\
+    \ BART as the decoder. Specifically the [asian-bart-ecjk](https://huggingface.co/hyunwoongko/asian-bart-ecjk)\
+    \ model, which is mentioned in the [paper](https://arxiv.org/pdf/2111.15664.pdf)\
+    \ on page 5. However, we noticed that the vocabulary in [DONUT's tokenizer.json](https://huggingface.co/naver-clova-ix/donut-base/blob/main/tokenizer.json)\
+    \ does not match the list of possible output tokens from the original [asian-bart-ecjk\
+    \ tokenizer.json](https://huggingface.co/hyunwoongko/asian-bart-ecjk/blob/main/tokenizer.json).\
+    \ Can someone explain why that is exactly? Where does the vocabulary of the donut-decoder\
+    \ come from if it has been pre-trained?\n\nIn addition, we found that there is\
+    \ no valid token id for the character `\"1\"`. In practise that means, whenever\
+    \ a result from a Donut models contains a `\"1\"` that can not be tokenized into\
+    \ a larger token (ie something like `\"15\"`) it will decode into token-id 3:\
+    \ `\"<unk>\"`, which we observe regulary and are currently fixing manually in\
+    \ post-processing.\n\nHere is a code sample to show what I am talking about:\n\
+    ```python\nfrom transformers import AutoTokenizer\n\ndonut_tokenizer = AutoTokenizer.from_pretrained(\"\
+    naver-clova-ix/donut-base\")\n\ntext = \"ABC1QRF7\"\nencoded = donut_tokenizer.encode(text)\n\
+    decoded = donut_tokenizer.decode(encoded, skip_special_tokens=False) \nprint(f\"\
+    Decoded String: {decoded}\") \n```\n\nThis will result in: `<s>ABC<unk>QRF7</s>`\n\
+    \nHere is sample code to show that the vocabulary differs from the BART model\
+    \ referenced by the authors:\n```python\ndonut_donut_tokenizer = AutoTokenizer.from_pretrained(\"\
+    naver-clova-ix/donut-base\")\ndonut_vocab = donut_tokenizer.get_vocab()\nbart_tokenizer\
+    \ = AutoTokenizer.from_pretrained(\"hyunwoongko/asian-bart-ecjk\")\nbart_vocab\
+    \ = bart_tokenizer.get_vocab()\n\nprint(f\"Donut Vocabulary size: {len(donut_vocab)}\"\
+    ) # 57525\nprint(f\"Bart Vocabulary size: {len(bart_vocab)}\") # 57547\nprint(\"\
+    Tokens in Donut, not in Bart:\", len(set(donut_vocab) - set(bart_vocab))) # 18601\n\
+    print(\"Tokens in Bart, not in Donut:\", len(set(bart_vocab) - set(donut_vocab)))\
+    \ # 18623\n\nassert \"1\" in bart_vocab # works fine\nassert \"1\" in donut_vocab\
+    \ # AssertionError\n```\n\nWe would love to better our understanding of where\
+    \ the donut vocabulary comes from and if anyone else ran into this problem or\
+    \ found a better fix.\n\nThanks!"
+  created_at: 2023-10-26 07:39:03+00:00
+  edited: true
+  hidden: false
+  id: 653a25a7341143f777446b2f
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: naver-clova-ix/donut-base
+repo_type: model
+status: open
+target_branch: null
+title: Discrepancies between DONUT / BART Tokenizer and missing characters

@@ -1,0 +1,2682 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cekal
+conflicting_files: null
+created_at: 2023-12-14 21:30:09+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-14T21:30:09.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5684288144111633
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p>I have tried fine-tuning the model with LoRA (peft) using the following\
+          \ target modules: 'lm_head.linear', 'transformer.embd.wte' - which resulted\
+          \ in better responses, but I feel like something is wrong in my training\
+          \ setup, as the model often behaves weirdly, and its responses are significantly\
+          \ worse than the ones from Mistral 7B. Considering Microsoft called this\
+          \ the state-of-art model below 13b parameters, mentioning it beats Mistral,\
+          \ it should outperform it, not underperform. I use a high-quality proprietary\
+          \ Q&amp;A dataset, so the dataset quality cannot be the issue.</p>\n<p>Just\
+          \ to confirm, am I using the right 'target_modules', or I should use different\
+          \ ones? Here is my training code:</p>\n<pre><code>import os\nfrom dataclasses\
+          \ import dataclass, field\nfrom typing import Optional\n\nimport torch\n\
+          from datasets import load_dataset\nfrom datasets import load_from_disk\n\
+          from peft import LoraConfig\nfrom transformers import (\n    AutoModelForCausalLM,\n\
+          \    AutoTokenizer,\n    BitsAndBytesConfig,\n    HfArgumentParser,\n  \
+          \  AutoTokenizer,\n    TrainingArguments,\n)\nfrom tqdm.notebook import\
+          \ tqdm\n\nfrom trl import SFTTrainer\nfrom huggingface_hub import interpreter_login\n\
+          \ninterpreter_login()\n\ncompute_dtype = getattr(torch, \"float16\")\nbnb_config\
+          \ = BitsAndBytesConfig(\n        load_in_4bit=True,\n        bnb_4bit_quant_type='nf4',\n\
+          \        bnb_4bit_compute_dtype='float16',\n        bnb_4bit_use_double_quant=False,\n\
+          \    )\ndevice_map = {\"\": 0}\n\n#Download model\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \        \"microsoft/phi-2\", \n        quantization_config=bnb_config,\
+          \ \n        device_map=device_map,\n        trust_remote_code=True,\n  \
+          \      use_auth_token=True\n    )\n\nmodel.config.pretraining_tp = 1 \n\
+          peft_config = LoraConfig(\n    lora_alpha=16,\n    lora_dropout=0.1,\n \
+          \   r=32,\n    target_modules=['lm_head.linear', 'transformer.embd.wte'],\
+          \ # is this correct?\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\", \n\
+          )\n\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\", trust_remote_code=True)\n\
+          tokenizer.pad_token = tokenizer.eos_token\n\ntraining_arguments = TrainingArguments(\n\
+          \    output_dir=\"./results\",\n    per_device_train_batch_size=1,\n   \
+          \ gradient_accumulation_steps=4,\n    optim=\"paged_adamw_32bit\",\n   \
+          \ save_steps=500, #CHANGE THIS IF YOU WANT IT TO SAVE LESS OFTEN. I WOULDN'T\
+          \ SAVE MORE OFTEN BECAUSE OF SPACE\n    logging_steps=10,\n    learning_rate=2e-4,\n\
+          \    fp16=False,\n    bf16=True,\n    max_grad_norm=.3,\n    max_steps=10000,\n\
+          \    warmup_ratio=.03,\n    group_by_length=True,\n    lr_scheduler_type=\"\
+          constant\",\n)\n\nmodel.config.use_cache = False\n\ndataset = load_dataset(\"\
+          json\", data_files=\"your_dataset.json\", split=\"train\")\n\ntrainer =\
+          \ SFTTrainer(\n    model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+          \    dataset_text_field=\"text\",\n    max_seq_length=2048,\n    tokenizer=tokenizer,\n\
+          \    args=training_arguments,\n    packing=False,\n)\n\ntrainer.train()\n\
+          </code></pre>\n"
+        raw: "I have tried fine-tuning the model with LoRA (peft) using the following\
+          \ target modules: 'lm_head.linear', 'transformer.embd.wte' - which resulted\
+          \ in better responses, but I feel like something is wrong in my training\
+          \ setup, as the model often behaves weirdly, and its responses are significantly\
+          \ worse than the ones from Mistral 7B. Considering Microsoft called this\
+          \ the state-of-art model below 13b parameters, mentioning it beats Mistral,\
+          \ it should outperform it, not underperform. I use a high-quality proprietary\
+          \ Q&A dataset, so the dataset quality cannot be the issue.\r\n\r\nJust to\
+          \ confirm, am I using the right 'target_modules', or I should use different\
+          \ ones? Here is my training code:\r\n\r\n```\r\nimport os\r\nfrom dataclasses\
+          \ import dataclass, field\r\nfrom typing import Optional\r\n\r\nimport torch\r\
+          \nfrom datasets import load_dataset\r\nfrom datasets import load_from_disk\r\
+          \nfrom peft import LoraConfig\r\nfrom transformers import (\r\n    AutoModelForCausalLM,\r\
+          \n    AutoTokenizer,\r\n    BitsAndBytesConfig,\r\n    HfArgumentParser,\r\
+          \n    AutoTokenizer,\r\n    TrainingArguments,\r\n)\r\nfrom tqdm.notebook\
+          \ import tqdm\r\n\r\nfrom trl import SFTTrainer\r\nfrom huggingface_hub\
+          \ import interpreter_login\r\n\r\ninterpreter_login()\r\n\r\ncompute_dtype\
+          \ = getattr(torch, \"float16\")\r\nbnb_config = BitsAndBytesConfig(\r\n\
+          \        load_in_4bit=True,\r\n        bnb_4bit_quant_type='nf4',\r\n  \
+          \      bnb_4bit_compute_dtype='float16',\r\n        bnb_4bit_use_double_quant=False,\r\
+          \n    )\r\ndevice_map = {\"\": 0}\r\n\r\n#Download model\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n        \"microsoft/phi-2\", \r\n        quantization_config=bnb_config,\
+          \ \r\n        device_map=device_map,\r\n        trust_remote_code=True,\r\
+          \n        use_auth_token=True\r\n    )\r\n\r\nmodel.config.pretraining_tp\
+          \ = 1 \r\npeft_config = LoraConfig(\r\n    lora_alpha=16,\r\n    lora_dropout=0.1,\r\
+          \n    r=32,\r\n    target_modules=['lm_head.linear', 'transformer.embd.wte'],\
+          \ # is this correct?\r\n    bias=\"none\",\r\n    task_type=\"CAUSAL_LM\"\
+          , \r\n)\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\"\
+          , trust_remote_code=True)\r\ntokenizer.pad_token = tokenizer.eos_token\r\
+          \n\r\ntraining_arguments = TrainingArguments(\r\n    output_dir=\"./results\"\
+          ,\r\n    per_device_train_batch_size=1,\r\n    gradient_accumulation_steps=4,\r\
+          \n    optim=\"paged_adamw_32bit\",\r\n    save_steps=500, #CHANGE THIS IF\
+          \ YOU WANT IT TO SAVE LESS OFTEN. I WOULDN'T SAVE MORE OFTEN BECAUSE OF\
+          \ SPACE\r\n    logging_steps=10,\r\n    learning_rate=2e-4,\r\n    fp16=False,\r\
+          \n    bf16=True,\r\n    max_grad_norm=.3,\r\n    max_steps=10000,\r\n  \
+          \  warmup_ratio=.03,\r\n    group_by_length=True,\r\n    lr_scheduler_type=\"\
+          constant\",\r\n)\r\n\r\nmodel.config.use_cache = False\r\n\r\ndataset =\
+          \ load_dataset(\"json\", data_files=\"your_dataset.json\", split=\"train\"\
+          )\r\n\r\ntrainer = SFTTrainer(\r\n    model=model,\r\n    train_dataset=dataset,\r\
+          \n    peft_config=peft_config,\r\n    dataset_text_field=\"text\",\r\n \
+          \   max_seq_length=2048,\r\n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\
+          \n    packing=False,\r\n)\r\n\r\ntrainer.train()\r\n```"
+        updatedAt: '2023-12-14T21:30:09.742Z'
+      numEdits: 0
+      reactions:
+      - count: 10
+        reaction: "\u2764\uFE0F"
+        users:
+        - Ali-C137
+        - Deepakvictor
+        - mapa17
+        - martinnormark
+        - Zled
+        - Siddharthvij10
+        - NouRed
+        - cosrahn
+        - Christiantb15
+        - bruce228
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - logame07
+    id: 657b73e1fb0285d857b49075
+    type: comment
+  author: cekal
+  content: "I have tried fine-tuning the model with LoRA (peft) using the following\
+    \ target modules: 'lm_head.linear', 'transformer.embd.wte' - which resulted in\
+    \ better responses, but I feel like something is wrong in my training setup, as\
+    \ the model often behaves weirdly, and its responses are significantly worse than\
+    \ the ones from Mistral 7B. Considering Microsoft called this the state-of-art\
+    \ model below 13b parameters, mentioning it beats Mistral, it should outperform\
+    \ it, not underperform. I use a high-quality proprietary Q&A dataset, so the dataset\
+    \ quality cannot be the issue.\r\n\r\nJust to confirm, am I using the right 'target_modules',\
+    \ or I should use different ones? Here is my training code:\r\n\r\n```\r\nimport\
+    \ os\r\nfrom dataclasses import dataclass, field\r\nfrom typing import Optional\r\
+    \n\r\nimport torch\r\nfrom datasets import load_dataset\r\nfrom datasets import\
+    \ load_from_disk\r\nfrom peft import LoraConfig\r\nfrom transformers import (\r\
+    \n    AutoModelForCausalLM,\r\n    AutoTokenizer,\r\n    BitsAndBytesConfig,\r\
+    \n    HfArgumentParser,\r\n    AutoTokenizer,\r\n    TrainingArguments,\r\n)\r\
+    \nfrom tqdm.notebook import tqdm\r\n\r\nfrom trl import SFTTrainer\r\nfrom huggingface_hub\
+    \ import interpreter_login\r\n\r\ninterpreter_login()\r\n\r\ncompute_dtype = getattr(torch,\
+    \ \"float16\")\r\nbnb_config = BitsAndBytesConfig(\r\n        load_in_4bit=True,\r\
+    \n        bnb_4bit_quant_type='nf4',\r\n        bnb_4bit_compute_dtype='float16',\r\
+    \n        bnb_4bit_use_double_quant=False,\r\n    )\r\ndevice_map = {\"\": 0}\r\
+    \n\r\n#Download model\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n   \
+    \     \"microsoft/phi-2\", \r\n        quantization_config=bnb_config, \r\n  \
+    \      device_map=device_map,\r\n        trust_remote_code=True,\r\n        use_auth_token=True\r\
+    \n    )\r\n\r\nmodel.config.pretraining_tp = 1 \r\npeft_config = LoraConfig(\r\
+    \n    lora_alpha=16,\r\n    lora_dropout=0.1,\r\n    r=32,\r\n    target_modules=['lm_head.linear',\
+    \ 'transformer.embd.wte'], # is this correct?\r\n    bias=\"none\",\r\n    task_type=\"\
+    CAUSAL_LM\", \r\n)\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\"\
+    , trust_remote_code=True)\r\ntokenizer.pad_token = tokenizer.eos_token\r\n\r\n\
+    training_arguments = TrainingArguments(\r\n    output_dir=\"./results\",\r\n \
+    \   per_device_train_batch_size=1,\r\n    gradient_accumulation_steps=4,\r\n \
+    \   optim=\"paged_adamw_32bit\",\r\n    save_steps=500, #CHANGE THIS IF YOU WANT\
+    \ IT TO SAVE LESS OFTEN. I WOULDN'T SAVE MORE OFTEN BECAUSE OF SPACE\r\n    logging_steps=10,\r\
+    \n    learning_rate=2e-4,\r\n    fp16=False,\r\n    bf16=True,\r\n    max_grad_norm=.3,\r\
+    \n    max_steps=10000,\r\n    warmup_ratio=.03,\r\n    group_by_length=True,\r\
+    \n    lr_scheduler_type=\"constant\",\r\n)\r\n\r\nmodel.config.use_cache = False\r\
+    \n\r\ndataset = load_dataset(\"json\", data_files=\"your_dataset.json\", split=\"\
+    train\")\r\n\r\ntrainer = SFTTrainer(\r\n    model=model,\r\n    train_dataset=dataset,\r\
+    \n    peft_config=peft_config,\r\n    dataset_text_field=\"text\",\r\n    max_seq_length=2048,\r\
+    \n    tokenizer=tokenizer,\r\n    args=training_arguments,\r\n    packing=False,\r\
+    \n)\r\n\r\ntrainer.train()\r\n```"
+  created_at: 2023-12-14 21:30:09+00:00
+  edited: false
+  hidden: false
+  id: 657b73e1fb0285d857b49075
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/10c2d052d82c3950aba094877fbf8e9d.svg
+      fullname: Brett Beaulieu-Jones
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: brettbj
+      type: user
+    createdAt: '2023-12-14T21:54:58.000Z'
+    data:
+      edited: false
+      editors:
+      - brettbj
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9787929058074951
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/10c2d052d82c3950aba094877fbf8e9d.svg
+          fullname: Brett Beaulieu-Jones
+          isHf: false
+          isPro: false
+          name: brettbj
+          type: user
+        html: '<p>This might be naive, but if  loading fp16, why do you train with
+          bf16 true?</p>
+
+          <p>I''m guessing we need additional target modules + higher rank given the
+          model is smaller? If you''re only using one gpu the effective batch size
+          is still really small - they trained over a ton of tokens, I''m wondering
+          if the lr might need to be lower as well. </p>
+
+          <p>That being said you made it further than I did, I was running into the
+          gradient checkpointing error (there''s already a pull request, so I was
+          hoping that would be merged in). So I haven''t experimented nearly enough.
+          Thanks for providing your code since at least it runs and you have me beat
+          there... </p>
+
+          '
+        raw: "This might be naive, but if  loading fp16, why do you train with bf16\
+          \ true?\n\nI'm guessing we need additional target modules + higher rank\
+          \ given the model is smaller? If you're only using one gpu the effective\
+          \ batch size is still really small - they trained over a ton of tokens,\
+          \ I'm wondering if the lr might need to be lower as well. \n\nThat being\
+          \ said you made it further than I did, I was running into the gradient checkpointing\
+          \ error (there's already a pull request, so I was hoping that would be merged\
+          \ in). So I haven't experimented nearly enough. Thanks for providing your\
+          \ code since at least it runs and you have me beat there... \n\n"
+        updatedAt: '2023-12-14T21:54:58.696Z'
+      numEdits: 0
+      reactions: []
+    id: 657b79b2688f1a0f7eb38015
+    type: comment
+  author: brettbj
+  content: "This might be naive, but if  loading fp16, why do you train with bf16\
+    \ true?\n\nI'm guessing we need additional target modules + higher rank given\
+    \ the model is smaller? If you're only using one gpu the effective batch size\
+    \ is still really small - they trained over a ton of tokens, I'm wondering if\
+    \ the lr might need to be lower as well. \n\nThat being said you made it further\
+    \ than I did, I was running into the gradient checkpointing error (there's already\
+    \ a pull request, so I was hoping that would be merged in). So I haven't experimented\
+    \ nearly enough. Thanks for providing your code since at least it runs and you\
+    \ have me beat there... \n\n"
+  created_at: 2023-12-14 21:54:58+00:00
+  edited: false
+  hidden: false
+  id: 657b79b2688f1a0f7eb38015
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-14T22:28:55.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9469479322433472
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p>Regarding your question about bf16 &amp; fp16:</p>\n<p>When you\
+          \ load a model in fp16 (float16), it uses less memory, which is great for\
+          \ handling large models. But, training a model can be more complex and requires\
+          \ better precision. That's where bf16 (bfloat16) comes in during training\
+          \ \u2013 it still saves memory like fp16, but it's better for the calculations\
+          \ needed in training, giving you a good balance between saving memory and\
+          \ having accurate training.</p>\n<p>\u201CI'm guessing we need additional\
+          \ target modules + higher rank given the model is smaller?\u201D - Maybe.\
+          \ What I did was executing print(model), copying all the info about it,\
+          \ pasting it into GPT-4 and it selected the 2 modules specified in my previous\
+          \ message as the ones I should target.</p>\n<p>Anyways I have no idea but\
+          \ my only hope is that I\u2019ve missed some modules or messed something\
+          \ up otherwise the training results are disappointing. If you figure it\
+          \ out please let me know, will do the same if I come to some new info.</p>\n"
+        raw: "Regarding your question about bf16 & fp16:\n\nWhen you load a model\
+          \ in fp16 (float16), it uses less memory, which is great for handling large\
+          \ models. But, training a model can be more complex and requires better\
+          \ precision. That's where bf16 (bfloat16) comes in during training \u2013\
+          \ it still saves memory like fp16, but it's better for the calculations\
+          \ needed in training, giving you a good balance between saving memory and\
+          \ having accurate training.\n\n\u201CI'm guessing we need additional target\
+          \ modules + higher rank given the model is smaller?\u201D - Maybe. What\
+          \ I did was executing print(model), copying all the info about it, pasting\
+          \ it into GPT-4 and it selected the 2 modules specified in my previous message\
+          \ as the ones I should target.\n\nAnyways I have no idea but my only hope\
+          \ is that I\u2019ve missed some modules or messed something up otherwise\
+          \ the training results are disappointing. If you figure it out please let\
+          \ me know, will do the same if I come to some new info."
+        updatedAt: '2023-12-14T22:28:55.673Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\u2764\uFE0F"
+        users:
+        - ngocbh
+        - brettbj
+        - detakarang
+        - Christiantb15
+    id: 657b81a7eda715a4be3c1642
+    type: comment
+  author: cekal
+  content: "Regarding your question about bf16 & fp16:\n\nWhen you load a model in\
+    \ fp16 (float16), it uses less memory, which is great for handling large models.\
+    \ But, training a model can be more complex and requires better precision. That's\
+    \ where bf16 (bfloat16) comes in during training \u2013 it still saves memory\
+    \ like fp16, but it's better for the calculations needed in training, giving you\
+    \ a good balance between saving memory and having accurate training.\n\n\u201C\
+    I'm guessing we need additional target modules + higher rank given the model is\
+    \ smaller?\u201D - Maybe. What I did was executing print(model), copying all the\
+    \ info about it, pasting it into GPT-4 and it selected the 2 modules specified\
+    \ in my previous message as the ones I should target.\n\nAnyways I have no idea\
+    \ but my only hope is that I\u2019ve missed some modules or messed something up\
+    \ otherwise the training results are disappointing. If you figure it out please\
+    \ let me know, will do the same if I come to some new info."
+  created_at: 2023-12-14 22:28:55+00:00
+  edited: false
+  hidden: false
+  id: 657b81a7eda715a4be3c1642
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ba843e4b22ae0a24773dfafa7e3e7c56.svg
+      fullname: Navanit Dubey
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: navanit
+      type: user
+    createdAt: '2023-12-15T04:46:54.000Z'
+    data:
+      edited: false
+      editors:
+      - navanit
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7815195918083191
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ba843e4b22ae0a24773dfafa7e3e7c56.svg
+          fullname: Navanit Dubey
+          isHf: false
+          isPro: false
+          name: navanit
+          type: user
+        html: '<p>So in LoraConfig, I have read the paper and got to know that we
+          have to use the Self attention layer.<br>Below is my loraconfig<br>LoraConfig(<br>    r=32,<br>    lora_alpha=16,<br>    target_modules=[<br>        ''Wqkv'',<br>       ''out_proj''<br>    ],<br>    bias="none",<br>    lora_dropout=0.05,  #
+          Conventional<br>    task_type="CAUSAL_LM",<br>)</p>
+
+          '
+        raw: "So in LoraConfig, I have read the paper and got to know that we have\
+          \ to use the Self attention layer. \nBelow is my loraconfig \nLoraConfig(\n\
+          \    r=32,\n    lora_alpha=16,\n    target_modules=[\n        'Wqkv',\n\
+          \       'out_proj'\n    ],\n    bias=\"none\",\n    lora_dropout=0.05, \
+          \ # Conventional\n    task_type=\"CAUSAL_LM\",\n)\n"
+        updatedAt: '2023-12-15T04:46:54.958Z'
+      numEdits: 0
+      reactions:
+      - count: 9
+        reaction: "\U0001F44D"
+        users:
+        - ssongss
+        - Siddharthvij10
+        - bennyhobart
+        - ydNA00eel
+        - Christiantb15
+        - arnavgrg
+        - bruce228
+        - weathermanj
+        - Vadiyala
+    id: 657bda3ede028a439ebf5e04
+    type: comment
+  author: navanit
+  content: "So in LoraConfig, I have read the paper and got to know that we have to\
+    \ use the Self attention layer. \nBelow is my loraconfig \nLoraConfig(\n    r=32,\n\
+    \    lora_alpha=16,\n    target_modules=[\n        'Wqkv',\n       'out_proj'\n\
+    \    ],\n    bias=\"none\",\n    lora_dropout=0.05,  # Conventional\n    task_type=\"\
+    CAUSAL_LM\",\n)\n"
+  created_at: 2023-12-15 04:46:54+00:00
+  edited: false
+  hidden: false
+  id: 657bda3ede028a439ebf5e04
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-15T05:44:11.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8938407897949219
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;navanit&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/navanit\">@<span class=\"\
+          underline\">navanit</span></a></span>\n\n\t</span></span> thanks for sharing!\
+          \ I will begin another training with these target modules and see if the\
+          \ performance improves or not. Will keep you all updated.</p>\n"
+        raw: '@navanit thanks for sharing! I will begin another training with these
+          target modules and see if the performance improves or not. Will keep you
+          all updated.'
+        updatedAt: '2023-12-15T05:44:11.593Z'
+      numEdits: 0
+      reactions: []
+    id: 657be7abda5b0b99551765b3
+    type: comment
+  author: cekal
+  content: '@navanit thanks for sharing! I will begin another training with these
+    target modules and see if the performance improves or not. Will keep you all updated.'
+  created_at: 2023-12-15 05:44:11+00:00
+  edited: false
+  hidden: false
+  id: 657be7abda5b0b99551765b3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-15T13:11:53.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8319918513298035
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p>Excellent results! <span data-props=\"{&quot;user&quot;:&quot;navanit&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/navanit\"\
+          >@<span class=\"underline\">navanit</span></a></span>\n\n\t</span></span>\
+          \ thank you for confirming the correct target_modules, the model now responds\
+          \ as expected.</p>\n<p>Here is an example prompt I gave it: How can advances\
+          \ in artificial intelligence and machine learning contribute to more accurate\
+          \ and timely weather forecasting, and what are the limitations of relying\
+          \ on these technologies for weather predictions?</p>\n<p><a rel=\"nofollow\"\
+          \ href=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png\"\
+          ><img alt=\"Screenshot 2023-12-15 at 14.10.45.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png\"\
+          ></a></p>\n"
+        raw: 'Excellent results! @navanit thank you for confirming the correct target_modules,
+          the model now responds as expected.
+
+
+          Here is an example prompt I gave it: How can advances in artificial intelligence
+          and machine learning contribute to more accurate and timely weather forecasting,
+          and what are the limitations of relying on these technologies for weather
+          predictions?
+
+
+          ![Screenshot 2023-12-15 at 14.10.45.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png)
+
+          '
+        updatedAt: '2023-12-15T13:11:53.569Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\u2764\uFE0F"
+        users:
+        - Navanit-shorthills
+        - martinnormark
+        - detakarang
+        - Christiantb15
+    id: 657c5099fe584cecda303a14
+    type: comment
+  author: cekal
+  content: 'Excellent results! @navanit thank you for confirming the correct target_modules,
+    the model now responds as expected.
+
+
+    Here is an example prompt I gave it: How can advances in artificial intelligence
+    and machine learning contribute to more accurate and timely weather forecasting,
+    and what are the limitations of relying on these technologies for weather predictions?
+
+
+    ![Screenshot 2023-12-15 at 14.10.45.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png)
+
+    '
+  created_at: 2023-12-15 13:11:53+00:00
+  edited: false
+  hidden: false
+  id: 657c5099fe584cecda303a14
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-15T13:23:17.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6625085473060608
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: '<p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png"><img
+          alt="Screenshot 2023-12-15 at 14.21.36.png" src="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png"></a></p>
+
+          <p>Great reasoning capability as well, GPT-3.5-Turbo wasn''t able to answer
+          this one correctly:</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png"><img
+          alt="Screenshot 2023-12-15 at 14.22.59.png" src="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png"></a></p>
+
+          '
+        raw: '
+
+          ![Screenshot 2023-12-15 at 14.21.36.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png)
+
+
+          Great reasoning capability as well, GPT-3.5-Turbo wasn''t able to answer
+          this one correctly:
+
+
+          ![Screenshot 2023-12-15 at 14.22.59.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png)
+
+          '
+        updatedAt: '2023-12-15T13:23:17.279Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Christiantb15
+    id: 657c53456201b05af73a0fdc
+    type: comment
+  author: cekal
+  content: '
+
+    ![Screenshot 2023-12-15 at 14.21.36.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png)
+
+
+    Great reasoning capability as well, GPT-3.5-Turbo wasn''t able to answer this
+    one correctly:
+
+
+    ![Screenshot 2023-12-15 at 14.22.59.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png)
+
+    '
+  created_at: 2023-12-15 13:23:17+00:00
+  edited: false
+  hidden: false
+  id: 657c53456201b05af73a0fdc
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+      fullname: NAVANIT DUBEY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Navanit-shorthills
+      type: user
+    createdAt: '2023-12-15T14:46:50.000Z'
+    data:
+      edited: false
+      editors:
+      - Navanit-shorthills
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8305783271789551
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+          fullname: NAVANIT DUBEY
+          isHf: false
+          isPro: false
+          name: Navanit-shorthills
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> I am facing the\
+          \ error by using your code.<br>ValueError: PhiForCausalLM does not support\
+          \ gradient checkpointing.<br>any walkthrough?</p>\n"
+        raw: "@cekal I am facing the error by using your code. \nValueError: PhiForCausalLM\
+          \ does not support gradient checkpointing.\nany walkthrough?"
+        updatedAt: '2023-12-15T14:46:50.915Z'
+      numEdits: 0
+      reactions: []
+    id: 657c66dae62c244a5b577acf
+    type: comment
+  author: Navanit-shorthills
+  content: "@cekal I am facing the error by using your code. \nValueError: PhiForCausalLM\
+    \ does not support gradient checkpointing.\nany walkthrough?"
+  created_at: 2023-12-15 14:46:50+00:00
+  edited: false
+  hidden: false
+  id: 657c66dae62c244a5b577acf
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-15T15:04:44.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7685593366622925
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Navanit-shorthills&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Navanit-shorthills\"\
+          >@<span class=\"underline\">Navanit-shorthills</span></a></span>\n\n\t</span></span>\
+          \ which GPU are you using? I'm on 1x A100 runpod.io (Jupyter notebook).\
+          \ The error you're encountering is due to the incompatibility of the PhiForCausalLM\
+          \ model with gradient checkpointing. To resolve this, you need to disable\
+          \ gradient checkpointing. This might increase memory usage, but it's necessary\
+          \ for this specific model architecture. You may try passing</p>\n<pre><code>model.config.gradient_checkpointing\
+          \ = False\n</code></pre>\n<p>right after loading the model. Replace the\
+          \ following section of the previous script with this one and try running\
+          \ it:</p>\n<pre><code># Configure model and training\ncompute_dtype = getattr(torch,\
+          \ \"float16\")\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n\
+          \    bnb_4bit_quant_type='nf4',\n    bnb_4bit_compute_dtype='float16',\n\
+          \    bnb_4bit_use_double_quant=False,\n)\n\ndevice_map = {\"\": 0}\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\n    \"microsoft/phi-2\", \n \
+          \   quantization_config=bnb_config, \n    device_map=device_map,\n    trust_remote_code=True,\n\
+          \    use_auth_token=True\n)\n\n# Disable gradient checkpointing\nmodel.config.gradient_checkpointing\
+          \ = False\n</code></pre>\n<p>Let me know if that solves the issue or not.</p>\n"
+        raw: "@Navanit-shorthills which GPU are you using? I'm on 1x A100 runpod.io\
+          \ (Jupyter notebook). The error you're encountering is due to the incompatibility\
+          \ of the PhiForCausalLM model with gradient checkpointing. To resolve this,\
+          \ you need to disable gradient checkpointing. This might increase memory\
+          \ usage, but it's necessary for this specific model architecture. You may\
+          \ try passing\n```\nmodel.config.gradient_checkpointing = False\n```\nright\
+          \ after loading the model. Replace the following section of the previous\
+          \ script with this one and try running it:\n```\n# Configure model and training\n\
+          compute_dtype = getattr(torch, \"float16\")\nbnb_config = BitsAndBytesConfig(\n\
+          \    load_in_4bit=True,\n    bnb_4bit_quant_type='nf4',\n    bnb_4bit_compute_dtype='float16',\n\
+          \    bnb_4bit_use_double_quant=False,\n)\n\ndevice_map = {\"\": 0}\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\n    \"microsoft/phi-2\", \n \
+          \   quantization_config=bnb_config, \n    device_map=device_map,\n    trust_remote_code=True,\n\
+          \    use_auth_token=True\n)\n\n# Disable gradient checkpointing\nmodel.config.gradient_checkpointing\
+          \ = False\n```\nLet me know if that solves the issue or not."
+        updatedAt: '2023-12-15T15:04:44.656Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\u2764\uFE0F"
+        users:
+        - louisbrulenaudet
+        - Siddharthvij10
+        - cosrahn
+    id: 657c6b0c17370734bffb476e
+    type: comment
+  author: cekal
+  content: "@Navanit-shorthills which GPU are you using? I'm on 1x A100 runpod.io\
+    \ (Jupyter notebook). The error you're encountering is due to the incompatibility\
+    \ of the PhiForCausalLM model with gradient checkpointing. To resolve this, you\
+    \ need to disable gradient checkpointing. This might increase memory usage, but\
+    \ it's necessary for this specific model architecture. You may try passing\n```\n\
+    model.config.gradient_checkpointing = False\n```\nright after loading the model.\
+    \ Replace the following section of the previous script with this one and try running\
+    \ it:\n```\n# Configure model and training\ncompute_dtype = getattr(torch, \"\
+    float16\")\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_quant_type='nf4',\n\
+    \    bnb_4bit_compute_dtype='float16',\n    bnb_4bit_use_double_quant=False,\n\
+    )\n\ndevice_map = {\"\": 0}\nmodel = AutoModelForCausalLM.from_pretrained(\n \
+    \   \"microsoft/phi-2\", \n    quantization_config=bnb_config, \n    device_map=device_map,\n\
+    \    trust_remote_code=True,\n    use_auth_token=True\n)\n\n# Disable gradient\
+    \ checkpointing\nmodel.config.gradient_checkpointing = False\n```\nLet me know\
+    \ if that solves the issue or not."
+  created_at: 2023-12-15 15:04:44+00:00
+  edited: false
+  hidden: false
+  id: 657c6b0c17370734bffb476e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+      fullname: NAVANIT DUBEY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Navanit-shorthills
+      type: user
+    createdAt: '2023-12-15T15:08:30.000Z'
+    data:
+      edited: false
+      editors:
+      - Navanit-shorthills
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9060053825378418
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+          fullname: NAVANIT DUBEY
+          isHf: false
+          isPro: false
+          name: Navanit-shorthills
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span>  thanks for the\
+          \ answer, currently I am using NVIDIA GeForce RTX 3090 of 24.5 GB GPU. will\
+          \ see if I can train on it. </p>\n"
+        raw: '@cekal  thanks for the answer, currently I am using NVIDIA GeForce RTX
+          3090 of 24.5 GB GPU. will see if I can train on it. '
+        updatedAt: '2023-12-15T15:08:30.061Z'
+      numEdits: 0
+      reactions: []
+    id: 657c6beece2fa3aa9fe60c8c
+    type: comment
+  author: Navanit-shorthills
+  content: '@cekal  thanks for the answer, currently I am using NVIDIA GeForce RTX
+    3090 of 24.5 GB GPU. will see if I can train on it. '
+  created_at: 2023-12-15 15:08:30+00:00
+  edited: false
+  hidden: false
+  id: 657c6beece2fa3aa9fe60c8c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+      fullname: NAVANIT DUBEY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Navanit-shorthills
+      type: user
+    createdAt: '2023-12-15T16:49:37.000Z'
+    data:
+      edited: false
+      editors:
+      - Navanit-shorthills
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.906244695186615
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+          fullname: NAVANIT DUBEY
+          isHf: false
+          isPro: false
+          name: Navanit-shorthills
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> you were right,\
+          \ I tried working around. After disabling the gradient_checkpointing, started\
+          \ facing Cuda_out_of memory error. Is there any turn around since with the\
+          \ same GPU i trained llama 2 7b , mistral 7b but unable to fine tune the\
+          \ 2b parameter model.</p>\n"
+        raw: '@cekal you were right, I tried working around. After disabling the gradient_checkpointing,
+          started facing Cuda_out_of memory error. Is there any turn around since
+          with the same GPU i trained llama 2 7b , mistral 7b but unable to fine tune
+          the 2b parameter model.'
+        updatedAt: '2023-12-15T16:49:37.099Z'
+      numEdits: 0
+      reactions: []
+    id: 657c83a16d19cb08acddf7f2
+    type: comment
+  author: Navanit-shorthills
+  content: '@cekal you were right, I tried working around. After disabling the gradient_checkpointing,
+    started facing Cuda_out_of memory error. Is there any turn around since with the
+    same GPU i trained llama 2 7b , mistral 7b but unable to fine tune the 2b parameter
+    model.'
+  created_at: 2023-12-15 16:49:37+00:00
+  edited: false
+  hidden: false
+  id: 657c83a16d19cb08acddf7f2
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-15T19:35:20.000Z'
+    data:
+      edited: true
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8727684020996094
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Navanit-shorthills&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Navanit-shorthills\"\
+          >@<span class=\"underline\">Navanit-shorthills</span></a></span>\n\n\t</span></span>\
+          \ it seems like more people are running into this problem. Instead of trying\
+          \ to turn off gradient checkpointing which is probably not the most effective\
+          \ approach, try adding <code>checkpointing=true</code> to <code>model=AutoModelForCasualLM.from_pretrained</code></p>\n\
+          <pre><code>model = AutoModelForCausalLM.from_pretrained(\"microsoft/phi-2\"\
+          ,  checkpointing=True)\n</code></pre>\n<p>as mentioned here:<br><a rel=\"\
+          nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/VeAiwDsEkTtU433x8X3xt.png\"\
+          ><img alt=\"Screenshot 2023-12-15 at 20.17.38.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/VeAiwDsEkTtU433x8X3xt.png\"\
+          ></a></p>\n<p>But again, I cannot verify if this works, as <span data-props=\"\
+          {&quot;user&quot;:&quot;rungao2001&quot;}\" data-target=\"UserMention\"\
+          \ class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"\
+          ><span class=\"contents\"><a href=\"/rungao2001\">@<span class=\"underline\"\
+          >rungao2001</span></a></span>\n\n\t</span></span> got <code>\"TypeError:\
+          \ PhiForCausalLM.init() got an unexpected keyword argument 'checkpointing'\"\
+          </code> error when applying this. But try it, might work.</p>\n<p>If that\
+          \ doesn't work, try doing the <code>model.config.gradient_checkpointing\
+          \ = False</code> approach as before but reduce the batch size and try training\
+          \ on a lower <code>max_seq_length</code> (e.g. <code>max_seq_length=2048</code>\
+          \ ----&gt; <code>max_seq_length=1096</code>). But this can produce a less\
+          \ capable model.</p>\n<p>Last suggestion if everything fails is to either\
+          \ wait, as it seems like more people are encountering this issue, or using\
+          \ cloud computing like runpod.io (cost me $15-$20 to fully fine-tune it).</p>\n"
+        raw: '@Navanit-shorthills it seems like more people are running into this
+          problem. Instead of trying to turn off gradient checkpointing which is probably
+          not the most effective approach, try adding `checkpointing=true` to `model=AutoModelForCasualLM.from_pretrained`
+
+
+          ```
+
+          model = AutoModelForCausalLM.from_pretrained("microsoft/phi-2",  checkpointing=True)
+
+          ```
+
+          as mentioned here:
+
+          ![Screenshot 2023-12-15 at 20.17.38.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/VeAiwDsEkTtU433x8X3xt.png)
+
+
+          But again, I cannot verify if this works, as @rungao2001 got `"TypeError:
+          PhiForCausalLM.init() got an unexpected keyword argument ''checkpointing''"`
+          error when applying this. But try it, might work.
+
+
+          If that doesn''t work, try doing the `model.config.gradient_checkpointing
+          = False` approach as before but reduce the batch size and try training on
+          a lower `max_seq_length` (e.g. `max_seq_length=2048` ----> `max_seq_length=1096`).
+          But this can produce a less capable model.
+
+
+          Last suggestion if everything fails is to either wait, as it seems like
+          more people are encountering this issue, or using cloud computing like runpod.io
+          (cost me $15-$20 to fully fine-tune it).'
+        updatedAt: '2023-12-15T19:37:14.192Z'
+      numEdits: 1
+      reactions: []
+    id: 657caa782bffc5568aad37d5
+    type: comment
+  author: cekal
+  content: '@Navanit-shorthills it seems like more people are running into this problem.
+    Instead of trying to turn off gradient checkpointing which is probably not the
+    most effective approach, try adding `checkpointing=true` to `model=AutoModelForCasualLM.from_pretrained`
+
+
+    ```
+
+    model = AutoModelForCausalLM.from_pretrained("microsoft/phi-2",  checkpointing=True)
+
+    ```
+
+    as mentioned here:
+
+    ![Screenshot 2023-12-15 at 20.17.38.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/VeAiwDsEkTtU433x8X3xt.png)
+
+
+    But again, I cannot verify if this works, as @rungao2001 got `"TypeError: PhiForCausalLM.init()
+    got an unexpected keyword argument ''checkpointing''"` error when applying this.
+    But try it, might work.
+
+
+    If that doesn''t work, try doing the `model.config.gradient_checkpointing = False`
+    approach as before but reduce the batch size and try training on a lower `max_seq_length`
+    (e.g. `max_seq_length=2048` ----> `max_seq_length=1096`). But this can produce
+    a less capable model.
+
+
+    Last suggestion if everything fails is to either wait, as it seems like more people
+    are encountering this issue, or using cloud computing like runpod.io (cost me
+    $15-$20 to fully fine-tune it).'
+  created_at: 2023-12-15 19:35:20+00:00
+  edited: true
+  hidden: false
+  id: 657caa782bffc5568aad37d5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+      fullname: NAVANIT DUBEY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Navanit-shorthills
+      type: user
+    createdAt: '2023-12-16T10:01:55.000Z'
+    data:
+      edited: false
+      editors:
+      - Navanit-shorthills
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7816555500030518
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+          fullname: NAVANIT DUBEY
+          isHf: false
+          isPro: false
+          name: Navanit-shorthills
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> thanks I was able\
+          \ to fine tune by decreasing the max_seq_length = 720. </p>\n<p>Also, I\
+          \ had used the below config. </p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/TIKW9NAOHVsmeZNumr9Ys.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/TIKW9NAOHVsmeZNumr9Ys.png\"\
+          ></a></p>\n<p>But still the same, I was able to train mistal or llama 2\
+          \ 7b parameters with 2048 max_seq_length on my 24GB gpu </p>\n"
+        raw: "@cekal thanks I was able to fine tune by decreasing the max_seq_length\
+          \ = 720. \n\nAlso, I had used the below config. \n\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/TIKW9NAOHVsmeZNumr9Ys.png)\n\
+          \nBut still the same, I was able to train mistal or llama 2 7b parameters\
+          \ with 2048 max_seq_length on my 24GB gpu \n"
+        updatedAt: '2023-12-16T10:01:55.656Z'
+      numEdits: 0
+      reactions: []
+    id: 657d7593156fdf0301a7b506
+    type: comment
+  author: Navanit-shorthills
+  content: "@cekal thanks I was able to fine tune by decreasing the max_seq_length\
+    \ = 720. \n\nAlso, I had used the below config. \n\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/TIKW9NAOHVsmeZNumr9Ys.png)\n\
+    \nBut still the same, I was able to train mistal or llama 2 7b parameters with\
+    \ 2048 max_seq_length on my 24GB gpu \n"
+  created_at: 2023-12-16 10:01:55+00:00
+  edited: false
+  hidden: false
+  id: 657d7593156fdf0301a7b506
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/CRSUAxwmfr03RG19x5pWp.jpeg?w=200&h=200&f=face
+      fullname: Deepakvictor
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Deepakvictor
+      type: user
+    createdAt: '2023-12-16T14:24:43.000Z'
+    data:
+      edited: false
+      editors:
+      - Deepakvictor
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6571522355079651
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/CRSUAxwmfr03RG19x5pWp.jpeg?w=200&h=200&f=face
+          fullname: Deepakvictor
+          isHf: false
+          isPro: false
+          name: Deepakvictor
+          type: user
+        html: '<blockquote>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png"><img
+          alt="Screenshot 2023-12-15 at 14.21.36.png" src="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png"></a></p>
+
+          <p>Great reasoning capability as well, GPT-3.5-Turbo wasn''t able to answer
+          this one correctly:</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png"><img
+          alt="Screenshot 2023-12-15 at 14.22.59.png" src="https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png"></a></p>
+
+          </blockquote>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/Ti4ZYL1tm-ylwYBuCBW-t.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/Ti4ZYL1tm-ylwYBuCBW-t.png"></a></p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/-kTGvgiZ0OcJYAY6zGJ6t.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/-kTGvgiZ0OcJYAY6zGJ6t.png"></a></p>
+
+          <p>I tried this prompt with different number . both chatgpt and phi-2 gave
+          the wrong answer ??</p>
+
+          '
+        raw: "> ![Screenshot 2023-12-15 at 14.21.36.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png)\n\
+          > \n> Great reasoning capability as well, GPT-3.5-Turbo wasn't able to answer\
+          \ this one correctly:\n> \n> ![Screenshot 2023-12-15 at 14.22.59.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png)\n\
+          \n\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/Ti4ZYL1tm-ylwYBuCBW-t.png)\n\
+          \n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/-kTGvgiZ0OcJYAY6zGJ6t.png)\n\
+          \nI tried this prompt with different number . both chatgpt and phi-2 gave\
+          \ the wrong answer ??"
+        updatedAt: '2023-12-16T14:24:43.413Z'
+      numEdits: 0
+      reactions: []
+    id: 657db32be1116d68e9857a59
+    type: comment
+  author: Deepakvictor
+  content: "> ![Screenshot 2023-12-15 at 14.21.36.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/ubyhtN88k8WjFnw0-G13Q.png)\n\
+    > \n> Great reasoning capability as well, GPT-3.5-Turbo wasn't able to answer\
+    \ this one correctly:\n> \n> ![Screenshot 2023-12-15 at 14.22.59.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/0AgLywLuTjq_2KlfcGA1C.png)\n\
+    \n\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/Ti4ZYL1tm-ylwYBuCBW-t.png)\n\
+    \n![image.png](https://cdn-uploads.huggingface.co/production/uploads/64a3b1e0275825d2c9ae5420/-kTGvgiZ0OcJYAY6zGJ6t.png)\n\
+    \nI tried this prompt with different number . both chatgpt and phi-2 gave the\
+    \ wrong answer ??"
+  created_at: 2023-12-16 14:24:43+00:00
+  edited: false
+  hidden: false
+  id: 657db32be1116d68e9857a59
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2023-12-16T14:45:12.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9651094079017639
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Deepakvictor&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Deepakvictor\"\
+          >@<span class=\"underline\">Deepakvictor</span></a></span>\n\n\t</span></span>\
+          \ might be because you used a different version of the model. The results\
+          \ I displayed were from my custom fine-tuned version of phi-2, which is\
+          \ currently private.</p>\n"
+        raw: '@Deepakvictor might be because you used a different version of the model.
+          The results I displayed were from my custom fine-tuned version of phi-2,
+          which is currently private.'
+        updatedAt: '2023-12-16T14:45:12.954Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Deepakvictor
+    id: 657db7f8112a9ca54534c58e
+    type: comment
+  author: cekal
+  content: '@Deepakvictor might be because you used a different version of the model.
+    The results I displayed were from my custom fine-tuned version of phi-2, which
+    is currently private.'
+  created_at: 2023-12-16 14:45:12+00:00
+  edited: false
+  hidden: false
+  id: 657db7f8112a9ca54534c58e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+      fullname: Yu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Yhyu13
+      type: user
+    createdAt: '2023-12-16T17:37:46.000Z'
+    data:
+      edited: false
+      editors:
+      - Yhyu13
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.20466852188110352
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+          fullname: Yu
+          isHf: false
+          isPro: false
+          name: Yhyu13
+          type: user
+        html: "<p><a rel=\"nofollow\" href=\"https://github.com/hiyouga/LLaMA-Factory\"\
+          >https://github.com/hiyouga/LLaMA-Factory</a> this repo seems supporting\
+          \ Phi-2, here is my toy working script</p>\n<pre><code>#!/bin/bash\n\neval\
+          \ \"$(conda shell.bash hook)\"\nconda activate llama_factory\n\nMODEL_NAME=phi-2\n\
+          STAGE=sft\nEPOCH=.01 <a href=\"/microsoft/phi-2/discussions/3\">#3</a>.0\n\
+          DATA=alpaca_gpt4_zh\nSAVE_PATH=./models/$STAGE/$MODEL_NAME-$STAGE-$DATA-$EPOCH\n\
+          SAVE_PATH_PREDICT=$SAVE_PATH/Predict\nMODEL_PATH=./models/$MODEL_NAME\n\
+          LoRA_TARGET=Wqkv #q_proj,v_proj\nTEMPLATE=default\nPREDICTION_SAMPLES=20\n\
+          \nif [ ! -d $MODEL_PATH ]; then\n    echo \"Model not found: $MODEL_PATH\"\
+          \n    return 1\nfi\n\nif [ ! -d $SAVE_PATH ]; then\n    mkdir -p $SAVE_PATH\n\
+          fi\n\nif [ ! -d $SAVE_PATH_PREDICT ]; then\n    mkdir -p $SAVE_PATH_PREDICT\n\
+          fi\n\nCUDA_VISIBLE_DEVICES=0 python src/train_bash.py \\\n    --seed 42\
+          \ \\\n    --stage $STAGE \\\n    --model_name_or_path $MODEL_PATH \\\n \
+          \   --dataset $DATA \\\n    --val_size .1 \\\n    --val_max_sample 20 \\\
+          \n    --finetuning_type lora \\\n    --do_train \\\n    --lora_target $LoRA_TARGET\
+          \ \\\n    --output_dir $SAVE_PATH \\\n    --overwrite_output_dir \\\n  \
+          \  --overwrite_cache \\\n    --per_device_train_batch_size 1 \\\n    --gradient_accumulation_steps\
+          \ 4 \\\n    --lr_scheduler_type cosine \\\n    --logging_steps 10 \\\n \
+          \   --save_steps 1000 \\\n    --learning_rate 5e-5 \\\n    --num_train_epochs\
+          \ $EPOCH \\\n    --do_eval \\\n    --evaluation_strategy steps \\\n    --per_device_eval_batch_size\
+          \ 1 \\\n    --prediction_loss_only \\\n    --plot_loss \\\n    --quantization_bit\
+          \ 4 \\\n    |&amp; tee $SAVE_PATH/train_eval_log.txt\n\nCUDA_VISIBLE_DEVICES=0\
+          \ python src/train_bash.py \\\n    --stage $STAGE \\\n    --model_name_or_path\
+          \ $MODEL_PATH \\\n    --do_predict \\\n    --max_samples $PREDICTION_SAMPLES\
+          \ \\\n    --predict_with_generate \\\n    --dataset $DATA \\\n    --template\
+          \ $TEMPLATE \\\n    --finetuning_type lora \\\n    --adapter_name_or_path\
+          \ $SAVE_PATH \\\n    --output_dir $SAVE_PATH_PREDICT \\\n    --per_device_eval_batch_size\
+          \ 1 \\\n    |&amp; tee $SAVE_PATH_PREDICT/predict_log.txt\n</code></pre>\n"
+        raw: "https://github.com/hiyouga/LLaMA-Factory this repo seems supporting\
+          \ Phi-2, here is my toy working script\n\n```\n#!/bin/bash\n\neval \"$(conda\
+          \ shell.bash hook)\"\nconda activate llama_factory\n\nMODEL_NAME=phi-2\n\
+          STAGE=sft\nEPOCH=.01 #3.0\nDATA=alpaca_gpt4_zh\nSAVE_PATH=./models/$STAGE/$MODEL_NAME-$STAGE-$DATA-$EPOCH\n\
+          SAVE_PATH_PREDICT=$SAVE_PATH/Predict\nMODEL_PATH=./models/$MODEL_NAME\n\
+          LoRA_TARGET=Wqkv #q_proj,v_proj\nTEMPLATE=default\nPREDICTION_SAMPLES=20\n\
+          \nif [ ! -d $MODEL_PATH ]; then\n    echo \"Model not found: $MODEL_PATH\"\
+          \n    return 1\nfi\n\nif [ ! -d $SAVE_PATH ]; then\n    mkdir -p $SAVE_PATH\n\
+          fi\n\nif [ ! -d $SAVE_PATH_PREDICT ]; then\n    mkdir -p $SAVE_PATH_PREDICT\n\
+          fi\n\nCUDA_VISIBLE_DEVICES=0 python src/train_bash.py \\\n    --seed 42\
+          \ \\\n    --stage $STAGE \\\n    --model_name_or_path $MODEL_PATH \\\n \
+          \   --dataset $DATA \\\n    --val_size .1 \\\n    --val_max_sample 20 \\\
+          \n    --finetuning_type lora \\\n    --do_train \\\n    --lora_target $LoRA_TARGET\
+          \ \\\n    --output_dir $SAVE_PATH \\\n    --overwrite_output_dir \\\n  \
+          \  --overwrite_cache \\\n    --per_device_train_batch_size 1 \\\n    --gradient_accumulation_steps\
+          \ 4 \\\n    --lr_scheduler_type cosine \\\n    --logging_steps 10 \\\n \
+          \   --save_steps 1000 \\\n    --learning_rate 5e-5 \\\n    --num_train_epochs\
+          \ $EPOCH \\\n    --do_eval \\\n    --evaluation_strategy steps \\\n    --per_device_eval_batch_size\
+          \ 1 \\\n    --prediction_loss_only \\\n    --plot_loss \\\n    --quantization_bit\
+          \ 4 \\\n    |& tee $SAVE_PATH/train_eval_log.txt\n\nCUDA_VISIBLE_DEVICES=0\
+          \ python src/train_bash.py \\\n    --stage $STAGE \\\n    --model_name_or_path\
+          \ $MODEL_PATH \\\n    --do_predict \\\n    --max_samples $PREDICTION_SAMPLES\
+          \ \\\n    --predict_with_generate \\\n    --dataset $DATA \\\n    --template\
+          \ $TEMPLATE \\\n    --finetuning_type lora \\\n    --adapter_name_or_path\
+          \ $SAVE_PATH \\\n    --output_dir $SAVE_PATH_PREDICT \\\n    --per_device_eval_batch_size\
+          \ 1 \\\n    |& tee $SAVE_PATH_PREDICT/predict_log.txt\n\n```"
+        updatedAt: '2023-12-16T17:37:46.277Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F91D"
+        users:
+        - cekal
+        - jiacheo
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Aavenir
+    id: 657de06ae1116d68e98cccc8
+    type: comment
+  author: Yhyu13
+  content: "https://github.com/hiyouga/LLaMA-Factory this repo seems supporting Phi-2,\
+    \ here is my toy working script\n\n```\n#!/bin/bash\n\neval \"$(conda shell.bash\
+    \ hook)\"\nconda activate llama_factory\n\nMODEL_NAME=phi-2\nSTAGE=sft\nEPOCH=.01\
+    \ #3.0\nDATA=alpaca_gpt4_zh\nSAVE_PATH=./models/$STAGE/$MODEL_NAME-$STAGE-$DATA-$EPOCH\n\
+    SAVE_PATH_PREDICT=$SAVE_PATH/Predict\nMODEL_PATH=./models/$MODEL_NAME\nLoRA_TARGET=Wqkv\
+    \ #q_proj,v_proj\nTEMPLATE=default\nPREDICTION_SAMPLES=20\n\nif [ ! -d $MODEL_PATH\
+    \ ]; then\n    echo \"Model not found: $MODEL_PATH\"\n    return 1\nfi\n\nif [\
+    \ ! -d $SAVE_PATH ]; then\n    mkdir -p $SAVE_PATH\nfi\n\nif [ ! -d $SAVE_PATH_PREDICT\
+    \ ]; then\n    mkdir -p $SAVE_PATH_PREDICT\nfi\n\nCUDA_VISIBLE_DEVICES=0 python\
+    \ src/train_bash.py \\\n    --seed 42 \\\n    --stage $STAGE \\\n    --model_name_or_path\
+    \ $MODEL_PATH \\\n    --dataset $DATA \\\n    --val_size .1 \\\n    --val_max_sample\
+    \ 20 \\\n    --finetuning_type lora \\\n    --do_train \\\n    --lora_target $LoRA_TARGET\
+    \ \\\n    --output_dir $SAVE_PATH \\\n    --overwrite_output_dir \\\n    --overwrite_cache\
+    \ \\\n    --per_device_train_batch_size 1 \\\n    --gradient_accumulation_steps\
+    \ 4 \\\n    --lr_scheduler_type cosine \\\n    --logging_steps 10 \\\n    --save_steps\
+    \ 1000 \\\n    --learning_rate 5e-5 \\\n    --num_train_epochs $EPOCH \\\n   \
+    \ --do_eval \\\n    --evaluation_strategy steps \\\n    --per_device_eval_batch_size\
+    \ 1 \\\n    --prediction_loss_only \\\n    --plot_loss \\\n    --quantization_bit\
+    \ 4 \\\n    |& tee $SAVE_PATH/train_eval_log.txt\n\nCUDA_VISIBLE_DEVICES=0 python\
+    \ src/train_bash.py \\\n    --stage $STAGE \\\n    --model_name_or_path $MODEL_PATH\
+    \ \\\n    --do_predict \\\n    --max_samples $PREDICTION_SAMPLES \\\n    --predict_with_generate\
+    \ \\\n    --dataset $DATA \\\n    --template $TEMPLATE \\\n    --finetuning_type\
+    \ lora \\\n    --adapter_name_or_path $SAVE_PATH \\\n    --output_dir $SAVE_PATH_PREDICT\
+    \ \\\n    --per_device_eval_batch_size 1 \\\n    |& tee $SAVE_PATH_PREDICT/predict_log.txt\n\
+    \n```"
+  created_at: 2023-12-16 17:37:46+00:00
+  edited: false
+  hidden: false
+  id: 657de06ae1116d68e98cccc8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9746e96197c8517ac1dd7d30dbe1dad5.svg
+      fullname: Jiang
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: XinKer
+      type: user
+    createdAt: '2023-12-17T13:47:07.000Z'
+    data:
+      edited: false
+      editors:
+      - XinKer
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8183890581130981
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9746e96197c8517ac1dd7d30dbe1dad5.svg
+          fullname: Jiang
+          isHf: false
+          isPro: false
+          name: XinKer
+          type: user
+        html: "<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/cekal\"\
+          >@<span class=\"underline\">cekal</span></a></span>\n\n\t</span></span>\
+          \ I am facing the error by using your code.<br>ValueError: PhiForCausalLM\
+          \ does not support gradient checkpointing.<br>any walkthrough?</p>\n</blockquote>\n\
+          <p>Me too</p>\n"
+        raw: "> @cekal I am facing the error by using your code. \n> ValueError: PhiForCausalLM\
+          \ does not support gradient checkpointing.\n> any walkthrough?\n\nMe too"
+        updatedAt: '2023-12-17T13:47:07.151Z'
+      numEdits: 0
+      reactions: []
+    id: 657efbdb476260623dd1cd41
+    type: comment
+  author: XinKer
+  content: "> @cekal I am facing the error by using your code. \n> ValueError: PhiForCausalLM\
+    \ does not support gradient checkpointing.\n> any walkthrough?\n\nMe too"
+  created_at: 2023-12-17 13:47:07+00:00
+  edited: false
+  hidden: false
+  id: 657efbdb476260623dd1cd41
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+      fullname: Karandeep Singh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdcyberdude
+      type: user
+    createdAt: '2023-12-18T12:31:30.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+          fullname: Karandeep Singh
+          isHf: false
+          isPro: false
+          name: kdcyberdude
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-12-18T13:39:41.024Z'
+      numEdits: 1
+      reactions: []
+    id: 65803ba254a75cbee66e0a8b
+    type: comment
+  author: kdcyberdude
+  content: This comment has been hidden
+  created_at: 2023-12-18 12:31:30+00:00
+  edited: true
+  hidden: true
+  id: 65803ba254a75cbee66e0a8b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+      fullname: Karandeep Singh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdcyberdude
+      type: user
+    createdAt: '2023-12-18T16:55:44.000Z'
+    data:
+      edited: false
+      editors:
+      - kdcyberdude
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3638533353805542
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+          fullname: Karandeep Singh
+          isHf: false
+          isPro: false
+          name: kdcyberdude
+          type: user
+        html: "<pre><code class=\"language-python\">base_model = <span class=\"hljs-string\"\
+          >\"microsoft/phi-2\"</span>\nnew_model = <span class=\"hljs-string\">\"\
+          phi-2-pa\"</span>\ndataset = datasets.load_from_disk(<span class=\"hljs-string\"\
+          >'wiki_pa_train_dataset'</span>)\n\ntokenizer = AutoTokenizer.from_pretrained(base_model,\
+          \ use_fast=<span class=\"hljs-literal\">True</span>)\ntokenizer.pad_token=tokenizer.eos_token\n\
+          tokenizer.padding_side=<span class=\"hljs-string\">\"right\"</span>\n\n\
+          bnb_config = BitsAndBytesConfig(\n    load_in_4bit=<span class=\"hljs-literal\"\
+          >True</span>,\n    bnb_4bit_quant_type=<span class=\"hljs-string\">\"nf4\"\
+          </span>,\n    bnb_4bit_compute_dtype=torch.float16,\n    bnb_4bit_use_double_quant=<span\
+          \ class=\"hljs-literal\">False</span>,\n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    base_model,\n    quantization_config=bnb_config,\n    <span class=\"\
+          hljs-comment\"># use_flash_attention_2=True, # Phi does not support yet.</span>\n\
+          \    trust_remote_code=<span class=\"hljs-literal\">True</span>,\n    flash_attn=<span\
+          \ class=\"hljs-literal\">True</span>,\n    flash_rotary=<span class=\"hljs-literal\"\
+          >True</span>, \n    fused_dense=<span class=\"hljs-literal\">True</span>,\n\
+          \    low_cpu_mem_usage=<span class=\"hljs-literal\">True</span>,\n    device_map={<span\
+          \ class=\"hljs-string\">\"\"</span>: <span class=\"hljs-number\">0</span>},\n\
+          \    revision=<span class=\"hljs-string\">\"refs/pr/23\"</span>,\n)\n\n\
+          model.config.use_cache = <span class=\"hljs-literal\">False</span>\nmodel.config.pretraining_tp\
+          \ = <span class=\"hljs-number\">1</span>\n\nmodel = prepare_model_for_kbit_training(model,\
+          \ use_gradient_checkpointing=<span class=\"hljs-literal\">True</span>)\n\
+          \ntraining_arguments = TrainingArguments(\n    output_dir=<span class=\"\
+          hljs-string\">\"./results\"</span>,\n    num_train_epochs=<span class=\"\
+          hljs-number\">3</span>,\n    per_device_train_batch_size=<span class=\"\
+          hljs-number\">2</span>, \n    gradient_accumulation_steps=<span class=\"\
+          hljs-number\">32</span>, \n    evaluation_strategy=<span class=\"hljs-string\"\
+          >\"steps\"</span>,\n    eval_steps=<span class=\"hljs-number\">2000</span>,\n\
+          \    logging_steps=<span class=\"hljs-number\">15</span>,\n    optim=<span\
+          \ class=\"hljs-string\">\"paged_adamw_8bit\"</span>,\n    learning_rate=<span\
+          \ class=\"hljs-number\">2e-4</span>,\n    lr_scheduler_type=<span class=\"\
+          hljs-string\">\"cosine\"</span>,\n    save_steps=<span class=\"hljs-number\"\
+          >2000</span>,\n    warmup_ratio=<span class=\"hljs-number\">0.05</span>,\n\
+          \    weight_decay=<span class=\"hljs-number\">0.01</span>,\n    report_to=<span\
+          \ class=\"hljs-string\">\"tensorboard\"</span>,\n    max_steps=-<span class=\"\
+          hljs-number\">1</span>, <span class=\"hljs-comment\"># if maximum steps=2,\
+          \ it will stop after two steps</span>\n)\n\npeft_config = LoraConfig(\n\
+          \    r=<span class=\"hljs-number\">32</span>,\n    lora_alpha=<span class=\"\
+          hljs-number\">64</span>,\n    lora_dropout=<span class=\"hljs-number\">0.05</span>,\n\
+          \    bias=<span class=\"hljs-string\">\"none\"</span>,\n    task_type=<span\
+          \ class=\"hljs-string\">\"CAUSAL_LM\"</span>,\n    target_modules= [<span\
+          \ class=\"hljs-string\">\"Wqkv\"</span>, <span class=\"hljs-string\">\"\
+          fc1\"</span>, <span class=\"hljs-string\">\"fc2\"</span> ] <span class=\"\
+          hljs-comment\"># [\"Wqkv\", \"out_proj\", \"fc1\", \"fc2\" ], - 41M params</span>\n\
+          \    <span class=\"hljs-comment\"># modules_to_save=[\"embed_tokens\",\"\
+          lm_head\"] </span>\n)\n\ntrainer = SFTTrainer(\n    model=model,\n    train_dataset=dataset[<span\
+          \ class=\"hljs-string\">'train'</span>],\n    eval_dataset=dataset[<span\
+          \ class=\"hljs-string\">'train'</span>], <span class=\"hljs-comment\">#No\
+          \ separate evaluation dataset, i am using the same dataset</span>\n    peft_config=peft_config,\n\
+          \    dataset_text_field=<span class=\"hljs-string\">\"text\"</span>,\n \
+          \   max_seq_length=<span class=\"hljs-number\">690</span>,\n    tokenizer=tokenizer,\n\
+          \    args=training_arguments,\n)\n</code></pre>\n"
+        raw: "```python\nbase_model = \"microsoft/phi-2\"\nnew_model = \"phi-2-pa\"\
+          \ndataset = datasets.load_from_disk('wiki_pa_train_dataset')\n\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(base_model, use_fast=True)\ntokenizer.pad_token=tokenizer.eos_token\n\
+          tokenizer.padding_side=\"right\"\n\nbnb_config = BitsAndBytesConfig(\n \
+          \   load_in_4bit=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.float16,\n\
+          \    bnb_4bit_use_double_quant=False,\n)\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    base_model,\n    quantization_config=bnb_config,\n    # use_flash_attention_2=True,\
+          \ # Phi does not support yet.\n    trust_remote_code=True,\n    flash_attn=True,\n\
+          \    flash_rotary=True, \n    fused_dense=True,\n    low_cpu_mem_usage=True,\n\
+          \    device_map={\"\": 0},\n    revision=\"refs/pr/23\",\n)\n\nmodel.config.use_cache\
+          \ = False\nmodel.config.pretraining_tp = 1\n\nmodel = prepare_model_for_kbit_training(model,\
+          \ use_gradient_checkpointing=True)\n\ntraining_arguments = TrainingArguments(\n\
+          \    output_dir=\"./results\",\n    num_train_epochs=3,\n    per_device_train_batch_size=2,\
+          \ \n    gradient_accumulation_steps=32, \n    evaluation_strategy=\"steps\"\
+          ,\n    eval_steps=2000,\n    logging_steps=15,\n    optim=\"paged_adamw_8bit\"\
+          ,\n    learning_rate=2e-4,\n    lr_scheduler_type=\"cosine\",\n    save_steps=2000,\n\
+          \    warmup_ratio=0.05,\n    weight_decay=0.01,\n    report_to=\"tensorboard\"\
+          ,\n    max_steps=-1, # if maximum steps=2, it will stop after two steps\n\
+          )\n\npeft_config = LoraConfig(\n    r=32,\n    lora_alpha=64,\n    lora_dropout=0.05,\n\
+          \    bias=\"none\",\n    task_type=\"CAUSAL_LM\",\n    target_modules= [\"\
+          Wqkv\", \"fc1\", \"fc2\" ] # [\"Wqkv\", \"out_proj\", \"fc1\", \"fc2\" ],\
+          \ - 41M params\n    # modules_to_save=[\"embed_tokens\",\"lm_head\"] \n\
+          )\n\ntrainer = SFTTrainer(\n    model=model,\n    train_dataset=dataset['train'],\n\
+          \    eval_dataset=dataset['train'], #No separate evaluation dataset, i am\
+          \ using the same dataset\n    peft_config=peft_config,\n    dataset_text_field=\"\
+          text\",\n    max_seq_length=690,\n    tokenizer=tokenizer,\n    args=training_arguments,\n\
+          )\n```"
+        updatedAt: '2023-12-18T16:55:44.119Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - masoudhashemi
+        - jiacheo
+    id: 65807990402b16689cecf574
+    type: comment
+  author: kdcyberdude
+  content: "```python\nbase_model = \"microsoft/phi-2\"\nnew_model = \"phi-2-pa\"\n\
+    dataset = datasets.load_from_disk('wiki_pa_train_dataset')\n\ntokenizer = AutoTokenizer.from_pretrained(base_model,\
+    \ use_fast=True)\ntokenizer.pad_token=tokenizer.eos_token\ntokenizer.padding_side=\"\
+    right\"\n\nbnb_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_quant_type=\"\
+    nf4\",\n    bnb_4bit_compute_dtype=torch.float16,\n    bnb_4bit_use_double_quant=False,\n\
+    )\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    base_model,\n    quantization_config=bnb_config,\n\
+    \    # use_flash_attention_2=True, # Phi does not support yet.\n    trust_remote_code=True,\n\
+    \    flash_attn=True,\n    flash_rotary=True, \n    fused_dense=True,\n    low_cpu_mem_usage=True,\n\
+    \    device_map={\"\": 0},\n    revision=\"refs/pr/23\",\n)\n\nmodel.config.use_cache\
+    \ = False\nmodel.config.pretraining_tp = 1\n\nmodel = prepare_model_for_kbit_training(model,\
+    \ use_gradient_checkpointing=True)\n\ntraining_arguments = TrainingArguments(\n\
+    \    output_dir=\"./results\",\n    num_train_epochs=3,\n    per_device_train_batch_size=2,\
+    \ \n    gradient_accumulation_steps=32, \n    evaluation_strategy=\"steps\",\n\
+    \    eval_steps=2000,\n    logging_steps=15,\n    optim=\"paged_adamw_8bit\",\n\
+    \    learning_rate=2e-4,\n    lr_scheduler_type=\"cosine\",\n    save_steps=2000,\n\
+    \    warmup_ratio=0.05,\n    weight_decay=0.01,\n    report_to=\"tensorboard\"\
+    ,\n    max_steps=-1, # if maximum steps=2, it will stop after two steps\n)\n\n\
+    peft_config = LoraConfig(\n    r=32,\n    lora_alpha=64,\n    lora_dropout=0.05,\n\
+    \    bias=\"none\",\n    task_type=\"CAUSAL_LM\",\n    target_modules= [\"Wqkv\"\
+    , \"fc1\", \"fc2\" ] # [\"Wqkv\", \"out_proj\", \"fc1\", \"fc2\" ], - 41M params\n\
+    \    # modules_to_save=[\"embed_tokens\",\"lm_head\"] \n)\n\ntrainer = SFTTrainer(\n\
+    \    model=model,\n    train_dataset=dataset['train'],\n    eval_dataset=dataset['train'],\
+    \ #No separate evaluation dataset, i am using the same dataset\n    peft_config=peft_config,\n\
+    \    dataset_text_field=\"text\",\n    max_seq_length=690,\n    tokenizer=tokenizer,\n\
+    \    args=training_arguments,\n)\n```"
+  created_at: 2023-12-18 16:55:44+00:00
+  edited: false
+  hidden: false
+  id: 65807990402b16689cecf574
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+      fullname: Yu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Yhyu13
+      type: user
+    createdAt: '2023-12-19T13:42:09.000Z'
+    data:
+      edited: false
+      editors:
+      - Yhyu13
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5756925344467163
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+          fullname: Yu
+          isHf: false
+          isPro: false
+          name: Yhyu13
+          type: user
+        html: '<p>Hi folks, here is my ft result done by llama_factory</p>
+
+          <p><a href="https://huggingface.co/microsoft/phi-2/discussions/35#65819d07ca21d74c214cb3f6">https://huggingface.co/microsoft/phi-2/discussions/35#65819d07ca21d74c214cb3f6</a></p>
+
+          '
+        raw: 'Hi folks, here is my ft result done by llama_factory
+
+
+          https://huggingface.co/microsoft/phi-2/discussions/35#65819d07ca21d74c214cb3f6'
+        updatedAt: '2023-12-19T13:42:09.501Z'
+      numEdits: 0
+      reactions: []
+    id: 65819db15311fe07be85e8f9
+    type: comment
+  author: Yhyu13
+  content: 'Hi folks, here is my ft result done by llama_factory
+
+
+    https://huggingface.co/microsoft/phi-2/discussions/35#65819d07ca21d74c214cb3f6'
+  created_at: 2023-12-19 13:42:09+00:00
+  edited: false
+  hidden: false
+  id: 65819db15311fe07be85e8f9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/9cf45cc5bf590d362dbb03db89993caa.svg
+      fullname: Piyush Batra
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: pbatra
+      type: user
+    createdAt: '2023-12-20T05:26:55.000Z'
+    data:
+      edited: true
+      editors:
+      - pbatra
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8149749636650085
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/9cf45cc5bf590d362dbb03db89993caa.svg
+          fullname: Piyush Batra
+          isHf: false
+          isPro: false
+          name: pbatra
+          type: user
+        html: "<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/cekal\"\
+          >@<span class=\"underline\">cekal</span></a></span>\n\n\t</span></span>\
+          \ thanks I was able to fine tune by decreasing the max_seq_length = 720.\
+          \ </p>\n<p>Also, I had used the below config. </p>\n<p>But still the same,\
+          \ I was able to train mistal or llama 2 7b parameters with 2048 max_seq_length\
+          \ on my 24GB gpu</p>\n</blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;Navanit-shorthills&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Navanit-shorthills\"\
+          >@<span class=\"underline\">Navanit-shorthills</span></a></span>\n\n\t</span></span>\
+          \ true, I'm also having the same issue</p>\n"
+        raw: "> @cekal thanks I was able to fine tune by decreasing the max_seq_length\
+          \ = 720. \n> \n> Also, I had used the below config. \n> \n> But still the\
+          \ same, I was able to train mistal or llama 2 7b parameters with 2048 max_seq_length\
+          \ on my 24GB gpu\n\n@Navanit-shorthills true, I'm also having the same issue"
+        updatedAt: '2023-12-20T05:28:08.588Z'
+      numEdits: 1
+      reactions: []
+    id: 65827b1f18be848c0cdf8bd4
+    type: comment
+  author: pbatra
+  content: "> @cekal thanks I was able to fine tune by decreasing the max_seq_length\
+    \ = 720. \n> \n> Also, I had used the below config. \n> \n> But still the same,\
+    \ I was able to train mistal or llama 2 7b parameters with 2048 max_seq_length\
+    \ on my 24GB gpu\n\n@Navanit-shorthills true, I'm also having the same issue"
+  created_at: 2023-12-20 05:26:55+00:00
+  edited: true
+  hidden: false
+  id: 65827b1f18be848c0cdf8bd4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+      fullname: NAVANIT DUBEY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Navanit-shorthills
+      type: user
+    createdAt: '2023-12-20T09:59:01.000Z'
+    data:
+      edited: false
+      editors:
+      - Navanit-shorthills
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8405348062515259
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64be1bffe38420aabae4f984/i1M2P_12qIauDROLNER6d.jpeg?w=200&h=200&f=face
+          fullname: NAVANIT DUBEY
+          isHf: false
+          isPro: false
+          name: Navanit-shorthills
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;pbatra&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/pbatra\">@<span class=\"\
+          underline\">pbatra</span></a></span>\n\n\t</span></span>  if you find any\
+          \ answer kindly reply in this thread. </p>\n"
+        raw: '@pbatra  if you find any answer kindly reply in this thread. '
+        updatedAt: '2023-12-20T09:59:01.248Z'
+      numEdits: 0
+      reactions: []
+    id: 6582bae54ee85531becc8eaa
+    type: comment
+  author: Navanit-shorthills
+  content: '@pbatra  if you find any answer kindly reply in this thread. '
+  created_at: 2023-12-20 09:59:01+00:00
+  edited: false
+  hidden: false
+  id: 6582bae54ee85531becc8eaa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c82f20c56705f5c5f6e83bf5ad5db1a9.svg
+      fullname: Masoud Hashemi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: masoudhashemi
+      type: user
+    createdAt: '2023-12-24T06:48:27.000Z'
+    data:
+      edited: false
+      editors:
+      - masoudhashemi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8691848516464233
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c82f20c56705f5c5f6e83bf5ad5db1a9.svg
+          fullname: Masoud Hashemi
+          isHf: false
+          isPro: false
+          name: masoudhashemi
+          type: user
+        html: "<blockquote>\n<p>Excellent results! <span data-props=\"{&quot;user&quot;:&quot;navanit&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/navanit\"\
+          >@<span class=\"underline\">navanit</span></a></span>\n\n\t</span></span>\
+          \ thank you for confirming the correct target_modules, the model now responds\
+          \ as expected.</p>\n<p>Here is an example prompt I gave it: How can advances\
+          \ in artificial intelligence and machine learning contribute to more accurate\
+          \ and timely weather forecasting, and what are the limitations of relying\
+          \ on these technologies for weather predictions?</p>\n<p><a rel=\"nofollow\"\
+          \ href=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png\"\
+          ><img alt=\"Screenshot 2023-12-15 at 14.10.45.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png\"\
+          ></a></p>\n</blockquote>\n<p>Can you share the final working code that worked\
+          \ for you?</p>\n"
+        raw: "> Excellent results! @navanit thank you for confirming the correct target_modules,\
+          \ the model now responds as expected.\n> \n> Here is an example prompt I\
+          \ gave it: How can advances in artificial intelligence and machine learning\
+          \ contribute to more accurate and timely weather forecasting, and what are\
+          \ the limitations of relying on these technologies for weather predictions?\n\
+          > \n> ![Screenshot 2023-12-15 at 14.10.45.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png)\n\
+          \nCan you share the final working code that worked for you?"
+        updatedAt: '2023-12-24T06:48:27.991Z'
+      numEdits: 0
+      reactions: []
+    id: 6587d43b74d1a1cbd0072275
+    type: comment
+  author: masoudhashemi
+  content: "> Excellent results! @navanit thank you for confirming the correct target_modules,\
+    \ the model now responds as expected.\n> \n> Here is an example prompt I gave\
+    \ it: How can advances in artificial intelligence and machine learning contribute\
+    \ to more accurate and timely weather forecasting, and what are the limitations\
+    \ of relying on these technologies for weather predictions?\n> \n> ![Screenshot\
+    \ 2023-12-15 at 14.10.45.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/MSbyYi5jv1895v2kYkZsj.png)\n\
+    \nCan you share the final working code that worked for you?"
+  created_at: 2023-12-24 06:48:27+00:00
+  edited: false
+  hidden: false
+  id: 6587d43b74d1a1cbd0072275
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0f4ec67cc4da64fe74d999e723a52f6a.svg
+      fullname: Qin
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: QiuQiuShouLing
+      type: user
+    createdAt: '2024-01-04T12:03:16.000Z'
+    data:
+      edited: false
+      editors:
+      - QiuQiuShouLing
+      hidden: false
+      identifiedLanguage:
+        language: zh
+        probability: 0.9998874664306641
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0f4ec67cc4da64fe74d999e723a52f6a.svg
+          fullname: Qin
+          isHf: false
+          isPro: false
+          name: QiuQiuShouLing
+          type: user
+        html: "<p>\u4F60\u597D \u8FD9\u4E2A\u5F00\u6E90\u6A21\u578B\u662F\u5DF2\u7ECF\
+          \u8BAD\u7EC3\u597D\u7684\u5417  \u5B83\u53EF\u4EE5\u8F6C\u6362\u6210\u4E2D\
+          \u6587\u7684\u5417  \u611F\u8C22  \u672C\u4EBA\u840C\u65B0\u4E00\u679A</p>\n"
+        raw: "\u4F60\u597D \u8FD9\u4E2A\u5F00\u6E90\u6A21\u578B\u662F\u5DF2\u7ECF\u8BAD\
+          \u7EC3\u597D\u7684\u5417  \u5B83\u53EF\u4EE5\u8F6C\u6362\u6210\u4E2D\u6587\
+          \u7684\u5417  \u611F\u8C22  \u672C\u4EBA\u840C\u65B0\u4E00\u679A\n\n\n\n"
+        updatedAt: '2024-01-04T12:03:16.488Z'
+      numEdits: 0
+      reactions: []
+    id: 65969e8425b1c7a91085f051
+    type: comment
+  author: QiuQiuShouLing
+  content: "\u4F60\u597D \u8FD9\u4E2A\u5F00\u6E90\u6A21\u578B\u662F\u5DF2\u7ECF\u8BAD\
+    \u7EC3\u597D\u7684\u5417  \u5B83\u53EF\u4EE5\u8F6C\u6362\u6210\u4E2D\u6587\u7684\
+    \u5417  \u611F\u8C22  \u672C\u4EBA\u840C\u65B0\u4E00\u679A\n\n\n\n"
+  created_at: 2024-01-04 12:03:16+00:00
+  edited: false
+  hidden: false
+  id: 65969e8425b1c7a91085f051
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+      fullname: Yu
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Yhyu13
+      type: user
+    createdAt: '2024-01-04T12:52:09.000Z'
+    data:
+      edited: false
+      editors:
+      - Yhyu13
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9542617797851562
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/19f9eeb9281b47b34f68c312092ca468.svg
+          fullname: Yu
+          isHf: false
+          isPro: false
+          name: Yhyu13
+          type: user
+        html: '<p>phi-2 has bug in speaking Chinese, it spits out gerberish</p>
+
+          '
+        raw: phi-2 has bug in speaking Chinese, it spits out gerberish
+        updatedAt: '2024-01-04T12:52:09.420Z'
+      numEdits: 0
+      reactions: []
+    id: 6596a9f9a09903e8845ab16e
+    type: comment
+  author: Yhyu13
+  content: phi-2 has bug in speaking Chinese, it spits out gerberish
+  created_at: 2024-01-04 12:52:09+00:00
+  edited: false
+  hidden: false
+  id: 6596a9f9a09903e8845ab16e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2024-01-05T21:00:28.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8712412714958191
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Yhyu13&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Yhyu13\">@<span class=\"\
+          underline\">Yhyu13</span></a></span>\n\n\t</span></span> because the base\
+          \ model was trained on English dataset, as seen on the picture below:</p>\n\
+          <p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/xexwNGYWtSWiE_q1i9EOo.png\"\
+          ><img alt=\"Screenshot 2024-01-05 at 21.58.42.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/xexwNGYWtSWiE_q1i9EOo.png\"\
+          ></a></p>\n<p>Sometimes, all you need is to read the documentation.</p>\n"
+        raw: '@Yhyu13 because the base model was trained on English dataset, as seen
+          on the picture below:
+
+
+          ![Screenshot 2024-01-05 at 21.58.42.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/xexwNGYWtSWiE_q1i9EOo.png)
+
+
+          Sometimes, all you need is to read the documentation.'
+        updatedAt: '2024-01-05T21:00:28.424Z'
+      numEdits: 0
+      reactions: []
+    id: 65986dec417c3c3ecd10a08a
+    type: comment
+  author: cekal
+  content: '@Yhyu13 because the base model was trained on English dataset, as seen
+    on the picture below:
+
+
+    ![Screenshot 2024-01-05 at 21.58.42.png](https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/xexwNGYWtSWiE_q1i9EOo.png)
+
+
+    Sometimes, all you need is to read the documentation.'
+  created_at: 2024-01-05 21:00:28+00:00
+  edited: false
+  hidden: false
+  id: 65986dec417c3c3ecd10a08a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/39164c0f0825ee6139edd9a31f942770.svg
+      fullname: azeddine
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: logame07
+      type: user
+    createdAt: '2024-01-06T01:08:18.000Z'
+    data:
+      edited: false
+      editors:
+      - logame07
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5372297167778015
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/39164c0f0825ee6139edd9a31f942770.svg
+          fullname: azeddine
+          isHf: false
+          isPro: false
+          name: logame07
+          type: user
+        html: "<blockquote>\n<p>I have tried fine-tuning the model with LoRA (peft)\
+          \ using the following target modules: 'lm_head.linear', 'transformer.embd.wte'\
+          \ - which resulted in better responses, but I feel like something is wrong\
+          \ in my training setup, as the model often behaves weirdly, and its responses\
+          \ are significantly worse than the ones from Mistral 7B. Considering Microsoft\
+          \ called this the state-of-art model below 13b parameters, mentioning it\
+          \ beats Mistral, it should outperform it, not underperform. I use a high-quality\
+          \ proprietary Q&amp;A dataset, so the dataset quality cannot be the issue.</p>\n\
+          <p>Just to confirm, am I using the right 'target_modules', or I should use\
+          \ different ones? Here is my training code:</p>\n<pre><code>import os\n\
+          from dataclasses import dataclass, field\nfrom typing import Optional\n\n\
+          import torch\nfrom datasets import load_dataset\nfrom datasets import load_from_disk\n\
+          from peft import LoraConfig\nfrom transformers import (\n    AutoModelForCausalLM,\n\
+          \    AutoTokenizer,\n    BitsAndBytesConfig,\n    HfArgumentParser,\n  \
+          \  AutoTokenizer,\n    TrainingArguments,\n)\nfrom tqdm.notebook import\
+          \ tqdm\n\nfrom trl import SFTTrainer\nfrom huggingface_hub import interpreter_login\n\
+          \ninterpreter_login()\n\ncompute_dtype = getattr(torch, \"float16\")\nbnb_config\
+          \ = BitsAndBytesConfig(\n        load_in_4bit=True,\n        bnb_4bit_quant_type='nf4',\n\
+          \        bnb_4bit_compute_dtype='float16',\n        bnb_4bit_use_double_quant=False,\n\
+          \    )\ndevice_map = {\"\": 0}\n\n#Download model\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \        \"microsoft/phi-2\", \n        quantization_config=bnb_config,\
+          \ \n        device_map=device_map,\n        trust_remote_code=True,\n  \
+          \      use_auth_token=True\n    )\n\nmodel.config.pretraining_tp = 1 \n\
+          peft_config = LoraConfig(\n    lora_alpha=16,\n    lora_dropout=0.1,\n \
+          \   r=32,\n    target_modules=['lm_head.linear', 'transformer.embd.wte'],\
+          \ # is this correct?\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\", \n\
+          )\n\ntokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\", trust_remote_code=True)\n\
+          tokenizer.pad_token = tokenizer.eos_token\n\ntraining_arguments = TrainingArguments(\n\
+          \    output_dir=\"./results\",\n    per_device_train_batch_size=1,\n   \
+          \ gradient_accumulation_steps=4,\n    optim=\"paged_adamw_32bit\",\n   \
+          \ save_steps=500, #CHANGE THIS IF YOU WANT IT TO SAVE LESS OFTEN. I WOULDN'T\
+          \ SAVE MORE OFTEN BECAUSE OF SPACE\n    logging_steps=10,\n    learning_rate=2e-4,\n\
+          \    fp16=False,\n    bf16=True,\n    max_grad_norm=.3,\n    max_steps=10000,\n\
+          \    warmup_ratio=.03,\n    group_by_length=True,\n    lr_scheduler_type=\"\
+          constant\",\n)\n\nmodel.config.use_cache = False\n\ndataset = load_dataset(\"\
+          json\", data_files=\"your_dataset.json\", split=\"train\")\n\ntrainer =\
+          \ SFTTrainer(\n    model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+          \    dataset_text_field=\"text\",\n    max_seq_length=2048,\n    tokenizer=tokenizer,\n\
+          \    args=training_arguments,\n    packing=False,\n)\n\ntrainer.train()\n\
+          </code></pre>\n</blockquote>\n"
+        raw: "> I have tried fine-tuning the model with LoRA (peft) using the following\
+          \ target modules: 'lm_head.linear', 'transformer.embd.wte' - which resulted\
+          \ in better responses, but I feel like something is wrong in my training\
+          \ setup, as the model often behaves weirdly, and its responses are significantly\
+          \ worse than the ones from Mistral 7B. Considering Microsoft called this\
+          \ the state-of-art model below 13b parameters, mentioning it beats Mistral,\
+          \ it should outperform it, not underperform. I use a high-quality proprietary\
+          \ Q&A dataset, so the dataset quality cannot be the issue.\r\n> \r\n> Just\
+          \ to confirm, am I using the right 'target_modules', or I should use different\
+          \ ones? Here is my training code:\r\n> \r\n> ```\r\n> import os\r\n> from\
+          \ dataclasses import dataclass, field\r\n> from typing import Optional\r\
+          \n> \r\n> import torch\r\n> from datasets import load_dataset\r\n> from\
+          \ datasets import load_from_disk\r\n> from peft import LoraConfig\r\n> from\
+          \ transformers import (\r\n>     AutoModelForCausalLM,\r\n>     AutoTokenizer,\r\
+          \n>     BitsAndBytesConfig,\r\n>     HfArgumentParser,\r\n>     AutoTokenizer,\r\
+          \n>     TrainingArguments,\r\n> )\r\n> from tqdm.notebook import tqdm\r\n\
+          > \r\n> from trl import SFTTrainer\r\n> from huggingface_hub import interpreter_login\r\
+          \n> \r\n> interpreter_login()\r\n> \r\n> compute_dtype = getattr(torch,\
+          \ \"float16\")\r\n> bnb_config = BitsAndBytesConfig(\r\n>         load_in_4bit=True,\r\
+          \n>         bnb_4bit_quant_type='nf4',\r\n>         bnb_4bit_compute_dtype='float16',\r\
+          \n>         bnb_4bit_use_double_quant=False,\r\n>     )\r\n> device_map\
+          \ = {\"\": 0}\r\n> \r\n> #Download model\r\n> model = AutoModelForCausalLM.from_pretrained(\r\
+          \n>         \"microsoft/phi-2\", \r\n>         quantization_config=bnb_config,\
+          \ \r\n>         device_map=device_map,\r\n>         trust_remote_code=True,\r\
+          \n>         use_auth_token=True\r\n>     )\r\n> \r\n> model.config.pretraining_tp\
+          \ = 1 \r\n> peft_config = LoraConfig(\r\n>     lora_alpha=16,\r\n>     lora_dropout=0.1,\r\
+          \n>     r=32,\r\n>     target_modules=['lm_head.linear', 'transformer.embd.wte'],\
+          \ # is this correct?\r\n>     bias=\"none\",\r\n>     task_type=\"CAUSAL_LM\"\
+          , \r\n> )\r\n> \r\n> tokenizer = AutoTokenizer.from_pretrained(\"microsoft/phi-2\"\
+          , trust_remote_code=True)\r\n> tokenizer.pad_token = tokenizer.eos_token\r\
+          \n> \r\n> training_arguments = TrainingArguments(\r\n>     output_dir=\"\
+          ./results\",\r\n>     per_device_train_batch_size=1,\r\n>     gradient_accumulation_steps=4,\r\
+          \n>     optim=\"paged_adamw_32bit\",\r\n>     save_steps=500, #CHANGE THIS\
+          \ IF YOU WANT IT TO SAVE LESS OFTEN. I WOULDN'T SAVE MORE OFTEN BECAUSE\
+          \ OF SPACE\r\n>     logging_steps=10,\r\n>     learning_rate=2e-4,\r\n>\
+          \     fp16=False,\r\n>     bf16=True,\r\n>     max_grad_norm=.3,\r\n>  \
+          \   max_steps=10000,\r\n>     warmup_ratio=.03,\r\n>     group_by_length=True,\r\
+          \n>     lr_scheduler_type=\"constant\",\r\n> )\r\n> \r\n> model.config.use_cache\
+          \ = False\r\n> \r\n> dataset = load_dataset(\"json\", data_files=\"your_dataset.json\"\
+          , split=\"train\")\r\n> \r\n> trainer = SFTTrainer(\r\n>     model=model,\r\
+          \n>     train_dataset=dataset,\r\n>     peft_config=peft_config,\r\n>  \
+          \   dataset_text_field=\"text\",\r\n>     max_seq_length=2048,\r\n>    \
+          \ tokenizer=tokenizer,\r\n>     args=training_arguments,\r\n>     packing=False,\r\
+          \n> )\r\n> \r\n> trainer.train()\r\n> ```\n\n"
+        updatedAt: '2024-01-06T01:08:18.915Z'
+      numEdits: 0
+      reactions: []
+    id: 6598a80207198ffcf76b17aa
+    type: comment
+  author: logame07
+  content: "> I have tried fine-tuning the model with LoRA (peft) using the following\
+    \ target modules: 'lm_head.linear', 'transformer.embd.wte' - which resulted in\
+    \ better responses, but I feel like something is wrong in my training setup, as\
+    \ the model often behaves weirdly, and its responses are significantly worse than\
+    \ the ones from Mistral 7B. Considering Microsoft called this the state-of-art\
+    \ model below 13b parameters, mentioning it beats Mistral, it should outperform\
+    \ it, not underperform. I use a high-quality proprietary Q&A dataset, so the dataset\
+    \ quality cannot be the issue.\r\n> \r\n> Just to confirm, am I using the right\
+    \ 'target_modules', or I should use different ones? Here is my training code:\r\
+    \n> \r\n> ```\r\n> import os\r\n> from dataclasses import dataclass, field\r\n\
+    > from typing import Optional\r\n> \r\n> import torch\r\n> from datasets import\
+    \ load_dataset\r\n> from datasets import load_from_disk\r\n> from peft import\
+    \ LoraConfig\r\n> from transformers import (\r\n>     AutoModelForCausalLM,\r\n\
+    >     AutoTokenizer,\r\n>     BitsAndBytesConfig,\r\n>     HfArgumentParser,\r\
+    \n>     AutoTokenizer,\r\n>     TrainingArguments,\r\n> )\r\n> from tqdm.notebook\
+    \ import tqdm\r\n> \r\n> from trl import SFTTrainer\r\n> from huggingface_hub\
+    \ import interpreter_login\r\n> \r\n> interpreter_login()\r\n> \r\n> compute_dtype\
+    \ = getattr(torch, \"float16\")\r\n> bnb_config = BitsAndBytesConfig(\r\n>   \
+    \      load_in_4bit=True,\r\n>         bnb_4bit_quant_type='nf4',\r\n>       \
+    \  bnb_4bit_compute_dtype='float16',\r\n>         bnb_4bit_use_double_quant=False,\r\
+    \n>     )\r\n> device_map = {\"\": 0}\r\n> \r\n> #Download model\r\n> model =\
+    \ AutoModelForCausalLM.from_pretrained(\r\n>         \"microsoft/phi-2\", \r\n\
+    >         quantization_config=bnb_config, \r\n>         device_map=device_map,\r\
+    \n>         trust_remote_code=True,\r\n>         use_auth_token=True\r\n>    \
+    \ )\r\n> \r\n> model.config.pretraining_tp = 1 \r\n> peft_config = LoraConfig(\r\
+    \n>     lora_alpha=16,\r\n>     lora_dropout=0.1,\r\n>     r=32,\r\n>     target_modules=['lm_head.linear',\
+    \ 'transformer.embd.wte'], # is this correct?\r\n>     bias=\"none\",\r\n>   \
+    \  task_type=\"CAUSAL_LM\", \r\n> )\r\n> \r\n> tokenizer = AutoTokenizer.from_pretrained(\"\
+    microsoft/phi-2\", trust_remote_code=True)\r\n> tokenizer.pad_token = tokenizer.eos_token\r\
+    \n> \r\n> training_arguments = TrainingArguments(\r\n>     output_dir=\"./results\"\
+    ,\r\n>     per_device_train_batch_size=1,\r\n>     gradient_accumulation_steps=4,\r\
+    \n>     optim=\"paged_adamw_32bit\",\r\n>     save_steps=500, #CHANGE THIS IF\
+    \ YOU WANT IT TO SAVE LESS OFTEN. I WOULDN'T SAVE MORE OFTEN BECAUSE OF SPACE\r\
+    \n>     logging_steps=10,\r\n>     learning_rate=2e-4,\r\n>     fp16=False,\r\n\
+    >     bf16=True,\r\n>     max_grad_norm=.3,\r\n>     max_steps=10000,\r\n>   \
+    \  warmup_ratio=.03,\r\n>     group_by_length=True,\r\n>     lr_scheduler_type=\"\
+    constant\",\r\n> )\r\n> \r\n> model.config.use_cache = False\r\n> \r\n> dataset\
+    \ = load_dataset(\"json\", data_files=\"your_dataset.json\", split=\"train\")\r\
+    \n> \r\n> trainer = SFTTrainer(\r\n>     model=model,\r\n>     train_dataset=dataset,\r\
+    \n>     peft_config=peft_config,\r\n>     dataset_text_field=\"text\",\r\n>  \
+    \   max_seq_length=2048,\r\n>     tokenizer=tokenizer,\r\n>     args=training_arguments,\r\
+    \n>     packing=False,\r\n> )\r\n> \r\n> trainer.train()\r\n> ```\n\n"
+  created_at: 2024-01-06 01:08:18+00:00
+  edited: false
+  hidden: false
+  id: 6598a80207198ffcf76b17aa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7b372baefdb573f094e401c814b23582.svg
+      fullname: '00'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zoujiulong
+      type: user
+    createdAt: '2024-01-12T11:53:42.000Z'
+    data:
+      edited: false
+      editors:
+      - zoujiulong
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.36570146679878235
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7b372baefdb573f094e401c814b23582.svg
+          fullname: '00'
+          isHf: false
+          isPro: false
+          name: zoujiulong
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span>\uFF0CI have a question\
+          \ ,in your fine-tune,trainer = SFTTrainer(<br>    model=model,<br>    train_dataset=dataset,<br>\
+          \    peft_config=peft_config,<br>    dataset_text_field=\"text\",<br>  \
+          \  max_seq_length=2048,<br>    tokenizer=tokenizer,<br>    args=training_arguments,<br>\
+          \    packing=False,<br>),in this code, dataset_text_field='text',What is\
+          \ the corresponding content? it's prompt ?</p>\n"
+        raw: "@cekal\uFF0CI have a question ,in your fine-tune,trainer = SFTTrainer(\n\
+          \    model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+          \    dataset_text_field=\"text\",\n    max_seq_length=2048,\n    tokenizer=tokenizer,\n\
+          \    args=training_arguments,\n    packing=False,\n),in this code, dataset_text_field='text',What\
+          \ is the corresponding content? it's prompt ?"
+        updatedAt: '2024-01-12T11:53:42.481Z'
+      numEdits: 0
+      reactions: []
+    id: 65a128469185dcca308ab783
+    type: comment
+  author: zoujiulong
+  content: "@cekal\uFF0CI have a question ,in your fine-tune,trainer = SFTTrainer(\n\
+    \    model=model,\n    train_dataset=dataset,\n    peft_config=peft_config,\n\
+    \    dataset_text_field=\"text\",\n    max_seq_length=2048,\n    tokenizer=tokenizer,\n\
+    \    args=training_arguments,\n    packing=False,\n),in this code, dataset_text_field='text',What\
+    \ is the corresponding content? it's prompt ?"
+  created_at: 2024-01-12 11:53:42+00:00
+  edited: false
+  hidden: false
+  id: 65a128469185dcca308ab783
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2024-01-13T04:22:46.000Z'
+    data:
+      edited: false
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7994068264961243
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;zoujiulong&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/zoujiulong\">@<span class=\"\
+          underline\">zoujiulong</span></a></span>\n\n\t</span></span> In the fine-tuning\
+          \ script, the <code>dataset_text_field</code> parameter in the <code>SFTTrainer</code>\
+          \ object specifies the field name from your dataset that contains the text\
+          \ data used for training. This is not necessarily a prompt, but rather the\
+          \ actual textual content that you want the model to learn from.</p>\n<p>Your\
+          \ dataset, which the script loads with <code>load_dataset(\"json\", data_files=\"\
+          your_dataset.json\", split=\"train\")</code>, is expected to be a collection\
+          \ of records, where each record is a JSON object. The <code>dataset_text_field='text'</code>\
+          \ means that the trainer will look for a field named \"text\" in each JSON\
+          \ object of your dataset. This \"text\" field should contain the actual\
+          \ textual data.</p>\n<p>For example, if you are training a language model\
+          \ and your dataset consists of sentences or paragraphs, each JSON object\
+          \ in your dataset file might look like this:</p>\n<pre><code class=\"language-json\"\
+          ><span class=\"hljs-punctuation\">{</span> <span class=\"hljs-attr\">\"\
+          text\"</span><span class=\"hljs-punctuation\">:</span> <span class=\"hljs-string\"\
+          >\"Here is a sample sentence for the language model to learn.\"</span> <span\
+          \ class=\"hljs-punctuation\">}</span>\n</code></pre>\n<p>In this case, <code>\"\
+          text\"</code> is the key in each JSON object that points to the actual textual\
+          \ data you want the model to train on. If your dataset uses a different\
+          \ field name to store this textual data, you should change the <code>dataset_text_field</code>\
+          \ parameter accordingly to match that field name.</p>\n"
+        raw: '@zoujiulong In the fine-tuning script, the `dataset_text_field` parameter
+          in the `SFTTrainer` object specifies the field name from your dataset that
+          contains the text data used for training. This is not necessarily a prompt,
+          but rather the actual textual content that you want the model to learn from.
+
+
+          Your dataset, which the script loads with `load_dataset("json", data_files="your_dataset.json",
+          split="train")`, is expected to be a collection of records, where each record
+          is a JSON object. The `dataset_text_field=''text''` means that the trainer
+          will look for a field named "text" in each JSON object of your dataset.
+          This "text" field should contain the actual textual data.
+
+
+          For example, if you are training a language model and your dataset consists
+          of sentences or paragraphs, each JSON object in your dataset file might
+          look like this:
+
+
+          ```json
+
+          { "text": "Here is a sample sentence for the language model to learn." }
+
+          ```
+
+
+          In this case, `"text"` is the key in each JSON object that points to the
+          actual textual data you want the model to train on. If your dataset uses
+          a different field name to store this textual data, you should change the
+          `dataset_text_field` parameter accordingly to match that field name.'
+        updatedAt: '2024-01-13T04:22:46.001Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - zoujiulong
+    id: 65a21016f266d20b2e421b3b
+    type: comment
+  author: cekal
+  content: '@zoujiulong In the fine-tuning script, the `dataset_text_field` parameter
+    in the `SFTTrainer` object specifies the field name from your dataset that contains
+    the text data used for training. This is not necessarily a prompt, but rather
+    the actual textual content that you want the model to learn from.
+
+
+    Your dataset, which the script loads with `load_dataset("json", data_files="your_dataset.json",
+    split="train")`, is expected to be a collection of records, where each record
+    is a JSON object. The `dataset_text_field=''text''` means that the trainer will
+    look for a field named "text" in each JSON object of your dataset. This "text"
+    field should contain the actual textual data.
+
+
+    For example, if you are training a language model and your dataset consists of
+    sentences or paragraphs, each JSON object in your dataset file might look like
+    this:
+
+
+    ```json
+
+    { "text": "Here is a sample sentence for the language model to learn." }
+
+    ```
+
+
+    In this case, `"text"` is the key in each JSON object that points to the actual
+    textual data you want the model to train on. If your dataset uses a different
+    field name to store this textual data, you should change the `dataset_text_field`
+    parameter accordingly to match that field name.'
+  created_at: 2024-01-13 04:22:46+00:00
+  edited: false
+  hidden: false
+  id: 65a21016f266d20b2e421b3b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7b372baefdb573f094e401c814b23582.svg
+      fullname: '00'
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: zoujiulong
+      type: user
+    createdAt: '2024-01-13T06:28:00.000Z'
+    data:
+      edited: false
+      editors:
+      - zoujiulong
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8929412364959717
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7b372baefdb573f094e401c814b23582.svg
+          fullname: '00'
+          isHf: false
+          isPro: false
+          name: zoujiulong
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> thank you\uFF0C\
+          I see,I\u2019m a green hand.I have one more question\uFF0Cyour purpose is\
+          \ Q&amp;A\uFF0CI remember that Should not you enter both the question and\
+          \ text such as BertForQuestionAnswering\uFF0Cwhy only use a field at here\uFF0C\
+          Is phi-2 able to learn just by typing in text and then just asking\uFF1F\
+          </p>\n"
+        raw: "@cekal thank you\uFF0CI see,I\u2019m a green hand.I have one more question\uFF0C\
+          your purpose is Q&A\uFF0CI remember that Should not you enter both the question\
+          \ and text such as BertForQuestionAnswering\uFF0Cwhy only use a field at\
+          \ here\uFF0CIs phi-2 able to learn just by typing in text and then just\
+          \ asking\uFF1F"
+        updatedAt: '2024-01-13T06:28:00.116Z'
+      numEdits: 0
+      reactions: []
+    id: 65a22d7090e65dc39a71a948
+    type: comment
+  author: zoujiulong
+  content: "@cekal thank you\uFF0CI see,I\u2019m a green hand.I have one more question\uFF0C\
+    your purpose is Q&A\uFF0CI remember that Should not you enter both the question\
+    \ and text such as BertForQuestionAnswering\uFF0Cwhy only use a field at here\uFF0C\
+    Is phi-2 able to learn just by typing in text and then just asking\uFF1F"
+  created_at: 2024-01-13 06:28:00+00:00
+  edited: false
+  hidden: false
+  id: 65a22d7090e65dc39a71a948
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+      fullname: Imran ullah
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Imran1
+      type: user
+    createdAt: '2024-01-15T12:13:35.000Z'
+    data:
+      edited: false
+      editors:
+      - Imran1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5829468965530396
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+          fullname: Imran ullah
+          isHf: false
+          isPro: false
+          name: Imran1
+          type: user
+        html: "<p>very bad model.  fine tune  not working properly. :(<br> [ 12/100\
+          \ 00:08 &lt; 01:17, 1.13 it/s, Epoch 0.00/1]<br>Step\tTraining Loss<br>1\t\
+          0.000000<br>2\t0.000000<br>3\t0.000000<br>4\t0.000000<br>5\t0.000000<br>6\t\
+          0.000000<br>7\t0.000000<br>8\t0.000000<br>9\t0.000000<br>10\t0.000000</p>\n"
+        raw: "very bad model.  fine tune  not working properly. :(\n [ 12/100 00:08\
+          \ < 01:17, 1.13 it/s, Epoch 0.00/1]\nStep\tTraining Loss\n1\t0.000000\n\
+          2\t0.000000\n3\t0.000000\n4\t0.000000\n5\t0.000000\n6\t0.000000\n7\t0.000000\n\
+          8\t0.000000\n9\t0.000000\n10\t0.000000"
+        updatedAt: '2024-01-15T12:13:35.440Z'
+      numEdits: 0
+      reactions: []
+    id: 65a5216f1a813e06e8645432
+    type: comment
+  author: Imran1
+  content: "very bad model.  fine tune  not working properly. :(\n [ 12/100 00:08\
+    \ < 01:17, 1.13 it/s, Epoch 0.00/1]\nStep\tTraining Loss\n1\t0.000000\n2\t0.000000\n\
+    3\t0.000000\n4\t0.000000\n5\t0.000000\n6\t0.000000\n7\t0.000000\n8\t0.000000\n\
+    9\t0.000000\n10\t0.000000"
+  created_at: 2024-01-15 12:13:35+00:00
+  edited: false
+  hidden: false
+  id: 65a5216f1a813e06e8645432
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+      fullname: Vojtech Cekal
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: true
+      name: cekal
+      type: user
+    createdAt: '2024-01-16T15:47:16.000Z'
+    data:
+      edited: true
+      editors:
+      - cekal
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9904761910438538
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ebfd71ca08a72ba9ce6fe0/WEXOVko_Lgvq_Y8_Zlb4o.png?w=200&h=200&f=face
+          fullname: Vojtech Cekal
+          isHf: false
+          isPro: true
+          name: cekal
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Imran1&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Imran1\">@<span class=\"\
+          underline\">Imran1</span></a></span>\n\n\t</span></span> model isn't bad,\
+          \ perhaps your code is. 0 loss is obviously wrong. Mind sharing your fine-tuning\
+          \ script?</p>\n<p>You can also try this: <a rel=\"nofollow\" href=\"https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb\"\
+          >https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb</a></p>\n"
+        raw: '@Imran1 model isn''t bad, perhaps your code is. 0 loss is obviously
+          wrong. Mind sharing your fine-tuning script?
+
+
+          You can also try this: https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb'
+        updatedAt: '2024-01-16T15:47:55.132Z'
+      numEdits: 1
+      reactions: []
+    id: 65a6a50479130b4be2286cf1
+    type: comment
+  author: cekal
+  content: '@Imran1 model isn''t bad, perhaps your code is. 0 loss is obviously wrong.
+    Mind sharing your fine-tuning script?
+
+
+    You can also try this: https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb'
+  created_at: 2024-01-16 15:47:16+00:00
+  edited: true
+  hidden: false
+  id: 65a6a50479130b4be2286cf1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+      fullname: Imran ullah
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Imran1
+      type: user
+    createdAt: '2024-01-16T15:54:23.000Z'
+    data:
+      edited: false
+      editors:
+      - Imran1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6577104926109314
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+          fullname: Imran ullah
+          isHf: false
+          isPro: false
+          name: Imran1
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> why the lose are\
+          \ showing zero?</p>\n"
+        raw: '@cekal why the lose are showing zero?'
+        updatedAt: '2024-01-16T15:54:23.683Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6a6aff319aa03482dbb78
+    type: comment
+  author: Imran1
+  content: '@cekal why the lose are showing zero?'
+  created_at: 2024-01-16 15:54:23+00:00
+  edited: false
+  hidden: false
+  id: 65a6a6aff319aa03482dbb78
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+      fullname: Imran ullah
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Imran1
+      type: user
+    createdAt: '2024-01-16T16:50:09.000Z'
+    data:
+      edited: false
+      editors:
+      - Imran1
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5554543733596802
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62846faa99bff5076f0a93b4/oTEr0Ns7Kmez7CzvcQEtL.jpeg?w=200&h=200&f=face
+          fullname: Imran ullah
+          isHf: false
+          isPro: false
+          name: Imran1
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;cekal&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/cekal\">@<span class=\"\
+          underline\">cekal</span></a></span>\n\n\t</span></span> here is the code\
+          \ <a rel=\"nofollow\" href=\"https://colab.research.google.com/drive/1a7rL3UzWfo5I7OPyVmTEnR6_tRqIOblg?usp=sharing\"\
+          >https://colab.research.google.com/drive/1a7rL3UzWfo5I7OPyVmTEnR6_tRqIOblg?usp=sharing</a></p>\n"
+        raw: '@cekal here is the code https://colab.research.google.com/drive/1a7rL3UzWfo5I7OPyVmTEnR6_tRqIOblg?usp=sharing
+
+          '
+        updatedAt: '2024-01-16T16:50:09.866Z'
+      numEdits: 0
+      reactions: []
+    id: 65a6b3c18ee30c067128e2f7
+    type: comment
+  author: Imran1
+  content: '@cekal here is the code https://colab.research.google.com/drive/1a7rL3UzWfo5I7OPyVmTEnR6_tRqIOblg?usp=sharing
+
+    '
+  created_at: 2024-01-16 16:50:09+00:00
+  edited: false
+  hidden: false
+  id: 65a6b3c18ee30c067128e2f7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+      fullname: Gustavo de Rosa
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: gugarosa
+      type: user
+    createdAt: '2024-01-17T18:10:57.000Z'
+    data:
+      edited: true
+      editors:
+      - gugarosa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8811570405960083
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1666203761402-6157454831624da88210e627.jpeg?w=200&h=200&f=face
+          fullname: Gustavo de Rosa
+          isHf: false
+          isPro: false
+          name: gugarosa
+          type: user
+        html: '<p>Could you please re-run with the latest update (FP16)? We updated
+          the <code>modeling_phi.py</code> file and disabled the auto-casting on the
+          Attention layer. This is the same fix as the previous code had.</p>
+
+          '
+        raw: Could you please re-run with the latest update (FP16)? We updated the
+          `modeling_phi.py` file and disabled the auto-casting on the Attention layer.
+          This is the same fix as the previous code had.
+        updatedAt: '2024-01-17T18:11:05.790Z'
+      numEdits: 1
+      reactions: []
+    id: 65a81831162efc9aef62d674
+    type: comment
+  author: gugarosa
+  content: Could you please re-run with the latest update (FP16)? We updated the `modeling_phi.py`
+    file and disabled the auto-casting on the Attention layer. This is the same fix
+    as the previous code had.
+  created_at: 2024-01-17 18:10:57+00:00
+  edited: true
+  hidden: false
+  id: 65a81831162efc9aef62d674
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/fcfc6ba8cde01b8d7bf0a2176edeef78.svg
+      fullname: Duc H. Le
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: hduc-le
+      type: user
+    createdAt: '2024-01-23T06:38:53.000Z'
+    data:
+      edited: false
+      editors:
+      - hduc-le
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.910464882850647
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/fcfc6ba8cde01b8d7bf0a2176edeef78.svg
+          fullname: Duc H. Le
+          isHf: false
+          isPro: false
+          name: hduc-le
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;gugarosa&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/gugarosa\">@<span class=\"\
+          underline\">gugarosa</span></a></span>\n\n\t</span></span> I have performed\
+          \ full finetune with phi-2 on a single RTX A6000, but the loss is very quickly\
+          \ going to zero for just 10 steps. I have tried with the latest tranformers==4.37.0.\
+          \ Can you help me this? Thanks.</p>\n<p>My implementation is followed: <a\
+          \ rel=\"nofollow\" href=\"https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb\"\
+          >https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb</a>,\
+          \ but I commented out the quantization and lora parts for full finetuning.\
+          \ </p>\n"
+        raw: "@gugarosa I have performed full finetune with phi-2 on a single RTX\
+          \ A6000, but the loss is very quickly going to zero for just 10 steps. I\
+          \ have tried with the latest tranformers==4.37.0. Can you help me this?\
+          \ Thanks.\n\nMy implementation is followed: https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb,\
+          \ but I commented out the quantization and lora parts for full finetuning.\
+          \ \n"
+        updatedAt: '2024-01-23T06:38:53.416Z'
+      numEdits: 0
+      reactions: []
+    id: 65af5efda560bc932903c75b
+    type: comment
+  author: hduc-le
+  content: "@gugarosa I have performed full finetune with phi-2 on a single RTX A6000,\
+    \ but the loss is very quickly going to zero for just 10 steps. I have tried with\
+    \ the latest tranformers==4.37.0. Can you help me this? Thanks.\n\nMy implementation\
+    \ is followed: https://github.com/brevdev/notebooks/blob/e815947d907460c3ed123d49ac6aeab67a9adf22/phi2-finetune-own-data.ipynb,\
+    \ but I commented out the quantization and lora parts for full finetuning. \n"
+  created_at: 2024-01-23 06:38:53+00:00
+  edited: false
+  hidden: false
+  id: 65af5efda560bc932903c75b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 19
+repo_id: microsoft/phi-2
+repo_type: model
+status: open
+target_branch: null
+title: How to fine-tune this? + Training code

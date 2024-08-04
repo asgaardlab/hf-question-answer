@@ -1,0 +1,267 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: monta
+conflicting_files: null
+created_at: 2023-04-17 06:16:06+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3a1071943173ffa301ebdc098fc72652.svg
+      fullname: mon
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: monta
+      type: user
+    createdAt: '2023-04-17T07:16:06.000Z'
+    data:
+      edited: false
+      editors:
+      - monta
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3a1071943173ffa301ebdc098fc72652.svg
+          fullname: mon
+          isHf: false
+          isPro: false
+          name: monta
+          type: user
+        html: "<p>Do we need to use DataCollatorForLanguageModeling and EOS (End of\
+          \ Sequence) token for padding token for BLOOM?</p>\n<p><a href=\"https://huggingface.co/docs/transformers/tasks/language_modeling\"\
+          >Causal language modeling</a> says:</p>\n<blockquote>\n<p>Now create a batch\
+          \ of examples using DataCollatorForLanguageModeling. It\u2019s more efficient\
+          \ to dynamically pad the sentences to the longest length in a batch during\
+          \ collation, instead of padding the whole dataset to the maximum length.\
+          \ Use the end-of-sequence token as the padding token and set mlm=False.\
+          \ This will use the inputs as labels shifted to the right by one element:</p>\n\
+          <pre><code>from transformers import DataCollatorForLanguageModeling\n\n\
+          tokenizer.pad_token = tokenizer.eos_token\ndata_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer,\
+          \ mlm=False)\n</code></pre>\n</blockquote>\n<p>However, if I use DataCollatorForLanguageModeling,\
+          \ I get the error:</p>\n<pre><code>ValueError: Unable to create tensor,\
+          \ you should probably activate truncation and/or padding with 'padding=True'\
+          \ 'truncation=True' to have batched tensors with the same length. Perhaps\
+          \ your features (`labels` in this case) have excessive nesting (inputs type\
+          \ `list` where type `int` is expected).\n</code></pre>\n<h1 id=\"environment\"\
+          >Environment</h1>\n<pre><code>!cat /etc/os-release\nPRETTY_NAME=\"Debian\
+          \ GNU/Linux 10 (buster)\"\n\n!transformers-cli env\n- `transformers` version:\
+          \ 4.28.0\n- Platform: Linux-4.14.309-231.529.amzn2.x86_64-x86_64-with-debian-10.6\n\
+          - Python version: 3.7.10\n- Huggingface_hub version: 0.13.4\n- Safetensors\
+          \ version: not installed\n- PyTorch version (GPU?): 1.13.1+cu117 (True)\n\
+          - Tensorflow version (GPU?): not installed (NA)\n- Flax version (CPU?/GPU?/TPU?):\
+          \ not installed (NA)\n- Jax version: not installed\n- JaxLib version: not\
+          \ installed\n- Using GPU in script?: YES\n- Using distributed or parallel\
+          \ set-up in script?: &lt;fill in&gt;\n</code></pre>\n<h1 id=\"code-for-tokenization\"\
+          >Code for Tokenization</h1>\n<pre><code>DATASET_STREAMING: bool = False\n\
+          train = load_dataset(\"xsum\", split=\"train\", streaming=DATASET_STREAMING)\n\
+          \n# --------------------------------------------------------------------------------\n\
+          # Function to generate prompt from XSUM dataset\n# --------------------------------------------------------------------------------\n\
+          def get_convert_to_prompt(template: Template) -&gt; Callable:\n    def _convert_to_prompt(example:\
+          \ Dict[str, str]) -&gt; Dict[str, str]:\n        \"\"\"Generate prompt as\
+          \ a dictionary:\n        {\n            \"prompt\": \"Summarize: &lt;document&gt;\\\
+          n&lt;summary&gt;\"\n        }\n\n        Args:\n            example: single\
+          \ {document, summary} pair to be able to apply template\n        Returns:\
+          \ a dictionary of prompt\n        \"\"\"\n        # assert isinstance(example,\
+          \ dict), f\"expected dict but {type(example)}.\\n{example}\"\n        assert\
+          \ isinstance(example['document'], str), f\"expected str but {type(example['document'])}.\"\
+          \n\n        prompt, response = template.apply(example=example, truncate=False)\n\
+          \        return {\n            \"prompt\": \" \".join(\n               \
+          \ re.sub(r'[\\s\\'\\\"]+', ' ', prompt).split(' ')[:MAX_REQUEST_LENGTH-1]\
+          \  # -1 for \\n\n            ) + \"\\n\" + \" \".join(\n               \
+          \ re.sub(r'[\\s\\'\\\"]+', ' ', response).split(' ')[:MAX_RESPONSE_LENGTH-1]\n\
+          \            ) + \"\\n\"\n        }\n\n    return _convert_to_prompt\n\n\
+          convert_to_prompt: Callable = get_convert_to_prompt(template=template)\n\
+          \n# --------------------------------------------------------------------------------\n\
+          # Function to tokenize prompt\n# --------------------------------------------------------------------------------\n\
+          def tokenize_prompt(example):\n    \"\"\"Generate the model inputs in the\
+          \ dictionary with format:\n    {\n        \"input_ids\": List[int], \n \
+          \       \"attention_mask\": List[int]\",\n        \"labels\": List[int]\n\
+          \    }\n    \n    Args:\n        example:   a dictionary of format {\n \
+          \           \"prompt\": \"Summarize:&lt;document&gt;\\n&lt;summary&gt;\\\
+          n\",\n        }\n    \"\"\"    \n    assert isinstance(example['prompt'],\
+          \ str), f\"expected str, got {type(example['prompt'])}\"\n    inputs: Dict[str,\
+          \ List[int]] = tokenizer(\n        example['prompt'], \n        max_length=MAX_TOKEN_LENGTH,\
+          \   \n        truncation=True,\n        # padding='max_length',\n    )\n\
+          \    inputs[\"labels\"] = inputs[\"input_ids\"].copy()   # Casual LM get\
+          \ the same tokens as inputs and label\n    \n    return inputs\n\nremove_column_names:\
+          \ List[str] = list(train.features.keys())\n\n# --------------------------------------------------------------------------------\n\
+          # Tokenization by applying function\n# --------------------------------------------------------------------------------\n\
+          tokenized_train = train.map(\n    function=convert_to_prompt, \n    batched=False,\n\
+          \    remove_columns=remove_column_names,\n    num_proc=NUM_CPUS\n).map(\n\
+          \    function=tokenize_prompt, \n    batched=False,\n    remove_columns=['prompt'],\n\
+          \    num_proc=NUM_CPUS\n).shuffle(\n    seed=42\n).with_format(\n    \"\
+          torch\"\n)\n</code></pre>\n<p>Training:</p>\n<pre><code>data_collator =\
+          \ DataCollatorForLanguageModeling(\n   tokenizer=tokenizer, \n   mlm=False,\n\
+          \   return_tensors='pt'\n)\n\ntraining_args = TrainingArguments(\n    output_dir=\"\
+          bloom_finetuned\",\n    max_steps=MAX_STEPS,\n    num_train_epochs=3,\n\
+          \    per_device_train_batch_size=1,\n#    per_device_eval_batch_size=1,\n\
+          \    learning_rate=2e-5,\n    weight_decay=0.01, \n    fp16=USE_FLOAT16,\n\
+          \    no_cuda=False,\n#    evaluation_strategy=\"epoch\",\n)\n\ntrainer =\
+          \ Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=tokenized_train,\n\
+          \    tokenizer=tokenizer,\n    data_collator=data_collator,\n    compute_metrics=compute_metrics,\n\
+          )\n</code></pre>\n"
+        raw: "Do we need to use DataCollatorForLanguageModeling and EOS (End of Sequence)\
+          \ token for padding token for BLOOM?\r\n\r\n[Causal language modeling](https://huggingface.co/docs/transformers/tasks/language_modeling)\
+          \ says:\r\n> Now create a batch of examples using DataCollatorForLanguageModeling.\
+          \ It\u2019s more efficient to dynamically pad the sentences to the longest\
+          \ length in a batch during collation, instead of padding the whole dataset\
+          \ to the maximum length. Use the end-of-sequence token as the padding token\
+          \ and set mlm=False. This will use the inputs as labels shifted to the right\
+          \ by one element:\r\n> ```\r\n> from transformers import DataCollatorForLanguageModeling\r\
+          \n> \r\n> tokenizer.pad_token = tokenizer.eos_token\r\n> data_collator =\
+          \ DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)\r\n> ```\r\
+          \n\r\nHowever, if I use DataCollatorForLanguageModeling, I get the error:\r\
+          \n```\r\nValueError: Unable to create tensor, you should probably activate\
+          \ truncation and/or padding with 'padding=True' 'truncation=True' to have\
+          \ batched tensors with the same length. Perhaps your features (`labels`\
+          \ in this case) have excessive nesting (inputs type `list` where type `int`\
+          \ is expected).\r\n```\r\n\r\n# Environment\r\n```\r\n!cat /etc/os-release\r\
+          \nPRETTY_NAME=\"Debian GNU/Linux 10 (buster)\"\r\n\r\n!transformers-cli\
+          \ env\r\n- `transformers` version: 4.28.0\r\n- Platform: Linux-4.14.309-231.529.amzn2.x86_64-x86_64-with-debian-10.6\r\
+          \n- Python version: 3.7.10\r\n- Huggingface_hub version: 0.13.4\r\n- Safetensors\
+          \ version: not installed\r\n- PyTorch version (GPU?): 1.13.1+cu117 (True)\r\
+          \n- Tensorflow version (GPU?): not installed (NA)\r\n- Flax version (CPU?/GPU?/TPU?):\
+          \ not installed (NA)\r\n- Jax version: not installed\r\n- JaxLib version:\
+          \ not installed\r\n- Using GPU in script?: YES\r\n- Using distributed or\
+          \ parallel set-up in script?: <fill in>\r\n```\r\n\r\n# Code for Tokenization\r\
+          \n\r\n```\r\nDATASET_STREAMING: bool = False\r\ntrain = load_dataset(\"\
+          xsum\", split=\"train\", streaming=DATASET_STREAMING)\r\n\r\n# --------------------------------------------------------------------------------\r\
+          \n# Function to generate prompt from XSUM dataset\r\n# --------------------------------------------------------------------------------\r\
+          \ndef get_convert_to_prompt(template: Template) -> Callable:\r\n    def\
+          \ _convert_to_prompt(example: Dict[str, str]) -> Dict[str, str]:\r\n   \
+          \     \"\"\"Generate prompt as a dictionary:\r\n        {\r\n          \
+          \  \"prompt\": \"Summarize: <document>\\n<summary>\"\r\n        }\r\n\r\n\
+          \        Args:\r\n            example: single {document, summary} pair to\
+          \ be able to apply template\r\n        Returns: a dictionary of prompt\r\
+          \n        \"\"\"\r\n        # assert isinstance(example, dict), f\"expected\
+          \ dict but {type(example)}.\\n{example}\"\r\n        assert isinstance(example['document'],\
+          \ str), f\"expected str but {type(example['document'])}.\"\r\n\r\n     \
+          \   prompt, response = template.apply(example=example, truncate=False)\r\
+          \n        return {\r\n            \"prompt\": \" \".join(\r\n          \
+          \      re.sub(r'[\\s\\'\\\"]+', ' ', prompt).split(' ')[:MAX_REQUEST_LENGTH-1]\
+          \  # -1 for \\n\r\n            ) + \"\\n\" + \" \".join(\r\n           \
+          \     re.sub(r'[\\s\\'\\\"]+', ' ', response).split(' ')[:MAX_RESPONSE_LENGTH-1]\r\
+          \n            ) + \"\\n\"\r\n        }\r\n\r\n    return _convert_to_prompt\r\
+          \n\r\nconvert_to_prompt: Callable = get_convert_to_prompt(template=template)\r\
+          \n\r\n# --------------------------------------------------------------------------------\r\
+          \n# Function to tokenize prompt\r\n# --------------------------------------------------------------------------------\r\
+          \ndef tokenize_prompt(example):\r\n    \"\"\"Generate the model inputs in\
+          \ the dictionary with format:\r\n    {\r\n        \"input_ids\": List[int],\
+          \ \r\n        \"attention_mask\": List[int]\",\r\n        \"labels\": List[int]\r\
+          \n    }\r\n    \r\n    Args:\r\n        example:   a dictionary of format\
+          \ {\r\n            \"prompt\": \"Summarize:<document>\\n<summary>\\n\",\r\
+          \n        }\r\n    \"\"\"    \r\n    assert isinstance(example['prompt'],\
+          \ str), f\"expected str, got {type(example['prompt'])}\"\r\n    inputs:\
+          \ Dict[str, List[int]] = tokenizer(\r\n        example['prompt'], \r\n \
+          \       max_length=MAX_TOKEN_LENGTH,   \r\n        truncation=True,\r\n\
+          \        # padding='max_length',\r\n    )\r\n    inputs[\"labels\"] = inputs[\"\
+          input_ids\"].copy()   # Casual LM get the same tokens as inputs and label\r\
+          \n    \r\n    return inputs\r\n\r\nremove_column_names: List[str] = list(train.features.keys())\r\
+          \n\r\n# --------------------------------------------------------------------------------\r\
+          \n# Tokenization by applying function\r\n# --------------------------------------------------------------------------------\r\
+          \ntokenized_train = train.map(\r\n    function=convert_to_prompt, \r\n \
+          \   batched=False,\r\n    remove_columns=remove_column_names,\r\n    num_proc=NUM_CPUS\r\
+          \n).map(\r\n    function=tokenize_prompt, \r\n    batched=False,\r\n   \
+          \ remove_columns=['prompt'],\r\n    num_proc=NUM_CPUS\r\n).shuffle(\r\n\
+          \    seed=42\r\n).with_format(\r\n    \"torch\"\r\n)\r\n```\r\n\r\nTraining:\r\
+          \n\r\n```\r\ndata_collator = DataCollatorForLanguageModeling(\r\n   tokenizer=tokenizer,\
+          \ \r\n   mlm=False,\r\n   return_tensors='pt'\r\n)\r\n\r\ntraining_args\
+          \ = TrainingArguments(\r\n    output_dir=\"bloom_finetuned\",\r\n    max_steps=MAX_STEPS,\r\
+          \n    num_train_epochs=3,\r\n    per_device_train_batch_size=1,\r\n#   \
+          \ per_device_eval_batch_size=1,\r\n    learning_rate=2e-5,\r\n    weight_decay=0.01,\
+          \ \r\n    fp16=USE_FLOAT16,\r\n    no_cuda=False,\r\n#    evaluation_strategy=\"\
+          epoch\",\r\n)\r\n\r\ntrainer = Trainer(\r\n    model=model,\r\n    args=training_args,\r\
+          \n    train_dataset=tokenized_train,\r\n    tokenizer=tokenizer,\r\n   \
+          \ data_collator=data_collator,\r\n    compute_metrics=compute_metrics,\r\
+          \n)\r\n```"
+        updatedAt: '2023-04-17T07:16:06.569Z'
+      numEdits: 0
+      reactions: []
+    id: 643cf236cc862a73634cb39a
+    type: comment
+  author: monta
+  content: "Do we need to use DataCollatorForLanguageModeling and EOS (End of Sequence)\
+    \ token for padding token for BLOOM?\r\n\r\n[Causal language modeling](https://huggingface.co/docs/transformers/tasks/language_modeling)\
+    \ says:\r\n> Now create a batch of examples using DataCollatorForLanguageModeling.\
+    \ It\u2019s more efficient to dynamically pad the sentences to the longest length\
+    \ in a batch during collation, instead of padding the whole dataset to the maximum\
+    \ length. Use the end-of-sequence token as the padding token and set mlm=False.\
+    \ This will use the inputs as labels shifted to the right by one element:\r\n\
+    > ```\r\n> from transformers import DataCollatorForLanguageModeling\r\n> \r\n\
+    > tokenizer.pad_token = tokenizer.eos_token\r\n> data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer,\
+    \ mlm=False)\r\n> ```\r\n\r\nHowever, if I use DataCollatorForLanguageModeling,\
+    \ I get the error:\r\n```\r\nValueError: Unable to create tensor, you should probably\
+    \ activate truncation and/or padding with 'padding=True' 'truncation=True' to\
+    \ have batched tensors with the same length. Perhaps your features (`labels` in\
+    \ this case) have excessive nesting (inputs type `list` where type `int` is expected).\r\
+    \n```\r\n\r\n# Environment\r\n```\r\n!cat /etc/os-release\r\nPRETTY_NAME=\"Debian\
+    \ GNU/Linux 10 (buster)\"\r\n\r\n!transformers-cli env\r\n- `transformers` version:\
+    \ 4.28.0\r\n- Platform: Linux-4.14.309-231.529.amzn2.x86_64-x86_64-with-debian-10.6\r\
+    \n- Python version: 3.7.10\r\n- Huggingface_hub version: 0.13.4\r\n- Safetensors\
+    \ version: not installed\r\n- PyTorch version (GPU?): 1.13.1+cu117 (True)\r\n\
+    - Tensorflow version (GPU?): not installed (NA)\r\n- Flax version (CPU?/GPU?/TPU?):\
+    \ not installed (NA)\r\n- Jax version: not installed\r\n- JaxLib version: not\
+    \ installed\r\n- Using GPU in script?: YES\r\n- Using distributed or parallel\
+    \ set-up in script?: <fill in>\r\n```\r\n\r\n# Code for Tokenization\r\n\r\n```\r\
+    \nDATASET_STREAMING: bool = False\r\ntrain = load_dataset(\"xsum\", split=\"train\"\
+    , streaming=DATASET_STREAMING)\r\n\r\n# --------------------------------------------------------------------------------\r\
+    \n# Function to generate prompt from XSUM dataset\r\n# --------------------------------------------------------------------------------\r\
+    \ndef get_convert_to_prompt(template: Template) -> Callable:\r\n    def _convert_to_prompt(example:\
+    \ Dict[str, str]) -> Dict[str, str]:\r\n        \"\"\"Generate prompt as a dictionary:\r\
+    \n        {\r\n            \"prompt\": \"Summarize: <document>\\n<summary>\"\r\
+    \n        }\r\n\r\n        Args:\r\n            example: single {document, summary}\
+    \ pair to be able to apply template\r\n        Returns: a dictionary of prompt\r\
+    \n        \"\"\"\r\n        # assert isinstance(example, dict), f\"expected dict\
+    \ but {type(example)}.\\n{example}\"\r\n        assert isinstance(example['document'],\
+    \ str), f\"expected str but {type(example['document'])}.\"\r\n\r\n        prompt,\
+    \ response = template.apply(example=example, truncate=False)\r\n        return\
+    \ {\r\n            \"prompt\": \" \".join(\r\n                re.sub(r'[\\s\\\
+    '\\\"]+', ' ', prompt).split(' ')[:MAX_REQUEST_LENGTH-1]  # -1 for \\n\r\n   \
+    \         ) + \"\\n\" + \" \".join(\r\n                re.sub(r'[\\s\\'\\\"]+',\
+    \ ' ', response).split(' ')[:MAX_RESPONSE_LENGTH-1]\r\n            ) + \"\\n\"\
+    \r\n        }\r\n\r\n    return _convert_to_prompt\r\n\r\nconvert_to_prompt: Callable\
+    \ = get_convert_to_prompt(template=template)\r\n\r\n# --------------------------------------------------------------------------------\r\
+    \n# Function to tokenize prompt\r\n# --------------------------------------------------------------------------------\r\
+    \ndef tokenize_prompt(example):\r\n    \"\"\"Generate the model inputs in the\
+    \ dictionary with format:\r\n    {\r\n        \"input_ids\": List[int], \r\n \
+    \       \"attention_mask\": List[int]\",\r\n        \"labels\": List[int]\r\n\
+    \    }\r\n    \r\n    Args:\r\n        example:   a dictionary of format {\r\n\
+    \            \"prompt\": \"Summarize:<document>\\n<summary>\\n\",\r\n        }\r\
+    \n    \"\"\"    \r\n    assert isinstance(example['prompt'], str), f\"expected\
+    \ str, got {type(example['prompt'])}\"\r\n    inputs: Dict[str, List[int]] = tokenizer(\r\
+    \n        example['prompt'], \r\n        max_length=MAX_TOKEN_LENGTH,   \r\n \
+    \       truncation=True,\r\n        # padding='max_length',\r\n    )\r\n    inputs[\"\
+    labels\"] = inputs[\"input_ids\"].copy()   # Casual LM get the same tokens as\
+    \ inputs and label\r\n    \r\n    return inputs\r\n\r\nremove_column_names: List[str]\
+    \ = list(train.features.keys())\r\n\r\n# --------------------------------------------------------------------------------\r\
+    \n# Tokenization by applying function\r\n# --------------------------------------------------------------------------------\r\
+    \ntokenized_train = train.map(\r\n    function=convert_to_prompt, \r\n    batched=False,\r\
+    \n    remove_columns=remove_column_names,\r\n    num_proc=NUM_CPUS\r\n).map(\r\
+    \n    function=tokenize_prompt, \r\n    batched=False,\r\n    remove_columns=['prompt'],\r\
+    \n    num_proc=NUM_CPUS\r\n).shuffle(\r\n    seed=42\r\n).with_format(\r\n   \
+    \ \"torch\"\r\n)\r\n```\r\n\r\nTraining:\r\n\r\n```\r\ndata_collator = DataCollatorForLanguageModeling(\r\
+    \n   tokenizer=tokenizer, \r\n   mlm=False,\r\n   return_tensors='pt'\r\n)\r\n\
+    \r\ntraining_args = TrainingArguments(\r\n    output_dir=\"bloom_finetuned\",\r\
+    \n    max_steps=MAX_STEPS,\r\n    num_train_epochs=3,\r\n    per_device_train_batch_size=1,\r\
+    \n#    per_device_eval_batch_size=1,\r\n    learning_rate=2e-5,\r\n    weight_decay=0.01,\
+    \ \r\n    fp16=USE_FLOAT16,\r\n    no_cuda=False,\r\n#    evaluation_strategy=\"\
+    epoch\",\r\n)\r\n\r\ntrainer = Trainer(\r\n    model=model,\r\n    args=training_args,\r\
+    \n    train_dataset=tokenized_train,\r\n    tokenizer=tokenizer,\r\n    data_collator=data_collator,\r\
+    \n    compute_metrics=compute_metrics,\r\n)\r\n```"
+  created_at: 2023-04-17 06:16:06+00:00
+  edited: false
+  hidden: false
+  id: 643cf236cc862a73634cb39a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 238
+repo_id: bigscience/bloom
+repo_type: model
+status: open
+target_branch: null
+title: Data Collator class to use for BLOOM

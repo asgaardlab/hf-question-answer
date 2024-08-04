@@ -1,0 +1,591 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: polymer
+conflicting_files: null
+created_at: 2023-10-13 08:58:52+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c2a62179099b6e9d40407534f04abead.svg
+      fullname: polymer
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: polymer
+      type: user
+    createdAt: '2023-10-13T09:58:52.000Z'
+    data:
+      edited: false
+      editors:
+      - polymer
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9484023451805115
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c2a62179099b6e9d40407534f04abead.svg
+          fullname: polymer
+          isHf: false
+          isPro: false
+          name: polymer
+          type: user
+        html: "<p>It's nice seeing all the developments chug along, with no stopping\
+          \ in sight! Thank you for your continued work in training these models.\
+          \ Being able to see and experience what's on the frontier for LLMs first-hand\
+          \ is really valuable. I had a few questions about the training details for\
+          \ this (very coherent) model, with potential areas for improvement:</p>\n\
+          <p>As per the original Orca paper, the training for their model used GPT-3.5\
+          \ completions as an intermediary target to meet before later training on\
+          \ GPT-4 completions, making sure the model has been <em>finalized</em> with\
+          \ the higher quality data (from GPT-4) at its training completion. Relevant\
+          \ excerpt from paper:</p>\n<blockquote>\n<p>We first train Orca on FLAN-5M\
+          \ (ChatGPT augmentations), followed by second stage of training on FLAN-1M\
+          \ (GPT-4 augmentations). Essentially, we leverage ChatGPT as intermediate\
+          \ teacher assistant for two reasons.<br><br>\u2022 Capacity gap: Orca with\
+          \ 13B parameters is many times smaller than GPT-4 (size undisclosed). Leveraging\
+          \ an intermediate teacher with reduced gap in capabilities, in this case\
+          \ ChatGPT, has been shown to improve imitation learning performance for\
+          \ smaller students in knowledge distillation [15]. This can be viewed as\
+          \ a form of progressive learning or curriculum learning, where the student\
+          \ first learns from easier examples, followed by harder ones: with the assumption\
+          \ that longer responses are difficult to mimic than shorter ones, along\
+          \ with improved reasoning and step-by-step explanation from a larger teacher\
+          \ . . .</p>\n</blockquote>\n<p>From what I could gather, the training for\
+          \ <code>dolphin-2.1</code> was performed with a mix of data in no particular\
+          \ order, which would suggest that the model learns using that mixed-quality\
+          \ target dataset all the way to training completion. If this is the case,\
+          \ future training could benefit from a more ordered learning process, for\
+          \ instance: 3 epochs of GPT-3.5 completions (w. shuffling on each epoch\
+          \ and a suitable LR scheduler) -&gt; 5 epochs of GPT-4 completions, where\
+          \ <code>airoboros</code> data (which is from GPT-4) could be mixed into.</p>\n\
+          <p>Separation of training into these stages, with each stage having its\
+          \ own scheduling \u2014 both leading to a final LR cool-down \u2014 can\
+          \ also act in a way similar to cosine annealing, refreshing the training\
+          \ and providing a chance for escaping local minima (thereby achieving better\
+          \ generalization). This would also add more hyperparameters to fiddle with,\
+          \ both the number of epochs and peak LR for each stage now variable.</p>\n\
+          <p>The other question is on the filtering for both GPT completions: was\
+          \ the deduplication step in filtering performed per-set or across both GPT-4\
+          \ and GPT-3.5 sets? Deduplication should have been performed per-set with\
+          \ GPT-3.5 and GPT-4 completions treated as completely separate datasets,\
+          \ given the curriculum learning intentions.</p>\n<p>Last is a small question\
+          \ about the formatting. It seems the model outputs for the assistant role\
+          \ always begin with a token containing a space character (logged from llama.cpp,\
+          \ notice token 6880):</p>\n<pre><code>'':32000, '':32001, 'ass':489, 'istant':11143,\
+          \ '':13, ' Another':6880, ' lesser':26767, '-':28733, 'known':4717, ' but':562,\
+          \ ' fascinating':23069, ' quote':13658, ' from':477, ' Charles':6427\n</code></pre>\n\
+          <p>Was this an intentional decision (as with default Llama tokenizer behavior,\
+          \ adding BOS and having the very first token include a space), and should\
+          \ the user input also include a space?</p>\n"
+        raw: "It's nice seeing all the developments chug along, with no stopping in\
+          \ sight! Thank you for your continued work in training these models. Being\
+          \ able to see and experience what's on the frontier for LLMs first-hand\
+          \ is really valuable. I had a few questions about the training details for\
+          \ this (very coherent) model, with potential areas for improvement:\r\n\r\
+          \nAs per the original Orca paper, the training for their model used GPT-3.5\
+          \ completions as an intermediary target to meet before later training on\
+          \ GPT-4 completions, making sure the model has been *finalized* with the\
+          \ higher quality data (from GPT-4) at its training completion. Relevant\
+          \ excerpt from paper:\r\n\r\n> We first train Orca on FLAN-5M (ChatGPT augmentations),\
+          \ followed by second stage of training on FLAN-1M (GPT-4 augmentations).\
+          \ Essentially, we leverage ChatGPT as intermediate teacher assistant for\
+          \ two reasons.<br/><br/>\u2022 Capacity gap: Orca with 13B parameters is\
+          \ many times smaller than GPT-4 (size undisclosed). Leveraging an intermediate\
+          \ teacher with reduced gap in capabilities, in this case ChatGPT, has been\
+          \ shown to improve imitation learning performance for smaller students in\
+          \ knowledge distillation [15]. This can be viewed as a form of progressive\
+          \ learning or curriculum learning, where the student first learns from easier\
+          \ examples, followed by harder ones: with the assumption that longer responses\
+          \ are difficult to mimic than shorter ones, along with improved reasoning\
+          \ and step-by-step explanation from a larger teacher . . .\r\n\r\nFrom what\
+          \ I could gather, the training for `dolphin-2.1` was performed with a mix\
+          \ of data in no particular order, which would suggest that the model learns\
+          \ using that mixed-quality target dataset all the way to training completion.\
+          \ If this is the case, future training could benefit from a more ordered\
+          \ learning process, for instance: 3 epochs of GPT-3.5 completions (w. shuffling\
+          \ on each epoch and a suitable LR scheduler) -> 5 epochs of GPT-4 completions,\
+          \ where `airoboros` data (which is from GPT-4) could be mixed into.\r\n\r\
+          \nSeparation of training into these stages, with each stage having its own\
+          \ scheduling \u2014 both leading to a final LR cool-down \u2014 can also\
+          \ act in a way similar to cosine annealing, refreshing the training and\
+          \ providing a chance for escaping local minima (thereby achieving better\
+          \ generalization). This would also add more hyperparameters to fiddle with,\
+          \ both the number of epochs and peak LR for each stage now variable.\r\n\
+          \r\nThe other question is on the filtering for both GPT completions: was\
+          \ the deduplication step in filtering performed per-set or across both GPT-4\
+          \ and GPT-3.5 sets? Deduplication should have been performed per-set with\
+          \ GPT-3.5 and GPT-4 completions treated as completely separate datasets,\
+          \ given the curriculum learning intentions.\r\n\r\nLast is a small question\
+          \ about the formatting. It seems the model outputs for the assistant role\
+          \ always begin with a token containing a space character (logged from llama.cpp,\
+          \ notice token 6880):\r\n\r\n```\r\n'':32000, '':32001, 'ass':489, 'istant':11143,\
+          \ '':13, ' Another':6880, ' lesser':26767, '-':28733, 'known':4717, ' but':562,\
+          \ ' fascinating':23069, ' quote':13658, ' from':477, ' Charles':6427\r\n\
+          ```\r\n\r\nWas this an intentional decision (as with default Llama tokenizer\
+          \ behavior, adding BOS and having the very first token include a space),\
+          \ and should the user input also include a space?"
+        updatedAt: '2023-10-13T09:58:52.053Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - david1155
+        - olivert
+        - PrimeD
+    id: 652914dc1ce90a0961512a6b
+    type: comment
+  author: polymer
+  content: "It's nice seeing all the developments chug along, with no stopping in\
+    \ sight! Thank you for your continued work in training these models. Being able\
+    \ to see and experience what's on the frontier for LLMs first-hand is really valuable.\
+    \ I had a few questions about the training details for this (very coherent) model,\
+    \ with potential areas for improvement:\r\n\r\nAs per the original Orca paper,\
+    \ the training for their model used GPT-3.5 completions as an intermediary target\
+    \ to meet before later training on GPT-4 completions, making sure the model has\
+    \ been *finalized* with the higher quality data (from GPT-4) at its training completion.\
+    \ Relevant excerpt from paper:\r\n\r\n> We first train Orca on FLAN-5M (ChatGPT\
+    \ augmentations), followed by second stage of training on FLAN-1M (GPT-4 augmentations).\
+    \ Essentially, we leverage ChatGPT as intermediate teacher assistant for two reasons.<br/><br/>\u2022\
+    \ Capacity gap: Orca with 13B parameters is many times smaller than GPT-4 (size\
+    \ undisclosed). Leveraging an intermediate teacher with reduced gap in capabilities,\
+    \ in this case ChatGPT, has been shown to improve imitation learning performance\
+    \ for smaller students in knowledge distillation [15]. This can be viewed as a\
+    \ form of progressive learning or curriculum learning, where the student first\
+    \ learns from easier examples, followed by harder ones: with the assumption that\
+    \ longer responses are difficult to mimic than shorter ones, along with improved\
+    \ reasoning and step-by-step explanation from a larger teacher . . .\r\n\r\nFrom\
+    \ what I could gather, the training for `dolphin-2.1` was performed with a mix\
+    \ of data in no particular order, which would suggest that the model learns using\
+    \ that mixed-quality target dataset all the way to training completion. If this\
+    \ is the case, future training could benefit from a more ordered learning process,\
+    \ for instance: 3 epochs of GPT-3.5 completions (w. shuffling on each epoch and\
+    \ a suitable LR scheduler) -> 5 epochs of GPT-4 completions, where `airoboros`\
+    \ data (which is from GPT-4) could be mixed into.\r\n\r\nSeparation of training\
+    \ into these stages, with each stage having its own scheduling \u2014 both leading\
+    \ to a final LR cool-down \u2014 can also act in a way similar to cosine annealing,\
+    \ refreshing the training and providing a chance for escaping local minima (thereby\
+    \ achieving better generalization). This would also add more hyperparameters to\
+    \ fiddle with, both the number of epochs and peak LR for each stage now variable.\r\
+    \n\r\nThe other question is on the filtering for both GPT completions: was the\
+    \ deduplication step in filtering performed per-set or across both GPT-4 and GPT-3.5\
+    \ sets? Deduplication should have been performed per-set with GPT-3.5 and GPT-4\
+    \ completions treated as completely separate datasets, given the curriculum learning\
+    \ intentions.\r\n\r\nLast is a small question about the formatting. It seems the\
+    \ model outputs for the assistant role always begin with a token containing a\
+    \ space character (logged from llama.cpp, notice token 6880):\r\n\r\n```\r\n'':32000,\
+    \ '':32001, 'ass':489, 'istant':11143, '':13, ' Another':6880, ' lesser':26767,\
+    \ '-':28733, 'known':4717, ' but':562, ' fascinating':23069, ' quote':13658, '\
+    \ from':477, ' Charles':6427\r\n```\r\n\r\nWas this an intentional decision (as\
+    \ with default Llama tokenizer behavior, adding BOS and having the very first\
+    \ token include a space), and should the user input also include a space?"
+  created_at: 2023-10-13 08:58:52+00:00
+  edited: false
+  hidden: false
+  id: 652914dc1ce90a0961512a6b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-13T13:27:24.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9719100594520569
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>Thanks for the insightful comment!</p>
+
+          <p>Yeah this is definitely not Orca anymore<br>That''s why I call it inspired
+          by Orca.</p>
+
+          <p>My attempt to replicate Orca failed.  The failure was that the performance
+          of dolphin-1.0 did not even come close to the numbers claimed by Microsoft.</p>
+
+          <p>Whether that means I did something wrong, or the Microsoft paper was
+          in error, I''m not sure we will ever know.</p>
+
+          <p>So I have gotten creative, using dataset strategies that seem to work
+          for others and my own mix.</p>
+
+          <p>What I saw in my experiments is that the 2-phase approach didn''t make
+          any difference.  The outcome is the same whether I mix the data and train
+          it all together or if I train it in two phases.</p>
+
+          <p>So I don''t bother with that.</p>
+
+          <p>I''m using only gpt4 generated data and omitting the gpt3.5 generated
+          data.</p>
+
+          <p>I''m also using only about 300k samples of it instead of the whole thing.  I
+          chose longer samples as a metric of quality.</p>
+
+          <p>Your note about the space after the assistant role - that''s a really
+          good catch.  I presume that''s a bug in axolotl.  I won''t retrain the model
+          but I''ll update the examples.  I''ll make sure to bring this to Wing''s
+          attention.</p>
+
+          <p>Thanks again!</p>
+
+          '
+        raw: 'Thanks for the insightful comment!
+
+
+          Yeah this is definitely not Orca anymore
+
+          That''s why I call it inspired by Orca.
+
+
+          My attempt to replicate Orca failed.  The failure was that the performance
+          of dolphin-1.0 did not even come close to the numbers claimed by Microsoft.
+
+
+          Whether that means I did something wrong, or the Microsoft paper was in
+          error, I''m not sure we will ever know.
+
+
+          So I have gotten creative, using dataset strategies that seem to work for
+          others and my own mix.
+
+
+          What I saw in my experiments is that the 2-phase approach didn''t make any
+          difference.  The outcome is the same whether I mix the data and train it
+          all together or if I train it in two phases.
+
+
+          So I don''t bother with that.
+
+
+          I''m using only gpt4 generated data and omitting the gpt3.5 generated data.
+
+
+          I''m also using only about 300k samples of it instead of the whole thing.  I
+          chose longer samples as a metric of quality.
+
+
+          Your note about the space after the assistant role - that''s a really good
+          catch.  I presume that''s a bug in axolotl.  I won''t retrain the model
+          but I''ll update the examples.  I''ll make sure to bring this to Wing''s
+          attention.
+
+
+          Thanks again!
+
+
+          '
+        updatedAt: '2023-10-13T13:27:24.503Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - lcahill
+    id: 652945bcbb31f9ed0c9abd2b
+    type: comment
+  author: ehartford
+  content: 'Thanks for the insightful comment!
+
+
+    Yeah this is definitely not Orca anymore
+
+    That''s why I call it inspired by Orca.
+
+
+    My attempt to replicate Orca failed.  The failure was that the performance of
+    dolphin-1.0 did not even come close to the numbers claimed by Microsoft.
+
+
+    Whether that means I did something wrong, or the Microsoft paper was in error,
+    I''m not sure we will ever know.
+
+
+    So I have gotten creative, using dataset strategies that seem to work for others
+    and my own mix.
+
+
+    What I saw in my experiments is that the 2-phase approach didn''t make any difference.  The
+    outcome is the same whether I mix the data and train it all together or if I train
+    it in two phases.
+
+
+    So I don''t bother with that.
+
+
+    I''m using only gpt4 generated data and omitting the gpt3.5 generated data.
+
+
+    I''m also using only about 300k samples of it instead of the whole thing.  I chose
+    longer samples as a metric of quality.
+
+
+    Your note about the space after the assistant role - that''s a really good catch.  I
+    presume that''s a bug in axolotl.  I won''t retrain the model but I''ll update
+    the examples.  I''ll make sure to bring this to Wing''s attention.
+
+
+    Thanks again!
+
+
+    '
+  created_at: 2023-10-13 12:27:24+00:00
+  edited: false
+  hidden: false
+  id: 652945bcbb31f9ed0c9abd2b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/c2a62179099b6e9d40407534f04abead.svg
+      fullname: polymer
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: polymer
+      type: user
+    createdAt: '2023-10-13T15:20:37.000Z'
+    data:
+      edited: false
+      editors:
+      - polymer
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9319191575050354
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/c2a62179099b6e9d40407534f04abead.svg
+          fullname: polymer
+          isHf: false
+          isPro: false
+          name: polymer
+          type: user
+        html: "<p>Hmm, interesting. I wonder if the disparity in results could be\
+          \ indicative of undertraining (i. e. staged optimization did not incur enough\
+          \ learning for model to follow curriculum learning hypothesis, gaps to both\
+          \ GPT-4 and 3.5 remaining too far). Maybe (or hopefully) there\u2019s a\
+          \ chance these small models could be better.</p>\n<p>I\u2019m surprised\
+          \ to learn that your performant models weren\u2019t using all the data.\
+          \ If the fact that switching up the data mixture/training process didn\u2019\
+          t make a significant difference is true, the LR and/or epochs could likely\
+          \ be set higher. Cosine annealing, perhaps with decreasing peak LRs, will\
+          \ definitely fight overfitting at the superficial/textual level (despite\
+          \ the wacky training loss curve, which won\u2019t tell you much) while allowing\
+          \ the slower semantic/generalizable learning to take place for longer.</p>\n\
+          <p>Thanks for going through my comments, hope your future experiments turn\
+          \ out great as well!</p>\n"
+        raw: "Hmm, interesting. I wonder if the disparity in results could be indicative\
+          \ of undertraining (i. e. staged optimization did not incur enough learning\
+          \ for model to follow curriculum learning hypothesis, gaps to both GPT-4\
+          \ and 3.5 remaining too far). Maybe (or hopefully) there\u2019s a chance\
+          \ these small models could be better.\n\nI\u2019m surprised to learn that\
+          \ your performant models weren\u2019t using all the data. If the fact that\
+          \ switching up the data mixture/training process didn\u2019t make a significant\
+          \ difference is true, the LR and/or epochs could likely be set higher. Cosine\
+          \ annealing, perhaps with decreasing peak LRs, will definitely fight overfitting\
+          \ at the superficial/textual level (despite the wacky training loss curve,\
+          \ which won\u2019t tell you much) while allowing the slower semantic/generalizable\
+          \ learning to take place for longer.\n\nThanks for going through my comments,\
+          \ hope your future experiments turn out great as well!"
+        updatedAt: '2023-10-13T15:20:37.356Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - olivert
+        - PrimeD
+    id: 652960452aa5b27c779cbe1d
+    type: comment
+  author: polymer
+  content: "Hmm, interesting. I wonder if the disparity in results could be indicative\
+    \ of undertraining (i. e. staged optimization did not incur enough learning for\
+    \ model to follow curriculum learning hypothesis, gaps to both GPT-4 and 3.5 remaining\
+    \ too far). Maybe (or hopefully) there\u2019s a chance these small models could\
+    \ be better.\n\nI\u2019m surprised to learn that your performant models weren\u2019\
+    t using all the data. If the fact that switching up the data mixture/training\
+    \ process didn\u2019t make a significant difference is true, the LR and/or epochs\
+    \ could likely be set higher. Cosine annealing, perhaps with decreasing peak LRs,\
+    \ will definitely fight overfitting at the superficial/textual level (despite\
+    \ the wacky training loss curve, which won\u2019t tell you much) while allowing\
+    \ the slower semantic/generalizable learning to take place for longer.\n\nThanks\
+    \ for going through my comments, hope your future experiments turn out great as\
+    \ well!"
+  created_at: 2023-10-13 14:20:37+00:00
+  edited: false
+  hidden: false
+  id: 652960452aa5b27c779cbe1d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+      fullname: Eric Hartford
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: true
+      name: ehartford
+      type: user
+    createdAt: '2023-10-13T18:20:37.000Z'
+    data:
+      edited: false
+      editors:
+      - ehartford
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9278481602668762
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63111b2d88942700629f5771/u2a9y-yx6TG0N31OhMSHI.png?w=200&h=200&f=face
+          fullname: Eric Hartford
+          isHf: false
+          isPro: true
+          name: ehartford
+          type: user
+        html: '<p>I''m seeking a partner on the dolphin project with academic / deeper
+          ML background than me.  If you are interested in collaboration, DM me on
+          Twitter / discord.</p>
+
+          '
+        raw: I'm seeking a partner on the dolphin project with academic / deeper ML
+          background than me.  If you are interested in collaboration, DM me on Twitter
+          / discord.
+        updatedAt: '2023-10-13T18:20:37.402Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - olivert
+        - Psychopatz
+    id: 65298a75b118f26df70e4bc3
+    type: comment
+  author: ehartford
+  content: I'm seeking a partner on the dolphin project with academic / deeper ML
+    background than me.  If you are interested in collaboration, DM me on Twitter
+    / discord.
+  created_at: 2023-10-13 17:20:37+00:00
+  edited: false
+  hidden: false
+  id: 65298a75b118f26df70e4bc3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8cdf266604b24bc9ae599aa2def8debd.svg
+      fullname: lvkaokao
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: lvkaokao
+      type: user
+    createdAt: '2023-10-16T07:32:53.000Z'
+    data:
+      edited: true
+      editors:
+      - lvkaokao
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9274867177009583
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8cdf266604b24bc9ae599aa2def8debd.svg
+          fullname: lvkaokao
+          isHf: false
+          isPro: false
+          name: lvkaokao
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ehartford&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ehartford\">@<span class=\"\
+          underline\">ehartford</span></a></span>\n\n\t</span></span>  hi, I have\
+          \ seen the training args in the files. And have a question about the hyper-parameters:<br>the\
+          \ training dataset is ~300k, epoch=4, per_device_train_batch=6, and gradient\
+          \ accumulation=4, GPU cards=4, but the global steps=1204, is the hyper-parameters\
+          \ correct?</p>\n<p>I am trying to reproduce your results, but I find the\
+          \ metric of ARC and Hellaswag decreases significantly during the training.</p>\n\
+          <p>Hope to get your reply~<br>Thanks</p>\n"
+        raw: '@ehartford  hi, I have seen the training args in the files. And have
+          a question about the hyper-parameters:
+
+          the training dataset is ~300k, epoch=4, per_device_train_batch=6, and gradient
+          accumulation=4, GPU cards=4, but the global steps=1204, is the hyper-parameters
+          correct?
+
+
+          I am trying to reproduce your results, but I find the metric of ARC and
+          Hellaswag decreases significantly during the training.
+
+
+          Hope to get your reply~
+
+          Thanks
+
+          '
+        updatedAt: '2023-10-16T07:34:03.727Z'
+      numEdits: 2
+      reactions: []
+    id: 652ce7255aec376f55416d06
+    type: comment
+  author: lvkaokao
+  content: '@ehartford  hi, I have seen the training args in the files. And have a
+    question about the hyper-parameters:
+
+    the training dataset is ~300k, epoch=4, per_device_train_batch=6, and gradient
+    accumulation=4, GPU cards=4, but the global steps=1204, is the hyper-parameters
+    correct?
+
+
+    I am trying to reproduce your results, but I find the metric of ARC and Hellaswag
+    decreases significantly during the training.
+
+
+    Hope to get your reply~
+
+    Thanks
+
+    '
+  created_at: 2023-10-16 06:32:53+00:00
+  edited: true
+  hidden: false
+  id: 652ce7255aec376f55416d06
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: cognitivecomputations/dolphin-2.1-mistral-7b
+repo_type: model
+status: open
+target_branch: null
+title: Some questions and potential suggestions

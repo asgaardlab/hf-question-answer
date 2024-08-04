@@ -1,0 +1,147 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: mbecuwe
+conflicting_files: null
+created_at: 2022-09-07 11:23:44+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/11f721bc0ce48626d95a062b86364a66.svg
+      fullname: martin becuwe
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mbecuwe
+      type: user
+    createdAt: '2022-09-07T12:23:44.000Z'
+    data:
+      edited: false
+      editors:
+      - mbecuwe
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/11f721bc0ce48626d95a062b86364a66.svg
+          fullname: martin becuwe
+          isHf: false
+          isPro: false
+          name: mbecuwe
+          type: user
+        html: "<p>I have a NLP use case to compute semantic similarity between sentences\
+          \ that are very specific to my use case.<br>I want to use <a rel=\"nofollow\"\
+          \ href=\"https://www.sbert.net/\">Sentence Transformers</a> library to do\
+          \ this, which provides with state of the art result for this goal.  </p>\n\
+          <p>I have a BERT model specifically trained for the sBERT task and I know\
+          \ I can finetune the model with pair of sentences as inputs and similarity\
+          \ score as labels.<br>However, I would also like to continue BERT pretraining\
+          \ with Mask Language Modeling task on this model.<br>Does it make sense\
+          \ to instantiate a BertForMaskedLM object from this model already trained\
+          \ for sentence transformer task in order to continue its pretraining, and\
+          \ then load it as a SentenceTransformer model to finetune it on sentence\
+          \ pairs? </p>\n<p>I would do as such, with example on <a href=\"https://huggingface.co/dangvantuan/sentence-camembert-large\"\
+          >Camembert French NLP model from huggingface</a> :</p>\n<p>For the MLM part:</p>\n\
+          <pre><code>from transformers import CamembertTokenizer, CamembertForMaskedLM,\
+          \ LineByLineTextDataset, DataCollatorForLanguageModeling, Trainer, TrainingArguments\n\
+          \n\ntokenizer = CamembertTokenizer.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+          )\nmodel = CamembertForMaskedLM.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+          )\n\ndataset = LineByLineTextDataset(\n    tokenizer=tokenizer,\n    file_path=LOCAL_DATASET_PATH,\n\
+          \    block_size=512\n)\n\ndata_collator = DataCollatorForLanguageModeling(\n\
+          \    tokenizer=tokenizer, mlm=True, mlm_probability=0.15\n)\n\ntraining_args\
+          \ = TrainingArguments(\n    output_dir=LOCAL_MODEL_PATH,\n    overwrite_output_dir=True,\n\
+          \    num_train_epochs=25,\n    save_steps=500,\n    save_total_limit=2,\n\
+          \    seed=1,\n    auto_find_batch_size=True\n)\n\ntrainer = Trainer(\n \
+          \   model=model,\n    args=training_args,\n    data_collator=data_collator,\n\
+          \    train_dataset=dataset,\n)\n\ntrainer.train()\n\ntrainer.save_model(LOCAL_MODEL_PATH\
+          \ + \"/my_model\")\n</code></pre>\n<p>To get it as SentenceTransformer model:</p>\n\
+          <pre><code>from sentence_transformers import SentenceTransformer, models\n\
+          \nword_embedding_model = models.Transformer(\nLOCAL_MODEL_PATH + \"/my_model\"\
+          , \ntokenizer_name_or_path=tokenizer_path, \nmax_seq_length=max_seq_length\n\
+          )\npooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())\n\
+          model = SentenceTransformer(modules=[word_embedding_model, pooling_model])\n\
+          </code></pre>\n<p>Thanks ! </p>\n"
+        raw: "I have a NLP use case to compute semantic similarity between sentences\
+          \ that are very specific to my use case.  \r\nI want to use [Sentence Transformers][1]\
+          \ library to do this, which provides with state of the art result for this\
+          \ goal.  \r\n\r\nI have a BERT model specifically trained for the sBERT\
+          \ task and I know I can finetune the model with pair of sentences as inputs\
+          \ and similarity score as labels.  \r\nHowever, I would also like to continue\
+          \ BERT pretraining with Mask Language Modeling task on this model.  \r\n\
+          Does it make sense to instantiate a BertForMaskedLM object from this model\
+          \ already trained for sentence transformer task in order to continue its\
+          \ pretraining, and then load it as a SentenceTransformer model to finetune\
+          \ it on sentence pairs? \r\n\r\nI would do as such, with example on [Camembert\
+          \ French NLP model from huggingface][2] :\r\n\r\nFor the MLM part:\r\n```\r\
+          \nfrom transformers import CamembertTokenizer, CamembertForMaskedLM, LineByLineTextDataset,\
+          \ DataCollatorForLanguageModeling, Trainer, TrainingArguments\r\n\r\n\r\n\
+          tokenizer = CamembertTokenizer.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+          )\r\nmodel = CamembertForMaskedLM.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+          )\r\n\r\ndataset = LineByLineTextDataset(\r\n    tokenizer=tokenizer,\r\n\
+          \    file_path=LOCAL_DATASET_PATH,\r\n    block_size=512\r\n)\r\n\r\ndata_collator\
+          \ = DataCollatorForLanguageModeling(\r\n    tokenizer=tokenizer, mlm=True,\
+          \ mlm_probability=0.15\r\n)\r\n\r\ntraining_args = TrainingArguments(\r\n\
+          \    output_dir=LOCAL_MODEL_PATH,\r\n    overwrite_output_dir=True,\r\n\
+          \    num_train_epochs=25,\r\n    save_steps=500,\r\n    save_total_limit=2,\r\
+          \n    seed=1,\r\n    auto_find_batch_size=True\r\n)\r\n\r\ntrainer = Trainer(\r\
+          \n    model=model,\r\n    args=training_args,\r\n    data_collator=data_collator,\r\
+          \n    train_dataset=dataset,\r\n)\r\n\r\ntrainer.train()\r\n\r\ntrainer.save_model(LOCAL_MODEL_PATH\
+          \ + \"/my_model\")\r\n\r\n```\r\n\r\nTo get it as SentenceTransformer model:\r\
+          \n```\r\nfrom sentence_transformers import SentenceTransformer, models\r\
+          \n\r\nword_embedding_model = models.Transformer(\r\nLOCAL_MODEL_PATH + \"\
+          /my_model\", \r\ntokenizer_name_or_path=tokenizer_path, \r\nmax_seq_length=max_seq_length\r\
+          \n)\r\npooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())\r\
+          \nmodel = SentenceTransformer(modules=[word_embedding_model, pooling_model])\r\
+          \n```\r\n\r\nThanks ! \r\n\r\n  [1]: https://www.sbert.net/\r\n  [2]: https://huggingface.co/dangvantuan/sentence-camembert-large"
+        updatedAt: '2022-09-07T12:23:44.092Z'
+      numEdits: 0
+      reactions: []
+    id: 63188d50d9ba7acee30a6442
+    type: comment
+  author: mbecuwe
+  content: "I have a NLP use case to compute semantic similarity between sentences\
+    \ that are very specific to my use case.  \r\nI want to use [Sentence Transformers][1]\
+    \ library to do this, which provides with state of the art result for this goal.\
+    \  \r\n\r\nI have a BERT model specifically trained for the sBERT task and I know\
+    \ I can finetune the model with pair of sentences as inputs and similarity score\
+    \ as labels.  \r\nHowever, I would also like to continue BERT pretraining with\
+    \ Mask Language Modeling task on this model.  \r\nDoes it make sense to instantiate\
+    \ a BertForMaskedLM object from this model already trained for sentence transformer\
+    \ task in order to continue its pretraining, and then load it as a SentenceTransformer\
+    \ model to finetune it on sentence pairs? \r\n\r\nI would do as such, with example\
+    \ on [Camembert French NLP model from huggingface][2] :\r\n\r\nFor the MLM part:\r\
+    \n```\r\nfrom transformers import CamembertTokenizer, CamembertForMaskedLM, LineByLineTextDataset,\
+    \ DataCollatorForLanguageModeling, Trainer, TrainingArguments\r\n\r\n\r\ntokenizer\
+    \ = CamembertTokenizer.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+    )\r\nmodel = CamembertForMaskedLM.from_pretrained(\"dangvantuan/sentence-camembert-large\"\
+    )\r\n\r\ndataset = LineByLineTextDataset(\r\n    tokenizer=tokenizer,\r\n    file_path=LOCAL_DATASET_PATH,\r\
+    \n    block_size=512\r\n)\r\n\r\ndata_collator = DataCollatorForLanguageModeling(\r\
+    \n    tokenizer=tokenizer, mlm=True, mlm_probability=0.15\r\n)\r\n\r\ntraining_args\
+    \ = TrainingArguments(\r\n    output_dir=LOCAL_MODEL_PATH,\r\n    overwrite_output_dir=True,\r\
+    \n    num_train_epochs=25,\r\n    save_steps=500,\r\n    save_total_limit=2,\r\
+    \n    seed=1,\r\n    auto_find_batch_size=True\r\n)\r\n\r\ntrainer = Trainer(\r\
+    \n    model=model,\r\n    args=training_args,\r\n    data_collator=data_collator,\r\
+    \n    train_dataset=dataset,\r\n)\r\n\r\ntrainer.train()\r\n\r\ntrainer.save_model(LOCAL_MODEL_PATH\
+    \ + \"/my_model\")\r\n\r\n```\r\n\r\nTo get it as SentenceTransformer model:\r\
+    \n```\r\nfrom sentence_transformers import SentenceTransformer, models\r\n\r\n\
+    word_embedding_model = models.Transformer(\r\nLOCAL_MODEL_PATH + \"/my_model\"\
+    , \r\ntokenizer_name_or_path=tokenizer_path, \r\nmax_seq_length=max_seq_length\r\
+    \n)\r\npooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())\r\
+    \nmodel = SentenceTransformer(modules=[word_embedding_model, pooling_model])\r\
+    \n```\r\n\r\nThanks ! \r\n\r\n  [1]: https://www.sbert.net/\r\n  [2]: https://huggingface.co/dangvantuan/sentence-camembert-large"
+  created_at: 2022-09-07 11:23:44+00:00
+  edited: false
+  hidden: false
+  id: 63188d50d9ba7acee30a6442
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 2
+repo_id: dangvantuan/sentence-camembert-large
+repo_type: model
+status: open
+target_branch: null
+title: Performing MLM pretraining on BERT pretrained model to use model in Sentence
+  Transformer for semantic similarity

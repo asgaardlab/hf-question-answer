@@ -1,0 +1,284 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: jbochi
+conflicting_files: []
+created_at: 2023-11-20 16:52:21+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+      fullname: J Bochi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: jbochi
+      type: user
+    createdAt: '2023-11-20T16:52:21.000Z'
+    data:
+      edited: true
+      editors:
+      - jbochi
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.11044929921627045
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+          fullname: J Bochi
+          isHf: false
+          isPro: false
+          name: jbochi
+          type: user
+        html: "<p>Files were created with this command:</p>\n<pre><code class=\"language-bash\"\
+          >$ optimum-cli <span class=\"hljs-built_in\">export</span> onnx \\\n  --model\
+          \ grammarly/coedit-large \\\n  --task text2text-generation-with-past \\\n\
+          \  --optimize O3 \\\n  coedit-large-onnx/\n</code></pre>\n<p>There were\
+          \ a few warnings, but the diffs seem small enough:</p>\n<pre><code class=\"\
+          language-bash\">Validation <span class=\"hljs-keyword\">for</span> the model\
+          \ coedit-large-onnx/decoder_model_merged.onnx raised: The maximum absolute\
+          \ difference between the output of the reference model and the ONNX exported\
+          \ model is not within the <span class=\"hljs-built_in\">set</span> tolerance\
+          \ 1e-05:\n- present.0.encoder.key: max diff = 3.0517578125e-05\n- present.2.decoder.key:\
+          \ max diff = 1.1920928955078125e-05\n- present.2.decoder.value: max diff\
+          \ = 1.2740492820739746e-05\n...\nThe ONNX <span class=\"hljs-built_in\"\
+          >export</span> succeeded with the warning: The maximum absolute difference\
+          \ between the output of the reference model and the ONNX exported model\
+          \ is not within the <span class=\"hljs-built_in\">set</span> tolerance 1e-05:\n\
+          - logits: max diff = 0.0004119873046875\n- present.23.decoder.value: max\
+          \ diff = 6.103515625e-05.\n The exported model was saved at: coedit-large-onyx\n\
+          ...\n</code></pre>\n<p>I tested it with the code below. Note that ONNX is\
+          \ about ~1.8x faster on CPU than the transformers implementation.</p>\n\
+          <pre><code class=\"language-python\">In [<span class=\"hljs-number\">1</span>]:\
+          \ <span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoTokenizer, T5ForConditionalGeneration\n\nIn [<span class=\"\
+          hljs-number\">2</span>]: <span class=\"hljs-keyword\">from</span> optimum.onnxruntime\
+          \ <span class=\"hljs-keyword\">import</span> ORTModelForSeq2SeqLM\n\nIn\
+          \ [<span class=\"hljs-number\">4</span>]: model = ORTModelForSeq2SeqLM.from_pretrained(<span\
+          \ class=\"hljs-string\">'./onnx'</span>,  device=<span class=\"hljs-string\"\
+          >\"auto\"</span>)\n\nIn [<span class=\"hljs-number\">6</span>]: torch_model\
+          \ = T5ForConditionalGeneration.from_pretrained(<span class=\"hljs-string\"\
+          >\"Grammarly/coedit-large\"</span>)\n\nIn [<span class=\"hljs-number\">7</span>]:\
+          \ text = <span class=\"hljs-string\">\"Rewrite to make this easier to understand:\
+          \ A storm surge is what forecasters consider a hurricane's most treacherous\
+          \ aspect.\"</span>\n\nIn [<span class=\"hljs-number\">9</span>]: tokenizer\
+          \ = AutoTokenizer.from_pretrained(<span class=\"hljs-string\">\"grammarly/coedit-large\"\
+          </span>)\n\nIn [<span class=\"hljs-number\">10</span>]: input_ids = tokenizer(text,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>).input_ids.to(model.device)\n\
+          \nIn [<span class=\"hljs-number\">11</span>]:  %time outputs = model.generate(input_ids=input_ids)\n\
+          /opt/homebrew/Caskroom/miniconda/base/lib/python3<span class=\"hljs-number\"\
+          >.11</span>/site-packages/transformers/generation/utils.py:<span class=\"\
+          hljs-number\">1273</span>: UserWarning: Using the model-agnostic default\
+          \ `max_length` (=<span class=\"hljs-number\">20</span>) to control the generation\
+          \ length. We recommend setting `max_new_tokens` to control the maximum length\
+          \ of the generation.\n  warnings.warn(\nCPU times: user <span class=\"hljs-number\"\
+          >2.2</span> s, sys: <span class=\"hljs-number\">178</span> ms, total: <span\
+          \ class=\"hljs-number\">2.38</span> s\nWall time: <span class=\"hljs-number\"\
+          >399</span> ms\n\nIn [<span class=\"hljs-number\">12</span>]: %time torch_outputs\
+          \ = torch_model.generate(input_ids=input_ids)\n/opt/homebrew/Caskroom/miniconda/base/lib/python3<span\
+          \ class=\"hljs-number\">.11</span>/site-packages/transformers/generation/utils.py:<span\
+          \ class=\"hljs-number\">1273</span>: UserWarning: Using the model-agnostic\
+          \ default `max_length` (=<span class=\"hljs-number\">20</span>) to control\
+          \ the generation length. We recommend setting `max_new_tokens` to control\
+          \ the maximum length of the generation.\n  warnings.warn(\nCPU times: user\
+          \ <span class=\"hljs-number\">721</span> ms, sys: <span class=\"hljs-number\"\
+          >28.7</span> ms, total: <span class=\"hljs-number\">750</span> ms\nWall\
+          \ time: <span class=\"hljs-number\">723</span> ms\n\nIn [<span class=\"\
+          hljs-number\">13</span>]: torch_outputs == outputs\nOut[<span class=\"hljs-number\"\
+          >13</span>]:\ntensor([[<span class=\"hljs-literal\">True</span>, <span class=\"\
+          hljs-literal\">True</span>, <span class=\"hljs-literal\">True</span>, <span\
+          \ class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\">True</span>,\
+          \ <span class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\"\
+          >True</span>, <span class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\"\
+          >True</span>, <span class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\"\
+          >True</span>, <span class=\"hljs-literal\">True</span>,\n         <span\
+          \ class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\">True</span>,\
+          \ <span class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\"\
+          >True</span>, <span class=\"hljs-literal\">True</span>, <span class=\"hljs-literal\"\
+          >True</span>]])\n\nIn [<span class=\"hljs-number\">14</span>]: tokenizer.decode(outputs[<span\
+          \ class=\"hljs-number\">0</span>])\nOut[<span class=\"hljs-number\">14</span>]:\
+          \ <span class=\"hljs-string\">\"&lt;pad&gt; It is what they consider to\
+          \ be a hurricane's most dangerous aspect.&lt;/s&gt;\"</span>\n</code></pre>\n"
+        raw: "Files were created with this command:\n\n```bash\n$ optimum-cli export\
+          \ onnx \\\n  --model grammarly/coedit-large \\\n  --task text2text-generation-with-past\
+          \ \\\n  --optimize O3 \\\n  coedit-large-onnx/\n```\n\nThere were a few\
+          \ warnings, but the diffs seem small enough:\n\n```bash\nValidation for\
+          \ the model coedit-large-onnx/decoder_model_merged.onnx raised: The maximum\
+          \ absolute difference between the output of the reference model and the\
+          \ ONNX exported model is not within the set tolerance 1e-05:\n- present.0.encoder.key:\
+          \ max diff = 3.0517578125e-05\n- present.2.decoder.key: max diff = 1.1920928955078125e-05\n\
+          - present.2.decoder.value: max diff = 1.2740492820739746e-05\n...\nThe ONNX\
+          \ export succeeded with the warning: The maximum absolute difference between\
+          \ the output of the reference model and the ONNX exported model is not within\
+          \ the set tolerance 1e-05:\n- logits: max diff = 0.0004119873046875\n- present.23.decoder.value:\
+          \ max diff = 6.103515625e-05.\n The exported model was saved at: coedit-large-onyx\n\
+          ...\n```\n\nI tested it with the code below. Note that ONNX is about ~1.8x\
+          \ faster on CPU than the transformers implementation.\n\n```python\nIn [1]:\
+          \ from transformers import AutoTokenizer, T5ForConditionalGeneration\n\n\
+          In [2]: from optimum.onnxruntime import ORTModelForSeq2SeqLM\n\nIn [4]:\
+          \ model = ORTModelForSeq2SeqLM.from_pretrained('./onnx',  device=\"auto\"\
+          )\n\nIn [6]: torch_model = T5ForConditionalGeneration.from_pretrained(\"\
+          Grammarly/coedit-large\")\n\nIn [7]: text = \"Rewrite to make this easier\
+          \ to understand: A storm surge is what forecasters consider a hurricane's\
+          \ most treacherous aspect.\"\n\nIn [9]: tokenizer = AutoTokenizer.from_pretrained(\"\
+          grammarly/coedit-large\")\n\nIn [10]: input_ids = tokenizer(text, return_tensors=\"\
+          pt\").input_ids.to(model.device)\n\nIn [11]:  %time outputs = model.generate(input_ids=input_ids)\n\
+          /opt/homebrew/Caskroom/miniconda/base/lib/python3.11/site-packages/transformers/generation/utils.py:1273:\
+          \ UserWarning: Using the model-agnostic default `max_length` (=20) to control\
+          \ the generation length. We recommend setting `max_new_tokens` to control\
+          \ the maximum length of the generation.\n  warnings.warn(\nCPU times: user\
+          \ 2.2 s, sys: 178 ms, total: 2.38 s\nWall time: 399 ms\n\nIn [12]: %time\
+          \ torch_outputs = torch_model.generate(input_ids=input_ids)\n/opt/homebrew/Caskroom/miniconda/base/lib/python3.11/site-packages/transformers/generation/utils.py:1273:\
+          \ UserWarning: Using the model-agnostic default `max_length` (=20) to control\
+          \ the generation length. We recommend setting `max_new_tokens` to control\
+          \ the maximum length of the generation.\n  warnings.warn(\nCPU times: user\
+          \ 721 ms, sys: 28.7 ms, total: 750 ms\nWall time: 723 ms\n\nIn [13]: torch_outputs\
+          \ == outputs\nOut[13]:\ntensor([[True, True, True, True, True, True, True,\
+          \ True, True, True, True, True,\n         True, True, True, True, True,\
+          \ True]])\n\nIn [14]: tokenizer.decode(outputs[0])\nOut[14]: \"<pad> It\
+          \ is what they consider to be a hurricane's most dangerous aspect.</s>\"\
+          \n\n```"
+        updatedAt: '2023-11-20T17:18:07.117Z'
+      numEdits: 2
+      reactions: []
+    id: 655b8ec5f63eaf2a75fe2912
+    type: comment
+  author: jbochi
+  content: "Files were created with this command:\n\n```bash\n$ optimum-cli export\
+    \ onnx \\\n  --model grammarly/coedit-large \\\n  --task text2text-generation-with-past\
+    \ \\\n  --optimize O3 \\\n  coedit-large-onnx/\n```\n\nThere were a few warnings,\
+    \ but the diffs seem small enough:\n\n```bash\nValidation for the model coedit-large-onnx/decoder_model_merged.onnx\
+    \ raised: The maximum absolute difference between the output of the reference\
+    \ model and the ONNX exported model is not within the set tolerance 1e-05:\n-\
+    \ present.0.encoder.key: max diff = 3.0517578125e-05\n- present.2.decoder.key:\
+    \ max diff = 1.1920928955078125e-05\n- present.2.decoder.value: max diff = 1.2740492820739746e-05\n\
+    ...\nThe ONNX export succeeded with the warning: The maximum absolute difference\
+    \ between the output of the reference model and the ONNX exported model is not\
+    \ within the set tolerance 1e-05:\n- logits: max diff = 0.0004119873046875\n-\
+    \ present.23.decoder.value: max diff = 6.103515625e-05.\n The exported model was\
+    \ saved at: coedit-large-onyx\n...\n```\n\nI tested it with the code below. Note\
+    \ that ONNX is about ~1.8x faster on CPU than the transformers implementation.\n\
+    \n```python\nIn [1]: from transformers import AutoTokenizer, T5ForConditionalGeneration\n\
+    \nIn [2]: from optimum.onnxruntime import ORTModelForSeq2SeqLM\n\nIn [4]: model\
+    \ = ORTModelForSeq2SeqLM.from_pretrained('./onnx',  device=\"auto\")\n\nIn [6]:\
+    \ torch_model = T5ForConditionalGeneration.from_pretrained(\"Grammarly/coedit-large\"\
+    )\n\nIn [7]: text = \"Rewrite to make this easier to understand: A storm surge\
+    \ is what forecasters consider a hurricane's most treacherous aspect.\"\n\nIn\
+    \ [9]: tokenizer = AutoTokenizer.from_pretrained(\"grammarly/coedit-large\")\n\
+    \nIn [10]: input_ids = tokenizer(text, return_tensors=\"pt\").input_ids.to(model.device)\n\
+    \nIn [11]:  %time outputs = model.generate(input_ids=input_ids)\n/opt/homebrew/Caskroom/miniconda/base/lib/python3.11/site-packages/transformers/generation/utils.py:1273:\
+    \ UserWarning: Using the model-agnostic default `max_length` (=20) to control\
+    \ the generation length. We recommend setting `max_new_tokens` to control the\
+    \ maximum length of the generation.\n  warnings.warn(\nCPU times: user 2.2 s,\
+    \ sys: 178 ms, total: 2.38 s\nWall time: 399 ms\n\nIn [12]: %time torch_outputs\
+    \ = torch_model.generate(input_ids=input_ids)\n/opt/homebrew/Caskroom/miniconda/base/lib/python3.11/site-packages/transformers/generation/utils.py:1273:\
+    \ UserWarning: Using the model-agnostic default `max_length` (=20) to control\
+    \ the generation length. We recommend setting `max_new_tokens` to control the\
+    \ maximum length of the generation.\n  warnings.warn(\nCPU times: user 721 ms,\
+    \ sys: 28.7 ms, total: 750 ms\nWall time: 723 ms\n\nIn [13]: torch_outputs ==\
+    \ outputs\nOut[13]:\ntensor([[True, True, True, True, True, True, True, True,\
+    \ True, True, True, True,\n         True, True, True, True, True, True]])\n\n\
+    In [14]: tokenizer.decode(outputs[0])\nOut[14]: \"<pad> It is what they consider\
+    \ to be a hurricane's most dangerous aspect.</s>\"\n\n```"
+  created_at: 2023-11-20 16:52:21+00:00
+  edited: true
+  hidden: false
+  id: 655b8ec5f63eaf2a75fe2912
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+      fullname: J Bochi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: jbochi
+      type: user
+    createdAt: '2023-11-20T16:57:06.000Z'
+    data:
+      edited: true
+      editors: []
+      hidden: true
+      hiddenBy: ''
+      latest:
+        author:
+          avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+          fullname: J Bochi
+          isHf: false
+          isPro: false
+          name: jbochi
+          type: user
+        html: This comment has been hidden
+        raw: This comment has been hidden
+        updatedAt: '2023-11-20T17:08:24.884Z'
+      numEdits: 0
+      reactions: []
+    id: 655b8fe2cfe086853e1f9c0b
+    type: comment
+  author: jbochi
+  content: This comment has been hidden
+  created_at: 2023-11-20 16:57:06+00:00
+  edited: true
+  hidden: true
+  id: 655b8fe2cfe086853e1f9c0b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+      fullname: J Bochi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: jbochi
+      type: user
+    createdAt: '2023-11-20T17:09:13.000Z'
+    data:
+      oid: 9cfa8c02ec5659c35ce0ea1097f84ba2b8a338a2
+      parents:
+      - 59a7232f9f45469b01ca093d8ddb806d8d00243f
+      subject: Add onnx model
+    id: 655b92b90000000000000000
+    type: commit
+  author: jbochi
+  created_at: 2023-11-20 17:09:13+00:00
+  id: 655b92b90000000000000000
+  oid: 9cfa8c02ec5659c35ce0ea1097f84ba2b8a338a2
+  summary: Add onnx model
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/1018b29e2da89f5920a58482e17a1948.svg
+      fullname: J Bochi
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: jbochi
+      type: user
+    createdAt: '2023-11-20T19:16:39.000Z'
+    data:
+      status: open
+    id: 655bb0972f050bbb02b3c535
+    type: status-change
+  author: jbochi
+  created_at: 2023-11-20 19:16:39+00:00
+  id: 655bb0972f050bbb02b3c535
+  new_status: open
+  type: status-change
+is_pull_request: true
+merge_commit_oid: null
+num: 8
+repo_id: grammarly/coedit-large
+repo_type: model
+status: open
+target_branch: refs/heads/main
+title: Add onnx files

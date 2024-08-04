@@ -1,0 +1,2381 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kevinknights29
+conflicting_files: null
+created_at: 2023-04-27 10:47:18+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/644a5b2a405bdff86cb732cb/2R7mnKhxQP72SaIKEnqtF.jpeg?w=200&h=200&f=face
+      fullname: Kevin Knights
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kevinknights29
+      type: user
+    createdAt: '2023-04-27T11:47:18.000Z'
+    data:
+      edited: false
+      editors:
+      - kevinknights29
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/644a5b2a405bdff86cb732cb/2R7mnKhxQP72SaIKEnqtF.jpeg?w=200&h=200&f=face
+          fullname: Kevin Knights
+          isHf: false
+          isPro: false
+          name: kevinknights29
+          type: user
+        html: "<p>Hi Team,</p>\n<p>I've being playing with dolly v2 3b model and extending\
+          \ its functionality with LangChain, one of those being SQL Chain.</p>\n\
+          <p>While doing so I've encountered the following error:<br><code>RuntimeError:\
+          \ The size of tensor a (2048) must match the size of tensor b (2611) at\
+          \ non-singleton dimension 3</code></p>\n<p>Do you know what might be the\
+          \ cause of this error?</p>\n<p>Support information:<br>Code (Executed on\
+          \ google collab with GPU):</p>\n<pre><code>!pip install \"accelerate&gt;=0.16.0,&lt;1\"\
+          \ \"transformers[torch]&gt;=4.28.1,&lt;5\" \"torch&gt;=1.13.1,&lt;2\" langchain\
+          \ \n\nimport torch\nfrom transformers import pipeline\n\ngenerate_text =\
+          \ pipeline(model=\"databricks/dolly-v2-3b\", torch_dtype=torch.bfloat16,\n\
+          \                         trust_remote_code=True, device_map=\"auto\", return_full_text=True)\n\
+          \nfrom langchain.llms import HuggingFacePipeline\n\nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\n\
+          \nimport requests\n\ndataset_url = \"https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip\"\
+          \ndataset_zip = \"chinook_db.zip\"\n\nresponse = requests.get(dataset_url)\n\
+          with open(dataset_zip, \"wb\") as f:\n  f.write(response.content)\n\nimport\
+          \ zipfile\nfrom pathlib import Path\n\nwith zipfile.ZipFile(dataset_zip,\
+          \ \"r\") as f:\n    f.extractall(\".\")\nPath(dataset_zip).unlink()\n\n\
+          from langchain import SQLDatabase\n\ndb = SQLDatabase.from_uri(\"sqlite:///./chinook.db\"\
+          )\ndb.table_info\n\nfrom langchain import SQLDatabaseChain\n\ndb_chain =\
+          \ SQLDatabaseChain(llm=hf_pipeline, database=db, verbose=True)\ndb_chain.run(\"\
+          How many employees are there?\")\n</code></pre>\n<p>Complete Error Log:</p>\n\
+          <pre><code>&gt; Entering new SQLDatabaseChain chain...\nHow many employees\
+          \ are there?\nSQLQuery:\n\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \ Traceback (most recent call last) \u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u256E\n\u2502 in &lt;cell line: 4&gt;:4                   \
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:213\
+          \ in run                       \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502   210 \u2502   \u2502   if args and not kwargs:      \
+          \                                                      \u2502\n\u2502  \
+          \ 211 \u2502   \u2502   \u2502   if len(args) != 1:                    \
+          \                                         \u2502\n\u2502   212 \u2502  \
+          \ \u2502   \u2502   \u2502   raise ValueError(\"`run` supports only one\
+          \ positional argument.\")           \u2502\n\u2502 \u2771 213 \u2502   \u2502\
+          \   \u2502   return self(args[0])[self.output_keys[0]]                 \
+          \                     \u2502\n\u2502   214 \u2502   \u2502             \
+          \                                                                      \
+          \   \u2502\n\u2502   215 \u2502   \u2502   if kwargs and not args:     \
+          \                                                       \u2502\n\u2502 \
+          \  216 \u2502   \u2502   \u2502   return self(kwargs)[self.output_keys[0]]\
+          \                                       \u2502\n\u2502                 \
+          \                                                                      \
+          \           \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116\
+          \ in __call__                  \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502   113 \u2502   \u2502   \u2502   outputs = self._call(inputs)\
+          \                                                   \u2502\n\u2502   114\
+          \ \u2502   \u2502   except (KeyboardInterrupt, Exception) as e:        \
+          \                                \u2502\n\u2502   115 \u2502   \u2502  \
+          \ \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\n\u2502 \u2771 116 \u2502   \u2502   \u2502  \
+          \ raise e                                                              \
+          \          \u2502\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+          \ verbose=self.verbose)                  \u2502\n\u2502   118 \u2502   \u2502\
+          \   return self.prep_outputs(inputs, outputs, return_only_outputs)     \
+          \                \u2502\n\u2502   119                                  \
+          \                                                          \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+          \ in __call__                  \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,\
+          \                                                          \u2502\n\u2502\
+          \   111 \u2502   \u2502   )                                            \
+          \                                      \u2502\n\u2502   112 \u2502   \u2502\
+          \   try:                                                               \
+          \                \u2502\n\u2502 \u2771 113 \u2502   \u2502   \u2502   outputs\
+          \ = self._call(inputs)                                                 \
+          \  \u2502\n\u2502   114 \u2502   \u2502   except (KeyboardInterrupt, Exception)\
+          \ as e:                                        \u2502\n\u2502   115 \u2502\
+          \   \u2502   \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\n\u2502   116 \u2502   \u2502   \u2502   raise\
+          \ e                                                                    \
+          \    \u2502\n\u2502                                                    \
+          \                                              \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/sql_database/base.py:83\
+          \ in _call         \u2502\n\u2502                                      \
+          \                                                            \u2502\n\u2502\
+          \    80 \u2502   \u2502   \u2502   \"stop\": [\"\\nSQLResult:\"],      \
+          \                                                \u2502\n\u2502    81 \u2502\
+          \   \u2502   }                                                         \
+          \                         \u2502\n\u2502    82 \u2502   \u2502   intermediate_steps\
+          \ = []                                                            \u2502\
+          \n\u2502 \u2771  83 \u2502   \u2502   sql_cmd = llm_chain.predict(**llm_inputs)\
+          \                                          \u2502\n\u2502    84 \u2502 \
+          \  \u2502   intermediate_steps.append(sql_cmd)                         \
+          \                        \u2502\n\u2502    85 \u2502   \u2502   self.callback_manager.on_text(sql_cmd,\
+          \ color=\"green\", verbose=self.verbose)        \u2502\n\u2502    86 \u2502\
+          \   \u2502   result = self.database.run(sql_cmd)                       \
+          \                         \u2502\n\u2502                               \
+          \                                                                   \u2502\
+          \n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:151\
+          \ in predict                    \u2502\n\u2502                         \
+          \                                                                      \
+          \   \u2502\n\u2502   148 \u2502   \u2502   \u2502   \u2502             \
+          \                                                                 \u2502\
+          \n\u2502   149 \u2502   \u2502   \u2502   \u2502   completion = llm.predict(adjective=\"\
+          funny\")                                \u2502\n\u2502   150 \u2502   \u2502\
+          \   \"\"\"                                                             \
+          \                   \u2502\n\u2502 \u2771 151 \u2502   \u2502   return self(kwargs)[self.output_key]\
+          \                                               \u2502\n\u2502   152 \u2502\
+          \                                                                      \
+          \                    \u2502\n\u2502   153 \u2502   async def apredict(self,\
+          \ **kwargs: Any) -&gt; str:                                        \u2502\
+          \n\u2502   154 \u2502   \u2502   \"\"\"Format prompt with kwargs and pass\
+          \ to LLM.                                      \u2502\n\u2502          \
+          \                                                                      \
+          \                  \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116\
+          \ in __call__                  \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502   113 \u2502   \u2502   \u2502   outputs = self._call(inputs)\
+          \                                                   \u2502\n\u2502   114\
+          \ \u2502   \u2502   except (KeyboardInterrupt, Exception) as e:        \
+          \                                \u2502\n\u2502   115 \u2502   \u2502  \
+          \ \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\n\u2502 \u2771 116 \u2502   \u2502   \u2502  \
+          \ raise e                                                              \
+          \          \u2502\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+          \ verbose=self.verbose)                  \u2502\n\u2502   118 \u2502   \u2502\
+          \   return self.prep_outputs(inputs, outputs, return_only_outputs)     \
+          \                \u2502\n\u2502   119                                  \
+          \                                                          \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+          \ in __call__                  \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,\
+          \                                                          \u2502\n\u2502\
+          \   111 \u2502   \u2502   )                                            \
+          \                                      \u2502\n\u2502   112 \u2502   \u2502\
+          \   try:                                                               \
+          \                \u2502\n\u2502 \u2771 113 \u2502   \u2502   \u2502   outputs\
+          \ = self._call(inputs)                                                 \
+          \  \u2502\n\u2502   114 \u2502   \u2502   except (KeyboardInterrupt, Exception)\
+          \ as e:                                        \u2502\n\u2502   115 \u2502\
+          \   \u2502   \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\n\u2502   116 \u2502   \u2502   \u2502   raise\
+          \ e                                                                    \
+          \    \u2502\n\u2502                                                    \
+          \                                              \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:57\
+          \ in _call                       \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502    54 \u2502   \u2502   return [self.output_key]   \
+          \                                                        \u2502\n\u2502\
+          \    55 \u2502                                                         \
+          \                                 \u2502\n\u2502    56 \u2502   def _call(self,\
+          \ inputs: Dict[str, Any]) -&gt; Dict[str, str]:                        \
+          \     \u2502\n\u2502 \u2771  57 \u2502   \u2502   return self.apply([inputs])[0]\
+          \                                                     \u2502\n\u2502   \
+          \ 58 \u2502                                                            \
+          \                              \u2502\n\u2502    59 \u2502   def generate(self,\
+          \ input_list: List[Dict[str, Any]]) -&gt; LLMResult:                   \
+          \  \u2502\n\u2502    60 \u2502   \u2502   \"\"\"Generate LLM result from\
+          \ inputs.\"\"\"                                             \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:118\
+          \ in apply                      \u2502\n\u2502                         \
+          \                                                                      \
+          \   \u2502\n\u2502   115 \u2502                                        \
+          \                                                  \u2502\n\u2502   116\
+          \ \u2502   def apply(self, input_list: List[Dict[str, Any]]) -&gt; List[Dict[str,\
+          \ str]]:             \u2502\n\u2502   117 \u2502   \u2502   \"\"\"Utilize\
+          \ the LLM generate method for speed gains.\"\"\"                       \
+          \      \u2502\n\u2502 \u2771 118 \u2502   \u2502   response = self.generate(input_list)\
+          \                                               \u2502\n\u2502   119 \u2502\
+          \   \u2502   return self.create_outputs(response)                      \
+          \                         \u2502\n\u2502   120 \u2502                  \
+          \                                                                      \
+          \  \u2502\n\u2502   121 \u2502   async def aapply(self, input_list: List[Dict[str,\
+          \ Any]]) -&gt; List[Dict[str, str]]:      \u2502\n\u2502               \
+          \                                                                      \
+          \             \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:62\
+          \ in generate                    \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502    59 \u2502   def generate(self, input_list: List[Dict[str,\
+          \ Any]]) -&gt; LLMResult:                     \u2502\n\u2502    60 \u2502\
+          \   \u2502   \"\"\"Generate LLM result from inputs.\"\"\"              \
+          \                               \u2502\n\u2502    61 \u2502   \u2502   prompts,\
+          \ stop = self.prep_prompts(input_list)                                 \
+          \     \u2502\n\u2502 \u2771  62 \u2502   \u2502   return self.llm.generate_prompt(prompts,\
+          \ stop)                                     \u2502\n\u2502    63 \u2502\
+          \                                                                      \
+          \                    \u2502\n\u2502    64 \u2502   async def agenerate(self,\
+          \ input_list: List[Dict[str, Any]]) -&gt; LLMResult:              \u2502\
+          \n\u2502    65 \u2502   \u2502   \"\"\"Generate LLM result from inputs.\"\
+          \"\"                                             \u2502\n\u2502        \
+          \                                                                      \
+          \                    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:107\
+          \ in generate_prompt             \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502   104 \u2502   \u2502   self, prompts: List[PromptValue],\
+          \ stop: Optional[List[str]] = None                 \u2502\n\u2502   105\
+          \ \u2502   ) -&gt; LLMResult:                                          \
+          \                              \u2502\n\u2502   106 \u2502   \u2502   prompt_strings\
+          \ = [p.to_string() for p in prompts]                                  \u2502\
+          \n\u2502 \u2771 107 \u2502   \u2502   return self.generate(prompt_strings,\
+          \ stop=stop)                                    \u2502\n\u2502   108 \u2502\
+          \                                                                      \
+          \                    \u2502\n\u2502   109 \u2502   async def agenerate_prompt(\
+          \                                                            \u2502\n\u2502\
+          \   110 \u2502   \u2502   self, prompts: List[PromptValue], stop: Optional[List[str]]\
+          \ = None                 \u2502\n\u2502                                \
+          \                                                                  \u2502\
+          \n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:140\
+          \ in generate                    \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502   137 \u2502   \u2502   \u2502   \u2502   output = self._generate(prompts,\
+          \ stop=stop)                                \u2502\n\u2502   138 \u2502\
+          \   \u2502   \u2502   except (KeyboardInterrupt, Exception) as e:      \
+          \                              \u2502\n\u2502   139 \u2502   \u2502   \u2502\
+          \   \u2502   self.callback_manager.on_llm_error(e, verbose=self.verbose)\
+          \                \u2502\n\u2502 \u2771 140 \u2502   \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \        \u2502\n\u2502   141 \u2502   \u2502   \u2502   self.callback_manager.on_llm_end(output,\
+          \ verbose=self.verbose)                 \u2502\n\u2502   142 \u2502   \u2502\
+          \   \u2502   return output                                             \
+          \                     \u2502\n\u2502   143 \u2502   \u2502   params = self.dict()\
+          \                                                               \u2502\n\
+          \u2502                                                                 \
+          \                                 \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:137\
+          \ in generate                    \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502   134 \u2502   \u2502   \u2502   \u2502   {\"name\"\
+          : self.__class__.__name__}, prompts, verbose=self.verbose           \u2502\
+          \n\u2502   135 \u2502   \u2502   \u2502   )                            \
+          \                                                  \u2502\n\u2502   136\
+          \ \u2502   \u2502   \u2502   try:                                      \
+          \                                     \u2502\n\u2502 \u2771 137 \u2502 \
+          \  \u2502   \u2502   \u2502   output = self._generate(prompts, stop=stop)\
+          \                                \u2502\n\u2502   138 \u2502   \u2502  \
+          \ \u2502   except (KeyboardInterrupt, Exception) as e:                 \
+          \                   \u2502\n\u2502   139 \u2502   \u2502   \u2502   \u2502\
+          \   self.callback_manager.on_llm_error(e, verbose=self.verbose)        \
+          \        \u2502\n\u2502   140 \u2502   \u2502   \u2502   \u2502   raise\
+          \ e                                                                    \u2502\
+          \n\u2502                                                               \
+          \                                   \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:324\
+          \ in _generate                   \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502   321 \u2502   \u2502   # TODO: add caching here.  \
+          \                                                        \u2502\n\u2502\
+          \   322 \u2502   \u2502   generations = []                             \
+          \                                      \u2502\n\u2502   323 \u2502   \u2502\
+          \   for prompt in prompts:                                             \
+          \                \u2502\n\u2502 \u2771 324 \u2502   \u2502   \u2502   text\
+          \ = self._call(prompt, stop=stop)                                      \
+          \     \u2502\n\u2502   325 \u2502   \u2502   \u2502   generations.append([Generation(text=text)])\
+          \                                    \u2502\n\u2502   326 \u2502   \u2502\
+          \   return LLMResult(generations=generations)                          \
+          \                \u2502\n\u2502   327                                  \
+          \                                                          \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/huggingface_pipeline.py:150\
+          \ in _call       \u2502\n\u2502                                        \
+          \                                                          \u2502\n\u2502\
+          \   147 \u2502   \u2502   return \"huggingface_pipeline\"              \
+          \                                        \u2502\n\u2502   148 \u2502   \
+          \                                                                      \
+          \                 \u2502\n\u2502   149 \u2502   def _call(self, prompt:\
+          \ str, stop: Optional[List[str]] = None) -&gt; str:                 \u2502\
+          \n\u2502 \u2771 150 \u2502   \u2502   response = self.pipeline(prompt) \
+          \                                                  \u2502\n\u2502   151\
+          \ \u2502   \u2502   if self.pipeline.task == \"text-generation\":      \
+          \                                  \u2502\n\u2502   152 \u2502   \u2502\
+          \   \u2502   # Text generation return includes the starter text.       \
+          \                     \u2502\n\u2502   153 \u2502   \u2502   \u2502   text\
+          \ = response[0][\"generated_text\"][len(prompt) :]                     \
+          \       \u2502\n\u2502                                                 \
+          \                                                 \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1109\
+          \ in __call__           \u2502\n\u2502                                 \
+          \                                                                 \u2502\
+          \n\u2502   1106 \u2502   \u2502   \u2502   \u2502   )                  \
+          \                                                       \u2502\n\u2502 \
+          \  1107 \u2502   \u2502   \u2502   )                                   \
+          \                                          \u2502\n\u2502   1108 \u2502\
+          \   \u2502   else:                                                     \
+          \                        \u2502\n\u2502 \u2771 1109 \u2502   \u2502   \u2502\
+          \   return self.run_single(inputs, preprocess_params, forward_params, postproces\
+          \  \u2502\n\u2502   1110 \u2502                                        \
+          \                                                 \u2502\n\u2502   1111\
+          \ \u2502   def run_multi(self, inputs, preprocess_params, forward_params,\
+          \ postprocess_params):   \u2502\n\u2502   1112 \u2502   \u2502   return\
+          \ [self.run_single(item, preprocess_params, forward_params, postprocess_par\
+          \  \u2502\n\u2502                                                      \
+          \                                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1116\
+          \ in run_single         \u2502\n\u2502                                 \
+          \                                                                 \u2502\
+          \n\u2502   1113 \u2502                                                 \
+          \                                        \u2502\n\u2502   1114 \u2502  \
+          \ def run_single(self, inputs, preprocess_params, forward_params, postprocess_params):\
+          \  \u2502\n\u2502   1115 \u2502   \u2502   model_inputs = self.preprocess(inputs,\
+          \ **preprocess_params)                       \u2502\n\u2502 \u2771 1116\
+          \ \u2502   \u2502   model_outputs = self.forward(model_inputs, **forward_params)\
+          \                      \u2502\n\u2502   1117 \u2502   \u2502   outputs =\
+          \ self.postprocess(model_outputs, **postprocess_params)                \
+          \   \u2502\n\u2502   1118 \u2502   \u2502   return outputs             \
+          \                                                       \u2502\n\u2502 \
+          \  1119                                                                \
+          \                           \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1015\
+          \ in forward            \u2502\n\u2502                                 \
+          \                                                                 \u2502\
+          \n\u2502   1012 \u2502   \u2502   \u2502   \u2502   inference_context =\
+          \ self.get_inference_context()                          \u2502\n\u2502 \
+          \  1013 \u2502   \u2502   \u2502   \u2502   with inference_context():  \
+          \                                               \u2502\n\u2502   1014 \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   model_inputs = self._ensure_tensor_on_device(model_inputs,\
+          \ device=se  \u2502\n\u2502 \u2771 1015 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   model_outputs = self._forward(model_inputs, **forward_params)\
+          \         \u2502\n\u2502   1016 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   model_outputs = self._ensure_tensor_on_device(model_outputs, device=\
+          \  \u2502\n\u2502   1017 \u2502   \u2502   \u2502   else:              \
+          \                                                           \u2502\n\u2502\
+          \   1018 \u2502   \u2502   \u2502   \u2502   raise ValueError(f\"Framework\
+          \ {self.framework} is not supported\")          \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502 /root/.cache/huggingface/modules/transformers_modules/databricks/dolly-v2-3b/e19a5252f69d79d94ac\
+          \ \u2502\n\u2502 95045eb9b8a158775f701/instruct_pipeline.py:132 in _forward\
+          \                                       \u2502\n\u2502                 \
+          \                                                                      \
+          \           \u2502\n\u2502   129 \u2502   \u2502   else:               \
+          \                                                               \u2502\n\
+          \u2502   130 \u2502   \u2502   \u2502   in_b = input_ids.shape[0]      \
+          \                                                \u2502\n\u2502   131 \u2502\
+          \   \u2502                                                             \
+          \                         \u2502\n\u2502 \u2771 132 \u2502   \u2502   generated_sequence\
+          \ = self.model.generate(                                          \u2502\
+          \n\u2502   133 \u2502   \u2502   \u2502   input_ids=input_ids.to(self.model.device),\
+          \                                     \u2502\n\u2502   134 \u2502   \u2502\
+          \   \u2502   attention_mask=attention_mask.to(self.model.device) if attention_mask\
+          \ is not   \u2502\n\u2502   135 \u2502   \u2502   \u2502   pad_token_id=self.tokenizer.pad_token_id,\
+          \                                      \u2502\n\u2502                  \
+          \                                                                      \
+          \          \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/autograd/grad_mode.py:27\
+          \ in decorate_context        \u2502\n\u2502                            \
+          \                                                                      \u2502\
+          \n\u2502    24 \u2502   \u2502   @functools.wraps(func)                \
+          \                                             \u2502\n\u2502    25 \u2502\
+          \   \u2502   def decorate_context(*args, **kwargs):                    \
+          \                         \u2502\n\u2502    26 \u2502   \u2502   \u2502\
+          \   with self.clone():                                                 \
+          \            \u2502\n\u2502 \u2771  27 \u2502   \u2502   \u2502   \u2502\
+          \   return func(*args, **kwargs)                                       \
+          \        \u2502\n\u2502    28 \u2502   \u2502   return cast(F, decorate_context)\
+          \                                                   \u2502\n\u2502    29\
+          \ \u2502                                                               \
+          \                           \u2502\n\u2502    30 \u2502   def _wrap_generator(self,\
+          \ func):                                                       \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:1485\
+          \ in generate         \u2502\n\u2502                                   \
+          \                                                               \u2502\n\
+          \u2502   1482 \u2502   \u2502   \u2502   )                             \
+          \                                                \u2502\n\u2502   1483 \u2502\
+          \   \u2502   \u2502                                                    \
+          \                             \u2502\n\u2502   1484 \u2502   \u2502   \u2502\
+          \   # 13. run sample                                                   \
+          \           \u2502\n\u2502 \u2771 1485 \u2502   \u2502   \u2502   return\
+          \ self.sample(                                                         \
+          \  \u2502\n\u2502   1486 \u2502   \u2502   \u2502   \u2502   input_ids,\
+          \                                                                \u2502\n\
+          \u2502   1487 \u2502   \u2502   \u2502   \u2502   logits_processor=logits_processor,\
+          \                                        \u2502\n\u2502   1488 \u2502  \
+          \ \u2502   \u2502   \u2502   logits_warper=logits_warper,              \
+          \                                \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:2524\
+          \ in sample           \u2502\n\u2502                                   \
+          \                                                               \u2502\n\
+          \u2502   2521 \u2502   \u2502   \u2502   model_inputs = self.prepare_inputs_for_generation(input_ids,\
+          \ **model_kwargs)  \u2502\n\u2502   2522 \u2502   \u2502   \u2502      \
+          \                                                                      \
+          \     \u2502\n\u2502   2523 \u2502   \u2502   \u2502   # forward pass to\
+          \ get next token                                              \u2502\n\u2502\
+          \ \u2771 2524 \u2502   \u2502   \u2502   outputs = self(               \
+          \                                                \u2502\n\u2502   2525 \u2502\
+          \   \u2502   \u2502   \u2502   **model_inputs,                         \
+          \                                  \u2502\n\u2502   2526 \u2502   \u2502\
+          \   \u2502   \u2502   return_dict=True,                                \
+          \                         \u2502\n\u2502   2527 \u2502   \u2502   \u2502\
+          \   \u2502   output_attentions=output_attentions,                      \
+          \                \u2502\n\u2502                                        \
+          \                                                          \u2502\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   1191 \u2502   \u2502   # this function, and just call forward.\
+          \                                           \u2502\n\u2502   1192 \u2502\
+          \   \u2502   if not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks\
+          \ o  \u2502\n\u2502   1193 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+          \ or _global_forward_pre_hooks):                   \u2502\n\u2502 \u2771\
+          \ 1194 \u2502   \u2502   \u2502   return forward_call(*input, **kwargs)\
+          \                                         \u2502\n\u2502   1195 \u2502 \
+          \  \u2502   # Do not call functions when jit is used                   \
+          \                       \u2502\n\u2502   1196 \u2502   \u2502   full_backward_hooks,\
+          \ non_full_backward_hooks = [], []                             \u2502\n\u2502\
+          \   1197 \u2502   \u2502   if self._backward_hooks or _global_backward_hooks:\
+          \                                \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\n\u2502                     \
+          \                                                                      \
+          \       \u2502\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\n\u2502   164 \u2502\
+          \   \u2502   else:                                                     \
+          \                         \u2502\n\u2502 \u2771 165 \u2502   \u2502   \u2502\
+          \   output = old_forward(*args, **kwargs)                              \
+          \            \u2502\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\n\u2502   167 \u2502   \
+          \                                                                      \
+          \                 \u2502\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:662\
+          \ in  \u2502\n\u2502 forward                                           \
+          \                                               \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502   659 \u2502   \u2502   ```\"\"\"   \
+          \                                                                      \
+          \    \u2502\n\u2502   660 \u2502   \u2502   return_dict = return_dict if\
+          \ return_dict is not None else self.config.use_return   \u2502\n\u2502 \
+          \  661 \u2502   \u2502                                                 \
+          \                                     \u2502\n\u2502 \u2771 662 \u2502 \
+          \  \u2502   outputs = self.gpt_neox(                                   \
+          \                        \u2502\n\u2502   663 \u2502   \u2502   \u2502 \
+          \  input_ids,                                                          \
+          \           \u2502\n\u2502   664 \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+          \                                                 \u2502\n\u2502   665 \u2502\
+          \   \u2502   \u2502   position_ids=position_ids,                       \
+          \                              \u2502\n\u2502                          \
+          \                                                                      \
+          \  \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   1191 \u2502   \u2502   # this function, and just call forward.\
+          \                                           \u2502\n\u2502   1192 \u2502\
+          \   \u2502   if not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks\
+          \ o  \u2502\n\u2502   1193 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+          \ or _global_forward_pre_hooks):                   \u2502\n\u2502 \u2771\
+          \ 1194 \u2502   \u2502   \u2502   return forward_call(*input, **kwargs)\
+          \                                         \u2502\n\u2502   1195 \u2502 \
+          \  \u2502   # Do not call functions when jit is used                   \
+          \                       \u2502\n\u2502   1196 \u2502   \u2502   full_backward_hooks,\
+          \ non_full_backward_hooks = [], []                             \u2502\n\u2502\
+          \   1197 \u2502   \u2502   if self._backward_hooks or _global_backward_hooks:\
+          \                                \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\n\u2502                     \
+          \                                                                      \
+          \       \u2502\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\n\u2502   164 \u2502\
+          \   \u2502   else:                                                     \
+          \                         \u2502\n\u2502 \u2771 165 \u2502   \u2502   \u2502\
+          \   output = old_forward(*args, **kwargs)                              \
+          \            \u2502\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\n\u2502   167 \u2502   \
+          \                                                                      \
+          \                 \u2502\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:553\
+          \ in  \u2502\n\u2502 forward                                           \
+          \                                               \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502   550 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   head_mask[i],                                             \
+          \             \u2502\n\u2502   551 \u2502   \u2502   \u2502   \u2502   )\
+          \                                                                      \
+          \    \u2502\n\u2502   552 \u2502   \u2502   \u2502   else:             \
+          \                                                             \u2502\n\u2502\
+          \ \u2771 553 \u2502   \u2502   \u2502   \u2502   outputs = layer(      \
+          \                                                     \u2502\n\u2502   554\
+          \ \u2502   \u2502   \u2502   \u2502   \u2502   hidden_states,          \
+          \                                               \u2502\n\u2502   555 \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   attention_mask=attention_mask, \
+          \                                        \u2502\n\u2502   556 \u2502   \u2502\
+          \   \u2502   \u2502   \u2502   position_ids=position_ids,              \
+          \                               \u2502\n\u2502                         \
+          \                                                                      \
+          \   \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   1191 \u2502   \u2502   # this function, and just call forward.\
+          \                                           \u2502\n\u2502   1192 \u2502\
+          \   \u2502   if not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks\
+          \ o  \u2502\n\u2502   1193 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+          \ or _global_forward_pre_hooks):                   \u2502\n\u2502 \u2771\
+          \ 1194 \u2502   \u2502   \u2502   return forward_call(*input, **kwargs)\
+          \                                         \u2502\n\u2502   1195 \u2502 \
+          \  \u2502   # Do not call functions when jit is used                   \
+          \                       \u2502\n\u2502   1196 \u2502   \u2502   full_backward_hooks,\
+          \ non_full_backward_hooks = [], []                             \u2502\n\u2502\
+          \   1197 \u2502   \u2502   if self._backward_hooks or _global_backward_hooks:\
+          \                                \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\n\u2502                     \
+          \                                                                      \
+          \       \u2502\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\n\u2502   164 \u2502\
+          \   \u2502   else:                                                     \
+          \                         \u2502\n\u2502 \u2771 165 \u2502   \u2502   \u2502\
+          \   output = old_forward(*args, **kwargs)                              \
+          \            \u2502\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\n\u2502   167 \u2502   \
+          \                                                                      \
+          \                 \u2502\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:320\
+          \ in  \u2502\n\u2502 forward                                           \
+          \                                               \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502   317 \u2502   \u2502   layer_past: Optional[Tuple[torch.Tensor]]\
+          \ = None,                                  \u2502\n\u2502   318 \u2502 \
+          \  \u2502   output_attentions: Optional[bool] = False,                 \
+          \                        \u2502\n\u2502   319 \u2502   ):              \
+          \                                                                      \
+          \ \u2502\n\u2502 \u2771 320 \u2502   \u2502   attention_layer_outputs =\
+          \ self.attention(                                          \u2502\n\u2502\
+          \   321 \u2502   \u2502   \u2502   self.input_layernorm(hidden_states),\
+          \                                           \u2502\n\u2502   322 \u2502\
+          \   \u2502   \u2502   attention_mask=attention_mask,                   \
+          \                              \u2502\n\u2502   323 \u2502   \u2502   \u2502\
+          \   position_ids=position_ids,                                         \
+          \            \u2502\n\u2502                                            \
+          \                                                      \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\n\u2502                             \
+          \                                                                     \u2502\
+          \n\u2502   1191 \u2502   \u2502   # this function, and just call forward.\
+          \                                           \u2502\n\u2502   1192 \u2502\
+          \   \u2502   if not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks\
+          \ o  \u2502\n\u2502   1193 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+          \ or _global_forward_pre_hooks):                   \u2502\n\u2502 \u2771\
+          \ 1194 \u2502   \u2502   \u2502   return forward_call(*input, **kwargs)\
+          \                                         \u2502\n\u2502   1195 \u2502 \
+          \  \u2502   # Do not call functions when jit is used                   \
+          \                       \u2502\n\u2502   1196 \u2502   \u2502   full_backward_hooks,\
+          \ non_full_backward_hooks = [], []                             \u2502\n\u2502\
+          \   1197 \u2502   \u2502   if self._backward_hooks or _global_backward_hooks:\
+          \                                \u2502\n\u2502                        \
+          \                                                                      \
+          \    \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\n\u2502                     \
+          \                                                                      \
+          \       \u2502\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\n\u2502   164 \u2502\
+          \   \u2502   else:                                                     \
+          \                         \u2502\n\u2502 \u2771 165 \u2502   \u2502   \u2502\
+          \   output = old_forward(*args, **kwargs)                              \
+          \            \u2502\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\n\u2502   167 \u2502   \
+          \                                                                      \
+          \                 \u2502\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\n\u2502\
+          \                                                                      \
+          \                            \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:152\
+          \ in  \u2502\n\u2502 forward                                           \
+          \                                               \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502   149 \u2502   \u2502   present = (key,\
+          \ value) if use_cache else None                                      \u2502\
+          \n\u2502   150 \u2502   \u2502                                         \
+          \                                             \u2502\n\u2502   151 \u2502\
+          \   \u2502   # Compute attention                                       \
+          \                         \u2502\n\u2502 \u2771 152 \u2502   \u2502   attn_output,\
+          \ attn_weights = self._attn(query, key, value, attention_mask, head_m  \
+          \ \u2502\n\u2502   153 \u2502   \u2502                                 \
+          \                                                     \u2502\n\u2502   154\
+          \ \u2502   \u2502   # Reshape outputs                                  \
+          \                                \u2502\n\u2502   155 \u2502   \u2502  \
+          \ attn_output = self._merge_heads(attn_output, self.num_attention_heads,\
+          \ self.head   \u2502\n\u2502                                           \
+          \                                                       \u2502\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:219\
+          \ in  \u2502\n\u2502 _attn                                             \
+          \                                               \u2502\n\u2502         \
+          \                                                                      \
+          \                   \u2502\n\u2502   216 \u2502   \u2502   # Need to be\
+          \ a tensor, otherwise we get error: `RuntimeError: expected scalar ty  \
+          \ \u2502\n\u2502   217 \u2502   \u2502   # Need to be on the same device,\
+          \ otherwise `RuntimeError: ..., x and y to be on    \u2502\n\u2502   218\
+          \ \u2502   \u2502   mask_value = torch.tensor(mask_value, dtype=attn_scores.dtype).to(attn_scores.de\
+          \   \u2502\n\u2502 \u2771 219 \u2502   \u2502   attn_scores = torch.where(causal_mask,\
+          \ attn_scores, mask_value)                    \u2502\n\u2502   220 \u2502\
+          \   \u2502                                                             \
+          \                         \u2502\n\u2502   221 \u2502   \u2502   if attention_mask\
+          \ is not None:                                                     \u2502\
+          \n\u2502   222 \u2502   \u2502   \u2502   # Apply the attention mask   \
+          \                                                  \u2502\n\u2570\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u256F\nRuntimeError: The size of tensor a (2048) must match the size of\
+          \ tensor b (2611) at non-singleton dimension 3\n</code></pre>\n"
+        raw: "Hi Team,\r\n\r\nI've being playing with dolly v2 3b model and extending\
+          \ its functionality with LangChain, one of those being SQL Chain.\r\n\r\n\
+          While doing so I've encountered the following error:\r\n```RuntimeError:\
+          \ The size of tensor a (2048) must match the size of tensor b (2611) at\
+          \ non-singleton dimension 3```\r\n\r\nDo you know what might be the cause\
+          \ of this error?\r\n\r\nSupport information:\r\nCode (Executed on google\
+          \ collab with GPU):\r\n```\r\n!pip install \"accelerate>=0.16.0,<1\" \"\
+          transformers[torch]>=4.28.1,<5\" \"torch>=1.13.1,<2\" langchain \r\n\r\n\
+          import torch\r\nfrom transformers import pipeline\r\n\r\ngenerate_text =\
+          \ pipeline(model=\"databricks/dolly-v2-3b\", torch_dtype=torch.bfloat16,\r\
+          \n                         trust_remote_code=True, device_map=\"auto\",\
+          \ return_full_text=True)\r\n\r\nfrom langchain.llms import HuggingFacePipeline\r\
+          \n\r\nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\r\n\r\n\
+          import requests\r\n\r\ndataset_url = \"https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip\"\
+          \r\ndataset_zip = \"chinook_db.zip\"\r\n\r\nresponse = requests.get(dataset_url)\r\
+          \nwith open(dataset_zip, \"wb\") as f:\r\n  f.write(response.content)\r\n\
+          \r\nimport zipfile\r\nfrom pathlib import Path\r\n\r\nwith zipfile.ZipFile(dataset_zip,\
+          \ \"r\") as f:\r\n    f.extractall(\".\")\r\nPath(dataset_zip).unlink()\r\
+          \n\r\nfrom langchain import SQLDatabase\r\n\r\ndb = SQLDatabase.from_uri(\"\
+          sqlite:///./chinook.db\")\r\ndb.table_info\r\n\r\nfrom langchain import\
+          \ SQLDatabaseChain\r\n\r\ndb_chain = SQLDatabaseChain(llm=hf_pipeline, database=db,\
+          \ verbose=True)\r\ndb_chain.run(\"How many employees are there?\")\r\n```\r\
+          \n\r\nComplete Error Log:\r\n```\r\n> Entering new SQLDatabaseChain chain...\r\
+          \nHow many employees are there?\r\nSQLQuery:\r\n\u256D\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u256E\r\n\u2502 in <cell line: 4>:4     \
+          \                                                                      \
+          \   \u2502\r\n\u2502                                                   \
+          \                                               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:213\
+          \ in run                       \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502   210 \u2502   \u2502   if args and not kwargs:  \
+          \                                                          \u2502\r\n\u2502\
+          \   211 \u2502   \u2502   \u2502   if len(args) != 1:                  \
+          \                                           \u2502\r\n\u2502   212 \u2502\
+          \   \u2502   \u2502   \u2502   raise ValueError(\"`run` supports only one\
+          \ positional argument.\")           \u2502\r\n\u2502 \u2771 213 \u2502 \
+          \  \u2502   \u2502   return self(args[0])[self.output_keys[0]]         \
+          \                             \u2502\r\n\u2502   214 \u2502   \u2502   \
+          \                                                                      \
+          \             \u2502\r\n\u2502   215 \u2502   \u2502   if kwargs and not\
+          \ args:                                                            \u2502\
+          \r\n\u2502   216 \u2502   \u2502   \u2502   return self(kwargs)[self.output_keys[0]]\
+          \                                       \u2502\r\n\u2502               \
+          \                                                                      \
+          \             \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116\
+          \ in __call__                  \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502   113 \u2502   \u2502   \u2502   outputs = self._call(inputs)\
+          \                                                   \u2502\r\n\u2502   114\
+          \ \u2502   \u2502   except (KeyboardInterrupt, Exception) as e:        \
+          \                                \u2502\r\n\u2502   115 \u2502   \u2502\
+          \   \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\r\n\u2502 \u2771 116 \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \            \u2502\r\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+          \ verbose=self.verbose)                  \u2502\r\n\u2502   118 \u2502 \
+          \  \u2502   return self.prep_outputs(inputs, outputs, return_only_outputs)\
+          \                     \u2502\r\n\u2502   119                           \
+          \                                                                 \u2502\
+          \r\n\u2502                                                             \
+          \                                     \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+          \ in __call__                  \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,\
+          \                                                          \u2502\r\n\u2502\
+          \   111 \u2502   \u2502   )                                            \
+          \                                      \u2502\r\n\u2502   112 \u2502   \u2502\
+          \   try:                                                               \
+          \                \u2502\r\n\u2502 \u2771 113 \u2502   \u2502   \u2502  \
+          \ outputs = self._call(inputs)                                         \
+          \          \u2502\r\n\u2502   114 \u2502   \u2502   except (KeyboardInterrupt,\
+          \ Exception) as e:                                        \u2502\r\n\u2502\
+          \   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+          \ verbose=self.verbose)                  \u2502\r\n\u2502   116 \u2502 \
+          \  \u2502   \u2502   raise e                                           \
+          \                             \u2502\r\n\u2502                         \
+          \                                                                      \
+          \   \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/sql_database/base.py:83\
+          \ in _call         \u2502\r\n\u2502                                    \
+          \                                                              \u2502\r\n\
+          \u2502    80 \u2502   \u2502   \u2502   \"stop\": [\"\\nSQLResult:\"], \
+          \                                                     \u2502\r\n\u2502 \
+          \   81 \u2502   \u2502   }                                             \
+          \                                     \u2502\r\n\u2502    82 \u2502   \u2502\
+          \   intermediate_steps = []                                            \
+          \                \u2502\r\n\u2502 \u2771  83 \u2502   \u2502   sql_cmd =\
+          \ llm_chain.predict(**llm_inputs)                                      \
+          \    \u2502\r\n\u2502    84 \u2502   \u2502   intermediate_steps.append(sql_cmd)\
+          \                                                 \u2502\r\n\u2502    85\
+          \ \u2502   \u2502   self.callback_manager.on_text(sql_cmd, color=\"green\"\
+          , verbose=self.verbose)        \u2502\r\n\u2502    86 \u2502   \u2502  \
+          \ result = self.database.run(sql_cmd)                                  \
+          \              \u2502\r\n\u2502                                        \
+          \                                                          \u2502\r\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:151 in\
+          \ predict                    \u2502\r\n\u2502                          \
+          \                                                                      \
+          \  \u2502\r\n\u2502   148 \u2502   \u2502   \u2502   \u2502            \
+          \                                                                  \u2502\
+          \r\n\u2502   149 \u2502   \u2502   \u2502   \u2502   completion = llm.predict(adjective=\"\
+          funny\")                                \u2502\r\n\u2502   150 \u2502  \
+          \ \u2502   \"\"\"                                                      \
+          \                          \u2502\r\n\u2502 \u2771 151 \u2502   \u2502 \
+          \  return self(kwargs)[self.output_key]                                \
+          \               \u2502\r\n\u2502   152 \u2502                          \
+          \                                                                \u2502\r\
+          \n\u2502   153 \u2502   async def apredict(self, **kwargs: Any) -> str:\
+          \                                        \u2502\r\n\u2502   154 \u2502 \
+          \  \u2502   \"\"\"Format prompt with kwargs and pass to LLM.           \
+          \                           \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116\
+          \ in __call__                  \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502   113 \u2502   \u2502   \u2502   outputs = self._call(inputs)\
+          \                                                   \u2502\r\n\u2502   114\
+          \ \u2502   \u2502   except (KeyboardInterrupt, Exception) as e:        \
+          \                                \u2502\r\n\u2502   115 \u2502   \u2502\
+          \   \u2502   self.callback_manager.on_chain_error(e, verbose=self.verbose)\
+          \                  \u2502\r\n\u2502 \u2771 116 \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \            \u2502\r\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+          \ verbose=self.verbose)                  \u2502\r\n\u2502   118 \u2502 \
+          \  \u2502   return self.prep_outputs(inputs, outputs, return_only_outputs)\
+          \                     \u2502\r\n\u2502   119                           \
+          \                                                                 \u2502\
+          \r\n\u2502                                                             \
+          \                                     \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+          \ in __call__                  \u2502\r\n\u2502                        \
+          \                                                                      \
+          \    \u2502\r\n\u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,\
+          \                                                          \u2502\r\n\u2502\
+          \   111 \u2502   \u2502   )                                            \
+          \                                      \u2502\r\n\u2502   112 \u2502   \u2502\
+          \   try:                                                               \
+          \                \u2502\r\n\u2502 \u2771 113 \u2502   \u2502   \u2502  \
+          \ outputs = self._call(inputs)                                         \
+          \          \u2502\r\n\u2502   114 \u2502   \u2502   except (KeyboardInterrupt,\
+          \ Exception) as e:                                        \u2502\r\n\u2502\
+          \   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+          \ verbose=self.verbose)                  \u2502\r\n\u2502   116 \u2502 \
+          \  \u2502   \u2502   raise e                                           \
+          \                             \u2502\r\n\u2502                         \
+          \                                                                      \
+          \   \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:57\
+          \ in _call                       \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502    54 \u2502   \u2502   return [self.output_key]\
+          \                                                           \u2502\r\n\u2502\
+          \    55 \u2502                                                         \
+          \                                 \u2502\r\n\u2502    56 \u2502   def _call(self,\
+          \ inputs: Dict[str, Any]) -> Dict[str, str]:                           \
+          \  \u2502\r\n\u2502 \u2771  57 \u2502   \u2502   return self.apply([inputs])[0]\
+          \                                                     \u2502\r\n\u2502 \
+          \   58 \u2502                                                          \
+          \                                \u2502\r\n\u2502    59 \u2502   def generate(self,\
+          \ input_list: List[Dict[str, Any]]) -> LLMResult:                     \u2502\
+          \r\n\u2502    60 \u2502   \u2502   \"\"\"Generate LLM result from inputs.\"\
+          \"\"                                             \u2502\r\n\u2502      \
+          \                                                                      \
+          \                      \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:118\
+          \ in apply                      \u2502\r\n\u2502                       \
+          \                                                                      \
+          \     \u2502\r\n\u2502   115 \u2502                                    \
+          \                                                      \u2502\r\n\u2502\
+          \   116 \u2502   def apply(self, input_list: List[Dict[str, Any]]) -> List[Dict[str,\
+          \ str]]:             \u2502\r\n\u2502   117 \u2502   \u2502   \"\"\"Utilize\
+          \ the LLM generate method for speed gains.\"\"\"                       \
+          \      \u2502\r\n\u2502 \u2771 118 \u2502   \u2502   response = self.generate(input_list)\
+          \                                               \u2502\r\n\u2502   119 \u2502\
+          \   \u2502   return self.create_outputs(response)                      \
+          \                         \u2502\r\n\u2502   120 \u2502                \
+          \                                                                      \
+          \    \u2502\r\n\u2502   121 \u2502   async def aapply(self, input_list:\
+          \ List[Dict[str, Any]]) -> List[Dict[str, str]]:      \u2502\r\n\u2502 \
+          \                                                                      \
+          \                           \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:62\
+          \ in generate                    \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502    59 \u2502   def generate(self, input_list: List[Dict[str,\
+          \ Any]]) -> LLMResult:                     \u2502\r\n\u2502    60 \u2502\
+          \   \u2502   \"\"\"Generate LLM result from inputs.\"\"\"              \
+          \                               \u2502\r\n\u2502    61 \u2502   \u2502 \
+          \  prompts, stop = self.prep_prompts(input_list)                       \
+          \               \u2502\r\n\u2502 \u2771  62 \u2502   \u2502   return self.llm.generate_prompt(prompts,\
+          \ stop)                                     \u2502\r\n\u2502    63 \u2502\
+          \                                                                      \
+          \                    \u2502\r\n\u2502    64 \u2502   async def agenerate(self,\
+          \ input_list: List[Dict[str, Any]]) -> LLMResult:              \u2502\r\n\
+          \u2502    65 \u2502   \u2502   \"\"\"Generate LLM result from inputs.\"\"\
+          \"                                             \u2502\r\n\u2502        \
+          \                                                                      \
+          \                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:107\
+          \ in generate_prompt             \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502   104 \u2502   \u2502   self, prompts: List[PromptValue],\
+          \ stop: Optional[List[str]] = None                 \u2502\r\n\u2502   105\
+          \ \u2502   ) -> LLMResult:                                             \
+          \                           \u2502\r\n\u2502   106 \u2502   \u2502   prompt_strings\
+          \ = [p.to_string() for p in prompts]                                  \u2502\
+          \r\n\u2502 \u2771 107 \u2502   \u2502   return self.generate(prompt_strings,\
+          \ stop=stop)                                    \u2502\r\n\u2502   108 \u2502\
+          \                                                                      \
+          \                    \u2502\r\n\u2502   109 \u2502   async def agenerate_prompt(\
+          \                                                            \u2502\r\n\u2502\
+          \   110 \u2502   \u2502   self, prompts: List[PromptValue], stop: Optional[List[str]]\
+          \ = None                 \u2502\r\n\u2502                              \
+          \                                                                    \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:140\
+          \ in generate                    \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502   137 \u2502   \u2502   \u2502   \u2502   output\
+          \ = self._generate(prompts, stop=stop)                                \u2502\
+          \r\n\u2502   138 \u2502   \u2502   \u2502   except (KeyboardInterrupt, Exception)\
+          \ as e:                                    \u2502\r\n\u2502   139 \u2502\
+          \   \u2502   \u2502   \u2502   self.callback_manager.on_llm_error(e, verbose=self.verbose)\
+          \                \u2502\r\n\u2502 \u2771 140 \u2502   \u2502   \u2502  \
+          \ \u2502   raise e                                                     \
+          \               \u2502\r\n\u2502   141 \u2502   \u2502   \u2502   self.callback_manager.on_llm_end(output,\
+          \ verbose=self.verbose)                 \u2502\r\n\u2502   142 \u2502  \
+          \ \u2502   \u2502   return output                                      \
+          \                            \u2502\r\n\u2502   143 \u2502   \u2502   params\
+          \ = self.dict()                                                        \
+          \       \u2502\r\n\u2502                                               \
+          \                                                   \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:137\
+          \ in generate                    \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502   134 \u2502   \u2502   \u2502   \u2502   {\"name\"\
+          : self.__class__.__name__}, prompts, verbose=self.verbose           \u2502\
+          \r\n\u2502   135 \u2502   \u2502   \u2502   )                          \
+          \                                                    \u2502\r\n\u2502  \
+          \ 136 \u2502   \u2502   \u2502   try:                                  \
+          \                                         \u2502\r\n\u2502 \u2771 137 \u2502\
+          \   \u2502   \u2502   \u2502   output = self._generate(prompts, stop=stop)\
+          \                                \u2502\r\n\u2502   138 \u2502   \u2502\
+          \   \u2502   except (KeyboardInterrupt, Exception) as e:               \
+          \                     \u2502\r\n\u2502   139 \u2502   \u2502   \u2502  \
+          \ \u2502   self.callback_manager.on_llm_error(e, verbose=self.verbose) \
+          \               \u2502\r\n\u2502   140 \u2502   \u2502   \u2502   \u2502\
+          \   raise e                                                            \
+          \        \u2502\r\n\u2502                                              \
+          \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:324\
+          \ in _generate                   \u2502\r\n\u2502                      \
+          \                                                                      \
+          \      \u2502\r\n\u2502   321 \u2502   \u2502   # TODO: add caching here.\
+          \                                                          \u2502\r\n\u2502\
+          \   322 \u2502   \u2502   generations = []                             \
+          \                                      \u2502\r\n\u2502   323 \u2502   \u2502\
+          \   for prompt in prompts:                                             \
+          \                \u2502\r\n\u2502 \u2771 324 \u2502   \u2502   \u2502  \
+          \ text = self._call(prompt, stop=stop)                                 \
+          \          \u2502\r\n\u2502   325 \u2502   \u2502   \u2502   generations.append([Generation(text=text)])\
+          \                                    \u2502\r\n\u2502   326 \u2502   \u2502\
+          \   return LLMResult(generations=generations)                          \
+          \                \u2502\r\n\u2502   327                                \
+          \                                                            \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/huggingface_pipeline.py:150\
+          \ in _call       \u2502\r\n\u2502                                      \
+          \                                                            \u2502\r\n\u2502\
+          \   147 \u2502   \u2502   return \"huggingface_pipeline\"              \
+          \                                        \u2502\r\n\u2502   148 \u2502 \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   149 \u2502   def _call(self, prompt:\
+          \ str, stop: Optional[List[str]] = None) -> str:                 \u2502\r\
+          \n\u2502 \u2771 150 \u2502   \u2502   response = self.pipeline(prompt) \
+          \                                                  \u2502\r\n\u2502   151\
+          \ \u2502   \u2502   if self.pipeline.task == \"text-generation\":      \
+          \                                  \u2502\r\n\u2502   152 \u2502   \u2502\
+          \   \u2502   # Text generation return includes the starter text.       \
+          \                     \u2502\r\n\u2502   153 \u2502   \u2502   \u2502  \
+          \ text = response[0][\"generated_text\"][len(prompt) :]                \
+          \            \u2502\r\n\u2502                                          \
+          \                                                        \u2502\r\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1109\
+          \ in __call__           \u2502\r\n\u2502                               \
+          \                                                                   \u2502\
+          \r\n\u2502   1106 \u2502   \u2502   \u2502   \u2502   )                \
+          \                                                         \u2502\r\n\u2502\
+          \   1107 \u2502   \u2502   \u2502   )                                  \
+          \                                           \u2502\r\n\u2502   1108 \u2502\
+          \   \u2502   else:                                                     \
+          \                        \u2502\r\n\u2502 \u2771 1109 \u2502   \u2502  \
+          \ \u2502   return self.run_single(inputs, preprocess_params, forward_params,\
+          \ postproces  \u2502\r\n\u2502   1110 \u2502                           \
+          \                                                              \u2502\r\n\
+          \u2502   1111 \u2502   def run_multi(self, inputs, preprocess_params, forward_params,\
+          \ postprocess_params):   \u2502\r\n\u2502   1112 \u2502   \u2502   return\
+          \ [self.run_single(item, preprocess_params, forward_params, postprocess_par\
+          \  \u2502\r\n\u2502                                                    \
+          \                                              \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1116\
+          \ in run_single         \u2502\r\n\u2502                               \
+          \                                                                   \u2502\
+          \r\n\u2502   1113 \u2502                                               \
+          \                                          \u2502\r\n\u2502   1114 \u2502\
+          \   def run_single(self, inputs, preprocess_params, forward_params, postprocess_params):\
+          \  \u2502\r\n\u2502   1115 \u2502   \u2502   model_inputs = self.preprocess(inputs,\
+          \ **preprocess_params)                       \u2502\r\n\u2502 \u2771 1116\
+          \ \u2502   \u2502   model_outputs = self.forward(model_inputs, **forward_params)\
+          \                      \u2502\r\n\u2502   1117 \u2502   \u2502   outputs\
+          \ = self.postprocess(model_outputs, **postprocess_params)              \
+          \     \u2502\r\n\u2502   1118 \u2502   \u2502   return outputs         \
+          \                                                           \u2502\r\n\u2502\
+          \   1119                                                               \
+          \                            \u2502\r\n\u2502                          \
+          \                                                                      \
+          \  \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1015\
+          \ in forward            \u2502\r\n\u2502                               \
+          \                                                                   \u2502\
+          \r\n\u2502   1012 \u2502   \u2502   \u2502   \u2502   inference_context\
+          \ = self.get_inference_context()                          \u2502\r\n\u2502\
+          \   1013 \u2502   \u2502   \u2502   \u2502   with inference_context(): \
+          \                                                \u2502\r\n\u2502   1014\
+          \ \u2502   \u2502   \u2502   \u2502   \u2502   model_inputs = self._ensure_tensor_on_device(model_inputs,\
+          \ device=se  \u2502\r\n\u2502 \u2771 1015 \u2502   \u2502   \u2502   \u2502\
+          \   \u2502   model_outputs = self._forward(model_inputs, **forward_params)\
+          \         \u2502\r\n\u2502   1016 \u2502   \u2502   \u2502   \u2502   \u2502\
+          \   model_outputs = self._ensure_tensor_on_device(model_outputs, device=\
+          \  \u2502\r\n\u2502   1017 \u2502   \u2502   \u2502   else:            \
+          \                                                             \u2502\r\n\
+          \u2502   1018 \u2502   \u2502   \u2502   \u2502   raise ValueError(f\"Framework\
+          \ {self.framework} is not supported\")          \u2502\r\n\u2502       \
+          \                                                                      \
+          \                     \u2502\r\n\u2502 /root/.cache/huggingface/modules/transformers_modules/databricks/dolly-v2-3b/e19a5252f69d79d94ac\
+          \ \u2502\r\n\u2502 95045eb9b8a158775f701/instruct_pipeline.py:132 in _forward\
+          \                                       \u2502\r\n\u2502               \
+          \                                                                      \
+          \             \u2502\r\n\u2502   129 \u2502   \u2502   else:           \
+          \                                                                   \u2502\
+          \r\n\u2502   130 \u2502   \u2502   \u2502   in_b = input_ids.shape[0]  \
+          \                                                    \u2502\r\n\u2502  \
+          \ 131 \u2502   \u2502                                                  \
+          \                                    \u2502\r\n\u2502 \u2771 132 \u2502\
+          \   \u2502   generated_sequence = self.model.generate(                 \
+          \                         \u2502\r\n\u2502   133 \u2502   \u2502   \u2502\
+          \   input_ids=input_ids.to(self.model.device),                         \
+          \            \u2502\r\n\u2502   134 \u2502   \u2502   \u2502   attention_mask=attention_mask.to(self.model.device)\
+          \ if attention_mask is not   \u2502\r\n\u2502   135 \u2502   \u2502   \u2502\
+          \   pad_token_id=self.tokenizer.pad_token_id,                          \
+          \            \u2502\r\n\u2502                                          \
+          \                                                        \u2502\r\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/torch/autograd/grad_mode.py:27\
+          \ in decorate_context        \u2502\r\n\u2502                          \
+          \                                                                      \
+          \  \u2502\r\n\u2502    24 \u2502   \u2502   @functools.wraps(func)     \
+          \                                                        \u2502\r\n\u2502\
+          \    25 \u2502   \u2502   def decorate_context(*args, **kwargs):       \
+          \                                      \u2502\r\n\u2502    26 \u2502   \u2502\
+          \   \u2502   with self.clone():                                        \
+          \                     \u2502\r\n\u2502 \u2771  27 \u2502   \u2502   \u2502\
+          \   \u2502   return func(*args, **kwargs)                              \
+          \                 \u2502\r\n\u2502    28 \u2502   \u2502   return cast(F,\
+          \ decorate_context)                                                   \u2502\
+          \r\n\u2502    29 \u2502                                                \
+          \                                          \u2502\r\n\u2502    30 \u2502\
+          \   def _wrap_generator(self, func):                                   \
+          \                    \u2502\r\n\u2502                                  \
+          \                                                                \u2502\r\
+          \n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:1485\
+          \ in generate         \u2502\r\n\u2502                                 \
+          \                                                                 \u2502\
+          \r\n\u2502   1482 \u2502   \u2502   \u2502   )                         \
+          \                                                    \u2502\r\n\u2502  \
+          \ 1483 \u2502   \u2502   \u2502                                        \
+          \                                         \u2502\r\n\u2502   1484 \u2502\
+          \   \u2502   \u2502   # 13. run sample                                 \
+          \                             \u2502\r\n\u2502 \u2771 1485 \u2502   \u2502\
+          \   \u2502   return self.sample(                                       \
+          \                    \u2502\r\n\u2502   1486 \u2502   \u2502   \u2502  \
+          \ \u2502   input_ids,                                                  \
+          \              \u2502\r\n\u2502   1487 \u2502   \u2502   \u2502   \u2502\
+          \   logits_processor=logits_processor,                                 \
+          \       \u2502\r\n\u2502   1488 \u2502   \u2502   \u2502   \u2502   logits_warper=logits_warper,\
+          \                                              \u2502\r\n\u2502        \
+          \                                                                      \
+          \                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:2524\
+          \ in sample           \u2502\r\n\u2502                                 \
+          \                                                                 \u2502\
+          \r\n\u2502   2521 \u2502   \u2502   \u2502   model_inputs = self.prepare_inputs_for_generation(input_ids,\
+          \ **model_kwargs)  \u2502\r\n\u2502   2522 \u2502   \u2502   \u2502    \
+          \                                                                      \
+          \       \u2502\r\n\u2502   2523 \u2502   \u2502   \u2502   # forward pass\
+          \ to get next token                                              \u2502\r\
+          \n\u2502 \u2771 2524 \u2502   \u2502   \u2502   outputs = self(        \
+          \                                                       \u2502\r\n\u2502\
+          \   2525 \u2502   \u2502   \u2502   \u2502   **model_inputs,           \
+          \                                                \u2502\r\n\u2502   2526\
+          \ \u2502   \u2502   \u2502   \u2502   return_dict=True,                \
+          \                                         \u2502\r\n\u2502   2527 \u2502\
+          \   \u2502   \u2502   \u2502   output_attentions=output_attentions,    \
+          \                                  \u2502\r\n\u2502                    \
+          \                                                                      \
+          \        \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   1191 \u2502   \u2502   # this function, and just call\
+          \ forward.                                           \u2502\r\n\u2502  \
+          \ 1192 \u2502   \u2502   if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks o  \u2502\r\n\u2502   1193 \u2502   \u2502\
+          \   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+          \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502\
+          \   return forward_call(*input, **kwargs)                              \
+          \           \u2502\r\n\u2502   1195 \u2502   \u2502   # Do not call functions\
+          \ when jit is used                                          \u2502\r\n\u2502\
+          \   1196 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+          \ = [], []                             \u2502\r\n\u2502   1197 \u2502  \
+          \ \u2502   if self._backward_hooks or _global_backward_hooks:          \
+          \                      \u2502\r\n\u2502                                \
+          \                                                                  \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\r\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\r\n\u2502   164\
+          \ \u2502   \u2502   else:                                              \
+          \                                \u2502\r\n\u2502 \u2771 165 \u2502   \u2502\
+          \   \u2502   output = old_forward(*args, **kwargs)                     \
+          \                     \u2502\r\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\r\n\u2502   167 \u2502 \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:662\
+          \ in  \u2502\r\n\u2502 forward                                         \
+          \                                                 \u2502\r\n\u2502     \
+          \                                                                      \
+          \                       \u2502\r\n\u2502   659 \u2502   \u2502   ```\"\"\
+          \"                                                                     \
+          \        \u2502\r\n\u2502   660 \u2502   \u2502   return_dict = return_dict\
+          \ if return_dict is not None else self.config.use_return   \u2502\r\n\u2502\
+          \   661 \u2502   \u2502                                                \
+          \                                      \u2502\r\n\u2502 \u2771 662 \u2502\
+          \   \u2502   outputs = self.gpt_neox(                                  \
+          \                         \u2502\r\n\u2502   663 \u2502   \u2502   \u2502\
+          \   input_ids,                                                         \
+          \            \u2502\r\n\u2502   664 \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+          \                                                 \u2502\r\n\u2502   665\
+          \ \u2502   \u2502   \u2502   position_ids=position_ids,                \
+          \                                     \u2502\r\n\u2502                 \
+          \                                                                      \
+          \           \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   1191 \u2502   \u2502   # this function, and just call\
+          \ forward.                                           \u2502\r\n\u2502  \
+          \ 1192 \u2502   \u2502   if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks o  \u2502\r\n\u2502   1193 \u2502   \u2502\
+          \   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+          \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502\
+          \   return forward_call(*input, **kwargs)                              \
+          \           \u2502\r\n\u2502   1195 \u2502   \u2502   # Do not call functions\
+          \ when jit is used                                          \u2502\r\n\u2502\
+          \   1196 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+          \ = [], []                             \u2502\r\n\u2502   1197 \u2502  \
+          \ \u2502   if self._backward_hooks or _global_backward_hooks:          \
+          \                      \u2502\r\n\u2502                                \
+          \                                                                  \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\r\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\r\n\u2502   164\
+          \ \u2502   \u2502   else:                                              \
+          \                                \u2502\r\n\u2502 \u2771 165 \u2502   \u2502\
+          \   \u2502   output = old_forward(*args, **kwargs)                     \
+          \                     \u2502\r\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\r\n\u2502   167 \u2502 \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:553\
+          \ in  \u2502\r\n\u2502 forward                                         \
+          \                                                 \u2502\r\n\u2502     \
+          \                                                                      \
+          \                       \u2502\r\n\u2502   550 \u2502   \u2502   \u2502\
+          \   \u2502   \u2502   head_mask[i],                                    \
+          \                      \u2502\r\n\u2502   551 \u2502   \u2502   \u2502 \
+          \  \u2502   )                                                          \
+          \                \u2502\r\n\u2502   552 \u2502   \u2502   \u2502   else:\
+          \                                                                      \
+          \    \u2502\r\n\u2502 \u2771 553 \u2502   \u2502   \u2502   \u2502   outputs\
+          \ = layer(                                                           \u2502\
+          \r\n\u2502   554 \u2502   \u2502   \u2502   \u2502   \u2502   hidden_states,\
+          \                                                         \u2502\r\n\u2502\
+          \   555 \u2502   \u2502   \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+          \                                         \u2502\r\n\u2502   556 \u2502\
+          \   \u2502   \u2502   \u2502   \u2502   position_ids=position_ids,     \
+          \                                        \u2502\r\n\u2502              \
+          \                                                                      \
+          \              \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   1191 \u2502   \u2502   # this function, and just call\
+          \ forward.                                           \u2502\r\n\u2502  \
+          \ 1192 \u2502   \u2502   if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks o  \u2502\r\n\u2502   1193 \u2502   \u2502\
+          \   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+          \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502\
+          \   return forward_call(*input, **kwargs)                              \
+          \           \u2502\r\n\u2502   1195 \u2502   \u2502   # Do not call functions\
+          \ when jit is used                                          \u2502\r\n\u2502\
+          \   1196 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+          \ = [], []                             \u2502\r\n\u2502   1197 \u2502  \
+          \ \u2502   if self._backward_hooks or _global_backward_hooks:          \
+          \                      \u2502\r\n\u2502                                \
+          \                                                                  \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\r\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\r\n\u2502   164\
+          \ \u2502   \u2502   else:                                              \
+          \                                \u2502\r\n\u2502 \u2771 165 \u2502   \u2502\
+          \   \u2502   output = old_forward(*args, **kwargs)                     \
+          \                     \u2502\r\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\r\n\u2502   167 \u2502 \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:320\
+          \ in  \u2502\r\n\u2502 forward                                         \
+          \                                                 \u2502\r\n\u2502     \
+          \                                                                      \
+          \                       \u2502\r\n\u2502   317 \u2502   \u2502   layer_past:\
+          \ Optional[Tuple[torch.Tensor]] = None,                                \
+          \  \u2502\r\n\u2502   318 \u2502   \u2502   output_attentions: Optional[bool]\
+          \ = False,                                         \u2502\r\n\u2502   319\
+          \ \u2502   ):                                                          \
+          \                           \u2502\r\n\u2502 \u2771 320 \u2502   \u2502\
+          \   attention_layer_outputs = self.attention(                          \
+          \                \u2502\r\n\u2502   321 \u2502   \u2502   \u2502   self.input_layernorm(hidden_states),\
+          \                                           \u2502\r\n\u2502   322 \u2502\
+          \   \u2502   \u2502   attention_mask=attention_mask,                   \
+          \                              \u2502\r\n\u2502   323 \u2502   \u2502  \
+          \ \u2502   position_ids=position_ids,                                  \
+          \                   \u2502\r\n\u2502                                   \
+          \                                                               \u2502\r\
+          \n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+          \ in _call_impl             \u2502\r\n\u2502                           \
+          \                                                                      \
+          \ \u2502\r\n\u2502   1191 \u2502   \u2502   # this function, and just call\
+          \ forward.                                           \u2502\r\n\u2502  \
+          \ 1192 \u2502   \u2502   if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks o  \u2502\r\n\u2502   1193 \u2502   \u2502\
+          \   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+          \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502\
+          \   return forward_call(*input, **kwargs)                              \
+          \           \u2502\r\n\u2502   1195 \u2502   \u2502   # Do not call functions\
+          \ when jit is used                                          \u2502\r\n\u2502\
+          \   1196 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+          \ = [], []                             \u2502\r\n\u2502   1197 \u2502  \
+          \ \u2502   if self._backward_hooks or _global_backward_hooks:          \
+          \                      \u2502\r\n\u2502                                \
+          \                                                                  \u2502\
+          \r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+          \ in new_forward                    \u2502\r\n\u2502                   \
+          \                                                                      \
+          \         \u2502\r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():\
+          \                                                          \u2502\r\n\u2502\
+          \   163 \u2502   \u2502   \u2502   \u2502   output = old_forward(*args,\
+          \ **kwargs)                                      \u2502\r\n\u2502   164\
+          \ \u2502   \u2502   else:                                              \
+          \                                \u2502\r\n\u2502 \u2771 165 \u2502   \u2502\
+          \   \u2502   output = old_forward(*args, **kwargs)                     \
+          \                     \u2502\r\n\u2502   166 \u2502   \u2502   return module._hf_hook.post_forward(module,\
+          \ output)                                \u2502\r\n\u2502   167 \u2502 \
+          \                                                                      \
+          \                   \u2502\r\n\u2502   168 \u2502   module.forward = new_forward\
+          \                                                           \u2502\r\n\u2502\
+          \                                                                      \
+          \                            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:152\
+          \ in  \u2502\r\n\u2502 forward                                         \
+          \                                                 \u2502\r\n\u2502     \
+          \                                                                      \
+          \                       \u2502\r\n\u2502   149 \u2502   \u2502   present\
+          \ = (key, value) if use_cache else None                                \
+          \      \u2502\r\n\u2502   150 \u2502   \u2502                          \
+          \                                                            \u2502\r\n\u2502\
+          \   151 \u2502   \u2502   # Compute attention                          \
+          \                                      \u2502\r\n\u2502 \u2771 152 \u2502\
+          \   \u2502   attn_output, attn_weights = self._attn(query, key, value, attention_mask,\
+          \ head_m   \u2502\r\n\u2502   153 \u2502   \u2502                      \
+          \                                                                \u2502\r\
+          \n\u2502   154 \u2502   \u2502   # Reshape outputs                     \
+          \                                             \u2502\r\n\u2502   155 \u2502\
+          \   \u2502   attn_output = self._merge_heads(attn_output, self.num_attention_heads,\
+          \ self.head   \u2502\r\n\u2502                                         \
+          \                                                         \u2502\r\n\u2502\
+          \ /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:219\
+          \ in  \u2502\r\n\u2502 _attn                                           \
+          \                                                 \u2502\r\n\u2502     \
+          \                                                                      \
+          \                       \u2502\r\n\u2502   216 \u2502   \u2502   # Need\
+          \ to be a tensor, otherwise we get error: `RuntimeError: expected scalar\
+          \ ty   \u2502\r\n\u2502   217 \u2502   \u2502   # Need to be on the same\
+          \ device, otherwise `RuntimeError: ..., x and y to be on    \u2502\r\n\u2502\
+          \   218 \u2502   \u2502   mask_value = torch.tensor(mask_value, dtype=attn_scores.dtype).to(attn_scores.de\
+          \   \u2502\r\n\u2502 \u2771 219 \u2502   \u2502   attn_scores = torch.where(causal_mask,\
+          \ attn_scores, mask_value)                    \u2502\r\n\u2502   220 \u2502\
+          \   \u2502                                                             \
+          \                         \u2502\r\n\u2502   221 \u2502   \u2502   if attention_mask\
+          \ is not None:                                                     \u2502\
+          \r\n\u2502   222 \u2502   \u2502   \u2502   # Apply the attention mask \
+          \                                                    \u2502\r\n\u2570\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u256F\r\nRuntimeError: The size of tensor a (2048) must match the\
+          \ size of tensor b (2611) at non-singleton dimension 3\r\n```"
+        updatedAt: '2023-04-27T11:47:18.760Z'
+      numEdits: 0
+      reactions: []
+    id: 644a60c6c4de0daa49607a02
+    type: comment
+  author: kevinknights29
+  content: "Hi Team,\r\n\r\nI've being playing with dolly v2 3b model and extending\
+    \ its functionality with LangChain, one of those being SQL Chain.\r\n\r\nWhile\
+    \ doing so I've encountered the following error:\r\n```RuntimeError: The size\
+    \ of tensor a (2048) must match the size of tensor b (2611) at non-singleton dimension\
+    \ 3```\r\n\r\nDo you know what might be the cause of this error?\r\n\r\nSupport\
+    \ information:\r\nCode (Executed on google collab with GPU):\r\n```\r\n!pip install\
+    \ \"accelerate>=0.16.0,<1\" \"transformers[torch]>=4.28.1,<5\" \"torch>=1.13.1,<2\"\
+    \ langchain \r\n\r\nimport torch\r\nfrom transformers import pipeline\r\n\r\n\
+    generate_text = pipeline(model=\"databricks/dolly-v2-3b\", torch_dtype=torch.bfloat16,\r\
+    \n                         trust_remote_code=True, device_map=\"auto\", return_full_text=True)\r\
+    \n\r\nfrom langchain.llms import HuggingFacePipeline\r\n\r\nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\r\
+    \n\r\nimport requests\r\n\r\ndataset_url = \"https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip\"\
+    \r\ndataset_zip = \"chinook_db.zip\"\r\n\r\nresponse = requests.get(dataset_url)\r\
+    \nwith open(dataset_zip, \"wb\") as f:\r\n  f.write(response.content)\r\n\r\n\
+    import zipfile\r\nfrom pathlib import Path\r\n\r\nwith zipfile.ZipFile(dataset_zip,\
+    \ \"r\") as f:\r\n    f.extractall(\".\")\r\nPath(dataset_zip).unlink()\r\n\r\n\
+    from langchain import SQLDatabase\r\n\r\ndb = SQLDatabase.from_uri(\"sqlite:///./chinook.db\"\
+    )\r\ndb.table_info\r\n\r\nfrom langchain import SQLDatabaseChain\r\n\r\ndb_chain\
+    \ = SQLDatabaseChain(llm=hf_pipeline, database=db, verbose=True)\r\ndb_chain.run(\"\
+    How many employees are there?\")\r\n```\r\n\r\nComplete Error Log:\r\n```\r\n\
+    > Entering new SQLDatabaseChain chain...\r\nHow many employees are there?\r\n\
+    SQLQuery:\r\n\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last)\
+    \ \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u256E\r\n\u2502 in <cell line: 4>:4     \
+    \                                                                         \u2502\
+    \r\n\u2502                                                                   \
+    \                               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:213\
+    \ in run                       \u2502\r\n\u2502                              \
+    \                                                                    \u2502\r\n\
+    \u2502   210 \u2502   \u2502   if args and not kwargs:                       \
+    \                                     \u2502\r\n\u2502   211 \u2502   \u2502 \
+    \  \u2502   if len(args) != 1:                                               \
+    \              \u2502\r\n\u2502   212 \u2502   \u2502   \u2502   \u2502   raise\
+    \ ValueError(\"`run` supports only one positional argument.\")           \u2502\
+    \r\n\u2502 \u2771 213 \u2502   \u2502   \u2502   return self(args[0])[self.output_keys[0]]\
+    \                                      \u2502\r\n\u2502   214 \u2502   \u2502\
+    \                                                                            \
+    \          \u2502\r\n\u2502   215 \u2502   \u2502   if kwargs and not args:  \
+    \                                                          \u2502\r\n\u2502  \
+    \ 216 \u2502   \u2502   \u2502   return self(kwargs)[self.output_keys[0]]    \
+    \                                   \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116\
+    \ in __call__                  \u2502\r\n\u2502                              \
+    \                                                                    \u2502\r\n\
+    \u2502   113 \u2502   \u2502   \u2502   outputs = self._call(inputs)         \
+    \                                          \u2502\r\n\u2502   114 \u2502   \u2502\
+    \   except (KeyboardInterrupt, Exception) as e:                              \
+    \          \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502 \u2771 116 \u2502  \
+    \ \u2502   \u2502   raise e                                                  \
+    \                      \u2502\r\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502   118 \u2502   \u2502\
+    \   return self.prep_outputs(inputs, outputs, return_only_outputs)           \
+    \          \u2502\r\n\u2502   119                                            \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+    \ in __call__                  \u2502\r\n\u2502                              \
+    \                                                                    \u2502\r\n\
+    \u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,                \
+    \                                          \u2502\r\n\u2502   111 \u2502   \u2502\
+    \   )                                                                        \
+    \          \u2502\r\n\u2502   112 \u2502   \u2502   try:                     \
+    \                                                          \u2502\r\n\u2502 \u2771\
+    \ 113 \u2502   \u2502   \u2502   outputs = self._call(inputs)                \
+    \                                   \u2502\r\n\u2502   114 \u2502   \u2502   except\
+    \ (KeyboardInterrupt, Exception) as e:                                       \
+    \ \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502   116 \u2502   \u2502\
+    \   \u2502   raise e                                                         \
+    \               \u2502\r\n\u2502                                             \
+    \                                                     \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/sql_database/base.py:83\
+    \ in _call         \u2502\r\n\u2502                                          \
+    \                                                        \u2502\r\n\u2502    80\
+    \ \u2502   \u2502   \u2502   \"stop\": [\"\\nSQLResult:\"],                  \
+    \                                    \u2502\r\n\u2502    81 \u2502   \u2502  \
+    \ }                                                                          \
+    \        \u2502\r\n\u2502    82 \u2502   \u2502   intermediate_steps = []    \
+    \                                                        \u2502\r\n\u2502 \u2771\
+    \  83 \u2502   \u2502   sql_cmd = llm_chain.predict(**llm_inputs)            \
+    \                              \u2502\r\n\u2502    84 \u2502   \u2502   intermediate_steps.append(sql_cmd)\
+    \                                                 \u2502\r\n\u2502    85 \u2502\
+    \   \u2502   self.callback_manager.on_text(sql_cmd, color=\"green\", verbose=self.verbose)\
+    \        \u2502\r\n\u2502    86 \u2502   \u2502   result = self.database.run(sql_cmd)\
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:151\
+    \ in predict                    \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502   148 \u2502   \u2502   \u2502   \u2502                             \
+    \                                                 \u2502\r\n\u2502   149 \u2502\
+    \   \u2502   \u2502   \u2502   completion = llm.predict(adjective=\"funny\") \
+    \                               \u2502\r\n\u2502   150 \u2502   \u2502   \"\"\"\
+    \                                                                            \
+    \    \u2502\r\n\u2502 \u2771 151 \u2502   \u2502   return self(kwargs)[self.output_key]\
+    \                                               \u2502\r\n\u2502   152 \u2502\
+    \                                                                            \
+    \              \u2502\r\n\u2502   153 \u2502   async def apredict(self, **kwargs:\
+    \ Any) -> str:                                        \u2502\r\n\u2502   154 \u2502\
+    \   \u2502   \"\"\"Format prompt with kwargs and pass to LLM.                \
+    \                      \u2502\r\n\u2502                                      \
+    \                                                            \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:116 in __call__\
+    \                  \u2502\r\n\u2502                                          \
+    \                                                        \u2502\r\n\u2502   113\
+    \ \u2502   \u2502   \u2502   outputs = self._call(inputs)                    \
+    \                               \u2502\r\n\u2502   114 \u2502   \u2502   except\
+    \ (KeyboardInterrupt, Exception) as e:                                       \
+    \ \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502 \u2771 116 \u2502  \
+    \ \u2502   \u2502   raise e                                                  \
+    \                      \u2502\r\n\u2502   117 \u2502   \u2502   self.callback_manager.on_chain_end(outputs,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502   118 \u2502   \u2502\
+    \   return self.prep_outputs(inputs, outputs, return_only_outputs)           \
+    \          \u2502\r\n\u2502   119                                            \
+    \                                                \u2502\r\n\u2502            \
+    \                                                                            \
+    \          \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/base.py:113\
+    \ in __call__                  \u2502\r\n\u2502                              \
+    \                                                                    \u2502\r\n\
+    \u2502   110 \u2502   \u2502   \u2502   verbose=self.verbose,                \
+    \                                          \u2502\r\n\u2502   111 \u2502   \u2502\
+    \   )                                                                        \
+    \          \u2502\r\n\u2502   112 \u2502   \u2502   try:                     \
+    \                                                          \u2502\r\n\u2502 \u2771\
+    \ 113 \u2502   \u2502   \u2502   outputs = self._call(inputs)                \
+    \                                   \u2502\r\n\u2502   114 \u2502   \u2502   except\
+    \ (KeyboardInterrupt, Exception) as e:                                       \
+    \ \u2502\r\n\u2502   115 \u2502   \u2502   \u2502   self.callback_manager.on_chain_error(e,\
+    \ verbose=self.verbose)                  \u2502\r\n\u2502   116 \u2502   \u2502\
+    \   \u2502   raise e                                                         \
+    \               \u2502\r\n\u2502                                             \
+    \                                                     \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:57\
+    \ in _call                       \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502    54 \u2502   \u2502   return [self.output_key]                    \
+    \                                       \u2502\r\n\u2502    55 \u2502        \
+    \                                                                            \
+    \      \u2502\r\n\u2502    56 \u2502   def _call(self, inputs: Dict[str, Any])\
+    \ -> Dict[str, str]:                             \u2502\r\n\u2502 \u2771  57 \u2502\
+    \   \u2502   return self.apply([inputs])[0]                                  \
+    \                   \u2502\r\n\u2502    58 \u2502                            \
+    \                                                              \u2502\r\n\u2502\
+    \    59 \u2502   def generate(self, input_list: List[Dict[str, Any]]) -> LLMResult:\
+    \                     \u2502\r\n\u2502    60 \u2502   \u2502   \"\"\"Generate\
+    \ LLM result from inputs.\"\"\"                                             \u2502\
+    \r\n\u2502                                                                   \
+    \                               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:118\
+    \ in apply                      \u2502\r\n\u2502                             \
+    \                                                                     \u2502\r\
+    \n\u2502   115 \u2502                                                        \
+    \                                  \u2502\r\n\u2502   116 \u2502   def apply(self,\
+    \ input_list: List[Dict[str, Any]]) -> List[Dict[str, str]]:             \u2502\
+    \r\n\u2502   117 \u2502   \u2502   \"\"\"Utilize the LLM generate method for speed\
+    \ gains.\"\"\"                             \u2502\r\n\u2502 \u2771 118 \u2502\
+    \   \u2502   response = self.generate(input_list)                            \
+    \                   \u2502\r\n\u2502   119 \u2502   \u2502   return self.create_outputs(response)\
+    \                                               \u2502\r\n\u2502   120 \u2502\
+    \                                                                            \
+    \              \u2502\r\n\u2502   121 \u2502   async def aapply(self, input_list:\
+    \ List[Dict[str, Any]]) -> List[Dict[str, str]]:      \u2502\r\n\u2502       \
+    \                                                                            \
+    \               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/chains/llm.py:62\
+    \ in generate                    \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502    59 \u2502   def generate(self, input_list: List[Dict[str, Any]]) ->\
+    \ LLMResult:                     \u2502\r\n\u2502    60 \u2502   \u2502   \"\"\
+    \"Generate LLM result from inputs.\"\"\"                                     \
+    \        \u2502\r\n\u2502    61 \u2502   \u2502   prompts, stop = self.prep_prompts(input_list)\
+    \                                      \u2502\r\n\u2502 \u2771  62 \u2502   \u2502\
+    \   return self.llm.generate_prompt(prompts, stop)                           \
+    \          \u2502\r\n\u2502    63 \u2502                                     \
+    \                                                     \u2502\r\n\u2502    64 \u2502\
+    \   async def agenerate(self, input_list: List[Dict[str, Any]]) -> LLMResult:\
+    \              \u2502\r\n\u2502    65 \u2502   \u2502   \"\"\"Generate LLM result\
+    \ from inputs.\"\"\"                                             \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:107\
+    \ in generate_prompt             \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502   104 \u2502   \u2502   self, prompts: List[PromptValue], stop: Optional[List[str]]\
+    \ = None                 \u2502\r\n\u2502   105 \u2502   ) -> LLMResult:     \
+    \                                                                   \u2502\r\n\
+    \u2502   106 \u2502   \u2502   prompt_strings = [p.to_string() for p in prompts]\
+    \                                  \u2502\r\n\u2502 \u2771 107 \u2502   \u2502\
+    \   return self.generate(prompt_strings, stop=stop)                          \
+    \          \u2502\r\n\u2502   108 \u2502                                     \
+    \                                                     \u2502\r\n\u2502   109 \u2502\
+    \   async def agenerate_prompt(                                              \
+    \              \u2502\r\n\u2502   110 \u2502   \u2502   self, prompts: List[PromptValue],\
+    \ stop: Optional[List[str]] = None                 \u2502\r\n\u2502          \
+    \                                                                            \
+    \            \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:140\
+    \ in generate                    \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502   137 \u2502   \u2502   \u2502   \u2502   output = self._generate(prompts,\
+    \ stop=stop)                                \u2502\r\n\u2502   138 \u2502   \u2502\
+    \   \u2502   except (KeyboardInterrupt, Exception) as e:                     \
+    \               \u2502\r\n\u2502   139 \u2502   \u2502   \u2502   \u2502   self.callback_manager.on_llm_error(e,\
+    \ verbose=self.verbose)                \u2502\r\n\u2502 \u2771 140 \u2502   \u2502\
+    \   \u2502   \u2502   raise e                                                \
+    \                    \u2502\r\n\u2502   141 \u2502   \u2502   \u2502   self.callback_manager.on_llm_end(output,\
+    \ verbose=self.verbose)                 \u2502\r\n\u2502   142 \u2502   \u2502\
+    \   \u2502   return output                                                   \
+    \               \u2502\r\n\u2502   143 \u2502   \u2502   params = self.dict()\
+    \                                                               \u2502\r\n\u2502\
+    \                                                                            \
+    \                      \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:137\
+    \ in generate                    \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502   134 \u2502   \u2502   \u2502   \u2502   {\"name\": self.__class__.__name__},\
+    \ prompts, verbose=self.verbose           \u2502\r\n\u2502   135 \u2502   \u2502\
+    \   \u2502   )                                                               \
+    \               \u2502\r\n\u2502   136 \u2502   \u2502   \u2502   try:       \
+    \                                                                    \u2502\r\n\
+    \u2502 \u2771 137 \u2502   \u2502   \u2502   \u2502   output = self._generate(prompts,\
+    \ stop=stop)                                \u2502\r\n\u2502   138 \u2502   \u2502\
+    \   \u2502   except (KeyboardInterrupt, Exception) as e:                     \
+    \               \u2502\r\n\u2502   139 \u2502   \u2502   \u2502   \u2502   self.callback_manager.on_llm_error(e,\
+    \ verbose=self.verbose)                \u2502\r\n\u2502   140 \u2502   \u2502\
+    \   \u2502   \u2502   raise e                                                \
+    \                    \u2502\r\n\u2502                                        \
+    \                                                          \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/base.py:324\
+    \ in _generate                   \u2502\r\n\u2502                            \
+    \                                                                      \u2502\r\
+    \n\u2502   321 \u2502   \u2502   # TODO: add caching here.                   \
+    \                                       \u2502\r\n\u2502   322 \u2502   \u2502\
+    \   generations = []                                                         \
+    \          \u2502\r\n\u2502   323 \u2502   \u2502   for prompt in prompts:   \
+    \                                                          \u2502\r\n\u2502 \u2771\
+    \ 324 \u2502   \u2502   \u2502   text = self._call(prompt, stop=stop)        \
+    \                                   \u2502\r\n\u2502   325 \u2502   \u2502   \u2502\
+    \   generations.append([Generation(text=text)])                              \
+    \      \u2502\r\n\u2502   326 \u2502   \u2502   return LLMResult(generations=generations)\
+    \                                          \u2502\r\n\u2502   327            \
+    \                                                                            \
+    \    \u2502\r\n\u2502                                                        \
+    \                                          \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/langchain/llms/huggingface_pipeline.py:150\
+    \ in _call       \u2502\r\n\u2502                                            \
+    \                                                      \u2502\r\n\u2502   147\
+    \ \u2502   \u2502   return \"huggingface_pipeline\"                          \
+    \                            \u2502\r\n\u2502   148 \u2502                   \
+    \                                                                       \u2502\
+    \r\n\u2502   149 \u2502   def _call(self, prompt: str, stop: Optional[List[str]]\
+    \ = None) -> str:                 \u2502\r\n\u2502 \u2771 150 \u2502   \u2502\
+    \   response = self.pipeline(prompt)                                         \
+    \          \u2502\r\n\u2502   151 \u2502   \u2502   if self.pipeline.task == \"\
+    text-generation\":                                        \u2502\r\n\u2502   152\
+    \ \u2502   \u2502   \u2502   # Text generation return includes the starter text.\
+    \                            \u2502\r\n\u2502   153 \u2502   \u2502   \u2502 \
+    \  text = response[0][\"generated_text\"][len(prompt) :]                     \
+    \       \u2502\r\n\u2502                                                     \
+    \                                             \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1109\
+    \ in __call__           \u2502\r\n\u2502                                     \
+    \                                                             \u2502\r\n\u2502\
+    \   1106 \u2502   \u2502   \u2502   \u2502   )                               \
+    \                                          \u2502\r\n\u2502   1107 \u2502   \u2502\
+    \   \u2502   )                                                               \
+    \              \u2502\r\n\u2502   1108 \u2502   \u2502   else:               \
+    \                                                              \u2502\r\n\u2502\
+    \ \u2771 1109 \u2502   \u2502   \u2502   return self.run_single(inputs, preprocess_params,\
+    \ forward_params, postproces  \u2502\r\n\u2502   1110 \u2502                 \
+    \                                                                        \u2502\
+    \r\n\u2502   1111 \u2502   def run_multi(self, inputs, preprocess_params, forward_params,\
+    \ postprocess_params):   \u2502\r\n\u2502   1112 \u2502   \u2502   return [self.run_single(item,\
+    \ preprocess_params, forward_params, postprocess_par  \u2502\r\n\u2502       \
+    \                                                                            \
+    \               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1116\
+    \ in run_single         \u2502\r\n\u2502                                     \
+    \                                                             \u2502\r\n\u2502\
+    \   1113 \u2502                                                              \
+    \                           \u2502\r\n\u2502   1114 \u2502   def run_single(self,\
+    \ inputs, preprocess_params, forward_params, postprocess_params):  \u2502\r\n\u2502\
+    \   1115 \u2502   \u2502   model_inputs = self.preprocess(inputs, **preprocess_params)\
+    \                       \u2502\r\n\u2502 \u2771 1116 \u2502   \u2502   model_outputs\
+    \ = self.forward(model_inputs, **forward_params)                      \u2502\r\
+    \n\u2502   1117 \u2502   \u2502   outputs = self.postprocess(model_outputs, **postprocess_params)\
+    \                   \u2502\r\n\u2502   1118 \u2502   \u2502   return outputs \
+    \                                                                   \u2502\r\n\
+    \u2502   1119                                                                \
+    \                           \u2502\r\n\u2502                                 \
+    \                                                                 \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/transformers/pipelines/base.py:1015 in\
+    \ forward            \u2502\r\n\u2502                                        \
+    \                                                          \u2502\r\n\u2502  \
+    \ 1012 \u2502   \u2502   \u2502   \u2502   inference_context = self.get_inference_context()\
+    \                          \u2502\r\n\u2502   1013 \u2502   \u2502   \u2502  \
+    \ \u2502   with inference_context():                                         \
+    \        \u2502\r\n\u2502   1014 \u2502   \u2502   \u2502   \u2502   \u2502  \
+    \ model_inputs = self._ensure_tensor_on_device(model_inputs, device=se  \u2502\
+    \r\n\u2502 \u2771 1015 \u2502   \u2502   \u2502   \u2502   \u2502   model_outputs\
+    \ = self._forward(model_inputs, **forward_params)         \u2502\r\n\u2502   1016\
+    \ \u2502   \u2502   \u2502   \u2502   \u2502   model_outputs = self._ensure_tensor_on_device(model_outputs,\
+    \ device=  \u2502\r\n\u2502   1017 \u2502   \u2502   \u2502   else:          \
+    \                                                               \u2502\r\n\u2502\
+    \   1018 \u2502   \u2502   \u2502   \u2502   raise ValueError(f\"Framework {self.framework}\
+    \ is not supported\")          \u2502\r\n\u2502                              \
+    \                                                                    \u2502\r\n\
+    \u2502 /root/.cache/huggingface/modules/transformers_modules/databricks/dolly-v2-3b/e19a5252f69d79d94ac\
+    \ \u2502\r\n\u2502 95045eb9b8a158775f701/instruct_pipeline.py:132 in _forward\
+    \                                       \u2502\r\n\u2502                     \
+    \                                                                            \
+    \ \u2502\r\n\u2502   129 \u2502   \u2502   else:                             \
+    \                                                 \u2502\r\n\u2502   130 \u2502\
+    \   \u2502   \u2502   in_b = input_ids.shape[0]                              \
+    \                        \u2502\r\n\u2502   131 \u2502   \u2502              \
+    \                                                                        \u2502\
+    \r\n\u2502 \u2771 132 \u2502   \u2502   generated_sequence = self.model.generate(\
+    \                                          \u2502\r\n\u2502   133 \u2502   \u2502\
+    \   \u2502   input_ids=input_ids.to(self.model.device),                      \
+    \               \u2502\r\n\u2502   134 \u2502   \u2502   \u2502   attention_mask=attention_mask.to(self.model.device)\
+    \ if attention_mask is not   \u2502\r\n\u2502   135 \u2502   \u2502   \u2502 \
+    \  pad_token_id=self.tokenizer.pad_token_id,                                 \
+    \     \u2502\r\n\u2502                                                       \
+    \                                           \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/autograd/grad_mode.py:27\
+    \ in decorate_context        \u2502\r\n\u2502                                \
+    \                                                                  \u2502\r\n\u2502\
+    \    24 \u2502   \u2502   @functools.wraps(func)                             \
+    \                                \u2502\r\n\u2502    25 \u2502   \u2502   def\
+    \ decorate_context(*args, **kwargs):                                         \
+    \    \u2502\r\n\u2502    26 \u2502   \u2502   \u2502   with self.clone():    \
+    \                                                         \u2502\r\n\u2502 \u2771\
+    \  27 \u2502   \u2502   \u2502   \u2502   return func(*args, **kwargs)       \
+    \                                        \u2502\r\n\u2502    28 \u2502   \u2502\
+    \   return cast(F, decorate_context)                                         \
+    \          \u2502\r\n\u2502    29 \u2502                                     \
+    \                                                     \u2502\r\n\u2502    30 \u2502\
+    \   def _wrap_generator(self, func):                                         \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:1485\
+    \ in generate         \u2502\r\n\u2502                                       \
+    \                                                           \u2502\r\n\u2502 \
+    \  1482 \u2502   \u2502   \u2502   )                                         \
+    \                                    \u2502\r\n\u2502   1483 \u2502   \u2502 \
+    \  \u2502                                                                    \
+    \             \u2502\r\n\u2502   1484 \u2502   \u2502   \u2502   # 13. run sample\
+    \                                                              \u2502\r\n\u2502\
+    \ \u2771 1485 \u2502   \u2502   \u2502   return self.sample(                 \
+    \                                          \u2502\r\n\u2502   1486 \u2502   \u2502\
+    \   \u2502   \u2502   input_ids,                                             \
+    \                   \u2502\r\n\u2502   1487 \u2502   \u2502   \u2502   \u2502\
+    \   logits_processor=logits_processor,                                       \
+    \ \u2502\r\n\u2502   1488 \u2502   \u2502   \u2502   \u2502   logits_warper=logits_warper,\
+    \                                              \u2502\r\n\u2502              \
+    \                                                                            \
+    \        \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/generation/utils.py:2524\
+    \ in sample           \u2502\r\n\u2502                                       \
+    \                                                           \u2502\r\n\u2502 \
+    \  2521 \u2502   \u2502   \u2502   model_inputs = self.prepare_inputs_for_generation(input_ids,\
+    \ **model_kwargs)  \u2502\r\n\u2502   2522 \u2502   \u2502   \u2502          \
+    \                                                                       \u2502\
+    \r\n\u2502   2523 \u2502   \u2502   \u2502   # forward pass to get next token\
+    \                                              \u2502\r\n\u2502 \u2771 2524 \u2502\
+    \   \u2502   \u2502   outputs = self(                                        \
+    \                       \u2502\r\n\u2502   2525 \u2502   \u2502   \u2502   \u2502\
+    \   **model_inputs,                                                          \
+    \ \u2502\r\n\u2502   2526 \u2502   \u2502   \u2502   \u2502   return_dict=True,\
+    \                                                         \u2502\r\n\u2502   2527\
+    \ \u2502   \u2502   \u2502   \u2502   output_attentions=output_attentions,   \
+    \                                   \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502 /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194\
+    \ in _call_impl             \u2502\r\n\u2502                                 \
+    \                                                                 \u2502\r\n\u2502\
+    \   1191 \u2502   \u2502   # this function, and just call forward.           \
+    \                                \u2502\r\n\u2502   1192 \u2502   \u2502   if\
+    \ not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks\
+    \ o  \u2502\r\n\u2502   1193 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):                   \u2502\r\n\u2502 \u2771 1194\
+    \ \u2502   \u2502   \u2502   return forward_call(*input, **kwargs)           \
+    \                              \u2502\r\n\u2502   1195 \u2502   \u2502   # Do\
+    \ not call functions when jit is used                                        \
+    \  \u2502\r\n\u2502   1196 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+    \ = [], []                             \u2502\r\n\u2502   1197 \u2502   \u2502\
+    \   if self._backward_hooks or _global_backward_hooks:                       \
+    \         \u2502\r\n\u2502                                                   \
+    \                                               \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+    \ in new_forward                    \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():            \
+    \                                              \u2502\r\n\u2502   163 \u2502 \
+    \  \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)          \
+    \                            \u2502\r\n\u2502   164 \u2502   \u2502   else:  \
+    \                                                                            \u2502\
+    \r\n\u2502 \u2771 165 \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)\
+    \                                          \u2502\r\n\u2502   166 \u2502   \u2502\
+    \   return module._hf_hook.post_forward(module, output)                      \
+    \          \u2502\r\n\u2502   167 \u2502                                     \
+    \                                                     \u2502\r\n\u2502   168 \u2502\
+    \   module.forward = new_forward                                             \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:662\
+    \ in  \u2502\r\n\u2502 forward                                               \
+    \                                           \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502   659 \u2502   \u2502   ```\"\"\"                     \
+    \                                                        \u2502\r\n\u2502   660\
+    \ \u2502   \u2502   return_dict = return_dict if return_dict is not None else\
+    \ self.config.use_return   \u2502\r\n\u2502   661 \u2502   \u2502            \
+    \                                                                          \u2502\
+    \r\n\u2502 \u2771 662 \u2502   \u2502   outputs = self.gpt_neox(             \
+    \                                              \u2502\r\n\u2502   663 \u2502 \
+    \  \u2502   \u2502   input_ids,                                              \
+    \                       \u2502\r\n\u2502   664 \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+    \                                                 \u2502\r\n\u2502   665 \u2502\
+    \   \u2502   \u2502   position_ids=position_ids,                             \
+    \                        \u2502\r\n\u2502                                    \
+    \                                                              \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194 in _call_impl\
+    \             \u2502\r\n\u2502                                               \
+    \                                                   \u2502\r\n\u2502   1191 \u2502\
+    \   \u2502   # this function, and just call forward.                         \
+    \                  \u2502\r\n\u2502   1192 \u2502   \u2502   if not (self._backward_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks o  \u2502\r\n\u2502   1193\
+    \ \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+    \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502   return\
+    \ forward_call(*input, **kwargs)                                         \u2502\
+    \r\n\u2502   1195 \u2502   \u2502   # Do not call functions when jit is used \
+    \                                         \u2502\r\n\u2502   1196 \u2502   \u2502\
+    \   full_backward_hooks, non_full_backward_hooks = [], []                    \
+    \         \u2502\r\n\u2502   1197 \u2502   \u2502   if self._backward_hooks or\
+    \ _global_backward_hooks:                                \u2502\r\n\u2502    \
+    \                                                                            \
+    \                  \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+    \ in new_forward                    \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():            \
+    \                                              \u2502\r\n\u2502   163 \u2502 \
+    \  \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)          \
+    \                            \u2502\r\n\u2502   164 \u2502   \u2502   else:  \
+    \                                                                            \u2502\
+    \r\n\u2502 \u2771 165 \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)\
+    \                                          \u2502\r\n\u2502   166 \u2502   \u2502\
+    \   return module._hf_hook.post_forward(module, output)                      \
+    \          \u2502\r\n\u2502   167 \u2502                                     \
+    \                                                     \u2502\r\n\u2502   168 \u2502\
+    \   module.forward = new_forward                                             \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:553\
+    \ in  \u2502\r\n\u2502 forward                                               \
+    \                                           \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502   550 \u2502   \u2502   \u2502   \u2502   \u2502   head_mask[i],\
+    \                                                          \u2502\r\n\u2502  \
+    \ 551 \u2502   \u2502   \u2502   \u2502   )                                  \
+    \                                        \u2502\r\n\u2502   552 \u2502   \u2502\
+    \   \u2502   else:                                                           \
+    \               \u2502\r\n\u2502 \u2771 553 \u2502   \u2502   \u2502   \u2502\
+    \   outputs = layer(                                                         \
+    \  \u2502\r\n\u2502   554 \u2502   \u2502   \u2502   \u2502   \u2502   hidden_states,\
+    \                                                         \u2502\r\n\u2502   555\
+    \ \u2502   \u2502   \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+    \                                         \u2502\r\n\u2502   556 \u2502   \u2502\
+    \   \u2502   \u2502   \u2502   position_ids=position_ids,                    \
+    \                         \u2502\r\n\u2502                                   \
+    \                                                               \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194 in _call_impl\
+    \             \u2502\r\n\u2502                                               \
+    \                                                   \u2502\r\n\u2502   1191 \u2502\
+    \   \u2502   # this function, and just call forward.                         \
+    \                  \u2502\r\n\u2502   1192 \u2502   \u2502   if not (self._backward_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks o  \u2502\r\n\u2502   1193\
+    \ \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+    \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502   return\
+    \ forward_call(*input, **kwargs)                                         \u2502\
+    \r\n\u2502   1195 \u2502   \u2502   # Do not call functions when jit is used \
+    \                                         \u2502\r\n\u2502   1196 \u2502   \u2502\
+    \   full_backward_hooks, non_full_backward_hooks = [], []                    \
+    \         \u2502\r\n\u2502   1197 \u2502   \u2502   if self._backward_hooks or\
+    \ _global_backward_hooks:                                \u2502\r\n\u2502    \
+    \                                                                            \
+    \                  \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+    \ in new_forward                    \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():            \
+    \                                              \u2502\r\n\u2502   163 \u2502 \
+    \  \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)          \
+    \                            \u2502\r\n\u2502   164 \u2502   \u2502   else:  \
+    \                                                                            \u2502\
+    \r\n\u2502 \u2771 165 \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)\
+    \                                          \u2502\r\n\u2502   166 \u2502   \u2502\
+    \   return module._hf_hook.post_forward(module, output)                      \
+    \          \u2502\r\n\u2502   167 \u2502                                     \
+    \                                                     \u2502\r\n\u2502   168 \u2502\
+    \   module.forward = new_forward                                             \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:320\
+    \ in  \u2502\r\n\u2502 forward                                               \
+    \                                           \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502   317 \u2502   \u2502   layer_past: Optional[Tuple[torch.Tensor]]\
+    \ = None,                                  \u2502\r\n\u2502   318 \u2502   \u2502\
+    \   output_attentions: Optional[bool] = False,                               \
+    \          \u2502\r\n\u2502   319 \u2502   ):                                \
+    \                                                     \u2502\r\n\u2502 \u2771\
+    \ 320 \u2502   \u2502   attention_layer_outputs = self.attention(            \
+    \                              \u2502\r\n\u2502   321 \u2502   \u2502   \u2502\
+    \   self.input_layernorm(hidden_states),                                     \
+    \      \u2502\r\n\u2502   322 \u2502   \u2502   \u2502   attention_mask=attention_mask,\
+    \                                                 \u2502\r\n\u2502   323 \u2502\
+    \   \u2502   \u2502   position_ids=position_ids,                             \
+    \                        \u2502\r\n\u2502                                    \
+    \                                                              \u2502\r\n\u2502\
+    \ /usr/local/lib/python3.9/dist-packages/torch/nn/modules/module.py:1194 in _call_impl\
+    \             \u2502\r\n\u2502                                               \
+    \                                                   \u2502\r\n\u2502   1191 \u2502\
+    \   \u2502   # this function, and just call forward.                         \
+    \                  \u2502\r\n\u2502   1192 \u2502   \u2502   if not (self._backward_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks o  \u2502\r\n\u2502   1193\
+    \ \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks or _global_forward_pre_hooks):\
+    \                   \u2502\r\n\u2502 \u2771 1194 \u2502   \u2502   \u2502   return\
+    \ forward_call(*input, **kwargs)                                         \u2502\
+    \r\n\u2502   1195 \u2502   \u2502   # Do not call functions when jit is used \
+    \                                         \u2502\r\n\u2502   1196 \u2502   \u2502\
+    \   full_backward_hooks, non_full_backward_hooks = [], []                    \
+    \         \u2502\r\n\u2502   1197 \u2502   \u2502   if self._backward_hooks or\
+    \ _global_backward_hooks:                                \u2502\r\n\u2502    \
+    \                                                                            \
+    \                  \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/accelerate/hooks.py:165\
+    \ in new_forward                    \u2502\r\n\u2502                         \
+    \                                                                         \u2502\
+    \r\n\u2502   162 \u2502   \u2502   \u2502   with torch.no_grad():            \
+    \                                              \u2502\r\n\u2502   163 \u2502 \
+    \  \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)          \
+    \                            \u2502\r\n\u2502   164 \u2502   \u2502   else:  \
+    \                                                                            \u2502\
+    \r\n\u2502 \u2771 165 \u2502   \u2502   \u2502   output = old_forward(*args, **kwargs)\
+    \                                          \u2502\r\n\u2502   166 \u2502   \u2502\
+    \   return module._hf_hook.post_forward(module, output)                      \
+    \          \u2502\r\n\u2502   167 \u2502                                     \
+    \                                                     \u2502\r\n\u2502   168 \u2502\
+    \   module.forward = new_forward                                             \
+    \              \u2502\r\n\u2502                                              \
+    \                                                    \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:152\
+    \ in  \u2502\r\n\u2502 forward                                               \
+    \                                           \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502   149 \u2502   \u2502   present = (key, value) if use_cache\
+    \ else None                                      \u2502\r\n\u2502   150 \u2502\
+    \   \u2502                                                                   \
+    \                   \u2502\r\n\u2502   151 \u2502   \u2502   # Compute attention\
+    \                                                                \u2502\r\n\u2502\
+    \ \u2771 152 \u2502   \u2502   attn_output, attn_weights = self._attn(query, key,\
+    \ value, attention_mask, head_m   \u2502\r\n\u2502   153 \u2502   \u2502     \
+    \                                                                            \
+    \     \u2502\r\n\u2502   154 \u2502   \u2502   # Reshape outputs             \
+    \                                                     \u2502\r\n\u2502   155 \u2502\
+    \   \u2502   attn_output = self._merge_heads(attn_output, self.num_attention_heads,\
+    \ self.head   \u2502\r\n\u2502                                               \
+    \                                                   \u2502\r\n\u2502 /usr/local/lib/python3.9/dist-packages/transformers/models/gpt_neox/modeling_gpt_neox.py:219\
+    \ in  \u2502\r\n\u2502 _attn                                                 \
+    \                                           \u2502\r\n\u2502                 \
+    \                                                                            \
+    \     \u2502\r\n\u2502   216 \u2502   \u2502   # Need to be a tensor, otherwise\
+    \ we get error: `RuntimeError: expected scalar ty   \u2502\r\n\u2502   217 \u2502\
+    \   \u2502   # Need to be on the same device, otherwise `RuntimeError: ..., x\
+    \ and y to be on    \u2502\r\n\u2502   218 \u2502   \u2502   mask_value = torch.tensor(mask_value,\
+    \ dtype=attn_scores.dtype).to(attn_scores.de   \u2502\r\n\u2502 \u2771 219 \u2502\
+    \   \u2502   attn_scores = torch.where(causal_mask, attn_scores, mask_value) \
+    \                   \u2502\r\n\u2502   220 \u2502   \u2502                   \
+    \                                                                   \u2502\r\n\
+    \u2502   221 \u2502   \u2502   if attention_mask is not None:                \
+    \                                     \u2502\r\n\u2502   222 \u2502   \u2502 \
+    \  \u2502   # Apply the attention mask                                       \
+    \              \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\
+    \r\nRuntimeError: The size of tensor a (2048) must match the size of tensor b\
+    \ (2611) at non-singleton dimension 3\r\n```"
+  created_at: 2023-04-27 10:47:18+00:00
+  edited: false
+  hidden: false
+  id: 644a60c6c4de0daa49607a02
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T12:14:10.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>The model has a context window limit of 2048 tokens. If you end
+          up constructing input that''s longer it won''t work. The SQL chain is producing
+          very long input. Maybe you need to limit the size of the results it parses
+          or something (number of rows). See the SQL chain docs.</p>
+
+          '
+        raw: The model has a context window limit of 2048 tokens. If you end up constructing
+          input that's longer it won't work. The SQL chain is producing very long
+          input. Maybe you need to limit the size of the results it parses or something
+          (number of rows). See the SQL chain docs.
+        updatedAt: '2023-04-27T12:14:10.378Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - kevinknights29
+    id: 644a67123830dda2239af31d
+    type: comment
+  author: srowen
+  content: The model has a context window limit of 2048 tokens. If you end up constructing
+    input that's longer it won't work. The SQL chain is producing very long input.
+    Maybe you need to limit the size of the results it parses or something (number
+    of rows). See the SQL chain docs.
+  created_at: 2023-04-27 11:14:10+00:00
+  edited: false
+  hidden: false
+  id: 644a67123830dda2239af31d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7a9287b285036768e99fbe6d25d0a744.svg
+      fullname: Tamirisa
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Krishnaveni
+      type: user
+    createdAt: '2023-04-27T13:20:38.000Z'
+    data:
+      edited: false
+      editors:
+      - Krishnaveni
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7a9287b285036768e99fbe6d25d0a744.svg
+          fullname: Tamirisa
+          isHf: false
+          isPro: false
+          name: Krishnaveni
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;srowen&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/srowen\">@<span class=\"\
+          underline\">srowen</span></a></span>\n\n\t</span></span> , would this limit\
+          \ also exist for the dolly-v2-7b and dolly-v2-12b versions as well ?</p>\n"
+        raw: '@srowen , would this limit also exist for the dolly-v2-7b and dolly-v2-12b
+          versions as well ?'
+        updatedAt: '2023-04-27T13:20:38.130Z'
+      numEdits: 0
+      reactions: []
+    id: 644a76a6376e8fd2bbe3c57e
+    type: comment
+  author: Krishnaveni
+  content: '@srowen , would this limit also exist for the dolly-v2-7b and dolly-v2-12b
+    versions as well ?'
+  created_at: 2023-04-27 12:20:38+00:00
+  edited: false
+  hidden: false
+  id: 644a76a6376e8fd2bbe3c57e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T13:21:52.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Yes, they''re based on Pythia, and all have a 2048 token context
+          window. In general, you want to be careful about sending so many tokens
+          even if the model accommodates them, as it increases runtime (and cost).
+          The prompt engineering is most of the work here!</p>
+
+          '
+        raw: Yes, they're based on Pythia, and all have a 2048 token context window.
+          In general, you want to be careful about sending so many tokens even if
+          the model accommodates them, as it increases runtime (and cost). The prompt
+          engineering is most of the work here!
+        updatedAt: '2023-04-27T13:21:52.757Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - kevinknights29
+    id: 644a76f0e3a902dbe0029609
+    type: comment
+  author: srowen
+  content: Yes, they're based on Pythia, and all have a 2048 token context window.
+    In general, you want to be careful about sending so many tokens even if the model
+    accommodates them, as it increases runtime (and cost). The prompt engineering
+    is most of the work here!
+  created_at: 2023-04-27 12:21:52+00:00
+  edited: false
+  hidden: false
+  id: 644a76f0e3a902dbe0029609
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/875a10e6ad1d860bf665275513a0fbed.svg
+      fullname: Saurabh Gupta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saurabh48782
+      type: user
+    createdAt: '2023-04-27T13:48:48.000Z'
+    data:
+      edited: false
+      editors:
+      - saurabh48782
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/875a10e6ad1d860bf665275513a0fbed.svg
+          fullname: Saurabh Gupta
+          isHf: false
+          isPro: false
+          name: saurabh48782
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;srowen&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/srowen\">@<span class=\"\
+          underline\">srowen</span></a></span>\n\n\t</span></span> I'm also encountering\
+          \ a similar kind of tensor size mismatch error when using RetrievalQA chain\
+          \ to create a model that can learn from my pdf document and then answer\
+          \ based on the content in the pdf document. When I pass the HuggingFacePipeline\
+          \ model into the RetrievalQA chain it loads correctly. But when I use the\
+          \ chain.run(query) as shown here <a rel=\"nofollow\" href=\"https://python.langchain.com/en/latest/modules/chains/index_examples/vector_db_qa.html\"\
+          >https://python.langchain.com/en/latest/modules/chains/index_examples/vector_db_qa.html</a>\
+          \ .It shows me the following error.<br>RuntimeError: The size of tensor\
+          \ a (2048) must match the size of tensor b (2568) at non-singleton dimension\
+          \ 3</p>\n"
+        raw: '@srowen I''m also encountering a similar kind of tensor size mismatch
+          error when using RetrievalQA chain to create a model that can learn from
+          my pdf document and then answer based on the content in the pdf document.
+          When I pass the HuggingFacePipeline model into the RetrievalQA chain it
+          loads correctly. But when I use the chain.run(query) as shown here https://python.langchain.com/en/latest/modules/chains/index_examples/vector_db_qa.html
+          .It shows me the following error.
+
+          RuntimeError: The size of tensor a (2048) must match the size of tensor
+          b (2568) at non-singleton dimension 3'
+        updatedAt: '2023-04-27T13:48:48.148Z'
+      numEdits: 0
+      reactions: []
+    id: 644a7d4070b10f96958f4a82
+    type: comment
+  author: saurabh48782
+  content: '@srowen I''m also encountering a similar kind of tensor size mismatch
+    error when using RetrievalQA chain to create a model that can learn from my pdf
+    document and then answer based on the content in the pdf document. When I pass
+    the HuggingFacePipeline model into the RetrievalQA chain it loads correctly. But
+    when I use the chain.run(query) as shown here https://python.langchain.com/en/latest/modules/chains/index_examples/vector_db_qa.html
+    .It shows me the following error.
+
+    RuntimeError: The size of tensor a (2048) must match the size of tensor b (2568)
+    at non-singleton dimension 3'
+  created_at: 2023-04-27 12:48:48+00:00
+  edited: false
+  hidden: false
+  id: 644a7d4070b10f96958f4a82
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T13:49:56.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>Same answer, you''re exceeding the context window size.</p>
+
+          '
+        raw: Same answer, you're exceeding the context window size.
+        updatedAt: '2023-04-27T13:49:56.890Z'
+      numEdits: 0
+      reactions: []
+    id: 644a7d847f7054bb8dd8a805
+    type: comment
+  author: srowen
+  content: Same answer, you're exceeding the context window size.
+  created_at: 2023-04-27 12:49:56+00:00
+  edited: false
+  hidden: false
+  id: 644a7d847f7054bb8dd8a805
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/875a10e6ad1d860bf665275513a0fbed.svg
+      fullname: Saurabh Gupta
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: saurabh48782
+      type: user
+    createdAt: '2023-04-27T13:55:21.000Z'
+    data:
+      edited: false
+      editors:
+      - saurabh48782
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/875a10e6ad1d860bf665275513a0fbed.svg
+          fullname: Saurabh Gupta
+          isHf: false
+          isPro: false
+          name: saurabh48782
+          type: user
+        html: '<p>I''m assuming there is something to do with tokenization of the
+          document while creating embeddings in the vector score. The model is not
+          able to retrieve large size embeddings from the vector store. Can this be
+          an issue here?</p>
+
+          '
+        raw: I'm assuming there is something to do with tokenization of the document
+          while creating embeddings in the vector score. The model is not able to
+          retrieve large size embeddings from the vector store. Can this be an issue
+          here?
+        updatedAt: '2023-04-27T13:55:21.821Z'
+      numEdits: 0
+      reactions: []
+    id: 644a7ec970b10f96958f7755
+    type: comment
+  author: saurabh48782
+  content: I'm assuming there is something to do with tokenization of the document
+    while creating embeddings in the vector score. The model is not able to retrieve
+    large size embeddings from the vector store. Can this be an issue here?
+  created_at: 2023-04-27 12:55:21+00:00
+  edited: false
+  hidden: false
+  id: 644a7ec970b10f96958f7755
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-27T13:59:36.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>No, not related to the vector DB. This happens when you feed context
+          to the model. You are perhaps retrieving too much to feed to the model,
+          yes.</p>
+
+          '
+        raw: No, not related to the vector DB. This happens when you feed context
+          to the model. You are perhaps retrieving too much to feed to the model,
+          yes.
+        updatedAt: '2023-04-27T13:59:36.001Z'
+      numEdits: 0
+      reactions: []
+    id: 644a7fc8e3a902dbe00392ec
+    type: comment
+  author: srowen
+  content: No, not related to the vector DB. This happens when you feed context to
+    the model. You are perhaps retrieving too much to feed to the model, yes.
+  created_at: 2023-04-27 12:59:36+00:00
+  edited: false
+  hidden: false
+  id: 644a7fc8e3a902dbe00392ec
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/644a5b2a405bdff86cb732cb/2R7mnKhxQP72SaIKEnqtF.jpeg?w=200&h=200&f=face
+      fullname: Kevin Knights
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kevinknights29
+      type: user
+    createdAt: '2023-04-28T11:42:09.000Z'
+    data:
+      edited: false
+      editors:
+      - kevinknights29
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/644a5b2a405bdff86cb732cb/2R7mnKhxQP72SaIKEnqtF.jpeg?w=200&h=200&f=face
+          fullname: Kevin Knights
+          isHf: false
+          isPro: false
+          name: kevinknights29
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;srowen&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/srowen\">@<span class=\"\
+          underline\">srowen</span></a></span>\n\n\t</span></span>, thanks for your\
+          \ response. </p>\n<p>Can you please expand on: \"The prompt engineering\
+          \ is most of the work here!\"? </p>\n<p>Would like to know what approaches\
+          \ or strategies you recommend or have seen that work to reduce the amount\
+          \ of context needed for the model to generate accurate predictions.</p>\n\
+          <p>In this example, passing the schema of the database and tables structure\
+          \ is making us exceed the limit of tokens.</p>\n<p>Thanks and regards,<br>Kevin\
+          \ K.</p>\n<p>PS: my account was created yesterday, so I'm limited to one\
+          \ comment a day.</p>\n"
+        raw: "Hi @srowen, thanks for your response. \n\n\nCan you please expand on:\
+          \ \"The prompt engineering is most of the work here!\"? \n\nWould like to\
+          \ know what approaches or strategies you recommend or have seen that work\
+          \ to reduce the amount of context needed for the model to generate accurate\
+          \ predictions.\n\nIn this example, passing the schema of the database and\
+          \ tables structure is making us exceed the limit of tokens.\n\n\nThanks\
+          \ and regards,\nKevin K.\n\nPS: my account was created yesterday, so I'm\
+          \ limited to one comment a day."
+        updatedAt: '2023-04-28T11:42:09.220Z'
+      numEdits: 0
+      reactions: []
+    id: 644bb111b5da3e194a6fe604
+    type: comment
+  author: kevinknights29
+  content: "Hi @srowen, thanks for your response. \n\n\nCan you please expand on:\
+    \ \"The prompt engineering is most of the work here!\"? \n\nWould like to know\
+    \ what approaches or strategies you recommend or have seen that work to reduce\
+    \ the amount of context needed for the model to generate accurate predictions.\n\
+    \nIn this example, passing the schema of the database and tables structure is\
+    \ making us exceed the limit of tokens.\n\n\nThanks and regards,\nKevin K.\n\n\
+    PS: my account was created yesterday, so I'm limited to one comment a day."
+  created_at: 2023-04-28 10:42:09+00:00
+  edited: false
+  hidden: false
+  id: 644bb111b5da3e194a6fe604
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-28T12:32:50.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>See for example <a rel="nofollow" href="https://python.langchain.com/en/latest/modules/chains/examples/sqlite.html#choosing-how-to-limit-the-number-of-rows-returned">https://python.langchain.com/en/latest/modules/chains/examples/sqlite.html#choosing-how-to-limit-the-number-of-rows-returned</a>
+          to limit rows.<br>Try turning on verbose=True in the chain so you can see
+          what is being passed. That may give you ideas about what is very long here.<br>You
+          may have to write custom, shorter prompts that are more targeted at your
+          use case. Langchain prompts tend to have a lot of boilerplate instruction.</p>
+
+          '
+        raw: 'See for example https://python.langchain.com/en/latest/modules/chains/examples/sqlite.html#choosing-how-to-limit-the-number-of-rows-returned
+          to limit rows.
+
+          Try turning on verbose=True in the chain so you can see what is being passed.
+          That may give you ideas about what is very long here.
+
+          You may have to write custom, shorter prompts that are more targeted at
+          your use case. Langchain prompts tend to have a lot of boilerplate instruction.'
+        updatedAt: '2023-04-28T12:32:50.731Z'
+      numEdits: 0
+      reactions: []
+    id: 644bbcf296b76e7c310498a7
+    type: comment
+  author: srowen
+  content: 'See for example https://python.langchain.com/en/latest/modules/chains/examples/sqlite.html#choosing-how-to-limit-the-number-of-rows-returned
+    to limit rows.
+
+    Try turning on verbose=True in the chain so you can see what is being passed.
+    That may give you ideas about what is very long here.
+
+    You may have to write custom, shorter prompts that are more targeted at your use
+    case. Langchain prompts tend to have a lot of boilerplate instruction.'
+  created_at: 2023-04-28 11:32:50+00:00
+  edited: false
+  hidden: false
+  id: 644bbcf296b76e7c310498a7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/644a5b2a405bdff86cb732cb/2R7mnKhxQP72SaIKEnqtF.jpeg?w=200&h=200&f=face
+      fullname: Kevin Knights
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kevinknights29
+      type: user
+    createdAt: '2023-05-04T04:50:06.000Z'
+    data:
+      status: closed
+    id: 6453397e8fe6558e328f3c14
+    type: status-change
+  author: kevinknights29
+  created_at: 2023-05-04 03:50:06+00:00
+  id: 6453397e8fe6558e328f3c14
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 11
+repo_id: databricks/dolly-v2-3b
+repo_type: model
+status: closed
+target_branch: null
+title: 'Dolly + LangChain SQL Chain  - RuntimeError: The size of tensor a (2048) must
+  match the size of tensor b (2611) at non-singleton dimension 3'

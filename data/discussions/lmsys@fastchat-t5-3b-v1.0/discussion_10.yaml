@@ -1,0 +1,187 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: kvmukilan
+conflicting_files: null
+created_at: 2023-07-15 04:17:10+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/11f48cd55623643f5b77771c7abde0f7.svg
+      fullname: Karmukilan V
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kvmukilan
+      type: user
+    createdAt: '2023-07-15T05:17:10.000Z'
+    data:
+      edited: false
+      editors:
+      - kvmukilan
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.606083869934082
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/11f48cd55623643f5b77771c7abde0f7.svg
+          fullname: Karmukilan V
+          isHf: false
+          isPro: false
+          name: kvmukilan
+          type: user
+        html: "<p>I have trained LLM on my PDF file now I am asking questions related\
+          \ to same. But  the output which is being generated is always truncated\
+          \ and stops in<br>between . Model giving incomplete sentences.</p>\n<p>I\
+          \ have used follwing embeddings:</p>\n<ol>\n<li>sentence-transformers/all-mpnet-base-v2</li>\n\
+          <li>hkunlp/instructor-xl</li>\n</ol>\n<h1 id=\"to-get-embedding\">to get\
+          \ embedding</h1>\n<pre><code>def getEmbedding():\n        device = \"cuda\"\
+          \ if torch.cuda.is_available() else \"cpu\"\n        return HuggingFaceEmbeddings(model_name=\"\
+          sentence-transformers/all-mpnet-base-v2\", model_kwargs={\"device\": device})\
+          \ \n</code></pre>\n<p>and tried with following LLMs:</p>\n<ol>\n<li>lmsys/fastchat-t5-3b-v1.0</li>\n\
+          <li>google/flan-t5-base</li>\n</ol>\n<h1 id=\"to-get-llm\">to get LLM</h1>\n\
+          <pre><code>def getLLM():\n        return pipeline(\n            task=\"\
+          text2text-generation\",\n            model = \"lmsys/fastchat-t5-3b-v1.0\"\
+          ,\n            min_new_tokens=100,\n            max_new_tokens=256,\n  \
+          \          model_kwargs={\"device_map\": \"auto\", \"load_in_8bit\": False,\
+          \ \"max_length\": 512, \"temperature\": 0.}\n        )\n\n# to get the text\n\
+          def get_pdf_text(pdf_path):\n    text = \"\"\n    documents = []\n    for\
+          \ pdf in pdf_path:\n        with NamedTemporaryFile(delete=False, suffix='.pdf')\
+          \ as tmp:\n            shutil.copyfileobj(pdf, tmp)\n            tmp_path\
+          \ = Path(tmp.name)\n            #print(tmp_path)\n            loader = PyPDFLoader(str(tmp_path))\n\
+          \            documents.extend(loader.load())\n    return documents\n# to\
+          \ split the document which we have gotten from the pdfs into tokens \ndef\
+          \ get_text_chunks(documents):\n    text_splitter = CharacterTextSplitter(chunk_size=100,\
+          \ chunk_overlap=0)\n    texts = text_splitter.split_documents(documents)\n\
+          \    text_splitter = TokenTextSplitter(chunk_size=100, chunk_overlap=10)\
+          \  # This the encoding for text-embedding-ada-002\n    texts = text_splitter.split_documents(texts)\n\
+          \    return texts   \n# Creating Chroma vector DB and persisting it\ndef\
+          \ vector_db_pdf(pdf_path):\n    #if PDF is not present then load from persist\
+          \ directory else condition otherwise use pdf to generate persist vector\
+          \ DB\n    if len(pdf_path)&gt;0:\n        documents=get_pdf_text(pdf_path)\n\
+          \        texts =get_text_chunks(documents)         \n        vector_db=Chroma.from_documents(documents=texts,\
+          \ embedding=getEmbedding(), persist_directory=\"storage\")\n        vector_db.persist()\
+          \    \n    else:\n        #Use from persist\n        vector_db=Chroma(persist_directory=\"\
+          storage\", embedding_function=getEmbedding())\n    return vector_db\n\n\
+          def retreival_qa_chain():\n        llm=getLLM()\n        vectordb=vector_db_pdf([])\n\
+          \        hf_llm = HuggingFacePipeline(pipeline=llm,model_id=\"lmsys/fastchat-t5-3b-v1.0\"\
+          )\n        qa = RetrievalQA.from_chain_type(llm=hf_llm, chain_type=\"stuff\"\
+          ,retriever=retriever)\n       retriever = vectordb.as_retriever(search_kwargs={\"\
+          k\":3})\n</code></pre>\n<p>In LLM pipeline  I have tried parameters like\
+          \ <code>early_stopping=False</code>  setting <code>min_new tokens</code>\
+          \ and increasing <code>max_new_tokens</code>  but nothing seems to work.\
+          \ Kindly explain how these parameters affect length of output. </p>\n<h1\
+          \ id=\"please-access-full-code-here\"><a rel=\"nofollow\" href=\"https://replit.com/join/lxaofshjga-kvmukilan\"\
+          >Please access full code here</a></h1>\n<p>Some extra info :<br>Input: a\
+          \ legal containing 8-10 pages<br>transformers==4.29.2 , sentence-transformers==2.2.2\
+          \ , lang chain= 0.0.189 , huggingface-hub==0.14.1 , </p>\n"
+        raw: "I have trained LLM on my PDF file now I am asking questions related\
+          \ to same. But  the output which is being generated is always truncated\
+          \ and stops in \r\nbetween . Model giving incomplete sentences.\r\n\r\n\
+          I have used follwing embeddings:\r\n\r\n1. sentence-transformers/all-mpnet-base-v2\r\
+          \n2. hkunlp/instructor-xl\r\n\r\n# to get embedding\r\n``` \r\ndef getEmbedding():\r\
+          \n        device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\r\n\
+          \        return HuggingFaceEmbeddings(model_name=\"sentence-transformers/all-mpnet-base-v2\"\
+          , model_kwargs={\"device\": device}) \r\n```\r\n\r\nand tried with following\
+          \ LLMs:\r\n1. lmsys/fastchat-t5-3b-v1.0\r\n2. google/flan-t5-base\r\n\r\n\
+          \r\n\r\n# to get LLM\r\n```\r\ndef getLLM():\r\n        return pipeline(\r\
+          \n            task=\"text2text-generation\",\r\n            model = \"lmsys/fastchat-t5-3b-v1.0\"\
+          ,\r\n            min_new_tokens=100,\r\n            max_new_tokens=256,\r\
+          \n            model_kwargs={\"device_map\": \"auto\", \"load_in_8bit\":\
+          \ False, \"max_length\": 512, \"temperature\": 0.}\r\n        )\r\n\r\n\
+          # to get the text\r\ndef get_pdf_text(pdf_path):\r\n    text = \"\"\r\n\
+          \    documents = []\r\n    for pdf in pdf_path:\r\n        with NamedTemporaryFile(delete=False,\
+          \ suffix='.pdf') as tmp:\r\n            shutil.copyfileobj(pdf, tmp)\r\n\
+          \            tmp_path = Path(tmp.name)\r\n            #print(tmp_path)\r\
+          \n            loader = PyPDFLoader(str(tmp_path))\r\n            documents.extend(loader.load())\r\
+          \n    return documents\r\n# to split the document which we have gotten from\
+          \ the pdfs into tokens \r\ndef get_text_chunks(documents):\r\n    text_splitter\
+          \ = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)\r\n    texts\
+          \ = text_splitter.split_documents(documents)\r\n    text_splitter = TokenTextSplitter(chunk_size=100,\
+          \ chunk_overlap=10)  # This the encoding for text-embedding-ada-002\r\n\
+          \    texts = text_splitter.split_documents(texts)\r\n    return texts  \
+          \ \r\n# Creating Chroma vector DB and persisting it\r\ndef vector_db_pdf(pdf_path):\r\
+          \n    #if PDF is not present then load from persist directory else condition\
+          \ otherwise use pdf to generate persist vector DB\r\n    if len(pdf_path)>0:\r\
+          \n        documents=get_pdf_text(pdf_path)\r\n        texts =get_text_chunks(documents)\
+          \         \r\n        vector_db=Chroma.from_documents(documents=texts, embedding=getEmbedding(),\
+          \ persist_directory=\"storage\")\r\n        vector_db.persist()    \r\n\
+          \    else:\r\n        #Use from persist\r\n        vector_db=Chroma(persist_directory=\"\
+          storage\", embedding_function=getEmbedding())\r\n    return vector_db\r\n\
+          \r\ndef retreival_qa_chain():\r\n        llm=getLLM()\r\n        vectordb=vector_db_pdf([])\r\
+          \n        hf_llm = HuggingFacePipeline(pipeline=llm,model_id=\"lmsys/fastchat-t5-3b-v1.0\"\
+          )\r\n        qa = RetrievalQA.from_chain_type(llm=hf_llm, chain_type=\"\
+          stuff\",retriever=retriever)\r\n       retriever = vectordb.as_retriever(search_kwargs={\"\
+          k\":3})\r\n```\r\n\r\n\r\n\r\nIn LLM pipeline  I have tried parameters like\
+          \ ```early_stopping=False```  setting ```min_new tokens``` and increasing\
+          \ ```max_new_tokens```  but nothing seems to work. Kindly explain how these\
+          \ parameters affect length of output. \r\n\r\n# [Please access full code\
+          \ here](https://replit.com/join/lxaofshjga-kvmukilan) \r\n\r\nSome extra\
+          \ info : \r\nInput: a legal containing 8-10 pages \r\ntransformers==4.29.2\
+          \ , sentence-transformers==2.2.2 , lang chain= 0.0.189 , huggingface-hub==0.14.1\
+          \ , "
+        updatedAt: '2023-07-15T05:17:10.645Z'
+      numEdits: 0
+      reactions: []
+    id: 64b22bd6520fa3a154c098bd
+    type: comment
+  author: kvmukilan
+  content: "I have trained LLM on my PDF file now I am asking questions related to\
+    \ same. But  the output which is being generated is always truncated and stops\
+    \ in \r\nbetween . Model giving incomplete sentences.\r\n\r\nI have used follwing\
+    \ embeddings:\r\n\r\n1. sentence-transformers/all-mpnet-base-v2\r\n2. hkunlp/instructor-xl\r\
+    \n\r\n# to get embedding\r\n``` \r\ndef getEmbedding():\r\n        device = \"\
+    cuda\" if torch.cuda.is_available() else \"cpu\"\r\n        return HuggingFaceEmbeddings(model_name=\"\
+    sentence-transformers/all-mpnet-base-v2\", model_kwargs={\"device\": device})\
+    \ \r\n```\r\n\r\nand tried with following LLMs:\r\n1. lmsys/fastchat-t5-3b-v1.0\r\
+    \n2. google/flan-t5-base\r\n\r\n\r\n\r\n# to get LLM\r\n```\r\ndef getLLM():\r\
+    \n        return pipeline(\r\n            task=\"text2text-generation\",\r\n \
+    \           model = \"lmsys/fastchat-t5-3b-v1.0\",\r\n            min_new_tokens=100,\r\
+    \n            max_new_tokens=256,\r\n            model_kwargs={\"device_map\"\
+    : \"auto\", \"load_in_8bit\": False, \"max_length\": 512, \"temperature\": 0.}\r\
+    \n        )\r\n\r\n# to get the text\r\ndef get_pdf_text(pdf_path):\r\n    text\
+    \ = \"\"\r\n    documents = []\r\n    for pdf in pdf_path:\r\n        with NamedTemporaryFile(delete=False,\
+    \ suffix='.pdf') as tmp:\r\n            shutil.copyfileobj(pdf, tmp)\r\n     \
+    \       tmp_path = Path(tmp.name)\r\n            #print(tmp_path)\r\n        \
+    \    loader = PyPDFLoader(str(tmp_path))\r\n            documents.extend(loader.load())\r\
+    \n    return documents\r\n# to split the document which we have gotten from the\
+    \ pdfs into tokens \r\ndef get_text_chunks(documents):\r\n    text_splitter =\
+    \ CharacterTextSplitter(chunk_size=100, chunk_overlap=0)\r\n    texts = text_splitter.split_documents(documents)\r\
+    \n    text_splitter = TokenTextSplitter(chunk_size=100, chunk_overlap=10)  # This\
+    \ the encoding for text-embedding-ada-002\r\n    texts = text_splitter.split_documents(texts)\r\
+    \n    return texts   \r\n# Creating Chroma vector DB and persisting it\r\ndef\
+    \ vector_db_pdf(pdf_path):\r\n    #if PDF is not present then load from persist\
+    \ directory else condition otherwise use pdf to generate persist vector DB\r\n\
+    \    if len(pdf_path)>0:\r\n        documents=get_pdf_text(pdf_path)\r\n     \
+    \   texts =get_text_chunks(documents)         \r\n        vector_db=Chroma.from_documents(documents=texts,\
+    \ embedding=getEmbedding(), persist_directory=\"storage\")\r\n        vector_db.persist()\
+    \    \r\n    else:\r\n        #Use from persist\r\n        vector_db=Chroma(persist_directory=\"\
+    storage\", embedding_function=getEmbedding())\r\n    return vector_db\r\n\r\n\
+    def retreival_qa_chain():\r\n        llm=getLLM()\r\n        vectordb=vector_db_pdf([])\r\
+    \n        hf_llm = HuggingFacePipeline(pipeline=llm,model_id=\"lmsys/fastchat-t5-3b-v1.0\"\
+    )\r\n        qa = RetrievalQA.from_chain_type(llm=hf_llm, chain_type=\"stuff\"\
+    ,retriever=retriever)\r\n       retriever = vectordb.as_retriever(search_kwargs={\"\
+    k\":3})\r\n```\r\n\r\n\r\n\r\nIn LLM pipeline  I have tried parameters like ```early_stopping=False```\
+    \  setting ```min_new tokens``` and increasing ```max_new_tokens```  but nothing\
+    \ seems to work. Kindly explain how these parameters affect length of output.\
+    \ \r\n\r\n# [Please access full code here](https://replit.com/join/lxaofshjga-kvmukilan)\
+    \ \r\n\r\nSome extra info : \r\nInput: a legal containing 8-10 pages \r\ntransformers==4.29.2\
+    \ , sentence-transformers==2.2.2 , lang chain= 0.0.189 , huggingface-hub==0.14.1\
+    \ , "
+  created_at: 2023-07-15 04:17:10+00:00
+  edited: false
+  hidden: false
+  id: 64b22bd6520fa3a154c098bd
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 10
+repo_id: lmsys/fastchat-t5-3b-v1.0
+repo_type: model
+status: open
+target_branch: null
+title: '  Fastchat generating truncated/Incomplete answers  '

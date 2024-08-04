@@ -1,0 +1,5 @@
+## https://huggingface.co/mlabonne/NeuralMarcoro14-7B/discussions/2
+
+contains_question: yes
+
+question_part: Hello! Could you please provide the field "chat_template":"{{ bos_token }}..." in tokenizer_config.json because currently I deployed this model using vllm and found that its output due to vllm's built-in mechanism of using chat_template, if this chat_template field is not provided, vllm by default uses a set of chat_templates that it comes with, which leads to a very bad problem where the model output becomes something like the following like this: As you can see the output comes with a lot of [INST] such lexical elements, which is not a good experience to use. I have experienced the gguf model you deployed and it works fantastic, thank you very much for your efforts to contribute! Or can you provide a copy of the deployment guide on vllm? A set of github repositories for easy deployment, similar to openchat-3.5, would be a great help to make your model available to a wider audience! Thanks again!

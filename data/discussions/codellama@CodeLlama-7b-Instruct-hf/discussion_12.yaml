@@ -1,0 +1,393 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: humza-sami
+conflicting_files: null
+created_at: 2023-09-01 14:12:03+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/633d6d4f48ab6a0add2ce1a3/qTO75kR0hk1Yn1SaP7ZPb.jpeg?w=200&h=200&f=face
+      fullname: Humza Sami
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: humza-sami
+      type: user
+    createdAt: '2023-09-01T15:12:03.000Z'
+    data:
+      edited: true
+      editors:
+      - humza-sami
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9217851758003235
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/633d6d4f48ab6a0add2ce1a3/qTO75kR0hk1Yn1SaP7ZPb.jpeg?w=200&h=200&f=face
+          fullname: Humza Sami
+          isHf: false
+          isPro: false
+          name: humza-sami
+          type: user
+        html: "<p>I hope this message finds you well. I recently had the opportunity\
+          \ to experiment with the Codellama-7b-Instruct model from GitHub repository\
+          \ and was pleased to observe its promising performance. Encouraged by these\
+          \ initial results, I am interested in fine-tuning this model on my proprietary\
+          \ code chat dataset. I have single 3090 with 24GB VRAM.</p>\n<p>To provide\
+          \ you with more context, my dataset has the following structure:</p>\n<pre><code>1.\
+          \ &lt;s&gt;[INST] {{user}} [/INST] {{assistant}} &lt;/s&gt;&lt;s&gt;[INST]\
+          \ {{user}} [/INST] {{assistant}} &lt;/s&gt;\n2. &lt;s&gt;[INST] {{user}}\
+          \ [/INST] {{assistant}} &lt;/s&gt;&lt;s&gt;[INST] {{user}} [/INST] {{assistant}}\
+          \ &lt;/s&gt;\n</code></pre>\n<p>I have a total of 1000 such chat examples\
+          \ in my dataset.</p>\n<p>Could you kindly guide me through the recommended\
+          \ pipeline or steps to effectively fine-tune the Codellama-7b-Instruct model\
+          \ on my specific chat dataset? I look forward to your guidance.</p>\n<p><strong>EDIT</strong></p>\n\
+          <p>I follow this pipeline but its giving me following error:</p>\n<pre><code>from\
+          \ transformers import AutoModelForCausalLM,AutoTokenizer\nfrom transformers\
+          \ import LlamaForCausalLM, LlamaTokenizer\nimport transformers\nimport torch\n\
+          from pathlib import Path\nimport os\nimport sys\n\nMODEL_NAME = \"codellama/CodeLlama-7b-Instruct-hf\"\
+          \n\nmodel =LlamaForCausalLM.from_pretrained(MODEL, load_in_8bit=True, device_map='auto',\
+          \ torch_dtype=torch.bfloat16)\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          codellama/CodeLlama-7b-Instruct-hf\")\n\nmodel.train()\n\ndef create_peft_config(model):\n\
+          \    from peft import (\n        get_peft_model,\n        LoraConfig,\n\
+          \        TaskType,\n        prepare_model_for_int8_training,\n    )\n\n\
+          \    peft_config = LoraConfig(\n        task_type=TaskType.CAUSAL_LM,\n\
+          \        inference_mode=False,\n        r=8,\n        lora_alpha=32,\n \
+          \       lora_dropout=0.05,\n        target_modules = [\"q_proj\", \"v_proj\"\
+          ]\n    )\n\n    # prepare int-8 model for training\n    model = prepare_model_for_int8_training(model)\n\
+          \    model = get_peft_model(model, peft_config)\n    model.print_trainable_parameters()\n\
+          \    return model, peft_config\n\n# create peft config\nmodel, lora_config\
+          \ = create_peft_config(model)\n\nfrom transformers import TrainerCallback\n\
+          from contextlib import nullcontext\nenable_profiler = False\noutput_dir\
+          \ = \"result\"\n\nconfig = {\n    'lora_config': lora_config,\n    'learning_rate':\
+          \ 1e-4,\n    'num_train_epochs': 1,\n    'gradient_accumulation_steps':\
+          \ 2,\n    'per_device_train_batch_size': 10,\n    'gradient_checkpointing':\
+          \ False,\n}\n\n# Set up profiler\nif enable_profiler:\n    wait, warmup,\
+          \ active, repeat = 1, 1, 2, 1\n    total_steps = (wait + warmup + active)\
+          \ * (1 + repeat)\n    schedule =  torch.profiler.schedule(wait=wait, warmup=warmup,\
+          \ active=active, repeat=repeat)\n    profiler = torch.profiler.profile(\n\
+          \        schedule=schedule,\n        on_trace_ready=torch.profiler.tensorboard_trace_handler(f\"\
+          {output_dir}/logs/tensorboard\"),\n        record_shapes=True,\n       \
+          \ profile_memory=True,\n        with_stack=True)\n    \n    class ProfilerCallback(TrainerCallback):\n\
+          \        def __init__(self, profiler):\n            self.profiler = profiler\n\
+          \            \n        def on_step_end(self, *args, **kwargs):\n       \
+          \     self.profiler.step()\n\n    profiler_callback = ProfilerCallback(profiler)\n\
+          else:\n    profiler = nullcontext()\n\nfrom transformers import default_data_collator,\
+          \ Trainer, TrainingArguments\n\n# Define training args\ntraining_args =\
+          \ TrainingArguments(\n    output_dir=output_dir,\n    overwrite_output_dir=True,\n\
+          \    bf16=True,  # Use BF16 if available\n    # logging strategies\n   \
+          \ logging_dir=f\"{output_dir}/logs\",\n    logging_strategy=\"steps\",\n\
+          \    logging_steps=10,\n    save_strategy=\"no\",\n    optim=\"adamw_torch_fused\"\
+          ,\n    max_steps=total_steps if enable_profiler else -1,\n    **{k:v for\
+          \ k,v in config.items() if k != 'lora_config'}\n)\n\nwith profiler:\n  \
+          \  # Create Trainer instance\n    trainer = Trainer(\n        model=model,\n\
+          \        args=training_args,\n        train_dataset=X_train,\n        data_collator=default_data_collator,\n\
+          \        callbacks=[profiler_callback] if enable_profiler else [],\n   \
+          \ )\n\n    # Start training\n    trainer.train()\n</code></pre>\n<p><strong>ERROR</strong></p>\n\
+          <pre><code>2680     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2682 with self.compute_loss_context_manager():\n-&gt; 2683     loss\
+          \ = self.compute_loss(model, inputs)\n   2685 if self.args.n_gpu &gt; 1:\n\
+          \   2686     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n\nValueError: The model did not return a loss from the inputs,\
+          \ only the following keys: logits. For reference, the inputs it received\
+          \ are input_ids,attention_mask.\n</code></pre>\n"
+        raw: "I hope this message finds you well. I recently had the opportunity to\
+          \ experiment with the Codellama-7b-Instruct model from GitHub repository\
+          \ and was pleased to observe its promising performance. Encouraged by these\
+          \ initial results, I am interested in fine-tuning this model on my proprietary\
+          \ code chat dataset. I have single 3090 with 24GB VRAM.\n\nTo provide you\
+          \ with more context, my dataset has the following structure:\n```\n1. <s>[INST]\
+          \ {{user}} [/INST] {{assistant}} </s><s>[INST] {{user}} [/INST] {{assistant}}\
+          \ </s>\n2. <s>[INST] {{user}} [/INST] {{assistant}} </s><s>[INST] {{user}}\
+          \ [/INST] {{assistant}} </s>\n```\nI have a total of 1000 such chat examples\
+          \ in my dataset.\n\nCould you kindly guide me through the recommended pipeline\
+          \ or steps to effectively fine-tune the Codellama-7b-Instruct model on my\
+          \ specific chat dataset? I look forward to your guidance.\n\n**EDIT**\n\n\
+          I follow this pipeline but its giving me following error:\n\n```\nfrom transformers\
+          \ import AutoModelForCausalLM,AutoTokenizer\nfrom transformers import LlamaForCausalLM,\
+          \ LlamaTokenizer\nimport transformers\nimport torch\nfrom pathlib import\
+          \ Path\nimport os\nimport sys\n\nMODEL_NAME = \"codellama/CodeLlama-7b-Instruct-hf\"\
+          \n\nmodel =LlamaForCausalLM.from_pretrained(MODEL, load_in_8bit=True, device_map='auto',\
+          \ torch_dtype=torch.bfloat16)\ntokenizer = LlamaTokenizer.from_pretrained(\"\
+          codellama/CodeLlama-7b-Instruct-hf\")\n\nmodel.train()\n\ndef create_peft_config(model):\n\
+          \    from peft import (\n        get_peft_model,\n        LoraConfig,\n\
+          \        TaskType,\n        prepare_model_for_int8_training,\n    )\n\n\
+          \    peft_config = LoraConfig(\n        task_type=TaskType.CAUSAL_LM,\n\
+          \        inference_mode=False,\n        r=8,\n        lora_alpha=32,\n \
+          \       lora_dropout=0.05,\n        target_modules = [\"q_proj\", \"v_proj\"\
+          ]\n    )\n\n    # prepare int-8 model for training\n    model = prepare_model_for_int8_training(model)\n\
+          \    model = get_peft_model(model, peft_config)\n    model.print_trainable_parameters()\n\
+          \    return model, peft_config\n\n# create peft config\nmodel, lora_config\
+          \ = create_peft_config(model)\n\nfrom transformers import TrainerCallback\n\
+          from contextlib import nullcontext\nenable_profiler = False\noutput_dir\
+          \ = \"result\"\n\nconfig = {\n    'lora_config': lora_config,\n    'learning_rate':\
+          \ 1e-4,\n    'num_train_epochs': 1,\n    'gradient_accumulation_steps':\
+          \ 2,\n    'per_device_train_batch_size': 10,\n    'gradient_checkpointing':\
+          \ False,\n}\n\n# Set up profiler\nif enable_profiler:\n    wait, warmup,\
+          \ active, repeat = 1, 1, 2, 1\n    total_steps = (wait + warmup + active)\
+          \ * (1 + repeat)\n    schedule =  torch.profiler.schedule(wait=wait, warmup=warmup,\
+          \ active=active, repeat=repeat)\n    profiler = torch.profiler.profile(\n\
+          \        schedule=schedule,\n        on_trace_ready=torch.profiler.tensorboard_trace_handler(f\"\
+          {output_dir}/logs/tensorboard\"),\n        record_shapes=True,\n       \
+          \ profile_memory=True,\n        with_stack=True)\n    \n    class ProfilerCallback(TrainerCallback):\n\
+          \        def __init__(self, profiler):\n            self.profiler = profiler\n\
+          \            \n        def on_step_end(self, *args, **kwargs):\n       \
+          \     self.profiler.step()\n\n    profiler_callback = ProfilerCallback(profiler)\n\
+          else:\n    profiler = nullcontext()\n\nfrom transformers import default_data_collator,\
+          \ Trainer, TrainingArguments\n\n# Define training args\ntraining_args =\
+          \ TrainingArguments(\n    output_dir=output_dir,\n    overwrite_output_dir=True,\n\
+          \    bf16=True,  # Use BF16 if available\n    # logging strategies\n   \
+          \ logging_dir=f\"{output_dir}/logs\",\n    logging_strategy=\"steps\",\n\
+          \    logging_steps=10,\n    save_strategy=\"no\",\n    optim=\"adamw_torch_fused\"\
+          ,\n    max_steps=total_steps if enable_profiler else -1,\n    **{k:v for\
+          \ k,v in config.items() if k != 'lora_config'}\n)\n\nwith profiler:\n  \
+          \  # Create Trainer instance\n    trainer = Trainer(\n        model=model,\n\
+          \        args=training_args,\n        train_dataset=X_train,\n        data_collator=default_data_collator,\n\
+          \        callbacks=[profiler_callback] if enable_profiler else [],\n   \
+          \ )\n\n    # Start training\n    trainer.train()\n\n```\n\n**ERROR**\n\n\
+          ```\n2680     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2682 with self.compute_loss_context_manager():\n-> 2683     loss = self.compute_loss(model,\
+          \ inputs)\n   2685 if self.args.n_gpu > 1:\n   2686     loss = loss.mean()\
+          \  # mean() to average on multi-gpu parallel training\n\nValueError: The\
+          \ model did not return a loss from the inputs, only the following keys:\
+          \ logits. For reference, the inputs it received are input_ids,attention_mask.\n\
+          ```\n\n"
+        updatedAt: '2023-09-01T16:11:40.591Z'
+      numEdits: 1
+      reactions: []
+    id: 64f1ff43c1cde1cd516e8980
+    type: comment
+  author: humza-sami
+  content: "I hope this message finds you well. I recently had the opportunity to\
+    \ experiment with the Codellama-7b-Instruct model from GitHub repository and was\
+    \ pleased to observe its promising performance. Encouraged by these initial results,\
+    \ I am interested in fine-tuning this model on my proprietary code chat dataset.\
+    \ I have single 3090 with 24GB VRAM.\n\nTo provide you with more context, my dataset\
+    \ has the following structure:\n```\n1. <s>[INST] {{user}} [/INST] {{assistant}}\
+    \ </s><s>[INST] {{user}} [/INST] {{assistant}} </s>\n2. <s>[INST] {{user}} [/INST]\
+    \ {{assistant}} </s><s>[INST] {{user}} [/INST] {{assistant}} </s>\n```\nI have\
+    \ a total of 1000 such chat examples in my dataset.\n\nCould you kindly guide\
+    \ me through the recommended pipeline or steps to effectively fine-tune the Codellama-7b-Instruct\
+    \ model on my specific chat dataset? I look forward to your guidance.\n\n**EDIT**\n\
+    \nI follow this pipeline but its giving me following error:\n\n```\nfrom transformers\
+    \ import AutoModelForCausalLM,AutoTokenizer\nfrom transformers import LlamaForCausalLM,\
+    \ LlamaTokenizer\nimport transformers\nimport torch\nfrom pathlib import Path\n\
+    import os\nimport sys\n\nMODEL_NAME = \"codellama/CodeLlama-7b-Instruct-hf\"\n\
+    \nmodel =LlamaForCausalLM.from_pretrained(MODEL, load_in_8bit=True, device_map='auto',\
+    \ torch_dtype=torch.bfloat16)\ntokenizer = LlamaTokenizer.from_pretrained(\"codellama/CodeLlama-7b-Instruct-hf\"\
+    )\n\nmodel.train()\n\ndef create_peft_config(model):\n    from peft import (\n\
+    \        get_peft_model,\n        LoraConfig,\n        TaskType,\n        prepare_model_for_int8_training,\n\
+    \    )\n\n    peft_config = LoraConfig(\n        task_type=TaskType.CAUSAL_LM,\n\
+    \        inference_mode=False,\n        r=8,\n        lora_alpha=32,\n       \
+    \ lora_dropout=0.05,\n        target_modules = [\"q_proj\", \"v_proj\"]\n    )\n\
+    \n    # prepare int-8 model for training\n    model = prepare_model_for_int8_training(model)\n\
+    \    model = get_peft_model(model, peft_config)\n    model.print_trainable_parameters()\n\
+    \    return model, peft_config\n\n# create peft config\nmodel, lora_config = create_peft_config(model)\n\
+    \nfrom transformers import TrainerCallback\nfrom contextlib import nullcontext\n\
+    enable_profiler = False\noutput_dir = \"result\"\n\nconfig = {\n    'lora_config':\
+    \ lora_config,\n    'learning_rate': 1e-4,\n    'num_train_epochs': 1,\n    'gradient_accumulation_steps':\
+    \ 2,\n    'per_device_train_batch_size': 10,\n    'gradient_checkpointing': False,\n\
+    }\n\n# Set up profiler\nif enable_profiler:\n    wait, warmup, active, repeat\
+    \ = 1, 1, 2, 1\n    total_steps = (wait + warmup + active) * (1 + repeat)\n  \
+    \  schedule =  torch.profiler.schedule(wait=wait, warmup=warmup, active=active,\
+    \ repeat=repeat)\n    profiler = torch.profiler.profile(\n        schedule=schedule,\n\
+    \        on_trace_ready=torch.profiler.tensorboard_trace_handler(f\"{output_dir}/logs/tensorboard\"\
+    ),\n        record_shapes=True,\n        profile_memory=True,\n        with_stack=True)\n\
+    \    \n    class ProfilerCallback(TrainerCallback):\n        def __init__(self,\
+    \ profiler):\n            self.profiler = profiler\n            \n        def\
+    \ on_step_end(self, *args, **kwargs):\n            self.profiler.step()\n\n  \
+    \  profiler_callback = ProfilerCallback(profiler)\nelse:\n    profiler = nullcontext()\n\
+    \nfrom transformers import default_data_collator, Trainer, TrainingArguments\n\
+    \n# Define training args\ntraining_args = TrainingArguments(\n    output_dir=output_dir,\n\
+    \    overwrite_output_dir=True,\n    bf16=True,  # Use BF16 if available\n   \
+    \ # logging strategies\n    logging_dir=f\"{output_dir}/logs\",\n    logging_strategy=\"\
+    steps\",\n    logging_steps=10,\n    save_strategy=\"no\",\n    optim=\"adamw_torch_fused\"\
+    ,\n    max_steps=total_steps if enable_profiler else -1,\n    **{k:v for k,v in\
+    \ config.items() if k != 'lora_config'}\n)\n\nwith profiler:\n    # Create Trainer\
+    \ instance\n    trainer = Trainer(\n        model=model,\n        args=training_args,\n\
+    \        train_dataset=X_train,\n        data_collator=default_data_collator,\n\
+    \        callbacks=[profiler_callback] if enable_profiler else [],\n    )\n\n\
+    \    # Start training\n    trainer.train()\n\n```\n\n**ERROR**\n\n```\n2680  \
+    \   return loss_mb.reduce_mean().detach().to(self.args.device)\n   2682 with self.compute_loss_context_manager():\n\
+    -> 2683     loss = self.compute_loss(model, inputs)\n   2685 if self.args.n_gpu\
+    \ > 1:\n   2686     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+    \ training\n\nValueError: The model did not return a loss from the inputs, only\
+    \ the following keys: logits. For reference, the inputs it received are input_ids,attention_mask.\n\
+    ```\n\n"
+  created_at: 2023-09-01 14:12:03+00:00
+  edited: true
+  hidden: false
+  id: 64f1ff43c1cde1cd516e8980
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0f3c7b4325110a4f0ad8127b1258ca1e.svg
+      fullname: Eden_YY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Edenyy
+      type: user
+    createdAt: '2023-09-06T10:03:12.000Z'
+    data:
+      edited: false
+      editors:
+      - Edenyy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9785309433937073
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0f3c7b4325110a4f0ad8127b1258ca1e.svg
+          fullname: Eden_YY
+          isHf: false
+          isPro: false
+          name: Edenyy
+          type: user
+        html: '<p>Hi! I''m also trying to fine-tune the model using the same GPU as
+          you. Have you solved this problem ?  I''m curious to know if this GPU can
+          support fine-tuning</p>
+
+          '
+        raw: Hi! I'm also trying to fine-tune the model using the same GPU as you.
+          Have you solved this problem ?  I'm curious to know if this GPU can support
+          fine-tuning
+        updatedAt: '2023-09-06T10:03:12.785Z'
+      numEdits: 0
+      reactions: []
+    id: 64f84e606389380c777c571c
+    type: comment
+  author: Edenyy
+  content: Hi! I'm also trying to fine-tune the model using the same GPU as you. Have
+    you solved this problem ?  I'm curious to know if this GPU can support fine-tuning
+  created_at: 2023-09-06 09:03:12+00:00
+  edited: false
+  hidden: false
+  id: 64f84e606389380c777c571c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/633d6d4f48ab6a0add2ce1a3/qTO75kR0hk1Yn1SaP7ZPb.jpeg?w=200&h=200&f=face
+      fullname: Humza Sami
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: humza-sami
+      type: user
+    createdAt: '2023-09-06T10:10:36.000Z'
+    data:
+      edited: false
+      editors:
+      - humza-sami
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8486633896827698
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/633d6d4f48ab6a0add2ce1a3/qTO75kR0hk1Yn1SaP7ZPb.jpeg?w=200&h=200&f=face
+          fullname: Humza Sami
+          isHf: false
+          isPro: false
+          name: humza-sami
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Edenyy&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Edenyy\">@<span class=\"\
+          underline\">Edenyy</span></a></span>\n\n\t</span></span> Please refer to\
+          \ this <a rel=\"nofollow\" href=\"https://www.youtube.com/watch?v=MDA3LUKNl1E\"\
+          >https://www.youtube.com/watch?v=MDA3LUKNl1E</a></p>\n"
+        raw: '@Edenyy Please refer to this https://www.youtube.com/watch?v=MDA3LUKNl1E'
+        updatedAt: '2023-09-06T10:10:36.814Z'
+      numEdits: 0
+      reactions: []
+    id: 64f8501cb2c85cf9e5011d0a
+    type: comment
+  author: humza-sami
+  content: '@Edenyy Please refer to this https://www.youtube.com/watch?v=MDA3LUKNl1E'
+  created_at: 2023-09-06 09:10:36+00:00
+  edited: false
+  hidden: false
+  id: 64f8501cb2c85cf9e5011d0a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0f3c7b4325110a4f0ad8127b1258ca1e.svg
+      fullname: Eden_YY
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Edenyy
+      type: user
+    createdAt: '2023-09-06T10:26:26.000Z'
+    data:
+      edited: false
+      editors:
+      - Edenyy
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8375221490859985
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0f3c7b4325110a4f0ad8127b1258ca1e.svg
+          fullname: Eden_YY
+          isHf: false
+          isPro: false
+          name: Edenyy
+          type: user
+        html: "<blockquote>\n<p><span data-props=\"{&quot;user&quot;:&quot;Edenyy&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Edenyy\"\
+          >@<span class=\"underline\">Edenyy</span></a></span>\n\n\t</span></span>\
+          \ Please refer to this <a rel=\"nofollow\" href=\"https://www.youtube.com/watch?v=MDA3LUKNl1E\"\
+          >https://www.youtube.com/watch?v=MDA3LUKNl1E</a><br>Thanks a lot!</p>\n\
+          </blockquote>\n"
+        raw: '
+
+          > @Edenyy Please refer to this https://www.youtube.com/watch?v=MDA3LUKNl1E
+
+          Thanks a lot!
+
+          '
+        updatedAt: '2023-09-06T10:26:26.727Z'
+      numEdits: 0
+      reactions: []
+    id: 64f853d2e7584abc6251f08b
+    type: comment
+  author: Edenyy
+  content: '
+
+    > @Edenyy Please refer to this https://www.youtube.com/watch?v=MDA3LUKNl1E
+
+    Thanks a lot!
+
+    '
+  created_at: 2023-09-06 09:26:26+00:00
+  edited: false
+  hidden: false
+  id: 64f853d2e7584abc6251f08b
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 12
+repo_id: codellama/CodeLlama-7b-Instruct-hf
+repo_type: model
+status: open
+target_branch: null
+title: Finetune CodeLlama-7b-Instruct-hf on private dataset

@@ -1,0 +1,4 @@
+## https://huggingface.co/THUDM/cogvlm-chat-hf/discussions/6
+
+contains_question: yes
+question_part: I can't find any information on how to properly encode the input for training... ```build_conversation_input_ids``` is just for inference, but for training we need to encode both the query and the intended text output + a bunch of other stuff. I'm now digging into the codebase of `https://huggingface.co/THUDM/cogvlm-chat-hf/blob/main/modeling_cogvlm.py` to better understand the details, but just wanted to check if the authors of CogVLM could maybe provide some guidance here, at least in the README?

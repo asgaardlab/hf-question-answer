@@ -1,0 +1,229 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: teneriffa
+conflicting_files: null
+created_at: 2023-11-11 17:54:39+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/589e3f19a6b466a6b90a1ff222e82d2d.svg
+      fullname: teneriffa
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: teneriffa
+      type: user
+    createdAt: '2023-11-11T17:54:39.000Z'
+    data:
+      edited: true
+      editors:
+      - teneriffa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.45132431387901306
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/589e3f19a6b466a6b90a1ff222e82d2d.svg
+          fullname: teneriffa
+          isHf: false
+          isPro: false
+          name: teneriffa
+          type: user
+        html: "<pre><code># Because ctransformers' AutoTokenizer.from_pretrain(:model)\
+          \ for GGML/GGUF is not implemented yet, \n# I use it from HF transformers.\n\
+          import torch, json\nfrom transformers import AutoTokenizer\n\nfrom ctransformers\
+          \ import AutoModelForCausalLM\n\n# Model paths must have everything from\
+          \ original files except original model weight *.bin files\n# becase those\
+          \ files are necessary to load tokenizers from HF transformers.\nmodel_path_actor\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/actor\"\nmodel_path_critic\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/critic\"\nmodel_path_regenerator\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/regenerator\"\
+          \n\n# Quantized GGUF files must be in each model path.\nmodel_file_actor\
+          \ = \"migtissera_HelixNet_actor-Q4_K_M.gguf\"\nmodel_file_critic = \"migtissera_HelixNet_critic-Q4_K_M.gguf\"\
+          \nmodel_file_regenerator = \"migtissera_HelixNet_regenerator-Q4_K_M.gguf\"\
+          \n\n\ndef load_model_gguf(model_path, file_path):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        model_file=file_path,\n        model_type=\"\
+          llama\",\n        local_files_only=True,\n        context_length=1024,\n\
+          \        # gpu_layers is for Metal acceleration for Apple Silicon.\n   \
+          \     # Comment out or remove if you do not use Metal acceleration.\n  \
+          \      gpu_layers=1,\n        hf=True\n    )\n    return model\n\ndef load_tokenizer(model):\n\
+          \    tokenizer = AutoTokenizer.from_pretrained(model, local_files_only=True)\n\
+          \    return tokenizer\n\nmodel_actor = load_model_gguf(model_path_actor,\
+          \ model_file_actor)\nmodel_critic = load_model_gguf(model_path_critic, model_file_critic)\n\
+          model_regenerator = load_model_gguf(model_path_regenerator, model_file_regenerator)\n\
+          \ntokenizer_actor = load_tokenizer(model_path_actor)\ntokenizer_critic =\
+          \ load_tokenizer(model_path_critic)\ntokenizer_regenerator = load_tokenizer(model_path_regenerator)\n\
+          \ndef generate_text(instruction, model, tokenizer):\n    tokens = tokenizer.encode(instruction)\n\
+          \    tokens = torch.LongTensor(tokens).unsqueeze(0)\n\n    instance = {\n\
+          \        \"input_ids\": tokens,\n        \"top_p\": 1.0,\n        \"temperature\"\
+          : 0.75,\n        \"generate_len\": 1024,\n        \"top_k\": 50,\n    }\n\
+          \n    length = len(tokens[0])\n    with torch.no_grad():\n        rest =\
+          \ model.generate(\n            input_ids=tokens,\n            max_length=length\
+          \ + instance[\"generate_len\"],\n            use_cache=True,\n         \
+          \   do_sample=True,\n            top_p=instance[\"top_p\"],\n          \
+          \  temperature=instance[\"temperature\"],\n            top_k=instance[\"\
+          top_k\"],\n            num_return_sequences=1,\n        )\n    output =\
+          \ rest[0][length:]\n    string = tokenizer.decode(output, skip_special_tokens=True)\n\
+          \    return f\"{string}\"\n\nsystem_prompt = \"You are HelixNet. Elaborate\
+          \ on the topic using a Tree of Thoughts and backtrack when necessary to\
+          \ construct a clear, cohesive Chain of Thought reasoning. Always answer\
+          \ without hesitation.\"\n  \nconversation = f\"SYSTEM:{system_prompt}\"\n\
+          \nwhile True:\n    user_input = input(\"You: \")\n\n    prompt_actor = f\"\
+          {conversation} \\nUSER: {user_input} \\nASSISTANT: \"\n    actor_response\
+          \ = generate_text(prompt_actor, model_actor, tokenizer_actor)\n    print(\"\
+          Generated ACTOR RESPONSE\")\n\n    prompt_critic = f\"SYSTEM: {system_prompt}\
+          \ \\nUSER: {user_input} \\nRESPONSE: {actor_response} \\nCRITIQUE:\"\n \
+          \   critic_response = generate_text(prompt_critic, model_critic, tokenizer_critic)\n\
+          \    print(\"Generated CRITIQUE\")\n\n    prompt_regenerator = f\"SYSTEM:\
+          \ {system_prompt} \\nUSER: {user_input} \\nRESPONSE: {actor_response} \\\
+          nCRITIQUE: {critic_response} \\nREGENERATOR: REGENERATED ANSWER:\"\n   \
+          \ regenerator_response = generate_text(prompt_regenerator, model_regenerator,\
+          \ tokenizer_regenerator)\n    print(\"Generated REGENERATION\")\n\n    conversation\
+          \ = f\"{conversation} \\nUSER: {user_input} \\nASSISTANT: {regenerator_response}\"\
+          \n    print(conversation)\n</code></pre>\n"
+        raw: "```\n# Because ctransformers' AutoTokenizer.from_pretrain(:model) for\
+          \ GGML/GGUF is not implemented yet, \n# I use it from HF transformers.\n\
+          import torch, json\nfrom transformers import AutoTokenizer\n\nfrom ctransformers\
+          \ import AutoModelForCausalLM\n\n# Model paths must have everything from\
+          \ original files except original model weight *.bin files\n# becase those\
+          \ files are necessary to load tokenizers from HF transformers.\nmodel_path_actor\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/actor\"\nmodel_path_critic\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/critic\"\nmodel_path_regenerator\
+          \ = \"/replace_it_with_your_model_path/migtissera_HelixNet/regenerator\"\
+          \n\n# Quantized GGUF files must be in each model path.\nmodel_file_actor\
+          \ = \"migtissera_HelixNet_actor-Q4_K_M.gguf\"\nmodel_file_critic = \"migtissera_HelixNet_critic-Q4_K_M.gguf\"\
+          \nmodel_file_regenerator = \"migtissera_HelixNet_regenerator-Q4_K_M.gguf\"\
+          \n\n\ndef load_model_gguf(model_path, file_path):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        model_path,\n        model_file=file_path,\n        model_type=\"\
+          llama\",\n        local_files_only=True,\n        context_length=1024,\n\
+          \        # gpu_layers is for Metal acceleration for Apple Silicon.\n   \
+          \     # Comment out or remove if you do not use Metal acceleration.\n  \
+          \      gpu_layers=1,\n        hf=True\n    )\n    return model\n\ndef load_tokenizer(model):\n\
+          \    tokenizer = AutoTokenizer.from_pretrained(model, local_files_only=True)\n\
+          \    return tokenizer\n\nmodel_actor = load_model_gguf(model_path_actor,\
+          \ model_file_actor)\nmodel_critic = load_model_gguf(model_path_critic, model_file_critic)\n\
+          model_regenerator = load_model_gguf(model_path_regenerator, model_file_regenerator)\n\
+          \ntokenizer_actor = load_tokenizer(model_path_actor)\ntokenizer_critic =\
+          \ load_tokenizer(model_path_critic)\ntokenizer_regenerator = load_tokenizer(model_path_regenerator)\n\
+          \ndef generate_text(instruction, model, tokenizer):\n    tokens = tokenizer.encode(instruction)\n\
+          \    tokens = torch.LongTensor(tokens).unsqueeze(0)\n\n    instance = {\n\
+          \        \"input_ids\": tokens,\n        \"top_p\": 1.0,\n        \"temperature\"\
+          : 0.75,\n        \"generate_len\": 1024,\n        \"top_k\": 50,\n    }\n\
+          \n    length = len(tokens[0])\n    with torch.no_grad():\n        rest =\
+          \ model.generate(\n            input_ids=tokens,\n            max_length=length\
+          \ + instance[\"generate_len\"],\n            use_cache=True,\n         \
+          \   do_sample=True,\n            top_p=instance[\"top_p\"],\n          \
+          \  temperature=instance[\"temperature\"],\n            top_k=instance[\"\
+          top_k\"],\n            num_return_sequences=1,\n        )\n    output =\
+          \ rest[0][length:]\n    string = tokenizer.decode(output, skip_special_tokens=True)\n\
+          \    return f\"{string}\"\n\nsystem_prompt = \"You are HelixNet. Elaborate\
+          \ on the topic using a Tree of Thoughts and backtrack when necessary to\
+          \ construct a clear, cohesive Chain of Thought reasoning. Always answer\
+          \ without hesitation.\"\n  \nconversation = f\"SYSTEM:{system_prompt}\"\n\
+          \nwhile True:\n    user_input = input(\"You: \")\n\n    prompt_actor = f\"\
+          {conversation} \\nUSER: {user_input} \\nASSISTANT: \"\n    actor_response\
+          \ = generate_text(prompt_actor, model_actor, tokenizer_actor)\n    print(\"\
+          Generated ACTOR RESPONSE\")\n\n    prompt_critic = f\"SYSTEM: {system_prompt}\
+          \ \\nUSER: {user_input} \\nRESPONSE: {actor_response} \\nCRITIQUE:\"\n \
+          \   critic_response = generate_text(prompt_critic, model_critic, tokenizer_critic)\n\
+          \    print(\"Generated CRITIQUE\")\n\n    prompt_regenerator = f\"SYSTEM:\
+          \ {system_prompt} \\nUSER: {user_input} \\nRESPONSE: {actor_response} \\\
+          nCRITIQUE: {critic_response} \\nREGENERATOR: REGENERATED ANSWER:\"\n   \
+          \ regenerator_response = generate_text(prompt_regenerator, model_regenerator,\
+          \ tokenizer_regenerator)\n    print(\"Generated REGENERATION\")\n\n    conversation\
+          \ = f\"{conversation} \\nUSER: {user_input} \\nASSISTANT: {regenerator_response}\"\
+          \n    print(conversation)\n```"
+        updatedAt: '2023-11-11T17:56:53.040Z'
+      numEdits: 1
+      reactions: []
+    id: 654fbfdf734a0692ec93fc57
+    type: comment
+  author: teneriffa
+  content: "```\n# Because ctransformers' AutoTokenizer.from_pretrain(:model) for\
+    \ GGML/GGUF is not implemented yet, \n# I use it from HF transformers.\nimport\
+    \ torch, json\nfrom transformers import AutoTokenizer\n\nfrom ctransformers import\
+    \ AutoModelForCausalLM\n\n# Model paths must have everything from original files\
+    \ except original model weight *.bin files\n# becase those files are necessary\
+    \ to load tokenizers from HF transformers.\nmodel_path_actor = \"/replace_it_with_your_model_path/migtissera_HelixNet/actor\"\
+    \nmodel_path_critic = \"/replace_it_with_your_model_path/migtissera_HelixNet/critic\"\
+    \nmodel_path_regenerator = \"/replace_it_with_your_model_path/migtissera_HelixNet/regenerator\"\
+    \n\n# Quantized GGUF files must be in each model path.\nmodel_file_actor = \"\
+    migtissera_HelixNet_actor-Q4_K_M.gguf\"\nmodel_file_critic = \"migtissera_HelixNet_critic-Q4_K_M.gguf\"\
+    \nmodel_file_regenerator = \"migtissera_HelixNet_regenerator-Q4_K_M.gguf\"\n\n\
+    \ndef load_model_gguf(model_path, file_path):\n    model = AutoModelForCausalLM.from_pretrained(\n\
+    \        model_path,\n        model_file=file_path,\n        model_type=\"llama\"\
+    ,\n        local_files_only=True,\n        context_length=1024,\n        # gpu_layers\
+    \ is for Metal acceleration for Apple Silicon.\n        # Comment out or remove\
+    \ if you do not use Metal acceleration.\n        gpu_layers=1,\n        hf=True\n\
+    \    )\n    return model\n\ndef load_tokenizer(model):\n    tokenizer = AutoTokenizer.from_pretrained(model,\
+    \ local_files_only=True)\n    return tokenizer\n\nmodel_actor = load_model_gguf(model_path_actor,\
+    \ model_file_actor)\nmodel_critic = load_model_gguf(model_path_critic, model_file_critic)\n\
+    model_regenerator = load_model_gguf(model_path_regenerator, model_file_regenerator)\n\
+    \ntokenizer_actor = load_tokenizer(model_path_actor)\ntokenizer_critic = load_tokenizer(model_path_critic)\n\
+    tokenizer_regenerator = load_tokenizer(model_path_regenerator)\n\ndef generate_text(instruction,\
+    \ model, tokenizer):\n    tokens = tokenizer.encode(instruction)\n    tokens =\
+    \ torch.LongTensor(tokens).unsqueeze(0)\n\n    instance = {\n        \"input_ids\"\
+    : tokens,\n        \"top_p\": 1.0,\n        \"temperature\": 0.75,\n        \"\
+    generate_len\": 1024,\n        \"top_k\": 50,\n    }\n\n    length = len(tokens[0])\n\
+    \    with torch.no_grad():\n        rest = model.generate(\n            input_ids=tokens,\n\
+    \            max_length=length + instance[\"generate_len\"],\n            use_cache=True,\n\
+    \            do_sample=True,\n            top_p=instance[\"top_p\"],\n       \
+    \     temperature=instance[\"temperature\"],\n            top_k=instance[\"top_k\"\
+    ],\n            num_return_sequences=1,\n        )\n    output = rest[0][length:]\n\
+    \    string = tokenizer.decode(output, skip_special_tokens=True)\n    return f\"\
+    {string}\"\n\nsystem_prompt = \"You are HelixNet. Elaborate on the topic using\
+    \ a Tree of Thoughts and backtrack when necessary to construct a clear, cohesive\
+    \ Chain of Thought reasoning. Always answer without hesitation.\"\n  \nconversation\
+    \ = f\"SYSTEM:{system_prompt}\"\n\nwhile True:\n    user_input = input(\"You:\
+    \ \")\n\n    prompt_actor = f\"{conversation} \\nUSER: {user_input} \\nASSISTANT:\
+    \ \"\n    actor_response = generate_text(prompt_actor, model_actor, tokenizer_actor)\n\
+    \    print(\"Generated ACTOR RESPONSE\")\n\n    prompt_critic = f\"SYSTEM: {system_prompt}\
+    \ \\nUSER: {user_input} \\nRESPONSE: {actor_response} \\nCRITIQUE:\"\n    critic_response\
+    \ = generate_text(prompt_critic, model_critic, tokenizer_critic)\n    print(\"\
+    Generated CRITIQUE\")\n\n    prompt_regenerator = f\"SYSTEM: {system_prompt} \\\
+    nUSER: {user_input} \\nRESPONSE: {actor_response} \\nCRITIQUE: {critic_response}\
+    \ \\nREGENERATOR: REGENERATED ANSWER:\"\n    regenerator_response = generate_text(prompt_regenerator,\
+    \ model_regenerator, tokenizer_regenerator)\n    print(\"Generated REGENERATION\"\
+    )\n\n    conversation = f\"{conversation} \\nUSER: {user_input} \\nASSISTANT:\
+    \ {regenerator_response}\"\n    print(conversation)\n```"
+  created_at: 2023-11-11 17:54:39+00:00
+  edited: true
+  hidden: false
+  id: 654fbfdf734a0692ec93fc57
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/589e3f19a6b466a6b90a1ff222e82d2d.svg
+      fullname: teneriffa
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: teneriffa
+      type: user
+    createdAt: '2023-11-11T17:55:20.000Z'
+    data:
+      from: Modified example code using ctransformers on Apple Silicon
+      to: Modified example code using GGUF quantized ctransformers on Apple Silicon
+    id: 654fc00845c0dccd57080795
+    type: title-change
+  author: teneriffa
+  created_at: 2023-11-11 17:55:20+00:00
+  id: 654fc00845c0dccd57080795
+  new_title: Modified example code using GGUF quantized ctransformers on Apple Silicon
+  old_title: Modified example code using ctransformers on Apple Silicon
+  type: title-change
+is_pull_request: false
+merge_commit_oid: null
+num: 8
+repo_id: migtissera/HelixNet
+repo_type: model
+status: open
+target_branch: null
+title: Modified example code using GGUF quantized ctransformers on Apple Silicon

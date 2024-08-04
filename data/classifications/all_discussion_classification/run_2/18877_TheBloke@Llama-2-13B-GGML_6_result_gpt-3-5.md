@@ -1,0 +1,6 @@
+## https://huggingface.co/TheBloke/Llama-2-13B-GGML/discussions/6
+
+contains_question: yes
+
+question_part: Why im getting invalid responses
+Im getting invalid response when i ask 'Calculate 2+2'. what changes i need to do here

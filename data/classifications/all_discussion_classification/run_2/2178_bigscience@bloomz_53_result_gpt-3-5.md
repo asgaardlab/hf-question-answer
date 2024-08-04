@@ -1,0 +1,4 @@
+## https://huggingface.co/bigscience/bloomz/discussions/53
+
+contains_question: yes
+question_part: Why does the token vocabs are unreadable code? Why does the token vocabs are unreadable code? Is there any special handling when training BPE by sentencepiece?

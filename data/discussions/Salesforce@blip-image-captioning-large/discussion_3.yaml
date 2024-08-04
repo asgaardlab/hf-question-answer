@@ -1,0 +1,755 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: rubenjanss
+conflicting_files: null
+created_at: 2023-01-17 16:11:19+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-01-17T16:11:19.000Z'
+    data:
+      edited: false
+      editors:
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+          fullname: Ruben Janssens
+          isHf: false
+          isPro: false
+          name: rubenjanss
+          type: user
+        html: "<p>Hi,</p>\n<p>I'm fine-tuning this BLIP checkpoint on my own dataset,\
+          \ but I'm running into an error while training. Either I'm not doing something\
+          \ wrong in loading/processing the data or training the model, or there is\
+          \ a bug with the BlipModel?</p>\n<p>I'm loading the data and training the\
+          \ model as follows:</p>\n<pre><code>model = BlipForConditionalGeneration.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\nprocessor = AutoProcessor.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\n\nclass VCSDatasetProcessor(Dataset):\n\
+          \    def __init__(self, root_dir, df, processor, tokenizer, max_target_length=128):\n\
+          \        self.root_dir = root_dir\n        self.df = df\n        self.processor\
+          \ = processor\n        self.tokenizer = tokenizer\n        self.max_target_length\
+          \ = max_target_length\n\n    def __len__(self):\n        return len(self.df)\n\
+          \n    def __getitem__(self, idx):\n        # get file name + text \n   \
+          \     file_name = self.df[\"image_id\"][idx]\n        text = self.df[\"\
+          question\"][idx]\n        # prepare image (i.e. resize + normalize)\n  \
+          \      image = Image.open(self.root_dir + file_name).convert(\"RGB\")\n\
+          \        #pixel_values = self.feature_extractor(image, return_tensors=\"\
+          pt\").pixel_values\n        pixel_values = self.processor(image, return_tensors=\"\
+          pt\").pixel_values\n        \n        # add labels (input_ids) by encoding\
+          \ the text\n        labels = self.tokenizer(text, \n                   \
+          \                       padding=\"max_length\",\n                      \
+          \                    max_length=self.max_target_length,\n              \
+          \                          truncation=True).input_ids\n        # important:\
+          \ make sure that PAD tokens are ignored by the loss function\n        labels\
+          \ = [label if label != self.tokenizer.pad_token_id else -100 for label in\
+          \ labels]\n\n        encoding = {\"pixel_values\": pixel_values.squeeze(),\
+          \ \"labels\": torch.tensor(labels)}\n        return encoding\n\ntrain_set\
+          \ = VCSDatasetProcessor(root_dir=\"data/images/\", df=train_df, processor=processor,\
+          \ tokenizer=tokenizer)\nvalid_set = VCSDatasetProcessor(root_dir=\"data/images/\"\
+          , df=valid_df, processor=processor, tokenizer=tokenizer)\n\nfrom transformers\
+          \ import Seq2SeqTrainer, Seq2SeqTrainingArguments\n\ntraining_args = Seq2SeqTrainingArguments(\n\
+          \    predict_with_generate=True,\n    evaluation_strategy=\"steps\",\n \
+          \   per_device_train_batch_size=4,\n    per_device_eval_batch_size=4,\n\
+          \    fp16=False, \n    output_dir=\"./blip/\",\n    logging_steps=2,\n \
+          \   save_steps=1000,\n    eval_steps=200,\n)\n\nfrom transformers import\
+          \ default_data_collator\n\n# instantiate trainer\ntrainer = Seq2SeqTrainer(\n\
+          \    model=model,\n    tokenizer=processor,\n    args=training_args,\n \
+          \   compute_metrics=compute_metrics,\n    train_dataset=train_set,\n   \
+          \ eval_dataset=valid_set,\n    data_collator=default_data_collator,\n)\n\
+          \ntrainer.train()\n</code></pre>\n<p>And I get the following error trace:</p>\n\
+          <pre><code>***** Running training *****\n  Num examples = 8886\n  Num Epochs\
+          \ = 3\n  Instantaneous batch size per device = 4\n  Total train batch size\
+          \ (w. parallel, distributed &amp; accumulation) = 4\n  Gradient Accumulation\
+          \ steps = 1\n  Total optimization steps = 6666\n  Number of trainable parameters\
+          \ = 469732924\n\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          Cell In [45], line 1\n----&gt; 1 trainer.train()\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\n   1534     self.model_wrapped = self.model\n   1536 inner_training_loop\
+          \ = find_executable_batch_size(\n   1537     self._inner_training_loop,\
+          \ self._train_batch_size, args.auto_find_batch_size\n   1538 )\n-&gt; 1539\
+          \ return inner_training_loop(\n   1540     args=args,\n   1541     resume_from_checkpoint=resume_from_checkpoint,\n\
+          \   1542     trial=trial,\n   1543     ignore_keys_for_eval=ignore_keys_for_eval,\n\
+          \   1544 )\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1787,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\n   1785         tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1786 else:\n-&gt; 1787     tr_loss_step = self.training_step(model,\
+          \ inputs)\n   1789 if (\n   1790     args.logging_nan_inf_filter\n   1791\
+          \     and not is_torch_tpu_available()\n   1792     and (torch.isnan(tr_loss_step)\
+          \ or torch.isinf(tr_loss_step))\n   1793 ):\n   1794     # if loss is nan\
+          \ or inf simply add the average of previous logged losses\n   1795     tr_loss\
+          \ += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\n\
+          \nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2535,\
+          \ in Trainer.training_step(self, model, inputs)\n   2532     return loss_mb.reduce_mean().detach().to(self.args.device)\n\
+          \   2534 with self.compute_loss_context_manager():\n-&gt; 2535     loss\
+          \ = self.compute_loss(model, inputs)\n   2537 if self.args.n_gpu &gt; 1:\n\
+          \   2538     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2567,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\n   2565\
+          \ else:\n   2566     labels = None\n-&gt; 2567 outputs = model(**inputs)\n\
+          \   2568 # Save past state if it exists\n   2569 # TODO: this needs to be\
+          \ fixed and made cleaner later.\n   2570 if self.args.past_index &gt;= 0:\n\
+          \nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1186 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1187 # this function,\
+          \ and just call forward.\n   1188 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1189        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1190  \
+          \   return forward_call(*input, **kwargs)\n   1191 # Do not call functions\
+          \ when jit is used\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip.py:1011,\
+          \ in BlipForConditionalGeneration.forward(self, pixel_values, input_ids,\
+          \ attention_mask, output_attentions, output_hidden_states, labels, return_dict)\n\
+          \   1008 if labels is None:\n   1009     labels = input_ids.masked_fill(input_ids\
+          \ == self.decoder_pad_token_id, -100)\n-&gt; 1011 outputs = self.text_decoder(\n\
+          \   1012     input_ids=input_ids,\n   1013     attention_mask=attention_mask,\n\
+          \   1014     encoder_hidden_states=image_embeds,\n   1015     labels=labels,\n\
+          \   1016     return_dict=return_dict,\n   1017 )\n   1019 if not return_dict:\n\
+          \   1020     outputs = (outputs[0], outputs[1], image_embeds, vision_outputs[0])\
+          \ + vision_outputs[2:]\n\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1186 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1187 # this function,\
+          \ and just call forward.\n   1188 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1189        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1190  \
+          \   return forward_call(*input, **kwargs)\n   1191 # Do not call functions\
+          \ when jit is used\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:875,\
+          \ in BlipTextLMHeadModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ labels, past_key_values, use_cache, output_attentions, output_hidden_states,\
+          \ return_dict, return_logits, is_decoder, reduction)\n    872 if labels\
+          \ is not None:\n    873     use_cache = False\n--&gt; 875 outputs = self.bert(\n\
+          \    876     input_ids,\n    877     attention_mask=attention_mask,\n  \
+          \  878     position_ids=position_ids,\n    879     head_mask=head_mask,\n\
+          \    880     inputs_embeds=inputs_embeds,\n    881     encoder_hidden_states=encoder_hidden_states,\n\
+          \    882     encoder_attention_mask=encoder_attention_mask,\n    883   \
+          \  past_key_values=past_key_values,\n    884     use_cache=use_cache,\n\
+          \    885     output_attentions=output_attentions,\n    886     output_hidden_states=output_hidden_states,\n\
+          \    887     return_dict=return_dict,\n    888     is_decoder=is_decoder,\n\
+          \    889 )\n    891 sequence_output = outputs[0]\n    892 prediction_scores\
+          \ = self.cls(sequence_output)\n\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\n   1186 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1187 # this function,\
+          \ and just call forward.\n   1188 if not (self._backward_hooks or self._forward_hooks\
+          \ or self._forward_pre_hooks or _global_backward_hooks\n   1189        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1190  \
+          \   return forward_call(*input, **kwargs)\n   1191 # Do not call functions\
+          \ when jit is used\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:738,\
+          \ in BlipTextModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ head_mask, inputs_embeds, encoder_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ past_key_values, use_cache, output_attentions, output_hidden_states, return_dict,\
+          \ is_decoder)\n    734     attention_mask = torch.ones(((batch_size, seq_length\
+          \ + past_key_values_length)))\n    736 # We can provide a self-attention\
+          \ mask of dimensions [batch_size, from_seq_length, to_seq_length]\n    737\
+          \ # ourselves in which case we just need to make it broadcastable to all\
+          \ heads.\n--&gt; 738 extended_attention_mask: torch.Tensor = self.get_extended_attention_mask(\n\
+          \    739     attention_mask, input_shape, device, is_decoder\n    740 )\n\
+          \    742 # If a 2D or 3D attention mask is provided for the cross-attention\n\
+          \    743 # we need to make broadcastable to [batch_size, num_heads, seq_length,\
+          \ seq_length]\n    744 if encoder_hidden_states is not None:\n\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:645,\
+          \ in BlipTextModel.get_extended_attention_mask(self, attention_mask, input_shape,\
+          \ device, is_decoder)\n    634         prefix_seq_len = attention_mask.shape[1]\
+          \ - causal_mask.shape[1]\n    635         causal_mask = torch.cat(\n   \
+          \ 636             [\n    637                 torch.ones(\n   (...)\n   \
+          \ 642             axis=-1,\n    643         )\n--&gt; 645     extended_attention_mask\
+          \ = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]\n    646\
+          \ else:\n    647     extended_attention_mask = attention_mask[:, None, None,\
+          \ :]\n\nRuntimeError: Expected all tensors to be on the same device, but\
+          \ found at least two devices, cuda:0 and cpu!\n</code></pre>\n<p>Does anyone\
+          \ have an idea what could cause this?</p>\n<p>Best wishes,</p>\n<p>Ruben</p>\n"
+        raw: "Hi,\r\n\r\nI'm fine-tuning this BLIP checkpoint on my own dataset, but\
+          \ I'm running into an error while training. Either I'm not doing something\
+          \ wrong in loading/processing the data or training the model, or there is\
+          \ a bug with the BlipModel?\r\n\r\nI'm loading the data and training the\
+          \ model as follows:\r\n```\r\nmodel = BlipForConditionalGeneration.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\r\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\r\nprocessor = AutoProcessor.from_pretrained(\"\
+          Salesforce/blip-image-captioning-large\")\r\n\r\nclass VCSDatasetProcessor(Dataset):\r\
+          \n    def __init__(self, root_dir, df, processor, tokenizer, max_target_length=128):\r\
+          \n        self.root_dir = root_dir\r\n        self.df = df\r\n        self.processor\
+          \ = processor\r\n        self.tokenizer = tokenizer\r\n        self.max_target_length\
+          \ = max_target_length\r\n\r\n    def __len__(self):\r\n        return len(self.df)\r\
+          \n\r\n    def __getitem__(self, idx):\r\n        # get file name + text\
+          \ \r\n        file_name = self.df[\"image_id\"][idx]\r\n        text = self.df[\"\
+          question\"][idx]\r\n        # prepare image (i.e. resize + normalize)\r\n\
+          \        image = Image.open(self.root_dir + file_name).convert(\"RGB\")\r\
+          \n        #pixel_values = self.feature_extractor(image, return_tensors=\"\
+          pt\").pixel_values\r\n        pixel_values = self.processor(image, return_tensors=\"\
+          pt\").pixel_values\r\n        \r\n        # add labels (input_ids) by encoding\
+          \ the text\r\n        labels = self.tokenizer(text, \r\n               \
+          \                           padding=\"max_length\",\r\n                \
+          \                          max_length=self.max_target_length,\r\n      \
+          \                                  truncation=True).input_ids\r\n      \
+          \  # important: make sure that PAD tokens are ignored by the loss function\r\
+          \n        labels = [label if label != self.tokenizer.pad_token_id else -100\
+          \ for label in labels]\r\n\r\n        encoding = {\"pixel_values\": pixel_values.squeeze(),\
+          \ \"labels\": torch.tensor(labels)}\r\n        return encoding\r\n\r\ntrain_set\
+          \ = VCSDatasetProcessor(root_dir=\"data/images/\", df=train_df, processor=processor,\
+          \ tokenizer=tokenizer)\r\nvalid_set = VCSDatasetProcessor(root_dir=\"data/images/\"\
+          , df=valid_df, processor=processor, tokenizer=tokenizer)\r\n\r\nfrom transformers\
+          \ import Seq2SeqTrainer, Seq2SeqTrainingArguments\r\n\r\ntraining_args =\
+          \ Seq2SeqTrainingArguments(\r\n    predict_with_generate=True,\r\n    evaluation_strategy=\"\
+          steps\",\r\n    per_device_train_batch_size=4,\r\n    per_device_eval_batch_size=4,\r\
+          \n    fp16=False, \r\n    output_dir=\"./blip/\",\r\n    logging_steps=2,\r\
+          \n    save_steps=1000,\r\n    eval_steps=200,\r\n)\r\n\r\nfrom transformers\
+          \ import default_data_collator\r\n\r\n# instantiate trainer\r\ntrainer =\
+          \ Seq2SeqTrainer(\r\n    model=model,\r\n    tokenizer=processor,\r\n  \
+          \  args=training_args,\r\n    compute_metrics=compute_metrics,\r\n    train_dataset=train_set,\r\
+          \n    eval_dataset=valid_set,\r\n    data_collator=default_data_collator,\r\
+          \n)\r\n\r\ntrainer.train()\r\n```\r\n\r\nAnd I get the following error trace:\r\
+          \n\r\n```\r\n***** Running training *****\r\n  Num examples = 8886\r\n \
+          \ Num Epochs = 3\r\n  Instantaneous batch size per device = 4\r\n  Total\
+          \ train batch size (w. parallel, distributed & accumulation) = 4\r\n  Gradient\
+          \ Accumulation steps = 1\r\n  Total optimization steps = 6666\r\n  Number\
+          \ of trainable parameters = 469732924\r\n\r\n---------------------------------------------------------------------------\r\
+          \nRuntimeError                              Traceback (most recent call\
+          \ last)\r\nCell In [45], line 1\r\n----> 1 trainer.train()\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+          \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+          \ **kwargs)\r\n   1534     self.model_wrapped = self.model\r\n   1536 inner_training_loop\
+          \ = find_executable_batch_size(\r\n   1537     self._inner_training_loop,\
+          \ self._train_batch_size, args.auto_find_batch_size\r\n   1538 )\r\n-> 1539\
+          \ return inner_training_loop(\r\n   1540     args=args,\r\n   1541     resume_from_checkpoint=resume_from_checkpoint,\r\
+          \n   1542     trial=trial,\r\n   1543     ignore_keys_for_eval=ignore_keys_for_eval,\r\
+          \n   1544 )\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1787,\
+          \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+          \ trial, ignore_keys_for_eval)\r\n   1785         tr_loss_step = self.training_step(model,\
+          \ inputs)\r\n   1786 else:\r\n-> 1787     tr_loss_step = self.training_step(model,\
+          \ inputs)\r\n   1789 if (\r\n   1790     args.logging_nan_inf_filter\r\n\
+          \   1791     and not is_torch_tpu_available()\r\n   1792     and (torch.isnan(tr_loss_step)\
+          \ or torch.isinf(tr_loss_step))\r\n   1793 ):\r\n   1794     # if loss is\
+          \ nan or inf simply add the average of previous logged losses\r\n   1795\
+          \     tr_loss += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\r\
+          \n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2535,\
+          \ in Trainer.training_step(self, model, inputs)\r\n   2532     return loss_mb.reduce_mean().detach().to(self.args.device)\r\
+          \n   2534 with self.compute_loss_context_manager():\r\n-> 2535     loss\
+          \ = self.compute_loss(model, inputs)\r\n   2537 if self.args.n_gpu > 1:\r\
+          \n   2538     loss = loss.mean()  # mean() to average on multi-gpu parallel\
+          \ training\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2567,\
+          \ in Trainer.compute_loss(self, model, inputs, return_outputs)\r\n   2565\
+          \ else:\r\n   2566     labels = None\r\n-> 2567 outputs = model(**inputs)\r\
+          \n   2568 # Save past state if it exists\r\n   2569 # TODO: this needs to\
+          \ be fixed and made cleaner later.\r\n   2570 if self.args.past_index >=\
+          \ 0:\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1187 #\
+          \ this function, and just call forward.\r\n   1188 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1189         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1190     return forward_call(*input, **kwargs)\r\n   1191 # Do not\
+          \ call functions when jit is used\r\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip.py:1011,\
+          \ in BlipForConditionalGeneration.forward(self, pixel_values, input_ids,\
+          \ attention_mask, output_attentions, output_hidden_states, labels, return_dict)\r\
+          \n   1008 if labels is None:\r\n   1009     labels = input_ids.masked_fill(input_ids\
+          \ == self.decoder_pad_token_id, -100)\r\n-> 1011 outputs = self.text_decoder(\r\
+          \n   1012     input_ids=input_ids,\r\n   1013     attention_mask=attention_mask,\r\
+          \n   1014     encoder_hidden_states=image_embeds,\r\n   1015     labels=labels,\r\
+          \n   1016     return_dict=return_dict,\r\n   1017 )\r\n   1019 if not return_dict:\r\
+          \n   1020     outputs = (outputs[0], outputs[1], image_embeds, vision_outputs[0])\
+          \ + vision_outputs[2:]\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1187 #\
+          \ this function, and just call forward.\r\n   1188 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1189         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1190     return forward_call(*input, **kwargs)\r\n   1191 # Do not\
+          \ call functions when jit is used\r\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:875,\
+          \ in BlipTextLMHeadModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ labels, past_key_values, use_cache, output_attentions, output_hidden_states,\
+          \ return_dict, return_logits, is_decoder, reduction)\r\n    872 if labels\
+          \ is not None:\r\n    873     use_cache = False\r\n--> 875 outputs = self.bert(\r\
+          \n    876     input_ids,\r\n    877     attention_mask=attention_mask,\r\
+          \n    878     position_ids=position_ids,\r\n    879     head_mask=head_mask,\r\
+          \n    880     inputs_embeds=inputs_embeds,\r\n    881     encoder_hidden_states=encoder_hidden_states,\r\
+          \n    882     encoder_attention_mask=encoder_attention_mask,\r\n    883\
+          \     past_key_values=past_key_values,\r\n    884     use_cache=use_cache,\r\
+          \n    885     output_attentions=output_attentions,\r\n    886     output_hidden_states=output_hidden_states,\r\
+          \n    887     return_dict=return_dict,\r\n    888     is_decoder=is_decoder,\r\
+          \n    889 )\r\n    891 sequence_output = outputs[0]\r\n    892 prediction_scores\
+          \ = self.cls(sequence_output)\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+          \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't\
+          \ have any hooks, we want to skip the rest of the logic in\r\n   1187 #\
+          \ this function, and just call forward.\r\n   1188 if not (self._backward_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks\r\
+          \n   1189         or _global_forward_hooks or _global_forward_pre_hooks):\r\
+          \n-> 1190     return forward_call(*input, **kwargs)\r\n   1191 # Do not\
+          \ call functions when jit is used\r\n   1192 full_backward_hooks, non_full_backward_hooks\
+          \ = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:738,\
+          \ in BlipTextModel.forward(self, input_ids, attention_mask, position_ids,\
+          \ head_mask, inputs_embeds, encoder_embeds, encoder_hidden_states, encoder_attention_mask,\
+          \ past_key_values, use_cache, output_attentions, output_hidden_states, return_dict,\
+          \ is_decoder)\r\n    734     attention_mask = torch.ones(((batch_size, seq_length\
+          \ + past_key_values_length)))\r\n    736 # We can provide a self-attention\
+          \ mask of dimensions [batch_size, from_seq_length, to_seq_length]\r\n  \
+          \  737 # ourselves in which case we just need to make it broadcastable to\
+          \ all heads.\r\n--> 738 extended_attention_mask: torch.Tensor = self.get_extended_attention_mask(\r\
+          \n    739     attention_mask, input_shape, device, is_decoder\r\n    740\
+          \ )\r\n    742 # If a 2D or 3D attention mask is provided for the cross-attention\r\
+          \n    743 # we need to make broadcastable to [batch_size, num_heads, seq_length,\
+          \ seq_length]\r\n    744 if encoder_hidden_states is not None:\r\n\r\nFile\
+          \ /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:645,\
+          \ in BlipTextModel.get_extended_attention_mask(self, attention_mask, input_shape,\
+          \ device, is_decoder)\r\n    634         prefix_seq_len = attention_mask.shape[1]\
+          \ - causal_mask.shape[1]\r\n    635         causal_mask = torch.cat(\r\n\
+          \    636             [\r\n    637                 torch.ones(\r\n   (...)\r\
+          \n    642             axis=-1,\r\n    643         )\r\n--> 645     extended_attention_mask\
+          \ = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]\r\n  \
+          \  646 else:\r\n    647     extended_attention_mask = attention_mask[:,\
+          \ None, None, :]\r\n\r\nRuntimeError: Expected all tensors to be on the\
+          \ same device, but found at least two devices, cuda:0 and cpu!\r\n```\r\n\
+          \r\nDoes anyone have an idea what could cause this?\r\n\r\nBest wishes,\r\
+          \n\r\nRuben"
+        updatedAt: '2023-01-17T16:11:19.050Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - yukiarimo
+    id: 63c6c8a78bfd6a208eb0a6fa
+    type: comment
+  author: rubenjanss
+  content: "Hi,\r\n\r\nI'm fine-tuning this BLIP checkpoint on my own dataset, but\
+    \ I'm running into an error while training. Either I'm not doing something wrong\
+    \ in loading/processing the data or training the model, or there is a bug with\
+    \ the BlipModel?\r\n\r\nI'm loading the data and training the model as follows:\r\
+    \n```\r\nmodel = BlipForConditionalGeneration.from_pretrained(\"Salesforce/blip-image-captioning-large\"\
+    )\r\ntokenizer = AutoTokenizer.from_pretrained(\"Salesforce/blip-image-captioning-large\"\
+    )\r\nprocessor = AutoProcessor.from_pretrained(\"Salesforce/blip-image-captioning-large\"\
+    )\r\n\r\nclass VCSDatasetProcessor(Dataset):\r\n    def __init__(self, root_dir,\
+    \ df, processor, tokenizer, max_target_length=128):\r\n        self.root_dir =\
+    \ root_dir\r\n        self.df = df\r\n        self.processor = processor\r\n \
+    \       self.tokenizer = tokenizer\r\n        self.max_target_length = max_target_length\r\
+    \n\r\n    def __len__(self):\r\n        return len(self.df)\r\n\r\n    def __getitem__(self,\
+    \ idx):\r\n        # get file name + text \r\n        file_name = self.df[\"image_id\"\
+    ][idx]\r\n        text = self.df[\"question\"][idx]\r\n        # prepare image\
+    \ (i.e. resize + normalize)\r\n        image = Image.open(self.root_dir + file_name).convert(\"\
+    RGB\")\r\n        #pixel_values = self.feature_extractor(image, return_tensors=\"\
+    pt\").pixel_values\r\n        pixel_values = self.processor(image, return_tensors=\"\
+    pt\").pixel_values\r\n        \r\n        # add labels (input_ids) by encoding\
+    \ the text\r\n        labels = self.tokenizer(text, \r\n                     \
+    \                     padding=\"max_length\",\r\n                            \
+    \              max_length=self.max_target_length,\r\n                        \
+    \                truncation=True).input_ids\r\n        # important: make sure\
+    \ that PAD tokens are ignored by the loss function\r\n        labels = [label\
+    \ if label != self.tokenizer.pad_token_id else -100 for label in labels]\r\n\r\
+    \n        encoding = {\"pixel_values\": pixel_values.squeeze(), \"labels\": torch.tensor(labels)}\r\
+    \n        return encoding\r\n\r\ntrain_set = VCSDatasetProcessor(root_dir=\"data/images/\"\
+    , df=train_df, processor=processor, tokenizer=tokenizer)\r\nvalid_set = VCSDatasetProcessor(root_dir=\"\
+    data/images/\", df=valid_df, processor=processor, tokenizer=tokenizer)\r\n\r\n\
+    from transformers import Seq2SeqTrainer, Seq2SeqTrainingArguments\r\n\r\ntraining_args\
+    \ = Seq2SeqTrainingArguments(\r\n    predict_with_generate=True,\r\n    evaluation_strategy=\"\
+    steps\",\r\n    per_device_train_batch_size=4,\r\n    per_device_eval_batch_size=4,\r\
+    \n    fp16=False, \r\n    output_dir=\"./blip/\",\r\n    logging_steps=2,\r\n\
+    \    save_steps=1000,\r\n    eval_steps=200,\r\n)\r\n\r\nfrom transformers import\
+    \ default_data_collator\r\n\r\n# instantiate trainer\r\ntrainer = Seq2SeqTrainer(\r\
+    \n    model=model,\r\n    tokenizer=processor,\r\n    args=training_args,\r\n\
+    \    compute_metrics=compute_metrics,\r\n    train_dataset=train_set,\r\n    eval_dataset=valid_set,\r\
+    \n    data_collator=default_data_collator,\r\n)\r\n\r\ntrainer.train()\r\n```\r\
+    \n\r\nAnd I get the following error trace:\r\n\r\n```\r\n***** Running training\
+    \ *****\r\n  Num examples = 8886\r\n  Num Epochs = 3\r\n  Instantaneous batch\
+    \ size per device = 4\r\n  Total train batch size (w. parallel, distributed &\
+    \ accumulation) = 4\r\n  Gradient Accumulation steps = 1\r\n  Total optimization\
+    \ steps = 6666\r\n  Number of trainable parameters = 469732924\r\n\r\n---------------------------------------------------------------------------\r\
+    \nRuntimeError                              Traceback (most recent call last)\r\
+    \nCell In [45], line 1\r\n----> 1 trainer.train()\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1539,\
+    \ in Trainer.train(self, resume_from_checkpoint, trial, ignore_keys_for_eval,\
+    \ **kwargs)\r\n   1534     self.model_wrapped = self.model\r\n   1536 inner_training_loop\
+    \ = find_executable_batch_size(\r\n   1537     self._inner_training_loop, self._train_batch_size,\
+    \ args.auto_find_batch_size\r\n   1538 )\r\n-> 1539 return inner_training_loop(\r\
+    \n   1540     args=args,\r\n   1541     resume_from_checkpoint=resume_from_checkpoint,\r\
+    \n   1542     trial=trial,\r\n   1543     ignore_keys_for_eval=ignore_keys_for_eval,\r\
+    \n   1544 )\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:1787,\
+    \ in Trainer._inner_training_loop(self, batch_size, args, resume_from_checkpoint,\
+    \ trial, ignore_keys_for_eval)\r\n   1785         tr_loss_step = self.training_step(model,\
+    \ inputs)\r\n   1786 else:\r\n-> 1787     tr_loss_step = self.training_step(model,\
+    \ inputs)\r\n   1789 if (\r\n   1790     args.logging_nan_inf_filter\r\n   1791\
+    \     and not is_torch_tpu_available()\r\n   1792     and (torch.isnan(tr_loss_step)\
+    \ or torch.isinf(tr_loss_step))\r\n   1793 ):\r\n   1794     # if loss is nan\
+    \ or inf simply add the average of previous logged losses\r\n   1795     tr_loss\
+    \ += tr_loss / (1 + self.state.global_step - self._globalstep_last_logged)\r\n\
+    \r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2535,\
+    \ in Trainer.training_step(self, model, inputs)\r\n   2532     return loss_mb.reduce_mean().detach().to(self.args.device)\r\
+    \n   2534 with self.compute_loss_context_manager():\r\n-> 2535     loss = self.compute_loss(model,\
+    \ inputs)\r\n   2537 if self.args.n_gpu > 1:\r\n   2538     loss = loss.mean()\
+    \  # mean() to average on multi-gpu parallel training\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/trainer.py:2567,\
+    \ in Trainer.compute_loss(self, model, inputs, return_outputs)\r\n   2565 else:\r\
+    \n   2566     labels = None\r\n-> 2567 outputs = model(**inputs)\r\n   2568 #\
+    \ Save past state if it exists\r\n   2569 # TODO: this needs to be fixed and made\
+    \ cleaner later.\r\n   2570 if self.args.past_index >= 0:\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1187 # this function,\
+    \ and just call forward.\r\n   1188 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1189         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1190     return forward_call(*input, **kwargs)\r\
+    \n   1191 # Do not call functions when jit is used\r\n   1192 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip.py:1011,\
+    \ in BlipForConditionalGeneration.forward(self, pixel_values, input_ids, attention_mask,\
+    \ output_attentions, output_hidden_states, labels, return_dict)\r\n   1008 if\
+    \ labels is None:\r\n   1009     labels = input_ids.masked_fill(input_ids == self.decoder_pad_token_id,\
+    \ -100)\r\n-> 1011 outputs = self.text_decoder(\r\n   1012     input_ids=input_ids,\r\
+    \n   1013     attention_mask=attention_mask,\r\n   1014     encoder_hidden_states=image_embeds,\r\
+    \n   1015     labels=labels,\r\n   1016     return_dict=return_dict,\r\n   1017\
+    \ )\r\n   1019 if not return_dict:\r\n   1020     outputs = (outputs[0], outputs[1],\
+    \ image_embeds, vision_outputs[0]) + vision_outputs[2:]\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1187 # this function,\
+    \ and just call forward.\r\n   1188 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1189         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1190     return forward_call(*input, **kwargs)\r\
+    \n   1191 # Do not call functions when jit is used\r\n   1192 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:875,\
+    \ in BlipTextLMHeadModel.forward(self, input_ids, attention_mask, position_ids,\
+    \ head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask, labels,\
+    \ past_key_values, use_cache, output_attentions, output_hidden_states, return_dict,\
+    \ return_logits, is_decoder, reduction)\r\n    872 if labels is not None:\r\n\
+    \    873     use_cache = False\r\n--> 875 outputs = self.bert(\r\n    876    \
+    \ input_ids,\r\n    877     attention_mask=attention_mask,\r\n    878     position_ids=position_ids,\r\
+    \n    879     head_mask=head_mask,\r\n    880     inputs_embeds=inputs_embeds,\r\
+    \n    881     encoder_hidden_states=encoder_hidden_states,\r\n    882     encoder_attention_mask=encoder_attention_mask,\r\
+    \n    883     past_key_values=past_key_values,\r\n    884     use_cache=use_cache,\r\
+    \n    885     output_attentions=output_attentions,\r\n    886     output_hidden_states=output_hidden_states,\r\
+    \n    887     return_dict=return_dict,\r\n    888     is_decoder=is_decoder,\r\
+    \n    889 )\r\n    891 sequence_output = outputs[0]\r\n    892 prediction_scores\
+    \ = self.cls(sequence_output)\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/torch/nn/modules/module.py:1190,\
+    \ in Module._call_impl(self, *input, **kwargs)\r\n   1186 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\r\n   1187 # this function,\
+    \ and just call forward.\r\n   1188 if not (self._backward_hooks or self._forward_hooks\
+    \ or self._forward_pre_hooks or _global_backward_hooks\r\n   1189         or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):\r\n-> 1190     return forward_call(*input, **kwargs)\r\
+    \n   1191 # Do not call functions when jit is used\r\n   1192 full_backward_hooks,\
+    \ non_full_backward_hooks = [], []\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:738,\
+    \ in BlipTextModel.forward(self, input_ids, attention_mask, position_ids, head_mask,\
+    \ inputs_embeds, encoder_embeds, encoder_hidden_states, encoder_attention_mask,\
+    \ past_key_values, use_cache, output_attentions, output_hidden_states, return_dict,\
+    \ is_decoder)\r\n    734     attention_mask = torch.ones(((batch_size, seq_length\
+    \ + past_key_values_length)))\r\n    736 # We can provide a self-attention mask\
+    \ of dimensions [batch_size, from_seq_length, to_seq_length]\r\n    737 # ourselves\
+    \ in which case we just need to make it broadcastable to all heads.\r\n--> 738\
+    \ extended_attention_mask: torch.Tensor = self.get_extended_attention_mask(\r\n\
+    \    739     attention_mask, input_shape, device, is_decoder\r\n    740 )\r\n\
+    \    742 # If a 2D or 3D attention mask is provided for the cross-attention\r\n\
+    \    743 # we need to make broadcastable to [batch_size, num_heads, seq_length,\
+    \ seq_length]\r\n    744 if encoder_hidden_states is not None:\r\n\r\nFile /opt/conda/lib/python3.10/site-packages/transformers/models/blip/modeling_blip_text.py:645,\
+    \ in BlipTextModel.get_extended_attention_mask(self, attention_mask, input_shape,\
+    \ device, is_decoder)\r\n    634         prefix_seq_len = attention_mask.shape[1]\
+    \ - causal_mask.shape[1]\r\n    635         causal_mask = torch.cat(\r\n    636\
+    \             [\r\n    637                 torch.ones(\r\n   (...)\r\n    642\
+    \             axis=-1,\r\n    643         )\r\n--> 645     extended_attention_mask\
+    \ = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]\r\n    646 else:\r\
+    \n    647     extended_attention_mask = attention_mask[:, None, None, :]\r\n\r\
+    \nRuntimeError: Expected all tensors to be on the same device, but found at least\
+    \ two devices, cuda:0 and cpu!\r\n```\r\n\r\nDoes anyone have an idea what could\
+    \ cause this?\r\n\r\nBest wishes,\r\n\r\nRuben"
+  created_at: 2023-01-17 16:11:19+00:00
+  edited: false
+  hidden: false
+  id: 63c6c8a78bfd6a208eb0a6fa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2023-01-17T17:01:54.000Z'
+    data:
+      edited: false
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: "<p>hi <span data-props=\"{&quot;user&quot;:&quot;rubenjanss&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/rubenjanss\"\
+          >@<span class=\"underline\">rubenjanss</span></a></span>\n\n\t</span></span><br>This\
+          \ should be addressed in <a rel=\"nofollow\" href=\"https://github.com/huggingface/transformers/pull/21021\"\
+          >https://github.com/huggingface/transformers/pull/21021</a><br>Meanwhile,\
+          \ you can install <code>transformers</code> from this branch with: <code>pip\
+          \ install git+https://github.com/younesbelkada/transformers.git@blip-train-support</code><br>Here\
+          \ is also a colab notebook on how to fine tune BLIP on a custom dataset:\
+          \ <a rel=\"nofollow\" href=\"https://colab.research.google.com/drive/1lbqiSiA0sDF7JDWPeS0tccrM85LloVha?usp=sharing\"\
+          >https://colab.research.google.com/drive/1lbqiSiA0sDF7JDWPeS0tccrM85LloVha?usp=sharing</a></p>\n"
+        raw: "hi @rubenjanss \nThis should be addressed in https://github.com/huggingface/transformers/pull/21021\n\
+          Meanwhile, you can install `transformers` from this branch with: `pip install\
+          \ git+https://github.com/younesbelkada/transformers.git@blip-train-support`\n\
+          Here is also a colab notebook on how to fine tune BLIP on a custom dataset:\
+          \ https://colab.research.google.com/drive/1lbqiSiA0sDF7JDWPeS0tccrM85LloVha?usp=sharing"
+        updatedAt: '2023-01-17T17:01:54.790Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - rubenjanss
+    id: 63c6d48202d8c962333b260e
+    type: comment
+  author: ybelkada
+  content: "hi @rubenjanss \nThis should be addressed in https://github.com/huggingface/transformers/pull/21021\n\
+    Meanwhile, you can install `transformers` from this branch with: `pip install\
+    \ git+https://github.com/younesbelkada/transformers.git@blip-train-support`\n\
+    Here is also a colab notebook on how to fine tune BLIP on a custom dataset: https://colab.research.google.com/drive/1lbqiSiA0sDF7JDWPeS0tccrM85LloVha?usp=sharing"
+  created_at: 2023-01-17 17:01:54+00:00
+  edited: false
+  hidden: false
+  id: 63c6d48202d8c962333b260e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2023-01-18T10:28:05.000Z'
+    data:
+      edited: false
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: '<p>Now that <a rel="nofollow" href="https://github.com/huggingface/transformers/pull/21021">https://github.com/huggingface/transformers/pull/21021</a>
+          has been merged you can install <code>transformers</code> from source and
+          everything should work !</p>
+
+          <pre><code>pip install git+https://github.com/huggingface/transformers.git@main
+
+          </code></pre>
+
+          '
+        raw: 'Now that https://github.com/huggingface/transformers/pull/21021 has
+          been merged you can install `transformers` from source and everything should
+          work !
+
+          ```
+
+          pip install git+https://github.com/huggingface/transformers.git@main
+
+          ```'
+        updatedAt: '2023-01-18T10:28:05.648Z'
+      numEdits: 0
+      reactions: []
+    id: 63c7c9b5f44d8afa3a47a2de
+    type: comment
+  author: ybelkada
+  content: 'Now that https://github.com/huggingface/transformers/pull/21021 has been
+    merged you can install `transformers` from source and everything should work !
+
+    ```
+
+    pip install git+https://github.com/huggingface/transformers.git@main
+
+    ```'
+  created_at: 2023-01-18 10:28:05+00:00
+  edited: false
+  hidden: false
+  id: 63c7c9b5f44d8afa3a47a2de
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+      fullname: Ruben Janssens
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rubenjanss
+      type: user
+    createdAt: '2023-01-19T10:21:18.000Z'
+    data:
+      edited: false
+      editors:
+      - rubenjanss
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/60373eae8cfc99e50a8d6b41134738b5.svg
+          fullname: Ruben Janssens
+          isHf: false
+          isPro: false
+          name: rubenjanss
+          type: user
+        html: "<p>Thank you so much <span data-props=\"{&quot;user&quot;:&quot;ybelkada&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/ybelkada\"\
+          >@<span class=\"underline\">ybelkada</span></a></span>\n\n\t</span></span>\
+          \ , it's working now!</p>\n"
+        raw: Thank you so much @ybelkada , it's working now!
+        updatedAt: '2023-01-19T10:21:18.357Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F91D"
+        users:
+        - ybelkada
+    id: 63c9199e4c74c79fff609682
+    type: comment
+  author: rubenjanss
+  content: Thank you so much @ybelkada , it's working now!
+  created_at: 2023-01-19 10:21:18+00:00
+  edited: false
+  hidden: false
+  id: 63c9199e4c74c79fff609682
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2023-01-19T10:40:15.000Z'
+    data:
+      edited: true
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: '<p>Thanks! Feel free to close the issue ;)<br>Don''t hesitate to share
+          your model once you have fine-tuned it!</p>
+
+          '
+        raw: "Thanks! Feel free to close the issue ;) \nDon't hesitate to share your\
+          \ model once you have fine-tuned it!"
+        updatedAt: '2023-01-19T10:40:28.436Z'
+      numEdits: 1
+      reactions: []
+    id: 63c91e0f8afd58b440962c80
+    type: comment
+  author: ybelkada
+  content: "Thanks! Feel free to close the issue ;) \nDon't hesitate to share your\
+    \ model once you have fine-tuned it!"
+  created_at: 2023-01-19 10:40:15+00:00
+  edited: true
+  hidden: false
+  id: 63c91e0f8afd58b440962c80
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2023-01-20T17:00:46.000Z'
+    data:
+      edited: false
+      editors:
+      - ybelkada
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+          fullname: Younes Belkada
+          isHf: true
+          isPro: false
+          name: ybelkada
+          type: user
+        html: '<p>Closing as completed</p>
+
+          '
+        raw: Closing as completed
+        updatedAt: '2023-01-20T17:00:46.800Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 63cac8be4f42ce0cf3b97bf5
+    id: 63cac8be4f42ce0cf3b97bf4
+    type: comment
+  author: ybelkada
+  content: Closing as completed
+  created_at: 2023-01-20 17:00:46+00:00
+  edited: false
+  hidden: false
+  id: 63cac8be4f42ce0cf3b97bf4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1648631057413-noauth.png?w=200&h=200&f=face
+      fullname: Younes Belkada
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: ybelkada
+      type: user
+    createdAt: '2023-01-20T17:00:46.000Z'
+    data:
+      status: closed
+    id: 63cac8be4f42ce0cf3b97bf5
+    type: status-change
+  author: ybelkada
+  created_at: 2023-01-20 17:00:46+00:00
+  id: 63cac8be4f42ce0cf3b97bf5
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 3
+repo_id: Salesforce/blip-image-captioning-large
+repo_type: model
+status: closed
+target_branch: null
+title: 'Error while fine-tuning BLIP on own task: found two devices'

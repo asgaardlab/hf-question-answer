@@ -1,0 +1,396 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: LazerJesus
+conflicting_files: null
+created_at: 2023-08-07 07:06:51+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+      fullname: Finn Frotscher
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LazerJesus
+      type: user
+    createdAt: '2023-08-07T08:06:51.000Z'
+    data:
+      edited: false
+      editors:
+      - LazerJesus
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7236670255661011
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+          fullname: Finn Frotscher
+          isHf: false
+          isPro: false
+          name: LazerJesus
+          type: user
+        html: "<p>I am trying to further finetune <code>Starchat-Beta</code>, save\
+          \ my progress, load my progress, and continue training. But whatever I do,\
+          \ it doesn't come together. Whenever I load my progress and continue training,\
+          \ my loss starts back from <em>zero</em> (3.xxx in my case).<br>I'll run\
+          \ you through my code and then the problem.</p>\n<pre><code class=\"language-python\"\
+          >tokenizer = AutoTokenizer.from_pretrained(BASEPATH)\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"/notebooks/starbaseplus\"</span>\n  \
+          \  ...\n)\n<span class=\"hljs-comment\"># I get both the Tokenizer and the\
+          \ Foundation model from the starbaseplus repo (which I have locally). </span>\n\
+          \npeftconfig = LoraConfig(\n    <span class=\"hljs-string\">\"/notebooks/starchat-beta\"\
+          </span> \n    base_model_name_or_path = <span class=\"hljs-string\">\"/notebooks/starbaseplus\"\
+          </span>,\n    ...\n)\nmodel = get_peft_model(model, peftconfig)\n<span class=\"\
+          hljs-comment\"># All Gucci so far, the model and the LoRA fine-tune are\
+          \ loaded from the starchat-beta repo (also local).</span>\n\n<span class=\"\
+          hljs-comment\"># important for later:</span>\nprint_trainable_parameters(model)\n\
+          <span class=\"hljs-comment\"># trainable params: 306 Million || all params:\
+          \ 15 Billion || trainable: 1.971%</span>\n\n\ntrainer = Trainer(\n    model=model,\n\
+          \    ...\n)\ntrainer.train()\n<span class=\"hljs-comment\"># I train, loss\
+          \ drops. from 3.xx to 1.xx.</span>\n\n<span class=\"hljs-comment\"># Now,\
+          \ either I follow the HugginFace docks:</span>\nmodel.save_pretrained(<span\
+          \ class=\"hljs-string\">\"./huggingface_model\"</span>) \n<span class=\"\
+          hljs-comment\"># -&gt; saves /notebooks/huggingface_model/adapter_model.bin\
+          \ 16mb.</span>\n\n<span class=\"hljs-comment\"># or an alternative I found\
+          \ on SO:</span>\ntrainer.save_model(<span class=\"hljs-string\">\"./torch_model\"\
+          </span>) \n<span class=\"hljs-comment\"># -&gt; saves /notebooks/torch_model/pytorch_model.bin\
+          \ 60gb.</span>\n</code></pre>\n<p>I have two alternatives saved to disk.\
+          \ Lets restart and try either of these approaches </p>\n<p>First the <a\
+          \ href=\"https://huggingface.co/docs/peft/quicktour#peftmodel\">huggingface\
+          \ docs</a> approach:<br>I now have three sets of weights.</p>\n<ol>\n<li>the\
+          \ foundation model - starbase plus</li>\n<li>the chat finetune - starchat-beta</li>\n\
+          <li>the 16mb saved bin - adapter_model.bin</li>\n</ol>\n<p>But I only have\
+          \ two opportunities to load weights. </p>\n<ol>\n<li><code>AutoModelForCausalLM.from_pretrained</code>\
+          \ </li>\n<li>either <code>get_peft_model</code> or <code>PeftModel.from_pretrained</code></li>\n\
+          </ol>\n<p>Neither works. training restarts at a loss of 3.x.</p>\n<p>Second\
+          \ approach:<br>Load the 60bg instead of the <em>old</em> starchat-beta repo\
+          \ model.<br><code>get_peft_model(\"/notebooks/torch_model/pytorch_model.bin\"\
+          , peftconfig)</code></p>\n<p>Also doesn't work. The <code>print_trainable_parameters(model)</code>\
+          \ drops to <code>trainable: 0.02%</code> and training restarts at a loss\
+          \ of 3.x</p>\n"
+        raw: "I am trying to further finetune `Starchat-Beta`, save my progress, load\
+          \ my progress, and continue training. But whatever I do, it doesn't come\
+          \ together. Whenever I load my progress and continue training, my loss starts\
+          \ back from _zero_ (3.xxx in my case).\r\nI'll run you through my code and\
+          \ then the problem.\r\n\r\n```python\r\ntokenizer = AutoTokenizer.from_pretrained(BASEPATH)\r\
+          \nmodel = AutoModelForCausalLM.from_pretrained(\r\n    \"/notebooks/starbaseplus\"\
+          \r\n    ...\r\n)\r\n# I get both the Tokenizer and the Foundation model\
+          \ from the starbaseplus repo (which I have locally). \r\n\r\npeftconfig\
+          \ = LoraConfig(\r\n    \"/notebooks/starchat-beta\" \r\n    base_model_name_or_path\
+          \ = \"/notebooks/starbaseplus\",\r\n    ...\r\n)\r\nmodel = get_peft_model(model,\
+          \ peftconfig)\r\n# All Gucci so far, the model and the LoRA fine-tune are\
+          \ loaded from the starchat-beta repo (also local).\r\n\r\n# important for\
+          \ later:\r\nprint_trainable_parameters(model)\r\n# trainable params: 306\
+          \ Million || all params: 15 Billion || trainable: 1.971%\r\n\r\n\r\ntrainer\
+          \ = Trainer(\r\n    model=model,\r\n    ...\r\n)\r\ntrainer.train()\r\n\
+          # I train, loss drops. from 3.xx to 1.xx.\r\n\r\n# Now, either I follow\
+          \ the HugginFace docks:\r\nmodel.save_pretrained(\"./huggingface_model\"\
+          ) \r\n# -> saves /notebooks/huggingface_model/adapter_model.bin 16mb.\r\n\
+          \r\n# or an alternative I found on SO:\r\ntrainer.save_model(\"./torch_model\"\
+          ) \r\n# -> saves /notebooks/torch_model/pytorch_model.bin 60gb.\r\n```\r\
+          \n\r\nI have two alternatives saved to disk. Lets restart and try either\
+          \ of these approaches \r\n\r\nFirst the [huggingface docs][1] approach:\r\
+          \nI now have three sets of weights.\r\n1. the foundation model - starbase\
+          \ plus\r\n2. the chat finetune - starchat-beta\r\n3. the 16mb saved bin\
+          \ - adapter_model.bin\r\n\r\nBut I only have two opportunities to load weights.\
+          \ \r\n1. `AutoModelForCausalLM.from_pretrained` \r\n2. either `get_peft_model`\
+          \ or `PeftModel.from_pretrained`\r\n\r\nNeither works. training restarts\
+          \ at a loss of 3.x.\r\n\r\nSecond approach:\r\nLoad the 60bg instead of\
+          \ the _old_ starchat-beta repo model.\r\n`get_peft_model(\"/notebooks/torch_model/pytorch_model.bin\"\
+          , peftconfig)`\r\n\r\nAlso doesn't work. The `print_trainable_parameters(model)`\
+          \ drops to `trainable: 0.02%` and training restarts at a loss of 3.x\r\n\
+          \r\n\r\n  [1]: https://huggingface.co/docs/peft/quicktour#peftmodel"
+        updatedAt: '2023-08-07T08:06:51.631Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\U0001F44D"
+        users:
+        - hoot123
+        - houyx21
+        - AayushShah
+        - bsp-albz
+    id: 64d0a61b31c655ff8a7fa604
+    type: comment
+  author: LazerJesus
+  content: "I am trying to further finetune `Starchat-Beta`, save my progress, load\
+    \ my progress, and continue training. But whatever I do, it doesn't come together.\
+    \ Whenever I load my progress and continue training, my loss starts back from\
+    \ _zero_ (3.xxx in my case).\r\nI'll run you through my code and then the problem.\r\
+    \n\r\n```python\r\ntokenizer = AutoTokenizer.from_pretrained(BASEPATH)\r\nmodel\
+    \ = AutoModelForCausalLM.from_pretrained(\r\n    \"/notebooks/starbaseplus\"\r\
+    \n    ...\r\n)\r\n# I get both the Tokenizer and the Foundation model from the\
+    \ starbaseplus repo (which I have locally). \r\n\r\npeftconfig = LoraConfig(\r\
+    \n    \"/notebooks/starchat-beta\" \r\n    base_model_name_or_path = \"/notebooks/starbaseplus\"\
+    ,\r\n    ...\r\n)\r\nmodel = get_peft_model(model, peftconfig)\r\n# All Gucci\
+    \ so far, the model and the LoRA fine-tune are loaded from the starchat-beta repo\
+    \ (also local).\r\n\r\n# important for later:\r\nprint_trainable_parameters(model)\r\
+    \n# trainable params: 306 Million || all params: 15 Billion || trainable: 1.971%\r\
+    \n\r\n\r\ntrainer = Trainer(\r\n    model=model,\r\n    ...\r\n)\r\ntrainer.train()\r\
+    \n# I train, loss drops. from 3.xx to 1.xx.\r\n\r\n# Now, either I follow the\
+    \ HugginFace docks:\r\nmodel.save_pretrained(\"./huggingface_model\") \r\n# ->\
+    \ saves /notebooks/huggingface_model/adapter_model.bin 16mb.\r\n\r\n# or an alternative\
+    \ I found on SO:\r\ntrainer.save_model(\"./torch_model\") \r\n# -> saves /notebooks/torch_model/pytorch_model.bin\
+    \ 60gb.\r\n```\r\n\r\nI have two alternatives saved to disk. Lets restart and\
+    \ try either of these approaches \r\n\r\nFirst the [huggingface docs][1] approach:\r\
+    \nI now have three sets of weights.\r\n1. the foundation model - starbase plus\r\
+    \n2. the chat finetune - starchat-beta\r\n3. the 16mb saved bin - adapter_model.bin\r\
+    \n\r\nBut I only have two opportunities to load weights. \r\n1. `AutoModelForCausalLM.from_pretrained`\
+    \ \r\n2. either `get_peft_model` or `PeftModel.from_pretrained`\r\n\r\nNeither\
+    \ works. training restarts at a loss of 3.x.\r\n\r\nSecond approach:\r\nLoad the\
+    \ 60bg instead of the _old_ starchat-beta repo model.\r\n`get_peft_model(\"/notebooks/torch_model/pytorch_model.bin\"\
+    , peftconfig)`\r\n\r\nAlso doesn't work. The `print_trainable_parameters(model)`\
+    \ drops to `trainable: 0.02%` and training restarts at a loss of 3.x\r\n\r\n\r\
+    \n  [1]: https://huggingface.co/docs/peft/quicktour#peftmodel"
+  created_at: 2023-08-07 07:06:51+00:00
+  edited: false
+  hidden: false
+  id: 64d0a61b31c655ff8a7fa604
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+      fullname: Finn Frotscher
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LazerJesus
+      type: user
+    createdAt: '2023-08-09T12:06:51.000Z'
+    data:
+      edited: false
+      editors:
+      - LazerJesus
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5688700675964355
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+          fullname: Finn Frotscher
+          isHf: false
+          isPro: false
+          name: LazerJesus
+          type: user
+        html: '<p>There are 4 different ways to save a model.<br><code>model.save_pretrained(PATH)</code><br><code>torch.save({''model_state_dict'':
+          model.state_dict()})</code><br><code>trainer.save_model(PATH)</code> and<br><code>TrainerArgs(save_strategy=''steps'')</code>.</p>
+
+          <p>Which one can I use to store the <code>PeftModelForCausalLM(AutoModelForCausalLM())</code>
+          and how to load it again?</p>
+
+          '
+        raw: "\nThere are 4 different ways to save a model. \n`model.save_pretrained(PATH)`\
+          \ \n`torch.save({'model_state_dict': model.state_dict()})` \n`trainer.save_model(PATH)`\
+          \ and \n`TrainerArgs(save_strategy='steps')`.\n\nWhich one can I use to\
+          \ store the `PeftModelForCausalLM(AutoModelForCausalLM())` and how to load\
+          \ it again?\n"
+        updatedAt: '2023-08-09T12:06:51.770Z'
+      numEdits: 0
+      reactions: []
+    id: 64d3815b508a6313e31e44d0
+    type: comment
+  author: LazerJesus
+  content: "\nThere are 4 different ways to save a model. \n`model.save_pretrained(PATH)`\
+    \ \n`torch.save({'model_state_dict': model.state_dict()})` \n`trainer.save_model(PATH)`\
+    \ and \n`TrainerArgs(save_strategy='steps')`.\n\nWhich one can I use to store\
+    \ the `PeftModelForCausalLM(AutoModelForCausalLM())` and how to load it again?\n"
+  created_at: 2023-08-09 11:06:51+00:00
+  edited: false
+  hidden: false
+  id: 64d3815b508a6313e31e44d0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ff5fc4fe6383d50b29052e/Vk9R5rKqG-Z_ou-55J9x-.jpeg?w=200&h=200&f=face
+      fullname: AayushShah
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: AayushShah
+      type: user
+    createdAt: '2023-10-04T15:52:18.000Z'
+    data:
+      edited: false
+      editors:
+      - AayushShah
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9332576394081116
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63ff5fc4fe6383d50b29052e/Vk9R5rKqG-Z_ou-55J9x-.jpeg?w=200&h=200&f=face
+          fullname: AayushShah
+          isHf: false
+          isPro: false
+          name: AayushShah
+          type: user
+        html: "<p>Any update on this? I am willing to continue the training for the\
+          \ LoRA tuned model.</p>\n<h2 id=\"actually\">Actually</h2>\n<p>I have finetuned\
+          \ the T5-large with LoRA on my task for one epoch. Now, I want to tune it\
+          \ more for several epochs, is it possible to use the existing LoRA weights\
+          \ and update them on the new dataset so that I don't have to do it from\
+          \ scratch?</p>\n<p>Please share some links, I have followed the <a rel=\"\
+          nofollow\" href=\"https://www.philschmid.de/fine-tune-flan-t5-peft\">https://www.philschmid.de/fine-tune-flan-t5-peft</a>\
+          \ guide for training.</p>\n<p>Thanks \U0001F64F\U0001F3FB</p>\n"
+        raw: "Any update on this? I am willing to continue the training for the LoRA\
+          \ tuned model.\n\n## Actually\nI have finetuned the T5-large with LoRA on\
+          \ my task for one epoch. Now, I want to tune it more for several epochs,\
+          \ is it possible to use the existing LoRA weights and update them on the\
+          \ new dataset so that I don't have to do it from scratch?\n\nPlease share\
+          \ some links, I have followed the https://www.philschmid.de/fine-tune-flan-t5-peft\
+          \ guide for training.\n\nThanks \U0001F64F\U0001F3FB"
+        updatedAt: '2023-10-04T15:52:18.974Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - bsp-albz
+    id: 651d8a32fc2027247f337577
+    type: comment
+  author: AayushShah
+  content: "Any update on this? I am willing to continue the training for the LoRA\
+    \ tuned model.\n\n## Actually\nI have finetuned the T5-large with LoRA on my task\
+    \ for one epoch. Now, I want to tune it more for several epochs, is it possible\
+    \ to use the existing LoRA weights and update them on the new dataset so that\
+    \ I don't have to do it from scratch?\n\nPlease share some links, I have followed\
+    \ the https://www.philschmid.de/fine-tune-flan-t5-peft guide for training.\n\n\
+    Thanks \U0001F64F\U0001F3FB"
+  created_at: 2023-10-04 14:52:18+00:00
+  edited: false
+  hidden: false
+  id: 651d8a32fc2027247f337577
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d94564c43e6f68af983ae9223f109f4e.svg
+      fullname: Bijo
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: bijo8585
+      type: user
+    createdAt: '2023-10-19T03:16:16.000Z'
+    data:
+      edited: true
+      editors:
+      - bijo8585
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.20774021744728088
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d94564c43e6f68af983ae9223f109f4e.svg
+          fullname: Bijo
+          isHf: false
+          isPro: false
+          name: bijo8585
+          type: user
+        html: '<h2 id="use-trainer-api-to-save-to-a-local-path">Use trainer API to
+          save to a local path</h2>
+
+          <p><code>trainer.save_model("./torch_model") </code></p>
+
+          <h2 id="load-model-from-the-saved-path">Load model from the saved path</h2>
+
+          <pre><code>from transformers import AutoTokenizer, AutoModelForCausalLM
+
+          from peft import PeftModel, PeftConfig
+
+          peft_model_id = "./torch_model"
+
+          config = PeftConfig.from_pretrained(peft_model_id)
+
+          model = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path)
+
+          model = PeftModel.from_pretrained(model, peft_model_id)
+
+          tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
+
+          </code></pre>
+
+          '
+        raw: '## Use trainer API to save to a local path
+
+          `trainer.save_model("./torch_model") `
+
+
+          ## Load model from the saved path
+
+          ```
+
+          from transformers import AutoTokenizer, AutoModelForCausalLM
+
+          from peft import PeftModel, PeftConfig
+
+          peft_model_id = "./torch_model"
+
+          config = PeftConfig.from_pretrained(peft_model_id)
+
+          model = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path)
+
+          model = PeftModel.from_pretrained(model, peft_model_id)
+
+          tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
+
+          ```'
+        updatedAt: '2023-10-19T03:21:10.122Z'
+      numEdits: 7
+      reactions: []
+    id: 65309f80237d321c2c237b49
+    type: comment
+  author: bijo8585
+  content: '## Use trainer API to save to a local path
+
+    `trainer.save_model("./torch_model") `
+
+
+    ## Load model from the saved path
+
+    ```
+
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+
+    from peft import PeftModel, PeftConfig
+
+    peft_model_id = "./torch_model"
+
+    config = PeftConfig.from_pretrained(peft_model_id)
+
+    model = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path)
+
+    model = PeftModel.from_pretrained(model, peft_model_id)
+
+    tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
+
+    ```'
+  created_at: 2023-10-19 02:16:16+00:00
+  edited: true
+  hidden: false
+  id: 65309f80237d321c2c237b49
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 78
+repo_id: bigcode/starcoder
+repo_type: model
+status: open
+target_branch: null
+title: How to save and load the Peft/LoRA Finetune

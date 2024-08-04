@@ -1,0 +1,4 @@
+## https://huggingface.co/sanchit-gandhi/whisper-medium-fleurs-lang-id/discussions/3
+
+contains_question: yes  
+question_part: Could you please suggest how I can use my own Audio Classifier Is my understanding correct that AutoModelForAudioClassification actually uses WhisperForAudioClassification from https://github.com/huggingface/transformers/blob/v4.29.1/src/transformers/models/whisper/modeling_whisper.py#L1664 If yes, can I define my own custom audio classifier the way WhisperForAudioClassification is defined with suitable modifications and use it directly without using AutoModelForAudioClassification

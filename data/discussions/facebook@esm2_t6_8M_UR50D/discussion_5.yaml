@@ -1,0 +1,174 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: chenchaozhao
+conflicting_files: null
+created_at: 2023-02-02 18:40:01+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/04cf825151327edf5748d79474817847.svg
+      fullname: Chenchao Zhao
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: chenchaozhao
+      type: user
+    createdAt: '2023-02-02T18:40:01.000Z'
+    data:
+      edited: false
+      editors:
+      - chenchaozhao
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/04cf825151327edf5748d79474817847.svg
+          fullname: Chenchao Zhao
+          isHf: false
+          isPro: false
+          name: chenchaozhao
+          type: user
+        html: "<pre><code class=\"language-python\">DEVICE = <span class=\"hljs-string\"\
+          >'cuda'</span>\nesm = model.esm.to(DEVICE)\ntensors = tokenizer([<span class=\"\
+          hljs-string\">'MRWQEMGYIFYPRKLR'</span>, <span class=\"hljs-string\">'MRWQEMGYLR'</span>],\
+          \ return_tensors=<span class=\"hljs-string\">'pt'</span>, padding=<span\
+          \ class=\"hljs-string\">'max_length'</span>, max_length=<span class=\"hljs-number\"\
+          >64</span>).to(DEVICE)\n_ = esm(**tensors)  <span class=\"hljs-comment\"\
+          ># the script does not work without this line</span>\nts_model = torch.jit.trace(esm,\
+          \ example_inputs=(tensors[<span class=\"hljs-string\">'input_ids'</span>],\
+          \ tensors[<span class=\"hljs-string\">'attention_mask'</span>]), strict=<span\
+          \ class=\"hljs-literal\">False</span>)\n</code></pre>\n<p>I have to run\
+          \ the model once in order to <code>torch.jit.trace</code> the model. This\
+          \ is completely unexpected behavior.</p>\n<p>The tracing also rely on device.\
+          \ Probably due to </p>\n<pre><code class=\"language-python\"><span class=\"\
+          hljs-keyword\">class</span> <span class=\"hljs-title class_\">RotaryEmbedding</span>(torch.nn.Module):\n\
+          \    <span class=\"hljs-string\">\"\"\"</span>\n<span class=\"hljs-string\"\
+          >    Rotary position embeddings based on those in</span>\n<span class=\"\
+          hljs-string\">    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer).\
+          \ Query and keys are transformed by rotation</span>\n<span class=\"hljs-string\"\
+          >    matrices which depend on their relative positions.</span>\n<span class=\"\
+          hljs-string\">    \"\"\"</span>\n\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">__init__</span>(<span class=\"hljs-params\"\
+          >self, dim: <span class=\"hljs-built_in\">int</span></span>):\n        <span\
+          \ class=\"hljs-built_in\">super</span>().__init__()\n        <span class=\"\
+          hljs-comment\"># Generate and save the inverse frequency buffer (non trainable)</span>\n\
+          \        inv_freq = <span class=\"hljs-number\">1.0</span> / (<span class=\"\
+          hljs-number\">10000</span> ** (torch.arange(<span class=\"hljs-number\"\
+          >0</span>, dim, <span class=\"hljs-number\">2</span>).<span class=\"hljs-built_in\"\
+          >float</span>() / dim))\n        inv_freq = inv_freq\n        self.register_buffer(<span\
+          \ class=\"hljs-string\">\"inv_freq\"</span>, inv_freq)\n\n        self._seq_len_cached\
+          \ = <span class=\"hljs-literal\">None</span>\n        self._cos_cached =\
+          \ <span class=\"hljs-literal\">None</span>\n        self._sin_cached = <span\
+          \ class=\"hljs-literal\">None</span>\n\n    <span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">_update_cos_sin_tables</span>(<span\
+          \ class=\"hljs-params\">self, x, seq_dimension=<span class=\"hljs-number\"\
+          >2</span></span>):\n        seq_len = x.shape[seq_dimension]\n        \n\
+          \       <span class=\"hljs-string\">\"\"\"Here is the problem\"\"\"</span>\n\
+          \        <span class=\"hljs-comment\"># Reset the tables if the sequence\
+          \ length has changed,</span>\n        <span class=\"hljs-comment\"># or\
+          \ if we're on a new device (possibly due to tracing for instance)</span>\n\
+          \        <span class=\"hljs-keyword\">if</span> seq_len != self._seq_len_cached\
+          \ <span class=\"hljs-keyword\">or</span> self._cos_cached.device != x.device:\n\
+          \            self._seq_len_cached = seq_len\n            t = torch.arange(x.shape[seq_dimension],\
+          \ device=x.device).type_as(self.inv_freq)\n            freqs = torch.outer(t,\
+          \ self.inv_freq)\n            emb = torch.cat((freqs, freqs), dim=-<span\
+          \ class=\"hljs-number\">1</span>).to(x.device)\n\n            self._cos_cached\
+          \ = emb.cos()[<span class=\"hljs-literal\">None</span>, <span class=\"hljs-literal\"\
+          >None</span>, :, :]\n            self._sin_cached = emb.sin()[<span class=\"\
+          hljs-literal\">None</span>, <span class=\"hljs-literal\">None</span>, :,\
+          \ :]\n\n        <span class=\"hljs-keyword\">return</span> self._cos_cached,\
+          \ self._sin_cached\n\n    <span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">forward</span>(<span class=\"hljs-params\"\
+          >self, q: torch.Tensor, k: torch.Tensor</span>) -&gt; <span class=\"hljs-type\"\
+          >Tuple</span>[torch.Tensor, torch.Tensor]:\n        self._cos_cached, self._sin_cached\
+          \ = self._update_cos_sin_tables(k, seq_dimension=-<span class=\"hljs-number\"\
+          >2</span>)\n\n        <span class=\"hljs-keyword\">return</span> (\n   \
+          \         apply_rotary_pos_emb(q, self._cos_cached, self._sin_cached),\n\
+          \            apply_rotary_pos_emb(k, self._cos_cached, self._sin_cached),\n\
+          \        )\n\n</code></pre>\n"
+        raw: "```python\r\nDEVICE = 'cuda'\r\nesm = model.esm.to(DEVICE)\r\ntensors\
+          \ = tokenizer(['MRWQEMGYIFYPRKLR', 'MRWQEMGYLR'], return_tensors='pt', padding='max_length',\
+          \ max_length=64).to(DEVICE)\r\n_ = esm(**tensors)  # the script does not\
+          \ work without this line\r\nts_model = torch.jit.trace(esm, example_inputs=(tensors['input_ids'],\
+          \ tensors['attention_mask']), strict=False)\r\n```\r\n\r\nI have to run\
+          \ the model once in order to `torch.jit.trace` the model. This is completely\
+          \ unexpected behavior.\r\n\r\nThe tracing also rely on device. Probably\
+          \ due to \r\n\r\n```python\r\nclass RotaryEmbedding(torch.nn.Module):\r\n\
+          \    \"\"\"\r\n    Rotary position embeddings based on those in\r\n    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer).\
+          \ Query and keys are transformed by rotation\r\n    matrices which depend\
+          \ on their relative positions.\r\n    \"\"\"\r\n\r\n    def __init__(self,\
+          \ dim: int):\r\n        super().__init__()\r\n        # Generate and save\
+          \ the inverse frequency buffer (non trainable)\r\n        inv_freq = 1.0\
+          \ / (10000 ** (torch.arange(0, dim, 2).float() / dim))\r\n        inv_freq\
+          \ = inv_freq\r\n        self.register_buffer(\"inv_freq\", inv_freq)\r\n\
+          \r\n        self._seq_len_cached = None\r\n        self._cos_cached = None\r\
+          \n        self._sin_cached = None\r\n\r\n    def _update_cos_sin_tables(self,\
+          \ x, seq_dimension=2):\r\n        seq_len = x.shape[seq_dimension]\r\n \
+          \       \r\n       \"\"\"Here is the problem\"\"\"\r\n        # Reset the\
+          \ tables if the sequence length has changed,\r\n        # or if we're on\
+          \ a new device (possibly due to tracing for instance)\r\n        if seq_len\
+          \ != self._seq_len_cached or self._cos_cached.device != x.device:\r\n  \
+          \          self._seq_len_cached = seq_len\r\n            t = torch.arange(x.shape[seq_dimension],\
+          \ device=x.device).type_as(self.inv_freq)\r\n            freqs = torch.outer(t,\
+          \ self.inv_freq)\r\n            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)\r\
+          \n\r\n            self._cos_cached = emb.cos()[None, None, :, :]\r\n   \
+          \         self._sin_cached = emb.sin()[None, None, :, :]\r\n\r\n       \
+          \ return self._cos_cached, self._sin_cached\r\n\r\n    def forward(self,\
+          \ q: torch.Tensor, k: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:\r\
+          \n        self._cos_cached, self._sin_cached = self._update_cos_sin_tables(k,\
+          \ seq_dimension=-2)\r\n\r\n        return (\r\n            apply_rotary_pos_emb(q,\
+          \ self._cos_cached, self._sin_cached),\r\n            apply_rotary_pos_emb(k,\
+          \ self._cos_cached, self._sin_cached),\r\n        )\r\n\r\n\r\n```"
+        updatedAt: '2023-02-02T18:40:01.003Z'
+      numEdits: 0
+      reactions: []
+    id: 63dc038106e5ca3879854c49
+    type: comment
+  author: chenchaozhao
+  content: "```python\r\nDEVICE = 'cuda'\r\nesm = model.esm.to(DEVICE)\r\ntensors\
+    \ = tokenizer(['MRWQEMGYIFYPRKLR', 'MRWQEMGYLR'], return_tensors='pt', padding='max_length',\
+    \ max_length=64).to(DEVICE)\r\n_ = esm(**tensors)  # the script does not work\
+    \ without this line\r\nts_model = torch.jit.trace(esm, example_inputs=(tensors['input_ids'],\
+    \ tensors['attention_mask']), strict=False)\r\n```\r\n\r\nI have to run the model\
+    \ once in order to `torch.jit.trace` the model. This is completely unexpected\
+    \ behavior.\r\n\r\nThe tracing also rely on device. Probably due to \r\n\r\n```python\r\
+    \nclass RotaryEmbedding(torch.nn.Module):\r\n    \"\"\"\r\n    Rotary position\
+    \ embeddings based on those in\r\n    [RoFormer](https://huggingface.co/docs/transformers/model_doc/roformer).\
+    \ Query and keys are transformed by rotation\r\n    matrices which depend on their\
+    \ relative positions.\r\n    \"\"\"\r\n\r\n    def __init__(self, dim: int):\r\
+    \n        super().__init__()\r\n        # Generate and save the inverse frequency\
+    \ buffer (non trainable)\r\n        inv_freq = 1.0 / (10000 ** (torch.arange(0,\
+    \ dim, 2).float() / dim))\r\n        inv_freq = inv_freq\r\n        self.register_buffer(\"\
+    inv_freq\", inv_freq)\r\n\r\n        self._seq_len_cached = None\r\n        self._cos_cached\
+    \ = None\r\n        self._sin_cached = None\r\n\r\n    def _update_cos_sin_tables(self,\
+    \ x, seq_dimension=2):\r\n        seq_len = x.shape[seq_dimension]\r\n       \
+    \ \r\n       \"\"\"Here is the problem\"\"\"\r\n        # Reset the tables if\
+    \ the sequence length has changed,\r\n        # or if we're on a new device (possibly\
+    \ due to tracing for instance)\r\n        if seq_len != self._seq_len_cached or\
+    \ self._cos_cached.device != x.device:\r\n            self._seq_len_cached = seq_len\r\
+    \n            t = torch.arange(x.shape[seq_dimension], device=x.device).type_as(self.inv_freq)\r\
+    \n            freqs = torch.outer(t, self.inv_freq)\r\n            emb = torch.cat((freqs,\
+    \ freqs), dim=-1).to(x.device)\r\n\r\n            self._cos_cached = emb.cos()[None,\
+    \ None, :, :]\r\n            self._sin_cached = emb.sin()[None, None, :, :]\r\n\
+    \r\n        return self._cos_cached, self._sin_cached\r\n\r\n    def forward(self,\
+    \ q: torch.Tensor, k: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:\r\n\
+    \        self._cos_cached, self._sin_cached = self._update_cos_sin_tables(k, seq_dimension=-2)\r\
+    \n\r\n        return (\r\n            apply_rotary_pos_emb(q, self._cos_cached,\
+    \ self._sin_cached),\r\n            apply_rotary_pos_emb(k, self._cos_cached,\
+    \ self._sin_cached),\r\n        )\r\n\r\n\r\n```"
+  created_at: 2023-02-02 18:40:01+00:00
+  edited: false
+  hidden: false
+  id: 63dc038106e5ca3879854c49
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 5
+repo_id: facebook/esm2_t6_8M_UR50D
+repo_type: model
+status: open
+target_branch: null
+title: TorchScript export failed. Maybe related to sequence length cache.

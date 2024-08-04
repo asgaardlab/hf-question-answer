@@ -1,0 +1,183 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: JohnSnyderTC
+conflicting_files: null
+created_at: 2023-08-29 17:54:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7d271e13b6a76a4aa1407f7e7d2b62e6.svg
+      fullname: John Snyder
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: JohnSnyderTC
+      type: user
+    createdAt: '2023-08-29T18:54:07.000Z'
+    data:
+      edited: true
+      editors:
+      - JohnSnyderTC
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5863332748413086
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7d271e13b6a76a4aa1407f7e7d2b62e6.svg
+          fullname: John Snyder
+          isHf: false
+          isPro: false
+          name: JohnSnyderTC
+          type: user
+        html: "<p>I am attempting to run some comparisons on different revisions of\
+          \ this model.  The code at the end (from the main page basically) yields\
+          \ the following traceback.  It seems like some calculations are being done\
+          \ on non conformable tensors or something.</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          /home/...on.py in line 13\n     46 print(\"\\n\\n*** Generate:\")\n    \
+          \ 48 input_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+          ---&gt; 49 output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+          \     50 print(tokenizer.decode(output[0]))\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/auto_gptq/modeling/_base.py:438,\
+          \ in BaseGPTQForCausalLM.generate(self, **kwargs)\n    436 \"\"\"shortcut\
+          \ for model.generate\"\"\"\n    437 with torch.inference_mode(), torch.amp.autocast(device_type=self.device.type):\n\
+          --&gt; 438     return self.model.generate(**kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator..decorate_context(*args, **kwargs)\n    112 @functools.wraps(func)\n\
+          \    113 def decorate_context(*args, **kwargs):\n    114     with ctx_factory():\n\
+          --&gt; 115         return func(*args, **kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/transformers/generation/utils.py:1538,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\n   1532         raise ValueError(\n   1533      \
+          \       \"num_return_sequences has to be 1 when doing greedy search, \"\n\
+          \   1534             f\"but is {generation_config.num_return_sequences}.\"\
+          \n   1535         )\n   1537     # 11. run greedy search\n...\n--&gt; 261\
+          \ weight = (scales * (weight - zeros))\n    262 weight = weight.reshape(weight.shape[0]\
+          \ * weight.shape[1], weight.shape[2])\n    264 out = torch.matmul(x.half(),\
+          \ weight)\n\nRuntimeError: The size of tensor a (32) must match the size\
+          \ of tensor b (128) at non-singleton dimension 0\n</code></pre>\n<p>Code,\
+          \ copied from the main page:</p>\n<pre><code>model_name_or_path = \"TheBloke/Llama-2-7b-Chat-GPTQ\"\
+          \nmodel_basename = \"model\"\n\n# %%\nuse_triton = False\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+          \ use_fast=True)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        revision=\"gptq-4bit-32g-actorder_True\",\n        model_basename=model_basename,\n\
+          \        use_safetensors=True,\n        trust_remote_code=True,\n      \
+          \  device=\"cuda:0\",\n        quantize_config=None)\n\n# %%\nprompt = \"\
+          Tell me about AI\"\nsystem_message = \"You are a helpful, respectful and\
+          \ honest assistant. Always answer as helpfully as possible, while being\
+          \ safe.  Your answers should not include any harmful, unethical, racist,\
+          \ sexist, toxic, dangerous, or illegal content. Please ensure that your\
+          \ responses are socially unbiased and positive in nature. If a question\
+          \ does not make any sense, or is not factually coherent, explain why instead\
+          \ of answering something not correct. If you don't know the answer to a\
+          \ question, please don't share false information.\"\nprompt_template=f'''[INST]\
+          \ &lt;&lt;SYS&gt;&gt;\n{system_message}\n&lt;&lt;/SYS&gt;&gt;\n\n{prompt}\
+          \ [/INST]'''\n\nprint(\"\\n\\n*** Generate:\")\n\ninput_ids = tokenizer(prompt_template,\
+          \ return_tensors='pt').input_ids.cuda()\noutput = model.generate(inputs=input_ids,\
+          \ temperature=0.7, max_new_tokens=512)\nprint(tokenizer.decode(output[0]))\n\
+          </code></pre>\n"
+        raw: "I am attempting to run some comparisons on different revisions of this\
+          \ model.  The code at the end (from the main page basically) yields the\
+          \ following traceback.  It seems like some calculations are being done on\
+          \ non conformable tensors or something.\n\n```\n---------------------------------------------------------------------------\n\
+          RuntimeError                              Traceback (most recent call last)\n\
+          /home/...on.py in line 13\n     46 print(\"\\n\\n*** Generate:\")\n    \
+          \ 48 input_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+          ---> 49 output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+          \     50 print(tokenizer.decode(output[0]))\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/auto_gptq/modeling/_base.py:438,\
+          \ in BaseGPTQForCausalLM.generate(self, **kwargs)\n    436 \"\"\"shortcut\
+          \ for model.generate\"\"\"\n    437 with torch.inference_mode(), torch.amp.autocast(device_type=self.device.type):\n\
+          --> 438     return self.model.generate(**kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator..decorate_context(*args, **kwargs)\n    112 @functools.wraps(func)\n\
+          \    113 def decorate_context(*args, **kwargs):\n    114     with ctx_factory():\n\
+          --> 115         return func(*args, **kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/transformers/generation/utils.py:1538,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, **kwargs)\n   1532         raise ValueError(\n   1533      \
+          \       \"num_return_sequences has to be 1 when doing greedy search, \"\n\
+          \   1534             f\"but is {generation_config.num_return_sequences}.\"\
+          \n   1535         )\n   1537     # 11. run greedy search\n...\n--> 261 weight\
+          \ = (scales * (weight - zeros))\n    262 weight = weight.reshape(weight.shape[0]\
+          \ * weight.shape[1], weight.shape[2])\n    264 out = torch.matmul(x.half(),\
+          \ weight)\n\nRuntimeError: The size of tensor a (32) must match the size\
+          \ of tensor b (128) at non-singleton dimension 0\n```\n\n\nCode, copied\
+          \ from the main page:\n```\nmodel_name_or_path = \"TheBloke/Llama-2-7b-Chat-GPTQ\"\
+          \nmodel_basename = \"model\"\n\n# %%\nuse_triton = False\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+          \ use_fast=True)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+          \        revision=\"gptq-4bit-32g-actorder_True\",\n        model_basename=model_basename,\n\
+          \        use_safetensors=True,\n        trust_remote_code=True,\n      \
+          \  device=\"cuda:0\",\n        quantize_config=None)\n\n# %%\nprompt = \"\
+          Tell me about AI\"\nsystem_message = \"You are a helpful, respectful and\
+          \ honest assistant. Always answer as helpfully as possible, while being\
+          \ safe.  Your answers should not include any harmful, unethical, racist,\
+          \ sexist, toxic, dangerous, or illegal content. Please ensure that your\
+          \ responses are socially unbiased and positive in nature. If a question\
+          \ does not make any sense, or is not factually coherent, explain why instead\
+          \ of answering something not correct. If you don't know the answer to a\
+          \ question, please don't share false information.\"\nprompt_template=f'''[INST]\
+          \ <<SYS>>\n{system_message}\n<</SYS>>\n\n{prompt} [/INST]'''\n\nprint(\"\
+          \\n\\n*** Generate:\")\n\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+          output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+          print(tokenizer.decode(output[0]))\n```"
+        updatedAt: '2023-08-29T18:55:13.787Z'
+      numEdits: 1
+      reactions: []
+    id: 64ee3ecf44f4b3b1bccb1ca7
+    type: comment
+  author: JohnSnyderTC
+  content: "I am attempting to run some comparisons on different revisions of this\
+    \ model.  The code at the end (from the main page basically) yields the following\
+    \ traceback.  It seems like some calculations are being done on non conformable\
+    \ tensors or something.\n\n```\n---------------------------------------------------------------------------\n\
+    RuntimeError                              Traceback (most recent call last)\n\
+    /home/...on.py in line 13\n     46 print(\"\\n\\n*** Generate:\")\n     48 input_ids\
+    \ = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n---> 49\
+    \ output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+    \     50 print(tokenizer.decode(output[0]))\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/auto_gptq/modeling/_base.py:438,\
+    \ in BaseGPTQForCausalLM.generate(self, **kwargs)\n    436 \"\"\"shortcut for\
+    \ model.generate\"\"\"\n    437 with torch.inference_mode(), torch.amp.autocast(device_type=self.device.type):\n\
+    --> 438     return self.model.generate(**kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/torch/utils/_contextlib.py:115,\
+    \ in context_decorator..decorate_context(*args, **kwargs)\n    112 @functools.wraps(func)\n\
+    \    113 def decorate_context(*args, **kwargs):\n    114     with ctx_factory():\n\
+    --> 115         return func(*args, **kwargs)\n\nFile ~/anaconda3/envs/huggingfacePEFT/lib/python3.11/site-packages/transformers/generation/utils.py:1538,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ **kwargs)\n   1532         raise ValueError(\n   1533             \"num_return_sequences\
+    \ has to be 1 when doing greedy search, \"\n   1534             f\"but is {generation_config.num_return_sequences}.\"\
+    \n   1535         )\n   1537     # 11. run greedy search\n...\n--> 261 weight\
+    \ = (scales * (weight - zeros))\n    262 weight = weight.reshape(weight.shape[0]\
+    \ * weight.shape[1], weight.shape[2])\n    264 out = torch.matmul(x.half(), weight)\n\
+    \nRuntimeError: The size of tensor a (32) must match the size of tensor b (128)\
+    \ at non-singleton dimension 0\n```\n\n\nCode, copied from the main page:\n```\n\
+    model_name_or_path = \"TheBloke/Llama-2-7b-Chat-GPTQ\"\nmodel_basename = \"model\"\
+    \n\n# %%\nuse_triton = False\ntokenizer = AutoTokenizer.from_pretrained(model_name_or_path,\
+    \ use_fast=True)\n\nmodel = AutoGPTQForCausalLM.from_quantized(model_name_or_path,\n\
+    \        revision=\"gptq-4bit-32g-actorder_True\",\n        model_basename=model_basename,\n\
+    \        use_safetensors=True,\n        trust_remote_code=True,\n        device=\"\
+    cuda:0\",\n        quantize_config=None)\n\n# %%\nprompt = \"Tell me about AI\"\
+    \nsystem_message = \"You are a helpful, respectful and honest assistant. Always\
+    \ answer as helpfully as possible, while being safe.  Your answers should not\
+    \ include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal\
+    \ content. Please ensure that your responses are socially unbiased and positive\
+    \ in nature. If a question does not make any sense, or is not factually coherent,\
+    \ explain why instead of answering something not correct. If you don't know the\
+    \ answer to a question, please don't share false information.\"\nprompt_template=f'''[INST]\
+    \ <<SYS>>\n{system_message}\n<</SYS>>\n\n{prompt} [/INST]'''\n\nprint(\"\\n\\\
+    n*** Generate:\")\n\ninput_ids = tokenizer(prompt_template, return_tensors='pt').input_ids.cuda()\n\
+    output = model.generate(inputs=input_ids, temperature=0.7, max_new_tokens=512)\n\
+    print(tokenizer.decode(output[0]))\n```"
+  created_at: 2023-08-29 17:54:07+00:00
+  edited: true
+  hidden: false
+  id: 64ee3ecf44f4b3b1bccb1ca7
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: TheBloke/Llama-2-7B-Chat-GPTQ
+repo_type: model
+status: open
+target_branch: null
+title: Error trying to run on a revision, tensors not conforming?

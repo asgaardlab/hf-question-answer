@@ -1,0 +1,249 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: drmeir
+conflicting_files: null
+created_at: 2023-08-27 12:24:50+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/520b9e3418a19d3e442f5713613ef9b8.svg
+      fullname: Meir Goldenberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: drmeir
+      type: user
+    createdAt: '2023-08-27T13:24:50.000Z'
+    data:
+      edited: true
+      editors:
+      - drmeir
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9054160118103027
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/520b9e3418a19d3e442f5713613ef9b8.svg
+          fullname: Meir Goldenberg
+          isHf: false
+          isPro: false
+          name: drmeir
+          type: user
+        html: "<p>I have a long input and would like to split it in order to process\
+          \ in distributed manner. To test how it would affect performance, I ran:</p>\n\
+          <pre><code class=\"language-py\">timer = Timer()\nn_parts = <span class=\"\
+          hljs-number\">100</span>\npart = <span class=\"hljs-built_in\">int</span>(<span\
+          \ class=\"hljs-built_in\">len</span>(text)/n_parts)\n<span class=\"hljs-keyword\"\
+          >for</span> i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(n_parts):\n    begin = i * part\n    end = begin + part\n\
+          \    results = m.infer([text[begin:end]])\n<span class=\"hljs-built_in\"\
+          >print</span>(timer.stop())\n</code></pre>\n<p>In this code, I split the\
+          \ text in 100 parts and perform the inference on each part. This takes almost\
+          \ twice as long as performing inference on the whole text at once. This\
+          \ suggests to me that initialization takes significant time. Is there a\
+          \ way to make it more efficient?</p>\n"
+        raw: "I have a long input and would like to split it in order to process in\
+          \ distributed manner. To test how it would affect performance, I ran:\n\
+          ```py\ntimer = Timer()\nn_parts = 100\npart = int(len(text)/n_parts)\nfor\
+          \ i in range(n_parts):\n    begin = i * part\n    end = begin + part\n \
+          \   results = m.infer([text[begin:end]])\nprint(timer.stop())\n```\n\nIn\
+          \ this code, I split the text in 100 parts and perform the inference on\
+          \ each part. This takes almost twice as long as performing inference on\
+          \ the whole text at once. This suggests to me that initialization takes\
+          \ significant time. Is there a way to make it more efficient?"
+        updatedAt: '2023-08-28T09:52:37.368Z'
+      numEdits: 1
+      reactions: []
+    id: 64eb4ea2ece58a9799a1951e
+    type: comment
+  author: drmeir
+  content: "I have a long input and would like to split it in order to process in\
+    \ distributed manner. To test how it would affect performance, I ran:\n```py\n\
+    timer = Timer()\nn_parts = 100\npart = int(len(text)/n_parts)\nfor i in range(n_parts):\n\
+    \    begin = i * part\n    end = begin + part\n    results = m.infer([text[begin:end]])\n\
+    print(timer.stop())\n```\n\nIn this code, I split the text in 100 parts and perform\
+    \ the inference on each part. This takes almost twice as long as performing inference\
+    \ on the whole text at once. This suggests to me that initialization takes significant\
+    \ time. Is there a way to make it more efficient?"
+  created_at: 2023-08-27 12:24:50+00:00
+  edited: true
+  hidden: false
+  id: 64eb4ea2ece58a9799a1951e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/617c01ea958eb333759f69922b62fb10.svg
+      fullname: sc
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: 1-800-BAD-CODE
+      type: user
+    createdAt: '2023-08-27T21:36:55.000Z'
+    data:
+      edited: false
+      editors:
+      - 1-800-BAD-CODE
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9452958106994629
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/617c01ea958eb333759f69922b62fb10.svg
+          fullname: sc
+          isHf: false
+          isPro: false
+          name: 1-800-BAD-CODE
+          type: user
+        html: '<p>There''s a lot to consider here.</p>
+
+          <p>First, if you''re using the <code>punctuators</code> package, you''re
+          certainly running on CPU. I wouldn''t have any expectations of good performance
+          in any case. I wrote that package simply to demonstrate how to use the models;
+          everyone''s use case differs and I presumed others would optimize for their
+          own case, as needed.</p>
+
+          <p>Second, with multiple inputs, it''s best to batch, even on CPU. Something
+          like <code>m.infer([text[0:10], [text[10:20], ..., text[90:100]])</code>.</p>
+
+          <p>Third, this model is a Transformer, which uses global scaled dot product
+          attention. Running time is therefore quadratic in sequence length. So a
+          single input of length <code>N</code> should run <em>slower</em> than <code>N//n</code>
+          inputs of length <code>n</code> for <code>n &gt; 1</code>. </p>
+
+          <p>The "initialization time" here is presumably batching vs. multiple passes
+          through the graph.</p>
+
+          '
+        raw: "There's a lot to consider here.\n\nFirst, if you're using the `punctuators`\
+          \ package, you're certainly running on CPU. I wouldn't have any expectations\
+          \ of good performance in any case. I wrote that package simply to demonstrate\
+          \ how to use the models; everyone's use case differs and I presumed others\
+          \ would optimize for their own case, as needed.\n\nSecond, with multiple\
+          \ inputs, it's best to batch, even on CPU. Something like `m.infer([text[0:10],\
+          \ [text[10:20], ..., text[90:100]])`.\n\nThird, this model is a Transformer,\
+          \ which uses global scaled dot product attention. Running time is therefore\
+          \ quadratic in sequence length. So a single input of length `N` should run\
+          \ *slower* than `N//n` inputs of length `n` for `n > 1`. \n\nThe \"initialization\
+          \ time\" here is presumably batching vs. multiple passes through the graph.\n\
+          \n"
+        updatedAt: '2023-08-27T21:36:55.456Z'
+      numEdits: 0
+      reactions: []
+    id: 64ebc1f7f494f8b2a094db13
+    type: comment
+  author: 1-800-BAD-CODE
+  content: "There's a lot to consider here.\n\nFirst, if you're using the `punctuators`\
+    \ package, you're certainly running on CPU. I wouldn't have any expectations of\
+    \ good performance in any case. I wrote that package simply to demonstrate how\
+    \ to use the models; everyone's use case differs and I presumed others would optimize\
+    \ for their own case, as needed.\n\nSecond, with multiple inputs, it's best to\
+    \ batch, even on CPU. Something like `m.infer([text[0:10], [text[10:20], ...,\
+    \ text[90:100]])`.\n\nThird, this model is a Transformer, which uses global scaled\
+    \ dot product attention. Running time is therefore quadratic in sequence length.\
+    \ So a single input of length `N` should run *slower* than `N//n` inputs of length\
+    \ `n` for `n > 1`. \n\nThe \"initialization time\" here is presumably batching\
+    \ vs. multiple passes through the graph.\n\n"
+  created_at: 2023-08-27 20:36:55+00:00
+  edited: false
+  hidden: false
+  id: 64ebc1f7f494f8b2a094db13
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/520b9e3418a19d3e442f5713613ef9b8.svg
+      fullname: Meir Goldenberg
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: drmeir
+      type: user
+    createdAt: '2023-08-28T10:07:17.000Z'
+    data:
+      edited: false
+      editors:
+      - drmeir
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9342806935310364
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/520b9e3418a19d3e442f5713613ef9b8.svg
+          fullname: Meir Goldenberg
+          isHf: false
+          isPro: false
+          name: drmeir
+          type: user
+        html: '<p>My Python backend is running on PythonAnywhere. To speed up segmentation
+          of a long text, I submit each part of the text as a separate request. All
+          requests are submitted in parallel and each request is handled by a web
+          worker, all web workers doing their job in parallel. My test script measures
+          how much time in total the web workers would spend if I split the large
+          test in 100 parts and give them to 100 web workers.</p>
+
+          <p>For the point of O(n^2). I modified the code in the question to make
+          the number of parts a variable (<code>n_parts</code>). What is then the
+          explanation for my script running twice as slow for <code>n_parts=100</code>
+          than for <code>n_parts=1</code> when it should really become faster?</p>
+
+          '
+        raw: 'My Python backend is running on PythonAnywhere. To speed up segmentation
+          of a long text, I submit each part of the text as a separate request. All
+          requests are submitted in parallel and each request is handled by a web
+          worker, all web workers doing their job in parallel. My test script measures
+          how much time in total the web workers would spend if I split the large
+          test in 100 parts and give them to 100 web workers.
+
+
+          For the point of O(n^2). I modified the code in the question to make the
+          number of parts a variable (`n_parts`). What is then the explanation for
+          my script running twice as slow for `n_parts=100` than for `n_parts=1` when
+          it should really become faster?
+
+          '
+        updatedAt: '2023-08-28T10:07:17.139Z'
+      numEdits: 0
+      reactions: []
+    id: 64ec71d58a9f0c94593c8453
+    type: comment
+  author: drmeir
+  content: 'My Python backend is running on PythonAnywhere. To speed up segmentation
+    of a long text, I submit each part of the text as a separate request. All requests
+    are submitted in parallel and each request is handled by a web worker, all web
+    workers doing their job in parallel. My test script measures how much time in
+    total the web workers would spend if I split the large test in 100 parts and give
+    them to 100 web workers.
+
+
+    For the point of O(n^2). I modified the code in the question to make the number
+    of parts a variable (`n_parts`). What is then the explanation for my script running
+    twice as slow for `n_parts=100` than for `n_parts=1` when it should really become
+    faster?
+
+    '
+  created_at: 2023-08-28 09:07:17+00:00
+  edited: false
+  hidden: false
+  id: 64ec71d58a9f0c94593c8453
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 6
+repo_id: 1-800-BAD-CODE/punctuation_fullstop_truecase_english
+repo_type: model
+status: open
+target_branch: null
+title: Slow initialization

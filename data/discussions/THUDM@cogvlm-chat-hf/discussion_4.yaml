@@ -1,0 +1,1505 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: justinwickett
+conflicting_files: null
+created_at: 2023-11-25 15:57:07+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-25T15:57:07.000Z'
+    data:
+      edited: true
+      editors:
+      - justinwickett
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.48748767375946045
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+          fullname: Justin Wickett
+          isHf: false
+          isPro: false
+          name: justinwickett
+          type: user
+        html: "<p>When calling </p>\n<pre><code>outputs = model.generate(**inputs,\
+          \ **gen_kwargs)\n</code></pre>\n<p>I encounter the following error:</p>\n\
+          <pre><code>File ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+          \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+          \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\\
+          n\" + _format_not_supported_reasons(op, not_supported)\n---&gt; 63 raise\
+          \ NotImplementedError(msg)\n\nNotImplementedError: No operator found for\
+          \ `memory_efficient_attention_forward` with inputs:\n     query       :\
+          \ shape=(1, 1226, 16, 112) (torch.bfloat16)\n     key         : shape=(1,\
+          \ 1226, 16, 112) (torch.bfloat16)\n     value       : shape=(1, 1226, 16,\
+          \ 112) (torch.bfloat16)\n     attn_bias   : &lt;class 'NoneType'&gt;\n \
+          \    p           : 0.0\n`decoderF` is not supported because:\n    attn_bias\
+          \ type is &lt;class 'NoneType'&gt;\n    bf16 is only supported on A100+\
+          \ GPUs\n`flshattF@v2.3.2` is not supported because:\n    requires device\
+          \ with capability &gt; (8, 0) but your GPU has capability (7, 0) (too old)\n\
+          \    bf16 is only supported on A100+ GPUs\n`tritonflashattF` is not supported\
+          \ because:\n    requires device with capability &gt; (8, 0) but your GPU\
+          \ has capability (7, 0) (too old)\n    bf16 is only supported on A100+ GPUs\n\
+          \    operator wasn't built - see `python -m xformers.info` for more info\n\
+          \    triton is not available\n    requires GPU with sm80 minimum compute\
+          \ capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton for now\n\
+          `cutlassF` is not supported because:\n    bf16 is only supported on A100+\
+          \ GPUs\n`smallkF` is not supported because:\n    max(query.shape[-1] !=\
+          \ value.shape[-1]) &gt; 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n\
+          \    has custom scale\n    bf16 is only supported on A100+ GPUs\n    unsupported\
+          \ embed per head: 112\n</code></pre>\n<p>Here is the code I am executing:</p>\n\
+          <pre><code>import torch\nimport requests\nfrom PIL import Image\nfrom transformers\
+          \ import AutoModelForCausalLM, LlamaTokenizer\nfrom accelerate import init_empty_weights,\
+          \ infer_auto_device_map, load_checkpoint_and_dispatch\n\ntokenizer = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\n\
+          \nwith init_empty_weights():\n    model = AutoModelForCausalLM.from_pretrained('THUDM/cogvlm-chat-hf',\n\
+          \                                            torch_dtype=torch.bfloat16,\n\
+          \                                            low_cpu_mem_usage=True,\n \
+          \                                           trust_remote_code=True\n   \
+          \                                        )\nmodel = load_checkpoint_and_dispatch(\n\
+          \    model,\n    '/home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730',\n\
+          \    device_map=\"auto\",\n    no_split_module_classes=['CogVLMDecoderLayer']\n\
+          )\nmodel = model.eval()\n\nquery = 'Describe this image'\nimage = Image.open(requests.get('https://github.com/THUDM/CogVLM/blob/main/examples/1.png?raw=true',\
+          \ stream=True).raw).convert('RGB')\ninputs = model.build_conversation_input_ids(tokenizer,\
+          \ query=query, history=[], images=[image])  # chat mode\ninputs = {\n  \
+          \  'input_ids': inputs['input_ids'].unsqueeze(0).to('cuda'),\n    'token_type_ids':\
+          \ inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n    'attention_mask':\
+          \ inputs['attention_mask'].unsqueeze(0).to('cuda'),\n    'images': [[inputs['images'][0].to('cuda').to(torch.bfloat16)]],\n\
+          }\ngen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n\
+          \    outputs = model.generate(**inputs, **gen_kwargs)\n    outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n    print(tokenizer.decode(outputs[0]))\n\
+          </code></pre>\n<p>And here is the output when I run </p>\n<pre><code>$ python\
+          \ -m xformers.info\nxFormers 0.0.22.post7\nmemory_efficient_attention.cutlassF:\
+          \               available\nmemory_efficient_attention.cutlassB:        \
+          \       available\nmemory_efficient_attention.decoderF:               available\n\
+          memory_efficient_attention.flshattF@v2.3.2:        available\nmemory_efficient_attention.flshattB@v2.3.2:\
+          \        available\nmemory_efficient_attention.smallkF:                available\n\
+          memory_efficient_attention.smallkB:                available\nmemory_efficient_attention.tritonflashattF:\
+          \        unavailable\nmemory_efficient_attention.tritonflashattB:      \
+          \  unavailable\nmemory_efficient_attention.triton_splitKF:         available\n\
+          indexing.scaled_index_addF:                        available\nindexing.scaled_index_addB:\
+          \                        available\nindexing.index_select:             \
+          \                available\nswiglu.dual_gemm_silu:                     \
+          \        available\nswiglu.gemm_fused_operand_sum:                     available\n\
+          swiglu.fused.p.cpp:                                available\nis_triton_available:\
+          \                               True\npytorch.version:                 \
+          \                  2.1.0+cu121\npytorch.cuda:                          \
+          \            available\ngpu.compute_capability:                        \
+          \    7.0\ngpu.name:                                          Tesla V100-SXM2-16GB\n\
+          build.info:                                        available\nbuild.cuda_version:\
+          \                                1201\nbuild.python_version:           \
+          \                   3.10.13\nbuild.torch_version:                      \
+          \         2.1.0+cu121\nbuild.env.TORCH_CUDA_ARCH_LIST:                 \
+          \   5.0+PTX 6.0 6.1 7.0 7.5 8.0+PTX 9.0\nbuild.env.XFORMERS_BUILD_TYPE:\
+          \                     Release\nbuild.env.XFORMERS_ENABLE_DEBUG_ASSERTIONS:\
+          \        None\nbuild.env.NVCC_FLAGS:                              None\n\
+          build.env.XFORMERS_PACKAGE_FROM:                   wheel-v0.0.22.post7\n\
+          build.nvcc_version:                                12.1.66\nsource.privacy:\
+          \                                    open source\n</code></pre>\n<p>I also\
+          \ confirmed there were no dependency issues:</p>\n<pre><code>$ pip check\n\
+          No broken requirements found.\n</code></pre>\n"
+        raw: "When calling \n\n```\noutputs = model.generate(**inputs, **gen_kwargs)\n\
+          ```\n\nI encounter the following error:\n\n```\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+          \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+          \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\\
+          n\" + _format_not_supported_reasons(op, not_supported)\n---> 63 raise NotImplementedError(msg)\n\
+          \nNotImplementedError: No operator found for `memory_efficient_attention_forward`\
+          \ with inputs:\n     query       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n\
+          \     key         : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     value\
+          \       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     attn_bias   :\
+          \ <class 'NoneType'>\n     p           : 0.0\n`decoderF` is not supported\
+          \ because:\n    attn_bias type is <class 'NoneType'>\n    bf16 is only supported\
+          \ on A100+ GPUs\n`flshattF@v2.3.2` is not supported because:\n    requires\
+          \ device with capability > (8, 0) but your GPU has capability (7, 0) (too\
+          \ old)\n    bf16 is only supported on A100+ GPUs\n`tritonflashattF` is not\
+          \ supported because:\n    requires device with capability > (8, 0) but your\
+          \ GPU has capability (7, 0) (too old)\n    bf16 is only supported on A100+\
+          \ GPUs\n    operator wasn't built - see `python -m xformers.info` for more\
+          \ info\n    triton is not available\n    requires GPU with sm80 minimum\
+          \ compute capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton\
+          \ for now\n`cutlassF` is not supported because:\n    bf16 is only supported\
+          \ on A100+ GPUs\n`smallkF` is not supported because:\n    max(query.shape[-1]\
+          \ != value.shape[-1]) > 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n\
+          \    has custom scale\n    bf16 is only supported on A100+ GPUs\n    unsupported\
+          \ embed per head: 112\n```\n\nHere is the code I am executing:\n\n```\n\
+          import torch\nimport requests\nfrom PIL import Image\nfrom transformers\
+          \ import AutoModelForCausalLM, LlamaTokenizer\nfrom accelerate import init_empty_weights,\
+          \ infer_auto_device_map, load_checkpoint_and_dispatch\n\ntokenizer = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\n\
+          \nwith init_empty_weights():\n    model = AutoModelForCausalLM.from_pretrained('THUDM/cogvlm-chat-hf',\n\
+          \                                            torch_dtype=torch.bfloat16,\n\
+          \                                            low_cpu_mem_usage=True,\n \
+          \                                           trust_remote_code=True\n   \
+          \                                        )\nmodel = load_checkpoint_and_dispatch(\n\
+          \    model,\n    '/home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730',\n\
+          \    device_map=\"auto\",\n    no_split_module_classes=['CogVLMDecoderLayer']\n\
+          )\nmodel = model.eval()\n\nquery = 'Describe this image'\nimage = Image.open(requests.get('https://github.com/THUDM/CogVLM/blob/main/examples/1.png?raw=true',\
+          \ stream=True).raw).convert('RGB')\ninputs = model.build_conversation_input_ids(tokenizer,\
+          \ query=query, history=[], images=[image])  # chat mode\ninputs = {\n  \
+          \  'input_ids': inputs['input_ids'].unsqueeze(0).to('cuda'),\n    'token_type_ids':\
+          \ inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n    'attention_mask':\
+          \ inputs['attention_mask'].unsqueeze(0).to('cuda'),\n    'images': [[inputs['images'][0].to('cuda').to(torch.bfloat16)]],\n\
+          }\ngen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n\
+          \    outputs = model.generate(**inputs, **gen_kwargs)\n    outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n    print(tokenizer.decode(outputs[0]))\n\
+          ```\n\nAnd here is the output when I run \n\n```\n$ python -m xformers.info\n\
+          xFormers 0.0.22.post7\nmemory_efficient_attention.cutlassF:            \
+          \   available\nmemory_efficient_attention.cutlassB:               available\n\
+          memory_efficient_attention.decoderF:               available\nmemory_efficient_attention.flshattF@v2.3.2:\
+          \        available\nmemory_efficient_attention.flshattB@v2.3.2:        available\n\
+          memory_efficient_attention.smallkF:                available\nmemory_efficient_attention.smallkB:\
+          \                available\nmemory_efficient_attention.tritonflashattF:\
+          \        unavailable\nmemory_efficient_attention.tritonflashattB:      \
+          \  unavailable\nmemory_efficient_attention.triton_splitKF:         available\n\
+          indexing.scaled_index_addF:                        available\nindexing.scaled_index_addB:\
+          \                        available\nindexing.index_select:             \
+          \                available\nswiglu.dual_gemm_silu:                     \
+          \        available\nswiglu.gemm_fused_operand_sum:                     available\n\
+          swiglu.fused.p.cpp:                                available\nis_triton_available:\
+          \                               True\npytorch.version:                 \
+          \                  2.1.0+cu121\npytorch.cuda:                          \
+          \            available\ngpu.compute_capability:                        \
+          \    7.0\ngpu.name:                                          Tesla V100-SXM2-16GB\n\
+          build.info:                                        available\nbuild.cuda_version:\
+          \                                1201\nbuild.python_version:           \
+          \                   3.10.13\nbuild.torch_version:                      \
+          \         2.1.0+cu121\nbuild.env.TORCH_CUDA_ARCH_LIST:                 \
+          \   5.0+PTX 6.0 6.1 7.0 7.5 8.0+PTX 9.0\nbuild.env.XFORMERS_BUILD_TYPE:\
+          \                     Release\nbuild.env.XFORMERS_ENABLE_DEBUG_ASSERTIONS:\
+          \        None\nbuild.env.NVCC_FLAGS:                              None\n\
+          build.env.XFORMERS_PACKAGE_FROM:                   wheel-v0.0.22.post7\n\
+          build.nvcc_version:                                12.1.66\nsource.privacy:\
+          \                                    open source\n```\n\nI also confirmed\
+          \ there were no dependency issues:\n\n```\n$ pip check\nNo broken requirements\
+          \ found.\n```"
+        updatedAt: '2023-11-26T00:22:07.592Z'
+      numEdits: 4
+      reactions: []
+    id: 65621953d5e3c35c790be1fa
+    type: comment
+  author: justinwickett
+  content: "When calling \n\n```\noutputs = model.generate(**inputs, **gen_kwargs)\n\
+    ```\n\nI encounter the following error:\n\n```\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+    \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+    \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\n\" +\
+    \ _format_not_supported_reasons(op, not_supported)\n---> 63 raise NotImplementedError(msg)\n\
+    \nNotImplementedError: No operator found for `memory_efficient_attention_forward`\
+    \ with inputs:\n     query       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n\
+    \     key         : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     value    \
+    \   : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     attn_bias   : <class 'NoneType'>\n\
+    \     p           : 0.0\n`decoderF` is not supported because:\n    attn_bias type\
+    \ is <class 'NoneType'>\n    bf16 is only supported on A100+ GPUs\n`flshattF@v2.3.2`\
+    \ is not supported because:\n    requires device with capability > (8, 0) but\
+    \ your GPU has capability (7, 0) (too old)\n    bf16 is only supported on A100+\
+    \ GPUs\n`tritonflashattF` is not supported because:\n    requires device with\
+    \ capability > (8, 0) but your GPU has capability (7, 0) (too old)\n    bf16 is\
+    \ only supported on A100+ GPUs\n    operator wasn't built - see `python -m xformers.info`\
+    \ for more info\n    triton is not available\n    requires GPU with sm80 minimum\
+    \ compute capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton for now\n\
+    `cutlassF` is not supported because:\n    bf16 is only supported on A100+ GPUs\n\
+    `smallkF` is not supported because:\n    max(query.shape[-1] != value.shape[-1])\
+    \ > 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n    has custom\
+    \ scale\n    bf16 is only supported on A100+ GPUs\n    unsupported embed per head:\
+    \ 112\n```\n\nHere is the code I am executing:\n\n```\nimport torch\nimport requests\n\
+    from PIL import Image\nfrom transformers import AutoModelForCausalLM, LlamaTokenizer\n\
+    from accelerate import init_empty_weights, infer_auto_device_map, load_checkpoint_and_dispatch\n\
+    \ntokenizer = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\n\nwith init_empty_weights():\n\
+    \    model = AutoModelForCausalLM.from_pretrained('THUDM/cogvlm-chat-hf',\n  \
+    \                                          torch_dtype=torch.bfloat16,\n     \
+    \                                       low_cpu_mem_usage=True,\n            \
+    \                                trust_remote_code=True\n                    \
+    \                       )\nmodel = load_checkpoint_and_dispatch(\n    model,\n\
+    \    '/home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730',\n\
+    \    device_map=\"auto\",\n    no_split_module_classes=['CogVLMDecoderLayer']\n\
+    )\nmodel = model.eval()\n\nquery = 'Describe this image'\nimage = Image.open(requests.get('https://github.com/THUDM/CogVLM/blob/main/examples/1.png?raw=true',\
+    \ stream=True).raw).convert('RGB')\ninputs = model.build_conversation_input_ids(tokenizer,\
+    \ query=query, history=[], images=[image])  # chat mode\ninputs = {\n    'input_ids':\
+    \ inputs['input_ids'].unsqueeze(0).to('cuda'),\n    'token_type_ids': inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n\
+    \    'attention_mask': inputs['attention_mask'].unsqueeze(0).to('cuda'),\n   \
+    \ 'images': [[inputs['images'][0].to('cuda').to(torch.bfloat16)]],\n}\ngen_kwargs\
+    \ = {\"max_length\": 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n  \
+    \  outputs = model.generate(**inputs, **gen_kwargs)\n    outputs = outputs[:,\
+    \ inputs['input_ids'].shape[1]:]\n    print(tokenizer.decode(outputs[0]))\n```\n\
+    \nAnd here is the output when I run \n\n```\n$ python -m xformers.info\nxFormers\
+    \ 0.0.22.post7\nmemory_efficient_attention.cutlassF:               available\n\
+    memory_efficient_attention.cutlassB:               available\nmemory_efficient_attention.decoderF:\
+    \               available\nmemory_efficient_attention.flshattF@v2.3.2:       \
+    \ available\nmemory_efficient_attention.flshattB@v2.3.2:        available\nmemory_efficient_attention.smallkF:\
+    \                available\nmemory_efficient_attention.smallkB:              \
+    \  available\nmemory_efficient_attention.tritonflashattF:        unavailable\n\
+    memory_efficient_attention.tritonflashattB:        unavailable\nmemory_efficient_attention.triton_splitKF:\
+    \         available\nindexing.scaled_index_addF:                        available\n\
+    indexing.scaled_index_addB:                        available\nindexing.index_select:\
+    \                             available\nswiglu.dual_gemm_silu:              \
+    \               available\nswiglu.gemm_fused_operand_sum:                    \
+    \ available\nswiglu.fused.p.cpp:                                available\nis_triton_available:\
+    \                               True\npytorch.version:                       \
+    \            2.1.0+cu121\npytorch.cuda:                                      available\n\
+    gpu.compute_capability:                            7.0\ngpu.name:            \
+    \                              Tesla V100-SXM2-16GB\nbuild.info:             \
+    \                           available\nbuild.cuda_version:                   \
+    \             1201\nbuild.python_version:                              3.10.13\n\
+    build.torch_version:                               2.1.0+cu121\nbuild.env.TORCH_CUDA_ARCH_LIST:\
+    \                    5.0+PTX 6.0 6.1 7.0 7.5 8.0+PTX 9.0\nbuild.env.XFORMERS_BUILD_TYPE:\
+    \                     Release\nbuild.env.XFORMERS_ENABLE_DEBUG_ASSERTIONS:   \
+    \     None\nbuild.env.NVCC_FLAGS:                              None\nbuild.env.XFORMERS_PACKAGE_FROM:\
+    \                   wheel-v0.0.22.post7\nbuild.nvcc_version:                 \
+    \               12.1.66\nsource.privacy:                                    open\
+    \ source\n```\n\nI also confirmed there were no dependency issues:\n\n```\n$ pip\
+    \ check\nNo broken requirements found.\n```"
+  created_at: 2023-11-25 15:57:07+00:00
+  edited: true
+  hidden: false
+  id: 65621953d5e3c35c790be1fa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-25T16:46:21.000Z'
+    data:
+      edited: false
+      editors:
+      - justinwickett
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3941905200481415
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+          fullname: Justin Wickett
+          isHf: false
+          isPro: false
+          name: justinwickett
+          type: user
+        html: "<p>Just discovered and read <a href=\"https://huggingface.co/THUDM/cogvlm-chat-hf/discussions/2#655ca4de93ac084b7d802358\"\
+          >https://huggingface.co/THUDM/cogvlm-chat-hf/discussions/2#655ca4de93ac084b7d802358</a>.\
+          \ <span data-props=\"{&quot;user&quot;:&quot;chenkq&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/chenkq\">@<span class=\"\
+          underline\">chenkq</span></a></span>\n\n\t</span></span> where can I find\
+          \ the model ckpt? I don't see it in this local path where I thought it would\
+          \ be:</p>\n<pre><code>$ pwd\n/home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730\n\
+          \n$ ls -l\ntotal 0\nlrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 config.json\
+          \ -&gt; ../../blobs/8b5a3c26659a087d6f41701ef63c8b094d36cad0\nlrwxrwxrwx\
+          \ 1 ec2-user ec2-user 52 Nov 24 23:11 configuration_cogvlm.py -&gt; ../../blobs/60d487ac530bb1aa6e13828e2a17ae2f521b02d1\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:31 generation_config.json -&gt;\
+          \ ../../blobs/a4fee64c3bea2cc2488999c0611a0602930b7e93\nlrwxrwxrwx 1 ec2-user\
+          \ ec2-user 76 Nov 24 23:21 model-00001-of-00008.safetensors -&gt; ../../blobs/e29f6ec471ca55789ab14947b527729b9c30313ceb1e7726590b85f9f6406cca\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00002-of-00008.safetensors\
+          \ -&gt; ../../blobs/e82356882701b1a778408f31e676d17c2aff799c543e8596ed74bc805b4a1213\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00003-of-00008.safetensors\
+          \ -&gt; ../../blobs/04096f84f42798d0c89319ff8254995a2a3512c16ec88dfd078ce421867d92ec\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00004-of-00008.safetensors\
+          \ -&gt; ../../blobs/2b42af0bb16647959b3e55def4b3c66ab8c3a25fd948a5245c81d070f2b4313d\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00005-of-00008.safetensors\
+          \ -&gt; ../../blobs/38c07825790e055dd169376479994a58a4f59775ba7cf31d5ca25d8a465e7b0c\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00006-of-00008.safetensors\
+          \ -&gt; ../../blobs/d01880ca5677e69a5f8632f9dda62814f0c549b5a40d4f7e136065e5d64c1a7d\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00007-of-00008.safetensors\
+          \ -&gt; ../../blobs/e70b0e10d2ac8800e69e514b6a9b04ac28cd7db43985ce62daa4e0e639b4e5ba\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00008-of-00008.safetensors\
+          \ -&gt; ../../blobs/a756381ef65b92af7f1fb97da3d59cb04586080982de86d76805299898223294\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 modeling_cogvlm.py -&gt;\
+          \ ../../blobs/4a7a748e2dbf349e260cd50771197cefc99c68b0\nlrwxrwxrwx 1 ec2-user\
+          \ ec2-user 52 Nov 24 23:21 model.safetensors.index.json -&gt; ../../blobs/197b878b0e9f9b1ffb97a7c4da1fb834fffcaf97\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 25 15:30 README.md -&gt; ../../blobs/77cb0e1cf17f1a8f70e26cb86af0ed7f44ec1952\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 util.py -&gt; ../../blobs/1dccacad2ded4c357ab9cb23d04027500256e281\n\
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 visual.py -&gt; ../../blobs/367e2fb1d19ff3b5c43fb898b7d15e436bbbf7cc\n\
+          </code></pre>\n"
+        raw: 'Just discovered and read https://huggingface.co/THUDM/cogvlm-chat-hf/discussions/2#655ca4de93ac084b7d802358.
+          @chenkq where can I find the model ckpt? I don''t see it in this local path
+          where I thought it would be:
+
+
+          ```
+
+          $ pwd
+
+          /home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730
+
+
+          $ ls -l
+
+          total 0
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 config.json -> ../../blobs/8b5a3c26659a087d6f41701ef63c8b094d36cad0
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 configuration_cogvlm.py ->
+          ../../blobs/60d487ac530bb1aa6e13828e2a17ae2f521b02d1
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:31 generation_config.json ->
+          ../../blobs/a4fee64c3bea2cc2488999c0611a0602930b7e93
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:21 model-00001-of-00008.safetensors
+          -> ../../blobs/e29f6ec471ca55789ab14947b527729b9c30313ceb1e7726590b85f9f6406cca
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00002-of-00008.safetensors
+          -> ../../blobs/e82356882701b1a778408f31e676d17c2aff799c543e8596ed74bc805b4a1213
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00003-of-00008.safetensors
+          -> ../../blobs/04096f84f42798d0c89319ff8254995a2a3512c16ec88dfd078ce421867d92ec
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00004-of-00008.safetensors
+          -> ../../blobs/2b42af0bb16647959b3e55def4b3c66ab8c3a25fd948a5245c81d070f2b4313d
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00005-of-00008.safetensors
+          -> ../../blobs/38c07825790e055dd169376479994a58a4f59775ba7cf31d5ca25d8a465e7b0c
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00006-of-00008.safetensors
+          -> ../../blobs/d01880ca5677e69a5f8632f9dda62814f0c549b5a40d4f7e136065e5d64c1a7d
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00007-of-00008.safetensors
+          -> ../../blobs/e70b0e10d2ac8800e69e514b6a9b04ac28cd7db43985ce62daa4e0e639b4e5ba
+
+          lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00008-of-00008.safetensors
+          -> ../../blobs/a756381ef65b92af7f1fb97da3d59cb04586080982de86d76805299898223294
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 modeling_cogvlm.py -> ../../blobs/4a7a748e2dbf349e260cd50771197cefc99c68b0
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:21 model.safetensors.index.json
+          -> ../../blobs/197b878b0e9f9b1ffb97a7c4da1fb834fffcaf97
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 25 15:30 README.md -> ../../blobs/77cb0e1cf17f1a8f70e26cb86af0ed7f44ec1952
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 util.py -> ../../blobs/1dccacad2ded4c357ab9cb23d04027500256e281
+
+          lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 visual.py -> ../../blobs/367e2fb1d19ff3b5c43fb898b7d15e436bbbf7cc
+
+          ```'
+        updatedAt: '2023-11-25T16:46:21.003Z'
+      numEdits: 0
+      reactions: []
+    id: 656224dd2c671784e2d3d1f4
+    type: comment
+  author: justinwickett
+  content: 'Just discovered and read https://huggingface.co/THUDM/cogvlm-chat-hf/discussions/2#655ca4de93ac084b7d802358.
+    @chenkq where can I find the model ckpt? I don''t see it in this local path where
+    I thought it would be:
+
+
+    ```
+
+    $ pwd
+
+    /home/ec2-user/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730
+
+
+    $ ls -l
+
+    total 0
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 config.json -> ../../blobs/8b5a3c26659a087d6f41701ef63c8b094d36cad0
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 configuration_cogvlm.py -> ../../blobs/60d487ac530bb1aa6e13828e2a17ae2f521b02d1
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:31 generation_config.json -> ../../blobs/a4fee64c3bea2cc2488999c0611a0602930b7e93
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:21 model-00001-of-00008.safetensors
+    -> ../../blobs/e29f6ec471ca55789ab14947b527729b9c30313ceb1e7726590b85f9f6406cca
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00002-of-00008.safetensors
+    -> ../../blobs/e82356882701b1a778408f31e676d17c2aff799c543e8596ed74bc805b4a1213
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00003-of-00008.safetensors
+    -> ../../blobs/04096f84f42798d0c89319ff8254995a2a3512c16ec88dfd078ce421867d92ec
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:22 model-00004-of-00008.safetensors
+    -> ../../blobs/2b42af0bb16647959b3e55def4b3c66ab8c3a25fd948a5245c81d070f2b4313d
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00005-of-00008.safetensors
+    -> ../../blobs/38c07825790e055dd169376479994a58a4f59775ba7cf31d5ca25d8a465e7b0c
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:23 model-00006-of-00008.safetensors
+    -> ../../blobs/d01880ca5677e69a5f8632f9dda62814f0c549b5a40d4f7e136065e5d64c1a7d
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00007-of-00008.safetensors
+    -> ../../blobs/e70b0e10d2ac8800e69e514b6a9b04ac28cd7db43985ce62daa4e0e639b4e5ba
+
+    lrwxrwxrwx 1 ec2-user ec2-user 76 Nov 24 23:31 model-00008-of-00008.safetensors
+    -> ../../blobs/a756381ef65b92af7f1fb97da3d59cb04586080982de86d76805299898223294
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:11 modeling_cogvlm.py -> ../../blobs/4a7a748e2dbf349e260cd50771197cefc99c68b0
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:21 model.safetensors.index.json ->
+    ../../blobs/197b878b0e9f9b1ffb97a7c4da1fb834fffcaf97
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 25 15:30 README.md -> ../../blobs/77cb0e1cf17f1a8f70e26cb86af0ed7f44ec1952
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 util.py -> ../../blobs/1dccacad2ded4c357ab9cb23d04027500256e281
+
+    lrwxrwxrwx 1 ec2-user ec2-user 52 Nov 24 23:12 visual.py -> ../../blobs/367e2fb1d19ff3b5c43fb898b7d15e436bbbf7cc
+
+    ```'
+  created_at: 2023-11-25 16:46:21+00:00
+  edited: false
+  hidden: false
+  id: 656224dd2c671784e2d3d1f4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-11-26T03:33:33.000Z'
+    data:
+      edited: false
+      editors:
+      - chenkq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7720304727554321
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+          fullname: chenkq
+          isHf: false
+          isPro: false
+          name: chenkq
+          type: user
+        html: '<p>Based on the call stack information you provided, I suspect there
+          might be an issue with the dispatch of the visual model. You could try modifying
+          <code>no_split_module_classes=[''CogVLMDecoderLayer'']</code> to <code>no_split_module_classes=[''CogVLMDecoderLayer'',
+          ''TransformerLayer'']</code>. This adjustment should prevent the model from
+          being fragmented excessively, thereby reducing the need to wrap sth like
+          xformers.ops (I guess</p>
+
+          <p>Regarding your question, "Where can I find the model checkpoint (ckpt)?",
+          in your case, the local path is <code>models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730</code>.
+          The files <code>model-0000x-of-00008.safetensors</code> and <code>model.safetensors.index.json</code>
+          constitute the model checkpoint. Here, these are symbolic links pointing
+          to files in blobs.</p>
+
+          '
+        raw: 'Based on the call stack information you provided, I suspect there might
+          be an issue with the dispatch of the visual model. You could try modifying
+          `no_split_module_classes=[''CogVLMDecoderLayer'']` to `no_split_module_classes=[''CogVLMDecoderLayer'',
+          ''TransformerLayer'']`. This adjustment should prevent the model from being
+          fragmented excessively, thereby reducing the need to wrap sth like xformers.ops
+          (I guess
+
+
+          Regarding your question, "Where can I find the model checkpoint (ckpt)?",
+          in your case, the local path is `models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730`.
+          The files `model-0000x-of-00008.safetensors` and `model.safetensors.index.json`
+          constitute the model checkpoint. Here, these are symbolic links pointing
+          to files in blobs.'
+        updatedAt: '2023-11-26T03:33:33.773Z'
+      numEdits: 0
+      reactions: []
+    id: 6562bc8d462e5ebcbf1e4542
+    type: comment
+  author: chenkq
+  content: 'Based on the call stack information you provided, I suspect there might
+    be an issue with the dispatch of the visual model. You could try modifying `no_split_module_classes=[''CogVLMDecoderLayer'']`
+    to `no_split_module_classes=[''CogVLMDecoderLayer'', ''TransformerLayer'']`. This
+    adjustment should prevent the model from being fragmented excessively, thereby
+    reducing the need to wrap sth like xformers.ops (I guess
+
+
+    Regarding your question, "Where can I find the model checkpoint (ckpt)?", in your
+    case, the local path is `models--THUDM--cogvlm-chat-hf/snapshots/8abca878c4257412c4c38eeafaed3fe27a036730`.
+    The files `model-0000x-of-00008.safetensors` and `model.safetensors.index.json`
+    constitute the model checkpoint. Here, these are symbolic links pointing to files
+    in blobs.'
+  created_at: 2023-11-26 03:33:33+00:00
+  edited: false
+  hidden: false
+  id: 6562bc8d462e5ebcbf1e4542
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-26T03:50:53.000Z'
+    data:
+      edited: true
+      editors:
+      - justinwickett
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.2642224133014679
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+          fullname: Justin Wickett
+          isHf: false
+          isPro: false
+          name: justinwickett
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;chenkq&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/chenkq\">@<span class=\"\
+          underline\">chenkq</span></a></span>\n\n\t</span></span> I made the change\
+          \ you suggested, but I am still encountering the error reported above. Any\
+          \ other ideas?</p>\n<p>Here is the output when I run <code>model.hf_device_map</code>\
+          \ after modifying <code>no_split_module_classes=['CogVLMDecoderLayer', 'TransformerLayer']</code>:</p>\n\
+          <pre><code>{'model.embed_tokens': 0,\n 'model.layers.0': 0,\n 'model.layers.1':\
+          \ 0,\n 'model.layers.2': 0,\n 'model.layers.3': 0,\n 'model.layers.4': 0,\n\
+          \ 'model.layers.5': 0,\n 'model.layers.6': 0,\n 'model.layers.7': 0,\n 'model.layers.8':\
+          \ 0,\n 'model.layers.9': 0,\n 'model.layers.10': 1,\n 'model.layers.11':\
+          \ 1,\n 'model.layers.12': 1,\n 'model.layers.13': 1,\n 'model.layers.14':\
+          \ 1,\n 'model.layers.15': 1,\n 'model.layers.16': 1,\n 'model.layers.17':\
+          \ 1,\n 'model.layers.18': 1,\n 'model.layers.19': 1,\n 'model.layers.20':\
+          \ 1,\n 'model.layers.21': 1,\n 'model.layers.22': 2,\n 'model.layers.23':\
+          \ 2,\n 'model.layers.24': 2,\n 'model.layers.25': 2,\n 'model.layers.26':\
+          \ 2,\n 'model.layers.27': 2,\n 'model.layers.28': 2,\n 'model.layers.29':\
+          \ 2,\n 'model.layers.30': 2,\n 'model.layers.31': 2,\n 'model.norm': 2,\n\
+          \ 'model.vision.boi': 2,\n 'model.vision.eoi': 2,\n 'model.vision.patch_embedding':\
+          \ 2,\n 'model.vision.transformer.layers.0': 2,\n 'model.vision.transformer.layers.1':\
+          \ 2,\n 'model.vision.transformer.layers.2': 2,\n 'model.vision.transformer.layers.3':\
+          \ 2,\n 'model.vision.transformer.layers.4': 2,\n 'model.vision.transformer.layers.5':\
+          \ 2,\n 'model.vision.transformer.layers.6': 2,\n 'model.vision.transformer.layers.7':\
+          \ 2,\n 'model.vision.transformer.layers.8': 2,\n 'model.vision.transformer.layers.9':\
+          \ 2,\n 'model.vision.transformer.layers.10': 2,\n 'model.vision.transformer.layers.11':\
+          \ 2,\n 'model.vision.transformer.layers.12': 3,\n 'model.vision.transformer.layers.13':\
+          \ 3,\n 'model.vision.transformer.layers.14': 3,\n 'model.vision.transformer.layers.15':\
+          \ 3,\n 'model.vision.transformer.layers.16': 3,\n 'model.vision.transformer.layers.17':\
+          \ 3,\n 'model.vision.transformer.layers.18': 3,\n 'model.vision.transformer.layers.19':\
+          \ 3,\n 'model.vision.transformer.layers.20': 3,\n 'model.vision.transformer.layers.21':\
+          \ 3,\n 'model.vision.transformer.layers.22': 3,\n 'model.vision.transformer.layers.23':\
+          \ 3,\n 'model.vision.transformer.layers.24': 3,\n 'model.vision.transformer.layers.25':\
+          \ 3,\n 'model.vision.transformer.layers.26': 3,\n 'model.vision.transformer.layers.27':\
+          \ 3,\n 'model.vision.transformer.layers.28': 3,\n 'model.vision.transformer.layers.29':\
+          \ 3,\n 'model.vision.transformer.layers.30': 3,\n 'model.vision.transformer.layers.31':\
+          \ 3,\n 'model.vision.transformer.layers.32': 3,\n 'model.vision.transformer.layers.33':\
+          \ 3,\n 'model.vision.transformer.layers.34': 3,\n 'model.vision.transformer.layers.35':\
+          \ 3,\n 'model.vision.transformer.layers.36': 3,\n 'model.vision.transformer.layers.37':\
+          \ 3,\n 'model.vision.transformer.layers.38': 3,\n 'model.vision.transformer.layers.39':\
+          \ 3,\n 'model.vision.transformer.layers.40': 3,\n 'model.vision.transformer.layers.41':\
+          \ 3,\n 'model.vision.transformer.layers.42': 3,\n 'model.vision.transformer.layers.43':\
+          \ 3,\n 'model.vision.transformer.layers.44': 3,\n 'model.vision.transformer.layers.45':\
+          \ 3,\n 'model.vision.transformer.layers.46': 3,\n 'model.vision.transformer.layers.47':\
+          \ 3,\n 'model.vision.transformer.layers.48': 3,\n 'model.vision.transformer.layers.49':\
+          \ 3,\n 'model.vision.transformer.layers.50': 3,\n 'model.vision.transformer.layers.51':\
+          \ 3,\n 'model.vision.transformer.layers.52': 3,\n 'model.vision.transformer.layers.53':\
+          \ 3,\n 'model.vision.transformer.layers.54': 3,\n 'model.vision.transformer.layers.55':\
+          \ 3,\n 'model.vision.transformer.layers.56': 3,\n 'model.vision.transformer.layers.57':\
+          \ 3,\n 'model.vision.transformer.layers.58': 3,\n 'model.vision.transformer.layers.59':\
+          \ 3,\n 'model.vision.transformer.layers.60': 3,\n 'model.vision.transformer.layers.61':\
+          \ 3,\n 'model.vision.transformer.layers.62': 3,\n 'model.vision.linear_proj':\
+          \ 3,\n 'lm_head': 3}\n</code></pre>\n"
+        raw: "@chenkq I made the change you suggested, but I am still encountering\
+          \ the error reported above. Any other ideas?\n\nHere is the output when\
+          \ I run `model.hf_device_map` after modifying `no_split_module_classes=['CogVLMDecoderLayer',\
+          \ 'TransformerLayer']`:\n\n```\n{'model.embed_tokens': 0,\n 'model.layers.0':\
+          \ 0,\n 'model.layers.1': 0,\n 'model.layers.2': 0,\n 'model.layers.3': 0,\n\
+          \ 'model.layers.4': 0,\n 'model.layers.5': 0,\n 'model.layers.6': 0,\n 'model.layers.7':\
+          \ 0,\n 'model.layers.8': 0,\n 'model.layers.9': 0,\n 'model.layers.10':\
+          \ 1,\n 'model.layers.11': 1,\n 'model.layers.12': 1,\n 'model.layers.13':\
+          \ 1,\n 'model.layers.14': 1,\n 'model.layers.15': 1,\n 'model.layers.16':\
+          \ 1,\n 'model.layers.17': 1,\n 'model.layers.18': 1,\n 'model.layers.19':\
+          \ 1,\n 'model.layers.20': 1,\n 'model.layers.21': 1,\n 'model.layers.22':\
+          \ 2,\n 'model.layers.23': 2,\n 'model.layers.24': 2,\n 'model.layers.25':\
+          \ 2,\n 'model.layers.26': 2,\n 'model.layers.27': 2,\n 'model.layers.28':\
+          \ 2,\n 'model.layers.29': 2,\n 'model.layers.30': 2,\n 'model.layers.31':\
+          \ 2,\n 'model.norm': 2,\n 'model.vision.boi': 2,\n 'model.vision.eoi': 2,\n\
+          \ 'model.vision.patch_embedding': 2,\n 'model.vision.transformer.layers.0':\
+          \ 2,\n 'model.vision.transformer.layers.1': 2,\n 'model.vision.transformer.layers.2':\
+          \ 2,\n 'model.vision.transformer.layers.3': 2,\n 'model.vision.transformer.layers.4':\
+          \ 2,\n 'model.vision.transformer.layers.5': 2,\n 'model.vision.transformer.layers.6':\
+          \ 2,\n 'model.vision.transformer.layers.7': 2,\n 'model.vision.transformer.layers.8':\
+          \ 2,\n 'model.vision.transformer.layers.9': 2,\n 'model.vision.transformer.layers.10':\
+          \ 2,\n 'model.vision.transformer.layers.11': 2,\n 'model.vision.transformer.layers.12':\
+          \ 3,\n 'model.vision.transformer.layers.13': 3,\n 'model.vision.transformer.layers.14':\
+          \ 3,\n 'model.vision.transformer.layers.15': 3,\n 'model.vision.transformer.layers.16':\
+          \ 3,\n 'model.vision.transformer.layers.17': 3,\n 'model.vision.transformer.layers.18':\
+          \ 3,\n 'model.vision.transformer.layers.19': 3,\n 'model.vision.transformer.layers.20':\
+          \ 3,\n 'model.vision.transformer.layers.21': 3,\n 'model.vision.transformer.layers.22':\
+          \ 3,\n 'model.vision.transformer.layers.23': 3,\n 'model.vision.transformer.layers.24':\
+          \ 3,\n 'model.vision.transformer.layers.25': 3,\n 'model.vision.transformer.layers.26':\
+          \ 3,\n 'model.vision.transformer.layers.27': 3,\n 'model.vision.transformer.layers.28':\
+          \ 3,\n 'model.vision.transformer.layers.29': 3,\n 'model.vision.transformer.layers.30':\
+          \ 3,\n 'model.vision.transformer.layers.31': 3,\n 'model.vision.transformer.layers.32':\
+          \ 3,\n 'model.vision.transformer.layers.33': 3,\n 'model.vision.transformer.layers.34':\
+          \ 3,\n 'model.vision.transformer.layers.35': 3,\n 'model.vision.transformer.layers.36':\
+          \ 3,\n 'model.vision.transformer.layers.37': 3,\n 'model.vision.transformer.layers.38':\
+          \ 3,\n 'model.vision.transformer.layers.39': 3,\n 'model.vision.transformer.layers.40':\
+          \ 3,\n 'model.vision.transformer.layers.41': 3,\n 'model.vision.transformer.layers.42':\
+          \ 3,\n 'model.vision.transformer.layers.43': 3,\n 'model.vision.transformer.layers.44':\
+          \ 3,\n 'model.vision.transformer.layers.45': 3,\n 'model.vision.transformer.layers.46':\
+          \ 3,\n 'model.vision.transformer.layers.47': 3,\n 'model.vision.transformer.layers.48':\
+          \ 3,\n 'model.vision.transformer.layers.49': 3,\n 'model.vision.transformer.layers.50':\
+          \ 3,\n 'model.vision.transformer.layers.51': 3,\n 'model.vision.transformer.layers.52':\
+          \ 3,\n 'model.vision.transformer.layers.53': 3,\n 'model.vision.transformer.layers.54':\
+          \ 3,\n 'model.vision.transformer.layers.55': 3,\n 'model.vision.transformer.layers.56':\
+          \ 3,\n 'model.vision.transformer.layers.57': 3,\n 'model.vision.transformer.layers.58':\
+          \ 3,\n 'model.vision.transformer.layers.59': 3,\n 'model.vision.transformer.layers.60':\
+          \ 3,\n 'model.vision.transformer.layers.61': 3,\n 'model.vision.transformer.layers.62':\
+          \ 3,\n 'model.vision.linear_proj': 3,\n 'lm_head': 3}\n```\n\n"
+        updatedAt: '2023-11-26T03:51:44.453Z'
+      numEdits: 1
+      reactions: []
+    id: 6562c09d620c177ae09c82ce
+    type: comment
+  author: justinwickett
+  content: "@chenkq I made the change you suggested, but I am still encountering the\
+    \ error reported above. Any other ideas?\n\nHere is the output when I run `model.hf_device_map`\
+    \ after modifying `no_split_module_classes=['CogVLMDecoderLayer', 'TransformerLayer']`:\n\
+    \n```\n{'model.embed_tokens': 0,\n 'model.layers.0': 0,\n 'model.layers.1': 0,\n\
+    \ 'model.layers.2': 0,\n 'model.layers.3': 0,\n 'model.layers.4': 0,\n 'model.layers.5':\
+    \ 0,\n 'model.layers.6': 0,\n 'model.layers.7': 0,\n 'model.layers.8': 0,\n 'model.layers.9':\
+    \ 0,\n 'model.layers.10': 1,\n 'model.layers.11': 1,\n 'model.layers.12': 1,\n\
+    \ 'model.layers.13': 1,\n 'model.layers.14': 1,\n 'model.layers.15': 1,\n 'model.layers.16':\
+    \ 1,\n 'model.layers.17': 1,\n 'model.layers.18': 1,\n 'model.layers.19': 1,\n\
+    \ 'model.layers.20': 1,\n 'model.layers.21': 1,\n 'model.layers.22': 2,\n 'model.layers.23':\
+    \ 2,\n 'model.layers.24': 2,\n 'model.layers.25': 2,\n 'model.layers.26': 2,\n\
+    \ 'model.layers.27': 2,\n 'model.layers.28': 2,\n 'model.layers.29': 2,\n 'model.layers.30':\
+    \ 2,\n 'model.layers.31': 2,\n 'model.norm': 2,\n 'model.vision.boi': 2,\n 'model.vision.eoi':\
+    \ 2,\n 'model.vision.patch_embedding': 2,\n 'model.vision.transformer.layers.0':\
+    \ 2,\n 'model.vision.transformer.layers.1': 2,\n 'model.vision.transformer.layers.2':\
+    \ 2,\n 'model.vision.transformer.layers.3': 2,\n 'model.vision.transformer.layers.4':\
+    \ 2,\n 'model.vision.transformer.layers.5': 2,\n 'model.vision.transformer.layers.6':\
+    \ 2,\n 'model.vision.transformer.layers.7': 2,\n 'model.vision.transformer.layers.8':\
+    \ 2,\n 'model.vision.transformer.layers.9': 2,\n 'model.vision.transformer.layers.10':\
+    \ 2,\n 'model.vision.transformer.layers.11': 2,\n 'model.vision.transformer.layers.12':\
+    \ 3,\n 'model.vision.transformer.layers.13': 3,\n 'model.vision.transformer.layers.14':\
+    \ 3,\n 'model.vision.transformer.layers.15': 3,\n 'model.vision.transformer.layers.16':\
+    \ 3,\n 'model.vision.transformer.layers.17': 3,\n 'model.vision.transformer.layers.18':\
+    \ 3,\n 'model.vision.transformer.layers.19': 3,\n 'model.vision.transformer.layers.20':\
+    \ 3,\n 'model.vision.transformer.layers.21': 3,\n 'model.vision.transformer.layers.22':\
+    \ 3,\n 'model.vision.transformer.layers.23': 3,\n 'model.vision.transformer.layers.24':\
+    \ 3,\n 'model.vision.transformer.layers.25': 3,\n 'model.vision.transformer.layers.26':\
+    \ 3,\n 'model.vision.transformer.layers.27': 3,\n 'model.vision.transformer.layers.28':\
+    \ 3,\n 'model.vision.transformer.layers.29': 3,\n 'model.vision.transformer.layers.30':\
+    \ 3,\n 'model.vision.transformer.layers.31': 3,\n 'model.vision.transformer.layers.32':\
+    \ 3,\n 'model.vision.transformer.layers.33': 3,\n 'model.vision.transformer.layers.34':\
+    \ 3,\n 'model.vision.transformer.layers.35': 3,\n 'model.vision.transformer.layers.36':\
+    \ 3,\n 'model.vision.transformer.layers.37': 3,\n 'model.vision.transformer.layers.38':\
+    \ 3,\n 'model.vision.transformer.layers.39': 3,\n 'model.vision.transformer.layers.40':\
+    \ 3,\n 'model.vision.transformer.layers.41': 3,\n 'model.vision.transformer.layers.42':\
+    \ 3,\n 'model.vision.transformer.layers.43': 3,\n 'model.vision.transformer.layers.44':\
+    \ 3,\n 'model.vision.transformer.layers.45': 3,\n 'model.vision.transformer.layers.46':\
+    \ 3,\n 'model.vision.transformer.layers.47': 3,\n 'model.vision.transformer.layers.48':\
+    \ 3,\n 'model.vision.transformer.layers.49': 3,\n 'model.vision.transformer.layers.50':\
+    \ 3,\n 'model.vision.transformer.layers.51': 3,\n 'model.vision.transformer.layers.52':\
+    \ 3,\n 'model.vision.transformer.layers.53': 3,\n 'model.vision.transformer.layers.54':\
+    \ 3,\n 'model.vision.transformer.layers.55': 3,\n 'model.vision.transformer.layers.56':\
+    \ 3,\n 'model.vision.transformer.layers.57': 3,\n 'model.vision.transformer.layers.58':\
+    \ 3,\n 'model.vision.transformer.layers.59': 3,\n 'model.vision.transformer.layers.60':\
+    \ 3,\n 'model.vision.transformer.layers.61': 3,\n 'model.vision.transformer.layers.62':\
+    \ 3,\n 'model.vision.linear_proj': 3,\n 'lm_head': 3}\n```\n\n"
+  created_at: 2023-11-26 03:50:53+00:00
+  edited: true
+  hidden: false
+  id: 6562c09d620c177ae09c82ce
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-26T04:12:01.000Z'
+    data:
+      edited: false
+      editors:
+      - justinwickett
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.42816588282585144
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+          fullname: Justin Wickett
+          isHf: false
+          isPro: false
+          name: justinwickett
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;chenkq&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/chenkq\">@<span class=\"\
+          underline\">chenkq</span></a></span>\n\n\t</span></span> here is the full\
+          \ stack trace that occurs when running <code>outputs = model.generate(**inputs,\
+          \ **gen_kwargs)</code>. Thank you \U0001F64F</p>\n<pre><code>---------------------------------------------------------------------------\n\
+          NotImplementedError                       Traceback (most recent call last)\n\
+          Cell In[5], line 2\n      1 with torch.no_grad():\n----&gt; 2     outputs\
+          \ = model.generate(**inputs, **gen_kwargs)\n      3     outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n      4     print(tokenizer.decode(outputs[0]))\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator.&lt;locals&gt;.decorate_context(*args, **kwargs)\n\
+          \    112 @functools.wraps(func)\n    113 def decorate_context(*args, **kwargs):\n\
+          \    114     with ctx_factory():\n--&gt; 115         return func(*args,\
+          \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:1673,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\n\
+          \   1656     return self.assisted_decoding(\n   1657         input_ids,\n\
+          \   1658         assistant_model=assistant_model,\n   (...)\n   1669   \
+          \      **model_kwargs,\n   1670     )\n   1671 if generation_mode == GenerationMode.GREEDY_SEARCH:\n\
+          \   1672     # 11. run greedy search\n-&gt; 1673     return self.greedy_search(\n\
+          \   1674         input_ids,\n   1675         logits_processor=logits_processor,\n\
+          \   1676         stopping_criteria=stopping_criteria,\n   1677         pad_token_id=generation_config.pad_token_id,\n\
+          \   1678         eos_token_id=generation_config.eos_token_id,\n   1679 \
+          \        output_scores=generation_config.output_scores,\n   1680       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1681         synced_gpus=synced_gpus,\n   1682         streamer=streamer,\n\
+          \   1683         **model_kwargs,\n   1684     )\n   1686 elif generation_mode\
+          \ == GenerationMode.CONTRASTIVE_SEARCH:\n   1687     if not model_kwargs[\"\
+          use_cache\"]:\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:2521,\
+          \ in GenerationMixin.greedy_search(self, input_ids, logits_processor, stopping_criteria,\
+          \ max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+          \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\n\
+          \   2518 model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)\n\
+          \   2520 # forward pass to get next token\n-&gt; 2521 outputs = self(\n\
+          \   2522     **model_inputs,\n   2523     return_dict=True,\n   2524   \
+          \  output_attentions=output_attentions,\n   2525     output_hidden_states=output_hidden_states,\n\
+          \   2526 )\n   2528 if synced_gpus and this_peer_finished:\n   2529    \
+          \ continue  # don't waste resources running the code we don't need\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+          \ in add_hook_to_module.&lt;locals&gt;.new_forward(module, *args, **kwargs)\n\
+          \    162         output = module._old_forward(*args, **kwargs)\n    163\
+          \ else:\n--&gt; 164     output = module._old_forward(*args, **kwargs)\n\
+          \    165 return module._hf_hook.post_forward(module, output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:610,\
+          \ in CogVLMForCausalLM.forward(self, input_ids, images, token_type_ids,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, use_cache,\
+          \ output_attentions, output_hidden_states, return_dict, labels)\n    607\
+          \ return_dict = return_dict if return_dict is not None else self.config.use_return_dict\n\
+          \    609 # decoder outputs consists of (dec_features, layer_state, dec_hidden,\
+          \ dec_attn)\n--&gt; 610 outputs = self.model(\n    611     input_ids=input_ids,\n\
+          \    612     images=images,\n    613     token_type_ids=token_type_ids,\n\
+          \    614     attention_mask=attention_mask,\n    615     position_ids=position_ids,\n\
+          \    616     past_key_values=past_key_values,\n    617     inputs_embeds=inputs_embeds,\n\
+          \    618     use_cache=use_cache,\n    619     output_attentions=output_attentions,\n\
+          \    620     output_hidden_states=output_hidden_states,\n    621     return_dict=return_dict,\n\
+          \    622 )\n    624 hidden_states = outputs[0]\n    625 logits = self.lm_head(hidden_states)\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:378,\
+          \ in CogVLMModel.forward(self, input_ids, images, token_type_ids, attention_mask,\
+          \ position_ids, past_key_values, inputs_embeds, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n    376 assert len(input_ids) == len(images),\
+          \ f\"{len(input_ids)} {len(images)}\"\n    377 inputs_embeds = self.embed_tokens(input_ids)\n\
+          --&gt; 378 images_features = self.encode_images(images)\n    379 images_features\
+          \ = rearrange(images_features, 'b n d -&gt; (b n) d')\n    380 images_features\
+          \ = images_features.to(dtype=inputs_embeds.dtype, device=inputs_embeds.device)\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:350,\
+          \ in CogVLMModel.encode_images(self, images)\n    347         images.append(image)\n\
+          \    349 images = torch.stack(images)\n--&gt; 350 images_features = self.vision(images)\n\
+          \    351 return images_features\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:129,\
+          \ in EVA2CLIPModel.forward(self, images)\n    127 def forward(self, images:\
+          \ \"tensor(B, C, H, W)\") -&gt; \"tensor(B, L, D)\":\n    128     x = self.patch_embedding(images)\n\
+          --&gt; 129     x = self.transformer(x)\n    130     x = x[:, 1:]\n    131\
+          \     x = self.linear_proj(x)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:94,\
+          \ in Transformer.forward(self, hidden_states)\n     92 def forward(self,\
+          \ hidden_states):\n     93     for layer_module in self.layers:\n---&gt;\
+          \ 94         hidden_states = layer_module(hidden_states)\n     95     return\
+          \ hidden_states\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:79,\
+          \ in TransformerLayer.forward(self, hidden_states)\n     77 def forward(self,\
+          \ hidden_states):\n     78     attention_input = hidden_states\n---&gt;\
+          \ 79     attention_output = self.input_layernorm(self.attention(attention_input))\n\
+          \     80     hidden_states = attention_input + attention_output\n     81\
+          \     mlp_input = hidden_states\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-&gt; 1518     return self._call_impl(*args, **kwargs)\n\nFile\
+          \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-&gt; 1527  \
+          \   return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+          \ = None\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+          \ in add_hook_to_module.&lt;locals&gt;.new_forward(module, *args, **kwargs)\n\
+          \    162         output = module._old_forward(*args, **kwargs)\n    163\
+          \ else:\n--&gt; 164     output = module._old_forward(*args, **kwargs)\n\
+          \    165 return module._hf_hook.post_forward(module, output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:40,\
+          \ in Attention.forward(self, x)\n     37 qkv = qkv.reshape(B, L, 3, self.num_heads,\
+          \ -1).permute(2, 0, 1, 3, 4)  # 3, B, L, H, D\n     38 q, k, v = qkv[0],\
+          \ qkv[1], qkv[2]\n---&gt; 40 out = xops.memory_efficient_attention(\n  \
+          \   41     q, k, v, scale=self.scale,\n     42 )\n     43 output = self.dense(out.view(B,\
+          \ L, -1))\n     44 output = self.output_dropout(output)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:223,\
+          \ in memory_efficient_attention(query, key, value, attn_bias, p, scale,\
+          \ op)\n    116 def memory_efficient_attention(\n    117     query: torch.Tensor,\n\
+          \    118     key: torch.Tensor,\n   (...)\n    124     op: Optional[AttentionOp]\
+          \ = None,\n    125 ) -&gt; torch.Tensor:\n    126     \"\"\"Implements the\
+          \ memory-efficient attention mechanism following\n    127     `\"Self-Attention\
+          \ Does Not Need O(n^2) Memory\" &lt;http://arxiv.org/abs/2112.05682&gt;`_.\n\
+          \    128 \n   (...)\n    221     :return: multi-head attention Tensor with\
+          \ shape ``[B, Mq, H, Kv]``\n    222     \"\"\"\n--&gt; 223     return _memory_efficient_attention(\n\
+          \    224         Inputs(\n    225             query=query, key=key, value=value,\
+          \ p=p, attn_bias=attn_bias, scale=scale\n    226         ),\n    227   \
+          \      op=op,\n    228     )\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:321,\
+          \ in _memory_efficient_attention(inp, op)\n    316 def _memory_efficient_attention(\n\
+          \    317     inp: Inputs, op: Optional[AttentionOp] = None\n    318 ) -&gt;\
+          \ torch.Tensor:\n    319     # fast-path that doesn't require computing\
+          \ the logsumexp for backward computation\n    320     if all(x.requires_grad\
+          \ is False for x in [inp.query, inp.key, inp.value]):\n--&gt; 321      \
+          \   return _memory_efficient_attention_forward(\n    322             inp,\
+          \ op=op[0] if op is not None else None\n    323         )\n    325     output_shape\
+          \ = inp.normalize_bmhk()\n    326     return _fMHA.apply(\n    327     \
+          \    op, inp.query, inp.key, inp.value, inp.attn_bias, inp.p, inp.scale\n\
+          \    328     ).reshape(output_shape)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:337,\
+          \ in _memory_efficient_attention_forward(inp, op)\n    335 output_shape\
+          \ = inp.normalize_bmhk()\n    336 if op is None:\n--&gt; 337     op = _dispatch_fw(inp,\
+          \ False)\n    338 else:\n    339     _ensure_op_supports_or_raise(ValueError,\
+          \ \"memory_efficient_attention\", op, inp)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:120,\
+          \ in _dispatch_fw(inp, needs_gradient)\n    111 def _dispatch_fw(inp: Inputs,\
+          \ needs_gradient: bool) -&gt; Type[AttentionFwOpBase]:\n    112     \"\"\
+          \"Computes the best operator for forward\n    113 \n    114     Raises:\n\
+          \   (...)\n    118         AttentionOp: The best operator for the configuration\n\
+          \    119     \"\"\"\n--&gt; 120     return _run_priority_list(\n    121\
+          \         \"memory_efficient_attention_forward\",\n    122         _dispatch_fw_priority_list(inp,\
+          \ needs_gradient),\n    123         inp,\n    124     )\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+          \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+          \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\\
+          n\" + _format_not_supported_reasons(op, not_supported)\n---&gt; 63 raise\
+          \ NotImplementedError(msg)\n\nNotImplementedError: No operator found for\
+          \ `memory_efficient_attention_forward` with inputs:\n     query       :\
+          \ shape=(1, 1226, 16, 112) (torch.bfloat16)\n     key         : shape=(1,\
+          \ 1226, 16, 112) (torch.bfloat16)\n     value       : shape=(1, 1226, 16,\
+          \ 112) (torch.bfloat16)\n     attn_bias   : &lt;class 'NoneType'&gt;\n \
+          \    p           : 0.0\n`decoderF` is not supported because:\n    attn_bias\
+          \ type is &lt;class 'NoneType'&gt;\n    bf16 is only supported on A100+\
+          \ GPUs\n`flshattF@v2.3.2` is not supported because:\n    requires device\
+          \ with capability &gt; (8, 0) but your GPU has capability (7, 0) (too old)\n\
+          \    bf16 is only supported on A100+ GPUs\n`tritonflashattF` is not supported\
+          \ because:\n    requires device with capability &gt; (8, 0) but your GPU\
+          \ has capability (7, 0) (too old)\n    bf16 is only supported on A100+ GPUs\n\
+          \    operator wasn't built - see `python -m xformers.info` for more info\n\
+          \    triton is not available\n    requires GPU with sm80 minimum compute\
+          \ capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton for now\n\
+          `cutlassF` is not supported because:\n    bf16 is only supported on A100+\
+          \ GPUs\n`smallkF` is not supported because:\n    max(query.shape[-1] !=\
+          \ value.shape[-1]) &gt; 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n\
+          \    has custom scale\n    bf16 is only supported on A100+ GPUs\n    unsupported\
+          \ embed per head: 112\n</code></pre>\n"
+        raw: "@chenkq here is the full stack trace that occurs when running `outputs\
+          \ = model.generate(**inputs, **gen_kwargs)`. Thank you \U0001F64F\n\n```\n\
+          ---------------------------------------------------------------------------\n\
+          NotImplementedError                       Traceback (most recent call last)\n\
+          Cell In[5], line 2\n      1 with torch.no_grad():\n----> 2     outputs =\
+          \ model.generate(**inputs, **gen_kwargs)\n      3     outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n      4     print(tokenizer.decode(outputs[0]))\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/utils/_contextlib.py:115,\
+          \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\n    112\
+          \ @functools.wraps(func)\n    113 def decorate_context(*args, **kwargs):\n\
+          \    114     with ctx_factory():\n--> 115         return func(*args, **kwargs)\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:1673,\
+          \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+          \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model,\
+          \ streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\n\
+          \   1656     return self.assisted_decoding(\n   1657         input_ids,\n\
+          \   1658         assistant_model=assistant_model,\n   (...)\n   1669   \
+          \      **model_kwargs,\n   1670     )\n   1671 if generation_mode == GenerationMode.GREEDY_SEARCH:\n\
+          \   1672     # 11. run greedy search\n-> 1673     return self.greedy_search(\n\
+          \   1674         input_ids,\n   1675         logits_processor=logits_processor,\n\
+          \   1676         stopping_criteria=stopping_criteria,\n   1677         pad_token_id=generation_config.pad_token_id,\n\
+          \   1678         eos_token_id=generation_config.eos_token_id,\n   1679 \
+          \        output_scores=generation_config.output_scores,\n   1680       \
+          \  return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+          \   1681         synced_gpus=synced_gpus,\n   1682         streamer=streamer,\n\
+          \   1683         **model_kwargs,\n   1684     )\n   1686 elif generation_mode\
+          \ == GenerationMode.CONTRASTIVE_SEARCH:\n   1687     if not model_kwargs[\"\
+          use_cache\"]:\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:2521,\
+          \ in GenerationMixin.greedy_search(self, input_ids, logits_processor, stopping_criteria,\
+          \ max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+          \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\n\
+          \   2518 model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)\n\
+          \   2520 # forward pass to get next token\n-> 2521 outputs = self(\n   2522\
+          \     **model_inputs,\n   2523     return_dict=True,\n   2524     output_attentions=output_attentions,\n\
+          \   2525     output_hidden_states=output_hidden_states,\n   2526 )\n   2528\
+          \ if synced_gpus and this_peer_finished:\n   2529     continue  # don't\
+          \ waste resources running the code we don't need\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+          \ in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)\n\
+          \    162         output = module._old_forward(*args, **kwargs)\n    163\
+          \ else:\n--> 164     output = module._old_forward(*args, **kwargs)\n   \
+          \ 165 return module._hf_hook.post_forward(module, output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:610,\
+          \ in CogVLMForCausalLM.forward(self, input_ids, images, token_type_ids,\
+          \ attention_mask, position_ids, past_key_values, inputs_embeds, use_cache,\
+          \ output_attentions, output_hidden_states, return_dict, labels)\n    607\
+          \ return_dict = return_dict if return_dict is not None else self.config.use_return_dict\n\
+          \    609 # decoder outputs consists of (dec_features, layer_state, dec_hidden,\
+          \ dec_attn)\n--> 610 outputs = self.model(\n    611     input_ids=input_ids,\n\
+          \    612     images=images,\n    613     token_type_ids=token_type_ids,\n\
+          \    614     attention_mask=attention_mask,\n    615     position_ids=position_ids,\n\
+          \    616     past_key_values=past_key_values,\n    617     inputs_embeds=inputs_embeds,\n\
+          \    618     use_cache=use_cache,\n    619     output_attentions=output_attentions,\n\
+          \    620     output_hidden_states=output_hidden_states,\n    621     return_dict=return_dict,\n\
+          \    622 )\n    624 hidden_states = outputs[0]\n    625 logits = self.lm_head(hidden_states)\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:378,\
+          \ in CogVLMModel.forward(self, input_ids, images, token_type_ids, attention_mask,\
+          \ position_ids, past_key_values, inputs_embeds, use_cache, output_attentions,\
+          \ output_hidden_states, return_dict)\n    376 assert len(input_ids) == len(images),\
+          \ f\"{len(input_ids)} {len(images)}\"\n    377 inputs_embeds = self.embed_tokens(input_ids)\n\
+          --> 378 images_features = self.encode_images(images)\n    379 images_features\
+          \ = rearrange(images_features, 'b n d -> (b n) d')\n    380 images_features\
+          \ = images_features.to(dtype=inputs_embeds.dtype, device=inputs_embeds.device)\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:350,\
+          \ in CogVLMModel.encode_images(self, images)\n    347         images.append(image)\n\
+          \    349 images = torch.stack(images)\n--> 350 images_features = self.vision(images)\n\
+          \    351 return images_features\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:129,\
+          \ in EVA2CLIPModel.forward(self, images)\n    127 def forward(self, images:\
+          \ \"tensor(B, C, H, W)\") -> \"tensor(B, L, D)\":\n    128     x = self.patch_embedding(images)\n\
+          --> 129     x = self.transformer(x)\n    130     x = x[:, 1:]\n    131 \
+          \    x = self.linear_proj(x)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:94,\
+          \ in Transformer.forward(self, hidden_states)\n     92 def forward(self,\
+          \ hidden_states):\n     93     for layer_module in self.layers:\n---> 94\
+          \         hidden_states = layer_module(hidden_states)\n     95     return\
+          \ hidden_states\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:79,\
+          \ in TransformerLayer.forward(self, hidden_states)\n     77 def forward(self,\
+          \ hidden_states):\n     78     attention_input = hidden_states\n---> 79\
+          \     attention_output = self.input_layernorm(self.attention(attention_input))\n\
+          \     80     hidden_states = attention_input + attention_output\n     81\
+          \     mlp_input = hidden_states\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+          \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return\
+          \ self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]\n   1517\
+          \ else:\n-> 1518     return self._call_impl(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+          \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have\
+          \ any hooks, we want to skip the rest of the logic in\n   1523 # this function,\
+          \ and just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or\
+          \ _global_backward_pre_hooks or _global_backward_hooks\n   1526        \
+          \ or _global_forward_hooks or _global_forward_pre_hooks):\n-> 1527     return\
+          \ forward_call(*args, **kwargs)\n   1529 try:\n   1530     result = None\n\
+          \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+          \ in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)\n\
+          \    162         output = module._old_forward(*args, **kwargs)\n    163\
+          \ else:\n--> 164     output = module._old_forward(*args, **kwargs)\n   \
+          \ 165 return module._hf_hook.post_forward(module, output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:40,\
+          \ in Attention.forward(self, x)\n     37 qkv = qkv.reshape(B, L, 3, self.num_heads,\
+          \ -1).permute(2, 0, 1, 3, 4)  # 3, B, L, H, D\n     38 q, k, v = qkv[0],\
+          \ qkv[1], qkv[2]\n---> 40 out = xops.memory_efficient_attention(\n     41\
+          \     q, k, v, scale=self.scale,\n     42 )\n     43 output = self.dense(out.view(B,\
+          \ L, -1))\n     44 output = self.output_dropout(output)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:223,\
+          \ in memory_efficient_attention(query, key, value, attn_bias, p, scale,\
+          \ op)\n    116 def memory_efficient_attention(\n    117     query: torch.Tensor,\n\
+          \    118     key: torch.Tensor,\n   (...)\n    124     op: Optional[AttentionOp]\
+          \ = None,\n    125 ) -> torch.Tensor:\n    126     \"\"\"Implements the\
+          \ memory-efficient attention mechanism following\n    127     `\"Self-Attention\
+          \ Does Not Need O(n^2) Memory\" <http://arxiv.org/abs/2112.05682>`_.\n \
+          \   128 \n   (...)\n    221     :return: multi-head attention Tensor with\
+          \ shape ``[B, Mq, H, Kv]``\n    222     \"\"\"\n--> 223     return _memory_efficient_attention(\n\
+          \    224         Inputs(\n    225             query=query, key=key, value=value,\
+          \ p=p, attn_bias=attn_bias, scale=scale\n    226         ),\n    227   \
+          \      op=op,\n    228     )\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:321,\
+          \ in _memory_efficient_attention(inp, op)\n    316 def _memory_efficient_attention(\n\
+          \    317     inp: Inputs, op: Optional[AttentionOp] = None\n    318 ) ->\
+          \ torch.Tensor:\n    319     # fast-path that doesn't require computing\
+          \ the logsumexp for backward computation\n    320     if all(x.requires_grad\
+          \ is False for x in [inp.query, inp.key, inp.value]):\n--> 321         return\
+          \ _memory_efficient_attention_forward(\n    322             inp, op=op[0]\
+          \ if op is not None else None\n    323         )\n    325     output_shape\
+          \ = inp.normalize_bmhk()\n    326     return _fMHA.apply(\n    327     \
+          \    op, inp.query, inp.key, inp.value, inp.attn_bias, inp.p, inp.scale\n\
+          \    328     ).reshape(output_shape)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:337,\
+          \ in _memory_efficient_attention_forward(inp, op)\n    335 output_shape\
+          \ = inp.normalize_bmhk()\n    336 if op is None:\n--> 337     op = _dispatch_fw(inp,\
+          \ False)\n    338 else:\n    339     _ensure_op_supports_or_raise(ValueError,\
+          \ \"memory_efficient_attention\", op, inp)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:120,\
+          \ in _dispatch_fw(inp, needs_gradient)\n    111 def _dispatch_fw(inp: Inputs,\
+          \ needs_gradient: bool) -> Type[AttentionFwOpBase]:\n    112     \"\"\"\
+          Computes the best operator for forward\n    113 \n    114     Raises:\n\
+          \   (...)\n    118         AttentionOp: The best operator for the configuration\n\
+          \    119     \"\"\"\n--> 120     return _run_priority_list(\n    121   \
+          \      \"memory_efficient_attention_forward\",\n    122         _dispatch_fw_priority_list(inp,\
+          \ needs_gradient),\n    123         inp,\n    124     )\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+          \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+          \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\\
+          n\" + _format_not_supported_reasons(op, not_supported)\n---> 63 raise NotImplementedError(msg)\n\
+          \nNotImplementedError: No operator found for `memory_efficient_attention_forward`\
+          \ with inputs:\n     query       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n\
+          \     key         : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     value\
+          \       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     attn_bias   :\
+          \ <class 'NoneType'>\n     p           : 0.0\n`decoderF` is not supported\
+          \ because:\n    attn_bias type is <class 'NoneType'>\n    bf16 is only supported\
+          \ on A100+ GPUs\n`flshattF@v2.3.2` is not supported because:\n    requires\
+          \ device with capability > (8, 0) but your GPU has capability (7, 0) (too\
+          \ old)\n    bf16 is only supported on A100+ GPUs\n`tritonflashattF` is not\
+          \ supported because:\n    requires device with capability > (8, 0) but your\
+          \ GPU has capability (7, 0) (too old)\n    bf16 is only supported on A100+\
+          \ GPUs\n    operator wasn't built - see `python -m xformers.info` for more\
+          \ info\n    triton is not available\n    requires GPU with sm80 minimum\
+          \ compute capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton\
+          \ for now\n`cutlassF` is not supported because:\n    bf16 is only supported\
+          \ on A100+ GPUs\n`smallkF` is not supported because:\n    max(query.shape[-1]\
+          \ != value.shape[-1]) > 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n\
+          \    has custom scale\n    bf16 is only supported on A100+ GPUs\n    unsupported\
+          \ embed per head: 112\n```"
+        updatedAt: '2023-11-26T04:12:01.070Z'
+      numEdits: 0
+      reactions: []
+    id: 6562c591b09c0b9ecee01dab
+    type: comment
+  author: justinwickett
+  content: "@chenkq here is the full stack trace that occurs when running `outputs\
+    \ = model.generate(**inputs, **gen_kwargs)`. Thank you \U0001F64F\n\n```\n---------------------------------------------------------------------------\n\
+    NotImplementedError                       Traceback (most recent call last)\n\
+    Cell In[5], line 2\n      1 with torch.no_grad():\n----> 2     outputs = model.generate(**inputs,\
+    \ **gen_kwargs)\n      3     outputs = outputs[:, inputs['input_ids'].shape[1]:]\n\
+    \      4     print(tokenizer.decode(outputs[0]))\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/utils/_contextlib.py:115,\
+    \ in context_decorator.<locals>.decorate_context(*args, **kwargs)\n    112 @functools.wraps(func)\n\
+    \    113 def decorate_context(*args, **kwargs):\n    114     with ctx_factory():\n\
+    --> 115         return func(*args, **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:1673,\
+    \ in GenerationMixin.generate(self, inputs, generation_config, logits_processor,\
+    \ stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer,\
+    \ negative_prompt_ids, negative_prompt_attention_mask, **kwargs)\n   1656    \
+    \ return self.assisted_decoding(\n   1657         input_ids,\n   1658        \
+    \ assistant_model=assistant_model,\n   (...)\n   1669         **model_kwargs,\n\
+    \   1670     )\n   1671 if generation_mode == GenerationMode.GREEDY_SEARCH:\n\
+    \   1672     # 11. run greedy search\n-> 1673     return self.greedy_search(\n\
+    \   1674         input_ids,\n   1675         logits_processor=logits_processor,\n\
+    \   1676         stopping_criteria=stopping_criteria,\n   1677         pad_token_id=generation_config.pad_token_id,\n\
+    \   1678         eos_token_id=generation_config.eos_token_id,\n   1679       \
+    \  output_scores=generation_config.output_scores,\n   1680         return_dict_in_generate=generation_config.return_dict_in_generate,\n\
+    \   1681         synced_gpus=synced_gpus,\n   1682         streamer=streamer,\n\
+    \   1683         **model_kwargs,\n   1684     )\n   1686 elif generation_mode\
+    \ == GenerationMode.CONTRASTIVE_SEARCH:\n   1687     if not model_kwargs[\"use_cache\"\
+    ]:\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/transformers/generation/utils.py:2521,\
+    \ in GenerationMixin.greedy_search(self, input_ids, logits_processor, stopping_criteria,\
+    \ max_length, pad_token_id, eos_token_id, output_attentions, output_hidden_states,\
+    \ output_scores, return_dict_in_generate, synced_gpus, streamer, **model_kwargs)\n\
+    \   2518 model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)\n\
+    \   2520 # forward pass to get next token\n-> 2521 outputs = self(\n   2522  \
+    \   **model_inputs,\n   2523     return_dict=True,\n   2524     output_attentions=output_attentions,\n\
+    \   2525     output_hidden_states=output_hidden_states,\n   2526 )\n   2528 if\
+    \ synced_gpus and this_peer_finished:\n   2529     continue  # don't waste resources\
+    \ running the code we don't need\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+    \ in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)\n    162\
+    \         output = module._old_forward(*args, **kwargs)\n    163 else:\n--> 164\
+    \     output = module._old_forward(*args, **kwargs)\n    165 return module._hf_hook.post_forward(module,\
+    \ output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:610,\
+    \ in CogVLMForCausalLM.forward(self, input_ids, images, token_type_ids, attention_mask,\
+    \ position_ids, past_key_values, inputs_embeds, use_cache, output_attentions,\
+    \ output_hidden_states, return_dict, labels)\n    607 return_dict = return_dict\
+    \ if return_dict is not None else self.config.use_return_dict\n    609 # decoder\
+    \ outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)\n--> 610\
+    \ outputs = self.model(\n    611     input_ids=input_ids,\n    612     images=images,\n\
+    \    613     token_type_ids=token_type_ids,\n    614     attention_mask=attention_mask,\n\
+    \    615     position_ids=position_ids,\n    616     past_key_values=past_key_values,\n\
+    \    617     inputs_embeds=inputs_embeds,\n    618     use_cache=use_cache,\n\
+    \    619     output_attentions=output_attentions,\n    620     output_hidden_states=output_hidden_states,\n\
+    \    621     return_dict=return_dict,\n    622 )\n    624 hidden_states = outputs[0]\n\
+    \    625 logits = self.lm_head(hidden_states)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:378,\
+    \ in CogVLMModel.forward(self, input_ids, images, token_type_ids, attention_mask,\
+    \ position_ids, past_key_values, inputs_embeds, use_cache, output_attentions,\
+    \ output_hidden_states, return_dict)\n    376 assert len(input_ids) == len(images),\
+    \ f\"{len(input_ids)} {len(images)}\"\n    377 inputs_embeds = self.embed_tokens(input_ids)\n\
+    --> 378 images_features = self.encode_images(images)\n    379 images_features\
+    \ = rearrange(images_features, 'b n d -> (b n) d')\n    380 images_features =\
+    \ images_features.to(dtype=inputs_embeds.dtype, device=inputs_embeds.device)\n\
+    \nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/modeling_cogvlm.py:350,\
+    \ in CogVLMModel.encode_images(self, images)\n    347         images.append(image)\n\
+    \    349 images = torch.stack(images)\n--> 350 images_features = self.vision(images)\n\
+    \    351 return images_features\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:129,\
+    \ in EVA2CLIPModel.forward(self, images)\n    127 def forward(self, images: \"\
+    tensor(B, C, H, W)\") -> \"tensor(B, L, D)\":\n    128     x = self.patch_embedding(images)\n\
+    --> 129     x = self.transformer(x)\n    130     x = x[:, 1:]\n    131     x =\
+    \ self.linear_proj(x)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:94,\
+    \ in Transformer.forward(self, hidden_states)\n     92 def forward(self, hidden_states):\n\
+    \     93     for layer_module in self.layers:\n---> 94         hidden_states =\
+    \ layer_module(hidden_states)\n     95     return hidden_states\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:79,\
+    \ in TransformerLayer.forward(self, hidden_states)\n     77 def forward(self,\
+    \ hidden_states):\n     78     attention_input = hidden_states\n---> 79     attention_output\
+    \ = self.input_layernorm(self.attention(attention_input))\n     80     hidden_states\
+    \ = attention_input + attention_output\n     81     mlp_input = hidden_states\n\
+    \nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1518,\
+    \ in Module._wrapped_call_impl(self, *args, **kwargs)\n   1516     return self._compiled_call_impl(*args,\
+    \ **kwargs)  # type: ignore[misc]\n   1517 else:\n-> 1518     return self._call_impl(*args,\
+    \ **kwargs)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/torch/nn/modules/module.py:1527,\
+    \ in Module._call_impl(self, *args, **kwargs)\n   1522 # If we don't have any\
+    \ hooks, we want to skip the rest of the logic in\n   1523 # this function, and\
+    \ just call forward.\n   1524 if not (self._backward_hooks or self._backward_pre_hooks\
+    \ or self._forward_hooks or self._forward_pre_hooks\n   1525         or _global_backward_pre_hooks\
+    \ or _global_backward_hooks\n   1526         or _global_forward_hooks or _global_forward_pre_hooks):\n\
+    -> 1527     return forward_call(*args, **kwargs)\n   1529 try:\n   1530     result\
+    \ = None\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/accelerate/hooks.py:164,\
+    \ in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)\n    162\
+    \         output = module._old_forward(*args, **kwargs)\n    163 else:\n--> 164\
+    \     output = module._old_forward(*args, **kwargs)\n    165 return module._hf_hook.post_forward(module,\
+    \ output)\n\nFile ~/.cache/huggingface/modules/transformers_modules/THUDM/cogvlm-chat-hf/8abca878c4257412c4c38eeafaed3fe27a036730/visual.py:40,\
+    \ in Attention.forward(self, x)\n     37 qkv = qkv.reshape(B, L, 3, self.num_heads,\
+    \ -1).permute(2, 0, 1, 3, 4)  # 3, B, L, H, D\n     38 q, k, v = qkv[0], qkv[1],\
+    \ qkv[2]\n---> 40 out = xops.memory_efficient_attention(\n     41     q, k, v,\
+    \ scale=self.scale,\n     42 )\n     43 output = self.dense(out.view(B, L, -1))\n\
+    \     44 output = self.output_dropout(output)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:223,\
+    \ in memory_efficient_attention(query, key, value, attn_bias, p, scale, op)\n\
+    \    116 def memory_efficient_attention(\n    117     query: torch.Tensor,\n \
+    \   118     key: torch.Tensor,\n   (...)\n    124     op: Optional[AttentionOp]\
+    \ = None,\n    125 ) -> torch.Tensor:\n    126     \"\"\"Implements the memory-efficient\
+    \ attention mechanism following\n    127     `\"Self-Attention Does Not Need O(n^2)\
+    \ Memory\" <http://arxiv.org/abs/2112.05682>`_.\n    128 \n   (...)\n    221 \
+    \    :return: multi-head attention Tensor with shape ``[B, Mq, H, Kv]``\n    222\
+    \     \"\"\"\n--> 223     return _memory_efficient_attention(\n    224       \
+    \  Inputs(\n    225             query=query, key=key, value=value, p=p, attn_bias=attn_bias,\
+    \ scale=scale\n    226         ),\n    227         op=op,\n    228     )\n\nFile\
+    \ ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:321,\
+    \ in _memory_efficient_attention(inp, op)\n    316 def _memory_efficient_attention(\n\
+    \    317     inp: Inputs, op: Optional[AttentionOp] = None\n    318 ) -> torch.Tensor:\n\
+    \    319     # fast-path that doesn't require computing the logsumexp for backward\
+    \ computation\n    320     if all(x.requires_grad is False for x in [inp.query,\
+    \ inp.key, inp.value]):\n--> 321         return _memory_efficient_attention_forward(\n\
+    \    322             inp, op=op[0] if op is not None else None\n    323      \
+    \   )\n    325     output_shape = inp.normalize_bmhk()\n    326     return _fMHA.apply(\n\
+    \    327         op, inp.query, inp.key, inp.value, inp.attn_bias, inp.p, inp.scale\n\
+    \    328     ).reshape(output_shape)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/__init__.py:337,\
+    \ in _memory_efficient_attention_forward(inp, op)\n    335 output_shape = inp.normalize_bmhk()\n\
+    \    336 if op is None:\n--> 337     op = _dispatch_fw(inp, False)\n    338 else:\n\
+    \    339     _ensure_op_supports_or_raise(ValueError, \"memory_efficient_attention\"\
+    , op, inp)\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:120,\
+    \ in _dispatch_fw(inp, needs_gradient)\n    111 def _dispatch_fw(inp: Inputs,\
+    \ needs_gradient: bool) -> Type[AttentionFwOpBase]:\n    112     \"\"\"Computes\
+    \ the best operator for forward\n    113 \n    114     Raises:\n   (...)\n   \
+    \ 118         AttentionOp: The best operator for the configuration\n    119  \
+    \   \"\"\"\n--> 120     return _run_priority_list(\n    121         \"memory_efficient_attention_forward\"\
+    ,\n    122         _dispatch_fw_priority_list(inp, needs_gradient),\n    123 \
+    \        inp,\n    124     )\n\nFile ~/jw-cogvlm-grounding-generalist-hf/lib/python3.10/site-packages/xformers/ops/fmha/dispatch.py:63,\
+    \ in _run_priority_list(name, priority_list, inp)\n     61 for op, not_supported\
+    \ in zip(priority_list, not_supported_reasons):\n     62     msg += \"\\n\" +\
+    \ _format_not_supported_reasons(op, not_supported)\n---> 63 raise NotImplementedError(msg)\n\
+    \nNotImplementedError: No operator found for `memory_efficient_attention_forward`\
+    \ with inputs:\n     query       : shape=(1, 1226, 16, 112) (torch.bfloat16)\n\
+    \     key         : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     value    \
+    \   : shape=(1, 1226, 16, 112) (torch.bfloat16)\n     attn_bias   : <class 'NoneType'>\n\
+    \     p           : 0.0\n`decoderF` is not supported because:\n    attn_bias type\
+    \ is <class 'NoneType'>\n    bf16 is only supported on A100+ GPUs\n`flshattF@v2.3.2`\
+    \ is not supported because:\n    requires device with capability > (8, 0) but\
+    \ your GPU has capability (7, 0) (too old)\n    bf16 is only supported on A100+\
+    \ GPUs\n`tritonflashattF` is not supported because:\n    requires device with\
+    \ capability > (8, 0) but your GPU has capability (7, 0) (too old)\n    bf16 is\
+    \ only supported on A100+ GPUs\n    operator wasn't built - see `python -m xformers.info`\
+    \ for more info\n    triton is not available\n    requires GPU with sm80 minimum\
+    \ compute capacity, e.g., A100/H100/L4\n    Only work on pre-MLIR triton for now\n\
+    `cutlassF` is not supported because:\n    bf16 is only supported on A100+ GPUs\n\
+    `smallkF` is not supported because:\n    max(query.shape[-1] != value.shape[-1])\
+    \ > 32\n    dtype=torch.bfloat16 (supported: {torch.float32})\n    has custom\
+    \ scale\n    bf16 is only supported on A100+ GPUs\n    unsupported embed per head:\
+    \ 112\n```"
+  created_at: 2023-11-26 04:12:01+00:00
+  edited: false
+  hidden: false
+  id: 6562c591b09c0b9ecee01dab
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-11-27T02:15:59.000Z'
+    data:
+      edited: true
+      editors:
+      - chenkq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9543308615684509
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+          fullname: chenkq
+          isHf: false
+          isPro: false
+          name: chenkq
+          type: user
+        html: '<p>oops, V100 does not support <code>bf16</code>, try <code>fp16</code>
+          instead.</p>
+
+          '
+        raw: oops, V100 does not support `bf16`, try `fp16` instead.
+        updatedAt: '2023-11-27T02:27:40.833Z'
+      numEdits: 2
+      reactions: []
+    id: 6563fbdf2cd8dac568acd8af
+    type: comment
+  author: chenkq
+  content: oops, V100 does not support `bf16`, try `fp16` instead.
+  created_at: 2023-11-27 02:15:59+00:00
+  edited: true
+  hidden: false
+  id: 6563fbdf2cd8dac568acd8af
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-27T05:56:30.000Z'
+    data:
+      edited: false
+      editors:
+      - justinwickett
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9867347478866577
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+          fullname: Justin Wickett
+          isHf: false
+          isPro: false
+          name: justinwickett
+          type: user
+        html: "<p>Thanks <span data-props=\"{&quot;user&quot;:&quot;chenkq&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/chenkq\"\
+          >@<span class=\"underline\">chenkq</span></a></span>\n\n\t</span></span>,\
+          \ that seems to have been my issue! I switched to NVIDIA A10G GPUs, and\
+          \ I am able to now use <code>bf16</code>. </p>\n"
+        raw: 'Thanks @chenkq, that seems to have been my issue! I switched to NVIDIA
+          A10G GPUs, and I am able to now use `bf16`. '
+        updatedAt: '2023-11-27T05:56:30.431Z'
+      numEdits: 0
+      reactions: []
+    id: 65642f8e2d309fa7e2d5f21d
+    type: comment
+  author: justinwickett
+  content: 'Thanks @chenkq, that seems to have been my issue! I switched to NVIDIA
+    A10G GPUs, and I am able to now use `bf16`. '
+  created_at: 2023-11-27 05:56:30+00:00
+  edited: false
+  hidden: false
+  id: 65642f8e2d309fa7e2d5f21d
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/d1252ec2e139ea0324b776944bb8596c.svg
+      fullname: Justin Wickett
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: justinwickett
+      type: user
+    createdAt: '2023-11-27T05:56:32.000Z'
+    data:
+      status: closed
+    id: 65642f902324e4d25c07decb
+    type: status-change
+  author: justinwickett
+  created_at: 2023-11-27 05:56:32+00:00
+  id: 65642f902324e4d25c07decb
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: THUDM/cogvlm-chat-hf
+repo_type: model
+status: closed
+target_branch: null
+title: Error when dispatching model into multiple GPUs

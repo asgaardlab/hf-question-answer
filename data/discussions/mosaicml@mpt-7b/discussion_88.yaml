@@ -1,0 +1,274 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: rmiller3
+conflicting_files: null
+created_at: 2023-12-27 08:17:24+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e5ae9ac4e4950255ac54597c851d64b5.svg
+      fullname: Rob
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rmiller3
+      type: user
+    createdAt: '2023-12-27T08:17:24.000Z'
+    data:
+      edited: false
+      editors:
+      - rmiller3
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5938426852226257
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e5ae9ac4e4950255ac54597c851d64b5.svg
+          fullname: Rob
+          isHf: false
+          isPro: false
+          name: rmiller3
+          type: user
+        html: "<p>Can anyone help with this performance problem?  Running the pipeline\
+          \ below for max_new_tokens=2 characters takes 2 minutes (each token adds\
+          \ about 1 minute).  Is this expected on a mac M1 (CPU, not Metal)?  I'm\
+          \ a beginner at this, but other models work in a few seconds with similar\
+          \ code (gpt2, distilbert-base-cased-distilled-squad).</p>\n<p>System:  macOS\
+          \ 12.7.1, M1 Pro chip, 16 GB RAM</p>\n<p>Included below:</p>\n<ol>\n<li>Source\
+          \ code.   It's just from here (<a href=\"https://huggingface.co/mosaicml/mpt-7b\"\
+          >https://huggingface.co/mosaicml/mpt-7b</a>) but without cuda.  I've started\
+          \ reading about Apple Metal which might be useful, but I'm not sure if it's\
+          \ required.  Example:  <a rel=\"nofollow\" href=\"https://www.mathworks.com/matlabcentral/answers/1744115-cuda-for-m1-macbook-pro\"\
+          >https://www.mathworks.com/matlabcentral/answers/1744115-cuda-for-m1-macbook-pro</a></li>\n\
+          <li>Warnings</li>\n<li>Profile (cProfile)</li>\n<li>Some of the dependencies\
+          \ (maybe the most relevant one is torch @ <a rel=\"nofollow\" href=\"https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl\"\
+          >https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl</a>).\
+          \  List truncated to the more interesting ones to save space.</li>\n</ol>\n\
+          <p>I've also tried:</p>\n<ol>\n<li>adding (with torch.autocast('cpu', dtype=torch.float32))\
+          \ around the pipeline run call.</li>\n<li>torch_dtype=torch.float32 in the\
+          \ model getter.</li>\n<li>Playing around with toggling do_sample and use_cache\
+          \ (I'm a bit new so I'm still learning what all the options are on here,\
+          \ and ML pipelines in general</li>\n</ol>\n<p>code:  </p>\n<pre><code>import\
+          \ cProfile\nfrom datetime import datetime\nimport time\nimport transformers\n\
+          from unittest import IsolatedAsyncioTestCase\n\nclass Unittest(IsolatedAsyncioTestCase):\n\
+          \    async def test_demo_mpt_7b_performance(self):\n        model = transformers.AutoModelForCausalLM.from_pretrained(\n\
+          \            \"mosaicml/mpt-7b\",\n            trust_remote_code=True)\n\
+          \n        tokenizer = transformers.AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\n\
+          \n        pipe = transformers.pipeline('text-generation', model=model, tokenizer=tokenizer)\n\
+          \n        print(f\"starting pipe__at__{datetime.now().time()}\")\n     \
+          \   with cProfile.Profile() as pr:\n            res = await self.print_duration(pipe,\n\
+          \                                      \"Here is a recipe for vegan banana\
+          \ bread\",\n                                      max_new_tokens=2,\n  \
+          \                                    do_sample=False,\n                \
+          \                      use_cache=True)\n\n        pr.print_stats(\"cumulative\"\
+          )\n\n        print(res)\n</code></pre>\n<p>Warnings:</p>\n<pre><code>.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:90:\
+          \ DeprecationWarning: verbose argument for MPTConfig is now ignored and\
+          \ will be removed. Use python_log_level instead.\n.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:97:\
+          \ UserWarning: alibi is turned on, setting `learned_pos_emb` to `False.`\n\
+          ...einops/_torch_specific.py:108: ImportWarning: allow_ops_in_compiled_graph\
+          \ failed to import torch: ensure pytorch &gt;=2.0\n  warnings.warn(\"allow_ops_in_compiled_graph\
+          \ failed to import torch: ensure pytorch &gt;=2.0\", ImportWarning)\n...Special\
+          \ tokens have been added in the vocabulary, make sure the associated word\
+          \ embeddings are fine-tuned or trained.\n...utils.py:1518: UserWarning:\
+          \ You have modified the pretrained model configuration to control generation.\
+          \ This is a deprecated strategy to control generation and will be removed\
+          \ soon, in a future version. Please use and modify the model generation\
+          \ configuration (see https://huggingface.co/docs/transformers/generation_strategies#default-text-generation-configuration\
+          \ )\n</code></pre>\n<p>Profile:</p>\n<pre><code>Took 172.56s, with 43.58\
+          \ s of process time__at__15:45:26.780838\n         28817 function calls\
+          \ (26003 primitive calls) in 172.566 seconds\n\n   Ordered by: cumulative\
+          \ time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n\
+          \        1    0.002    0.002  172.567  172.567 hugging_face_forum_performance.py:33(print_duration)\n\
+          \        1    0.000    0.000  172.560  172.560 text_generation.py:167(__call__)\n\
+          \        1    0.001    0.001  172.559  172.559 base.py:1077(__call__)\n\
+          \        1    0.001    0.001  172.559  172.559 base.py:1145(run_single)\n\
+          \        1    0.002    0.002  172.510  172.510 base.py:1037(forward)\n \
+          \       1    0.001    0.001  172.504  172.504 text_generation.py:240(_forward)\n\
+          \      3/1    0.003    0.001  172.502  172.502 _contextlib.py:112(decorate_context)\n\
+          \        1    0.008    0.008  172.498  172.498 utils.py:1395(generate)\n\
+          \        1    0.006    0.006  172.487  172.487 utils.py:2411(greedy_search)\n\
+          \    780/2    0.003    0.000  172.432   86.216 module.py:1514(_wrapped_call_impl)\n\
+          \    780/2    0.016    0.000  172.432   86.216 module.py:1520(_call_impl)\n\
+          \        2    0.001    0.000  172.432   86.216 modeling_mpt.py:269(forward)\n\
+          \      258  172.160    0.667  172.160    0.667 {built-in method torch._C._nn.linear}\n\
+          \        2    0.010    0.005  167.512   83.756 modeling_mpt.py:146(forward)\n\
+          \       64    0.012    0.000  167.471    2.617 blocks.py:32(forward)\n \
+          \     256    0.002    0.000  167.244    0.653 linear.py:113(forward)\n \
+          \      64    0.002    0.000  112.702    1.761 ffn.py:23(forward)\n     \
+          \  64    0.004    0.000   54.681    0.854 attention.py:263(forward)\n  \
+          \      4    0.000    0.000    4.923    1.231 custom_embedding.py:7(forward)\n\
+          \       64    0.009    0.000    0.099    0.002 attention.py:48(scaled_multihead_dot_product_attention)\n\
+          \      130    0.003    0.000    0.058    0.000 norm.py:20(forward)\n   \
+          \    68    0.052    0.001    0.052    0.001 {built-in method torch.cat}\n\
+          </code></pre>\n<p>Dependencies:</p>\n<pre><code>accelerate==0.25.0\neinops==0.7.0\n\
+          numpy==1.26.2\npandas==2.1.4\npydantic==2.5.2\npydantic_core==2.14.5\npython-dateutil==2.8.2\n\
+          pytz==2023.3.post1\nsafetensors==0.4.1\ntokenizers==0.15.0\ntorch @ https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl\n\
+          tqdm==4.66.1\ntransformers==4.36.2\n</code></pre>\n"
+        raw: "Can anyone help with this performance problem?  Running the pipeline\
+          \ below for max_new_tokens=2 characters takes 2 minutes (each token adds\
+          \ about 1 minute).  Is this expected on a mac M1 (CPU, not Metal)?  I'm\
+          \ a beginner at this, but other models work in a few seconds with similar\
+          \ code (gpt2, distilbert-base-cased-distilled-squad).\r\n\r\nSystem:  macOS\
+          \ 12.7.1, M1 Pro chip, 16 GB RAM\r\n\r\nIncluded below:\r\n1.  Source code.\
+          \   It's just from here (https://huggingface.co/mosaicml/mpt-7b) but without\
+          \ cuda.  I've started reading about Apple Metal which might be useful, but\
+          \ I'm not sure if it's required.  Example:  https://www.mathworks.com/matlabcentral/answers/1744115-cuda-for-m1-macbook-pro\r\
+          \n2.  Warnings\r\n3.  Profile (cProfile)\r\n4.  Some of the dependencies\
+          \ (maybe the most relevant one is torch @ https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl).\
+          \  List truncated to the more interesting ones to save space.\r\n\r\nI've\
+          \ also tried:\r\n1.  adding (with torch.autocast('cpu', dtype=torch.float32))\
+          \ around the pipeline run call.\r\n2.  torch_dtype=torch.float32 in the\
+          \ model getter.\r\n3.  Playing around with toggling do_sample and use_cache\
+          \ (I'm a bit new so I'm still learning what all the options are on here,\
+          \ and ML pipelines in general\r\n\r\ncode:  \r\n```\r\nimport cProfile\r\
+          \nfrom datetime import datetime\r\nimport time\r\nimport transformers\r\n\
+          from unittest import IsolatedAsyncioTestCase\r\n\r\nclass Unittest(IsolatedAsyncioTestCase):\r\
+          \n    async def test_demo_mpt_7b_performance(self):\r\n        model = transformers.AutoModelForCausalLM.from_pretrained(\r\
+          \n            \"mosaicml/mpt-7b\",\r\n            trust_remote_code=True)\r\
+          \n\r\n        tokenizer = transformers.AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\r\
+          \n\r\n        pipe = transformers.pipeline('text-generation', model=model,\
+          \ tokenizer=tokenizer)\r\n\r\n        print(f\"starting pipe__at__{datetime.now().time()}\"\
+          )\r\n        with cProfile.Profile() as pr:\r\n            res = await self.print_duration(pipe,\r\
+          \n                                      \"Here is a recipe for vegan banana\
+          \ bread\",\r\n                                      max_new_tokens=2,\r\n\
+          \                                      do_sample=False,\r\n            \
+          \                          use_cache=True)\r\n\r\n        pr.print_stats(\"\
+          cumulative\")\r\n\r\n        print(res)\r\n```\r\n\r\nWarnings:\r\n```\r\
+          \n.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:90:\
+          \ DeprecationWarning: verbose argument for MPTConfig is now ignored and\
+          \ will be removed. Use python_log_level instead.\r\n.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:97:\
+          \ UserWarning: alibi is turned on, setting `learned_pos_emb` to `False.`\r\
+          \n...einops/_torch_specific.py:108: ImportWarning: allow_ops_in_compiled_graph\
+          \ failed to import torch: ensure pytorch >=2.0\r\n  warnings.warn(\"allow_ops_in_compiled_graph\
+          \ failed to import torch: ensure pytorch >=2.0\", ImportWarning)\r\n...Special\
+          \ tokens have been added in the vocabulary, make sure the associated word\
+          \ embeddings are fine-tuned or trained.\r\n...utils.py:1518: UserWarning:\
+          \ You have modified the pretrained model configuration to control generation.\
+          \ This is a deprecated strategy to control generation and will be removed\
+          \ soon, in a future version. Please use and modify the model generation\
+          \ configuration (see https://huggingface.co/docs/transformers/generation_strategies#default-text-generation-configuration\
+          \ )\r\n```\r\nProfile:\r\n```\r\nTook 172.56s, with 43.58 s of process time__at__15:45:26.780838\r\
+          \n         28817 function calls (26003 primitive calls) in 172.566 seconds\r\
+          \n\r\n   Ordered by: cumulative time\r\n\r\n   ncalls  tottime  percall\
+          \  cumtime  percall filename:lineno(function)\r\n        1    0.002    0.002\
+          \  172.567  172.567 hugging_face_forum_performance.py:33(print_duration)\r\
+          \n        1    0.000    0.000  172.560  172.560 text_generation.py:167(__call__)\r\
+          \n        1    0.001    0.001  172.559  172.559 base.py:1077(__call__)\r\
+          \n        1    0.001    0.001  172.559  172.559 base.py:1145(run_single)\r\
+          \n        1    0.002    0.002  172.510  172.510 base.py:1037(forward)\r\n\
+          \        1    0.001    0.001  172.504  172.504 text_generation.py:240(_forward)\r\
+          \n      3/1    0.003    0.001  172.502  172.502 _contextlib.py:112(decorate_context)\r\
+          \n        1    0.008    0.008  172.498  172.498 utils.py:1395(generate)\r\
+          \n        1    0.006    0.006  172.487  172.487 utils.py:2411(greedy_search)\r\
+          \n    780/2    0.003    0.000  172.432   86.216 module.py:1514(_wrapped_call_impl)\r\
+          \n    780/2    0.016    0.000  172.432   86.216 module.py:1520(_call_impl)\r\
+          \n        2    0.001    0.000  172.432   86.216 modeling_mpt.py:269(forward)\r\
+          \n      258  172.160    0.667  172.160    0.667 {built-in method torch._C._nn.linear}\r\
+          \n        2    0.010    0.005  167.512   83.756 modeling_mpt.py:146(forward)\r\
+          \n       64    0.012    0.000  167.471    2.617 blocks.py:32(forward)\r\n\
+          \      256    0.002    0.000  167.244    0.653 linear.py:113(forward)\r\n\
+          \       64    0.002    0.000  112.702    1.761 ffn.py:23(forward)\r\n  \
+          \     64    0.004    0.000   54.681    0.854 attention.py:263(forward)\r\
+          \n        4    0.000    0.000    4.923    1.231 custom_embedding.py:7(forward)\r\
+          \n       64    0.009    0.000    0.099    0.002 attention.py:48(scaled_multihead_dot_product_attention)\r\
+          \n      130    0.003    0.000    0.058    0.000 norm.py:20(forward)\r\n\
+          \       68    0.052    0.001    0.052    0.001 {built-in method torch.cat}\r\
+          \n```\r\n\r\nDependencies:\r\n```\r\naccelerate==0.25.0\r\neinops==0.7.0\r\
+          \nnumpy==1.26.2\r\npandas==2.1.4\r\npydantic==2.5.2\r\npydantic_core==2.14.5\r\
+          \npython-dateutil==2.8.2\r\npytz==2023.3.post1\r\nsafetensors==0.4.1\r\n\
+          tokenizers==0.15.0\r\ntorch @ https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl\r\
+          \ntqdm==4.66.1\r\ntransformers==4.36.2\r\n```"
+        updatedAt: '2023-12-27T08:17:24.810Z'
+      numEdits: 0
+      reactions: []
+    id: 658bdd94674aa14b9b04ed76
+    type: comment
+  author: rmiller3
+  content: "Can anyone help with this performance problem?  Running the pipeline below\
+    \ for max_new_tokens=2 characters takes 2 minutes (each token adds about 1 minute).\
+    \  Is this expected on a mac M1 (CPU, not Metal)?  I'm a beginner at this, but\
+    \ other models work in a few seconds with similar code (gpt2, distilbert-base-cased-distilled-squad).\r\
+    \n\r\nSystem:  macOS 12.7.1, M1 Pro chip, 16 GB RAM\r\n\r\nIncluded below:\r\n\
+    1.  Source code.   It's just from here (https://huggingface.co/mosaicml/mpt-7b)\
+    \ but without cuda.  I've started reading about Apple Metal which might be useful,\
+    \ but I'm not sure if it's required.  Example:  https://www.mathworks.com/matlabcentral/answers/1744115-cuda-for-m1-macbook-pro\r\
+    \n2.  Warnings\r\n3.  Profile (cProfile)\r\n4.  Some of the dependencies (maybe\
+    \ the most relevant one is torch @ https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl).\
+    \  List truncated to the more interesting ones to save space.\r\n\r\nI've also\
+    \ tried:\r\n1.  adding (with torch.autocast('cpu', dtype=torch.float32)) around\
+    \ the pipeline run call.\r\n2.  torch_dtype=torch.float32 in the model getter.\r\
+    \n3.  Playing around with toggling do_sample and use_cache (I'm a bit new so I'm\
+    \ still learning what all the options are on here, and ML pipelines in general\r\
+    \n\r\ncode:  \r\n```\r\nimport cProfile\r\nfrom datetime import datetime\r\nimport\
+    \ time\r\nimport transformers\r\nfrom unittest import IsolatedAsyncioTestCase\r\
+    \n\r\nclass Unittest(IsolatedAsyncioTestCase):\r\n    async def test_demo_mpt_7b_performance(self):\r\
+    \n        model = transformers.AutoModelForCausalLM.from_pretrained(\r\n     \
+    \       \"mosaicml/mpt-7b\",\r\n            trust_remote_code=True)\r\n\r\n  \
+    \      tokenizer = transformers.AutoTokenizer.from_pretrained('EleutherAI/gpt-neox-20b')\r\
+    \n\r\n        pipe = transformers.pipeline('text-generation', model=model, tokenizer=tokenizer)\r\
+    \n\r\n        print(f\"starting pipe__at__{datetime.now().time()}\")\r\n     \
+    \   with cProfile.Profile() as pr:\r\n            res = await self.print_duration(pipe,\r\
+    \n                                      \"Here is a recipe for vegan banana bread\"\
+    ,\r\n                                      max_new_tokens=2,\r\n             \
+    \                         do_sample=False,\r\n                               \
+    \       use_cache=True)\r\n\r\n        pr.print_stats(\"cumulative\")\r\n\r\n\
+    \        print(res)\r\n```\r\n\r\nWarnings:\r\n```\r\n.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:90:\
+    \ DeprecationWarning: verbose argument for MPTConfig is now ignored and will be\
+    \ removed. Use python_log_level instead.\r\n.../mosaicml/mpt-7b/ada218f9a93b5f1c6dce48a4cc9ff01fcba431e7/configuration_mpt.py:97:\
+    \ UserWarning: alibi is turned on, setting `learned_pos_emb` to `False.`\r\n...einops/_torch_specific.py:108:\
+    \ ImportWarning: allow_ops_in_compiled_graph failed to import torch: ensure pytorch\
+    \ >=2.0\r\n  warnings.warn(\"allow_ops_in_compiled_graph failed to import torch:\
+    \ ensure pytorch >=2.0\", ImportWarning)\r\n...Special tokens have been added\
+    \ in the vocabulary, make sure the associated word embeddings are fine-tuned or\
+    \ trained.\r\n...utils.py:1518: UserWarning: You have modified the pretrained\
+    \ model configuration to control generation. This is a deprecated strategy to\
+    \ control generation and will be removed soon, in a future version. Please use\
+    \ and modify the model generation configuration (see https://huggingface.co/docs/transformers/generation_strategies#default-text-generation-configuration\
+    \ )\r\n```\r\nProfile:\r\n```\r\nTook 172.56s, with 43.58 s of process time__at__15:45:26.780838\r\
+    \n         28817 function calls (26003 primitive calls) in 172.566 seconds\r\n\
+    \r\n   Ordered by: cumulative time\r\n\r\n   ncalls  tottime  percall  cumtime\
+    \  percall filename:lineno(function)\r\n        1    0.002    0.002  172.567 \
+    \ 172.567 hugging_face_forum_performance.py:33(print_duration)\r\n        1  \
+    \  0.000    0.000  172.560  172.560 text_generation.py:167(__call__)\r\n     \
+    \   1    0.001    0.001  172.559  172.559 base.py:1077(__call__)\r\n        1\
+    \    0.001    0.001  172.559  172.559 base.py:1145(run_single)\r\n        1  \
+    \  0.002    0.002  172.510  172.510 base.py:1037(forward)\r\n        1    0.001\
+    \    0.001  172.504  172.504 text_generation.py:240(_forward)\r\n      3/1   \
+    \ 0.003    0.001  172.502  172.502 _contextlib.py:112(decorate_context)\r\n  \
+    \      1    0.008    0.008  172.498  172.498 utils.py:1395(generate)\r\n     \
+    \   1    0.006    0.006  172.487  172.487 utils.py:2411(greedy_search)\r\n   \
+    \ 780/2    0.003    0.000  172.432   86.216 module.py:1514(_wrapped_call_impl)\r\
+    \n    780/2    0.016    0.000  172.432   86.216 module.py:1520(_call_impl)\r\n\
+    \        2    0.001    0.000  172.432   86.216 modeling_mpt.py:269(forward)\r\n\
+    \      258  172.160    0.667  172.160    0.667 {built-in method torch._C._nn.linear}\r\
+    \n        2    0.010    0.005  167.512   83.756 modeling_mpt.py:146(forward)\r\
+    \n       64    0.012    0.000  167.471    2.617 blocks.py:32(forward)\r\n    \
+    \  256    0.002    0.000  167.244    0.653 linear.py:113(forward)\r\n       64\
+    \    0.002    0.000  112.702    1.761 ffn.py:23(forward)\r\n       64    0.004\
+    \    0.000   54.681    0.854 attention.py:263(forward)\r\n        4    0.000 \
+    \   0.000    4.923    1.231 custom_embedding.py:7(forward)\r\n       64    0.009\
+    \    0.000    0.099    0.002 attention.py:48(scaled_multihead_dot_product_attention)\r\
+    \n      130    0.003    0.000    0.058    0.000 norm.py:20(forward)\r\n      \
+    \ 68    0.052    0.001    0.052    0.001 {built-in method torch.cat}\r\n```\r\n\
+    \r\nDependencies:\r\n```\r\naccelerate==0.25.0\r\neinops==0.7.0\r\nnumpy==1.26.2\r\
+    \npandas==2.1.4\r\npydantic==2.5.2\r\npydantic_core==2.14.5\r\npython-dateutil==2.8.2\r\
+    \npytz==2023.3.post1\r\nsafetensors==0.4.1\r\ntokenizers==0.15.0\r\ntorch @ https://download.pytorch.org/whl/cpu/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl\r\
+    \ntqdm==4.66.1\r\ntransformers==4.36.2\r\n```"
+  created_at: 2023-12-27 08:17:24+00:00
+  edited: false
+  hidden: false
+  id: 658bdd94674aa14b9b04ed76
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 88
+repo_id: mosaicml/mpt-7b
+repo_type: model
+status: open
+target_branch: null
+title: mpt-7b taking several minutes on mac m1?

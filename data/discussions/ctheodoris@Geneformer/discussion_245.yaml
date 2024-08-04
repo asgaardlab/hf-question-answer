@@ -1,0 +1,343 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: junguyen
+conflicting_files: null
+created_at: 2023-09-13 13:04:27+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ecd4d674b85b6b6038b47181966e7b53.svg
+      fullname: Julie Nguyen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: junguyen
+      type: user
+    createdAt: '2023-09-13T14:04:27.000Z'
+    data:
+      edited: false
+      editors:
+      - junguyen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5476696491241455
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ecd4d674b85b6b6038b47181966e7b53.svg
+          fullname: Julie Nguyen
+          isHf: false
+          isPro: false
+          name: junguyen
+          type: user
+        html: "<p>Hello,</p>\n<p>I am quite new to machine learning and would like\
+          \ some help on how to run the model on a different GPU than where PyTorch\
+          \ is allocated. I have 4GPUs, 24GB each. PyTorch is currently on GPU 0,\
+          \ reserving ~17GB of memory:</p>\n<pre><code>\u2502+---------------------------------------------------------------------------------------+\n\
+          \u2502| NVIDIA-SMI 535.54.03              Driver Version: 535.54.03    CUDA\
+          \ Version: 12.2     |\n\u2502|-----------------------------------------+----------------------+----------------------+\n\
+          \u2502| GPU  Name                 Persistence-M | Bus-Id        Disp.A |\
+          \ Volatile Uncorr. ECC |\n\u2502| Fan  Temp   Perf          Pwr:Usage/Cap\
+          \ |         Memory-Usage | GPU-Util  Compute M. |\n\u2502|             \
+          \                            |                      |               MIG\
+          \ M. |\n\u2502|=========================================+======================+======================|\n\
+          \u2502|   0  NVIDIA A10G                    On  | 00000000:00:1B.0 Off |\
+          \                    0 |\n\u2502|  0%   34C    P0              60W / 300W\
+          \ |  17106MiB / 23028MiB |      0%      Default |\n\u2502|             \
+          \                            |                      |                  N/A\
+          \ |\n\u2502+-----------------------------------------+----------------------+----------------------+\n\
+          \u2502|   1  NVIDIA A10G                    On  | 00000000:00:1C.0 Off |\
+          \                    0 |\n\u2502|  0%   27C    P8              15W / 300W\
+          \ |      5MiB / 23028MiB |      0%      Default |\n\u2502|             \
+          \                            |                      |                  N/A\
+          \ |\n\u2502+-----------------------------------------+----------------------+----------------------+\n\
+          \u2502|   2  NVIDIA A10G                    On  | 00000000:00:1D.0 Off |\
+          \                    0 |\n\u2502|  0%   28C    P8              18W / 300W\
+          \ |      5MiB / 23028MiB |      0%      Default |\n\u2502|             \
+          \                            |                      |                  N/A\
+          \ |\n\u2502+-----------------------------------------+----------------------+----------------------+\n\
+          \u2502|   3  NVIDIA A10G                    On  | 00000000:00:1E.0 Off |\
+          \                    0 |\n\u2502|  0%   27C    P8              15W / 300W\
+          \ |      5MiB / 23028MiB |      0%      Default |\n\u2502|             \
+          \                            |                      |                  N/A\
+          \ |\n\u2502+-----------------------------------------+----------------------+----------------------+\n\
+          \u2502\n\u2502+---------------------------------------------------------------------------------------+\n\
+          \u2502| Processes:                                                     \
+          \                       |\n\u2502|  GPU   GI   CI        PID   Type   Process\
+          \ name                            GPU Memory |\n\u2502|        ID   ID \
+          \                                                            Usage     \
+          \ |\n\u2502|=======================================================================================|\n\
+          \u2502|    0   N/A  N/A      2024      C   python3                     \
+          \              17098MiB |\n\u2502+---------------------------------------------------------------------------------------+\n\
+          </code></pre>\n<p>I would like to run the model on GPU 1, 2, or 3. I've\
+          \ already tried to edit <code>in_silico_perturber.py</code> and have replaced\
+          \ every instance of <code>'cuda'</code> with <code>'cuda:1'</code>. However,\
+          \ it seems the model is still trying to run on GPU 0 (error posted at bottom).</p>\n\
+          <p>These are the parameters I am using for in silico perturbation:</p>\n\
+          <pre><code>isp = InSilicoPerturber(perturb_type=\"delete\",\n          \
+          \              perturb_rank_shift=None,\n                        # HNF4A:\
+          \ ENSG00000101076\n                        genes_to_perturb=[\"ENSG00000101076\"\
+          ],\n                        combos=0,\n                        anchor_gene=None,\n\
+          \                        model_type=\"Pretrained\",\n                  \
+          \      num_classes=0,\n                        emb_mode=\"cell\",\n    \
+          \                    cell_emb_style=\"mean_pool\",\n                   \
+          \     filter_data=None,\n                        cell_states_to_model=None,\n\
+          \                        max_ncells=None,\n                        emb_layer=-1,\n\
+          \                        forward_batch_size=200,\n                     \
+          \   nproc=16,\n                        token_dictionary_file = \"/home/ubuntu/Geneformer/geneformer/token_dictionary.pkl\"\
+          )\n\n# Perturb data\nisp.perturb_data(\"/home/ubuntu/Geneformer/\",\n  \
+          \               \"/data/genecorpus_filtered_hep/\",\n                 \"\
+          /data/genecorpus_filtered_hep/delete_cell/\",\n                 \"delete_cell_HNF4A\"\
+          )\n</code></pre>\n<p>And changing <code>forward_batch_size</code> to smaller\
+          \ numbers still raises the same <code>torch.cuda.OutOfMemoryError</code>\
+          \ error:</p>\n<pre><code>torch.cuda.OutOfMemoryError: CUDA out of memory.\
+          \ Tried to allocate 12.49 GiB (GPU 0; 22.19 GiB total capacity; 3.22 Gi\n\
+          B already allocated; 5.49 GiB free; 16.40 GiB reserved in total by PyTorch)\
+          \ If reserved memory is &gt;&gt; allocated memory \ntry setting max_split_size_mb\
+          \ to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_\n\
+          CONF \n</code></pre>\n<p>Any advice on what I should try next would be very\
+          \ helpful. Thank you!</p>\n"
+        raw: "Hello,\r\n\r\nI am quite new to machine learning and would like some\
+          \ help on how to run the model on a different GPU than where PyTorch is\
+          \ allocated. I have 4GPUs, 24GB each. PyTorch is currently on GPU 0, reserving\
+          \ ~17GB of memory:\r\n```\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+          \n\u2502| NVIDIA-SMI 535.54.03              Driver Version: 535.54.03  \
+          \  CUDA Version: 12.2     |\r\n\u2502|-----------------------------------------+----------------------+----------------------+\r\
+          \n\u2502| GPU  Name                 Persistence-M | Bus-Id        Disp.A\
+          \ | Volatile Uncorr. ECC |\r\n\u2502| Fan  Temp   Perf          Pwr:Usage/Cap\
+          \ |         Memory-Usage | GPU-Util  Compute M. |\r\n\u2502|           \
+          \                              |                      |               MIG\
+          \ M. |\r\n\u2502|=========================================+======================+======================|\r\
+          \n\u2502|   0  NVIDIA A10G                    On  | 00000000:00:1B.0 Off\
+          \ |                    0 |\r\n\u2502|  0%   34C    P0              60W /\
+          \ 300W |  17106MiB / 23028MiB |      0%      Default |\r\n\u2502|      \
+          \                                   |                      |           \
+          \       N/A |\r\n\u2502+-----------------------------------------+----------------------+----------------------+\r\
+          \n\u2502|   1  NVIDIA A10G                    On  | 00000000:00:1C.0 Off\
+          \ |                    0 |\r\n\u2502|  0%   27C    P8              15W /\
+          \ 300W |      5MiB / 23028MiB |      0%      Default |\r\n\u2502|      \
+          \                                   |                      |           \
+          \       N/A |\r\n\u2502+-----------------------------------------+----------------------+----------------------+\r\
+          \n\u2502|   2  NVIDIA A10G                    On  | 00000000:00:1D.0 Off\
+          \ |                    0 |\r\n\u2502|  0%   28C    P8              18W /\
+          \ 300W |      5MiB / 23028MiB |      0%      Default |\r\n\u2502|      \
+          \                                   |                      |           \
+          \       N/A |\r\n\u2502+-----------------------------------------+----------------------+----------------------+\r\
+          \n\u2502|   3  NVIDIA A10G                    On  | 00000000:00:1E.0 Off\
+          \ |                    0 |\r\n\u2502|  0%   27C    P8              15W /\
+          \ 300W |      5MiB / 23028MiB |      0%      Default |\r\n\u2502|      \
+          \                                   |                      |           \
+          \       N/A |\r\n\u2502+-----------------------------------------+----------------------+----------------------+\r\
+          \n\u2502\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+          \n\u2502| Processes:                                                   \
+          \                         |\r\n\u2502|  GPU   GI   CI        PID   Type\
+          \   Process name                            GPU Memory |\r\n\u2502|    \
+          \    ID   ID                                                           \
+          \  Usage      |\r\n\u2502|=======================================================================================|\r\
+          \n\u2502|    0   N/A  N/A      2024      C   python3                   \
+          \                17098MiB |\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+          \n```\r\nI would like to run the model on GPU 1, 2, or 3. I've already tried\
+          \ to edit `in_silico_perturber.py` and have replaced every instance of `'cuda'`\
+          \ with `'cuda:1'`. However, it seems the model is still trying to run on\
+          \ GPU 0 (error posted at bottom).\r\n\r\nThese are the parameters I am using\
+          \ for in silico perturbation:\r\n```\r\nisp = InSilicoPerturber(perturb_type=\"\
+          delete\",\r\n                        perturb_rank_shift=None,\r\n      \
+          \                  # HNF4A: ENSG00000101076\r\n                        genes_to_perturb=[\"\
+          ENSG00000101076\"],\r\n                        combos=0,\r\n           \
+          \             anchor_gene=None,\r\n                        model_type=\"\
+          Pretrained\",\r\n                        num_classes=0,\r\n            \
+          \            emb_mode=\"cell\",\r\n                        cell_emb_style=\"\
+          mean_pool\",\r\n                        filter_data=None,\r\n          \
+          \              cell_states_to_model=None,\r\n                        max_ncells=None,\r\
+          \n                        emb_layer=-1,\r\n                        forward_batch_size=200,\r\
+          \n                        nproc=16,\r\n                        token_dictionary_file\
+          \ = \"/home/ubuntu/Geneformer/geneformer/token_dictionary.pkl\")\r\n\r\n\
+          # Perturb data\r\nisp.perturb_data(\"/home/ubuntu/Geneformer/\",\r\n   \
+          \              \"/data/genecorpus_filtered_hep/\",\r\n                 \"\
+          /data/genecorpus_filtered_hep/delete_cell/\",\r\n                 \"delete_cell_HNF4A\"\
+          )\r\n```\r\n\r\nAnd changing `forward_batch_size` to smaller numbers still\
+          \ raises the same `torch.cuda.OutOfMemoryError` error:\r\n```\r\ntorch.cuda.OutOfMemoryError:\
+          \ CUDA out of memory. Tried to allocate 12.49 GiB (GPU 0; 22.19 GiB total\
+          \ capacity; 3.22 Gi\r\nB already allocated; 5.49 GiB free; 16.40 GiB reserved\
+          \ in total by PyTorch) If reserved memory is >> allocated memory \r\ntry\
+          \ setting max_split_size_mb to avoid fragmentation.  See documentation for\
+          \ Memory Management and PYTORCH_CUDA_ALLOC_\r\nCONF \r\n```\r\n\r\nAny advice\
+          \ on what I should try next would be very helpful. Thank you!"
+        updatedAt: '2023-09-13T14:04:27.512Z'
+      numEdits: 0
+      reactions: []
+    id: 6501c16b362e2aebc9c4930a
+    type: comment
+  author: junguyen
+  content: "Hello,\r\n\r\nI am quite new to machine learning and would like some help\
+    \ on how to run the model on a different GPU than where PyTorch is allocated.\
+    \ I have 4GPUs, 24GB each. PyTorch is currently on GPU 0, reserving ~17GB of memory:\r\
+    \n```\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+    \n\u2502| NVIDIA-SMI 535.54.03              Driver Version: 535.54.03    CUDA\
+    \ Version: 12.2     |\r\n\u2502|-----------------------------------------+----------------------+----------------------+\r\
+    \n\u2502| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile\
+    \ Uncorr. ECC |\r\n\u2502| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage\
+    \ | GPU-Util  Compute M. |\r\n\u2502|                                        \
+    \ |                      |               MIG M. |\r\n\u2502|=========================================+======================+======================|\r\
+    \n\u2502|   0  NVIDIA A10G                    On  | 00000000:00:1B.0 Off |   \
+    \                 0 |\r\n\u2502|  0%   34C    P0              60W / 300W |  17106MiB\
+    \ / 23028MiB |      0%      Default |\r\n\u2502|                             \
+    \            |                      |                  N/A |\r\n\u2502+-----------------------------------------+----------------------+----------------------+\r\
+    \n\u2502|   1  NVIDIA A10G                    On  | 00000000:00:1C.0 Off |   \
+    \                 0 |\r\n\u2502|  0%   27C    P8              15W / 300W |   \
+    \   5MiB / 23028MiB |      0%      Default |\r\n\u2502|                      \
+    \                   |                      |                  N/A |\r\n\u2502\
+    +-----------------------------------------+----------------------+----------------------+\r\
+    \n\u2502|   2  NVIDIA A10G                    On  | 00000000:00:1D.0 Off |   \
+    \                 0 |\r\n\u2502|  0%   28C    P8              18W / 300W |   \
+    \   5MiB / 23028MiB |      0%      Default |\r\n\u2502|                      \
+    \                   |                      |                  N/A |\r\n\u2502\
+    +-----------------------------------------+----------------------+----------------------+\r\
+    \n\u2502|   3  NVIDIA A10G                    On  | 00000000:00:1E.0 Off |   \
+    \                 0 |\r\n\u2502|  0%   27C    P8              15W / 300W |   \
+    \   5MiB / 23028MiB |      0%      Default |\r\n\u2502|                      \
+    \                   |                      |                  N/A |\r\n\u2502\
+    +-----------------------------------------+----------------------+----------------------+\r\
+    \n\u2502\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+    \n\u2502| Processes:                                                         \
+    \                   |\r\n\u2502|  GPU   GI   CI        PID   Type   Process name\
+    \                            GPU Memory |\r\n\u2502|        ID   ID          \
+    \                                                   Usage      |\r\n\u2502|=======================================================================================|\r\
+    \n\u2502|    0   N/A  N/A      2024      C   python3                         \
+    \          17098MiB |\r\n\u2502+---------------------------------------------------------------------------------------+\r\
+    \n```\r\nI would like to run the model on GPU 1, 2, or 3. I've already tried to\
+    \ edit `in_silico_perturber.py` and have replaced every instance of `'cuda'` with\
+    \ `'cuda:1'`. However, it seems the model is still trying to run on GPU 0 (error\
+    \ posted at bottom).\r\n\r\nThese are the parameters I am using for in silico\
+    \ perturbation:\r\n```\r\nisp = InSilicoPerturber(perturb_type=\"delete\",\r\n\
+    \                        perturb_rank_shift=None,\r\n                        #\
+    \ HNF4A: ENSG00000101076\r\n                        genes_to_perturb=[\"ENSG00000101076\"\
+    ],\r\n                        combos=0,\r\n                        anchor_gene=None,\r\
+    \n                        model_type=\"Pretrained\",\r\n                     \
+    \   num_classes=0,\r\n                        emb_mode=\"cell\",\r\n         \
+    \               cell_emb_style=\"mean_pool\",\r\n                        filter_data=None,\r\
+    \n                        cell_states_to_model=None,\r\n                     \
+    \   max_ncells=None,\r\n                        emb_layer=-1,\r\n            \
+    \            forward_batch_size=200,\r\n                        nproc=16,\r\n\
+    \                        token_dictionary_file = \"/home/ubuntu/Geneformer/geneformer/token_dictionary.pkl\"\
+    )\r\n\r\n# Perturb data\r\nisp.perturb_data(\"/home/ubuntu/Geneformer/\",\r\n\
+    \                 \"/data/genecorpus_filtered_hep/\",\r\n                 \"/data/genecorpus_filtered_hep/delete_cell/\"\
+    ,\r\n                 \"delete_cell_HNF4A\")\r\n```\r\n\r\nAnd changing `forward_batch_size`\
+    \ to smaller numbers still raises the same `torch.cuda.OutOfMemoryError` error:\r\
+    \n```\r\ntorch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 12.49\
+    \ GiB (GPU 0; 22.19 GiB total capacity; 3.22 Gi\r\nB already allocated; 5.49 GiB\
+    \ free; 16.40 GiB reserved in total by PyTorch) If reserved memory is >> allocated\
+    \ memory \r\ntry setting max_split_size_mb to avoid fragmentation.  See documentation\
+    \ for Memory Management and PYTORCH_CUDA_ALLOC_\r\nCONF \r\n```\r\n\r\nAny advice\
+    \ on what I should try next would be very helpful. Thank you!"
+  created_at: 2023-09-13 13:04:27+00:00
+  edited: false
+  hidden: false
+  id: 6501c16b362e2aebc9c4930a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-09-13T19:37:59.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9227672219276428
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer! The OOM error is referring
+          to any entities related to PyTorch (e.g. the model), not PyTorch itself.
+          PyTorch is required on all GPUs running the model. You should be able to
+          run the code on a single GPU - you should reduce the forward_batch_size
+          until it fits on your resources. Additionally, if you are using the 12L
+          model, you can consider using the 6L model which will be less resource-intensive.
+          If you''d like to distribute the job to multiple GPUs, there are multiple
+          ways to do this, but I would recommend either running separate batches of
+          cells on each GPU or using a method like Deepspeed if you''d like to distribute
+          the model itself.</p>
+
+          '
+        raw: Thank you for your interest in Geneformer! The OOM error is referring
+          to any entities related to PyTorch (e.g. the model), not PyTorch itself.
+          PyTorch is required on all GPUs running the model. You should be able to
+          run the code on a single GPU - you should reduce the forward_batch_size
+          until it fits on your resources. Additionally, if you are using the 12L
+          model, you can consider using the 6L model which will be less resource-intensive.
+          If you'd like to distribute the job to multiple GPUs, there are multiple
+          ways to do this, but I would recommend either running separate batches of
+          cells on each GPU or using a method like Deepspeed if you'd like to distribute
+          the model itself.
+        updatedAt: '2023-09-13T19:37:59.638Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 65020f9746582032cb801b64
+    id: 65020f9746582032cb801b61
+    type: comment
+  author: ctheodoris
+  content: Thank you for your interest in Geneformer! The OOM error is referring to
+    any entities related to PyTorch (e.g. the model), not PyTorch itself. PyTorch
+    is required on all GPUs running the model. You should be able to run the code
+    on a single GPU - you should reduce the forward_batch_size until it fits on your
+    resources. Additionally, if you are using the 12L model, you can consider using
+    the 6L model which will be less resource-intensive. If you'd like to distribute
+    the job to multiple GPUs, there are multiple ways to do this, but I would recommend
+    either running separate batches of cells on each GPU or using a method like Deepspeed
+    if you'd like to distribute the model itself.
+  created_at: 2023-09-13 18:37:59+00:00
+  edited: false
+  hidden: false
+  id: 65020f9746582032cb801b61
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-09-13T19:37:59.000Z'
+    data:
+      status: closed
+    id: 65020f9746582032cb801b64
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-09-13 18:37:59+00:00
+  id: 65020f9746582032cb801b64
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 245
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: How to run model (InSilicoPerturber) on different GPU than where PyTorch is
+  allocated

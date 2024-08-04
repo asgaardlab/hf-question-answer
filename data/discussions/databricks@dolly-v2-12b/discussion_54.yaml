@@ -1,0 +1,441 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: jwr1015
+conflicting_files: null
+created_at: 2023-04-25 14:26:43+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+      fullname: joshua roberge
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jwr1015
+      type: user
+    createdAt: '2023-04-25T15:26:43.000Z'
+    data:
+      edited: true
+      editors:
+      - jwr1015
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+          fullname: joshua roberge
+          isHf: false
+          isPro: false
+          name: jwr1015
+          type: user
+        html: "<p>Keep getting \"Could not parse LLM output\" when I try to build\
+          \ an agent and run a query and the agents do not seem to be interacting\
+          \ properly</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> langchain.chains <span class=\"hljs-keyword\">import</span>\
+          \ LLMMathChain\n<span class=\"hljs-keyword\">from</span> langchain.agents\
+          \ <span class=\"hljs-keyword\">import</span> Tool\n<span class=\"hljs-keyword\"\
+          >from</span> langchain.agents <span class=\"hljs-keyword\">import</span>\
+          \ load_tools\n<span class=\"hljs-keyword\">from</span> langchain.agents\
+          \ <span class=\"hljs-keyword\">import</span> AgentType\n<span class=\"hljs-keyword\"\
+          >from</span> langchain.chains.summarize <span class=\"hljs-keyword\">import</span>\
+          \ load_summarize_chain\n<span class=\"hljs-keyword\">from</span> langchain.agents\
+          \ <span class=\"hljs-keyword\">import</span> initialize_agent\n<span class=\"\
+          hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\">import</span>\
+          \ pipeline\n<span class=\"hljs-keyword\">from</span> langchain.embeddings\
+          \ <span class=\"hljs-keyword\">import</span> HuggingFaceEmbeddings\n<span\
+          \ class=\"hljs-keyword\">from</span> langchain <span class=\"hljs-keyword\"\
+          >import</span> PromptTemplate, LLMChain\n<span class=\"hljs-keyword\">from</span>\
+          \ langchain.llms <span class=\"hljs-keyword\">import</span> HuggingFacePipeline\n\
+          <span class=\"hljs-keyword\">from</span> langchain.llms <span class=\"hljs-keyword\"\
+          >import</span> HuggingFacePipeline\n<span class=\"hljs-keyword\">from</span>\
+          \ langchain.llms <span class=\"hljs-keyword\">import</span> HuggingFacePipeline\n\
+          <span class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoModelForCausalLM, AutoTokenizer\n<span class=\"hljs-keyword\"\
+          >from</span> langchain.llms <span class=\"hljs-keyword\">import</span> HuggingFacePipeline\n\
+          \ngenerate_text = pipeline(model=<span class=\"hljs-string\">\"databricks/dolly-v2-12b\"\
+          </span>, torch_dtype=torch.bfloat16,\n                         trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>, device_map=<span class=\"hljs-string\"\
+          >\"auto\"</span>, return_full_text=<span class=\"hljs-literal\">True</span>)\n\
+          \nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\n\ntools = []\n\
+          llm = hf_pipeline\n\nprompt = PromptTemplate(\n    input_variables=[<span\
+          \ class=\"hljs-string\">\"instruction\"</span>],\n    template=<span class=\"\
+          hljs-string\">\"{instruction}\"</span>\n)\n\nllm_chain = LLMChain(llm=llm,\
+          \ prompt=prompt)\n\ngenneral_tool = Tool(\n    name=<span class=\"hljs-string\"\
+          >'Language Model'</span>,\n    func=llm_chain.run,\n    description=<span\
+          \ class=\"hljs-string\">'use this tool for general purpose queries and logic'</span>\n\
+          )\n\n<span class=\"hljs-comment\">## QA closed book</span>\nprompt = PromptTemplate(template=<span\
+          \ class=\"hljs-string\">\"Question: {question}\\nAnswer:\"</span>, input_variables=[<span\
+          \ class=\"hljs-string\">\"question\"</span>])\nqachain = LLMChain(llm=llm,\
+          \ prompt=prompt)\nQA_general = Tool(\n    name=<span class=\"hljs-string\"\
+          >'Question Answer'</span>,\n    func=qachain.run,\n    description=<span\
+          \ class=\"hljs-string\">'use this tool when answering questions'</span>\n\
+          )\n\n<span class=\"hljs-comment\">### Math </span>\nllm_math = LLMMathChain(llm=llm,\
+          \ verbose=<span class=\"hljs-literal\">True</span>)\nllm_math_tool = Tool(\n\
+          \    name=<span class=\"hljs-string\">'Calculator'</span>,\n    func=llm_math.run,\n\
+          \    description=<span class=\"hljs-string\">'use this tool to perform calculations'</span>\n\
+          )\n\n<span class=\"hljs-comment\">### summarize</span>\nsummarize_chain\
+          \ = load_summarize_chain(llm, chain_type=<span class=\"hljs-string\">\"\
+          map_reduce\"</span>)\nsummarize_general = Tool(\n    name=<span class=\"\
+          hljs-string\">'summarization Tool'</span>,\n    func=summarize_chain.run,\n\
+          \    description=<span class=\"hljs-string\">'use this tool when summarizing\
+          \ information'</span>\n)\n\n\n<span class=\"hljs-comment\"># when giving\
+          \ tools to LLM, we must pass as list of tools</span>\ntools.extend([llm_math_tool,\
+          \ genneral_tool, summarize_general, QA_general])\n\nagent = initialize_agent(\n\
+          \    agent=<span class=\"hljs-string\">\"zero-shot-react-description\"</span>,\n\
+          \    tools=tools,\n    llm=llm,\n    verbose=<span class=\"hljs-literal\"\
+          >True</span>,\n    max_iterations=<span class=\"hljs-number\">20</span>\n\
+          )\n\n  agent(<span class=\"hljs-string\">r\"\"\"</span>\n<span class=\"\
+          hljs-string\">What is 2 * 2 equal too?</span>\n<span class=\"hljs-string\"\
+          >  \"\"\"</span>)\n</code></pre>\n"
+        raw: "Keep getting \"Could not parse LLM output\" when I try to build an agent\
+          \ and run a query and the agents do not seem to be interacting properly\n\
+          ```python\nfrom langchain.chains import LLMMathChain\nfrom langchain.agents\
+          \ import Tool\nfrom langchain.agents import load_tools\nfrom langchain.agents\
+          \ import AgentType\nfrom langchain.chains.summarize import load_summarize_chain\n\
+          from langchain.agents import initialize_agent\nfrom transformers import\
+          \ pipeline\nfrom langchain.embeddings import HuggingFaceEmbeddings\nfrom\
+          \ langchain import PromptTemplate, LLMChain\nfrom langchain.llms import\
+          \ HuggingFacePipeline\nfrom langchain.llms import HuggingFacePipeline\n\
+          from langchain.llms import HuggingFacePipeline\nfrom transformers import\
+          \ AutoModelForCausalLM, AutoTokenizer\nfrom langchain.llms import HuggingFacePipeline\n\
+          \ngenerate_text = pipeline(model=\"databricks/dolly-v2-12b\", torch_dtype=torch.bfloat16,\n\
+          \                         trust_remote_code=True, device_map=\"auto\", return_full_text=True)\n\
+          \nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\n\ntools = []\n\
+          llm = hf_pipeline\n\nprompt = PromptTemplate(\n    input_variables=[\"instruction\"\
+          ],\n    template=\"{instruction}\"\n)\n\nllm_chain = LLMChain(llm=llm, prompt=prompt)\n\
+          \ngenneral_tool = Tool(\n    name='Language Model',\n    func=llm_chain.run,\n\
+          \    description='use this tool for general purpose queries and logic'\n\
+          )\n\n## QA closed book\nprompt = PromptTemplate(template=\"Question: {question}\\\
+          nAnswer:\", input_variables=[\"question\"])\nqachain = LLMChain(llm=llm,\
+          \ prompt=prompt)\nQA_general = Tool(\n    name='Question Answer',\n    func=qachain.run,\n\
+          \    description='use this tool when answering questions'\n)\n\n### Math\
+          \ \nllm_math = LLMMathChain(llm=llm, verbose=True)\nllm_math_tool = Tool(\n\
+          \    name='Calculator',\n    func=llm_math.run,\n    description='use this\
+          \ tool to perform calculations'\n)\n\n### summarize\nsummarize_chain = load_summarize_chain(llm,\
+          \ chain_type=\"map_reduce\")\nsummarize_general = Tool(\n    name='summarization\
+          \ Tool',\n    func=summarize_chain.run,\n    description='use this tool\
+          \ when summarizing information'\n)\n\n\n# when giving tools to LLM, we must\
+          \ pass as list of tools\ntools.extend([llm_math_tool, genneral_tool, summarize_general,\
+          \ QA_general])\n\nagent = initialize_agent(\n\tagent=\"zero-shot-react-description\"\
+          ,\n\ttools=tools,\n\tllm=llm,\n\tverbose=True,\n\tmax_iterations=20\n)\n\
+          \n  agent(r\"\"\"\nWhat is 2 * 2 equal too?\n  \"\"\")\n```"
+        updatedAt: '2023-04-25T15:29:19.984Z'
+      numEdits: 4
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - jwr1015
+    id: 6447f133ab5c7251886e393e
+    type: comment
+  author: jwr1015
+  content: "Keep getting \"Could not parse LLM output\" when I try to build an agent\
+    \ and run a query and the agents do not seem to be interacting properly\n```python\n\
+    from langchain.chains import LLMMathChain\nfrom langchain.agents import Tool\n\
+    from langchain.agents import load_tools\nfrom langchain.agents import AgentType\n\
+    from langchain.chains.summarize import load_summarize_chain\nfrom langchain.agents\
+    \ import initialize_agent\nfrom transformers import pipeline\nfrom langchain.embeddings\
+    \ import HuggingFaceEmbeddings\nfrom langchain import PromptTemplate, LLMChain\n\
+    from langchain.llms import HuggingFacePipeline\nfrom langchain.llms import HuggingFacePipeline\n\
+    from langchain.llms import HuggingFacePipeline\nfrom transformers import AutoModelForCausalLM,\
+    \ AutoTokenizer\nfrom langchain.llms import HuggingFacePipeline\n\ngenerate_text\
+    \ = pipeline(model=\"databricks/dolly-v2-12b\", torch_dtype=torch.bfloat16,\n\
+    \                         trust_remote_code=True, device_map=\"auto\", return_full_text=True)\n\
+    \nhf_pipeline = HuggingFacePipeline(pipeline=generate_text)\n\ntools = []\nllm\
+    \ = hf_pipeline\n\nprompt = PromptTemplate(\n    input_variables=[\"instruction\"\
+    ],\n    template=\"{instruction}\"\n)\n\nllm_chain = LLMChain(llm=llm, prompt=prompt)\n\
+    \ngenneral_tool = Tool(\n    name='Language Model',\n    func=llm_chain.run,\n\
+    \    description='use this tool for general purpose queries and logic'\n)\n\n\
+    ## QA closed book\nprompt = PromptTemplate(template=\"Question: {question}\\nAnswer:\"\
+    , input_variables=[\"question\"])\nqachain = LLMChain(llm=llm, prompt=prompt)\n\
+    QA_general = Tool(\n    name='Question Answer',\n    func=qachain.run,\n    description='use\
+    \ this tool when answering questions'\n)\n\n### Math \nllm_math = LLMMathChain(llm=llm,\
+    \ verbose=True)\nllm_math_tool = Tool(\n    name='Calculator',\n    func=llm_math.run,\n\
+    \    description='use this tool to perform calculations'\n)\n\n### summarize\n\
+    summarize_chain = load_summarize_chain(llm, chain_type=\"map_reduce\")\nsummarize_general\
+    \ = Tool(\n    name='summarization Tool',\n    func=summarize_chain.run,\n   \
+    \ description='use this tool when summarizing information'\n)\n\n\n# when giving\
+    \ tools to LLM, we must pass as list of tools\ntools.extend([llm_math_tool, genneral_tool,\
+    \ summarize_general, QA_general])\n\nagent = initialize_agent(\n\tagent=\"zero-shot-react-description\"\
+    ,\n\ttools=tools,\n\tllm=llm,\n\tverbose=True,\n\tmax_iterations=20\n)\n\n  agent(r\"\
+    \"\"\nWhat is 2 * 2 equal too?\n  \"\"\")\n```"
+  created_at: 2023-04-25 14:26:43+00:00
+  edited: true
+  hidden: false
+  id: 6447f133ab5c7251886e393e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-25T16:29:57.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>It just means the LLM response isn''t quite following directions
+          enough for the chain to find what it''s looking for. It''s possible Dolly
+          doesn''t do well here, or needs different prompting.</p>
+
+          '
+        raw: It just means the LLM response isn't quite following directions enough
+          for the chain to find what it's looking for. It's possible Dolly doesn't
+          do well here, or needs different prompting.
+        updatedAt: '2023-04-25T16:29:57.676Z'
+      numEdits: 0
+      reactions: []
+    id: 64480005058f3572dd12b5f1
+    type: comment
+  author: srowen
+  content: It just means the LLM response isn't quite following directions enough
+    for the chain to find what it's looking for. It's possible Dolly doesn't do well
+    here, or needs different prompting.
+  created_at: 2023-04-25 15:29:57+00:00
+  edited: false
+  hidden: false
+  id: 64480005058f3572dd12b5f1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+      fullname: joshua roberge
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jwr1015
+      type: user
+    createdAt: '2023-04-25T16:41:35.000Z'
+    data:
+      edited: false
+      editors:
+      - jwr1015
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+          fullname: joshua roberge
+          isHf: false
+          isPro: false
+          name: jwr1015
+          type: user
+        html: '<p>by chance do you have any examples of langchain agents with dolly
+          2.0?</p>
+
+          '
+        raw: by chance do you have any examples of langchain agents with dolly 2.0?
+        updatedAt: '2023-04-25T16:41:35.763Z'
+      numEdits: 0
+      reactions: []
+    id: 644802bf3411a0902bbcc1e8
+    type: comment
+  author: jwr1015
+  content: by chance do you have any examples of langchain agents with dolly 2.0?
+  created_at: 2023-04-25 15:41:35+00:00
+  edited: false
+  hidden: false
+  id: 644802bf3411a0902bbcc1e8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-25T16:51:00.000Z'
+    data:
+      edited: false
+      editors:
+      - srowen
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+          fullname: Sean Owen
+          isHf: false
+          isPro: false
+          name: srowen
+          type: user
+        html: '<p>I tried with the SQLChain but didn''t get good results (not with
+          OpenAI either, really).  Here''s an example with a QA chain that works well
+          though: <a rel="nofollow" href="https://www.dbdemos.ai/demo.html?demoName=llm-dolly-chatbot">https://www.dbdemos.ai/demo.html?demoName=llm-dolly-chatbot</a></p>
+
+          '
+        raw: 'I tried with the SQLChain but didn''t get good results (not with OpenAI
+          either, really).  Here''s an example with a QA chain that works well though:
+          https://www.dbdemos.ai/demo.html?demoName=llm-dolly-chatbot'
+        updatedAt: '2023-04-25T16:51:00.842Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - jwr1015
+    id: 644804f43e498d6691953538
+    type: comment
+  author: srowen
+  content: 'I tried with the SQLChain but didn''t get good results (not with OpenAI
+    either, really).  Here''s an example with a QA chain that works well though: https://www.dbdemos.ai/demo.html?demoName=llm-dolly-chatbot'
+  created_at: 2023-04-25 15:51:00+00:00
+  edited: false
+  hidden: false
+  id: 644804f43e498d6691953538
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+      fullname: joshua roberge
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: jwr1015
+      type: user
+    createdAt: '2023-04-25T19:06:15.000Z'
+    data:
+      edited: false
+      editors:
+      - jwr1015
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/d8e974ab28c2236e2316e041611f7eb4.svg
+          fullname: joshua roberge
+          isHf: false
+          isPro: false
+          name: jwr1015
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;srowen&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/srowen\">@<span class=\"\
+          underline\">srowen</span></a></span>\n\n\t</span></span>, just wanted to\
+          \ take a moment and thank you for your time. Keep up the important work\
+          \ :)</p>\n"
+        raw: '@srowen, just wanted to take a moment and thank you for your time. Keep
+          up the important work :)'
+        updatedAt: '2023-04-25T19:06:15.809Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - srowen
+    id: 644824a73411a0902bbfce08
+    type: comment
+  author: jwr1015
+  content: '@srowen, just wanted to take a moment and thank you for your time. Keep
+    up the important work :)'
+  created_at: 2023-04-25 18:06:15+00:00
+  edited: false
+  hidden: false
+  id: 644824a73411a0902bbfce08
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/63050fbfce6b12280b1e2976/2lJphRSgdt9B_5YAQ1SIs.jpeg?w=200&h=200&f=face
+      fullname: Sean Owen
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: srowen
+      type: user
+    createdAt: '2023-04-26T14:03:56.000Z'
+    data:
+      status: closed
+    id: 64492f4cab5abd9278642d14
+    type: status-change
+  author: srowen
+  created_at: 2023-04-26 13:03:56+00:00
+  id: 64492f4cab5abd9278642d14
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/3c61231d6f07cfaad3adc4f9a6770a1e.svg
+      fullname: Wumniam Longoria
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Willis75
+      type: user
+    createdAt: '2023-05-26T00:56:53.000Z'
+    data:
+      edited: false
+      editors:
+      - Willis75
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/3c61231d6f07cfaad3adc4f9a6770a1e.svg
+          fullname: Wumniam Longoria
+          isHf: false
+          isPro: false
+          name: Willis75
+          type: user
+        html: '<p>Check this, worked for me: <a rel="nofollow" href="https://python.langchain.com/en/latest/modules/agents/agent_executors/examples/handle_parsing_errors.html">https://python.langchain.com/en/latest/modules/agents/agent_executors/examples/handle_parsing_errors.html</a></p>
+
+          '
+        raw: 'Check this, worked for me: https://python.langchain.com/en/latest/modules/agents/agent_executors/examples/handle_parsing_errors.html'
+        updatedAt: '2023-05-26T00:56:53.932Z'
+      numEdits: 0
+      reactions:
+      - count: 4
+        reaction: "\u2764\uFE0F"
+        users:
+        - sanky10987
+        - erob
+        - owaiskha9654
+        - ilyazub
+    id: 647003d56098ee820fc32cfc
+    type: comment
+  author: Willis75
+  content: 'Check this, worked for me: https://python.langchain.com/en/latest/modules/agents/agent_executors/examples/handle_parsing_errors.html'
+  created_at: 2023-05-25 23:56:53+00:00
+  edited: false
+  hidden: false
+  id: 647003d56098ee820fc32cfc
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 54
+repo_id: databricks/dolly-v2-12b
+repo_type: model
+status: closed
+target_branch: null
+title: Keep getting "Could not parse LLM output" and agents do not seem to be communicating
+  properly

@@ -1,0 +1,352 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: gcamposampie
+conflicting_files: null
+created_at: 2022-12-26 10:49:46+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-26T10:49:46.000Z'
+    data:
+      edited: true
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>Hi! I''m experiencing some issues while trying to export the zero
+          checkpoint to fp16 and load it using the HF interface. </p>
+
+          <p>I started finetuning the model from these optimizer states, then I convert
+          the final checkpoint using the <code>zero_to_fp32.py</code> script which
+          is created by Megatron-Deepspeed (with some modifications, e.g. I had to
+          modify the names of the layers from <code>n.something.something</code> to
+          <code>h.n.something.something</code>, which are the layers names in the
+          HF loadable model.</p>
+
+          <p>However, even after that, there is still a mismatch between some layers
+          names in the checkpoint and the HF model. Here''s an example of the warnings
+          I get when I try to load the finetuned model in HF:</p>
+
+          <pre><code>&gt;&gt;&gt; from transformer import AutoModelForCausalLM
+
+          &gt;&gt;&gt; model = AutoModelForCausalLM.from_pretrained("1b1/")
+
+          Some weights of the model checkpoint at 1b1/ were not used when initializing
+          BloomForCausalLM: [''h.25.mlp.dense_4h_to_h.bias'', ''h.26.post_attention_layernorm.weight'',
+          ''h.25.mlp.dense_h_to_4h.bias'', ''h.25.self_attention.dense.weight'', ''h.25.post_attention_layernorm.weight'',
+          ''h.28.weight'', ''h.25.self_attention.dense.bias'', ''h.26.mlp.dense_h_to_4h.bias'',
+          ''h.24.input_layernorm.bias'', ''h.24.self_attention.query_key_value.bias'',
+          ''h.26.post_attention_layernorm.bias'', ''h.25.post_attention_layernorm.bias'',
+          ''h.25.self_attention.query_key_value.bias'', ''h.28.bias'', ''h.26.input_layernorm.bias'',
+          ''h.24.post_attention_layernorm.weight'', ''h.26.input_layernorm.weight'',
+          ''h.24.mlp.dense_4h_to_h.bias'', ''h.24.mlp.dense_h_to_4h.bias'', ''h.26.self_attention.query_key_value.weight'',
+          ''h.25.input_layernorm.bias'', ''h.tied_modules.embed.word_embeddings.norm.weight'',
+          ''h.25.mlp.dense_4h_to_h.weight'', ''h.26.self_attention.dense.bias'', ''h.24.self_attention.dense.bias'',
+          ''h.26.self_attention.query_key_value.bias'', ''h.24.self_attention.query_key_value.weight'',
+          ''h.25.self_attention.query_key_value.weight'', ''h.24.mlp.dense_4h_to_h.weight'',
+          ''h.24.post_attention_layernorm.bias'', ''h.25.mlp.dense_h_to_4h.weight'',
+          ''h.24.mlp.dense_h_to_4h.weight'', ''h.26.self_attention.dense.weight'',
+          ''h.26.mlp.dense_h_to_4h.weight'', ''h.26.mlp.dense_4h_to_h.weight'', ''h.tied_modules.embed.word_embeddings.norm.bias'',
+          ''h.24.input_layernorm.weight'', ''h.25.input_layernorm.weight'', ''h.26.mlp.dense_4h_to_h.bias'',
+          ''h.24.self_attention.dense.weight'', ''h.tied_modules.embed.word_embeddings.weight'']
+
+          - This IS expected if you are initializing BloomForCausalLM from the checkpoint
+          of a model trained on another task or with another architecture (e.g. initializing
+          a BertForSequenceClassification model from a BertForPreTraining model).
+
+          - This IS NOT expected if you are initializing BloomForCausalLM from the
+          checkpoint of a model that you expect to be exactly identical (initializing
+          a BertForSequenceClassification model from a BertForSequenceClassification
+          model).
+
+          Some weights of BloomForCausalLM were not initialized from the model checkpoint
+          at 1b1/ and are newly initialized: [''h.2.mlp.dense_4h_to_h.weight'', ''h.1.post_attention_layernorm.weight'',
+          ''h.2.post_attention_layernorm.weight'', ''h.0.input_layernorm.bias'', ''h.0.self_attention.query_key_value.weight'',
+          ''h.0.self_attention.query_key_value.bias'', ''h.0.post_attention_layernorm.weight'',
+          ''h.1.post_attention_layernorm.bias'', ''h.1.mlp.dense_h_to_4h.weight'',
+          ''word_embeddings_layernorm.weight'', ''h.1.self_attention.query_key_value.weight'',
+          ''h.1.self_attention.dense.weight'', ''h.2.input_layernorm.weight'', ''h.1.self_attention.dense.bias'',
+          ''h.2.post_attention_layernorm.bias'', ''h.0.input_layernorm.weight'', ''h.2.self_attention.dense.bias'',
+          ''h.2.mlp.dense_h_to_4h.bias'', ''h.0.mlp.dense_h_to_4h.bias'', ''h.0.self_attention.dense.bias'',
+          ''h.1.input_layernorm.weight'', ''h.1.input_layernorm.bias'', ''h.2.self_attention.dense.weight'',
+          ''word_embeddings_layernorm.bias'', ''h.0.self_attention.dense.weight'',
+          ''h.0.mlp.dense_4h_to_h.bias'', ''h.1.self_attention.query_key_value.bias'',
+          ''h.0.mlp.dense_h_to_4h.weight'', ''word_embeddings.weight'', ''h.2.input_layernorm.bias'',
+          ''h.1.mlp.dense_h_to_4h.bias'', ''h.0.mlp.dense_4h_to_h.weight'', ''h.2.mlp.dense_4h_to_h.bias'',
+          ''h.2.self_attention.query_key_value.bias'', ''h.1.mlp.dense_4h_to_h.weight'',
+          ''h.2.mlp.dense_h_to_4h.weight'', ''h.2.self_attention.query_key_value.weight'',
+          ''ln_f.bias'', ''h.0.post_attention_layernorm.bias'', ''ln_f.weight'', ''h.1.mlp.dense_4h_to_h.bias'']
+
+          You should probably TRAIN this model on a down-stream task to be able to
+          use it for predictions and inference.
+
+          </code></pre>
+
+          <p>In practice, the performances of the model seems to be very compromised
+          as well. Do you have any idea about how why this is happening and why the
+          checkpoint has a different architecture from the HF available model?</p>
+
+          '
+        raw: "Hi! I'm experiencing some issues while trying to export the zero checkpoint\
+          \ to fp16 and load it using the HF interface. \n\nI started finetuning the\
+          \ model from these optimizer states, then I convert the final checkpoint\
+          \ using the `zero_to_fp32.py` script which is created by Megatron-Deepspeed\
+          \ (with some modifications, e.g. I had to modify the names of the layers\
+          \ from `n.something.something` to `h.n.something.something`, which are the\
+          \ layers names in the HF loadable model.\n\nHowever, even after that, there\
+          \ is still a mismatch between some layers names in the checkpoint and the\
+          \ HF model. Here's an example of the warnings I get when I try to load the\
+          \ finetuned model in HF:\n```\n>>> from transformer import AutoModelForCausalLM\n\
+          >>> model = AutoModelForCausalLM.from_pretrained(\"1b1/\")\nSome weights\
+          \ of the model checkpoint at 1b1/ were not used when initializing BloomForCausalLM:\
+          \ ['h.25.mlp.dense_4h_to_h.bias', 'h.26.post_attention_layernorm.weight',\
+          \ 'h.25.mlp.dense_h_to_4h.bias', 'h.25.self_attention.dense.weight', 'h.25.post_attention_layernorm.weight',\
+          \ 'h.28.weight', 'h.25.self_attention.dense.bias', 'h.26.mlp.dense_h_to_4h.bias',\
+          \ 'h.24.input_layernorm.bias', 'h.24.self_attention.query_key_value.bias',\
+          \ 'h.26.post_attention_layernorm.bias', 'h.25.post_attention_layernorm.bias',\
+          \ 'h.25.self_attention.query_key_value.bias', 'h.28.bias', 'h.26.input_layernorm.bias',\
+          \ 'h.24.post_attention_layernorm.weight', 'h.26.input_layernorm.weight',\
+          \ 'h.24.mlp.dense_4h_to_h.bias', 'h.24.mlp.dense_h_to_4h.bias', 'h.26.self_attention.query_key_value.weight',\
+          \ 'h.25.input_layernorm.bias', 'h.tied_modules.embed.word_embeddings.norm.weight',\
+          \ 'h.25.mlp.dense_4h_to_h.weight', 'h.26.self_attention.dense.bias', 'h.24.self_attention.dense.bias',\
+          \ 'h.26.self_attention.query_key_value.bias', 'h.24.self_attention.query_key_value.weight',\
+          \ 'h.25.self_attention.query_key_value.weight', 'h.24.mlp.dense_4h_to_h.weight',\
+          \ 'h.24.post_attention_layernorm.bias', 'h.25.mlp.dense_h_to_4h.weight',\
+          \ 'h.24.mlp.dense_h_to_4h.weight', 'h.26.self_attention.dense.weight', 'h.26.mlp.dense_h_to_4h.weight',\
+          \ 'h.26.mlp.dense_4h_to_h.weight', 'h.tied_modules.embed.word_embeddings.norm.bias',\
+          \ 'h.24.input_layernorm.weight', 'h.25.input_layernorm.weight', 'h.26.mlp.dense_4h_to_h.bias',\
+          \ 'h.24.self_attention.dense.weight', 'h.tied_modules.embed.word_embeddings.weight']\n\
+          - This IS expected if you are initializing BloomForCausalLM from the checkpoint\
+          \ of a model trained on another task or with another architecture (e.g.\
+          \ initializing a BertForSequenceClassification model from a BertForPreTraining\
+          \ model).\n- This IS NOT expected if you are initializing BloomForCausalLM\
+          \ from the checkpoint of a model that you expect to be exactly identical\
+          \ (initializing a BertForSequenceClassification model from a BertForSequenceClassification\
+          \ model).\nSome weights of BloomForCausalLM were not initialized from the\
+          \ model checkpoint at 1b1/ and are newly initialized: ['h.2.mlp.dense_4h_to_h.weight',\
+          \ 'h.1.post_attention_layernorm.weight', 'h.2.post_attention_layernorm.weight',\
+          \ 'h.0.input_layernorm.bias', 'h.0.self_attention.query_key_value.weight',\
+          \ 'h.0.self_attention.query_key_value.bias', 'h.0.post_attention_layernorm.weight',\
+          \ 'h.1.post_attention_layernorm.bias', 'h.1.mlp.dense_h_to_4h.weight', 'word_embeddings_layernorm.weight',\
+          \ 'h.1.self_attention.query_key_value.weight', 'h.1.self_attention.dense.weight',\
+          \ 'h.2.input_layernorm.weight', 'h.1.self_attention.dense.bias', 'h.2.post_attention_layernorm.bias',\
+          \ 'h.0.input_layernorm.weight', 'h.2.self_attention.dense.bias', 'h.2.mlp.dense_h_to_4h.bias',\
+          \ 'h.0.mlp.dense_h_to_4h.bias', 'h.0.self_attention.dense.bias', 'h.1.input_layernorm.weight',\
+          \ 'h.1.input_layernorm.bias', 'h.2.self_attention.dense.weight', 'word_embeddings_layernorm.bias',\
+          \ 'h.0.self_attention.dense.weight', 'h.0.mlp.dense_4h_to_h.bias', 'h.1.self_attention.query_key_value.bias',\
+          \ 'h.0.mlp.dense_h_to_4h.weight', 'word_embeddings.weight', 'h.2.input_layernorm.bias',\
+          \ 'h.1.mlp.dense_h_to_4h.bias', 'h.0.mlp.dense_4h_to_h.weight', 'h.2.mlp.dense_4h_to_h.bias',\
+          \ 'h.2.self_attention.query_key_value.bias', 'h.1.mlp.dense_4h_to_h.weight',\
+          \ 'h.2.mlp.dense_h_to_4h.weight', 'h.2.self_attention.query_key_value.weight',\
+          \ 'ln_f.bias', 'h.0.post_attention_layernorm.bias', 'ln_f.weight', 'h.1.mlp.dense_4h_to_h.bias']\n\
+          You should probably TRAIN this model on a down-stream task to be able to\
+          \ use it for predictions and inference.\n```\n\nIn practice, the performances\
+          \ of the model seems to be very compromised as well. Do you have any idea\
+          \ about how why this is happening and why the checkpoint has a different\
+          \ architecture from the HF available model?"
+        updatedAt: '2022-12-26T10:50:17.859Z'
+      numEdits: 1
+      reactions: []
+    id: 63a97c4a769a10efc4faec43
+    type: comment
+  author: gcamposampie
+  content: "Hi! I'm experiencing some issues while trying to export the zero checkpoint\
+    \ to fp16 and load it using the HF interface. \n\nI started finetuning the model\
+    \ from these optimizer states, then I convert the final checkpoint using the `zero_to_fp32.py`\
+    \ script which is created by Megatron-Deepspeed (with some modifications, e.g.\
+    \ I had to modify the names of the layers from `n.something.something` to `h.n.something.something`,\
+    \ which are the layers names in the HF loadable model.\n\nHowever, even after\
+    \ that, there is still a mismatch between some layers names in the checkpoint\
+    \ and the HF model. Here's an example of the warnings I get when I try to load\
+    \ the finetuned model in HF:\n```\n>>> from transformer import AutoModelForCausalLM\n\
+    >>> model = AutoModelForCausalLM.from_pretrained(\"1b1/\")\nSome weights of the\
+    \ model checkpoint at 1b1/ were not used when initializing BloomForCausalLM: ['h.25.mlp.dense_4h_to_h.bias',\
+    \ 'h.26.post_attention_layernorm.weight', 'h.25.mlp.dense_h_to_4h.bias', 'h.25.self_attention.dense.weight',\
+    \ 'h.25.post_attention_layernorm.weight', 'h.28.weight', 'h.25.self_attention.dense.bias',\
+    \ 'h.26.mlp.dense_h_to_4h.bias', 'h.24.input_layernorm.bias', 'h.24.self_attention.query_key_value.bias',\
+    \ 'h.26.post_attention_layernorm.bias', 'h.25.post_attention_layernorm.bias',\
+    \ 'h.25.self_attention.query_key_value.bias', 'h.28.bias', 'h.26.input_layernorm.bias',\
+    \ 'h.24.post_attention_layernorm.weight', 'h.26.input_layernorm.weight', 'h.24.mlp.dense_4h_to_h.bias',\
+    \ 'h.24.mlp.dense_h_to_4h.bias', 'h.26.self_attention.query_key_value.weight',\
+    \ 'h.25.input_layernorm.bias', 'h.tied_modules.embed.word_embeddings.norm.weight',\
+    \ 'h.25.mlp.dense_4h_to_h.weight', 'h.26.self_attention.dense.bias', 'h.24.self_attention.dense.bias',\
+    \ 'h.26.self_attention.query_key_value.bias', 'h.24.self_attention.query_key_value.weight',\
+    \ 'h.25.self_attention.query_key_value.weight', 'h.24.mlp.dense_4h_to_h.weight',\
+    \ 'h.24.post_attention_layernorm.bias', 'h.25.mlp.dense_h_to_4h.weight', 'h.24.mlp.dense_h_to_4h.weight',\
+    \ 'h.26.self_attention.dense.weight', 'h.26.mlp.dense_h_to_4h.weight', 'h.26.mlp.dense_4h_to_h.weight',\
+    \ 'h.tied_modules.embed.word_embeddings.norm.bias', 'h.24.input_layernorm.weight',\
+    \ 'h.25.input_layernorm.weight', 'h.26.mlp.dense_4h_to_h.bias', 'h.24.self_attention.dense.weight',\
+    \ 'h.tied_modules.embed.word_embeddings.weight']\n- This IS expected if you are\
+    \ initializing BloomForCausalLM from the checkpoint of a model trained on another\
+    \ task or with another architecture (e.g. initializing a BertForSequenceClassification\
+    \ model from a BertForPreTraining model).\n- This IS NOT expected if you are initializing\
+    \ BloomForCausalLM from the checkpoint of a model that you expect to be exactly\
+    \ identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification\
+    \ model).\nSome weights of BloomForCausalLM were not initialized from the model\
+    \ checkpoint at 1b1/ and are newly initialized: ['h.2.mlp.dense_4h_to_h.weight',\
+    \ 'h.1.post_attention_layernorm.weight', 'h.2.post_attention_layernorm.weight',\
+    \ 'h.0.input_layernorm.bias', 'h.0.self_attention.query_key_value.weight', 'h.0.self_attention.query_key_value.bias',\
+    \ 'h.0.post_attention_layernorm.weight', 'h.1.post_attention_layernorm.bias',\
+    \ 'h.1.mlp.dense_h_to_4h.weight', 'word_embeddings_layernorm.weight', 'h.1.self_attention.query_key_value.weight',\
+    \ 'h.1.self_attention.dense.weight', 'h.2.input_layernorm.weight', 'h.1.self_attention.dense.bias',\
+    \ 'h.2.post_attention_layernorm.bias', 'h.0.input_layernorm.weight', 'h.2.self_attention.dense.bias',\
+    \ 'h.2.mlp.dense_h_to_4h.bias', 'h.0.mlp.dense_h_to_4h.bias', 'h.0.self_attention.dense.bias',\
+    \ 'h.1.input_layernorm.weight', 'h.1.input_layernorm.bias', 'h.2.self_attention.dense.weight',\
+    \ 'word_embeddings_layernorm.bias', 'h.0.self_attention.dense.weight', 'h.0.mlp.dense_4h_to_h.bias',\
+    \ 'h.1.self_attention.query_key_value.bias', 'h.0.mlp.dense_h_to_4h.weight', 'word_embeddings.weight',\
+    \ 'h.2.input_layernorm.bias', 'h.1.mlp.dense_h_to_4h.bias', 'h.0.mlp.dense_4h_to_h.weight',\
+    \ 'h.2.mlp.dense_4h_to_h.bias', 'h.2.self_attention.query_key_value.bias', 'h.1.mlp.dense_4h_to_h.weight',\
+    \ 'h.2.mlp.dense_h_to_4h.weight', 'h.2.self_attention.query_key_value.weight',\
+    \ 'ln_f.bias', 'h.0.post_attention_layernorm.bias', 'ln_f.weight', 'h.1.mlp.dense_4h_to_h.bias']\n\
+    You should probably TRAIN this model on a down-stream task to be able to use it\
+    \ for predictions and inference.\n```\n\nIn practice, the performances of the\
+    \ model seems to be very compromised as well. Do you have any idea about how why\
+    \ this is happening and why the checkpoint has a different architecture from the\
+    \ HF available model?"
+  created_at: 2022-12-26 10:49:46+00:00
+  edited: true
+  hidden: false
+  id: 63a97c4a769a10efc4faec43
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+      fullname: Niklas Muennighoff
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: Muennighoff
+      type: user
+    createdAt: '2022-12-26T11:40:15.000Z'
+    data:
+      edited: false
+      editors:
+      - Muennighoff
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1659799717718-5f1eb362eec0ad2a071ad6e2.jpeg?w=200&h=200&f=face
+          fullname: Niklas Muennighoff
+          isHf: false
+          isPro: false
+          name: Muennighoff
+          type: user
+        html: "<p>Can you try this conversion script instead: <a rel=\"nofollow\"\
+          \ href=\"https://github.com/huggingface/transformers/blob/main/src/transformers/models/bloom/convert_bloom_original_checkpoint_to_pytorch.py\"\
+          >https://github.com/huggingface/transformers/blob/main/src/transformers/models/bloom/convert_bloom_original_checkpoint_to_pytorch.py</a><br>\U0001F9D0\
+          </p>\n"
+        raw: "Can you try this conversion script instead: https://github.com/huggingface/transformers/blob/main/src/transformers/models/bloom/convert_bloom_original_checkpoint_to_pytorch.py\n\
+          \U0001F9D0"
+        updatedAt: '2022-12-26T11:40:15.946Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - gcamposampie
+    id: 63a9881f57ca9193a6725edd
+    type: comment
+  author: Muennighoff
+  content: "Can you try this conversion script instead: https://github.com/huggingface/transformers/blob/main/src/transformers/models/bloom/convert_bloom_original_checkpoint_to_pytorch.py\n\
+    \U0001F9D0"
+  created_at: 2022-12-26 11:40:15+00:00
+  edited: false
+  hidden: false
+  id: 63a9881f57ca9193a6725edd
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-26T14:10:57.000Z'
+    data:
+      edited: false
+      editors:
+      - gcamposampie
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+          fullname: Giacomo Camposampiero
+          isHf: false
+          isPro: false
+          name: gcamposampie
+          type: user
+        html: '<p>This script worked perfectly! Thanks for the quick fix.</p>
+
+          '
+        raw: This script worked perfectly! Thanks for the quick fix.
+        updatedAt: '2022-12-26T14:10:57.378Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - Muennighoff
+    id: 63a9ab7157ca9193a67498d5
+    type: comment
+  author: gcamposampie
+  content: This script worked perfectly! Thanks for the quick fix.
+  created_at: 2022-12-26 14:10:57+00:00
+  edited: false
+  hidden: false
+  id: 63a9ab7157ca9193a67498d5
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/b24ae0d2e3fea8ad716d1b7225d9e722.svg
+      fullname: Giacomo Camposampiero
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gcamposampie
+      type: user
+    createdAt: '2022-12-26T14:11:12.000Z'
+    data:
+      status: closed
+    id: 63a9ab803c331aa6f5e0d0d0
+    type: status-change
+  author: gcamposampie
+  created_at: 2022-12-26 14:11:12+00:00
+  id: 63a9ab803c331aa6f5e0d0d0
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: bigscience/bloom-1b1-optimizer-states
+repo_type: model
+status: closed
+target_branch: null
+title: Mismatch layers between global step and HF

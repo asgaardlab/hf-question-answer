@@ -1,0 +1,426 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Aditiyadav
+conflicting_files: null
+created_at: 2023-12-18 20:32:16+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/bf3224a0827358f9fef87c3a6a7525fa.svg
+      fullname: AditiYadav
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Aditiyadav
+      type: user
+    createdAt: '2023-12-18T20:32:16.000Z'
+    data:
+      edited: false
+      editors:
+      - Aditiyadav
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.276620477437973
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/bf3224a0827358f9fef87c3a6a7525fa.svg
+          fullname: AditiYadav
+          isHf: false
+          isPro: false
+          name: Aditiyadav
+          type: user
+        html: "<p>I am FT Phi-2 and i am getting this error--PhiForCausalLM does not\
+          \ support gradient checkpointing. Has anyone dealt with this error?</p>\n\
+          <p>This is my FT code - </p>\n<p>import os<br>import pandas as pd<br>import\
+          \ logging<br>import re<br>import numpy as np<br>import torch<br>import argparse<br>from\
+          \ transformers import (<br>    AutoModelForCausalLM,<br>    AutoTokenizer,<br>\
+          \    TrainingArguments,<br>    DataCollatorForLanguageModeling,<br>    Trainer,Pipeline<br>)<br>from\
+          \ datetime import datetime<br>from datasets import load_dataset, Dataset,\
+          \ DatasetDict<br>from peft import prepare_model_for_int8_training, LoraConfig,\
+          \ get_peft_model,PeftModel<br>from datasets import Dataset, DatasetDict</p>\n\
+          <h1 id=\"set-up-logging\">Set up logging</h1>\n<p>logger = logging.getLogger(<strong>name</strong>)</p>\n\
+          <p>log_dir = \"logs\"<br>os.makedirs(log_dir, exist_ok=True)<br>log_file\
+          \ = os.path.join(log_dir, f\"logs_finetuning_{datetime.now().strftime('%Y%m%d%H%M%S')}.txt\"\
+          )<br>logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s\
+          \ - %(levelname)s - %(message)s')</p>\n<p>def main():<br>    \"\"\"Main\
+          \ function to run ALPaCA LORA training script.\"\"\"<br>    parser = argparse.ArgumentParser(description=\"\
+          Run ALPaCA LORA training script\")<br>    parser.add_argument(\"--sample_size\"\
+          , type=int, default=1000, help=\"Number of samples\")<br>    parser.add_argument(\"\
+          --model_name\", type=str, default=\"databricks/dolly-v2-3b\", help=\"Pretrained\
+          \ model name\")<br>    parser.add_argument(\"--batch_size\", type=int, default=32,\
+          \ help=\"Batch size\")<br>    parser.add_argument(\"--MICRO_BATCH_SIZE\"\
+          , type=int, default=4, help=\"MICRO_BATCH_SIZE\")<br>    parser.add_argument(\"\
+          --output_dir\", type=str, default=\"AlpacaWeights\", help=\"Output Directory\"\
+          )</p>\n<pre><code>args = parser.parse_args()\n\n# Log command-line arguments\n\
+          logging.info(f\"Command-line arguments: {args}\")\n\n# Load tokenizer and\
+          \ model\ntokenizer = AutoTokenizer.from_pretrained(args.model_name, padding_side=\"\
+          left\")\nmodel = AutoModelForCausalLM.from_pretrained(args.model_name, device_map=\"\
+          auto\", torch_dtype=torch.bfloat16, load_in_8bit=True)\n\n# Load dataset(From\
+          \ Hugging Face)\n\n# data = load_dataset(\"tatsu-lab/alpaca\")\n# def generate_prompt(data_point):\n\
+          #     return data_point[\"text\"]\n\n# data = data.map(lambda data_point:\
+          \ {\"prompt\": tokenizer(generate_prompt(data_point))})\n# sampled_data\
+          \ = data['train'].shuffle(seed=42).select(range(args.sample_size))\n# sampled_dataset_dict\
+          \ = DatasetDict({\"train\": sampled_data})\n# data=sampled_dataset_dict\n\
+          \n# End of Hugging Face Dataset code\n\n\n\n# Load dataset(From Local dataframe)\n\
+          df1 = pd.read_csv('mycsvfile.csv')\ndf1 = df1.sample(frac=1.0, random_state=42).reset_index(drop=True)\n\
+          # Convert the Pandas DataFrame to Hugging Face Dataset\nhf_dataset = Dataset.from_pandas(df1)\n\
+          # Create a DatasetDict\ndataset_dict = DatasetDict({\n    \"train\": hf_dataset\n\
+          })\ndata=dataset_dict\ndef generate_prompt(data_point):\n    return f\"\
+          {data_point['consolidated_prompt_response']} \"\n\n\ndata = data.map(lambda\
+          \ data_point: {\"prompt\": tokenizer(generate_prompt(data_point))})\n\n\
+          # Settings for A100 - For 3090 \nMICRO_BATCH_SIZE = args.MICRO_BATCH_SIZE\n\
+          BATCH_SIZE = args.batch_size\nGRADIENT_ACCUMULATION_STEPS = BATCH_SIZE //\
+          \ MICRO_BATCH_SIZE\nEPOCHS = 1  # paper uses 3\nLEARNING_RATE = 2e-5  \n\
+          CUTOFF_LEN = 200  \nLORA_R = 4\nLORA_ALPHA = 16\nLORA_DROPOUT = 0.05\n\n\
+          model = prepare_model_for_int8_training(model, use_gradient_checkpointing=True)\n\
+          \nconfig = LoraConfig(\n    r=LORA_R,\n    lora_alpha=LORA_ALPHA,\n    lora_dropout=LORA_DROPOUT,\n\
+          \    bias=\"none\",\n    task_type=\"CAUSAL_LM\",\n)\nmodel = get_peft_model(model,\
+          \ config)\ntokenizer.pad_token_id = 0  # unk. we want this to be different\
+          \ from the eos token\n\ndata = data.shuffle().map(\n    lambda data_point:\
+          \ tokenizer(\n        generate_prompt(data_point),\n        truncation=True,\n\
+          \        max_length=CUTOFF_LEN,\n        padding=\"max_length\",\n    )\n\
+          )\n\ntrainer = Trainer(\n    model=model,\n    train_dataset=data[\"train\"\
+          ],\n    args=TrainingArguments(\n        per_device_train_batch_size=MICRO_BATCH_SIZE,\n\
+          \        gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,\n    \
+          \    warmup_steps=100,\n        num_train_epochs=EPOCHS,\n        learning_rate=LEARNING_RATE,\n\
+          \        fp16=True,\n        logging_steps=10,\n        output_dir=\"my\
+          \ output directory\",\n        save_total_limit=3,\n        gradient_checkpointing=False,\
+          \  # Disable gradient checkpointing\n\n    ),\n    data_collator=DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\n)\nmodel.config.use_cache = False\ntrainer.train(resume_from_checkpoint=False)\n\
+          \nmodel.save_pretrained(\"my model path\")\n</code></pre>\n<p>if <strong>name</strong>\
+          \ == \"<strong>main</strong>\":<br>    main()</p>\n"
+        raw: "I am FT Phi-2 and i am getting this error--PhiForCausalLM does not support\
+          \ gradient checkpointing. Has anyone dealt with this error?\r\n\r\nThis\
+          \ is my FT code - \r\n\r\nimport os\r\nimport pandas as pd\r\nimport logging\r\
+          \nimport re\r\nimport numpy as np\r\nimport torch\r\nimport argparse\r\n\
+          from transformers import (\r\n    AutoModelForCausalLM,\r\n    AutoTokenizer,\r\
+          \n    TrainingArguments,\r\n    DataCollatorForLanguageModeling,\r\n   \
+          \ Trainer,Pipeline\r\n)\r\nfrom datetime import datetime\r\nfrom datasets\
+          \ import load_dataset, Dataset, DatasetDict\r\nfrom peft import prepare_model_for_int8_training,\
+          \ LoraConfig, get_peft_model,PeftModel\r\nfrom datasets import Dataset,\
+          \ DatasetDict\r\n\r\n\r\n\r\n# Set up logging\r\nlogger = logging.getLogger(__name__)\r\
+          \n\r\nlog_dir = \"logs\"\r\nos.makedirs(log_dir, exist_ok=True)\r\nlog_file\
+          \ = os.path.join(log_dir, f\"logs_finetuning_{datetime.now().strftime('%Y%m%d%H%M%S')}.txt\"\
+          )\r\nlogging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s\
+          \ - %(levelname)s - %(message)s')\r\n\r\n\r\ndef main():\r\n    \"\"\"Main\
+          \ function to run ALPaCA LORA training script.\"\"\"\r\n    parser = argparse.ArgumentParser(description=\"\
+          Run ALPaCA LORA training script\")\r\n    parser.add_argument(\"--sample_size\"\
+          , type=int, default=1000, help=\"Number of samples\")\r\n    parser.add_argument(\"\
+          --model_name\", type=str, default=\"databricks/dolly-v2-3b\", help=\"Pretrained\
+          \ model name\")\r\n    parser.add_argument(\"--batch_size\", type=int, default=32,\
+          \ help=\"Batch size\")\r\n    parser.add_argument(\"--MICRO_BATCH_SIZE\"\
+          , type=int, default=4, help=\"MICRO_BATCH_SIZE\")\r\n    parser.add_argument(\"\
+          --output_dir\", type=str, default=\"AlpacaWeights\", help=\"Output Directory\"\
+          )\r\n\r\n    args = parser.parse_args()\r\n\r\n    # Log command-line arguments\r\
+          \n    logging.info(f\"Command-line arguments: {args}\")\r\n\r\n    # Load\
+          \ tokenizer and model\r\n    tokenizer = AutoTokenizer.from_pretrained(args.model_name,\
+          \ padding_side=\"left\")\r\n    model = AutoModelForCausalLM.from_pretrained(args.model_name,\
+          \ device_map=\"auto\", torch_dtype=torch.bfloat16, load_in_8bit=True)\r\n\
+          \r\n    # Load dataset(From Hugging Face)\r\n    \r\n    # data = load_dataset(\"\
+          tatsu-lab/alpaca\")\r\n    # def generate_prompt(data_point):\r\n    # \
+          \    return data_point[\"text\"]\r\n    \r\n    # data = data.map(lambda\
+          \ data_point: {\"prompt\": tokenizer(generate_prompt(data_point))})\r\n\
+          \    # sampled_data = data['train'].shuffle(seed=42).select(range(args.sample_size))\r\
+          \n    # sampled_dataset_dict = DatasetDict({\"train\": sampled_data})\r\n\
+          \    # data=sampled_dataset_dict\r\n    \r\n    # End of Hugging Face Dataset\
+          \ code\r\n    \r\n\r\n    \r\n    # Load dataset(From Local dataframe)\r\
+          \n    df1 = pd.read_csv('mycsvfile.csv')\r\n    df1 = df1.sample(frac=1.0,\
+          \ random_state=42).reset_index(drop=True)\r\n    # Convert the Pandas DataFrame\
+          \ to Hugging Face Dataset\r\n    hf_dataset = Dataset.from_pandas(df1)\r\
+          \n    # Create a DatasetDict\r\n    dataset_dict = DatasetDict({\r\n   \
+          \     \"train\": hf_dataset\r\n    })\r\n    data=dataset_dict\r\n    def\
+          \ generate_prompt(data_point):\r\n        return f\"{data_point['consolidated_prompt_response']}\
+          \ \"\r\n\r\n\r\n    data = data.map(lambda data_point: {\"prompt\": tokenizer(generate_prompt(data_point))})\r\
+          \n\r\n    # Settings for A100 - For 3090 \r\n    MICRO_BATCH_SIZE = args.MICRO_BATCH_SIZE\r\
+          \n    BATCH_SIZE = args.batch_size\r\n    GRADIENT_ACCUMULATION_STEPS =\
+          \ BATCH_SIZE // MICRO_BATCH_SIZE\r\n    EPOCHS = 1  # paper uses 3\r\n \
+          \   LEARNING_RATE = 2e-5  \r\n    CUTOFF_LEN = 200  \r\n    LORA_R = 4\r\
+          \n    LORA_ALPHA = 16\r\n    LORA_DROPOUT = 0.05\r\n\r\n    model = prepare_model_for_int8_training(model,\
+          \ use_gradient_checkpointing=True)\r\n\r\n    config = LoraConfig(\r\n \
+          \       r=LORA_R,\r\n        lora_alpha=LORA_ALPHA,\r\n        lora_dropout=LORA_DROPOUT,\r\
+          \n        bias=\"none\",\r\n        task_type=\"CAUSAL_LM\",\r\n    )\r\n\
+          \    model = get_peft_model(model, config)\r\n    tokenizer.pad_token_id\
+          \ = 0  # unk. we want this to be different from the eos token\r\n\r\n  \
+          \  data = data.shuffle().map(\r\n        lambda data_point: tokenizer(\r\
+          \n            generate_prompt(data_point),\r\n            truncation=True,\r\
+          \n            max_length=CUTOFF_LEN,\r\n            padding=\"max_length\"\
+          ,\r\n        )\r\n    )\r\n\r\n    trainer = Trainer(\r\n        model=model,\r\
+          \n        train_dataset=data[\"train\"],\r\n        args=TrainingArguments(\r\
+          \n            per_device_train_batch_size=MICRO_BATCH_SIZE,\r\n        \
+          \    gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,\r\n      \
+          \      warmup_steps=100,\r\n            num_train_epochs=EPOCHS,\r\n   \
+          \         learning_rate=LEARNING_RATE,\r\n            fp16=True,\r\n   \
+          \         logging_steps=10,\r\n            output_dir=\"my output directory\"\
+          ,\r\n            save_total_limit=3,\r\n            gradient_checkpointing=False,\
+          \  # Disable gradient checkpointing\r\n\r\n        ),\r\n        data_collator=DataCollatorForLanguageModeling(tokenizer,\
+          \ mlm=False),\r\n    )\r\n    model.config.use_cache = False\r\n    trainer.train(resume_from_checkpoint=False)\r\
+          \n\r\n    model.save_pretrained(\"my model path\")\r\n\r\nif __name__ ==\
+          \ \"__main__\":\r\n    main()"
+        updatedAt: '2023-12-18T20:32:16.188Z'
+      numEdits: 0
+      reactions: []
+    id: 6580ac50abafd960c834ad9e
+    type: comment
+  author: Aditiyadav
+  content: "I am FT Phi-2 and i am getting this error--PhiForCausalLM does not support\
+    \ gradient checkpointing. Has anyone dealt with this error?\r\n\r\nThis is my\
+    \ FT code - \r\n\r\nimport os\r\nimport pandas as pd\r\nimport logging\r\nimport\
+    \ re\r\nimport numpy as np\r\nimport torch\r\nimport argparse\r\nfrom transformers\
+    \ import (\r\n    AutoModelForCausalLM,\r\n    AutoTokenizer,\r\n    TrainingArguments,\r\
+    \n    DataCollatorForLanguageModeling,\r\n    Trainer,Pipeline\r\n)\r\nfrom datetime\
+    \ import datetime\r\nfrom datasets import load_dataset, Dataset, DatasetDict\r\
+    \nfrom peft import prepare_model_for_int8_training, LoraConfig, get_peft_model,PeftModel\r\
+    \nfrom datasets import Dataset, DatasetDict\r\n\r\n\r\n\r\n# Set up logging\r\n\
+    logger = logging.getLogger(__name__)\r\n\r\nlog_dir = \"logs\"\r\nos.makedirs(log_dir,\
+    \ exist_ok=True)\r\nlog_file = os.path.join(log_dir, f\"logs_finetuning_{datetime.now().strftime('%Y%m%d%H%M%S')}.txt\"\
+    )\r\nlogging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s\
+    \ - %(levelname)s - %(message)s')\r\n\r\n\r\ndef main():\r\n    \"\"\"Main function\
+    \ to run ALPaCA LORA training script.\"\"\"\r\n    parser = argparse.ArgumentParser(description=\"\
+    Run ALPaCA LORA training script\")\r\n    parser.add_argument(\"--sample_size\"\
+    , type=int, default=1000, help=\"Number of samples\")\r\n    parser.add_argument(\"\
+    --model_name\", type=str, default=\"databricks/dolly-v2-3b\", help=\"Pretrained\
+    \ model name\")\r\n    parser.add_argument(\"--batch_size\", type=int, default=32,\
+    \ help=\"Batch size\")\r\n    parser.add_argument(\"--MICRO_BATCH_SIZE\", type=int,\
+    \ default=4, help=\"MICRO_BATCH_SIZE\")\r\n    parser.add_argument(\"--output_dir\"\
+    , type=str, default=\"AlpacaWeights\", help=\"Output Directory\")\r\n\r\n    args\
+    \ = parser.parse_args()\r\n\r\n    # Log command-line arguments\r\n    logging.info(f\"\
+    Command-line arguments: {args}\")\r\n\r\n    # Load tokenizer and model\r\n  \
+    \  tokenizer = AutoTokenizer.from_pretrained(args.model_name, padding_side=\"\
+    left\")\r\n    model = AutoModelForCausalLM.from_pretrained(args.model_name, device_map=\"\
+    auto\", torch_dtype=torch.bfloat16, load_in_8bit=True)\r\n\r\n    # Load dataset(From\
+    \ Hugging Face)\r\n    \r\n    # data = load_dataset(\"tatsu-lab/alpaca\")\r\n\
+    \    # def generate_prompt(data_point):\r\n    #     return data_point[\"text\"\
+    ]\r\n    \r\n    # data = data.map(lambda data_point: {\"prompt\": tokenizer(generate_prompt(data_point))})\r\
+    \n    # sampled_data = data['train'].shuffle(seed=42).select(range(args.sample_size))\r\
+    \n    # sampled_dataset_dict = DatasetDict({\"train\": sampled_data})\r\n    #\
+    \ data=sampled_dataset_dict\r\n    \r\n    # End of Hugging Face Dataset code\r\
+    \n    \r\n\r\n    \r\n    # Load dataset(From Local dataframe)\r\n    df1 = pd.read_csv('mycsvfile.csv')\r\
+    \n    df1 = df1.sample(frac=1.0, random_state=42).reset_index(drop=True)\r\n \
+    \   # Convert the Pandas DataFrame to Hugging Face Dataset\r\n    hf_dataset =\
+    \ Dataset.from_pandas(df1)\r\n    # Create a DatasetDict\r\n    dataset_dict =\
+    \ DatasetDict({\r\n        \"train\": hf_dataset\r\n    })\r\n    data=dataset_dict\r\
+    \n    def generate_prompt(data_point):\r\n        return f\"{data_point['consolidated_prompt_response']}\
+    \ \"\r\n\r\n\r\n    data = data.map(lambda data_point: {\"prompt\": tokenizer(generate_prompt(data_point))})\r\
+    \n\r\n    # Settings for A100 - For 3090 \r\n    MICRO_BATCH_SIZE = args.MICRO_BATCH_SIZE\r\
+    \n    BATCH_SIZE = args.batch_size\r\n    GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE\
+    \ // MICRO_BATCH_SIZE\r\n    EPOCHS = 1  # paper uses 3\r\n    LEARNING_RATE =\
+    \ 2e-5  \r\n    CUTOFF_LEN = 200  \r\n    LORA_R = 4\r\n    LORA_ALPHA = 16\r\n\
+    \    LORA_DROPOUT = 0.05\r\n\r\n    model = prepare_model_for_int8_training(model,\
+    \ use_gradient_checkpointing=True)\r\n\r\n    config = LoraConfig(\r\n       \
+    \ r=LORA_R,\r\n        lora_alpha=LORA_ALPHA,\r\n        lora_dropout=LORA_DROPOUT,\r\
+    \n        bias=\"none\",\r\n        task_type=\"CAUSAL_LM\",\r\n    )\r\n    model\
+    \ = get_peft_model(model, config)\r\n    tokenizer.pad_token_id = 0  # unk. we\
+    \ want this to be different from the eos token\r\n\r\n    data = data.shuffle().map(\r\
+    \n        lambda data_point: tokenizer(\r\n            generate_prompt(data_point),\r\
+    \n            truncation=True,\r\n            max_length=CUTOFF_LEN,\r\n     \
+    \       padding=\"max_length\",\r\n        )\r\n    )\r\n\r\n    trainer = Trainer(\r\
+    \n        model=model,\r\n        train_dataset=data[\"train\"],\r\n        args=TrainingArguments(\r\
+    \n            per_device_train_batch_size=MICRO_BATCH_SIZE,\r\n            gradient_accumulation_steps=GRADIENT_ACCUMULATION_STEPS,\r\
+    \n            warmup_steps=100,\r\n            num_train_epochs=EPOCHS,\r\n  \
+    \          learning_rate=LEARNING_RATE,\r\n            fp16=True,\r\n        \
+    \    logging_steps=10,\r\n            output_dir=\"my output directory\",\r\n\
+    \            save_total_limit=3,\r\n            gradient_checkpointing=False,\
+    \  # Disable gradient checkpointing\r\n\r\n        ),\r\n        data_collator=DataCollatorForLanguageModeling(tokenizer,\
+    \ mlm=False),\r\n    )\r\n    model.config.use_cache = False\r\n    trainer.train(resume_from_checkpoint=False)\r\
+    \n\r\n    model.save_pretrained(\"my model path\")\r\n\r\nif __name__ == \"__main__\"\
+    :\r\n    main()"
+  created_at: 2023-12-18 20:32:16+00:00
+  edited: false
+  hidden: false
+  id: 6580ac50abafd960c834ad9e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f8fc619f9eba435219b3292f4d828cd5.svg
+      fullname: rochak chadha
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: rchadha134
+      type: user
+    createdAt: '2023-12-19T01:36:36.000Z'
+    data:
+      edited: false
+      editors:
+      - rchadha134
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8215957283973694
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f8fc619f9eba435219b3292f4d828cd5.svg
+          fullname: rochak chadha
+          isHf: false
+          isPro: false
+          name: rchadha134
+          type: user
+        html: '<p>Phi-2 is currently not supported for gradient checkpointing. You
+          need to set<br> model = prepare_model_for_int8_training(model, use_gradient_checkpointing=False)
+          and then reduce the max seq length if you run into OOM errors. </p>
+
+          '
+        raw: "Phi-2 is currently not supported for gradient checkpointing. You need\
+          \ to set\n model = prepare_model_for_int8_training(model, use_gradient_checkpointing=False)\
+          \ and then reduce the max seq length if you run into OOM errors. \n"
+        updatedAt: '2023-12-19T01:36:36.416Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F44D"
+        users:
+        - Aditiyadav
+        - radames
+    id: 6580f3a4c1b5aed6933f3af8
+    type: comment
+  author: rchadha134
+  content: "Phi-2 is currently not supported for gradient checkpointing. You need\
+    \ to set\n model = prepare_model_for_int8_training(model, use_gradient_checkpointing=False)\
+    \ and then reduce the max seq length if you run into OOM errors. \n"
+  created_at: 2023-12-19 01:36:36+00:00
+  edited: false
+  hidden: false
+  id: 6580f3a4c1b5aed6933f3af8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+      fullname: Karandeep Singh
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdcyberdude
+      type: user
+    createdAt: '2023-12-19T05:54:06.000Z'
+    data:
+      edited: false
+      editors:
+      - kdcyberdude
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4796122908592224
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6379ced57dee98a4ec6ffa7a/QxeLeMXJ94itDM3qaZ2YM.jpeg?w=200&h=200&f=face
+          fullname: Karandeep Singh
+          isHf: false
+          isPro: false
+          name: kdcyberdude
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;Aditiyadav&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/Aditiyadav\">@<span class=\"\
+          underline\">Aditiyadav</span></a></span>\n\n\t</span></span> You can use\
+          \ appropriate branch by specifying revision to enable checkpointing - </p>\n\
+          <p><code>model = AutoModelForCausalLM.from_pretrained(     base_model, \
+          \    quantization_config=bnb_config,     trust_remote_code=True,     flash_attn=True,\
+          \     flash_rotary=True,      fused_dense=True,     low_cpu_mem_usage=True,\
+          \     device_map={\"\": 0},     revision=\"refs/pr/23\", )</code></p>\n"
+        raw: "@Aditiyadav You can use appropriate branch by specifying revision to\
+          \ enable checkpointing - \n```model = AutoModelForCausalLM.from_pretrained(\n\
+          \    base_model,\n    quantization_config=bnb_config,\n    trust_remote_code=True,\n\
+          \    flash_attn=True,\n    flash_rotary=True, \n    fused_dense=True,\n\
+          \    low_cpu_mem_usage=True,\n    device_map={\"\": 0},\n    revision=\"\
+          refs/pr/23\",\n)```"
+        updatedAt: '2023-12-19T05:54:06.510Z'
+      numEdits: 0
+      reactions: []
+    id: 65812ffec15f9833028054c3
+    type: comment
+  author: kdcyberdude
+  content: "@Aditiyadav You can use appropriate branch by specifying revision to enable\
+    \ checkpointing - \n```model = AutoModelForCausalLM.from_pretrained(\n    base_model,\n\
+    \    quantization_config=bnb_config,\n    trust_remote_code=True,\n    flash_attn=True,\n\
+    \    flash_rotary=True, \n    fused_dense=True,\n    low_cpu_mem_usage=True,\n\
+    \    device_map={\"\": 0},\n    revision=\"refs/pr/23\",\n)```"
+  created_at: 2023-12-19 05:54:06+00:00
+  edited: false
+  hidden: false
+  id: 65812ffec15f9833028054c3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/bf3224a0827358f9fef87c3a6a7525fa.svg
+      fullname: AditiYadav
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Aditiyadav
+      type: user
+    createdAt: '2023-12-19T15:06:28.000Z'
+    data:
+      edited: false
+      editors:
+      - Aditiyadav
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7615609765052795
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/bf3224a0827358f9fef87c3a6a7525fa.svg
+          fullname: AditiYadav
+          isHf: false
+          isPro: false
+          name: Aditiyadav
+          type: user
+        html: '<p>I am able to run it now by using use_gradient_checkpointing=False</p>
+
+          '
+        raw: I am able to run it now by using use_gradient_checkpointing=False
+        updatedAt: '2023-12-19T15:06:28.935Z'
+      numEdits: 0
+      reactions: []
+    id: 6581b1746cee829b63c7bbde
+    type: comment
+  author: Aditiyadav
+  content: I am able to run it now by using use_gradient_checkpointing=False
+  created_at: 2023-12-19 15:06:28+00:00
+  edited: false
+  hidden: false
+  id: 6581b1746cee829b63c7bbde
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/bf3224a0827358f9fef87c3a6a7525fa.svg
+      fullname: AditiYadav
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Aditiyadav
+      type: user
+    createdAt: '2023-12-19T19:05:16.000Z'
+    data:
+      status: closed
+    id: 6581e96c8c8aa8116b35ce73
+    type: status-change
+  author: Aditiyadav
+  created_at: 2023-12-19 19:05:16+00:00
+  id: 6581e96c8c8aa8116b35ce73
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 31
+repo_id: microsoft/phi-2
+repo_type: model
+status: closed
+target_branch: null
+title: PhiForCausalLM does not support gradient checkpointing.

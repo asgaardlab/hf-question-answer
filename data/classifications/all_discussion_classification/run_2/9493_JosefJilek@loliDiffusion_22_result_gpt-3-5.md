@@ -1,0 +1,13 @@
+## https://huggingface.co/JosefJilek/loliDiffusion/discussions/22
+
+contains_question: yes
+
+question_part: I've checked all the files in the Examples directory and noticed you didn't provide examples for 4 of the new models:
+loliDiffusionV0.11.10_AOM3-A2_1.0M4-CLIP_VAE_PURIFIED.safetensors
+loliDiffusionV0.11.10_AOM3-A3_1.0M4-CLIP_VAE_PURIFIED.safetensors
+loliDiffusionV0.11.10_Animelike2D-v2_1.0M4-CLIP_VAE_PURIFIED.safetensors
+loliDiffusionV0.11.10_MeinaPastelV6_1.0M4-CLIP_VAE_PURIFIED.safetensors
+
+There are a lot of checkpoints here, so having examples would help in deciding which ones to get. And I always prefer to use one of the original generation examples as the cover image. So it would be nice if you could provide at least one for each of those.
+
+Thanks

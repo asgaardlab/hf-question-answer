@@ -1,0 +1,487 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: patrickvonplaten
+conflicting_files: null
+created_at: 2023-04-15 15:55:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-04-15T16:55:08.000Z'
+    data:
+      edited: true
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: "<p>This thread quickly shows that the <code>diffusers</code> implementation\
+          \ and the original implementation as described <a rel=\"nofollow\" href=\"\
+          https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py\"\
+          >here</a> are equivalent besides some small numerical differences which\
+          \ is due to different attention layers and precision being used. </p>\n\
+          <p>I used the default values as advertised in <a rel=\"nofollow\" href=\"\
+          https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py\"\
+          >here</a> and the prompt \"blue bird\", created the following Python script:</p>\n\
+          <pre><code class=\"language-py\"><span class=\"hljs-keyword\">from</span>\
+          \ share <span class=\"hljs-keyword\">import</span> *\n<span class=\"hljs-keyword\"\
+          >import</span> config\n\n<span class=\"hljs-keyword\">import</span> cv2\n\
+          <span class=\"hljs-keyword\">import</span> einops\n<span class=\"hljs-keyword\"\
+          >import</span> numpy <span class=\"hljs-keyword\">as</span> np\n<span class=\"\
+          hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\">import</span>\
+          \ random\n\n<span class=\"hljs-keyword\">from</span> pytorch_lightning <span\
+          \ class=\"hljs-keyword\">import</span> seed_everything\n<span class=\"hljs-keyword\"\
+          >from</span> annotator.util <span class=\"hljs-keyword\">import</span> resize_image,\
+          \ HWC3\n<span class=\"hljs-keyword\">from</span> annotator.canny <span class=\"\
+          hljs-keyword\">import</span> CannyDetector\n<span class=\"hljs-keyword\"\
+          >from</span> cldm.model <span class=\"hljs-keyword\">import</span> create_model,\
+          \ load_state_dict\n<span class=\"hljs-keyword\">from</span> cldm.ddim_hacked\
+          \ <span class=\"hljs-keyword\">import</span> DDIMSampler\n<span class=\"\
+          hljs-keyword\">import</span> PIL\n\n\npreprocessor = <span class=\"hljs-literal\"\
+          >None</span>\n\nmodel_name = <span class=\"hljs-string\">'control_v11p_sd15_canny'</span>\n\
+          \nmodel = create_model(<span class=\"hljs-string\">f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/<span\
+          \ class=\"hljs-subst\">{model_name}</span>.yaml'</span>).cpu()\nmodel.load_state_dict(load_state_dict(<span\
+          \ class=\"hljs-string\">'/home/patrick/controlnet_v1_1/v1-5-pruned.ckpt'</span>,\
+          \ location=<span class=\"hljs-string\">'cuda'</span>), strict=<span class=\"\
+          hljs-literal\">False</span>)\nmodel.load_state_dict(load_state_dict(<span\
+          \ class=\"hljs-string\">f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/<span\
+          \ class=\"hljs-subst\">{model_name}</span>.pth'</span>, location=<span class=\"\
+          hljs-string\">'cuda'</span>), strict=<span class=\"hljs-literal\">False</span>)\n\
+          model = model.cuda()\nddim_sampler = DDIMSampler(model)\n\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">process</span>(<span\
+          \ class=\"hljs-params\">input_image, prompt, a_prompt=<span class=\"hljs-literal\"\
+          >None</span>, n_prompt=<span class=\"hljs-string\">\"\"</span>, num_samples=<span\
+          \ class=\"hljs-number\">1</span>, image_resolution=<span class=\"hljs-number\"\
+          >512</span>, detect_resolution=<span class=\"hljs-number\">512</span>, ddim_steps=<span\
+          \ class=\"hljs-number\">50</span>, guess_mode=<span class=\"hljs-literal\"\
+          >False</span>, strength=<span class=\"hljs-number\">1.0</span>, scale=<span\
+          \ class=\"hljs-number\">9.0</span>, seed=<span class=\"hljs-number\">0</span>,\
+          \ eta=<span class=\"hljs-number\">1.0</span>, low_threshold=<span class=\"\
+          hljs-number\">100</span>, high_threshold=<span class=\"hljs-number\">200</span></span>):\n\
+          \    <span class=\"hljs-keyword\">global</span> preprocessor\n\n    det\
+          \ = <span class=\"hljs-string\">\"Canny\"</span>\n    <span class=\"hljs-keyword\"\
+          >if</span> det == <span class=\"hljs-string\">'Canny'</span>:\n        <span\
+          \ class=\"hljs-keyword\">if</span> <span class=\"hljs-keyword\">not</span>\
+          \ <span class=\"hljs-built_in\">isinstance</span>(preprocessor, CannyDetector):\n\
+          \            preprocessor = CannyDetector()\n\n    <span class=\"hljs-keyword\"\
+          >with</span> torch.no_grad():\n        input_image = HWC3(input_image)\n\
+          \n        <span class=\"hljs-keyword\">if</span> det == <span class=\"hljs-string\"\
+          >'None'</span>:\n            detected_map = input_image.copy()\n       \
+          \ <span class=\"hljs-keyword\">else</span>:\n            detected_map =\
+          \ preprocessor(resize_image(input_image, detect_resolution), low_threshold,\
+          \ high_threshold)\n            detected_map = HWC3(detected_map)\n\n   \
+          \     img = resize_image(input_image, image_resolution)\n        H, W, C\
+          \ = img.shape\n\n        detected_map = cv2.resize(detected_map, (W, H),\
+          \ interpolation=cv2.INTER_LINEAR)\n\n        control = torch.from_numpy(detected_map.copy()).<span\
+          \ class=\"hljs-built_in\">float</span>().cuda() / <span class=\"hljs-number\"\
+          >255.0</span>\n        control = torch.stack([control <span class=\"hljs-keyword\"\
+          >for</span> _ <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(num_samples)], dim=<span class=\"hljs-number\">0</span>)\n\
+          \        control = einops.rearrange(control, <span class=\"hljs-string\"\
+          >'b h w c -&gt; b c h w'</span>).clone()\n\n        <span class=\"hljs-keyword\"\
+          >if</span> seed == -<span class=\"hljs-number\">1</span>:\n            seed\
+          \ = random.randint(<span class=\"hljs-number\">0</span>, <span class=\"\
+          hljs-number\">65535</span>)\n        seed_everything(seed)\n\n        <span\
+          \ class=\"hljs-keyword\">if</span> config.save_memory:\n            model.low_vram_shift(is_diffusing=<span\
+          \ class=\"hljs-literal\">False</span>)\n\n        cond = {<span class=\"\
+          hljs-string\">\"c_concat\"</span>: [control], <span class=\"hljs-string\"\
+          >\"c_crossattn\"</span>: [model.get_learned_conditioning([prompt + <span\
+          \ class=\"hljs-string\">', '</span> + a_prompt] * num_samples)]}\n     \
+          \   un_cond = {<span class=\"hljs-string\">\"c_concat\"</span>: <span class=\"\
+          hljs-literal\">None</span> <span class=\"hljs-keyword\">if</span> guess_mode\
+          \ <span class=\"hljs-keyword\">else</span> [control], <span class=\"hljs-string\"\
+          >\"c_crossattn\"</span>: [model.get_learned_conditioning([n_prompt] * num_samples)]}\n\
+          \        shape = (<span class=\"hljs-number\">4</span>, H // <span class=\"\
+          hljs-number\">8</span>, W // <span class=\"hljs-number\">8</span>)\n\n \
+          \       <span class=\"hljs-keyword\">if</span> config.save_memory:\n   \
+          \         model.low_vram_shift(is_diffusing=<span class=\"hljs-literal\"\
+          >True</span>)\n\n        model.control_scales = [strength * (<span class=\"\
+          hljs-number\">0.825</span> ** <span class=\"hljs-built_in\">float</span>(<span\
+          \ class=\"hljs-number\">12</span> - i)) <span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-number\">13</span>)] <span class=\"hljs-keyword\"\
+          >if</span> guess_mode <span class=\"hljs-keyword\">else</span> ([strength]\
+          \ * <span class=\"hljs-number\">13</span>)\n        <span class=\"hljs-comment\"\
+          ># Magic number. IDK why. Perhaps because 0.825**12&lt;0.01 but 0.826**12&gt;0.01</span>\n\
+          \n        samples, intermediates = ddim_sampler.sample(ddim_steps, num_samples,\n\
+          \                                                     shape, cond, verbose=<span\
+          \ class=\"hljs-literal\">False</span>, eta=eta,\n                      \
+          \                               unconditional_guidance_scale=scale,\n  \
+          \                                                   unconditional_conditioning=un_cond)\n\
+          \n        <span class=\"hljs-keyword\">if</span> config.save_memory:\n \
+          \           model.low_vram_shift(is_diffusing=<span class=\"hljs-literal\"\
+          >False</span>)\n\n        x_samples = model.decode_first_stage(samples)\n\
+          \        x_samples = (einops.rearrange(x_samples, <span class=\"hljs-string\"\
+          >'b c h w -&gt; b h w c'</span>) * <span class=\"hljs-number\">127.5</span>\
+          \ + <span class=\"hljs-number\">127.5</span>).cpu().numpy().clip(<span class=\"\
+          hljs-number\">0</span>, <span class=\"hljs-number\">255</span>).astype(np.uint8)\n\
+          \n        results = [x_samples[i] <span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(num_samples)]\n    <span class=\"hljs-keyword\">return</span>\
+          \ [detected_map] + results\n\ninput_image = PIL.Image.<span class=\"hljs-built_in\"\
+          >open</span>(<span class=\"hljs-string\">\"/home/patrick/controlnet_v1_1/control_v11p_sd15_canny/images/input.png\"\
+          </span>)\ninput_image = np.asarray(input_image, dtype=np.uint8)\nprompt\
+          \ = <span class=\"hljs-string\">\"red bird\"</span>\n\noutput = process(\n\
+          \    input_image,\n    prompt,\n    eta=<span class=\"hljs-number\">1.0</span>,\n\
+          \    ddim_steps=<span class=\"hljs-number\">20</span>,\n    scale=<span\
+          \ class=\"hljs-number\">9.0</span>,\n    seed=<span class=\"hljs-number\"\
+          >12345</span>,\n    a_prompt=<span class=\"hljs-string\">\"best quality\"\
+          </span>,\n    n_prompt=<span class=\"hljs-string\">\"lowres, bad anatomy,\
+          \ bad hands, cropped, worst quality\"</span>\n)\n\n\n\n\nimg_1 = PIL.Image.fromarray(output[<span\
+          \ class=\"hljs-number\">0</span>])\nimg_2 = PIL.Image.fromarray(output[<span\
+          \ class=\"hljs-number\">1</span>])\n\nimg_1.save(<span class=\"hljs-string\"\
+          >\"/home/patrick/images/canny_orig_1.png\"</span>)\nimg_2.save(<span class=\"\
+          hljs-string\">\"/home/patrick/images/canny_orig_2.png\"</span>)\n</code></pre>\n\
+          <p>Running this script gives me the following two images:<br><a rel=\"nofollow\"\
+          \ href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/4jUks1uf92JZ3qGEFFLr1.png\"\
+          ><img alt=\"canny_orig_1.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/4jUks1uf92JZ3qGEFFLr1.png\"\
+          ></a><br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/BU86UuO0lFupjJ5ZLdXA1.png\"\
+          ><img alt=\"canny_orig_2.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/BU86UuO0lFupjJ5ZLdXA1.png\"\
+          ></a></p>\n"
+        raw: "This thread quickly shows that the `diffusers` implementation and the\
+          \ original implementation as described [here](https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py)\
+          \ are equivalent besides some small numerical differences which is due to\
+          \ different attention layers and precision being used. \n\nI used the default\
+          \ values as advertised in [here](https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py)\
+          \ and the prompt \"blue bird\", created the following Python script:\n\n\
+          ```py\nfrom share import *\nimport config\n\nimport cv2\nimport einops\n\
+          import numpy as np\nimport torch\nimport random\n\nfrom pytorch_lightning\
+          \ import seed_everything\nfrom annotator.util import resize_image, HWC3\n\
+          from annotator.canny import CannyDetector\nfrom cldm.model import create_model,\
+          \ load_state_dict\nfrom cldm.ddim_hacked import DDIMSampler\nimport PIL\n\
+          \n\npreprocessor = None\n\nmodel_name = 'control_v11p_sd15_canny'\n\nmodel\
+          \ = create_model(f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/{model_name}.yaml').cpu()\n\
+          model.load_state_dict(load_state_dict('/home/patrick/controlnet_v1_1/v1-5-pruned.ckpt',\
+          \ location='cuda'), strict=False)\nmodel.load_state_dict(load_state_dict(f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/{model_name}.pth',\
+          \ location='cuda'), strict=False)\nmodel = model.cuda()\nddim_sampler =\
+          \ DDIMSampler(model)\n\ndef process(input_image, prompt, a_prompt=None,\
+          \ n_prompt=\"\", num_samples=1, image_resolution=512, detect_resolution=512,\
+          \ ddim_steps=50, guess_mode=False, strength=1.0, scale=9.0, seed=0, eta=1.0,\
+          \ low_threshold=100, high_threshold=200):\n    global preprocessor\n\n \
+          \   det = \"Canny\"\n    if det == 'Canny':\n        if not isinstance(preprocessor,\
+          \ CannyDetector):\n            preprocessor = CannyDetector()\n\n    with\
+          \ torch.no_grad():\n        input_image = HWC3(input_image)\n\n        if\
+          \ det == 'None':\n            detected_map = input_image.copy()\n      \
+          \  else:\n            detected_map = preprocessor(resize_image(input_image,\
+          \ detect_resolution), low_threshold, high_threshold)\n            detected_map\
+          \ = HWC3(detected_map)\n\n        img = resize_image(input_image, image_resolution)\n\
+          \        H, W, C = img.shape\n\n        detected_map = cv2.resize(detected_map,\
+          \ (W, H), interpolation=cv2.INTER_LINEAR)\n\n        control = torch.from_numpy(detected_map.copy()).float().cuda()\
+          \ / 255.0\n        control = torch.stack([control for _ in range(num_samples)],\
+          \ dim=0)\n        control = einops.rearrange(control, 'b h w c -> b c h\
+          \ w').clone()\n\n        if seed == -1:\n            seed = random.randint(0,\
+          \ 65535)\n        seed_everything(seed)\n\n        if config.save_memory:\n\
+          \            model.low_vram_shift(is_diffusing=False)\n\n        cond =\
+          \ {\"c_concat\": [control], \"c_crossattn\": [model.get_learned_conditioning([prompt\
+          \ + ', ' + a_prompt] * num_samples)]}\n        un_cond = {\"c_concat\":\
+          \ None if guess_mode else [control], \"c_crossattn\": [model.get_learned_conditioning([n_prompt]\
+          \ * num_samples)]}\n        shape = (4, H // 8, W // 8)\n\n        if config.save_memory:\n\
+          \            model.low_vram_shift(is_diffusing=True)\n\n        model.control_scales\
+          \ = [strength * (0.825 ** float(12 - i)) for i in range(13)] if guess_mode\
+          \ else ([strength] * 13)\n        # Magic number. IDK why. Perhaps because\
+          \ 0.825**12<0.01 but 0.826**12>0.01\n\n        samples, intermediates =\
+          \ ddim_sampler.sample(ddim_steps, num_samples,\n                       \
+          \                              shape, cond, verbose=False, eta=eta,\n  \
+          \                                                   unconditional_guidance_scale=scale,\n\
+          \                                                     unconditional_conditioning=un_cond)\n\
+          \n        if config.save_memory:\n            model.low_vram_shift(is_diffusing=False)\n\
+          \n        x_samples = model.decode_first_stage(samples)\n        x_samples\
+          \ = (einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5).cpu().numpy().clip(0,\
+          \ 255).astype(np.uint8)\n\n        results = [x_samples[i] for i in range(num_samples)]\n\
+          \    return [detected_map] + results\n\ninput_image = PIL.Image.open(\"\
+          /home/patrick/controlnet_v1_1/control_v11p_sd15_canny/images/input.png\"\
+          )\ninput_image = np.asarray(input_image, dtype=np.uint8)\nprompt = \"red\
+          \ bird\"\n\noutput = process(\n    input_image,\n    prompt,\n    eta=1.0,\n\
+          \    ddim_steps=20,\n    scale=9.0,\n    seed=12345,\n    a_prompt=\"best\
+          \ quality\",\n    n_prompt=\"lowres, bad anatomy, bad hands, cropped, worst\
+          \ quality\"\n)\n\n\n\n\nimg_1 = PIL.Image.fromarray(output[0])\nimg_2 =\
+          \ PIL.Image.fromarray(output[1])\n\nimg_1.save(\"/home/patrick/images/canny_orig_1.png\"\
+          )\nimg_2.save(\"/home/patrick/images/canny_orig_2.png\")\n```\n\nRunning\
+          \ this script gives me the following two images:\n![canny_orig_1.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/4jUks1uf92JZ3qGEFFLr1.png)\n\
+          ![canny_orig_2.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/BU86UuO0lFupjJ5ZLdXA1.png)"
+        updatedAt: '2023-04-15T16:59:40.553Z'
+      numEdits: 1
+      reactions: []
+    id: 643ad6ece2b979ae614561b7
+    type: comment
+  author: patrickvonplaten
+  content: "This thread quickly shows that the `diffusers` implementation and the\
+    \ original implementation as described [here](https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py)\
+    \ are equivalent besides some small numerical differences which is due to different\
+    \ attention layers and precision being used. \n\nI used the default values as\
+    \ advertised in [here](https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/gradio_canny.py)\
+    \ and the prompt \"blue bird\", created the following Python script:\n\n```py\n\
+    from share import *\nimport config\n\nimport cv2\nimport einops\nimport numpy\
+    \ as np\nimport torch\nimport random\n\nfrom pytorch_lightning import seed_everything\n\
+    from annotator.util import resize_image, HWC3\nfrom annotator.canny import CannyDetector\n\
+    from cldm.model import create_model, load_state_dict\nfrom cldm.ddim_hacked import\
+    \ DDIMSampler\nimport PIL\n\n\npreprocessor = None\n\nmodel_name = 'control_v11p_sd15_canny'\n\
+    \nmodel = create_model(f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/{model_name}.yaml').cpu()\n\
+    model.load_state_dict(load_state_dict('/home/patrick/controlnet_v1_1/v1-5-pruned.ckpt',\
+    \ location='cuda'), strict=False)\nmodel.load_state_dict(load_state_dict(f'/home/patrick/controlnet_v1_1/ControlNet-v1-1/{model_name}.pth',\
+    \ location='cuda'), strict=False)\nmodel = model.cuda()\nddim_sampler = DDIMSampler(model)\n\
+    \ndef process(input_image, prompt, a_prompt=None, n_prompt=\"\", num_samples=1,\
+    \ image_resolution=512, detect_resolution=512, ddim_steps=50, guess_mode=False,\
+    \ strength=1.0, scale=9.0, seed=0, eta=1.0, low_threshold=100, high_threshold=200):\n\
+    \    global preprocessor\n\n    det = \"Canny\"\n    if det == 'Canny':\n    \
+    \    if not isinstance(preprocessor, CannyDetector):\n            preprocessor\
+    \ = CannyDetector()\n\n    with torch.no_grad():\n        input_image = HWC3(input_image)\n\
+    \n        if det == 'None':\n            detected_map = input_image.copy()\n \
+    \       else:\n            detected_map = preprocessor(resize_image(input_image,\
+    \ detect_resolution), low_threshold, high_threshold)\n            detected_map\
+    \ = HWC3(detected_map)\n\n        img = resize_image(input_image, image_resolution)\n\
+    \        H, W, C = img.shape\n\n        detected_map = cv2.resize(detected_map,\
+    \ (W, H), interpolation=cv2.INTER_LINEAR)\n\n        control = torch.from_numpy(detected_map.copy()).float().cuda()\
+    \ / 255.0\n        control = torch.stack([control for _ in range(num_samples)],\
+    \ dim=0)\n        control = einops.rearrange(control, 'b h w c -> b c h w').clone()\n\
+    \n        if seed == -1:\n            seed = random.randint(0, 65535)\n      \
+    \  seed_everything(seed)\n\n        if config.save_memory:\n            model.low_vram_shift(is_diffusing=False)\n\
+    \n        cond = {\"c_concat\": [control], \"c_crossattn\": [model.get_learned_conditioning([prompt\
+    \ + ', ' + a_prompt] * num_samples)]}\n        un_cond = {\"c_concat\": None if\
+    \ guess_mode else [control], \"c_crossattn\": [model.get_learned_conditioning([n_prompt]\
+    \ * num_samples)]}\n        shape = (4, H // 8, W // 8)\n\n        if config.save_memory:\n\
+    \            model.low_vram_shift(is_diffusing=True)\n\n        model.control_scales\
+    \ = [strength * (0.825 ** float(12 - i)) for i in range(13)] if guess_mode else\
+    \ ([strength] * 13)\n        # Magic number. IDK why. Perhaps because 0.825**12<0.01\
+    \ but 0.826**12>0.01\n\n        samples, intermediates = ddim_sampler.sample(ddim_steps,\
+    \ num_samples,\n                                                     shape, cond,\
+    \ verbose=False, eta=eta,\n                                                  \
+    \   unconditional_guidance_scale=scale,\n                                    \
+    \                 unconditional_conditioning=un_cond)\n\n        if config.save_memory:\n\
+    \            model.low_vram_shift(is_diffusing=False)\n\n        x_samples = model.decode_first_stage(samples)\n\
+    \        x_samples = (einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5\
+    \ + 127.5).cpu().numpy().clip(0, 255).astype(np.uint8)\n\n        results = [x_samples[i]\
+    \ for i in range(num_samples)]\n    return [detected_map] + results\n\ninput_image\
+    \ = PIL.Image.open(\"/home/patrick/controlnet_v1_1/control_v11p_sd15_canny/images/input.png\"\
+    )\ninput_image = np.asarray(input_image, dtype=np.uint8)\nprompt = \"red bird\"\
+    \n\noutput = process(\n    input_image,\n    prompt,\n    eta=1.0,\n    ddim_steps=20,\n\
+    \    scale=9.0,\n    seed=12345,\n    a_prompt=\"best quality\",\n    n_prompt=\"\
+    lowres, bad anatomy, bad hands, cropped, worst quality\"\n)\n\n\n\n\nimg_1 = PIL.Image.fromarray(output[0])\n\
+    img_2 = PIL.Image.fromarray(output[1])\n\nimg_1.save(\"/home/patrick/images/canny_orig_1.png\"\
+    )\nimg_2.save(\"/home/patrick/images/canny_orig_2.png\")\n```\n\nRunning this\
+    \ script gives me the following two images:\n![canny_orig_1.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/4jUks1uf92JZ3qGEFFLr1.png)\n\
+    ![canny_orig_2.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/BU86UuO0lFupjJ5ZLdXA1.png)"
+  created_at: 2023-04-15 15:55:08+00:00
+  edited: true
+  hidden: false
+  id: 643ad6ece2b979ae614561b7
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-04-15T16:59:09.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: "<p>Now doing more or less the equivalent with `diffusers:</p>\n<pre><code\
+          \ class=\"language-py\"><span class=\"hljs-keyword\">from</span> pytorch_lightning\
+          \ <span class=\"hljs-keyword\">import</span> seed_everything\n<span class=\"\
+          hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\">import</span>\
+          \ os\n<span class=\"hljs-keyword\">from</span> huggingface_hub <span class=\"\
+          hljs-keyword\">import</span> HfApi\n<span class=\"hljs-keyword\">from</span>\
+          \ annotator.util <span class=\"hljs-keyword\">import</span> resize_image,\
+          \ HWC3\n<span class=\"hljs-keyword\">from</span> pathlib <span class=\"\
+          hljs-keyword\">import</span> Path\n<span class=\"hljs-keyword\">from</span>\
+          \ diffusers.utils <span class=\"hljs-keyword\">import</span> load_image\n\
+          <span class=\"hljs-keyword\">from</span> diffusers.models.attention_processor\
+          \ <span class=\"hljs-keyword\">import</span> AttnProcessor\n<span class=\"\
+          hljs-keyword\">import</span> numpy <span class=\"hljs-keyword\">as</span>\
+          \ np\n<span class=\"hljs-keyword\">import</span> cv2\n<span class=\"hljs-keyword\"\
+          >from</span> PIL <span class=\"hljs-keyword\">import</span> Image\n\n<span\
+          \ class=\"hljs-keyword\">from</span> diffusers <span class=\"hljs-keyword\"\
+          >import</span> (\n    ControlNetModel,\n    StableDiffusionControlNetPipeline,\n\
+          \    DDIMScheduler,\n)\n\ncheckpoint = <span class=\"hljs-string\">\"lllyasviel/control_v11p_sd15_canny\"\
+          </span>\n\nimage = load_image(\n    <span class=\"hljs-string\">\"https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/images/input.png\"\
+          </span>\n)\n\nimage = np.array(image)\n\nimage = resize_image(image, <span\
+          \ class=\"hljs-number\">512</span>)\n\nlow_threshold = <span class=\"hljs-number\"\
+          >100</span>\nhigh_threshold = <span class=\"hljs-number\">200</span>\n\n\
+          image = cv2.Canny(image, low_threshold, high_threshold)\nimage = image[:,\
+          \ :, <span class=\"hljs-literal\">None</span>]\nimage = np.concatenate([image,\
+          \ image, image], axis=<span class=\"hljs-number\">2</span>)\ncontrol_image\
+          \ = Image.fromarray(image)\n\ncontrolnet = ControlNetModel.from_pretrained(checkpoint,\
+          \ torch_dtype=torch.float16)\npipe = StableDiffusionControlNetPipeline.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"runwayml/stable-diffusion-v1-5\"</span>,\
+          \ controlnet=controlnet, torch_dtype=torch.float16\n)\npipe.scheduler =\
+          \ DDIMScheduler.from_config(pipe.scheduler.config)\npipe.to(<span class=\"\
+          hljs-string\">\"cuda\"</span>)\n\nprompt = <span class=\"hljs-string\">\"\
+          bird, best quality\"</span>\nseed = <span class=\"hljs-number\">12345</span>\n\
+          negative_prompt = <span class=\"hljs-string\">\"lowres, bad anatomy, bad\
+          \ hands, cropped, worst quality\"</span>\n\nseed_everything(seed)\nimage\
+          \ = pipe(prompt, num_inference_steps=<span class=\"hljs-number\">20</span>,\
+          \ negative_prompt=negative_prompt, image=control_image, guidance_scale=<span\
+          \ class=\"hljs-number\">9.0</span>, eta=<span class=\"hljs-number\">1.0</span>).images[<span\
+          \ class=\"hljs-number\">0</span>]\n\ncontrol_image.save(<span class=\"hljs-string\"\
+          >\"/home/patrick/images/canny_diff_1.png\"</span>)\nimage.save(<span class=\"\
+          hljs-string\">\"/home/patrick/images/canny_diff_2.png\"</span>)\n</code></pre>\n\
+          <p>We get:<br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/t3vg98c8GOXwJsukSGXyz.png\"\
+          ><img alt=\"canny_diff_1.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/t3vg98c8GOXwJsukSGXyz.png\"\
+          ></a><br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/SneW0J2ODiNrf8bRGbIzw.png\"\
+          ><img alt=\"canny_diff_2.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/SneW0J2ODiNrf8bRGbIzw.png\"\
+          ></a></p>\n"
+        raw: "Now doing more or less the equivalent with `diffusers:\n\n```py\nfrom\
+          \ pytorch_lightning import seed_everything\nimport torch\nimport os\nfrom\
+          \ huggingface_hub import HfApi\nfrom annotator.util import resize_image,\
+          \ HWC3\nfrom pathlib import Path\nfrom diffusers.utils import load_image\n\
+          from diffusers.models.attention_processor import AttnProcessor\nimport numpy\
+          \ as np\nimport cv2\nfrom PIL import Image\n\nfrom diffusers import (\n\
+          \    ControlNetModel,\n    StableDiffusionControlNetPipeline,\n    DDIMScheduler,\n\
+          )\n\ncheckpoint = \"lllyasviel/control_v11p_sd15_canny\"\n\nimage = load_image(\n\
+          \    \"https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/images/input.png\"\
+          \n)\n\nimage = np.array(image)\n\nimage = resize_image(image, 512)\n\nlow_threshold\
+          \ = 100\nhigh_threshold = 200\n\nimage = cv2.Canny(image, low_threshold,\
+          \ high_threshold)\nimage = image[:, :, None]\nimage = np.concatenate([image,\
+          \ image, image], axis=2)\ncontrol_image = Image.fromarray(image)\n\ncontrolnet\
+          \ = ControlNetModel.from_pretrained(checkpoint, torch_dtype=torch.float16)\n\
+          pipe = StableDiffusionControlNetPipeline.from_pretrained(\n    \"runwayml/stable-diffusion-v1-5\"\
+          , controlnet=controlnet, torch_dtype=torch.float16\n)\npipe.scheduler =\
+          \ DDIMScheduler.from_config(pipe.scheduler.config)\npipe.to(\"cuda\")\n\n\
+          prompt = \"bird, best quality\"\nseed = 12345\nnegative_prompt = \"lowres,\
+          \ bad anatomy, bad hands, cropped, worst quality\"\n\nseed_everything(seed)\n\
+          image = pipe(prompt, num_inference_steps=20, negative_prompt=negative_prompt,\
+          \ image=control_image, guidance_scale=9.0, eta=1.0).images[0]\n\ncontrol_image.save(\"\
+          /home/patrick/images/canny_diff_1.png\")\nimage.save(\"/home/patrick/images/canny_diff_2.png\"\
+          )\n```\n\nWe get:\n![canny_diff_1.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/t3vg98c8GOXwJsukSGXyz.png)\n\
+          ![canny_diff_2.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/SneW0J2ODiNrf8bRGbIzw.png)"
+        updatedAt: '2023-04-15T16:59:09.885Z'
+      numEdits: 0
+      reactions: []
+    id: 643ad7dd9462a44ea6e97a1b
+    type: comment
+  author: patrickvonplaten
+  content: "Now doing more or less the equivalent with `diffusers:\n\n```py\nfrom\
+    \ pytorch_lightning import seed_everything\nimport torch\nimport os\nfrom huggingface_hub\
+    \ import HfApi\nfrom annotator.util import resize_image, HWC3\nfrom pathlib import\
+    \ Path\nfrom diffusers.utils import load_image\nfrom diffusers.models.attention_processor\
+    \ import AttnProcessor\nimport numpy as np\nimport cv2\nfrom PIL import Image\n\
+    \nfrom diffusers import (\n    ControlNetModel,\n    StableDiffusionControlNetPipeline,\n\
+    \    DDIMScheduler,\n)\n\ncheckpoint = \"lllyasviel/control_v11p_sd15_canny\"\n\
+    \nimage = load_image(\n    \"https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/images/input.png\"\
+    \n)\n\nimage = np.array(image)\n\nimage = resize_image(image, 512)\n\nlow_threshold\
+    \ = 100\nhigh_threshold = 200\n\nimage = cv2.Canny(image, low_threshold, high_threshold)\n\
+    image = image[:, :, None]\nimage = np.concatenate([image, image, image], axis=2)\n\
+    control_image = Image.fromarray(image)\n\ncontrolnet = ControlNetModel.from_pretrained(checkpoint,\
+    \ torch_dtype=torch.float16)\npipe = StableDiffusionControlNetPipeline.from_pretrained(\n\
+    \    \"runwayml/stable-diffusion-v1-5\", controlnet=controlnet, torch_dtype=torch.float16\n\
+    )\npipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)\npipe.to(\"\
+    cuda\")\n\nprompt = \"bird, best quality\"\nseed = 12345\nnegative_prompt = \"\
+    lowres, bad anatomy, bad hands, cropped, worst quality\"\n\nseed_everything(seed)\n\
+    image = pipe(prompt, num_inference_steps=20, negative_prompt=negative_prompt,\
+    \ image=control_image, guidance_scale=9.0, eta=1.0).images[0]\n\ncontrol_image.save(\"\
+    /home/patrick/images/canny_diff_1.png\")\nimage.save(\"/home/patrick/images/canny_diff_2.png\"\
+    )\n```\n\nWe get:\n![canny_diff_1.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/t3vg98c8GOXwJsukSGXyz.png)\n\
+    ![canny_diff_2.png](https://cdn-uploads.huggingface.co/production/uploads/5dfcb1aada6d0311fd3d5448/SneW0J2ODiNrf8bRGbIzw.png)"
+  created_at: 2023-04-15 15:59:09+00:00
+  edited: false
+  hidden: false
+  id: 643ad7dd9462a44ea6e97a1b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-04-15T17:06:48.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: '<p>As one can see there are some differences: The diffusers version
+          has some green feathers while the original one does not. Apart from this,
+          I would argue that the images are extremely similar for such a non-specific
+          prompt. The more specific the prompt, the more similar the pictures would
+          be. </p>
+
+          <p>I''m running the examples on PyTorch 2.0 and on a RTX4090 GPU and use
+          "pure" float16 optimization for <code>diffusers</code>. Also <code>diffusers</code>
+          makes use of <a rel="nofollow" href="https://pytorch.org/blog/accelerated-diffusers-pt-20/">PyTorch''s
+          Accelerated Attention</a> while the original code seems to run using "normal"
+          PyTorch attention and float32.</p>
+
+          '
+        raw: "As one can see there are some differences: The diffusers version has\
+          \ some green feathers while the original one does not. Apart from this,\
+          \ I would argue that the images are extremely similar for such a non-specific\
+          \ prompt. The more specific the prompt, the more similar the pictures would\
+          \ be. \n\nI'm running the examples on PyTorch 2.0 and on a RTX4090 GPU and\
+          \ use \"pure\" float16 optimization for `diffusers`. Also `diffusers` makes\
+          \ use of [PyTorch's Accelerated Attention](https://pytorch.org/blog/accelerated-diffusers-pt-20/)\
+          \ while the original code seems to run using \"normal\" PyTorch attention\
+          \ and float32."
+        updatedAt: '2023-04-15T17:06:48.883Z'
+      numEdits: 0
+      reactions: []
+    id: 643ad9a845200ac3e705c875
+    type: comment
+  author: patrickvonplaten
+  content: "As one can see there are some differences: The diffusers version has some\
+    \ green feathers while the original one does not. Apart from this, I would argue\
+    \ that the images are extremely similar for such a non-specific prompt. The more\
+    \ specific the prompt, the more similar the pictures would be. \n\nI'm running\
+    \ the examples on PyTorch 2.0 and on a RTX4090 GPU and use \"pure\" float16 optimization\
+    \ for `diffusers`. Also `diffusers` makes use of [PyTorch's Accelerated Attention](https://pytorch.org/blog/accelerated-diffusers-pt-20/)\
+    \ while the original code seems to run using \"normal\" PyTorch attention and\
+    \ float32."
+  created_at: 2023-04-15 16:06:48+00:00
+  edited: false
+  hidden: false
+  id: 643ad9a845200ac3e705c875
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 1
+repo_id: lllyasviel/control_v11p_sd15_canny
+repo_type: model
+status: open
+target_branch: null
+title: Integration Testing against original implementation

@@ -1,0 +1,4 @@
+## https://huggingface.co/mistralai/Mistral-7B-v0.1/discussions/114
+
+contains_question: yes
+question_part: I know you usually do not put these type of stuff on the community tab of the projects, but let's be honest! I'm super excited and happy to announce Mistral 7B, is the reason I could bring my own language, Persian, to the world of AI. If you want to know more about what we've done, first you can find information [here](https://haghiri75.com/en/maral-is-here-7-billion-parameters-bilingual-model-with-support-of-persian/) and second, you can ask me anything here or in the community tab of our own project.

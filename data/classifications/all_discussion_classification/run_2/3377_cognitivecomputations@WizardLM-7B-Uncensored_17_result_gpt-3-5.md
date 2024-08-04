@@ -1,0 +1,4 @@
+## https://huggingface.co/cognitivecomputations/WizardLM-7B-Uncensored/discussions/17
+
+contains_question: yes
+question_part: I'm finding myself stuck on how to implement this into my script, I figure that you could simply do it like other models but I'd like to make sure, this is how I'd imagine you can run it: config = transformers.AutoConfig.from_pretrained( 'ehartford/WizardLM-7B-Uncensored', trust_remote_code=True ) config.attn_config['attn_impl'] = 'torch' config.update({"max_seq_len": 8192}) model = transformers.AutoModelForCausalLM.from_pretrained( 'ehartford/WizardLM-7B-Uncensored', config=config, torch_dtype=torch.bfloat16, trust_remote_code=True ) Although, I'm uncertain about things like if I can actually change the sequence length on this one, and if I need to add the attn_config part. Any help would greatly be appreciated.

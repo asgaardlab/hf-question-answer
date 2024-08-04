@@ -1,0 +1,175 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: cooper521
+conflicting_files: null
+created_at: 2023-10-03 11:50:24+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a5b30f1c14cb2b2c633076719f824ec0.svg
+      fullname: cooper x
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: cooper521
+      type: user
+    createdAt: '2023-10-03T12:50:24.000Z'
+    data:
+      edited: true
+      editors:
+      - cooper521
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5918198823928833
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a5b30f1c14cb2b2c633076719f824ec0.svg
+          fullname: cooper x
+          isHf: false
+          isPro: false
+          name: cooper521
+          type: user
+        html: "<p>I want to know how to configure the settings to achieve better scores.I\
+          \ observed that the evaluation results in the \"Evaluation results\" column\
+          \ are as follows:</p>\n<ul>\n<li>ROUGE-1 on cnn_dailymail: 42.949</li>\n\
+          <li>ROUGE-2 on cnn_dailymail: 20.815</li>\n<li>ROUGE-L on cnn_dailymail:\
+          \ 30.619</li>\n</ul>\n<p>However, when I tested using <code>bart-large-cnn</code>\
+          \ on daily/dm, the scores were significantly lower:</p>\n<ul>\n<li>ROUGE-1:\
+          \ 0.2891</li>\n<li>ROUGE-2: 0.1383</li>\n<li>ROUGE-L: 0.2104<br>Here is\
+          \ the code I used:</li>\n</ul>\n<pre><code class=\"language-python\"><span\
+          \ class=\"hljs-comment\"># Importing libraries</span>\nmodel_name = <span\
+          \ class=\"hljs-string\">'/root/.cache/huggingface/hub/bart-large-cnn'</span>\n\
+          tokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = BartForConditionalGeneration.from_pretrained(model_name)\n\
+          dataset = datasets.load_from_disk(<span class=\"hljs-string\">'data/cnn_daily'</span>)[<span\
+          \ class=\"hljs-string\">'test'</span>]\n\n<span class=\"hljs-comment\">#\
+          \ Initialize</span>\naccelerator = Accelerator()\nmodel, tokenizer = accelerator.prepare(model,\
+          \ tokenizer)\nscorer = rouge_scorer.RougeScorer([<span class=\"hljs-string\"\
+          >'rouge1'</span>, <span class=\"hljs-string\">'rouge2'</span>, <span class=\"\
+          hljs-string\">'rougeL'</span>], use_stemmer=<span class=\"hljs-literal\"\
+          >True</span>)\n\n<span class=\"hljs-comment\"># Generate summaries</span>\n\
+          predicted_texts = []\nreference_texts = []\nbatch_size = <span class=\"\
+          hljs-number\">8</span>\n\n<span class=\"hljs-keyword\">for</span> i <span\
+          \ class=\"hljs-keyword\">in</span> tqdm(<span class=\"hljs-built_in\">range</span>(<span\
+          \ class=\"hljs-number\">0</span>, <span class=\"hljs-built_in\">len</span>(dataset),\
+          \ batch_size), desc=<span class=\"hljs-string\">\"Processing batches\"</span>):\n\
+          \    <span class=\"hljs-comment\"># Test condition</span>\n    <span class=\"\
+          hljs-keyword\">if</span> i &gt;= <span class=\"hljs-number\">2</span> *\
+          \ batch_size:\n        <span class=\"hljs-keyword\">break</span>\n    \n\
+          \    batch = dataset[i: i + batch_size]\n    input_texts = batch[<span class=\"\
+          hljs-string\">'article'</span>]\n    target_texts = batch[<span class=\"\
+          hljs-string\">'highlights'</span>]\n    \n    inputs = tokenizer(\n    \
+          \    input_texts, \n        return_tensors=<span class=\"hljs-string\">\"\
+          pt\"</span>, \n        add_special_tokens=<span class=\"hljs-literal\">True</span>,\
+          \ \n        padding=<span class=\"hljs-literal\">True</span>, \n       \
+          \ truncation=<span class=\"hljs-literal\">True</span>, \n        max_length=<span\
+          \ class=\"hljs-number\">1024</span>\n    ).to(model.device)\n    \n    <span\
+          \ class=\"hljs-comment\"># Generate summary IDs</span>\n    summary_ids\
+          \ = model.generate(\n        **inputs, \n        do_sample=<span class=\"\
+          hljs-literal\">True</span>, \n        temperature=<span class=\"hljs-number\"\
+          >0.7</span>, \n        max_new_tokens=<span class=\"hljs-number\">200</span>,\
+          \ \n        top_k=<span class=\"hljs-number\">0</span>\n    )\n\n    <span\
+          \ class=\"hljs-comment\"># Decode and extend lists</span>\n    predicted_texts_batch\
+          \ = tokenizer.batch_decode(summary_ids, skip_special_tokens=<span class=\"\
+          hljs-literal\">True</span>)\n    predicted_texts.extend(predicted_texts_batch)\n\
+          \    reference_texts.extend(target_texts)\n\n<span class=\"hljs-comment\"\
+          ># Compute ROUGE scores</span>\nall_scores = []\n<span class=\"hljs-keyword\"\
+          >for</span> ref, pred <span class=\"hljs-keyword\">in</span> <span class=\"\
+          hljs-built_in\">zip</span>(reference_texts, predicted_texts):\n    scores\
+          \ = scorer.score(ref, pred)\n    all_scores.append(scores)\n\n<span class=\"\
+          hljs-comment\"># Calculate average scores</span>\navg_scores = {key: <span\
+          \ class=\"hljs-number\">0.0</span> <span class=\"hljs-keyword\">for</span>\
+          \ key <span class=\"hljs-keyword\">in</span> all_scores[<span class=\"hljs-number\"\
+          >0</span>].keys()}\n<span class=\"hljs-keyword\">for</span> score <span\
+          \ class=\"hljs-keyword\">in</span> all_scores:\n    <span class=\"hljs-keyword\"\
+          >for</span> key, value <span class=\"hljs-keyword\">in</span> score.items():\n\
+          \        avg_scores[key] += value.fmeasure\n\n<span class=\"hljs-keyword\"\
+          >for</span> key, value <span class=\"hljs-keyword\">in</span> avg_scores.items():\n\
+          \    avg_scores[key] = value / <span class=\"hljs-built_in\">len</span>(all_scores)\n\
+          \n<span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >\"Average ROUGE scores:\"</span>, avg_scores)\n</code></pre>\n"
+        raw: "I want to know how to configure the settings to achieve better scores.I\
+          \ observed that the evaluation results in the \"Evaluation results\" column\
+          \ are as follows:\n- ROUGE-1 on cnn_dailymail: 42.949\n- ROUGE-2 on cnn_dailymail:\
+          \ 20.815\n- ROUGE-L on cnn_dailymail: 30.619\n\nHowever, when I tested using\
+          \ `bart-large-cnn` on daily/dm, the scores were significantly lower:\n-\
+          \ ROUGE-1: 0.2891\n- ROUGE-2: 0.1383\n- ROUGE-L: 0.2104\nHere is the code\
+          \ I used:\n\n```python\n# Importing libraries\nmodel_name = '/root/.cache/huggingface/hub/bart-large-cnn'\n\
+          tokenizer = AutoTokenizer.from_pretrained(model_name)\nmodel = BartForConditionalGeneration.from_pretrained(model_name)\n\
+          dataset = datasets.load_from_disk('data/cnn_daily')['test']\n\n# Initialize\n\
+          accelerator = Accelerator()\nmodel, tokenizer = accelerator.prepare(model,\
+          \ tokenizer)\nscorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'],\
+          \ use_stemmer=True)\n\n# Generate summaries\npredicted_texts = []\nreference_texts\
+          \ = []\nbatch_size = 8\n\nfor i in tqdm(range(0, len(dataset), batch_size),\
+          \ desc=\"Processing batches\"):\n    # Test condition\n    if i >= 2 * batch_size:\n\
+          \        break\n    \n    batch = dataset[i: i + batch_size]\n    input_texts\
+          \ = batch['article']\n    target_texts = batch['highlights']\n    \n   \
+          \ inputs = tokenizer(\n        input_texts, \n        return_tensors=\"\
+          pt\", \n        add_special_tokens=True, \n        padding=True, \n    \
+          \    truncation=True, \n        max_length=1024\n    ).to(model.device)\n\
+          \    \n    # Generate summary IDs\n    summary_ids = model.generate(\n \
+          \       **inputs, \n        do_sample=True, \n        temperature=0.7, \n\
+          \        max_new_tokens=200, \n        top_k=0\n    )\n\n    # Decode and\
+          \ extend lists\n    predicted_texts_batch = tokenizer.batch_decode(summary_ids,\
+          \ skip_special_tokens=True)\n    predicted_texts.extend(predicted_texts_batch)\n\
+          \    reference_texts.extend(target_texts)\n\n# Compute ROUGE scores\nall_scores\
+          \ = []\nfor ref, pred in zip(reference_texts, predicted_texts):\n    scores\
+          \ = scorer.score(ref, pred)\n    all_scores.append(scores)\n\n# Calculate\
+          \ average scores\navg_scores = {key: 0.0 for key in all_scores[0].keys()}\n\
+          for score in all_scores:\n    for key, value in score.items():\n       \
+          \ avg_scores[key] += value.fmeasure\n\nfor key, value in avg_scores.items():\n\
+          \    avg_scores[key] = value / len(all_scores)\n\nprint(\"Average ROUGE\
+          \ scores:\", avg_scores)\n```"
+        updatedAt: '2023-10-03T12:55:19.599Z'
+      numEdits: 1
+      reactions: []
+    id: 651c0e1063cd12f4ba9132b4
+    type: comment
+  author: cooper521
+  content: "I want to know how to configure the settings to achieve better scores.I\
+    \ observed that the evaluation results in the \"Evaluation results\" column are\
+    \ as follows:\n- ROUGE-1 on cnn_dailymail: 42.949\n- ROUGE-2 on cnn_dailymail:\
+    \ 20.815\n- ROUGE-L on cnn_dailymail: 30.619\n\nHowever, when I tested using `bart-large-cnn`\
+    \ on daily/dm, the scores were significantly lower:\n- ROUGE-1: 0.2891\n- ROUGE-2:\
+    \ 0.1383\n- ROUGE-L: 0.2104\nHere is the code I used:\n\n```python\n# Importing\
+    \ libraries\nmodel_name = '/root/.cache/huggingface/hub/bart-large-cnn'\ntokenizer\
+    \ = AutoTokenizer.from_pretrained(model_name)\nmodel = BartForConditionalGeneration.from_pretrained(model_name)\n\
+    dataset = datasets.load_from_disk('data/cnn_daily')['test']\n\n# Initialize\n\
+    accelerator = Accelerator()\nmodel, tokenizer = accelerator.prepare(model, tokenizer)\n\
+    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)\n\
+    \n# Generate summaries\npredicted_texts = []\nreference_texts = []\nbatch_size\
+    \ = 8\n\nfor i in tqdm(range(0, len(dataset), batch_size), desc=\"Processing batches\"\
+    ):\n    # Test condition\n    if i >= 2 * batch_size:\n        break\n    \n \
+    \   batch = dataset[i: i + batch_size]\n    input_texts = batch['article']\n \
+    \   target_texts = batch['highlights']\n    \n    inputs = tokenizer(\n      \
+    \  input_texts, \n        return_tensors=\"pt\", \n        add_special_tokens=True,\
+    \ \n        padding=True, \n        truncation=True, \n        max_length=1024\n\
+    \    ).to(model.device)\n    \n    # Generate summary IDs\n    summary_ids = model.generate(\n\
+    \        **inputs, \n        do_sample=True, \n        temperature=0.7, \n   \
+    \     max_new_tokens=200, \n        top_k=0\n    )\n\n    # Decode and extend\
+    \ lists\n    predicted_texts_batch = tokenizer.batch_decode(summary_ids, skip_special_tokens=True)\n\
+    \    predicted_texts.extend(predicted_texts_batch)\n    reference_texts.extend(target_texts)\n\
+    \n# Compute ROUGE scores\nall_scores = []\nfor ref, pred in zip(reference_texts,\
+    \ predicted_texts):\n    scores = scorer.score(ref, pred)\n    all_scores.append(scores)\n\
+    \n# Calculate average scores\navg_scores = {key: 0.0 for key in all_scores[0].keys()}\n\
+    for score in all_scores:\n    for key, value in score.items():\n        avg_scores[key]\
+    \ += value.fmeasure\n\nfor key, value in avg_scores.items():\n    avg_scores[key]\
+    \ = value / len(all_scores)\n\nprint(\"Average ROUGE scores:\", avg_scores)\n\
+    ```"
+  created_at: 2023-10-03 11:50:24+00:00
+  edited: true
+  hidden: false
+  id: 651c0e1063cd12f4ba9132b4
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 49
+repo_id: facebook/bart-large-cnn
+repo_type: model
+status: open
+target_branch: null
+title: Seeking Guidance on Improving ROUGE Scores in Text Summarization with BART-Large-CNN

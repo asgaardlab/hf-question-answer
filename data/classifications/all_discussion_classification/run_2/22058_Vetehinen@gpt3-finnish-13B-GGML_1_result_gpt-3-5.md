@@ -1,0 +1,4 @@
+## https://huggingface.co/Vetehinen/gpt3-finnish-13B-GGML/discussions/1
+
+contains_question: yes
+question_part: GGUF versions? Would you make GGUF versions of these since GGML has been unsupported for a while and will not work on latest llama.cpp versions. Also there are finetuned versions available for 2 of these models [Villekom/gpt3-finnish-13B-sft-4epoch](https://huggingface.co/Villekom/gpt3-finnish-13B-sft-4epoch) and [Villekom/gpt3-finnish-3B-sft](https://huggingface.co/Villekom/gpt3-finnish-3B-sft) (also for the 13B model having a Q3_K_S quantization would be nice to have as well and not just Q4 because I'm pretty memory limited at the moment)

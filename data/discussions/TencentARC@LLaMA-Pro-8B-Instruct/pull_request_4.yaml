@@ -1,0 +1,346 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: gardner
+conflicting_files: []
+created_at: 2024-01-07 05:30:27+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/638581711769b7c4b10f0523/v95VFXJqueQ_pp9ZURu4R.jpeg?w=200&h=200&f=face
+      fullname: Gardner Bickford
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gardner
+      type: user
+    createdAt: '2024-01-07T05:30:27.000Z'
+    data:
+      edited: false
+      editors:
+      - gardner
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7502625584602356
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/638581711769b7c4b10f0523/v95VFXJqueQ_pp9ZURu4R.jpeg?w=200&h=200&f=face
+          fullname: Gardner Bickford
+          isHf: false
+          isPro: false
+          name: gardner
+          type: user
+        html: "<p>Add <code>chat_template</code> from <a href=\"https://huggingface.co/allenai/tulu-2-dpo-70b/blob/f33beddfdbbc2ccb4e349f71f515aa3ad983d49b/tokenizer_config.json#L35\"\
+          >allenai/tulu-2-dpo-70b/tokenizer_config.json</a></p>\n<p>This change includes\
+          \ a <code>chat_template</code> in <code>tokenizer_config.json</code>. For\
+          \ more information please see <a href=\"https://huggingface.co/docs/transformers/main/chat_templating\"\
+          >Templates for Chat Models\n</a>.</p>\n<p>To demonstrate the outcome of\
+          \ this change please see before and after:</p>\n<h3>Before</h3>\n<pre><code\
+          \ class=\"language-python\"><span class=\"hljs-keyword\">from</span> transformers\
+          \ <span class=\"hljs-keyword\">import</span> AutoTokenizer\ntokenizer =\
+          \ AutoTokenizer.from_pretrained(<span class=\"hljs-string\">\"TencentARC/LLaMA-Pro-8B-Instruct\"\
+          </span>, legacy=<span class=\"hljs-literal\">False</span>)\n\nchat = [\n\
+          \   {<span class=\"hljs-string\">\"role\"</span>: <span class=\"hljs-string\"\
+          >\"user\"</span>, <span class=\"hljs-string\">\"content\"</span>: <span\
+          \ class=\"hljs-string\">\"Hello, how are you?\"</span>},\n   {<span class=\"\
+          hljs-string\">\"role\"</span>: <span class=\"hljs-string\">\"assistant\"\
+          </span>, <span class=\"hljs-string\">\"content\"</span>: <span class=\"\
+          hljs-string\">\"I'm doing great. How can I help you today?\"</span>},\n\
+          \   {<span class=\"hljs-string\">\"role\"</span>: <span class=\"hljs-string\"\
+          >\"user\"</span>, <span class=\"hljs-string\">\"content\"</span>: <span\
+          \ class=\"hljs-string\">\"I'd like to show off how chat templating works!\"\
+          </span>},\n   {<span class=\"hljs-string\">\"role\"</span>: <span class=\"\
+          hljs-string\">\"assistant\"</span>, <span class=\"hljs-string\">\"content\"\
+          </span>: <span class=\"hljs-string\">\"Great, please let me know if I can\
+          \ help.\"</span>},\n]\n\n<span class=\"hljs-built_in\">print</span>(tokenizer.apply_chat_template(chat,\
+          \ tokenize=<span class=\"hljs-literal\">False</span>))\n</code></pre>\n\
+          <p>output:</p>\n<pre><code>$ python3 main.py \n\nNo chat template is defined\
+          \ for this tokenizer - using the default template for the LlamaTokenizerFast\
+          \ class. If the default is not appropriate for your model, please set `tokenizer.chat_template`\
+          \ to an appropriate template. See https://huggingface.co/docs/transformers/main/chat_templating\
+          \ for more information.\n\n&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\nYou are\
+          \ a helpful, respectful and honest assistant. Always answer as helpfully\
+          \ as possible, while being safe. Your answers should not include any harmful,\
+          \ unethical, racist, sexist, toxic, dangerous, or illegal content. Please\
+          \ ensure that your responses are socially unbiased and positive in nature.\n\
+          \nIf a question does not make any sense, or is not factually coherent, explain\
+          \ why instead of answering something not correct. If you don't know the\
+          \ answer to a question, please don't share false information.\n&lt;&lt;/SYS&gt;&gt;\n\
+          \nHello, how are you? [/INST] I'm doing great. How can I help you today?\
+          \ &lt;/s&gt;&lt;s&gt;[INST] I'd like to show off how chat templating works!\
+          \ [/INST] Great, please let me know if I can help. &lt;/s&gt;\n</code></pre>\n\
+          <h3>After</h3>\n<p>If we modify the tokenizer to use a <code>chat_template</code>,\
+          \ we can see the difference:</p>\n<pre><code class=\"language-diff\">from\
+          \ transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          TencentARC/LLaMA-Pro-8B-Instruct\", legacy=False)\n\n<span class=\"hljs-addition\"\
+          >+ tokenizer.chat_template = \"{% for message in messages %}\\n{% if message['role']\
+          \ == 'user' %}\\n{{ '&lt;|user|&gt;\\n' + message['content'] }}\\n{% elif\
+          \ message['role'] == 'assistant' %}\\n{{ '&lt;|assistant|&gt;\\n'  + message['content']\
+          \ + eos_token }}\\n{% endif %}\\n{% if loop.last and add_generation_prompt\
+          \ %}\\n{{ '&lt;|assistant|&gt;' }}\\n{% endif %}\\n{% endfor %}\"</span>\n\
+          \nchat = [\n   {\"role\": \"user\", \"content\": \"Hello, how are you?\"\
+          },\n   {\"role\": \"assistant\", \"content\": \"I'm doing great. How can\
+          \ I help you today?\"},\n   {\"role\": \"user\", \"content\": \"I'd like\
+          \ to show off how chat templating works!\"},\n   {\"role\": \"assistant\"\
+          , \"content\": \"Great, please let me know if I can help.\"},\n]\n\nprint(tokenizer.apply_chat_template(chat,\
+          \ tokenize=False))\n</code></pre>\n<p>Which outputs:</p>\n<pre><code>$ python3\
+          \ main.py \n&lt;|user|&gt;\nHello, how are you?\n&lt;|assistant|&gt;\nI'm\
+          \ doing great. How can I help you today?&lt;/s&gt;\n&lt;|user|&gt;\nI'd\
+          \ like to show off how chat templating works!\n&lt;|assistant|&gt;\nGreat,\
+          \ please let me know if I can help.&lt;/s&gt;\n</code></pre>\n<p>Please\
+          \ see <a href=\"https://huggingface.co/TencentARC/LLaMA-Pro-8B-Instruct/discussions/3\"\
+          >TencentARC/LLaMA-Pro-8B-Instruct/discussions/3</a>.</p>\n"
+        raw: "Add `chat_template` from [allenai/tulu-2-dpo-70b/tokenizer_config.json](https://huggingface.co/allenai/tulu-2-dpo-70b/blob/f33beddfdbbc2ccb4e349f71f515aa3ad983d49b/tokenizer_config.json#L35)\n\
+          \nThis change includes a `chat_template` in `tokenizer_config.json`. For\
+          \ more information please see [Templates for Chat Models\n](https://huggingface.co/docs/transformers/main/chat_templating).\n\
+          \nTo demonstrate the outcome of this change please see before and after:\n\
+          \n### Before\n\n```python\nfrom transformers import AutoTokenizer\ntokenizer\
+          \ = AutoTokenizer.from_pretrained(\"TencentARC/LLaMA-Pro-8B-Instruct\",\
+          \ legacy=False)\n\nchat = [\n   {\"role\": \"user\", \"content\": \"Hello,\
+          \ how are you?\"},\n   {\"role\": \"assistant\", \"content\": \"I'm doing\
+          \ great. How can I help you today?\"},\n   {\"role\": \"user\", \"content\"\
+          : \"I'd like to show off how chat templating works!\"},\n   {\"role\": \"\
+          assistant\", \"content\": \"Great, please let me know if I can help.\"},\n\
+          ]\n\nprint(tokenizer.apply_chat_template(chat, tokenize=False))\n```\noutput:\n\
+          ```\n$ python3 main.py \n\nNo chat template is defined for this tokenizer\
+          \ - using the default template for the LlamaTokenizerFast class. If the\
+          \ default is not appropriate for your model, please set `tokenizer.chat_template`\
+          \ to an appropriate template. See https://huggingface.co/docs/transformers/main/chat_templating\
+          \ for more information.\n\n<s>[INST] <<SYS>>\nYou are a helpful, respectful\
+          \ and honest assistant. Always answer as helpfully as possible, while being\
+          \ safe. Your answers should not include any harmful, unethical, racist,\
+          \ sexist, toxic, dangerous, or illegal content. Please ensure that your\
+          \ responses are socially unbiased and positive in nature.\n\nIf a question\
+          \ does not make any sense, or is not factually coherent, explain why instead\
+          \ of answering something not correct. If you don't know the answer to a\
+          \ question, please don't share false information.\n<</SYS>>\n\nHello, how\
+          \ are you? [/INST] I'm doing great. How can I help you today? </s><s>[INST]\
+          \ I'd like to show off how chat templating works! [/INST] Great, please\
+          \ let me know if I can help. </s>\n```\n\n### After\n\nIf we modify the\
+          \ tokenizer to use a `chat_template`, we can see the difference:\n```diff\n\
+          from transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+          TencentARC/LLaMA-Pro-8B-Instruct\", legacy=False)\n\n+ tokenizer.chat_template\
+          \ = \"{% for message in messages %}\\n{% if message['role'] == 'user' %}\\\
+          n{{ '<|user|>\\n' + message['content'] }}\\n{% elif message['role'] == 'assistant'\
+          \ %}\\n{{ '<|assistant|>\\n'  + message['content'] + eos_token }}\\n{% endif\
+          \ %}\\n{% if loop.last and add_generation_prompt %}\\n{{ '<|assistant|>'\
+          \ }}\\n{% endif %}\\n{% endfor %}\"\n\nchat = [\n   {\"role\": \"user\"\
+          , \"content\": \"Hello, how are you?\"},\n   {\"role\": \"assistant\", \"\
+          content\": \"I'm doing great. How can I help you today?\"},\n   {\"role\"\
+          : \"user\", \"content\": \"I'd like to show off how chat templating works!\"\
+          },\n   {\"role\": \"assistant\", \"content\": \"Great, please let me know\
+          \ if I can help.\"},\n]\n\nprint(tokenizer.apply_chat_template(chat, tokenize=False))\n\
+          ```\n\nWhich outputs:\n\n```\n$ python3 main.py \n<|user|>\nHello, how are\
+          \ you?\n<|assistant|>\nI'm doing great. How can I help you today?</s>\n\
+          <|user|>\nI'd like to show off how chat templating works!\n<|assistant|>\n\
+          Great, please let me know if I can help.</s>\n\n```\n\nPlease see [TencentARC/LLaMA-Pro-8B-Instruct/discussions/3](https://huggingface.co/TencentARC/LLaMA-Pro-8B-Instruct/discussions/3)."
+        updatedAt: '2024-01-07T05:30:27.204Z'
+      numEdits: 0
+      reactions: []
+    id: 659a36f311b48706babd8408
+    type: comment
+  author: gardner
+  content: "Add `chat_template` from [allenai/tulu-2-dpo-70b/tokenizer_config.json](https://huggingface.co/allenai/tulu-2-dpo-70b/blob/f33beddfdbbc2ccb4e349f71f515aa3ad983d49b/tokenizer_config.json#L35)\n\
+    \nThis change includes a `chat_template` in `tokenizer_config.json`. For more\
+    \ information please see [Templates for Chat Models\n](https://huggingface.co/docs/transformers/main/chat_templating).\n\
+    \nTo demonstrate the outcome of this change please see before and after:\n\n###\
+    \ Before\n\n```python\nfrom transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+    TencentARC/LLaMA-Pro-8B-Instruct\", legacy=False)\n\nchat = [\n   {\"role\": \"\
+    user\", \"content\": \"Hello, how are you?\"},\n   {\"role\": \"assistant\", \"\
+    content\": \"I'm doing great. How can I help you today?\"},\n   {\"role\": \"\
+    user\", \"content\": \"I'd like to show off how chat templating works!\"},\n \
+    \  {\"role\": \"assistant\", \"content\": \"Great, please let me know if I can\
+    \ help.\"},\n]\n\nprint(tokenizer.apply_chat_template(chat, tokenize=False))\n\
+    ```\noutput:\n```\n$ python3 main.py \n\nNo chat template is defined for this\
+    \ tokenizer - using the default template for the LlamaTokenizerFast class. If\
+    \ the default is not appropriate for your model, please set `tokenizer.chat_template`\
+    \ to an appropriate template. See https://huggingface.co/docs/transformers/main/chat_templating\
+    \ for more information.\n\n<s>[INST] <<SYS>>\nYou are a helpful, respectful and\
+    \ honest assistant. Always answer as helpfully as possible, while being safe.\
+    \ Your answers should not include any harmful, unethical, racist, sexist, toxic,\
+    \ dangerous, or illegal content. Please ensure that your responses are socially\
+    \ unbiased and positive in nature.\n\nIf a question does not make any sense, or\
+    \ is not factually coherent, explain why instead of answering something not correct.\
+    \ If you don't know the answer to a question, please don't share false information.\n\
+    <</SYS>>\n\nHello, how are you? [/INST] I'm doing great. How can I help you today?\
+    \ </s><s>[INST] I'd like to show off how chat templating works! [/INST] Great,\
+    \ please let me know if I can help. </s>\n```\n\n### After\n\nIf we modify the\
+    \ tokenizer to use a `chat_template`, we can see the difference:\n```diff\nfrom\
+    \ transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(\"\
+    TencentARC/LLaMA-Pro-8B-Instruct\", legacy=False)\n\n+ tokenizer.chat_template\
+    \ = \"{% for message in messages %}\\n{% if message['role'] == 'user' %}\\n{{\
+    \ '<|user|>\\n' + message['content'] }}\\n{% elif message['role'] == 'assistant'\
+    \ %}\\n{{ '<|assistant|>\\n'  + message['content'] + eos_token }}\\n{% endif %}\\\
+    n{% if loop.last and add_generation_prompt %}\\n{{ '<|assistant|>' }}\\n{% endif\
+    \ %}\\n{% endfor %}\"\n\nchat = [\n   {\"role\": \"user\", \"content\": \"Hello,\
+    \ how are you?\"},\n   {\"role\": \"assistant\", \"content\": \"I'm doing great.\
+    \ How can I help you today?\"},\n   {\"role\": \"user\", \"content\": \"I'd like\
+    \ to show off how chat templating works!\"},\n   {\"role\": \"assistant\", \"\
+    content\": \"Great, please let me know if I can help.\"},\n]\n\nprint(tokenizer.apply_chat_template(chat,\
+    \ tokenize=False))\n```\n\nWhich outputs:\n\n```\n$ python3 main.py \n<|user|>\n\
+    Hello, how are you?\n<|assistant|>\nI'm doing great. How can I help you today?</s>\n\
+    <|user|>\nI'd like to show off how chat templating works!\n<|assistant|>\nGreat,\
+    \ please let me know if I can help.</s>\n\n```\n\nPlease see [TencentARC/LLaMA-Pro-8B-Instruct/discussions/3](https://huggingface.co/TencentARC/LLaMA-Pro-8B-Instruct/discussions/3)."
+  created_at: 2024-01-07 05:30:27+00:00
+  edited: false
+  hidden: false
+  id: 659a36f311b48706babd8408
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/638581711769b7c4b10f0523/v95VFXJqueQ_pp9ZURu4R.jpeg?w=200&h=200&f=face
+      fullname: Gardner Bickford
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: gardner
+      type: user
+    createdAt: '2024-01-07T05:30:28.000Z'
+    data:
+      oid: 8ab48e7aa6322c87a4cb9b71d36b7deb84262310
+      parents:
+      - 209760d8bffdc49afa18afdb038b0cf921b19fe4
+      subject: Add chat_template from allenai/tulu-2-dpo-70b to tokenizer_config.json
+    id: 659a36f40000000000000000
+    type: commit
+  author: gardner
+  created_at: 2024-01-07 05:30:28+00:00
+  id: 659a36f40000000000000000
+  oid: 8ab48e7aa6322c87a4cb9b71d36b7deb84262310
+  summary: Add chat_template from allenai/tulu-2-dpo-70b to tokenizer_config.json
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1338458e053dfa374fceb739d6549654.svg
+      fullname: sean
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: sean-public
+      type: user
+    createdAt: '2024-01-07T05:36:13.000Z'
+    data:
+      edited: false
+      editors:
+      - sean-public
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7603980898857117
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1338458e053dfa374fceb739d6549654.svg
+          fullname: sean
+          isHf: false
+          isPro: false
+          name: sean-public
+          type: user
+        html: "<p>Thank you for opening this, beat me to it!</p>\n<p>Super nitpicky:\
+          \ the keys in <code>tokenizer_config.json</code> are otherwise in alphabetical\
+          \ order \U0001F601</p>\n"
+        raw: "Thank you for opening this, beat me to it!\n\nSuper nitpicky: the keys\
+          \ in `tokenizer_config.json` are otherwise in alphabetical order \U0001F601"
+        updatedAt: '2024-01-07T05:36:13.020Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - gardner
+    id: 659a384d28676374f3b3e05e
+    type: comment
+  author: sean-public
+  content: "Thank you for opening this, beat me to it!\n\nSuper nitpicky: the keys\
+    \ in `tokenizer_config.json` are otherwise in alphabetical order \U0001F601"
+  created_at: 2024-01-07 05:36:13+00:00
+  edited: false
+  hidden: false
+  id: 659a384d28676374f3b3e05e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/7faf8c6f71fc318a0113d780d376c381.svg
+      fullname: Wu Chengyue
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: WuChengyue
+      type: user
+    createdAt: '2024-01-07T08:44:10.000Z'
+    data:
+      edited: false
+      editors:
+      - WuChengyue
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9764518141746521
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/7faf8c6f71fc318a0113d780d376c381.svg
+          fullname: Wu Chengyue
+          isHf: false
+          isPro: false
+          name: WuChengyue
+          type: user
+        html: '<p>Thanks for this PR! I really appreciate it!</p>
+
+          '
+        raw: Thanks for this PR! I really appreciate it!
+        updatedAt: '2024-01-07T08:44:10.532Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F917"
+        users:
+        - gardner
+    id: 659a645a351b2890632f57d1
+    type: comment
+  author: WuChengyue
+  content: Thanks for this PR! I really appreciate it!
+  created_at: 2024-01-07 08:44:10+00:00
+  edited: false
+  hidden: false
+  id: 659a645a351b2890632f57d1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/7faf8c6f71fc318a0113d780d376c381.svg
+      fullname: Wu Chengyue
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: WuChengyue
+      type: user
+    createdAt: '2024-01-07T08:44:15.000Z'
+    data:
+      status: merged
+    id: 659a645feff07dcf1fa0583e
+    type: status-change
+  author: WuChengyue
+  created_at: 2024-01-07 08:44:15+00:00
+  id: 659a645feff07dcf1fa0583e
+  new_status: merged
+  type: status-change
+is_pull_request: true
+merge_commit_oid: 9850c8afce19a69d8fc4a1603a82441157514016
+num: 4
+repo_id: TencentARC/LLaMA-Pro-8B-Instruct
+repo_type: model
+status: merged
+target_branch: refs/heads/main
+title: Add chat_template from allenai/tulu-2-dpo-70b to tokenizer_config.json

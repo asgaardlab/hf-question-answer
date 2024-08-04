@@ -1,0 +1,1733 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: newtonapple
+conflicting_files: null
+created_at: 2023-07-10 19:53:28+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+      fullname: david
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: newtonapple
+      type: user
+    createdAt: '2023-07-10T20:53:28.000Z'
+    data:
+      edited: true
+      editors:
+      - newtonapple
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6406659483909607
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+          fullname: david
+          isHf: false
+          isPro: false
+          name: newtonapple
+          type: user
+        html: "<h3 id=\"the-bug\">The Bug</h3>\n<p>This was copied from <a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/diffusers/issues/4014\"\
+          >Diffusers Issue#4014</a> as a dev there asked me to message the Stability\
+          \ AI folks.  So, I'm posting it here for more visibility.</p>\n<p>The introduction\
+          \ of <a rel=\"nofollow\" href=\"https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py#L810\"\
+          >watermark in the StableDiffusionXLPipeline</a> has introduced undesirable\
+          \ pixel artifacts in the generated images. Here is an example with 2 images\
+          \ one generated with watermark (1st image) and one without (2nd image).\
+          \  If you zoom in and look at them side-by-side, you can clearly see the\
+          \ pixel artifacts in the image generated with watermark.</p>\n<p><a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/diffusers/assets/1544/d70a7465-cfef-41d1-9b51-471d5ef2574f\"\
+          ><img alt=\"burger-and-fries\" src=\"https://github.com/huggingface/diffusers/assets/1544/d70a7465-cfef-41d1-9b51-471d5ef2574f\"\
+          ></a><br><a rel=\"nofollow\" href=\"https://github.com/huggingface/diffusers/assets/1544/f941203e-b764-4b9d-8a97-b316e42951f8\"\
+          ><img alt=\"burger-and-fries-no-wm\" src=\"https://github.com/huggingface/diffusers/assets/1544/f941203e-b764-4b9d-8a97-b316e42951f8\"\
+          ></a></p>\n<h3 id=\"reproduction\">Reproduction</h3>\n<p>Here is small Python\
+          \ script that I created to mock out the <code>pipeline.watermark</code>\
+          \ object in order to compare the image generated with and without the watermark.\
+          \  I'm using a Apple M2 MacBook hence <code>device = mps</code>.  </p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-keyword\">import</span>\
+          \ torch\n<span class=\"hljs-keyword\">from</span> diffusers <span class=\"\
+          hljs-keyword\">import</span> DiffusionPipeline\n\ndevice = <span class=\"\
+          hljs-string\">\"mps\"</span>\n\n\n<span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">pipeline</span>():\n    model = <span\
+          \ class=\"hljs-string\">\"stabilityai/stable-diffusion-xl-base-0.9\"</span>\n\
+          \    torch_dtype = torch.float32\n    variant = <span class=\"hljs-string\"\
+          >\"fp32\"</span>\n\n    <span class=\"hljs-keyword\">return</span> DiffusionPipeline.from_pretrained(\n\
+          \        model,\n        torch_dtype=torch_dtype,\n        use_safetensors=<span\
+          \ class=\"hljs-literal\">True</span>,\n        variant=variant,\n    ).to(device)\n\
+          \n\n<span class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\"\
+          >NoWatermark</span>:\n    <span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">apply_watermark</span>(<span class=\"hljs-params\"\
+          >self, img</span>):\n        <span class=\"hljs-keyword\">return</span>\
+          \ img\n\n\npipe = pipeline()\npipe_no_wm = pipeline()\npipe_no_wm.watermark\
+          \ = NoWatermark()\ngen1 = torch.Generator(device=<span class=\"hljs-string\"\
+          >\"mps\"</span>).manual_seed(<span class=\"hljs-number\">1337</span>)\n\
+          gen2 = torch.Generator(device=<span class=\"hljs-string\">\"mps\"</span>).manual_seed(<span\
+          \ class=\"hljs-number\">1337</span>)\n\nprompt = <span class=\"hljs-string\"\
+          >\"a juicy burger with fries\"</span>\nimg = pipe(prompt=prompt, generator=gen1).images[<span\
+          \ class=\"hljs-number\">0</span>]\nimg_no_wm = pipe_no_wm(prompt=prompt,\
+          \ generator=gen2).images[<span class=\"hljs-number\">0</span>]\nimg.save(<span\
+          \ class=\"hljs-string\">\"burger-and-fries.png\"</span>)\nimg_no_wm.save(<span\
+          \ class=\"hljs-string\">\"burger-and-fries-no-wm.png\"</span>)\n</code></pre>\n\
+          <h3 id=\"system-info\">System Info</h3>\n<ul>\n<li><code>diffusers</code>\
+          \ version: 0.18.1</li>\n<li>Platform: macOS-13.4.1-arm64-arm-64bit</li>\n\
+          <li>Python version: 3.10.12</li>\n<li>PyTorch version (GPU?): 2.0.1 (False)</li>\n\
+          <li>Huggingface_hub version: 0.16.4</li>\n<li>Transformers version: 4.30.2</li>\n\
+          <li>Accelerate version: 0.20.3</li>\n<li>xFormers version: not installed</li>\n\
+          <li>Using GPU in script?: yes, <code>mps</code>. </li>\n<li>Using distributed\
+          \ or parallel set-up in script?: no.</li>\n</ul>\n"
+        raw: "### The Bug\nThis was copied from [Diffusers Issue#4014](https://github.com/huggingface/diffusers/issues/4014)\
+          \ as a dev there asked me to message the Stability AI folks.  So, I'm posting\
+          \ it here for more visibility.\n\nThe introduction of [watermark in the\
+          \ StableDiffusionXLPipeline](https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py#L810)\
+          \ has introduced undesirable pixel artifacts in the generated images. Here\
+          \ is an example with 2 images one generated with watermark (1st image) and\
+          \ one without (2nd image).  If you zoom in and look at them side-by-side,\
+          \ you can clearly see the pixel artifacts in the image generated with watermark.\n\
+          \n![burger-and-fries](https://github.com/huggingface/diffusers/assets/1544/d70a7465-cfef-41d1-9b51-471d5ef2574f)\n\
+          ![burger-and-fries-no-wm](https://github.com/huggingface/diffusers/assets/1544/f941203e-b764-4b9d-8a97-b316e42951f8)\n\
+          \n\n### Reproduction\n\nHere is small Python script that I created to mock\
+          \ out the `pipeline.watermark` object in order to compare the image generated\
+          \ with and without the watermark.  I'm using a Apple M2 MacBook hence `device\
+          \ = mps`.  \n\n```python\nimport torch\nfrom diffusers import DiffusionPipeline\n\
+          \ndevice = \"mps\"\n\n\ndef pipeline():\n    model = \"stabilityai/stable-diffusion-xl-base-0.9\"\
+          \n    torch_dtype = torch.float32\n    variant = \"fp32\"\n\n    return\
+          \ DiffusionPipeline.from_pretrained(\n        model,\n        torch_dtype=torch_dtype,\n\
+          \        use_safetensors=True,\n        variant=variant,\n    ).to(device)\n\
+          \n\nclass NoWatermark:\n    def apply_watermark(self, img):\n        return\
+          \ img\n\n\npipe = pipeline()\npipe_no_wm = pipeline()\npipe_no_wm.watermark\
+          \ = NoWatermark()\ngen1 = torch.Generator(device=\"mps\").manual_seed(1337)\n\
+          gen2 = torch.Generator(device=\"mps\").manual_seed(1337)\n\nprompt = \"\
+          a juicy burger with fries\"\nimg = pipe(prompt=prompt, generator=gen1).images[0]\n\
+          img_no_wm = pipe_no_wm(prompt=prompt, generator=gen2).images[0]\nimg.save(\"\
+          burger-and-fries.png\")\nimg_no_wm.save(\"burger-and-fries-no-wm.png\")\n\
+          ```\n\n### System Info\n\n- `diffusers` version: 0.18.1\n- Platform: macOS-13.4.1-arm64-arm-64bit\n\
+          - Python version: 3.10.12\n- PyTorch version (GPU?): 2.0.1 (False)\n- Huggingface_hub\
+          \ version: 0.16.4\n- Transformers version: 4.30.2\n- Accelerate version:\
+          \ 0.20.3\n- xFormers version: not installed\n- Using GPU in script?: yes,\
+          \ `mps`. \n- Using distributed or parallel set-up in script?: no.\n\n"
+        updatedAt: '2023-07-10T20:53:43.092Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F91D"
+        users:
+        - natehzy
+      - count: 1
+        reaction: "\u2764\uFE0F"
+        users:
+        - patrickvonplaten
+    id: 64ac6fc8cf90fe27553c08f9
+    type: comment
+  author: newtonapple
+  content: "### The Bug\nThis was copied from [Diffusers Issue#4014](https://github.com/huggingface/diffusers/issues/4014)\
+    \ as a dev there asked me to message the Stability AI folks.  So, I'm posting\
+    \ it here for more visibility.\n\nThe introduction of [watermark in the StableDiffusionXLPipeline](https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py#L810)\
+    \ has introduced undesirable pixel artifacts in the generated images. Here is\
+    \ an example with 2 images one generated with watermark (1st image) and one without\
+    \ (2nd image).  If you zoom in and look at them side-by-side, you can clearly\
+    \ see the pixel artifacts in the image generated with watermark.\n\n![burger-and-fries](https://github.com/huggingface/diffusers/assets/1544/d70a7465-cfef-41d1-9b51-471d5ef2574f)\n\
+    ![burger-and-fries-no-wm](https://github.com/huggingface/diffusers/assets/1544/f941203e-b764-4b9d-8a97-b316e42951f8)\n\
+    \n\n### Reproduction\n\nHere is small Python script that I created to mock out\
+    \ the `pipeline.watermark` object in order to compare the image generated with\
+    \ and without the watermark.  I'm using a Apple M2 MacBook hence `device = mps`.\
+    \  \n\n```python\nimport torch\nfrom diffusers import DiffusionPipeline\n\ndevice\
+    \ = \"mps\"\n\n\ndef pipeline():\n    model = \"stabilityai/stable-diffusion-xl-base-0.9\"\
+    \n    torch_dtype = torch.float32\n    variant = \"fp32\"\n\n    return DiffusionPipeline.from_pretrained(\n\
+    \        model,\n        torch_dtype=torch_dtype,\n        use_safetensors=True,\n\
+    \        variant=variant,\n    ).to(device)\n\n\nclass NoWatermark:\n    def apply_watermark(self,\
+    \ img):\n        return img\n\n\npipe = pipeline()\npipe_no_wm = pipeline()\n\
+    pipe_no_wm.watermark = NoWatermark()\ngen1 = torch.Generator(device=\"mps\").manual_seed(1337)\n\
+    gen2 = torch.Generator(device=\"mps\").manual_seed(1337)\n\nprompt = \"a juicy\
+    \ burger with fries\"\nimg = pipe(prompt=prompt, generator=gen1).images[0]\nimg_no_wm\
+    \ = pipe_no_wm(prompt=prompt, generator=gen2).images[0]\nimg.save(\"burger-and-fries.png\"\
+    )\nimg_no_wm.save(\"burger-and-fries-no-wm.png\")\n```\n\n### System Info\n\n\
+    - `diffusers` version: 0.18.1\n- Platform: macOS-13.4.1-arm64-arm-64bit\n- Python\
+    \ version: 3.10.12\n- PyTorch version (GPU?): 2.0.1 (False)\n- Huggingface_hub\
+    \ version: 0.16.4\n- Transformers version: 4.30.2\n- Accelerate version: 0.20.3\n\
+    - xFormers version: not installed\n- Using GPU in script?: yes, `mps`. \n- Using\
+    \ distributed or parallel set-up in script?: no.\n\n"
+  created_at: 2023-07-10 19:53:28+00:00
+  edited: true
+  hidden: false
+  id: 64ac6fc8cf90fe27553c08f9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/14f8c7e8fd146cbeb5aee874030c54a6.svg
+      fullname: Samsara
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Irkson0101
+      type: user
+    createdAt: '2023-07-10T23:06:28.000Z'
+    data:
+      edited: false
+      editors:
+      - Irkson0101
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9864663481712341
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/14f8c7e8fd146cbeb5aee874030c54a6.svg
+          fullname: Samsara
+          isHf: false
+          isPro: false
+          name: Irkson0101
+          type: user
+        html: '<p>kind of what I was afraid of with all the invisible watermarks.
+          How do you even get rid of the watermark in modern engines that seem to
+          have it on by default?</p>
+
+          '
+        raw: kind of what I was afraid of with all the invisible watermarks. How do
+          you even get rid of the watermark in modern engines that seem to have it
+          on by default?
+        updatedAt: '2023-07-10T23:06:28.845Z'
+      numEdits: 0
+      reactions: []
+    id: 64ac8ef4714bad736d34a776
+    type: comment
+  author: Irkson0101
+  content: kind of what I was afraid of with all the invisible watermarks. How do
+    you even get rid of the watermark in modern engines that seem to have it on by
+    default?
+  created_at: 2023-07-10 22:06:28+00:00
+  edited: false
+  hidden: false
+  id: 64ac8ef4714bad736d34a776
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+      fullname: "Furkan G\xF6z\xFCkara"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: MonsterMMORPG
+      type: user
+    createdAt: '2023-07-10T23:53:30.000Z'
+    data:
+      edited: false
+      editors:
+      - MonsterMMORPG
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8508819341659546
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+          fullname: "Furkan G\xF6z\xFCkara"
+          isHf: false
+          isPro: false
+          name: MonsterMMORPG
+          type: user
+        html: '<p>yep noticed red dots</p>
+
+          '
+        raw: yep noticed red dots
+        updatedAt: '2023-07-10T23:53:30.957Z'
+      numEdits: 0
+      reactions: []
+    id: 64ac99fa0fb9b20dbaaff279
+    type: comment
+  author: MonsterMMORPG
+  content: yep noticed red dots
+  created_at: 2023-07-10 22:53:30+00:00
+  edited: false
+  hidden: false
+  id: 64ac99fa0fb9b20dbaaff279
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/df7bc66364c7f95729e256f01c5abef0.svg
+      fullname: Alexone
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: krustik
+      type: user
+    createdAt: '2023-07-11T00:08:59.000Z'
+    data:
+      edited: true
+      editors:
+      - krustik
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9664574265480042
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/df7bc66364c7f95729e256f01c5abef0.svg
+          fullname: Alexone
+          isHf: false
+          isPro: false
+          name: krustik
+          type: user
+        html: '<p>I still don''t understand any logic in this even legally. According
+          to current draft rules by U.S. Copyright office - any produce of Ai is public
+          domain, if it was manipulated by humans it''s becoming full copyright of
+          the manipulator, so why after applying copyright watermarking present is
+          a question, because new real author receiving right of watermarks removal.<br>If
+          this used in production of computer game (which is already imaginative product)
+          and manipulated by studio artists - it''s becoming full copyright of the
+          studio and keeping watermark is unacceptable or can even produce visual
+          artifacts in computer game product.<br>There''s only one longtime example
+          of forced watermarking consumer produce - mostly all laser printers using
+          secret steganography of yellow dots to mark every printed page. This from
+          1980''s was made under only one foundation - not prevent, but to find people
+          who would laser printing money banknotes. Kinda logical, but for art and
+          imaginative products i don''t see logic and don''t remember any legal case
+          of damage by art. Even in creation of defamation materials if we take famous
+          case of Michael Jackson - he was justified as fully not guilty after expertise
+          of certain body characteristics which witness wasn''t able to provide. Imaginative
+          art are same like UFO photography expertise.<br>U.S. Supreme Court made
+          social networks exempt from any liability, so users responsible, the only
+          example i''m aware of is "pentagon fire art" photo, which was fabricated
+          by media company and re-posted by accounts of big media, which regulator
+          ignored, it''s their duty of media to check sources of anything (watermarked
+          or not), so it only proves how ordinary people creations will never be popular
+          without media companies.<br>In case of caricatures, media (newspapers) makes
+          the most role, there was no legal outcome and watermarking doing nothing
+          here because the main point of media which makes that scandals bigger &amp;
+          louder - is they "protected freedom of speech and press" by that.<br>In
+          conclusion, the only reason of watermarking is to tracking users and/or
+          making slightly damaged art (exclusion reality questioning).</p>
+
+          '
+        raw: "I still don't understand any logic in this even legally. According to\
+          \ current draft rules by U.S. Copyright office - any produce of Ai is public\
+          \ domain, if it was manipulated by humans it's becoming full copyright of\
+          \ the manipulator, so why after applying copyright watermarking present\
+          \ is a question, because new real author receiving right of watermarks removal.\n\
+          If this used in production of computer game (which is already imaginative\
+          \ product) and manipulated by studio artists - it's becoming full copyright\
+          \ of the studio and keeping watermark is unacceptable or can even produce\
+          \ visual artifacts in computer game product.\nThere's only one longtime\
+          \ example of forced watermarking consumer produce - mostly all laser printers\
+          \ using secret steganography of yellow dots to mark every printed page.\
+          \ This from 1980's was made under only one foundation - not prevent, but\
+          \ to find people who would laser printing money banknotes. Kinda logical,\
+          \ but for art and imaginative products i don't see logic and don't remember\
+          \ any legal case of damage by art. Even in creation of defamation materials\
+          \ if we take famous case of Michael Jackson - he was justified as fully\
+          \ not guilty after expertise of certain body characteristics which witness\
+          \ wasn't able to provide. Imaginative art are same like UFO photography\
+          \ expertise.\nU.S. Supreme Court made social networks exempt from any liability,\
+          \ so users responsible, the only example i'm aware of is \"pentagon fire\
+          \ art\" photo, which was fabricated by media company and re-posted by accounts\
+          \ of big media, which regulator ignored, it's their duty of media to check\
+          \ sources of anything (watermarked or not), so it only proves how ordinary\
+          \ people creations will never be popular without media companies. \nIn case\
+          \ of caricatures, media (newspapers) makes the most role, there was no legal\
+          \ outcome and watermarking doing nothing here because the main point of\
+          \ media which makes that scandals bigger & louder - is they \"protected\
+          \ freedom of speech and press\" by that.\nIn conclusion, the only reason\
+          \ of watermarking is to tracking users and/or making slightly damaged art\
+          \ (exclusion reality questioning)."
+        updatedAt: '2023-07-11T05:51:03.986Z'
+      numEdits: 4
+      reactions: []
+    id: 64ac9d9b7a9df1bd413d6d67
+    type: comment
+  author: krustik
+  content: "I still don't understand any logic in this even legally. According to\
+    \ current draft rules by U.S. Copyright office - any produce of Ai is public domain,\
+    \ if it was manipulated by humans it's becoming full copyright of the manipulator,\
+    \ so why after applying copyright watermarking present is a question, because\
+    \ new real author receiving right of watermarks removal.\nIf this used in production\
+    \ of computer game (which is already imaginative product) and manipulated by studio\
+    \ artists - it's becoming full copyright of the studio and keeping watermark is\
+    \ unacceptable or can even produce visual artifacts in computer game product.\n\
+    There's only one longtime example of forced watermarking consumer produce - mostly\
+    \ all laser printers using secret steganography of yellow dots to mark every printed\
+    \ page. This from 1980's was made under only one foundation - not prevent, but\
+    \ to find people who would laser printing money banknotes. Kinda logical, but\
+    \ for art and imaginative products i don't see logic and don't remember any legal\
+    \ case of damage by art. Even in creation of defamation materials if we take famous\
+    \ case of Michael Jackson - he was justified as fully not guilty after expertise\
+    \ of certain body characteristics which witness wasn't able to provide. Imaginative\
+    \ art are same like UFO photography expertise.\nU.S. Supreme Court made social\
+    \ networks exempt from any liability, so users responsible, the only example i'm\
+    \ aware of is \"pentagon fire art\" photo, which was fabricated by media company\
+    \ and re-posted by accounts of big media, which regulator ignored, it's their\
+    \ duty of media to check sources of anything (watermarked or not), so it only\
+    \ proves how ordinary people creations will never be popular without media companies.\
+    \ \nIn case of caricatures, media (newspapers) makes the most role, there was\
+    \ no legal outcome and watermarking doing nothing here because the main point\
+    \ of media which makes that scandals bigger & louder - is they \"protected freedom\
+    \ of speech and press\" by that.\nIn conclusion, the only reason of watermarking\
+    \ is to tracking users and/or making slightly damaged art (exclusion reality questioning)."
+  created_at: 2023-07-10 23:08:59+00:00
+  edited: true
+  hidden: false
+  id: 64ac9d9b7a9df1bd413d6d67
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+      fullname: david
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: newtonapple
+      type: user
+    createdAt: '2023-07-11T00:30:48.000Z'
+    data:
+      edited: false
+      editors:
+      - newtonapple
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8921746015548706
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+          fullname: david
+          isHf: false
+          isPro: false
+          name: newtonapple
+          type: user
+        html: '<p>I think it''s worth pointing out that the watermark is only added
+          when you use <code>diffusers</code>''s <code>StableDiffusionXLPipeline</code>
+          to generate the images.</p>
+
+          '
+        raw: I think it's worth pointing out that the watermark is only added when
+          you use `diffusers`'s `StableDiffusionXLPipeline` to generate the images.
+        updatedAt: '2023-07-11T00:30:48.436Z'
+      numEdits: 0
+      reactions: []
+    id: 64aca2b87ac35b7de04d986e
+    type: comment
+  author: newtonapple
+  content: I think it's worth pointing out that the watermark is only added when you
+    use `diffusers`'s `StableDiffusionXLPipeline` to generate the images.
+  created_at: 2023-07-10 23:30:48+00:00
+  edited: false
+  hidden: false
+  id: 64aca2b87ac35b7de04d986e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+      fullname: PseudoTerminal X
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ptx0
+      type: user
+    createdAt: '2023-07-12T03:55:42.000Z'
+    data:
+      edited: false
+      editors:
+      - ptx0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8633607625961304
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+          fullname: PseudoTerminal X
+          isHf: false
+          isPro: false
+          name: ptx0
+          type: user
+        html: '<p>it (the watermark) is also in SGM. it doesn''t add the watermark
+          via the XL pipeline if you use latent output. it seems like a bug that the
+          img2img pipeline does not apply the watermark. i will open with HF to ensure
+          that happens.</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/641caf6c043963b1c0a27256/WQN19oYYZga-4Wk2K28s_.png"><img
+          alt="image.png" src="https://cdn-uploads.huggingface.co/production/uploads/641caf6c043963b1c0a27256/WQN19oYYZga-4Wk2K28s_.png"></a></p>
+
+          '
+        raw: 'it (the watermark) is also in SGM. it doesn''t add the watermark via
+          the XL pipeline if you use latent output. it seems like a bug that the img2img
+          pipeline does not apply the watermark. i will open with HF to ensure that
+          happens.
+
+
+          ![image.png](https://cdn-uploads.huggingface.co/production/uploads/641caf6c043963b1c0a27256/WQN19oYYZga-4Wk2K28s_.png)
+
+          '
+        updatedAt: '2023-07-12T03:55:42.618Z'
+      numEdits: 0
+      reactions: []
+    id: 64ae243e58bd9e9cc2eccfad
+    type: comment
+  author: ptx0
+  content: 'it (the watermark) is also in SGM. it doesn''t add the watermark via the
+    XL pipeline if you use latent output. it seems like a bug that the img2img pipeline
+    does not apply the watermark. i will open with HF to ensure that happens.
+
+
+    ![image.png](https://cdn-uploads.huggingface.co/production/uploads/641caf6c043963b1c0a27256/WQN19oYYZga-4Wk2K28s_.png)
+
+    '
+  created_at: 2023-07-12 02:55:42+00:00
+  edited: false
+  hidden: false
+  id: 64ae243e58bd9e9cc2eccfad
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+      fullname: david
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: newtonapple
+      type: user
+    createdAt: '2023-07-12T07:41:54.000Z'
+    data:
+      edited: false
+      editors:
+      - newtonapple
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8987188935279846
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/535215c41c0949117577517b4506202c.svg
+          fullname: david
+          isHf: false
+          isPro: false
+          name: newtonapple
+          type: user
+        html: "<blockquote>\n<p>it (the watermark) is also in SGM. it doesn't add\
+          \ the watermark via the XL pipeline if you use latent output. it seems like\
+          \ a bug that the img2img pipeline does not apply the watermark. i will open\
+          \ with HF to ensure that happens.</p>\n</blockquote>\n<p><span data-props=\"\
+          {&quot;user&quot;:&quot;ptx0&quot;}\" data-target=\"UserMention\" class=\"\
+          SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"inline-block\"><span\
+          \ class=\"contents\"><a href=\"/ptx0\">@<span class=\"underline\">ptx0</span></a></span>\n\
+          \n\t</span></span>, as I pointed out in my initial bug report, the <a rel=\"\
+          nofollow\" href=\"https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/watermark.py\"\
+          >watermark library</a> was specifically added to the XL pipeline.  I'm not\
+          \ too familiar with the all the ins-and-outs of the code base.  This is\
+          \ just from my findings poking around. </p>\n"
+        raw: "> it (the watermark) is also in SGM. it doesn't add the watermark via\
+          \ the XL pipeline if you use latent output. it seems like a bug that the\
+          \ img2img pipeline does not apply the watermark. i will open with HF to\
+          \ ensure that happens.\n\n@ptx0, as I pointed out in my initial bug report,\
+          \ the [watermark library](https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/watermark.py)\
+          \ was specifically added to the XL pipeline.  I'm not too familiar with\
+          \ the all the ins-and-outs of the code base.  This is just from my findings\
+          \ poking around. \n"
+        updatedAt: '2023-07-12T07:41:54.258Z'
+      numEdits: 0
+      reactions: []
+    id: 64ae5942b7e4b2c1ce663a43
+    type: comment
+  author: newtonapple
+  content: "> it (the watermark) is also in SGM. it doesn't add the watermark via\
+    \ the XL pipeline if you use latent output. it seems like a bug that the img2img\
+    \ pipeline does not apply the watermark. i will open with HF to ensure that happens.\n\
+    \n@ptx0, as I pointed out in my initial bug report, the [watermark library](https://github.com/huggingface/diffusers/blob/e3d71ad89abfee3817340b2245a49eec894a1705/src/diffusers/pipelines/stable_diffusion_xl/watermark.py)\
+    \ was specifically added to the XL pipeline.  I'm not too familiar with the all\
+    \ the ins-and-outs of the code base.  This is just from my findings poking around.\
+    \ \n"
+  created_at: 2023-07-12 06:41:54+00:00
+  edited: false
+  hidden: false
+  id: 64ae5942b7e4b2c1ce663a43
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+      fullname: PseudoTerminal X
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ptx0
+      type: user
+    createdAt: '2023-07-12T18:35:35.000Z'
+    data:
+      edited: false
+      editors:
+      - ptx0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9716401696205139
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+          fullname: PseudoTerminal X
+          isHf: false
+          isPro: false
+          name: ptx0
+          type: user
+        html: '<p>i see what you mean, i thought you meant that in a different way.
+          you are correct, the old pipelines have a watermark but SDXL uses a different
+          one - not sure why.</p>
+
+          '
+        raw: i see what you mean, i thought you meant that in a different way. you
+          are correct, the old pipelines have a watermark but SDXL uses a different
+          one - not sure why.
+        updatedAt: '2023-07-12T18:35:35.534Z'
+      numEdits: 0
+      reactions: []
+    id: 64aef27764536ef13e820013
+    type: comment
+  author: ptx0
+  content: i see what you mean, i thought you meant that in a different way. you are
+    correct, the old pipelines have a watermark but SDXL uses a different one - not
+    sure why.
+  created_at: 2023-07-12 17:35:35+00:00
+  edited: false
+  hidden: false
+  id: 64aef27764536ef13e820013
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-07-15T13:25:05.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.928838312625885
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: '<p>Thanks a lot for the helpful discussion here! We could / should
+          maybe try out to replace the watermark with the tree-ring watermark technique:
+          <a rel="nofollow" href="https://github.com/YuxinWenRick/tree-ring-watermark">https://github.com/YuxinWenRick/tree-ring-watermark</a></p>
+
+          '
+        raw: 'Thanks a lot for the helpful discussion here! We could / should maybe
+          try out to replace the watermark with the tree-ring watermark technique:
+          https://github.com/YuxinWenRick/tree-ring-watermark'
+        updatedAt: '2023-07-15T13:25:05.443Z'
+      numEdits: 0
+      reactions: []
+    id: 64b29e31a248169796e77ab4
+    type: comment
+  author: patrickvonplaten
+  content: 'Thanks a lot for the helpful discussion here! We could / should maybe
+    try out to replace the watermark with the tree-ring watermark technique: https://github.com/YuxinWenRick/tree-ring-watermark'
+  created_at: 2023-07-15 12:25:05+00:00
+  edited: false
+  hidden: false
+  id: 64b29e31a248169796e77ab4
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+      fullname: Patrick von Platen
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: patrickvonplaten
+      type: user
+    createdAt: '2023-07-15T13:25:40.000Z'
+    data:
+      edited: false
+      editors:
+      - patrickvonplaten
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9533162117004395
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1584435275418-5dfcb1aada6d0311fd3d5448.jpeg?w=200&h=200&f=face
+          fullname: Patrick von Platen
+          isHf: true
+          isPro: false
+          name: patrickvonplaten
+          type: user
+        html: '<blockquote>
+
+          <p>I think it''s worth pointing out that the watermark is only added when
+          you use <code>diffusers</code>''s <code>StableDiffusionXLPipeline</code>
+          to generate the images.</p>
+
+          </blockquote>
+
+          <p>It''s also in the img2img pipeline - think it''s everywhere really</p>
+
+          '
+        raw: '> I think it''s worth pointing out that the watermark is only added
+          when you use `diffusers`''s `StableDiffusionXLPipeline` to generate the
+          images.
+
+
+          It''s also in the img2img pipeline - think it''s everywhere really'
+        updatedAt: '2023-07-15T13:25:40.860Z'
+      numEdits: 0
+      reactions: []
+    id: 64b29e54f4361a032010d4e9
+    type: comment
+  author: patrickvonplaten
+  content: '> I think it''s worth pointing out that the watermark is only added when
+    you use `diffusers`''s `StableDiffusionXLPipeline` to generate the images.
+
+
+    It''s also in the img2img pipeline - think it''s everywhere really'
+  created_at: 2023-07-15 12:25:40+00:00
+  edited: false
+  hidden: false
+  id: 64b29e54f4361a032010d4e9
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+      fullname: PseudoTerminal X
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ptx0
+      type: user
+    createdAt: '2023-07-15T17:54:03.000Z'
+    data:
+      edited: false
+      editors:
+      - ptx0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7399799823760986
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+          fullname: PseudoTerminal X
+          isHf: false
+          isPro: false
+          name: ptx0
+          type: user
+        html: '<p>PyTorch == 1.13.0<br>transformers == 4.23.1<br>diffusers == 0.11.1<br>Note:
+          higher diffusers version may not be compatible with the DDIM inversion code.</p>
+
+          <p>That library might need a bit of love, first.</p>
+
+          '
+        raw: 'PyTorch == 1.13.0
+
+          transformers == 4.23.1
+
+          diffusers == 0.11.1
+
+          Note: higher diffusers version may not be compatible with the DDIM inversion
+          code.
+
+
+
+          That library might need a bit of love, first.'
+        updatedAt: '2023-07-15T17:54:03.164Z'
+      numEdits: 0
+      reactions: []
+    id: 64b2dd3bbcfd8542d60c31f3
+    type: comment
+  author: ptx0
+  content: 'PyTorch == 1.13.0
+
+    transformers == 4.23.1
+
+    diffusers == 0.11.1
+
+    Note: higher diffusers version may not be compatible with the DDIM inversion code.
+
+
+
+    That library might need a bit of love, first.'
+  created_at: 2023-07-15 16:54:03+00:00
+  edited: false
+  hidden: false
+  id: 64b2dd3bbcfd8542d60c31f3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653673654684-noauth.jpeg?w=200&h=200&f=face
+      fullname: "Andr\xE9s Mauricio Repetto Ferrero"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mauricio-repetto
+      type: user
+    createdAt: '2023-07-16T03:04:14.000Z'
+    data:
+      edited: true
+      editors:
+      - mauricio-repetto
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9505531787872314
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653673654684-noauth.jpeg?w=200&h=200&f=face
+          fullname: "Andr\xE9s Mauricio Repetto Ferrero"
+          isHf: false
+          isPro: false
+          name: mauricio-repetto
+          type: user
+        html: "<p>I'm just wondering why is it now this need of a watermark? In my\
+          \ case I'm working in my master's thesis and it's related to data augmentation\
+          \ using syntethic images to improve classification models, in particular\
+          \ I was using the previous sd versions together with the dreambooth script.\
+          \ However for XL when I ran the script I had an error because of  missing\
+          \ the library<code>invisible-watermark</code>, so I had to install it. \
+          \ I'm just worried about these watermarks changing the data distribution\
+          \ of the real data because of new patterns that I may not see but are present\
+          \ in these (not so) invisible watermarks.  As a way to bypass them for anyone\
+          \ that is looking for a solution, luckly there's a way found <a rel=\"nofollow\"\
+          \ href=\"https://github.com/huggingface/diffusers/issues/4035\">here</a>\
+          \ that should work.</p>\n<p><span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ when you say \"It's also in the img2img pipeline - think it's everywhere\
+          \ really\",  do you mean eveywhere in all XL related stuff right? I'm assuming\
+          \ previous sd versions don't use any watermarking technique behind the scenes\
+          \ :D</p>\n<p>Thanks!</p>\n"
+        raw: 'I''m just wondering why is it now this need of a watermark? In my case
+          I''m working in my master''s thesis and it''s related to data augmentation
+          using syntethic images to improve classification models, in particular I
+          was using the previous sd versions together with the dreambooth script.
+          However for XL when I ran the script I had an error because of  missing
+          the library`invisible-watermark`, so I had to install it.  I''m just worried
+          about these watermarks changing the data distribution of the real data because
+          of new patterns that I may not see but are present in these (not so) invisible
+          watermarks.  As a way to bypass them for anyone that is looking for a solution,
+          luckly there''s a way found [here](https://github.com/huggingface/diffusers/issues/4035)
+          that should work.
+
+
+          @patrickvonplaten when you say "It''s also in the img2img pipeline - think
+          it''s everywhere really",  do you mean eveywhere in all XL related stuff
+          right? I''m assuming previous sd versions don''t use any watermarking technique
+          behind the scenes :D
+
+
+          Thanks!'
+        updatedAt: '2023-07-16T03:08:43.506Z'
+      numEdits: 3
+      reactions: []
+    id: 64b35e2e372d43407760f849
+    type: comment
+  author: mauricio-repetto
+  content: 'I''m just wondering why is it now this need of a watermark? In my case
+    I''m working in my master''s thesis and it''s related to data augmentation using
+    syntethic images to improve classification models, in particular I was using the
+    previous sd versions together with the dreambooth script. However for XL when
+    I ran the script I had an error because of  missing the library`invisible-watermark`,
+    so I had to install it.  I''m just worried about these watermarks changing the
+    data distribution of the real data because of new patterns that I may not see
+    but are present in these (not so) invisible watermarks.  As a way to bypass them
+    for anyone that is looking for a solution, luckly there''s a way found [here](https://github.com/huggingface/diffusers/issues/4035)
+    that should work.
+
+
+    @patrickvonplaten when you say "It''s also in the img2img pipeline - think it''s
+    everywhere really",  do you mean eveywhere in all XL related stuff right? I''m
+    assuming previous sd versions don''t use any watermarking technique behind the
+    scenes :D
+
+
+    Thanks!'
+  created_at: 2023-07-16 02:04:14+00:00
+  edited: true
+  hidden: false
+  id: 64b35e2e372d43407760f849
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+      fullname: PseudoTerminal X
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ptx0
+      type: user
+    createdAt: '2023-07-16T07:17:58.000Z'
+    data:
+      edited: false
+      editors:
+      - ptx0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9875855445861816
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+          fullname: PseudoTerminal X
+          isHf: false
+          isPro: false
+          name: ptx0
+          type: user
+        html: '<p>it''s required by the license, mate</p>
+
+          '
+        raw: it's required by the license, mate
+        updatedAt: '2023-07-16T07:17:58.881Z'
+      numEdits: 0
+      reactions:
+      - count: 2
+        reaction: "\U0001F614"
+        users:
+        - mauricio-repetto
+        - augmentedrealitycat
+    id: 64b399a67da6a1dca88dff9e
+    type: comment
+  author: ptx0
+  content: it's required by the license, mate
+  created_at: 2023-07-16 06:17:58+00:00
+  edited: false
+  hidden: false
+  id: 64b399a67da6a1dca88dff9e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653673654684-noauth.jpeg?w=200&h=200&f=face
+      fullname: "Andr\xE9s Mauricio Repetto Ferrero"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: mauricio-repetto
+      type: user
+    createdAt: '2023-07-16T14:48:40.000Z'
+    data:
+      edited: false
+      editors:
+      - mauricio-repetto
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9876641631126404
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1653673654684-noauth.jpeg?w=200&h=200&f=face
+          fullname: "Andr\xE9s Mauricio Repetto Ferrero"
+          isHf: false
+          isPro: false
+          name: mauricio-repetto
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;ptx0&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/ptx0\">@<span class=\"\
+          underline\">ptx0</span></a></span>\n\n\t</span></span> yes of course, but\
+          \ my question was deeper than that, thinking again that we already have\
+          \ used sd models before without issues and now they come up with watermarking..\
+          \ I don't know if it's related with people concerns about AI and secure\
+          \ the use of it and they are just taking steps ahead on that matter.</p>\n"
+        raw: '@ptx0 yes of course, but my question was deeper than that, thinking
+          again that we already have used sd models before without issues and now
+          they come up with watermarking.. I don''t know if it''s related with people
+          concerns about AI and secure the use of it and they are just taking steps
+          ahead on that matter.'
+        updatedAt: '2023-07-16T14:48:40.421Z'
+      numEdits: 0
+      reactions: []
+    id: 64b40348372d434077701fcb
+    type: comment
+  author: mauricio-repetto
+  content: '@ptx0 yes of course, but my question was deeper than that, thinking again
+    that we already have used sd models before without issues and now they come up
+    with watermarking.. I don''t know if it''s related with people concerns about
+    AI and secure the use of it and they are just taking steps ahead on that matter.'
+  created_at: 2023-07-16 13:48:40+00:00
+  edited: false
+  hidden: false
+  id: 64b40348372d434077701fcb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+      fullname: "Furkan G\xF6z\xFCkara"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: MonsterMMORPG
+      type: user
+    createdAt: '2023-07-17T00:02:31.000Z'
+    data:
+      edited: false
+      editors:
+      - MonsterMMORPG
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9113489389419556
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+          fullname: "Furkan G\xF6z\xFCkara"
+          isHf: false
+          isPro: false
+          name: MonsterMMORPG
+          type: user
+        html: "<blockquote>\n<p>I'm just wondering why is it now this need of a watermark?\
+          \ In my case I'm working in my master's thesis and it's related to data\
+          \ augmentation using syntethic images to improve classification models,\
+          \ in particular I was using the previous sd versions together with the dreambooth\
+          \ script. However for XL when I ran the script I had an error because of\
+          \  missing the library<code>invisible-watermark</code>, so I had to install\
+          \ it.  I'm just worried about these watermarks changing the data distribution\
+          \ of the real data because of new patterns that I may not see but are present\
+          \ in these (not so) invisible watermarks.  As a way to bypass them for anyone\
+          \ that is looking for a solution, luckly there's a way found <a rel=\"nofollow\"\
+          \ href=\"https://github.com/huggingface/diffusers/issues/4035\">here</a>\
+          \ that should work.</p>\n<p><span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ when you say \"It's also in the img2img pipeline - think it's everywhere\
+          \ really\",  do you mean eveywhere in all XL related stuff right? I'm assuming\
+          \ previous sd versions don't use any watermarking technique behind the scenes\
+          \ :D</p>\n<p>Thanks!</p>\n</blockquote>\n<p>have you tried other uis like\
+          \ comfy ui?</p>\n<p>i just made a tutorial for that but not sure if that\
+          \ is also suffering from this or not</p>\n<p><a rel=\"nofollow\" href=\"\
+          https://youtu.be/FnMHbhvWUhE\"><strong>ComfyUI Master Tutorial - Stable\
+          \ Diffusion XL (SDXL) - Install On PC, Google Colab (Free) &amp; RunPod</strong></a></p>\n\
+          <p><a rel=\"nofollow\" href=\"https://youtu.be/FnMHbhvWUhE\"><img alt=\"\
+          image\" src=\"https://cdn-uploads.huggingface.co/production/uploads/6345bd89fe134dfd7a0dba40/WEPEFBLGWUYBdMEWaq2zS.png\"\
+          ></a></p>\n"
+        raw: "> I'm just wondering why is it now this need of a watermark? In my case\
+          \ I'm working in my master's thesis and it's related to data augmentation\
+          \ using syntethic images to improve classification models, in particular\
+          \ I was using the previous sd versions together with the dreambooth script.\
+          \ However for XL when I ran the script I had an error because of  missing\
+          \ the library`invisible-watermark`, so I had to install it.  I'm just worried\
+          \ about these watermarks changing the data distribution of the real data\
+          \ because of new patterns that I may not see but are present in these (not\
+          \ so) invisible watermarks.  As a way to bypass them for anyone that is\
+          \ looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+          \ that should work.\n> \n> @patrickvonplaten when you say \"It's also in\
+          \ the img2img pipeline - think it's everywhere really\",  do you mean eveywhere\
+          \ in all XL related stuff right? I'm assuming previous sd versions don't\
+          \ use any watermarking technique behind the scenes :D\n> \n> Thanks!\n\n\
+          have you tried other uis like comfy ui?\n\ni just made a tutorial for that\
+          \ but not sure if that is also suffering from this or not\n\n[**ComfyUI\
+          \ Master Tutorial - Stable Diffusion XL (SDXL) - Install On PC, Google Colab\
+          \ (Free) & RunPod**](https://youtu.be/FnMHbhvWUhE)\n\n[![image](https://cdn-uploads.huggingface.co/production/uploads/6345bd89fe134dfd7a0dba40/WEPEFBLGWUYBdMEWaq2zS.png)](https://youtu.be/FnMHbhvWUhE)\n\
+          \n"
+        updatedAt: '2023-07-17T00:02:31.218Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - Aquinius
+    id: 64b48517bcfd8542d6363d1b
+    type: comment
+  author: MonsterMMORPG
+  content: "> I'm just wondering why is it now this need of a watermark? In my case\
+    \ I'm working in my master's thesis and it's related to data augmentation using\
+    \ syntethic images to improve classification models, in particular I was using\
+    \ the previous sd versions together with the dreambooth script. However for XL\
+    \ when I ran the script I had an error because of  missing the library`invisible-watermark`,\
+    \ so I had to install it.  I'm just worried about these watermarks changing the\
+    \ data distribution of the real data because of new patterns that I may not see\
+    \ but are present in these (not so) invisible watermarks.  As a way to bypass\
+    \ them for anyone that is looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+    \ that should work.\n> \n> @patrickvonplaten when you say \"It's also in the img2img\
+    \ pipeline - think it's everywhere really\",  do you mean eveywhere in all XL\
+    \ related stuff right? I'm assuming previous sd versions don't use any watermarking\
+    \ technique behind the scenes :D\n> \n> Thanks!\n\nhave you tried other uis like\
+    \ comfy ui?\n\ni just made a tutorial for that but not sure if that is also suffering\
+    \ from this or not\n\n[**ComfyUI Master Tutorial - Stable Diffusion XL (SDXL)\
+    \ - Install On PC, Google Colab (Free) & RunPod**](https://youtu.be/FnMHbhvWUhE)\n\
+    \n[![image](https://cdn-uploads.huggingface.co/production/uploads/6345bd89fe134dfd7a0dba40/WEPEFBLGWUYBdMEWaq2zS.png)](https://youtu.be/FnMHbhvWUhE)\n\
+    \n"
+  created_at: 2023-07-16 23:02:31+00:00
+  edited: false
+  hidden: false
+  id: 64b48517bcfd8542d6363d1b
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+      fullname: PseudoTerminal X
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ptx0
+      type: user
+    createdAt: '2023-07-17T00:09:18.000Z'
+    data:
+      edited: false
+      editors:
+      - ptx0
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9522079229354858
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/447d8fe5c7126f590c0333f0693e6c5c.svg
+          fullname: PseudoTerminal X
+          isHf: false
+          isPro: false
+          name: ptx0
+          type: user
+        html: "<blockquote>\n<blockquote>\n<p>I'm just wondering why is it now this\
+          \ need of a watermark? In my case I'm working in my master's thesis and\
+          \ it's related to data augmentation using syntethic images to improve classification\
+          \ models, in particular I was using the previous sd versions together with\
+          \ the dreambooth script. However for XL when I ran the script I had an error\
+          \ because of  missing the library<code>invisible-watermark</code>, so I\
+          \ had to install it.  I'm just worried about these watermarks changing the\
+          \ data distribution of the real data because of new patterns that I may\
+          \ not see but are present in these (not so) invisible watermarks.  As a\
+          \ way to bypass them for anyone that is looking for a solution, luckly there's\
+          \ a way found <a rel=\"nofollow\" href=\"https://github.com/huggingface/diffusers/issues/4035\"\
+          >here</a> that should work.</p>\n<p><span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ when you say \"It's also in the img2img pipeline - think it's everywhere\
+          \ really\",  do you mean eveywhere in all XL related stuff right? I'm assuming\
+          \ previous sd versions don't use any watermarking technique behind the scenes\
+          \ :D</p>\n<p>Thanks!</p>\n</blockquote>\n<p>have you tried other uis like\
+          \ comfy ui?</p>\n<p>i just made a tutorial for that but not sure if that\
+          \ is also suffering from this or not</p>\n</blockquote>\n<p>please man,\
+          \ stop STOP spamming the forums here with your youtube channel, No one is\
+          \ interested in it, not relevant to the topic at all</p>\n"
+        raw: "> > I'm just wondering why is it now this need of a watermark? In my\
+          \ case I'm working in my master's thesis and it's related to data augmentation\
+          \ using syntethic images to improve classification models, in particular\
+          \ I was using the previous sd versions together with the dreambooth script.\
+          \ However for XL when I ran the script I had an error because of  missing\
+          \ the library`invisible-watermark`, so I had to install it.  I'm just worried\
+          \ about these watermarks changing the data distribution of the real data\
+          \ because of new patterns that I may not see but are present in these (not\
+          \ so) invisible watermarks.  As a way to bypass them for anyone that is\
+          \ looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+          \ that should work.\n> > \n> > @patrickvonplaten when you say \"It's also\
+          \ in the img2img pipeline - think it's everywhere really\",  do you mean\
+          \ eveywhere in all XL related stuff right? I'm assuming previous sd versions\
+          \ don't use any watermarking technique behind the scenes :D\n> > \n> > Thanks!\n\
+          > \n> have you tried other uis like comfy ui?\n> \n> i just made a tutorial\
+          \ for that but not sure if that is also suffering from this or not\n> \n\
+          \nplease man, stop STOP spamming the forums here with your youtube channel,\
+          \ No one is interested in it, not relevant to the topic at all"
+        updatedAt: '2023-07-17T00:09:18.418Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - Vinzou
+        - augmentedrealitycat
+        - r3gm
+    id: 64b486ae727711e4eae75401
+    type: comment
+  author: ptx0
+  content: "> > I'm just wondering why is it now this need of a watermark? In my case\
+    \ I'm working in my master's thesis and it's related to data augmentation using\
+    \ syntethic images to improve classification models, in particular I was using\
+    \ the previous sd versions together with the dreambooth script. However for XL\
+    \ when I ran the script I had an error because of  missing the library`invisible-watermark`,\
+    \ so I had to install it.  I'm just worried about these watermarks changing the\
+    \ data distribution of the real data because of new patterns that I may not see\
+    \ but are present in these (not so) invisible watermarks.  As a way to bypass\
+    \ them for anyone that is looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+    \ that should work.\n> > \n> > @patrickvonplaten when you say \"It's also in the\
+    \ img2img pipeline - think it's everywhere really\",  do you mean eveywhere in\
+    \ all XL related stuff right? I'm assuming previous sd versions don't use any\
+    \ watermarking technique behind the scenes :D\n> > \n> > Thanks!\n> \n> have you\
+    \ tried other uis like comfy ui?\n> \n> i just made a tutorial for that but not\
+    \ sure if that is also suffering from this or not\n> \n\nplease man, stop STOP\
+    \ spamming the forums here with your youtube channel, No one is interested in\
+    \ it, not relevant to the topic at all"
+  created_at: 2023-07-16 23:09:18+00:00
+  edited: false
+  hidden: false
+  id: 64b486ae727711e4eae75401
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+      fullname: "Furkan G\xF6z\xFCkara"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: MonsterMMORPG
+      type: user
+    createdAt: '2023-07-17T00:31:02.000Z'
+    data:
+      edited: false
+      editors:
+      - MonsterMMORPG
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9515265226364136
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1672531901326-6345bd89fe134dfd7a0dba40.png?w=200&h=200&f=face
+          fullname: "Furkan G\xF6z\xFCkara"
+          isHf: false
+          isPro: false
+          name: MonsterMMORPG
+          type: user
+        html: "<blockquote>\n<blockquote>\n<blockquote>\n<p>I'm just wondering why\
+          \ is it now this need of a watermark? In my case I'm working in my master's\
+          \ thesis and it's related to data augmentation using syntethic images to\
+          \ improve classification models, in particular I was using the previous\
+          \ sd versions together with the dreambooth script. However for XL when I\
+          \ ran the script I had an error because of  missing the library<code>invisible-watermark</code>,\
+          \ so I had to install it.  I'm just worried about these watermarks changing\
+          \ the data distribution of the real data because of new patterns that I\
+          \ may not see but are present in these (not so) invisible watermarks.  As\
+          \ a way to bypass them for anyone that is looking for a solution, luckly\
+          \ there's a way found <a rel=\"nofollow\" href=\"https://github.com/huggingface/diffusers/issues/4035\"\
+          >here</a> that should work.</p>\n<p><span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \ when you say \"It's also in the img2img pipeline - think it's everywhere\
+          \ really\",  do you mean eveywhere in all XL related stuff right? I'm assuming\
+          \ previous sd versions don't use any watermarking technique behind the scenes\
+          \ :D</p>\n<p>Thanks!</p>\n</blockquote>\n<p>have you tried other uis like\
+          \ comfy ui?</p>\n<p>i just made a tutorial for that but not sure if that\
+          \ is also suffering from this or not</p>\n</blockquote>\n<p>please man,\
+          \ stop STOP spamming the forums here with your youtube channel, No one is\
+          \ interested in it, not relevant to the topic at all</p>\n</blockquote>\n\
+          <p>i dont know if you are reading but i gave an idea for the person to try\
+          \ </p>\n<p>how it is not relevant have you tested comfyui ? </p>\n"
+        raw: "> > > I'm just wondering why is it now this need of a watermark? In\
+          \ my case I'm working in my master's thesis and it's related to data augmentation\
+          \ using syntethic images to improve classification models, in particular\
+          \ I was using the previous sd versions together with the dreambooth script.\
+          \ However for XL when I ran the script I had an error because of  missing\
+          \ the library`invisible-watermark`, so I had to install it.  I'm just worried\
+          \ about these watermarks changing the data distribution of the real data\
+          \ because of new patterns that I may not see but are present in these (not\
+          \ so) invisible watermarks.  As a way to bypass them for anyone that is\
+          \ looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+          \ that should work.\n> > > \n> > > @patrickvonplaten when you say \"It's\
+          \ also in the img2img pipeline - think it's everywhere really\",  do you\
+          \ mean eveywhere in all XL related stuff right? I'm assuming previous sd\
+          \ versions don't use any watermarking technique behind the scenes :D\n>\
+          \ > > \n> > > Thanks!\n> > \n> > have you tried other uis like comfy ui?\n\
+          > > \n> > i just made a tutorial for that but not sure if that is also suffering\
+          \ from this or not\n> > \n> \n> please man, stop STOP spamming the forums\
+          \ here with your youtube channel, No one is interested in it, not relevant\
+          \ to the topic at all\n\ni dont know if you are reading but i gave an idea\
+          \ for the person to try \n\nhow it is not relevant have you tested comfyui\
+          \ ? "
+        updatedAt: '2023-07-17T00:31:02.958Z'
+      numEdits: 0
+      reactions: []
+    id: 64b48bc6d52d67c01cfb9b14
+    type: comment
+  author: MonsterMMORPG
+  content: "> > > I'm just wondering why is it now this need of a watermark? In my\
+    \ case I'm working in my master's thesis and it's related to data augmentation\
+    \ using syntethic images to improve classification models, in particular I was\
+    \ using the previous sd versions together with the dreambooth script. However\
+    \ for XL when I ran the script I had an error because of  missing the library`invisible-watermark`,\
+    \ so I had to install it.  I'm just worried about these watermarks changing the\
+    \ data distribution of the real data because of new patterns that I may not see\
+    \ but are present in these (not so) invisible watermarks.  As a way to bypass\
+    \ them for anyone that is looking for a solution, luckly there's a way found [here](https://github.com/huggingface/diffusers/issues/4035)\
+    \ that should work.\n> > > \n> > > @patrickvonplaten when you say \"It's also\
+    \ in the img2img pipeline - think it's everywhere really\",  do you mean eveywhere\
+    \ in all XL related stuff right? I'm assuming previous sd versions don't use any\
+    \ watermarking technique behind the scenes :D\n> > > \n> > > Thanks!\n> > \n>\
+    \ > have you tried other uis like comfy ui?\n> > \n> > i just made a tutorial\
+    \ for that but not sure if that is also suffering from this or not\n> > \n> \n\
+    > please man, stop STOP spamming the forums here with your youtube channel, No\
+    \ one is interested in it, not relevant to the topic at all\n\ni dont know if\
+    \ you are reading but i gave an idea for the person to try \n\nhow it is not relevant\
+    \ have you tested comfyui ? "
+  created_at: 2023-07-16 23:31:02+00:00
+  edited: false
+  hidden: false
+  id: 64b48bc6d52d67c01cfb9b14
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669804172553-noauth.png?w=200&h=200&f=face
+      fullname: James Shinn
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Diffuse-A-Gnome
+      type: user
+    createdAt: '2023-07-20T07:56:50.000Z'
+    data:
+      edited: false
+      editors:
+      - Diffuse-A-Gnome
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9626726508140564
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669804172553-noauth.png?w=200&h=200&f=face
+          fullname: James Shinn
+          isHf: false
+          isPro: false
+          name: Diffuse-A-Gnome
+          type: user
+        html: '<p>Nobody can know if it''s relevant without watching a probably incredibly
+          annoying video.   It would be relevant if YOU had actually tested it for
+          watermarking and then written a simple bit of text saying something like,
+          "oh hai, the watermark isn''t there in comfyUI.  Here''s a link to the github,
+          buf if you''re having trouble following the 4 lines of installation instructions
+          there I have a video tutorial like 40 other people on youtube that you can
+          check out." instead of spamming your youtube channel via a link to a video
+          on setting up a UI that only took me 10 minutes to get up and running on
+          the AMD platform with their github instructions via directml which might
+          as well be unsupported for the amount of stuff that just crashes on it and
+          I won''t install git on windows until there''s a native version so I had
+          to manually download a repo or two on top of that.  </p>
+
+          <p>"But my video shows how to set up SDXL in ComfyUI too!", </p>
+
+          <p>ComfyUI saves the entire node tree and settings used to create an image
+          in the .png it generates by default, so the polite thing to do would be
+          to link to the github, then post a PNG generated with SDXL in it that anyone
+          can open in the UI and get the entire node layout instantly without watching
+          your video.  Then maybe explain that since pipelines aren''t used in Comfy
+          directly (rather they''re chained together and executed from the tree step-wise)
+          there''s some chance the watermarking won''t execute.  Maybe even do enough
+          testing to find out what conditions will make that happen.     I won''t
+          even click on the video, because youtube removed downvotes and me clicking
+          is just going to feed idiots like you ad revenue (and I already know it''s
+          not going to be worth downloading from ytp-dlp from the cover image).</p>
+
+          <p>"But," you shout, "I''m a CONTENT CREATOR!!!11  NOT A SPAMMER."</p>
+
+          <p>I create content too, usually several times a day.  Unlike youtubers
+          I have the courtesy to flush afterwards.  </p>
+
+          '
+        raw: "Nobody can know if it's relevant without watching a probably incredibly\
+          \ annoying video.   It would be relevant if YOU had actually tested it for\
+          \ watermarking and then written a simple bit of text saying something like,\
+          \ \"oh hai, the watermark isn't there in comfyUI.  Here's a link to the\
+          \ github, buf if you're having trouble following the 4 lines of installation\
+          \ instructions there I have a video tutorial like 40 other people on youtube\
+          \ that you can check out.\" instead of spamming your youtube channel via\
+          \ a link to a video on setting up a UI that only took me 10 minutes to get\
+          \ up and running on the AMD platform with their github instructions via\
+          \ directml which might as well be unsupported for the amount of stuff that\
+          \ just crashes on it and I won't install git on windows until there's a\
+          \ native version so I had to manually download a repo or two on top of that.\
+          \  \n\n\"But my video shows how to set up SDXL in ComfyUI too!\", \n\nComfyUI\
+          \ saves the entire node tree and settings used to create an image in the\
+          \ .png it generates by default, so the polite thing to do would be to link\
+          \ to the github, then post a PNG generated with SDXL in it that anyone can\
+          \ open in the UI and get the entire node layout instantly without watching\
+          \ your video.  Then maybe explain that since pipelines aren't used in Comfy\
+          \ directly (rather they're chained together and executed from the tree step-wise)\
+          \ there's some chance the watermarking won't execute.  Maybe even do enough\
+          \ testing to find out what conditions will make that happen.     I won't\
+          \ even click on the video, because youtube removed downvotes and me clicking\
+          \ is just going to feed idiots like you ad revenue (and I already know it's\
+          \ not going to be worth downloading from ytp-dlp from the cover image).\n\
+          \n\"But,\" you shout, \"I'm a CONTENT CREATOR!!!11  NOT A SPAMMER.\"\n\n\
+          I create content too, usually several times a day.  Unlike youtubers I have\
+          \ the courtesy to flush afterwards.  "
+        updatedAt: '2023-07-20T07:56:50.151Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\U0001F44D"
+        users:
+        - Vinzou
+        - JohnCe
+        - sgim
+      - count: 2
+        reaction: "\U0001F91D"
+        users:
+        - ptx0
+        - JohnCe
+    id: 64b8e8c2cf14c2fabea059a6
+    type: comment
+  author: Diffuse-A-Gnome
+  content: "Nobody can know if it's relevant without watching a probably incredibly\
+    \ annoying video.   It would be relevant if YOU had actually tested it for watermarking\
+    \ and then written a simple bit of text saying something like, \"oh hai, the watermark\
+    \ isn't there in comfyUI.  Here's a link to the github, buf if you're having trouble\
+    \ following the 4 lines of installation instructions there I have a video tutorial\
+    \ like 40 other people on youtube that you can check out.\" instead of spamming\
+    \ your youtube channel via a link to a video on setting up a UI that only took\
+    \ me 10 minutes to get up and running on the AMD platform with their github instructions\
+    \ via directml which might as well be unsupported for the amount of stuff that\
+    \ just crashes on it and I won't install git on windows until there's a native\
+    \ version so I had to manually download a repo or two on top of that.  \n\n\"\
+    But my video shows how to set up SDXL in ComfyUI too!\", \n\nComfyUI saves the\
+    \ entire node tree and settings used to create an image in the .png it generates\
+    \ by default, so the polite thing to do would be to link to the github, then post\
+    \ a PNG generated with SDXL in it that anyone can open in the UI and get the entire\
+    \ node layout instantly without watching your video.  Then maybe explain that\
+    \ since pipelines aren't used in Comfy directly (rather they're chained together\
+    \ and executed from the tree step-wise) there's some chance the watermarking won't\
+    \ execute.  Maybe even do enough testing to find out what conditions will make\
+    \ that happen.     I won't even click on the video, because youtube removed downvotes\
+    \ and me clicking is just going to feed idiots like you ad revenue (and I already\
+    \ know it's not going to be worth downloading from ytp-dlp from the cover image).\n\
+    \n\"But,\" you shout, \"I'm a CONTENT CREATOR!!!11  NOT A SPAMMER.\"\n\nI create\
+    \ content too, usually several times a day.  Unlike youtubers I have the courtesy\
+    \ to flush afterwards.  "
+  created_at: 2023-07-20 06:56:50+00:00
+  edited: false
+  hidden: false
+  id: 64b8e8c2cf14c2fabea059a6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/619cb085c1c8be979b029d82/_ooUzyiTCX1gcAuovtMXY.jpeg?w=200&h=200&f=face
+      fullname: Dien-Hoa Truong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dhoa
+      type: user
+    createdAt: '2023-10-20T10:19:24.000Z'
+    data:
+      edited: true
+      editors:
+      - dhoa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.8022941946983337
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/619cb085c1c8be979b029d82/_ooUzyiTCX1gcAuovtMXY.jpeg?w=200&h=200&f=face
+          fullname: Dien-Hoa Truong
+          isHf: false
+          isPro: false
+          name: dhoa
+          type: user
+        html: "<blockquote>\n<p>Thanks a lot for the helpful discussion here! We could\
+          \ / should maybe try out to replace the watermark with the tree-ring watermark\
+          \ technique: <a rel=\"nofollow\" href=\"https://github.com/YuxinWenRick/tree-ring-watermark\"\
+          >https://github.com/YuxinWenRick/tree-ring-watermark</a></p>\n</blockquote>\n\
+          <p><span data-props=\"{&quot;user&quot;:&quot;patrickvonplaten&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/patrickvonplaten\"\
+          >@<span class=\"underline\">patrickvonplaten</span></a></span>\n\n\t</span></span>\
+          \  What is your current thought on this? From my own experiments, I found\
+          \ multiple issues with the current watermark technique:</p>\n<ul>\n<li>JPEG\
+          \ Compression can drop a lot the performance (for example from 85% to 56%\
+          \ bit match) </li>\n<li>Even with no postprocessing at all, sometimes the\
+          \ decoding doesn't work. Below is my simple pipeline</li>\n</ul>\n<pre><code\
+          \ class=\"language-python\">pipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n\
+          \    <span class=\"hljs-string\">\"stabilityai/stable-diffusion-xl-base-1.0\"\
+          </span>, torch_dtype=torch.float16, variant=<span class=\"hljs-string\"\
+          >\"fp16\"</span>, use_safetensors=<span class=\"hljs-literal\">True</span>\n\
+          ).to(<span class=\"hljs-string\">\"cuda\"</span>)\n\nprompt = <span class=\"\
+          hljs-string\">\"photo of dog\"</span>\n<span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-number\">10</span>):\n    image = pipeline_text2image(prompt=prompt).images[<span\
+          \ class=\"hljs-number\">0</span>]\n    watermark_dec = water_maker_bits.decode(np.array(image))\n\
+          </code></pre>\n<p>From the 10 images I generated, sometimes only 27/48 bits\
+          \ match</p>\n<p>Thanks</p>\n<p>P/s: From all HuggingFace public spaces,\
+          \ I found no image that has watermark, same conclusion from a thread from\
+          \ reddit: <a rel=\"nofollow\" href=\"https://www.reddit.com/r/StableDiffusion/comments/16duvd6/why_how_to_check_invisible_watermark/\"\
+          >https://www.reddit.com/r/StableDiffusion/comments/16duvd6/why_how_to_check_invisible_watermark/</a></p>\n\
+          <p>Anyone can confirm this? Or do I miss something? Thanks </p>\n"
+        raw: "> Thanks a lot for the helpful discussion here! We could / should maybe\
+          \ try out to replace the watermark with the tree-ring watermark technique:\
+          \ https://github.com/YuxinWenRick/tree-ring-watermark\n\n@patrickvonplaten\
+          \  What is your current thought on this? From my own experiments, I found\
+          \ multiple issues with the current watermark technique:\n\n- JPEG Compression\
+          \ can drop a lot the performance (for example from 85% to 56% bit match)\
+          \ \n- Even with no postprocessing at all, sometimes the decoding doesn't\
+          \ work. Below is my simple pipeline\n```python\npipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n\
+          \    \"stabilityai/stable-diffusion-xl-base-1.0\", torch_dtype=torch.float16,\
+          \ variant=\"fp16\", use_safetensors=True\n).to(\"cuda\")\n\nprompt = \"\
+          photo of dog\"\nfor i in range(10):\n    image = pipeline_text2image(prompt=prompt).images[0]\n\
+          \    watermark_dec = water_maker_bits.decode(np.array(image))\n```\nFrom\
+          \ the 10 images I generated, sometimes only 27/48 bits match\n\nThanks\n\
+          \nP/s: From all HuggingFace public spaces, I found no image that has watermark,\
+          \ same conclusion from a thread from reddit: https://www.reddit.com/r/StableDiffusion/comments/16duvd6/why_how_to_check_invisible_watermark/\n\
+          \nAnyone can confirm this? Or do I miss something? Thanks \n"
+        updatedAt: '2023-10-20T11:21:31.712Z'
+      numEdits: 5
+      reactions: []
+    id: 6532542c6c7dac8c44a8a86e
+    type: comment
+  author: dhoa
+  content: "> Thanks a lot for the helpful discussion here! We could / should maybe\
+    \ try out to replace the watermark with the tree-ring watermark technique: https://github.com/YuxinWenRick/tree-ring-watermark\n\
+    \n@patrickvonplaten  What is your current thought on this? From my own experiments,\
+    \ I found multiple issues with the current watermark technique:\n\n- JPEG Compression\
+    \ can drop a lot the performance (for example from 85% to 56% bit match) \n- Even\
+    \ with no postprocessing at all, sometimes the decoding doesn't work. Below is\
+    \ my simple pipeline\n```python\npipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n\
+    \    \"stabilityai/stable-diffusion-xl-base-1.0\", torch_dtype=torch.float16,\
+    \ variant=\"fp16\", use_safetensors=True\n).to(\"cuda\")\n\nprompt = \"photo of\
+    \ dog\"\nfor i in range(10):\n    image = pipeline_text2image(prompt=prompt).images[0]\n\
+    \    watermark_dec = water_maker_bits.decode(np.array(image))\n```\nFrom the 10\
+    \ images I generated, sometimes only 27/48 bits match\n\nThanks\n\nP/s: From all\
+    \ HuggingFace public spaces, I found no image that has watermark, same conclusion\
+    \ from a thread from reddit: https://www.reddit.com/r/StableDiffusion/comments/16duvd6/why_how_to_check_invisible_watermark/\n\
+    \nAnyone can confirm this? Or do I miss something? Thanks \n"
+  created_at: 2023-10-20 09:19:24+00:00
+  edited: true
+  hidden: false
+  id: 6532542c6c7dac8c44a8a86e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/619cb085c1c8be979b029d82/_ooUzyiTCX1gcAuovtMXY.jpeg?w=200&h=200&f=face
+      fullname: Dien-Hoa Truong
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dhoa
+      type: user
+    createdAt: '2023-10-20T15:13:58.000Z'
+    data:
+      edited: false
+      editors:
+      - dhoa
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5237180590629578
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/619cb085c1c8be979b029d82/_ooUzyiTCX1gcAuovtMXY.jpeg?w=200&h=200&f=face
+          fullname: Dien-Hoa Truong
+          isHf: false
+          isPro: false
+          name: dhoa
+          type: user
+        html: "<p>Continuing my comment above, I found different behaviors of watermark\
+          \ decoding between <code>Diffusers</code> (works) and <code>Hosted inference\
+          \ API</code> (doesn't work). Maybe it's the reason all the public spaces\
+          \ don't have watermark</p>\n<p>You find below the code to reproduce the\
+          \ results:</p>\n<p>Using <code>Diffusers</code></p>\n<pre><code class=\"\
+          language-python\"><span class=\"hljs-keyword\">from</span> diffusers <span\
+          \ class=\"hljs-keyword\">import</span> AutoPipelineForText2Image\n<span\
+          \ class=\"hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\"\
+          >from</span> imwatermark <span class=\"hljs-keyword\">import</span> WatermarkDecoder,\
+          \ WatermarkEncoder\n<span class=\"hljs-keyword\">import</span> matplotlib.pyplot\
+          \ <span class=\"hljs-keyword\">as</span> plt\n<span class=\"hljs-keyword\"\
+          >from</span> PIL <span class=\"hljs-keyword\">import</span> Image\n<span\
+          \ class=\"hljs-keyword\">import</span> numpy <span class=\"hljs-keyword\"\
+          >as</span> np\n<span class=\"hljs-keyword\">import</span> torch\n<span class=\"\
+          hljs-keyword\">import</span> cv2\n<span class=\"hljs-keyword\">import</span>\
+          \ io\n\n<span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\
+          \ class_\">WaterMaker</span>:\n    <span class=\"hljs-keyword\">def</span>\
+          \ <span class=\"hljs-title function_\">__init__</span>(<span class=\"hljs-params\"\
+          >self, watermark</span>):\n        self.watermark = watermark\n        self.encoder\
+          \ = WatermarkEncoder()\n        self.data_format = <span class=\"hljs-string\"\
+          >'bits'</span>\n        self.watermark_bits = np.array([<span class=\"hljs-built_in\"\
+          >int</span>(bit) <span class=\"hljs-keyword\">for</span> bit <span class=\"\
+          hljs-keyword\">in</span> <span class=\"hljs-built_in\">bin</span>(self.watermark)[<span\
+          \ class=\"hljs-number\">2</span>:]])\n        num_bits = <span class=\"\
+          hljs-built_in\">len</span>(self.watermark_bits)\n        self.decoder =\
+          \ WatermarkDecoder(<span class=\"hljs-string\">\"bits\"</span>, num_bits)\n\
+          \    \n    <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">decode</span>(<span class=\"hljs-params\">self, img</span>):\n\
+          \        <span class=\"hljs-string\">\"The Image must be in RGB format\"\
+          </span>\n        watermark = self.decoder.decode(img, <span class=\"hljs-string\"\
+          >'dwtDct'</span>)\n        <span class=\"hljs-built_in\">print</span>(<span\
+          \ class=\"hljs-string\">'Number of bits match'</span>)\n        <span class=\"\
+          hljs-keyword\">match</span> = self.watermark_bits == watermark\n       \
+          \ <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-keyword\"\
+          >match</span>)\n        <span class=\"hljs-built_in\">print</span>(np.<span\
+          \ class=\"hljs-built_in\">sum</span>(<span class=\"hljs-keyword\">match</span>))\n\
+          \        <span class=\"hljs-keyword\">return</span> np.<span class=\"hljs-built_in\"\
+          >sum</span>(<span class=\"hljs-keyword\">match</span>)/<span class=\"hljs-built_in\"\
+          >len</span>(<span class=\"hljs-keyword\">match</span>)\n        <span class=\"\
+          hljs-keyword\">return</span> watermark\n\nwater_maker_bits = WaterMaker(<span\
+          \ class=\"hljs-number\">0b101100111110110010010000011110111011000110011110</span>)\n\
+          \npipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n   \
+          \ <span class=\"hljs-string\">\"stabilityai/stable-diffusion-xl-base-1.0\"\
+          </span>, torch_dtype=torch.float16, variant=<span class=\"hljs-string\"\
+          >\"fp16\"</span>, use_safetensors=<span class=\"hljs-literal\">True</span>\n\
+          ).to(<span class=\"hljs-string\">\"cuda\"</span>)\n\nprompt = <span class=\"\
+          hljs-string\">\"photo of dog\"</span>\n<span class=\"hljs-keyword\">for</span>\
+          \ i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-number\">5</span>):\n    image = pipeline_text2image(prompt=prompt).images[<span\
+          \ class=\"hljs-number\">0</span>]\n    watermark_dec = water_maker_bits.decode(np.array(image))\n\
+          </code></pre>\n<p>Almost all images generated have 48/48 bits match</p>\n\
+          <p>Using <code>Hosted Inference API</code></p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">import</span> requests\n\nAPI_URL = <span\
+          \ class=\"hljs-string\">\"https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0\"\
+          </span>\nheaders = {<span class=\"hljs-string\">\"Authorization\"</span>:\
+          \ <span class=\"hljs-string\">f\"Bearer <span class=\"hljs-subst\">{token}</span>\"\
+          </span>}\n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">query</span>(<span class=\"hljs-params\">payload</span>):\n\
+          \    response = requests.post(API_URL, headers=headers, json=payload)\n\
+          \    <span class=\"hljs-keyword\">return</span> response.content\n\nimage_bytes\
+          \ = query({\n<span class=\"hljs-string\">\"inputs\"</span>: <span class=\"\
+          hljs-string\">\"photo of dog 1\"</span>,\n})\n\n<span class=\"hljs-keyword\"\
+          >for</span> i <span class=\"hljs-keyword\">in</span> <span class=\"hljs-built_in\"\
+          >range</span>(<span class=\"hljs-number\">5</span>):\n    image_bytes =\
+          \ query({\n    <span class=\"hljs-string\">\"inputs\"</span>: <span class=\"\
+          hljs-string\">f\"photo of dog <span class=\"hljs-subst\">{i}</span>\"</span>,\n\
+          \    })\n    image = Image.<span class=\"hljs-built_in\">open</span>(io.BytesIO(image_bytes))\n\
+          \    watermark_dec = water_maker_bits.decode(np.array(image))\n</code></pre>\n\
+          <p>Almost all images have bits match only 21/48 </p>\n"
+        raw: "Continuing my comment above, I found different behaviors of watermark\
+          \ decoding between `Diffusers` (works) and `Hosted inference API` (doesn't\
+          \ work). Maybe it's the reason all the public spaces don't have watermark\n\
+          \nYou find below the code to reproduce the results:\n\nUsing `Diffusers`\n\
+          ```python\nfrom diffusers import AutoPipelineForText2Image\nimport torch\n\
+          from imwatermark import WatermarkDecoder, WatermarkEncoder\nimport matplotlib.pyplot\
+          \ as plt\nfrom PIL import Image\nimport numpy as np\nimport torch\nimport\
+          \ cv2\nimport io\n\nclass WaterMaker:\n    def __init__(self, watermark):\n\
+          \        self.watermark = watermark\n        self.encoder = WatermarkEncoder()\n\
+          \        self.data_format = 'bits'\n        self.watermark_bits = np.array([int(bit)\
+          \ for bit in bin(self.watermark)[2:]])\n        num_bits = len(self.watermark_bits)\n\
+          \        self.decoder = WatermarkDecoder(\"bits\", num_bits)\n    \n   \
+          \ def decode(self, img):\n        \"The Image must be in RGB format\"\n\
+          \        watermark = self.decoder.decode(img, 'dwtDct')\n        print('Number\
+          \ of bits match')\n        match = self.watermark_bits == watermark\n  \
+          \      print(match)\n        print(np.sum(match))\n        return np.sum(match)/len(match)\n\
+          \        return watermark\n\nwater_maker_bits = WaterMaker(0b101100111110110010010000011110111011000110011110)\n\
+          \npipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n   \
+          \ \"stabilityai/stable-diffusion-xl-base-1.0\", torch_dtype=torch.float16,\
+          \ variant=\"fp16\", use_safetensors=True\n).to(\"cuda\")\n\nprompt = \"\
+          photo of dog\"\nfor i in range(5):\n    image = pipeline_text2image(prompt=prompt).images[0]\n\
+          \    watermark_dec = water_maker_bits.decode(np.array(image))\n\n```\n\n\
+          Almost all images generated have 48/48 bits match\n\nUsing `Hosted Inference\
+          \ API`\n\n```python\nimport requests\n\nAPI_URL = \"https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0\"\
+          \nheaders = {\"Authorization\": f\"Bearer {token}\"}\n\ndef query(payload):\n\
+          \    response = requests.post(API_URL, headers=headers, json=payload)\n\
+          \    return response.content\n\nimage_bytes = query({\n\"inputs\": \"photo\
+          \ of dog 1\",\n})\n\nfor i in range(5):\n    image_bytes = query({\n   \
+          \ \"inputs\": f\"photo of dog {i}\",\n    })\n    image = Image.open(io.BytesIO(image_bytes))\n\
+          \    watermark_dec = water_maker_bits.decode(np.array(image))\n```\n\nAlmost\
+          \ all images have bits match only 21/48 "
+        updatedAt: '2023-10-20T15:13:58.275Z'
+      numEdits: 0
+      reactions: []
+    id: 653299366e86d670ff6c8ccf
+    type: comment
+  author: dhoa
+  content: "Continuing my comment above, I found different behaviors of watermark\
+    \ decoding between `Diffusers` (works) and `Hosted inference API` (doesn't work).\
+    \ Maybe it's the reason all the public spaces don't have watermark\n\nYou find\
+    \ below the code to reproduce the results:\n\nUsing `Diffusers`\n```python\nfrom\
+    \ diffusers import AutoPipelineForText2Image\nimport torch\nfrom imwatermark import\
+    \ WatermarkDecoder, WatermarkEncoder\nimport matplotlib.pyplot as plt\nfrom PIL\
+    \ import Image\nimport numpy as np\nimport torch\nimport cv2\nimport io\n\nclass\
+    \ WaterMaker:\n    def __init__(self, watermark):\n        self.watermark = watermark\n\
+    \        self.encoder = WatermarkEncoder()\n        self.data_format = 'bits'\n\
+    \        self.watermark_bits = np.array([int(bit) for bit in bin(self.watermark)[2:]])\n\
+    \        num_bits = len(self.watermark_bits)\n        self.decoder = WatermarkDecoder(\"\
+    bits\", num_bits)\n    \n    def decode(self, img):\n        \"The Image must\
+    \ be in RGB format\"\n        watermark = self.decoder.decode(img, 'dwtDct')\n\
+    \        print('Number of bits match')\n        match = self.watermark_bits ==\
+    \ watermark\n        print(match)\n        print(np.sum(match))\n        return\
+    \ np.sum(match)/len(match)\n        return watermark\n\nwater_maker_bits = WaterMaker(0b101100111110110010010000011110111011000110011110)\n\
+    \npipeline_text2image = AutoPipelineForText2Image.from_pretrained(\n    \"stabilityai/stable-diffusion-xl-base-1.0\"\
+    , torch_dtype=torch.float16, variant=\"fp16\", use_safetensors=True\n).to(\"cuda\"\
+    )\n\nprompt = \"photo of dog\"\nfor i in range(5):\n    image = pipeline_text2image(prompt=prompt).images[0]\n\
+    \    watermark_dec = water_maker_bits.decode(np.array(image))\n\n```\n\nAlmost\
+    \ all images generated have 48/48 bits match\n\nUsing `Hosted Inference API`\n\
+    \n```python\nimport requests\n\nAPI_URL = \"https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0\"\
+    \nheaders = {\"Authorization\": f\"Bearer {token}\"}\n\ndef query(payload):\n\
+    \    response = requests.post(API_URL, headers=headers, json=payload)\n    return\
+    \ response.content\n\nimage_bytes = query({\n\"inputs\": \"photo of dog 1\",\n\
+    })\n\nfor i in range(5):\n    image_bytes = query({\n    \"inputs\": f\"photo\
+    \ of dog {i}\",\n    })\n    image = Image.open(io.BytesIO(image_bytes))\n   \
+    \ watermark_dec = water_maker_bits.decode(np.array(image))\n```\n\nAlmost all\
+    \ images have bits match only 21/48 "
+  created_at: 2023-10-20 14:13:58+00:00
+  edited: false
+  hidden: false
+  id: 653299366e86d670ff6c8ccf
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 31
+repo_id: stabilityai/stable-diffusion-xl-base-0.9
+repo_type: model
+status: open
+target_branch: null
+title: StableDiffusionXLPipeline's watermark introduces undesirable pixel noises in
+  generated images

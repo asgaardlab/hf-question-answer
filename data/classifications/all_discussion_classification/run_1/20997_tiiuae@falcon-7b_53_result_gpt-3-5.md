@@ -1,0 +1,6 @@
+## https://huggingface.co/tiiuae/falcon-7b/discussions/53
+
+contains_question: yes
+
+question_part: Actually I'm learning fine tuning, so I scraped some data from financial website and tried to fine-tuning it, after fine tunning, I'm getting output something like this,
+<human>: How  help me?\n <assistant>:  helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available. They helped me to understand the market and the opportunities that were available.

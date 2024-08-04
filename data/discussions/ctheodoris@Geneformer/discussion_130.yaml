@@ -1,0 +1,454 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: thereallda
+conflicting_files: null
+created_at: 2023-07-22 07:42:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1e7473631312f4fd3018116eb39c75c9.svg
+      fullname: Dean Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thereallda
+      type: user
+    createdAt: '2023-07-22T08:42:08.000Z'
+    data:
+      edited: false
+      editors:
+      - thereallda
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6633123755455017
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1e7473631312f4fd3018116eb39c75c9.svg
+          fullname: Dean Li
+          isHf: false
+          isPro: false
+          name: thereallda
+          type: user
+        html: "<p>Hi, thanks for your fantastic work.<br>I am quite new to the transformer\
+          \ and want to apply the Geneformer to celltypes classification.  I was following\
+          \ your <code>cell_classification</code> notebook and used the model fine-tuned\
+          \ on immune organs to predict the celltypes of PBMCs 3k dataset (<a rel=\"\
+          nofollow\" href=\"http://cf.10xgenomics.com/samples/cell-exp/1.1.0/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+          >http://cf.10xgenomics.com/samples/cell-exp/1.1.0/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz</a>).\
+          \  </p>\n<p>I refer to the previous discussion (<a href=\"https://huggingface.co/ctheodoris/Geneformer/discussions/107\"\
+          >https://huggingface.co/ctheodoris/Geneformer/discussions/107</a>) and perform\
+          \ the prediction as follows: </p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-comment\"># 1. transform scRNA-seq expression data to\
+          \ rank value .dataset format</span>\n<span class=\"hljs-keyword\">from</span>\
+          \ geneformer <span class=\"hljs-keyword\">import</span> TranscriptomeTokenizer\n\
+          \ntk = TranscriptomeTokenizer({<span class=\"hljs-string\">\"cell_type\"\
+          </span>: <span class=\"hljs-string\">\"cell_type\"</span>, <span class=\"\
+          hljs-string\">\"organ_major\"</span>: <span class=\"hljs-string\">\"organ_major\"\
+          </span>}, nproc=<span class=\"hljs-number\">4</span>)\ntk.tokenize_data(<span\
+          \ class=\"hljs-string\">\"D:/jupyterNote/pySC/output/\"</span>, output_directory=<span\
+          \ class=\"hljs-string\">\"token_data/\"</span>, output_prefix=<span class=\"\
+          hljs-string\">\"tk_pbmc3k\"</span>)\n\n<span class=\"hljs-comment\"># 2.\
+          \ load new dataset</span>\n<span class=\"hljs-keyword\">import</span> pandas\
+          \ <span class=\"hljs-keyword\">as</span> pd\nnew_dataset = load_from_disk(<span\
+          \ class=\"hljs-string\">\"D:/jupyterNote/Geneformer/examples/token_data/tk_pbmc3k.dataset/\"\
+          </span>)\npd.DataFrame(new_dataset)\n</code></pre>\n<p><a rel=\"nofollow\"\
+          \ href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/kiAC7ZfJETnAy17i-x7M4.png\"\
+          ><img alt=\"Input dataset\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/kiAC7ZfJETnAy17i-x7M4.png\"\
+          ></a></p>\n<pre><code class=\"language-python\"><span class=\"hljs-comment\"\
+          ># 3. load the fine-tuned model</span>\nft_model = BertForSequenceClassification.from_pretrained(<span\
+          \ class=\"hljs-string\">\"cell_class_test/230719_geneformer_CellClassifier_immune_L2048_B4_LR5e-05_LSlinear_WU500_E10_Oadamw_F0/\"\
+          </span>)\nft_trainer = Trainer(model=ft_model)\n\n<span class=\"hljs-comment\"\
+          ># 4. perform prediction </span>\nct_predictions = ft_trainer.predict(new_dataset)\n\
+          ct_pred = ct_predictions.predictions\n\n<span class=\"hljs-comment\"># celltype\
+          \ : index </span>\nimmune_label_idx_dict = target_dict_list[<span class=\"\
+          hljs-number\">5</span>]\n\n<span class=\"hljs-comment\"># get the celltype\
+          \ with label_id</span>\nct_pred_id = ct_pred.argmax(-<span class=\"hljs-number\"\
+          >1</span>) \nct_pred_label = [k <span class=\"hljs-keyword\">for</span>\
+          \ idx <span class=\"hljs-keyword\">in</span> ct_pred_id <span class=\"hljs-keyword\"\
+          >for</span> k, v <span class=\"hljs-keyword\">in</span> immune_label_idx_dict.items()\
+          \ <span class=\"hljs-keyword\">if</span> v == idx]\n</code></pre>\n<p>Finally,\
+          \ when I compared the Geneformer prediction with the celltype annotation\
+          \ from the dataset, I found that most predictions were different from the\
+          \ annotation. </p>\n<pre><code class=\"language-python\"><span class=\"\
+          hljs-keyword\">import</span> numpy <span class=\"hljs-keyword\">as</span>\
+          \ np\n<span class=\"hljs-keyword\">import</span> scanpy <span class=\"hljs-keyword\"\
+          >as</span> sc\n<span class=\"hljs-keyword\">import</span> anndata\n\nadata\
+          \ = anndata.read_h5ad(<span class=\"hljs-string\">\"D:/jupyterNote/pySC/output/pbmc3k.h5ad\"\
+          </span>)\nadata.obs[<span class=\"hljs-string\">'geneformer_pred'</span>]\
+          \ = ct_pred_label\nsc.pl.umap(adata, color=<span class=\"hljs-string\">'geneformer_pred'</span>)\n\
+          sc.pl.umap(adata, color=<span class=\"hljs-string\">'cell_type'</span>)\n\
+          </code></pre>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/SgIEcFyFxtPAHqjL6d5Kz.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/SgIEcFyFxtPAHqjL6d5Kz.png\"\
+          ></a></p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/L5eIKez4tNSJWZLvAU-UI.png\"\
+          ><img alt=\"image.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/L5eIKez4tNSJWZLvAU-UI.png\"\
+          ></a></p>\n<p>Could you provide any suggestions on this? Any help would\
+          \ be appreciated.</p>\n"
+        raw: "Hi, thanks for your fantastic work. \r\nI am quite new to the transformer\
+          \ and want to apply the Geneformer to celltypes classification.  I was following\
+          \ your `cell_classification` notebook and used the model fine-tuned on immune\
+          \ organs to predict the celltypes of PBMCs 3k dataset (http://cf.10xgenomics.com/samples/cell-exp/1.1.0/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).\
+          \  \r\n\r\nI refer to the previous discussion (https://huggingface.co/ctheodoris/Geneformer/discussions/107)\
+          \ and perform the prediction as follows: \r\n```python\r\n# 1. transform\
+          \ scRNA-seq expression data to rank value .dataset format\r\nfrom geneformer\
+          \ import TranscriptomeTokenizer\r\n\r\ntk = TranscriptomeTokenizer({\"cell_type\"\
+          : \"cell_type\", \"organ_major\": \"organ_major\"}, nproc=4)\r\ntk.tokenize_data(\"\
+          D:/jupyterNote/pySC/output/\", output_directory=\"token_data/\", output_prefix=\"\
+          tk_pbmc3k\")\r\n\r\n# 2. load new dataset\r\nimport pandas as pd\r\nnew_dataset\
+          \ = load_from_disk(\"D:/jupyterNote/Geneformer/examples/token_data/tk_pbmc3k.dataset/\"\
+          )\r\npd.DataFrame(new_dataset)\r\n```\r\n\r\n![Input dataset ](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/kiAC7ZfJETnAy17i-x7M4.png)\r\
+          \n\r\n```python\r\n# 3. load the fine-tuned model\r\nft_model = BertForSequenceClassification.from_pretrained(\"\
+          cell_class_test/230719_geneformer_CellClassifier_immune_L2048_B4_LR5e-05_LSlinear_WU500_E10_Oadamw_F0/\"\
+          )\r\nft_trainer = Trainer(model=ft_model)\r\n\r\n# 4. perform prediction\
+          \ \r\nct_predictions = ft_trainer.predict(new_dataset)\r\nct_pred = ct_predictions.predictions\r\
+          \n\r\n# celltype : index \r\nimmune_label_idx_dict = target_dict_list[5]\r\
+          \n\r\n# get the celltype with label_id\r\nct_pred_id = ct_pred.argmax(-1)\
+          \ \r\nct_pred_label = [k for idx in ct_pred_id for k, v in immune_label_idx_dict.items()\
+          \ if v == idx]\r\n```\r\n\r\nFinally, when I compared the Geneformer prediction\
+          \ with the celltype annotation from the dataset, I found that most predictions\
+          \ were different from the annotation. \r\n\r\n```python\r\nimport numpy\
+          \ as np\r\nimport scanpy as sc\r\nimport anndata\r\n\r\nadata = anndata.read_h5ad(\"\
+          D:/jupyterNote/pySC/output/pbmc3k.h5ad\")\r\nadata.obs['geneformer_pred']\
+          \ = ct_pred_label\r\nsc.pl.umap(adata, color='geneformer_pred')\r\nsc.pl.umap(adata,\
+          \ color='cell_type')\r\n```\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/SgIEcFyFxtPAHqjL6d5Kz.png)\r\
+          \n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/L5eIKez4tNSJWZLvAU-UI.png)\r\
+          \n\r\nCould you provide any suggestions on this? Any help would be appreciated."
+        updatedAt: '2023-07-22T08:42:08.446Z'
+      numEdits: 0
+      reactions: []
+    id: 64bb9660b567ae97c30aeb67
+    type: comment
+  author: thereallda
+  content: "Hi, thanks for your fantastic work. \r\nI am quite new to the transformer\
+    \ and want to apply the Geneformer to celltypes classification.  I was following\
+    \ your `cell_classification` notebook and used the model fine-tuned on immune\
+    \ organs to predict the celltypes of PBMCs 3k dataset (http://cf.10xgenomics.com/samples/cell-exp/1.1.0/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).\
+    \  \r\n\r\nI refer to the previous discussion (https://huggingface.co/ctheodoris/Geneformer/discussions/107)\
+    \ and perform the prediction as follows: \r\n```python\r\n# 1. transform scRNA-seq\
+    \ expression data to rank value .dataset format\r\nfrom geneformer import TranscriptomeTokenizer\r\
+    \n\r\ntk = TranscriptomeTokenizer({\"cell_type\": \"cell_type\", \"organ_major\"\
+    : \"organ_major\"}, nproc=4)\r\ntk.tokenize_data(\"D:/jupyterNote/pySC/output/\"\
+    , output_directory=\"token_data/\", output_prefix=\"tk_pbmc3k\")\r\n\r\n# 2. load\
+    \ new dataset\r\nimport pandas as pd\r\nnew_dataset = load_from_disk(\"D:/jupyterNote/Geneformer/examples/token_data/tk_pbmc3k.dataset/\"\
+    )\r\npd.DataFrame(new_dataset)\r\n```\r\n\r\n![Input dataset ](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/kiAC7ZfJETnAy17i-x7M4.png)\r\
+    \n\r\n```python\r\n# 3. load the fine-tuned model\r\nft_model = BertForSequenceClassification.from_pretrained(\"\
+    cell_class_test/230719_geneformer_CellClassifier_immune_L2048_B4_LR5e-05_LSlinear_WU500_E10_Oadamw_F0/\"\
+    )\r\nft_trainer = Trainer(model=ft_model)\r\n\r\n# 4. perform prediction \r\n\
+    ct_predictions = ft_trainer.predict(new_dataset)\r\nct_pred = ct_predictions.predictions\r\
+    \n\r\n# celltype : index \r\nimmune_label_idx_dict = target_dict_list[5]\r\n\r\
+    \n# get the celltype with label_id\r\nct_pred_id = ct_pred.argmax(-1) \r\nct_pred_label\
+    \ = [k for idx in ct_pred_id for k, v in immune_label_idx_dict.items() if v ==\
+    \ idx]\r\n```\r\n\r\nFinally, when I compared the Geneformer prediction with the\
+    \ celltype annotation from the dataset, I found that most predictions were different\
+    \ from the annotation. \r\n\r\n```python\r\nimport numpy as np\r\nimport scanpy\
+    \ as sc\r\nimport anndata\r\n\r\nadata = anndata.read_h5ad(\"D:/jupyterNote/pySC/output/pbmc3k.h5ad\"\
+    )\r\nadata.obs['geneformer_pred'] = ct_pred_label\r\nsc.pl.umap(adata, color='geneformer_pred')\r\
+    \nsc.pl.umap(adata, color='cell_type')\r\n```\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/SgIEcFyFxtPAHqjL6d5Kz.png)\r\
+    \n\r\n\r\n![image.png](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/L5eIKez4tNSJWZLvAU-UI.png)\r\
+    \n\r\nCould you provide any suggestions on this? Any help would be appreciated."
+  created_at: 2023-07-22 07:42:08+00:00
+  edited: false
+  hidden: false
+  id: 64bb9660b567ae97c30aeb67
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1e7473631312f4fd3018116eb39c75c9.svg
+      fullname: Dean Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: thereallda
+      type: user
+    createdAt: '2023-07-22T10:33:01.000Z'
+    data:
+      edited: false
+      editors:
+      - thereallda
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5428687930107117
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1e7473631312f4fd3018116eb39c75c9.svg
+          fullname: Dean Li
+          isHf: false
+          isPro: false
+          name: thereallda
+          type: user
+        html: "<p>I apologize for my mistakes. It appeared that I used scaled data\
+          \ as input for tokenizing, so the predictions were incorrect. After using\
+          \ the raw count for tokenizing, the predictions seem generally accurate\
+          \ despite the different terminology of celltype between the Geneformer and\
+          \ the 3k PBMCs dataset.  </p>\n<p>Also, I padded the whole dataset into\
+          \ the same length. It is the right way to do so? </p>\n<pre><code class=\"\
+          language-python\"><span class=\"hljs-keyword\">from</span> geneformer.pretrainer\
+          \ <span class=\"hljs-keyword\">import</span> token_dictionary\n\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">preprocess_classifier_batch</span>(<span\
+          \ class=\"hljs-params\">cell_batch, max_len</span>):\n    <span class=\"\
+          hljs-keyword\">if</span> max_len == <span class=\"hljs-literal\">None</span>:\n\
+          \        max_len = <span class=\"hljs-built_in\">max</span>([<span class=\"\
+          hljs-built_in\">len</span>(i) <span class=\"hljs-keyword\">for</span> i\
+          \ <span class=\"hljs-keyword\">in</span> cell_batch[<span class=\"hljs-string\"\
+          >\"input_ids\"</span>]])\n    <span class=\"hljs-keyword\">def</span> <span\
+          \ class=\"hljs-title function_\">pad_label_example</span>(<span class=\"\
+          hljs-params\">example</span>):\n        <span class=\"hljs-comment\">#example[\"\
+          labels\"] = np.pad(example[\"labels\"], </span>\n        <span class=\"\
+          hljs-comment\">#                           (0, max_len-len(example[\"input_ids\"\
+          ])), </span>\n        <span class=\"hljs-comment\">#                   \
+          \        mode='constant', constant_values=-100)</span>\n        example[<span\
+          \ class=\"hljs-string\">\"input_ids\"</span>] = np.pad(example[<span class=\"\
+          hljs-string\">\"input_ids\"</span>], \n                                \
+          \      (<span class=\"hljs-number\">0</span>, max_len-<span class=\"hljs-built_in\"\
+          >len</span>(example[<span class=\"hljs-string\">\"input_ids\"</span>])),\
+          \ \n                                      mode=<span class=\"hljs-string\"\
+          >'constant'</span>, constant_values=token_dictionary.get(<span class=\"\
+          hljs-string\">\"&lt;pad&gt;\"</span>))\n        example[<span class=\"hljs-string\"\
+          >\"attention_mask\"</span>] = (example[<span class=\"hljs-string\">\"input_ids\"\
+          </span>] != token_dictionary.get(<span class=\"hljs-string\">\"&lt;pad&gt;\"\
+          </span>)).astype(<span class=\"hljs-built_in\">int</span>)\n        <span\
+          \ class=\"hljs-keyword\">return</span> example\n    padded_batch = cell_batch.<span\
+          \ class=\"hljs-built_in\">map</span>(pad_label_example)\n    <span class=\"\
+          hljs-keyword\">return</span> padded_batch\n\n<span class=\"hljs-comment\"\
+          ># Function to find the largest number smaller</span>\n<span class=\"hljs-comment\"\
+          ># than or equal to N that is divisible by k</span>\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">find_largest_div</span>(<span\
+          \ class=\"hljs-params\">N, K</span>):\n    rem = N % K\n    <span class=\"\
+          hljs-keyword\">if</span>(rem == <span class=\"hljs-number\">0</span>):\n\
+          \        <span class=\"hljs-keyword\">return</span> N\n    <span class=\"\
+          hljs-keyword\">else</span>:\n        <span class=\"hljs-keyword\">return</span>\
+          \ N - rem\n   \n<span class=\"hljs-comment\"># padded to be the same length.</span>\n\
+          set_len=<span class=\"hljs-built_in\">len</span>(new_dataset)\nmax_set_len\
+          \ = <span class=\"hljs-built_in\">max</span>(new_dataset.select([i <span\
+          \ class=\"hljs-keyword\">for</span> i <span class=\"hljs-keyword\">in</span>\
+          \ <span class=\"hljs-built_in\">range</span>(set_len)])[<span class=\"hljs-string\"\
+          >\"length\"</span>])\npadded_dataset = preprocess_classifier_batch(new_dataset,\
+          \ max_set_len)\npd.DataFrame(padded_dataset)\n</code></pre>\n<p><a rel=\"\
+          nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/DrROnzG8uW-MUvty-BWNs.png\"\
+          ><img alt=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/DrROnzG8uW-MUvty-BWNs.png\"\
+          ></a></p>\n<pre><code class=\"language-python\"><span class=\"hljs-comment\"\
+          ># 3. load the fine-tuned model</span>\n<span class=\"hljs-comment\"># same\
+          \ as above</span>\n\n<span class=\"hljs-comment\"># 4. perform prediction\
+          \ </span>\nct_predictions = ft_trainer.predict(padded_dataset)\n<span class=\"\
+          hljs-comment\"># same as above</span>\n\n<span class=\"hljs-comment\">#\
+          \ 5. plot umap </span>\n<span class=\"hljs-comment\"># same as above</span>\n\
+          </code></pre>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/mjwY_8ZmEqhQo9XUeM6Xt.png\"\
+          ><img alt=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/mjwY_8ZmEqhQo9XUeM6Xt.png\"\
+          ></a></p>\n<p><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/EGuMgOG_LLwZ4zpw67RE7.png\"\
+          ><img alt=\"\" src=\"https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/EGuMgOG_LLwZ4zpw67RE7.png\"\
+          ></a></p>\n"
+        raw: "I apologize for my mistakes. It appeared that I used scaled data as\
+          \ input for tokenizing, so the predictions were incorrect. After using the\
+          \ raw count for tokenizing, the predictions seem generally accurate despite\
+          \ the different terminology of celltype between the Geneformer and the 3k\
+          \ PBMCs dataset.  \n\nAlso, I padded the whole dataset into the same length.\
+          \ It is the right way to do so? \n\n```python\nfrom geneformer.pretrainer\
+          \ import token_dictionary\n\ndef preprocess_classifier_batch(cell_batch,\
+          \ max_len):\n    if max_len == None:\n        max_len = max([len(i) for\
+          \ i in cell_batch[\"input_ids\"]])\n    def pad_label_example(example):\n\
+          \        #example[\"labels\"] = np.pad(example[\"labels\"], \n        #\
+          \                           (0, max_len-len(example[\"input_ids\"])), \n\
+          \        #                           mode='constant', constant_values=-100)\n\
+          \        example[\"input_ids\"] = np.pad(example[\"input_ids\"], \n    \
+          \                                  (0, max_len-len(example[\"input_ids\"\
+          ])), \n                                      mode='constant', constant_values=token_dictionary.get(\"\
+          <pad>\"))\n        example[\"attention_mask\"] = (example[\"input_ids\"\
+          ] != token_dictionary.get(\"<pad>\")).astype(int)\n        return example\n\
+          \    padded_batch = cell_batch.map(pad_label_example)\n    return padded_batch\n\
+          \n# Function to find the largest number smaller\n# than or equal to N that\
+          \ is divisible by k\ndef find_largest_div(N, K):\n    rem = N % K\n    if(rem\
+          \ == 0):\n        return N\n    else:\n        return N - rem\n   \n# padded\
+          \ to be the same length.\nset_len=len(new_dataset)\nmax_set_len = max(new_dataset.select([i\
+          \ for i in range(set_len)])[\"length\"])\npadded_dataset = preprocess_classifier_batch(new_dataset,\
+          \ max_set_len)\npd.DataFrame(padded_dataset)\n```\n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/DrROnzG8uW-MUvty-BWNs.png)\n\
+          \n```python\n# 3. load the fine-tuned model\n# same as above\n\n# 4. perform\
+          \ prediction \nct_predictions = ft_trainer.predict(padded_dataset)\n# same\
+          \ as above\n\n# 5. plot umap \n# same as above\n```\n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/mjwY_8ZmEqhQo9XUeM6Xt.png)\n\
+          \n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/EGuMgOG_LLwZ4zpw67RE7.png)\n"
+        updatedAt: '2023-07-22T10:33:01.899Z'
+      numEdits: 0
+      reactions: []
+    id: 64bbb05d4b4ff0d50920597a
+    type: comment
+  author: thereallda
+  content: "I apologize for my mistakes. It appeared that I used scaled data as input\
+    \ for tokenizing, so the predictions were incorrect. After using the raw count\
+    \ for tokenizing, the predictions seem generally accurate despite the different\
+    \ terminology of celltype between the Geneformer and the 3k PBMCs dataset.  \n\
+    \nAlso, I padded the whole dataset into the same length. It is the right way to\
+    \ do so? \n\n```python\nfrom geneformer.pretrainer import token_dictionary\n\n\
+    def preprocess_classifier_batch(cell_batch, max_len):\n    if max_len == None:\n\
+    \        max_len = max([len(i) for i in cell_batch[\"input_ids\"]])\n    def pad_label_example(example):\n\
+    \        #example[\"labels\"] = np.pad(example[\"labels\"], \n        #      \
+    \                     (0, max_len-len(example[\"input_ids\"])), \n        #  \
+    \                         mode='constant', constant_values=-100)\n        example[\"\
+    input_ids\"] = np.pad(example[\"input_ids\"], \n                             \
+    \         (0, max_len-len(example[\"input_ids\"])), \n                       \
+    \               mode='constant', constant_values=token_dictionary.get(\"<pad>\"\
+    ))\n        example[\"attention_mask\"] = (example[\"input_ids\"] != token_dictionary.get(\"\
+    <pad>\")).astype(int)\n        return example\n    padded_batch = cell_batch.map(pad_label_example)\n\
+    \    return padded_batch\n\n# Function to find the largest number smaller\n# than\
+    \ or equal to N that is divisible by k\ndef find_largest_div(N, K):\n    rem =\
+    \ N % K\n    if(rem == 0):\n        return N\n    else:\n        return N - rem\n\
+    \   \n# padded to be the same length.\nset_len=len(new_dataset)\nmax_set_len =\
+    \ max(new_dataset.select([i for i in range(set_len)])[\"length\"])\npadded_dataset\
+    \ = preprocess_classifier_batch(new_dataset, max_set_len)\npd.DataFrame(padded_dataset)\n\
+    ```\n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/DrROnzG8uW-MUvty-BWNs.png)\n\
+    \n```python\n# 3. load the fine-tuned model\n# same as above\n\n# 4. perform prediction\
+    \ \nct_predictions = ft_trainer.predict(padded_dataset)\n# same as above\n\n#\
+    \ 5. plot umap \n# same as above\n```\n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/mjwY_8ZmEqhQo9XUeM6Xt.png)\n\
+    \n\n![](https://cdn-uploads.huggingface.co/production/uploads/647955184d959c96febb7497/EGuMgOG_LLwZ4zpw67RE7.png)\n"
+  created_at: 2023-07-22 09:33:01+00:00
+  edited: false
+  hidden: false
+  id: 64bbb05d4b4ff0d50920597a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-22T12:35:34.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.917847752571106
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: "<p>Thank you for your interest in Geneformer! I can\u2019t see the\
+          \ end of the rank value encodings in the data frame since it\u2019s cut\
+          \ off, but that looks generally correct for the padding - you just want\
+          \ to add the padding token at the end to make all the tensors the same length\
+          \ so they can be stacked into a batch for batched processing. </p>\n<p>On\
+          \ a side note, the datasets used for fine-tuning in the manuscript and example\
+          \ here were provided by one of the alternative methods so were only chosen\
+          \ for the purpose of comparison and do not necessarily represent the ideal\
+          \ dataset for fine-tuning for each tissue\u2019s cell types. If you trying\
+          \ to train an ideal model for classification of any cell state (including\
+          \ PBMC cell type annotation), it would be best to train with multiple datasets\
+          \ in the training set, if available, to ensure the best generalizability,\
+          \ and with fine-tuning hyperparameters on a validation test (which should\
+          \ be separate from the held-out test set used for evaluating the final best\
+          \ trained model). The training set can be prepared to have the same labels\
+          \ as you\u2019d like to classify in your final dataset, and if needed can\
+          \ be balanced if there is an overwhelming majority of a particular state\
+          \ label (though in our experience the model is quite robust to imbalanced\
+          \ training datasets, likely because it has been pretrained on a large range\
+          \ of cells previously). Important hyperparameters to tune include max learning\
+          \ rate, learning schedule, warmup steps, and number of layers to freeze\
+          \ in the pretrained model, among others. Please see the example for hyperparameter\
+          \ tuning for more information.</p>\n"
+        raw: "Thank you for your interest in Geneformer! I can\u2019t see the end\
+          \ of the rank value encodings in the data frame since it\u2019s cut off,\
+          \ but that looks generally correct for the padding - you just want to add\
+          \ the padding token at the end to make all the tensors the same length so\
+          \ they can be stacked into a batch for batched processing. \n\nOn a side\
+          \ note, the datasets used for fine-tuning in the manuscript and example\
+          \ here were provided by one of the alternative methods so were only chosen\
+          \ for the purpose of comparison and do not necessarily represent the ideal\
+          \ dataset for fine-tuning for each tissue\u2019s cell types. If you trying\
+          \ to train an ideal model for classification of any cell state (including\
+          \ PBMC cell type annotation), it would be best to train with multiple datasets\
+          \ in the training set, if available, to ensure the best generalizability,\
+          \ and with fine-tuning hyperparameters on a validation test (which should\
+          \ be separate from the held-out test set used for evaluating the final best\
+          \ trained model). The training set can be prepared to have the same labels\
+          \ as you\u2019d like to classify in your final dataset, and if needed can\
+          \ be balanced if there is an overwhelming majority of a particular state\
+          \ label (though in our experience the model is quite robust to imbalanced\
+          \ training datasets, likely because it has been pretrained on a large range\
+          \ of cells previously). Important hyperparameters to tune include max learning\
+          \ rate, learning schedule, warmup steps, and number of layers to freeze\
+          \ in the pretrained model, among others. Please see the example for hyperparameter\
+          \ tuning for more information."
+        updatedAt: '2023-07-22T12:35:34.781Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - thereallda
+      relatedEventId: 64bbcd16c05a0df0d270c667
+    id: 64bbcd16c05a0df0d270c664
+    type: comment
+  author: ctheodoris
+  content: "Thank you for your interest in Geneformer! I can\u2019t see the end of\
+    \ the rank value encodings in the data frame since it\u2019s cut off, but that\
+    \ looks generally correct for the padding - you just want to add the padding token\
+    \ at the end to make all the tensors the same length so they can be stacked into\
+    \ a batch for batched processing. \n\nOn a side note, the datasets used for fine-tuning\
+    \ in the manuscript and example here were provided by one of the alternative methods\
+    \ so were only chosen for the purpose of comparison and do not necessarily represent\
+    \ the ideal dataset for fine-tuning for each tissue\u2019s cell types. If you\
+    \ trying to train an ideal model for classification of any cell state (including\
+    \ PBMC cell type annotation), it would be best to train with multiple datasets\
+    \ in the training set, if available, to ensure the best generalizability, and\
+    \ with fine-tuning hyperparameters on a validation test (which should be separate\
+    \ from the held-out test set used for evaluating the final best trained model).\
+    \ The training set can be prepared to have the same labels as you\u2019d like\
+    \ to classify in your final dataset, and if needed can be balanced if there is\
+    \ an overwhelming majority of a particular state label (though in our experience\
+    \ the model is quite robust to imbalanced training datasets, likely because it\
+    \ has been pretrained on a large range of cells previously). Important hyperparameters\
+    \ to tune include max learning rate, learning schedule, warmup steps, and number\
+    \ of layers to freeze in the pretrained model, among others. Please see the example\
+    \ for hyperparameter tuning for more information."
+  created_at: 2023-07-22 11:35:34+00:00
+  edited: false
+  hidden: false
+  id: 64bbcd16c05a0df0d270c664
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-07-22T12:35:34.000Z'
+    data:
+      status: closed
+    id: 64bbcd16c05a0df0d270c667
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-07-22 11:35:34+00:00
+  id: 64bbcd16c05a0df0d270c667
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 130
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Prediction of celltype on 3k PBMCs dataset using fine-tuned model

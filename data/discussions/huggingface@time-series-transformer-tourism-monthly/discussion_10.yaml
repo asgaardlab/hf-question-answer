@@ -1,0 +1,713 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: younge1
+conflicting_files: null
+created_at: 2023-03-09 17:48:26+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+      fullname: Eric Young
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: younge1
+      type: user
+    createdAt: '2023-03-09T17:48:26.000Z'
+    data:
+      edited: true
+      editors:
+      - nielsr
+      - younge1
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1608042047613-5f1158120c833276f61f1a84.jpeg?w=200&h=200&f=face
+          fullname: Niels Rogge
+          isHf: true
+          isPro: false
+          name: nielsr
+          type: user
+        html: "<p>I'm attempting to modify the TimeSeriesTransformerForPrediction\
+          \ to accept my own multi variable dataset. My dataset contains ~70 runs.\
+          \ Each run contains a time series and three static environment variables\
+          \ that remain constant throughout the run and describe the conditions of\
+          \ the run. For example, one run may contain a time series, and the variables\
+          \ 1,250,5. Each time series contains values sampled every minute over 19\
+          \ hours (1140 Samples).<br>I have taken the following steps to prepare the\
+          \ data following following Kashif's time series dataset example:</p>\n<ol>\n\
+          <li>Create a list of dictionaries with each list item containing key value\
+          \ features for target, start, and feat_static_cat. For example, this is\
+          \ an item from the train list<br>{'start': Timestamp('1970-01-01 00:00:00'),\
+          \ 'target': array([ 775.457207,  775.457207,  785.056306, ..., 1231.042793,<br>1239.531532,\
+          \ 1239.598348]), 'feat_static_cat': [1, 250, 5]}</li>\n<li>Define a feature\
+          \ schema and</li>\n</ol>\n<pre><code>features  = Features(\n    {    \n\
+          \        \"start\": Value(\"timestamp[s]\"),\n        \"target\": Sequence(Value(\"\
+          float32\")),\n        \"feat_static_cat\": Sequence(Value(\"uint64\")),\n\
+          \    }\n)\n</code></pre>\n<ol start=\"3\">\n<li>Create training and test\
+          \ datasets from feature schema and list</li>\n</ol>\n<pre><code>train_dataset=\
+          \ Dataset.from_list(trainList,features)\ntest_dataset= Dataset.from_list(testList,features)\n\
+          </code></pre>\n<p>After preparing the dataset, I computed the cardinality\
+          \ of the static features</p>\n<pre><code>card= [len(depots.categories),\
+          \ len(tanks.categories), len(ships.categories)]\n</code></pre>\n<p> to get\
+          \ a list [5,3,5]</p>\n<p>I then declare my transformer config as follows:</p>\n\
+          <pre><code>config = TimeSeriesTransformerConfig(\n    prediction_length=prediction_length,\n\
+          \    context_length=30,\n   lags_sequence=[1, 2, 3, 4,5,6,7],\n    num_time_features=len(time_features)\
+          \ + 1, # we'll add 2 time features (\"month of year\" and \"age\", see further)\n\
+          \    num_static_categorical_features=3, # depot, shipnum, and tank size\n\
+          \    cardinality=card, \n    input_size=3,\n    embedding_dimension=[1,1,1],\
+          \ \n    encoder_layers=4, \n    decoder_layers=4,\n)\n</code></pre>\n<p>I\
+          \ then create a data loader and batch iterator:</p>\n<pre><code>train_dataloader\
+          \ = create_train_dataloader(\n    config=config, \n    freq=freq, \n   \
+          \ data=train_dataset, \n    batch_size=256,\n    num_batches_per_epoch=100,\n\
+          )\n\nbatch = next(iter(train_dataloader))\n</code></pre>\n<p>When I run\
+          \ the train data loader, I get the following error:</p>\n<pre><code> File\
+          \ \"/usr/local/lib/python3.9/site-packages/gluonts/exceptions.py\", line\
+          \ 95, in assert_gluonts\n    raise exception_class(message.format(*args,\
+          \ **kwargs))\ngluonts.exceptions.GluonTSDataError: Input for field \"target\"\
+          \ does not have the requireddimension (field: target, ndim observed: 1,\
+          \ expected ndim: 2)\n</code></pre>\n<p>I suspect the error is comping from\
+          \ when the data loader converts the target to an Numpy array.</p>\n<pre><code>\
+          \            AsNumpyArray(\n                field=FieldName.TARGET,\n  \
+          \              # in the following line, we add 1 for the time dimension\n\
+          \                expected_ndim=1 if config.input_size==1 else 2,\n     \
+          \       ),\n</code></pre>\n<p>When I change the data loader to expect n_dim=1,\
+          \ I get the following error</p>\n<pre><code>Batch Information:\nstatic_categorical_features\
+          \ torch.Size([256, 3]) torch.LongTensor\nstatic_real_features torch.Size([256,\
+          \ 1]) torch.FloatTensor\npast_time_features torch.Size([256, 37, 6]) torch.FloatTensor\n\
+          past_values torch.Size([256, 37]) torch.FloatTensor\npast_observed_mask\
+          \ torch.Size([256, 37]) torch.FloatTensor\nfuture_time_features torch.Size([256,\
+          \ 60, 6]) torch.FloatTensor\nfuture_values torch.Size([256, 60]) torch.FloatTensor\n\
+          future_observed_mask torch.Size([256, 60]) torch.FloatTensor\nError:\n \
+          \ File \"/usr/local/lib/python3.9/site-packages/torch/nn/functional.py\"\
+          , line 2210, in embedding\n    return torch.embedding(weight, input, padding_idx,\
+          \ scale_grad_by_freq, sparse)\nIndexError: index out of range in self\n\
+          </code></pre>\n<p>Is there something I am not doing when adding static features\
+          \ to my time series?</p>\n<p>Thanks</p>\n"
+        raw: "I'm attempting to modify the TimeSeriesTransformerForPrediction to accept\
+          \ my own multi variable dataset. My dataset contains ~70 runs. Each run\
+          \ contains a time series and three static environment variables that remain\
+          \ constant throughout the run and describe the conditions of the run. For\
+          \ example, one run may contain a time series, and the variables 1,250,5.\
+          \ Each time series contains values sampled every minute over 19 hours (1140\
+          \ Samples).\nI have taken the following steps to prepare the data following\
+          \ following Kashif's time series dataset example:\n\n1. Create a list of\
+          \ dictionaries with each list item containing key value features for target,\
+          \ start, and feat_static_cat. For example, this is an item from the train\
+          \ list\n{'start': Timestamp('1970-01-01 00:00:00'), 'target': array([ 775.457207,\
+          \  775.457207,  785.056306, ..., 1231.042793,\n       1239.531532, 1239.598348]),\
+          \ 'feat_static_cat': [1, 250, 5]}\n2. Define a feature schema and \n```\n\
+          features  = Features(\n    {    \n        \"start\": Value(\"timestamp[s]\"\
+          ),\n        \"target\": Sequence(Value(\"float32\")),\n        \"feat_static_cat\"\
+          : Sequence(Value(\"uint64\")),\n    }\n)\n```\n3. Create training and test\
+          \ datasets from feature schema and list \n```\ntrain_dataset= Dataset.from_list(trainList,features)\n\
+          test_dataset= Dataset.from_list(testList,features)\n```\n\nAfter preparing\
+          \ the dataset, I computed the cardinality of the static features\n```\n\
+          card= [len(depots.categories), len(tanks.categories), len(ships.categories)]\n\
+          ```\n to get a list [5,3,5]\n\nI then declare my transformer config as follows:\n\
+          ```\nconfig = TimeSeriesTransformerConfig(\n    prediction_length=prediction_length,\n\
+          \    context_length=30,\n   lags_sequence=[1, 2, 3, 4,5,6,7],\n    num_time_features=len(time_features)\
+          \ + 1, # we'll add 2 time features (\"month of year\" and \"age\", see further)\n\
+          \    num_static_categorical_features=3, # depot, shipnum, and tank size\n\
+          \    cardinality=card, \n    input_size=3,\n    embedding_dimension=[1,1,1],\
+          \ \n    encoder_layers=4, \n    decoder_layers=4,\n)\n```\n\nI then create\
+          \ a data loader and batch iterator:\n\n```\ntrain_dataloader = create_train_dataloader(\n\
+          \    config=config, \n    freq=freq, \n    data=train_dataset, \n    batch_size=256,\n\
+          \    num_batches_per_epoch=100,\n)\n\nbatch = next(iter(train_dataloader))\n\
+          ```\n\nWhen I run the train data loader, I get the following error:\n\n\
+          ```\n File \"/usr/local/lib/python3.9/site-packages/gluonts/exceptions.py\"\
+          , line 95, in assert_gluonts\n    raise exception_class(message.format(*args,\
+          \ **kwargs))\ngluonts.exceptions.GluonTSDataError: Input for field \"target\"\
+          \ does not have the requireddimension (field: target, ndim observed: 1,\
+          \ expected ndim: 2)\n```\n\nI suspect the error is comping from when the\
+          \ data loader converts the target to an Numpy array.\n\n```\n          \
+          \  AsNumpyArray(\n                field=FieldName.TARGET,\n            \
+          \    # in the following line, we add 1 for the time dimension\n        \
+          \        expected_ndim=1 if config.input_size==1 else 2,\n            ),\n\
+          ```\n\nWhen I change the data loader to expect n_dim=1, I get the following\
+          \ error\n```\nBatch Information:\nstatic_categorical_features torch.Size([256,\
+          \ 3]) torch.LongTensor\nstatic_real_features torch.Size([256, 1]) torch.FloatTensor\n\
+          past_time_features torch.Size([256, 37, 6]) torch.FloatTensor\npast_values\
+          \ torch.Size([256, 37]) torch.FloatTensor\npast_observed_mask torch.Size([256,\
+          \ 37]) torch.FloatTensor\nfuture_time_features torch.Size([256, 60, 6])\
+          \ torch.FloatTensor\nfuture_values torch.Size([256, 60]) torch.FloatTensor\n\
+          future_observed_mask torch.Size([256, 60]) torch.FloatTensor\nError:\n \
+          \ File \"/usr/local/lib/python3.9/site-packages/torch/nn/functional.py\"\
+          , line 2210, in embedding\n    return torch.embedding(weight, input, padding_idx,\
+          \ scale_grad_by_freq, sparse)\nIndexError: index out of range in self\n\
+          ```\n\nIs there something I am not doing when adding static features to\
+          \ my time series?\n\nThanks"
+        updatedAt: '2023-03-10T19:31:30.989Z'
+      numEdits: 3
+      reactions: []
+    id: 640a1bea9989bcb117247484
+    type: comment
+  author: younge1
+  content: "I'm attempting to modify the TimeSeriesTransformerForPrediction to accept\
+    \ my own multi variable dataset. My dataset contains ~70 runs. Each run contains\
+    \ a time series and three static environment variables that remain constant throughout\
+    \ the run and describe the conditions of the run. For example, one run may contain\
+    \ a time series, and the variables 1,250,5. Each time series contains values sampled\
+    \ every minute over 19 hours (1140 Samples).\nI have taken the following steps\
+    \ to prepare the data following following Kashif's time series dataset example:\n\
+    \n1. Create a list of dictionaries with each list item containing key value features\
+    \ for target, start, and feat_static_cat. For example, this is an item from the\
+    \ train list\n{'start': Timestamp('1970-01-01 00:00:00'), 'target': array([ 775.457207,\
+    \  775.457207,  785.056306, ..., 1231.042793,\n       1239.531532, 1239.598348]),\
+    \ 'feat_static_cat': [1, 250, 5]}\n2. Define a feature schema and \n```\nfeatures\
+    \  = Features(\n    {    \n        \"start\": Value(\"timestamp[s]\"),\n     \
+    \   \"target\": Sequence(Value(\"float32\")),\n        \"feat_static_cat\": Sequence(Value(\"\
+    uint64\")),\n    }\n)\n```\n3. Create training and test datasets from feature\
+    \ schema and list \n```\ntrain_dataset= Dataset.from_list(trainList,features)\n\
+    test_dataset= Dataset.from_list(testList,features)\n```\n\nAfter preparing the\
+    \ dataset, I computed the cardinality of the static features\n```\ncard= [len(depots.categories),\
+    \ len(tanks.categories), len(ships.categories)]\n```\n to get a list [5,3,5]\n\
+    \nI then declare my transformer config as follows:\n```\nconfig = TimeSeriesTransformerConfig(\n\
+    \    prediction_length=prediction_length,\n    context_length=30,\n   lags_sequence=[1,\
+    \ 2, 3, 4,5,6,7],\n    num_time_features=len(time_features) + 1, # we'll add 2\
+    \ time features (\"month of year\" and \"age\", see further)\n    num_static_categorical_features=3,\
+    \ # depot, shipnum, and tank size\n    cardinality=card, \n    input_size=3,\n\
+    \    embedding_dimension=[1,1,1], \n    encoder_layers=4, \n    decoder_layers=4,\n\
+    )\n```\n\nI then create a data loader and batch iterator:\n\n```\ntrain_dataloader\
+    \ = create_train_dataloader(\n    config=config, \n    freq=freq, \n    data=train_dataset,\
+    \ \n    batch_size=256,\n    num_batches_per_epoch=100,\n)\n\nbatch = next(iter(train_dataloader))\n\
+    ```\n\nWhen I run the train data loader, I get the following error:\n\n```\n File\
+    \ \"/usr/local/lib/python3.9/site-packages/gluonts/exceptions.py\", line 95, in\
+    \ assert_gluonts\n    raise exception_class(message.format(*args, **kwargs))\n\
+    gluonts.exceptions.GluonTSDataError: Input for field \"target\" does not have\
+    \ the requireddimension (field: target, ndim observed: 1, expected ndim: 2)\n\
+    ```\n\nI suspect the error is comping from when the data loader converts the target\
+    \ to an Numpy array.\n\n```\n            AsNumpyArray(\n                field=FieldName.TARGET,\n\
+    \                # in the following line, we add 1 for the time dimension\n  \
+    \              expected_ndim=1 if config.input_size==1 else 2,\n            ),\n\
+    ```\n\nWhen I change the data loader to expect n_dim=1, I get the following error\n\
+    ```\nBatch Information:\nstatic_categorical_features torch.Size([256, 3]) torch.LongTensor\n\
+    static_real_features torch.Size([256, 1]) torch.FloatTensor\npast_time_features\
+    \ torch.Size([256, 37, 6]) torch.FloatTensor\npast_values torch.Size([256, 37])\
+    \ torch.FloatTensor\npast_observed_mask torch.Size([256, 37]) torch.FloatTensor\n\
+    future_time_features torch.Size([256, 60, 6]) torch.FloatTensor\nfuture_values\
+    \ torch.Size([256, 60]) torch.FloatTensor\nfuture_observed_mask torch.Size([256,\
+    \ 60]) torch.FloatTensor\nError:\n  File \"/usr/local/lib/python3.9/site-packages/torch/nn/functional.py\"\
+    , line 2210, in embedding\n    return torch.embedding(weight, input, padding_idx,\
+    \ scale_grad_by_freq, sparse)\nIndexError: index out of range in self\n```\n\n\
+    Is there something I am not doing when adding static features to my time series?\n\
+    \nThanks"
+  created_at: 2023-03-09 17:48:26+00:00
+  edited: true
+  hidden: false
+  id: 640a1bea9989bcb117247484
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+      fullname: Kashif Rasul
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kashif
+      type: user
+    createdAt: '2023-03-10T19:33:15.000Z'
+    data:
+      edited: false
+      editors:
+      - kashif
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+          fullname: Kashif Rasul
+          isHf: true
+          isPro: false
+          name: kashif
+          type: user
+        html: "<p>thanks <span data-props=\"{&quot;user&quot;:&quot;younge1&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/younge1\"\
+          >@<span class=\"underline\">younge1</span></a></span>\n\n\t</span></span>\
+          \ for the question, we have added a multivariate tutorial and corresponding\
+          \ notebook. Can you kindly have a look here: <a href=\"https://huggingface.co/blog/informer\"\
+          >https://huggingface.co/blog/informer</a> </p>\n<p>In the mean time, I will\
+          \ have a look and try to figure out what could be the issue!</p>\n"
+        raw: "thanks @younge1 for the question, we have added a multivariate tutorial\
+          \ and corresponding notebook. Can you kindly have a look here: https://huggingface.co/blog/informer\
+          \ \n\nIn the mean time, I will have a look and try to figure out what could\
+          \ be the issue!"
+        updatedAt: '2023-03-10T19:33:15.042Z'
+      numEdits: 0
+      reactions: []
+    id: 640b85fbbc91275e8db5c9c6
+    type: comment
+  author: kashif
+  content: "thanks @younge1 for the question, we have added a multivariate tutorial\
+    \ and corresponding notebook. Can you kindly have a look here: https://huggingface.co/blog/informer\
+    \ \n\nIn the mean time, I will have a look and try to figure out what could be\
+    \ the issue!"
+  created_at: 2023-03-10 19:33:15+00:00
+  edited: false
+  hidden: false
+  id: 640b85fbbc91275e8db5c9c6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+      fullname: Eric Young
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: younge1
+      type: user
+    createdAt: '2023-03-10T19:41:31.000Z'
+    data:
+      edited: false
+      editors:
+      - younge1
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+          fullname: Eric Young
+          isHf: false
+          isPro: false
+          name: younge1
+          type: user
+        html: '<p>Hi Kashif,</p>
+
+          <p>Thanks for the response and linking the multivariate blog post. I''ll
+          review that now.</p>
+
+          '
+        raw: 'Hi Kashif,
+
+
+          Thanks for the response and linking the multivariate blog post. I''ll review
+          that now.'
+        updatedAt: '2023-03-10T19:41:31.899Z'
+      numEdits: 0
+      reactions: []
+    id: 640b87eb548fcf9a118e5fba
+    type: comment
+  author: younge1
+  content: 'Hi Kashif,
+
+
+    Thanks for the response and linking the multivariate blog post. I''ll review that
+    now.'
+  created_at: 2023-03-10 19:41:31+00:00
+  edited: false
+  hidden: false
+  id: 640b87eb548fcf9a118e5fba
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+      fullname: Kashif Rasul
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kashif
+      type: user
+    createdAt: '2023-03-10T19:46:06.000Z'
+    data:
+      edited: true
+      editors:
+      - kashif
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+          fullname: Kashif Rasul
+          isHf: true
+          isPro: false
+          name: kashif
+          type: user
+        html: '<p>so the error seems to be that the cardinality of the embeddings
+          is not correct, meaning the categorical covariate has some integer id which
+          is &gt; the cardinality you specified... can you check.</p>
+
+          <p>Also, note that the <code>input_size</code> is the size of the multivariate
+          vector in the <code>past_values</code> and <code>future_values</code> but
+          you seem to have univariate input so set that to <code>1</code>?</p>
+
+          <p>Another thing, the categorical values will range from <code>0, ..., cardinality
+          -1</code> for the respective categories.</p>
+
+          '
+        raw: 'so the error seems to be that the cardinality of the embeddings is not
+          correct, meaning the categorical covariate has some integer id which is
+          > the cardinality you specified... can you check.
+
+
+          Also, note that the `input_size` is the size of the multivariate vector
+          in the `past_values` and `future_values` but you seem to have univariate
+          input so set that to `1`?
+
+
+          Another thing, the categorical values will range from `0, ..., cardinality
+          -1` for the respective categories.'
+        updatedAt: '2023-03-10T19:53:11.030Z'
+      numEdits: 3
+      reactions: []
+    id: 640b88fe6b2136910745a438
+    type: comment
+  author: kashif
+  content: 'so the error seems to be that the cardinality of the embeddings is not
+    correct, meaning the categorical covariate has some integer id which is > the
+    cardinality you specified... can you check.
+
+
+    Also, note that the `input_size` is the size of the multivariate vector in the
+    `past_values` and `future_values` but you seem to have univariate input so set
+    that to `1`?
+
+
+    Another thing, the categorical values will range from `0, ..., cardinality -1`
+    for the respective categories.'
+  created_at: 2023-03-10 19:46:06+00:00
+  edited: true
+  hidden: false
+  id: 640b88fe6b2136910745a438
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+      fullname: Eric Young
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: younge1
+      type: user
+    createdAt: '2023-03-10T20:35:42.000Z'
+    data:
+      edited: false
+      editors:
+      - younge1
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+          fullname: Eric Young
+          isHf: false
+          isPro: false
+          name: younge1
+          type: user
+        html: '<p>Hi Kashif,</p>
+
+          <p>I misread the docs and assumed that input_size referred to variables
+          other than my single time series. I changed input_size back to 1. I currently
+          get the cardinality of my static features using the following function:</p>
+
+          <p>def getTrainSetCardinality(trainList):<br>#Depots<br>    depotCategoryList=
+          []<br>    for df in trainList:<br>        depotCategoryList.append(df[''feat_static_cat''][0])<br>    depots
+          = pd.Categorical(depotCategoryList)<br>#tanks<br>    tankCategoryList= []<br>    for
+          df in trainList:<br>        tankCategoryList.append(df[''feat_static_cat''][1])<br>    tanks
+          = pd.Categorical(tankCategoryList)<br>#ships<br>    shipCategoryList= []<br>    for
+          df in trainList:<br>        shipCategoryList.append(df[''feat_static_cat''][2])<br>    #create
+          a categorical feature for the ship numbers<br>    ships = pd.Categorical(shipCategoryList)</p>
+
+          <pre><code>#determine the cardinality of the static features
+
+          cardinality = [len(depots.categories), len(tanks.categories), len(ships.categories)]
+
+          return cardinality
+
+          </code></pre>
+
+          <ol>
+
+          <li>I run this function on my list prior to calling "train_dataset= Dataset.from_list(trainList,features)".
+          Is it possible the cardinality list order of my static_cat features may
+          have changed from using "Dataset.from_list"?</li>
+
+          <li>I attached a debug output of my train_dataset prior to being fed into
+          my data loaded. Is there an easy function/way to verify the cardinality
+          of my static features when for objects of type "Dataset"?</li>
+
+          </ol>
+
+          <p>Thanks again for all your help!</p>
+
+          <p><a rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1678479707893-640a05111ee054d66a6a6157.png"><img
+          alt="Screen Shot 2023-03-10 at 3.18.50 PM.png" src="https://cdn-uploads.huggingface.co/production/uploads/1678479707893-640a05111ee054d66a6a6157.png"></a></p>
+
+          '
+        raw: "Hi Kashif,\n\nI misread the docs and assumed that input_size referred\
+          \ to variables other than my single time series. I changed input_size back\
+          \ to 1. I currently get the cardinality of my static features using the\
+          \ following function:\n\ndef getTrainSetCardinality(trainList):\n#Depots\n\
+          \    depotCategoryList= []\n    for df in trainList:\n        depotCategoryList.append(df['feat_static_cat'][0])\n\
+          \    depots = pd.Categorical(depotCategoryList)\n#tanks\n    tankCategoryList=\
+          \ []\n    for df in trainList:\n        tankCategoryList.append(df['feat_static_cat'][1])\n\
+          \    tanks = pd.Categorical(tankCategoryList)\n#ships\n    shipCategoryList=\
+          \ []\n    for df in trainList:\n        shipCategoryList.append(df['feat_static_cat'][2])\n\
+          \    #create a categorical feature for the ship numbers\n    ships = pd.Categorical(shipCategoryList)\n\
+          \n    #determine the cardinality of the static features\n    cardinality\
+          \ = [len(depots.categories), len(tanks.categories), len(ships.categories)]\n\
+          \    return cardinality\n\n\n\n1. I run this function on my list prior to\
+          \ calling \"train_dataset= Dataset.from_list(trainList,features)\". Is it\
+          \ possible the cardinality list order of my static_cat features may have\
+          \ changed from using \"Dataset.from_list\"?\n2. I attached a debug output\
+          \ of my train_dataset prior to being fed into my data loaded. Is there an\
+          \ easy function/way to verify the cardinality of my static features when\
+          \ for objects of type \"Dataset\"?\n\nThanks again for all your help!\n\n\
+          ![Screen Shot 2023-03-10 at 3.18.50 PM.png](https://cdn-uploads.huggingface.co/production/uploads/1678479707893-640a05111ee054d66a6a6157.png)"
+        updatedAt: '2023-03-10T20:35:42.223Z'
+      numEdits: 0
+      reactions: []
+    id: 640b949e6f3c0ead17597af0
+    type: comment
+  author: younge1
+  content: "Hi Kashif,\n\nI misread the docs and assumed that input_size referred\
+    \ to variables other than my single time series. I changed input_size back to\
+    \ 1. I currently get the cardinality of my static features using the following\
+    \ function:\n\ndef getTrainSetCardinality(trainList):\n#Depots\n    depotCategoryList=\
+    \ []\n    for df in trainList:\n        depotCategoryList.append(df['feat_static_cat'][0])\n\
+    \    depots = pd.Categorical(depotCategoryList)\n#tanks\n    tankCategoryList=\
+    \ []\n    for df in trainList:\n        tankCategoryList.append(df['feat_static_cat'][1])\n\
+    \    tanks = pd.Categorical(tankCategoryList)\n#ships\n    shipCategoryList= []\n\
+    \    for df in trainList:\n        shipCategoryList.append(df['feat_static_cat'][2])\n\
+    \    #create a categorical feature for the ship numbers\n    ships = pd.Categorical(shipCategoryList)\n\
+    \n    #determine the cardinality of the static features\n    cardinality = [len(depots.categories),\
+    \ len(tanks.categories), len(ships.categories)]\n    return cardinality\n\n\n\n\
+    1. I run this function on my list prior to calling \"train_dataset= Dataset.from_list(trainList,features)\"\
+    . Is it possible the cardinality list order of my static_cat features may have\
+    \ changed from using \"Dataset.from_list\"?\n2. I attached a debug output of my\
+    \ train_dataset prior to being fed into my data loaded. Is there an easy function/way\
+    \ to verify the cardinality of my static features when for objects of type \"\
+    Dataset\"?\n\nThanks again for all your help!\n\n![Screen Shot 2023-03-10 at 3.18.50\
+    \ PM.png](https://cdn-uploads.huggingface.co/production/uploads/1678479707893-640a05111ee054d66a6a6157.png)"
+  created_at: 2023-03-10 20:35:42+00:00
+  edited: false
+  hidden: false
+  id: 640b949e6f3c0ead17597af0
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+      fullname: Kashif Rasul
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kashif
+      type: user
+    createdAt: '2023-03-10T20:38:04.000Z'
+    data:
+      edited: false
+      editors:
+      - kashif
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+          fullname: Kashif Rasul
+          isHf: true
+          isPro: false
+          name: kashif
+          type: user
+        html: '<p>so one thing to note the <code>cardinality</code> of the categorical
+          features is normally calculated as the number of unique categories... so
+          something like <code>depots.categories.nunique()</code></p>
+
+          '
+        raw: so one thing to note the `cardinality` of the categorical features is
+          normally calculated as the number of unique categories... so something like
+          `depots.categories.nunique()`
+        updatedAt: '2023-03-10T20:38:04.745Z'
+      numEdits: 0
+      reactions: []
+    id: 640b952cdff6d2ab4f632a89
+    type: comment
+  author: kashif
+  content: so one thing to note the `cardinality` of the categorical features is normally
+    calculated as the number of unique categories... so something like `depots.categories.nunique()`
+  created_at: 2023-03-10 20:38:04+00:00
+  edited: false
+  hidden: false
+  id: 640b952cdff6d2ab4f632a89
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+      fullname: Eric Young
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: younge1
+      type: user
+    createdAt: '2023-03-10T20:54:33.000Z'
+    data:
+      edited: false
+      editors:
+      - younge1
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+          fullname: Eric Young
+          isHf: false
+          isPro: false
+          name: younge1
+          type: user
+        html: '<p>I modified my getTrainingSetCardinality function to now return</p>
+
+          <p>  "cardinality = [depots.categories.nunique(), tanks.categories.nunique(),
+          ships.categories.nunique()]"<br>vice<br>"cardinality = [len(depots.categories),
+          len(tanks.categories), len(ships.categories)]"<br>And still get the same
+          cardinality. Do the actual category values have to be formatted in a unique
+          way? </p>
+
+          <p>I have attached a debug output of my getTrainingSetCardinality function<br><a
+          rel="nofollow" href="https://cdn-uploads.huggingface.co/production/uploads/1678481598349-640a05111ee054d66a6a6157.png"><img
+          alt="Screen Shot 2023-03-10 at 3.52.57 PM.png" src="https://cdn-uploads.huggingface.co/production/uploads/1678481598349-640a05111ee054d66a6a6157.png"></a></p>
+
+          '
+        raw: "I modified my getTrainingSetCardinality function to now return\n\n \
+          \ \"cardinality = [depots.categories.nunique(), tanks.categories.nunique(),\
+          \ ships.categories.nunique()]\"\nvice \n\"cardinality = [len(depots.categories),\
+          \ len(tanks.categories), len(ships.categories)]\"\nAnd still get the same\
+          \ cardinality. Do the actual category values have to be formatted in a unique\
+          \ way? \n\nI have attached a debug output of my getTrainingSetCardinality\
+          \ function\n![Screen Shot 2023-03-10 at 3.52.57 PM.png](https://cdn-uploads.huggingface.co/production/uploads/1678481598349-640a05111ee054d66a6a6157.png)"
+        updatedAt: '2023-03-10T20:54:33.197Z'
+      numEdits: 0
+      reactions: []
+    id: 640b99096b21369107468300
+    type: comment
+  author: younge1
+  content: "I modified my getTrainingSetCardinality function to now return\n\n  \"\
+    cardinality = [depots.categories.nunique(), tanks.categories.nunique(), ships.categories.nunique()]\"\
+    \nvice \n\"cardinality = [len(depots.categories), len(tanks.categories), len(ships.categories)]\"\
+    \nAnd still get the same cardinality. Do the actual category values have to be\
+    \ formatted in a unique way? \n\nI have attached a debug output of my getTrainingSetCardinality\
+    \ function\n![Screen Shot 2023-03-10 at 3.52.57 PM.png](https://cdn-uploads.huggingface.co/production/uploads/1678481598349-640a05111ee054d66a6a6157.png)"
+  created_at: 2023-03-10 20:54:33+00:00
+  edited: false
+  hidden: false
+  id: 640b99096b21369107468300
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+      fullname: Kashif Rasul
+      isHf: true
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: kashif
+      type: user
+    createdAt: '2023-03-10T20:57:49.000Z'
+    data:
+      edited: false
+      editors:
+      - kashif
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1669189789447-629f3b18ee05727ce328ccbe.jpeg?w=200&h=200&f=face
+          fullname: Kashif Rasul
+          isHf: true
+          isPro: false
+          name: kashif
+          type: user
+        html: '<p>almost... as i mentioned above the values of the ids of the categorical
+          values need to be integers starting from <code>0, ..., cardinality-1</code>
+          so in your example you have the encodings be large numbers e.g. 250 whereas
+          it should be <code>0, 1, 2,...</code> </p>
+
+          <p>hopefully, that helps!</p>
+
+          '
+        raw: "almost... as i mentioned above the values of the ids of the categorical\
+          \ values need to be integers starting from `0, ..., cardinality-1` so in\
+          \ your example you have the encodings be large numbers e.g. 250 whereas\
+          \ it should be `0, 1, 2,...` \n\nhopefully, that helps!"
+        updatedAt: '2023-03-10T20:57:49.281Z'
+      numEdits: 0
+      reactions: []
+    id: 640b99cd6b21369107468dff
+    type: comment
+  author: kashif
+  content: "almost... as i mentioned above the values of the ids of the categorical\
+    \ values need to be integers starting from `0, ..., cardinality-1` so in your\
+    \ example you have the encodings be large numbers e.g. 250 whereas it should be\
+    \ `0, 1, 2,...` \n\nhopefully, that helps!"
+  created_at: 2023-03-10 20:57:49+00:00
+  edited: false
+  hidden: false
+  id: 640b99cd6b21369107468dff
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+      fullname: Eric Young
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: younge1
+      type: user
+    createdAt: '2023-03-10T21:01:50.000Z'
+    data:
+      edited: false
+      editors:
+      - younge1
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/168edeed24df0533742fc39defbe6200.svg
+          fullname: Eric Young
+          isHf: false
+          isPro: false
+          name: younge1
+          type: user
+        html: '<p>Oh that makes sense! I''ll make the changes now. Thanks again for
+          your help.</p>
+
+          '
+        raw: Oh that makes sense! I'll make the changes now. Thanks again for your
+          help.
+        updatedAt: '2023-03-10T21:01:50.445Z'
+      numEdits: 0
+      reactions: []
+    id: 640b9abe93f6beedd7f52b3d
+    type: comment
+  author: younge1
+  content: Oh that makes sense! I'll make the changes now. Thanks again for your help.
+  created_at: 2023-03-10 21:01:50+00:00
+  edited: false
+  hidden: false
+  id: 640b9abe93f6beedd7f52b3d
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 10
+repo_id: huggingface/time-series-transformer-tourism-monthly
+repo_type: model
+status: open
+target_branch: null
+title: Time Series ndim error

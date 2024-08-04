@@ -1,0 +1,475 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ctrlMarcio
+conflicting_files: null
+created_at: 2023-05-21 12:17:53+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a951d4f009e863ccd051e736a15495e5.svg
+      fullname: "M\xE1rcio Duarte"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ctrlMarcio
+      type: user
+    createdAt: '2023-05-21T13:17:53.000Z'
+    data:
+      edited: false
+      editors:
+      - ctrlMarcio
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a951d4f009e863ccd051e736a15495e5.svg
+          fullname: "M\xE1rcio Duarte"
+          isHf: false
+          isPro: false
+          name: ctrlMarcio
+          type: user
+        html: "<p>Hello, excellent work!</p>\n<p>I encounter an error I cannot surpass\
+          \ when using audioldm models. In fact, what I'm trying to do is build the\
+          \ complete pipeline manually, following the tutorial present <a href=\"\
+          https://huggingface.co/docs/diffusers/using-diffusers/write_own_pipeline\"\
+          >here</a>.</p>\n<p>My code is the following: </p>\n<pre><code class=\"language-py\"\
+          ><span class=\"hljs-comment\"># %%</span>\n<span class=\"hljs-keyword\"\
+          >from</span> diffusers <span class=\"hljs-keyword\">import</span> DDPMScheduler,\
+          \ UNet2DConditionModel, AutoencoderKL\n<span class=\"hljs-keyword\">from</span>\
+          \ transformers <span class=\"hljs-keyword\">import</span> RobertaTokenizer,\
+          \ ClapTextModelWithProjection\n<span class=\"hljs-keyword\">import</span>\
+          \ torch\n\n<span class=\"hljs-comment\"># %%</span>\nmodel = <span class=\"\
+          hljs-string\">\"cvssp/audioldm\"</span>\ndevice = <span class=\"hljs-string\"\
+          >\"cuda\"</span>\n\n<span class=\"hljs-comment\"># %%</span>\nvae = AutoencoderKL.from_pretrained(model,\
+          \ subfolder=<span class=\"hljs-string\">\"vae\"</span>).to(device)\ntokenizer\
+          \ = RobertaTokenizer.from_pretrained(model, subfolder=<span class=\"hljs-string\"\
+          >\"tokenizer\"</span>)\ntext_encoder = ClapTextModelWithProjection.from_pretrained(model,\
+          \ subfolder=<span class=\"hljs-string\">\"text_encoder\"</span>).to(device)\n\
+          unet = UNet2DConditionModel.from_pretrained(model, subfolder=<span class=\"\
+          hljs-string\">\"unet\"</span>, num_class_embeds=<span class=\"hljs-number\"\
+          >0</span>).to(device)\nscheduler = DDPMScheduler.from_pretrained(model,\
+          \ subfolder=<span class=\"hljs-string\">\"scheduler\"</span>)\n\n<span class=\"\
+          hljs-comment\"># %%</span>\nprompt = [<span class=\"hljs-string\">\"a photograph\
+          \ of an astronaut riding a horse\"</span>]\nheight = <span class=\"hljs-number\"\
+          >512</span>  <span class=\"hljs-comment\"># default height of Stable Diffusion</span>\n\
+          width = <span class=\"hljs-number\">512</span>  <span class=\"hljs-comment\"\
+          ># default width of Stable Diffusion</span>\nnum_inference_steps = <span\
+          \ class=\"hljs-number\">25</span>  <span class=\"hljs-comment\"># Number\
+          \ of denoising steps</span>\nguidance_scale = <span class=\"hljs-number\"\
+          >7.5</span>  <span class=\"hljs-comment\"># Scale for classifier-free guidance</span>\n\
+          generator = torch.manual_seed(<span class=\"hljs-number\">0</span>)  <span\
+          \ class=\"hljs-comment\"># Seed generator to create the inital latent noise</span>\n\
+          batch_size = <span class=\"hljs-built_in\">len</span>(prompt)\n\n<span class=\"\
+          hljs-comment\"># %%</span>\ntext_input = tokenizer(\n    prompt, padding=<span\
+          \ class=\"hljs-string\">\"max_length\"</span>, max_length=tokenizer.model_max_length,\
+          \ truncation=<span class=\"hljs-literal\">True</span>, return_tensors=<span\
+          \ class=\"hljs-string\">\"pt\"</span>\n)\n\n<span class=\"hljs-keyword\"\
+          >with</span> torch.no_grad():\n    text_embeddings = text_encoder(text_input.input_ids.to(device))[<span\
+          \ class=\"hljs-number\">0</span>]\n\n<span class=\"hljs-comment\"># %%</span>\n\
+          max_length = text_input.input_ids.shape[-<span class=\"hljs-number\">1</span>]\n\
+          uncond_input = tokenizer([<span class=\"hljs-string\">\"\"</span>] * batch_size,\
+          \ padding=<span class=\"hljs-string\">\"max_length\"</span>, max_length=max_length,\
+          \ return_tensors=<span class=\"hljs-string\">\"pt\"</span>)\nuncond_embeddings\
+          \ = text_encoder(uncond_input.input_ids.to(device))[<span class=\"hljs-number\"\
+          >0</span>]\n\n<span class=\"hljs-comment\"># %%</span>\ntext_embeddings\
+          \ = torch.cat([uncond_embeddings, text_embeddings])\n\n<span class=\"hljs-comment\"\
+          ># %%</span>\nlatents = torch.randn(\n    (batch_size, unet.in_channels,\
+          \ height // <span class=\"hljs-number\">8</span>, width // <span class=\"\
+          hljs-number\">8</span>),\n    generator=generator,\n)\nlatents = latents.to(device)\n\
+          \n<span class=\"hljs-comment\"># %%</span>\nlatents = latents * scheduler.init_noise_sigma\n\
+          \n<span class=\"hljs-comment\"># %%</span>\n<span class=\"hljs-keyword\"\
+          >from</span> tqdm.auto <span class=\"hljs-keyword\">import</span> tqdm\n\
+          \nscheduler.set_timesteps(num_inference_steps)\n\n<span class=\"hljs-keyword\"\
+          >for</span> t <span class=\"hljs-keyword\">in</span> tqdm(scheduler.timesteps):\n\
+          \    <span class=\"hljs-comment\"># expand the latents if we are doing classifier-free\
+          \ guidance to avoid doing two forward passes.</span>\n    latent_model_input\
+          \ = torch.cat([latents] * <span class=\"hljs-number\">2</span>)\n\n    latent_model_input\
+          \ = scheduler.scale_model_input(latent_model_input, timestep=t)\n\n    <span\
+          \ class=\"hljs-comment\"># predict the noise residual</span>\n    <span\
+          \ class=\"hljs-keyword\">with</span> torch.no_grad():\n        noise_pred\
+          \ = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample\n\
+          \n    <span class=\"hljs-comment\"># perform guidance</span>\n    noise_pred_uncond,\
+          \ noise_pred_text = noise_pred.chunk(<span class=\"hljs-number\">2</span>)\n\
+          \    noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_text\
+          \ - noise_pred_uncond)\n\n    <span class=\"hljs-comment\"># compute the\
+          \ previous noisy sample x_t -&gt; x_t-1</span>\n    latents = scheduler.step(noise_pred,\
+          \ t, latents).prev_sample\n</code></pre>\n<p>In the <code>noise_pred = unet(latent_model_input,\
+          \ t, encoder_hidden_states=text_embeddings).sample</code> line I get</p>\n\
+          <pre><code>\u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent\
+          \ call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\n\u2502\
+          \ in &lt;module&gt;:14                                                 \
+          \                                  \u2502\n\u2502                      \
+          \                                                                      \
+          \      \u2502\n\u2502 /home/admin/.local/lib/python3.8/site-packages/torch/nn/modules/module.py:1501\
+          \ in _call_impl     \u2502\n\u2502                                     \
+          \                                                             \u2502\n\u2502\
+          \   1498 \u2502   \u2502   if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks   \u2502\n\u2502   1499 \u2502   \u2502   \u2502\
+          \   \u2502   or _global_backward_pre_hooks or _global_backward_hooks   \
+          \                \u2502\n\u2502   1500 \u2502   \u2502   \u2502   \u2502\
+          \   or _global_forward_hooks or _global_forward_pre_hooks):            \
+          \       \u2502\n\u2502 \u2771 1501 \u2502   \u2502   \u2502   return forward_call(*args,\
+          \ **kwargs)                                          \u2502\n\u2502   1502\
+          \ \u2502   \u2502   # Do not call functions when jit is used           \
+          \                               \u2502\n\u2502   1503 \u2502   \u2502  \
+          \ full_backward_hooks, non_full_backward_hooks = [], []                \
+          \             \u2502\n\u2502   1504 \u2502   \u2502   backward_pre_hooks\
+          \ = []                                                           \u2502\n\
+          \u2502                                                                 \
+          \                                 \u2502\n\u2502 /home/admin/.local/lib/python3.8/site-packages/diffusers/models/unet_2d_condition.py:691\
+          \ in      \u2502\n\u2502 forward                                       \
+          \                                                   \u2502\n\u2502     \
+          \                                                                      \
+          \                       \u2502\n\u2502   688 \u2502   \u2502           \
+          \                                                                      \
+          \     \u2502\n\u2502   689 \u2502   \u2502   if self.class_embedding is\
+          \ not None:                                               \u2502\n\u2502\
+          \   690 \u2502   \u2502   \u2502   if class_labels is None:            \
+          \                                           \u2502\n\u2502 \u2771 691 \u2502\
+          \   \u2502   \u2502   \u2502   raise ValueError(\"class_labels should be\
+          \ provided when num_class_embeds    \u2502\n\u2502   692 \u2502   \u2502\
+          \   \u2502                                                             \
+          \                     \u2502\n\u2502   693 \u2502   \u2502   \u2502   if\
+          \ self.config.class_embed_type == \"timestep\":                        \
+          \         \u2502\n\u2502   694 \u2502   \u2502   \u2502   \u2502   class_labels\
+          \ = self.time_proj(class_labels)                                \u2502\n\
+          \u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u256F\nValueError: class_labels should be provided when\
+          \ num_class_embeds &gt; 0\n</code></pre>\n<p>As far as I understand, in\
+          \ the config of the unet you set the <code>num_class_embeds</code> to null\
+          \ or none. So, this shouldn't be an error. A you can see by my code, I also\
+          \ tried to force the <code>num_class_embeds</code> to 0 when I initialize\
+          \ my unet object unsuccessfully. </p>\n<p>Can you help me?</p>\n<p>Thank\
+          \ you! \U0001F917</p>\n"
+        raw: "Hello, excellent work!\r\n\r\nI encounter an error I cannot surpass\
+          \ when using audioldm models. In fact, what I'm trying to do is build the\
+          \ complete pipeline manually, following the tutorial present [here](https://huggingface.co/docs/diffusers/using-diffusers/write_own_pipeline).\r\
+          \n\r\nMy code is the following: \r\n\r\n```py\r\n# %%\r\nfrom diffusers\
+          \ import DDPMScheduler, UNet2DConditionModel, AutoencoderKL\r\nfrom transformers\
+          \ import RobertaTokenizer, ClapTextModelWithProjection\r\nimport torch\r\
+          \n\r\n# %%\r\nmodel = \"cvssp/audioldm\"\r\ndevice = \"cuda\"\r\n\r\n# %%\r\
+          \nvae = AutoencoderKL.from_pretrained(model, subfolder=\"vae\").to(device)\r\
+          \ntokenizer = RobertaTokenizer.from_pretrained(model, subfolder=\"tokenizer\"\
+          )\r\ntext_encoder = ClapTextModelWithProjection.from_pretrained(model, subfolder=\"\
+          text_encoder\").to(device)\r\nunet = UNet2DConditionModel.from_pretrained(model,\
+          \ subfolder=\"unet\", num_class_embeds=0).to(device)\r\nscheduler = DDPMScheduler.from_pretrained(model,\
+          \ subfolder=\"scheduler\")\r\n\r\n# %%\r\nprompt = [\"a photograph of an\
+          \ astronaut riding a horse\"]\r\nheight = 512  # default height of Stable\
+          \ Diffusion\r\nwidth = 512  # default width of Stable Diffusion\r\nnum_inference_steps\
+          \ = 25  # Number of denoising steps\r\nguidance_scale = 7.5  # Scale for\
+          \ classifier-free guidance\r\ngenerator = torch.manual_seed(0)  # Seed generator\
+          \ to create the inital latent noise\r\nbatch_size = len(prompt)\r\n\r\n\
+          # %%\r\ntext_input = tokenizer(\r\n    prompt, padding=\"max_length\", max_length=tokenizer.model_max_length,\
+          \ truncation=True, return_tensors=\"pt\"\r\n)\r\n\r\nwith torch.no_grad():\r\
+          \n    text_embeddings = text_encoder(text_input.input_ids.to(device))[0]\r\
+          \n\r\n# %%\r\nmax_length = text_input.input_ids.shape[-1]\r\nuncond_input\
+          \ = tokenizer([\"\"] * batch_size, padding=\"max_length\", max_length=max_length,\
+          \ return_tensors=\"pt\")\r\nuncond_embeddings = text_encoder(uncond_input.input_ids.to(device))[0]\r\
+          \n\r\n# %%\r\ntext_embeddings = torch.cat([uncond_embeddings, text_embeddings])\r\
+          \n\r\n# %%\r\nlatents = torch.randn(\r\n    (batch_size, unet.in_channels,\
+          \ height // 8, width // 8),\r\n    generator=generator,\r\n)\r\nlatents\
+          \ = latents.to(device)\r\n\r\n# %%\r\nlatents = latents * scheduler.init_noise_sigma\r\
+          \n\r\n# %%\r\nfrom tqdm.auto import tqdm\r\n\r\nscheduler.set_timesteps(num_inference_steps)\r\
+          \n\r\nfor t in tqdm(scheduler.timesteps):\r\n    # expand the latents if\
+          \ we are doing classifier-free guidance to avoid doing two forward passes.\r\
+          \n    latent_model_input = torch.cat([latents] * 2)\r\n\r\n    latent_model_input\
+          \ = scheduler.scale_model_input(latent_model_input, timestep=t)\r\n\r\n\
+          \    # predict the noise residual\r\n    with torch.no_grad():\r\n     \
+          \   noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample\r\
+          \n\r\n    # perform guidance\r\n    noise_pred_uncond, noise_pred_text =\
+          \ noise_pred.chunk(2)\r\n    noise_pred = noise_pred_uncond + guidance_scale\
+          \ * (noise_pred_text - noise_pred_uncond)\r\n\r\n    # compute the previous\
+          \ noisy sample x_t -> x_t-1\r\n    latents = scheduler.step(noise_pred,\
+          \ t, latents).prev_sample\r\n```\r\n\r\nIn the `noise_pred = unet(latent_model_input,\
+          \ t, encoder_hidden_states=text_embeddings).sample` line I get\r\n```\r\n\
+          \u256D\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Traceback (most recent\
+          \ call last) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256E\r\n\u2502\
+          \ in <module>:14                                                       \
+          \                            \u2502\r\n\u2502                          \
+          \                                                                      \
+          \  \u2502\r\n\u2502 /home/admin/.local/lib/python3.8/site-packages/torch/nn/modules/module.py:1501\
+          \ in _call_impl     \u2502\r\n\u2502                                   \
+          \                                                               \u2502\r\
+          \n\u2502   1498 \u2502   \u2502   if not (self._backward_hooks or self._backward_pre_hooks\
+          \ or self._forward_hooks   \u2502\r\n\u2502   1499 \u2502   \u2502   \u2502\
+          \   \u2502   or _global_backward_pre_hooks or _global_backward_hooks   \
+          \                \u2502\r\n\u2502   1500 \u2502   \u2502   \u2502   \u2502\
+          \   or _global_forward_hooks or _global_forward_pre_hooks):            \
+          \       \u2502\r\n\u2502 \u2771 1501 \u2502   \u2502   \u2502   return forward_call(*args,\
+          \ **kwargs)                                          \u2502\r\n\u2502  \
+          \ 1502 \u2502   \u2502   # Do not call functions when jit is used      \
+          \                                    \u2502\r\n\u2502   1503 \u2502   \u2502\
+          \   full_backward_hooks, non_full_backward_hooks = [], []              \
+          \               \u2502\r\n\u2502   1504 \u2502   \u2502   backward_pre_hooks\
+          \ = []                                                           \u2502\r\
+          \n\u2502                                                               \
+          \                                   \u2502\r\n\u2502 /home/admin/.local/lib/python3.8/site-packages/diffusers/models/unet_2d_condition.py:691\
+          \ in      \u2502\r\n\u2502 forward                                     \
+          \                                                     \u2502\r\n\u2502 \
+          \                                                                      \
+          \                           \u2502\r\n\u2502   688 \u2502   \u2502     \
+          \                                                                      \
+          \           \u2502\r\n\u2502   689 \u2502   \u2502   if self.class_embedding\
+          \ is not None:                                               \u2502\r\n\u2502\
+          \   690 \u2502   \u2502   \u2502   if class_labels is None:            \
+          \                                           \u2502\r\n\u2502 \u2771 691\
+          \ \u2502   \u2502   \u2502   \u2502   raise ValueError(\"class_labels should\
+          \ be provided when num_class_embeds    \u2502\r\n\u2502   692 \u2502   \u2502\
+          \   \u2502                                                             \
+          \                     \u2502\r\n\u2502   693 \u2502   \u2502   \u2502  \
+          \ if self.config.class_embed_type == \"timestep\":                     \
+          \            \u2502\r\n\u2502   694 \u2502   \u2502   \u2502   \u2502  \
+          \ class_labels = self.time_proj(class_labels)                          \
+          \      \u2502\r\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+          \u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError: class_labels should\
+          \ be provided when num_class_embeds > 0\r\n```\r\n\r\nAs far as I understand,\
+          \ in the config of the unet you set the `num_class_embeds` to null or none.\
+          \ So, this shouldn't be an error. A you can see by my code, I also tried\
+          \ to force the `num_class_embeds` to 0 when I initialize my unet object\
+          \ unsuccessfully. \r\n\r\nCan you help me?\r\n\r\nThank you! \U0001F917"
+        updatedAt: '2023-05-21T13:17:53.452Z'
+      numEdits: 0
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - melissachen
+    id: 646a1a014c1cd18b49763491
+    type: comment
+  author: ctrlMarcio
+  content: "Hello, excellent work!\r\n\r\nI encounter an error I cannot surpass when\
+    \ using audioldm models. In fact, what I'm trying to do is build the complete\
+    \ pipeline manually, following the tutorial present [here](https://huggingface.co/docs/diffusers/using-diffusers/write_own_pipeline).\r\
+    \n\r\nMy code is the following: \r\n\r\n```py\r\n# %%\r\nfrom diffusers import\
+    \ DDPMScheduler, UNet2DConditionModel, AutoencoderKL\r\nfrom transformers import\
+    \ RobertaTokenizer, ClapTextModelWithProjection\r\nimport torch\r\n\r\n# %%\r\n\
+    model = \"cvssp/audioldm\"\r\ndevice = \"cuda\"\r\n\r\n# %%\r\nvae = AutoencoderKL.from_pretrained(model,\
+    \ subfolder=\"vae\").to(device)\r\ntokenizer = RobertaTokenizer.from_pretrained(model,\
+    \ subfolder=\"tokenizer\")\r\ntext_encoder = ClapTextModelWithProjection.from_pretrained(model,\
+    \ subfolder=\"text_encoder\").to(device)\r\nunet = UNet2DConditionModel.from_pretrained(model,\
+    \ subfolder=\"unet\", num_class_embeds=0).to(device)\r\nscheduler = DDPMScheduler.from_pretrained(model,\
+    \ subfolder=\"scheduler\")\r\n\r\n# %%\r\nprompt = [\"a photograph of an astronaut\
+    \ riding a horse\"]\r\nheight = 512  # default height of Stable Diffusion\r\n\
+    width = 512  # default width of Stable Diffusion\r\nnum_inference_steps = 25 \
+    \ # Number of denoising steps\r\nguidance_scale = 7.5  # Scale for classifier-free\
+    \ guidance\r\ngenerator = torch.manual_seed(0)  # Seed generator to create the\
+    \ inital latent noise\r\nbatch_size = len(prompt)\r\n\r\n# %%\r\ntext_input =\
+    \ tokenizer(\r\n    prompt, padding=\"max_length\", max_length=tokenizer.model_max_length,\
+    \ truncation=True, return_tensors=\"pt\"\r\n)\r\n\r\nwith torch.no_grad():\r\n\
+    \    text_embeddings = text_encoder(text_input.input_ids.to(device))[0]\r\n\r\n\
+    # %%\r\nmax_length = text_input.input_ids.shape[-1]\r\nuncond_input = tokenizer([\"\
+    \"] * batch_size, padding=\"max_length\", max_length=max_length, return_tensors=\"\
+    pt\")\r\nuncond_embeddings = text_encoder(uncond_input.input_ids.to(device))[0]\r\
+    \n\r\n# %%\r\ntext_embeddings = torch.cat([uncond_embeddings, text_embeddings])\r\
+    \n\r\n# %%\r\nlatents = torch.randn(\r\n    (batch_size, unet.in_channels, height\
+    \ // 8, width // 8),\r\n    generator=generator,\r\n)\r\nlatents = latents.to(device)\r\
+    \n\r\n# %%\r\nlatents = latents * scheduler.init_noise_sigma\r\n\r\n# %%\r\nfrom\
+    \ tqdm.auto import tqdm\r\n\r\nscheduler.set_timesteps(num_inference_steps)\r\n\
+    \r\nfor t in tqdm(scheduler.timesteps):\r\n    # expand the latents if we are\
+    \ doing classifier-free guidance to avoid doing two forward passes.\r\n    latent_model_input\
+    \ = torch.cat([latents] * 2)\r\n\r\n    latent_model_input = scheduler.scale_model_input(latent_model_input,\
+    \ timestep=t)\r\n\r\n    # predict the noise residual\r\n    with torch.no_grad():\r\
+    \n        noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample\r\
+    \n\r\n    # perform guidance\r\n    noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)\r\
+    \n    noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_text - noise_pred_uncond)\r\
+    \n\r\n    # compute the previous noisy sample x_t -> x_t-1\r\n    latents = scheduler.step(noise_pred,\
+    \ t, latents).prev_sample\r\n```\r\n\r\nIn the `noise_pred = unet(latent_model_input,\
+    \ t, encoder_hidden_states=text_embeddings).sample` line I get\r\n```\r\n\u256D\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500 Traceback (most recent call last) \u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u256E\r\n\u2502 in <module>:14                            \
+    \                                                       \u2502\r\n\u2502     \
+    \                                                                            \
+    \                 \u2502\r\n\u2502 /home/admin/.local/lib/python3.8/site-packages/torch/nn/modules/module.py:1501\
+    \ in _call_impl     \u2502\r\n\u2502                                         \
+    \                                                         \u2502\r\n\u2502   1498\
+    \ \u2502   \u2502   if not (self._backward_hooks or self._backward_pre_hooks or\
+    \ self._forward_hooks   \u2502\r\n\u2502   1499 \u2502   \u2502   \u2502   \u2502\
+    \   or _global_backward_pre_hooks or _global_backward_hooks                  \
+    \ \u2502\r\n\u2502   1500 \u2502   \u2502   \u2502   \u2502   or _global_forward_hooks\
+    \ or _global_forward_pre_hooks):                   \u2502\r\n\u2502 \u2771 1501\
+    \ \u2502   \u2502   \u2502   return forward_call(*args, **kwargs)            \
+    \                              \u2502\r\n\u2502   1502 \u2502   \u2502   # Do\
+    \ not call functions when jit is used                                        \
+    \  \u2502\r\n\u2502   1503 \u2502   \u2502   full_backward_hooks, non_full_backward_hooks\
+    \ = [], []                             \u2502\r\n\u2502   1504 \u2502   \u2502\
+    \   backward_pre_hooks = []                                                  \
+    \         \u2502\r\n\u2502                                                   \
+    \                                               \u2502\r\n\u2502 /home/admin/.local/lib/python3.8/site-packages/diffusers/models/unet_2d_condition.py:691\
+    \ in      \u2502\r\n\u2502 forward                                           \
+    \                                               \u2502\r\n\u2502             \
+    \                                                                            \
+    \         \u2502\r\n\u2502   688 \u2502   \u2502                             \
+    \                                                         \u2502\r\n\u2502   689\
+    \ \u2502   \u2502   if self.class_embedding is not None:                     \
+    \                          \u2502\r\n\u2502   690 \u2502   \u2502   \u2502   if\
+    \ class_labels is None:                                                      \
+    \ \u2502\r\n\u2502 \u2771 691 \u2502   \u2502   \u2502   \u2502   raise ValueError(\"\
+    class_labels should be provided when num_class_embeds    \u2502\r\n\u2502   692\
+    \ \u2502   \u2502   \u2502                                                   \
+    \                               \u2502\r\n\u2502   693 \u2502   \u2502   \u2502\
+    \   if self.config.class_embed_type == \"timestep\":                         \
+    \        \u2502\r\n\u2502   694 \u2502   \u2502   \u2502   \u2502   class_labels\
+    \ = self.time_proj(class_labels)                                \u2502\r\n\u2570\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256F\r\nValueError: class_labels should\
+    \ be provided when num_class_embeds > 0\r\n```\r\n\r\nAs far as I understand,\
+    \ in the config of the unet you set the `num_class_embeds` to null or none. So,\
+    \ this shouldn't be an error. A you can see by my code, I also tried to force\
+    \ the `num_class_embeds` to 0 when I initialize my unet object unsuccessfully.\
+    \ \r\n\r\nCan you help me?\r\n\r\nThank you! \U0001F917"
+  created_at: 2023-05-21 12:17:53+00:00
+  edited: false
+  hidden: false
+  id: 646a1a014c1cd18b49763491
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/148a1205f1e95dffe04875102e913838.svg
+      fullname: Meiying Chen
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: melissachen
+      type: user
+    createdAt: '2023-06-08T02:25:57.000Z'
+    data:
+      edited: true
+      editors:
+      - melissachen
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.974280595779419
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/148a1205f1e95dffe04875102e913838.svg
+          fullname: Meiying Chen
+          isHf: false
+          isPro: false
+          name: melissachen
+          type: user
+        html: '<p>I''m having the same issue here...</p>
+
+          <p>Here is what I found:<br>class_embed_type is set to simple_projection,
+          which makes the class_embedding not None. When class_embedding is not None,
+          class_labels are required. </p>
+
+          <p>But I''m not sure how to fix this problem yet...</p>
+
+          '
+        raw: "I'm having the same issue here...\n\nHere is what I found:\nclass_embed_type\
+          \ is set to simple_projection, which makes the class_embedding not None.\
+          \ When class_embedding is not None, class_labels are required. \n\nBut I'm\
+          \ not sure how to fix this problem yet..."
+        updatedAt: '2023-06-08T02:29:29.011Z'
+      numEdits: 1
+      reactions: []
+    id: 64813c359aafd41918b41b6f
+    type: comment
+  author: melissachen
+  content: "I'm having the same issue here...\n\nHere is what I found:\nclass_embed_type\
+    \ is set to simple_projection, which makes the class_embedding not None. When\
+    \ class_embedding is not None, class_labels are required. \n\nBut I'm not sure\
+    \ how to fix this problem yet..."
+  created_at: 2023-06-08 01:25:57+00:00
+  edited: true
+  hidden: false
+  id: 64813c359aafd41918b41b6f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/a951d4f009e863ccd051e736a15495e5.svg
+      fullname: "M\xE1rcio Duarte"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ctrlMarcio
+      type: user
+    createdAt: '2023-06-11T13:07:19.000Z'
+    data:
+      edited: false
+      editors:
+      - ctrlMarcio
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9613466262817383
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/a951d4f009e863ccd051e736a15495e5.svg
+          fullname: "M\xE1rcio Duarte"
+          isHf: false
+          isPro: false
+          name: ctrlMarcio
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;melissachen&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/melissachen\"\
+          >@<span class=\"underline\">melissachen</span></a></span>\n\n\t</span></span>\
+          \ I did find that as well, but couldn\u2019t get over it. Sent an email\
+          \ to the main author to no avail. I believe this project might be deprecated.</p>\n"
+        raw: "@melissachen I did find that as well, but couldn\u2019t get over it.\
+          \ Sent an email to the main author to no avail. I believe this project might\
+          \ be deprecated."
+        updatedAt: '2023-06-11T13:07:19.278Z'
+      numEdits: 0
+      reactions: []
+    id: 6485c707a3893fa104fb577a
+    type: comment
+  author: ctrlMarcio
+  content: "@melissachen I did find that as well, but couldn\u2019t get over it. Sent\
+    \ an email to the main author to no avail. I believe this project might be deprecated."
+  created_at: 2023-06-11 12:07:19+00:00
+  edited: false
+  hidden: false
+  id: 6485c707a3893fa104fb577a
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 7
+repo_id: cvssp/audioldm
+repo_type: model
+status: open
+target_branch: null
+title: class_labels should be provided when num_class_embeds > 0

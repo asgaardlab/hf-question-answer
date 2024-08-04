@@ -1,0 +1,365 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Wraken
+conflicting_files: null
+created_at: 2023-07-14 14:49:08+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0fb966dc984eb6dba260baef643656a9.svg
+      fullname: Florent Trust
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Wraken
+      type: user
+    createdAt: '2023-07-14T15:49:08.000Z'
+    data:
+      edited: true
+      editors:
+      - Wraken
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.39769893884658813
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0fb966dc984eb6dba260baef643656a9.svg
+          fullname: Florent Trust
+          isHf: false
+          isPro: false
+          name: Wraken
+          type: user
+        html: "<p>Hey ! </p>\n<p>I have problems using triton.<br>I try to test this\
+          \ model with just this few lines of code : </p>\n<pre><code>from transformers\
+          \ import AutoModelForCausalLM\nfrom transformers import AutoTokenizer, AutoConfig\n\
+          import torch\nimport time\n\n# loac config\nconfig = AutoConfig.from_pretrained(\n\
+          \    \"replit/replit-code-v1-3b\",\n    trust_remote_code=True,\n    low_cpu_mem_usage=True\n\
+          )\nconfig.attn_config['attn_impl'] = 'triton'\n\n# load model\nmodel = AutoModelForCausalLM.from_pretrained('replit/replit-code-v1-3b',\n\
+          \                                            trust_remote_code=True,\n \
+          \                                           config=config,\n           \
+          \                                 ).to(device='cuda:0', dtype=torch.float16)\n\
+          \n# load tokenizer\ntokenizer = AutoTokenizer.from_pretrained('replit/replit-code-v1-3b',\
+          \ trust_remote_code=True)\n\nprompt = 'func main() {'\n\nstart_time = time.time()\n\
+          \ninputs = tokenizer.encode(prompt, return_tensors='pt').to(device='cuda:0')\n\
+          print(inputs, inputs.size(), inputs.size(dim=1))\n\noutputs = model.generate(inputs,\
+          \ do_sample=True, max_length=100, top_p=0.95, top_k=4, temperature=0.2,\
+          \ num_return_sequences=4, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.pad_token_id)\n\
+          \nprompt_len = inputs.size(dim=1)\nprint(prompt_len)\noutput_lens = [len(o)-prompt_len\
+          \ for o in outputs]\nprint(output_lens)\ndecoded = tokenizer.batch_decode([out[prompt_len:prompt_len\
+          \ + g] for g,out in zip(output_lens, outputs)])\n\nfor i,d in enumerate(decoded):\n\
+          \    print(i,d)\n</code></pre>\n<p>I  face an error that I can't fix, I've\
+          \ tried a lot of version of libs but can't fix it.<br>Currently I'm using\
+          \ : <code>triton==2.0.0.dev20221202</code> and <code>flash-attn==v1.0.3.post0</code></p>\n\
+          <pre><code>Traceback (most recent call last):\n  File \"&lt;string&gt;\"\
+          , line 21, in _fwd_kernel\nKeyError: ('2-.-0-.-0-d6e5675c89b63c389326c8b846421ab2-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+          \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128,\
+          \ False, False, False, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (False, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (False, False), (False, False), (True, False),\
+          \ (True, False), (True, False), (True, False)))\n\nDuring handling of the\
+          \ above exception, another exception occurred:\n\nTraceback (most recent\
+          \ call last):\n  File \"/home/wraken/FreePilot/test.py\", line 52, in &lt;module&gt;\n\
+          \    outputs = model.generate(inputs, do_sample=True, max_length=100, top_p=0.95,\
+          \ top_k=4, temperature=0.2, num_return_sequences=4, eos_token_id=tokenizer.eos_token_id,\
+          \ pad_token_id=tokenizer.pad_token_id)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1565, in generate\n    return self.sample(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2612, in sample\n    outputs = self(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+          , line 239, in forward\n    outputs = self.transformer(input_ids=input_ids,\
+          \ past_key_values=past_key_values, attention_mask=attention_mask, prefix_mask=prefix_mask,\
+          \ sequence_id=sequence_id, return_dict=return_dict, output_attentions=output_attentions,\
+          \ output_hidden_states=output_hidden_states, use_cache=use_cache)\n  File\
+          \ \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+          , line 185, in forward\n    (x, past_key_value) = block(x, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=self.is_causal)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/blocks.py\"\
+          , line 36, in forward\n    (b, _, past_key_value) = self.attn(a, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=is_causal)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+          , line 172, in forward\n    (context, attn_weights) = self.attn_fn(query,\
+          \ key, value, self.n_heads, softmax_scale=self.softmax_scale, attn_bias=attn_bias,\
+          \ key_padding_mask=key_padding_mask, is_causal=is_causal, dropout_p=self.attn_dropout_p,\
+          \ training=self.training, needs_weights=needs_weights)\n  File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+          , line 111, in triton_flash_attn_fn\n    attn_output = flash_attn_triton.flash_attn_func(query,\
+          \ key, value, attn_bias, reset_is_causal, softmax_scale)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/autograd/function.py\"\
+          , line 506, in apply\n    return super().apply(*args, **kwargs)  # type:\
+          \ ignore[misc]\n  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+          , line 810, in forward\n    o, lse, ctx.softmax_scale = _flash_attn_forward(\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+          , line 623, in _flash_attn_forward\n    _fwd_kernel[grid](\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/jit.py\"\
+          , line 106, in launcher\n    return self.run(*args, grid=grid, **kwargs)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/autotuner.py\"\
+          , line 200, in run\n    return self.fn.run(*args, **kwargs)\n  File \"&lt;string&gt;\"\
+          , line 41, in _fwd_kernel\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+          , line 1256, in compile\n    asm, shared, kernel_name = _compile(fn, signature,\
+          \ device, constants, configs[0], num_warps, num_stages,\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+          , line 901, in _compile\n    name, asm, shared_mem = _triton.code_gen.compile_ttir(backend,\
+          \ module, device, num_warps, num_stages, extern_libs, cc)\nRuntimeError:\
+          \ CUDA: Error- no device\n</code></pre>\n<p>I'm using ubuntu on wsl2 and\
+          \ have a RTX3080.</p>\n<p>Does someone know of to fix this ? </p>\n<p>Thanks\
+          \ :) </p>\n"
+        raw: "Hey ! \n\nI have problems using triton. \nI try to test this model with\
+          \ just this few lines of code : \n```\nfrom transformers import AutoModelForCausalLM\n\
+          from transformers import AutoTokenizer, AutoConfig\nimport torch\nimport\
+          \ time\n\n# loac config\nconfig = AutoConfig.from_pretrained(\n    \"replit/replit-code-v1-3b\"\
+          ,\n    trust_remote_code=True,\n    low_cpu_mem_usage=True\n)\nconfig.attn_config['attn_impl']\
+          \ = 'triton'\n\n# load model\nmodel = AutoModelForCausalLM.from_pretrained('replit/replit-code-v1-3b',\n\
+          \                                            trust_remote_code=True,\n \
+          \                                           config=config,\n           \
+          \                                 ).to(device='cuda:0', dtype=torch.float16)\n\
+          \n# load tokenizer\ntokenizer = AutoTokenizer.from_pretrained('replit/replit-code-v1-3b',\
+          \ trust_remote_code=True)\n\nprompt = 'func main() {'\n\nstart_time = time.time()\n\
+          \ninputs = tokenizer.encode(prompt, return_tensors='pt').to(device='cuda:0')\n\
+          print(inputs, inputs.size(), inputs.size(dim=1))\n\noutputs = model.generate(inputs,\
+          \ do_sample=True, max_length=100, top_p=0.95, top_k=4, temperature=0.2,\
+          \ num_return_sequences=4, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.pad_token_id)\n\
+          \nprompt_len = inputs.size(dim=1)\nprint(prompt_len)\noutput_lens = [len(o)-prompt_len\
+          \ for o in outputs]\nprint(output_lens)\ndecoded = tokenizer.batch_decode([out[prompt_len:prompt_len\
+          \ + g] for g,out in zip(output_lens, outputs)])\n\nfor i,d in enumerate(decoded):\n\
+          \    print(i,d)\n\n```\n\nI  face an error that I can't fix, I've tried\
+          \ a lot of version of libs but can't fix it.\nCurrently I'm using : `triton==2.0.0.dev20221202`\
+          \ and `flash-attn==v1.0.3.post0`\n\n```\nTraceback (most recent call last):\n\
+          \  File \"<string>\", line 21, in _fwd_kernel\nKeyError: ('2-.-0-.-0-d6e5675c89b63c389326c8b846421ab2-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+          \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+          \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+          \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128,\
+          \ False, False, False, 128, 128), (True, True, True, True, True, True, True,\
+          \ (False,), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (False, False), (True, False), (True, False), (True, False),\
+          \ (True, False), (True, False), (False, False), (False, False), (True, False),\
+          \ (True, False), (True, False), (True, False)))\n\nDuring handling of the\
+          \ above exception, another exception occurred:\n\nTraceback (most recent\
+          \ call last):\n  File \"/home/wraken/FreePilot/test.py\", line 52, in <module>\n\
+          \    outputs = model.generate(inputs, do_sample=True, max_length=100, top_p=0.95,\
+          \ top_k=4, temperature=0.2, num_return_sequences=4, eos_token_id=tokenizer.eos_token_id,\
+          \ pad_token_id=tokenizer.pad_token_id)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1565, in generate\n    return self.sample(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2612, in sample\n    outputs = self(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+          , line 239, in forward\n    outputs = self.transformer(input_ids=input_ids,\
+          \ past_key_values=past_key_values, attention_mask=attention_mask, prefix_mask=prefix_mask,\
+          \ sequence_id=sequence_id, return_dict=return_dict, output_attentions=output_attentions,\
+          \ output_hidden_states=output_hidden_states, use_cache=use_cache)\n  File\
+          \ \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+          , line 185, in forward\n    (x, past_key_value) = block(x, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=self.is_causal)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/blocks.py\"\
+          , line 36, in forward\n    (b, _, past_key_value) = self.attn(a, past_key_value=past_key_value,\
+          \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=is_causal)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+          , line 172, in forward\n    (context, attn_weights) = self.attn_fn(query,\
+          \ key, value, self.n_heads, softmax_scale=self.softmax_scale, attn_bias=attn_bias,\
+          \ key_padding_mask=key_padding_mask, is_causal=is_causal, dropout_p=self.attn_dropout_p,\
+          \ training=self.training, needs_weights=needs_weights)\n  File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+          , line 111, in triton_flash_attn_fn\n    attn_output = flash_attn_triton.flash_attn_func(query,\
+          \ key, value, attn_bias, reset_is_causal, softmax_scale)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/autograd/function.py\"\
+          , line 506, in apply\n    return super().apply(*args, **kwargs)  # type:\
+          \ ignore[misc]\n  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+          , line 810, in forward\n    o, lse, ctx.softmax_scale = _flash_attn_forward(\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+          , line 623, in _flash_attn_forward\n    _fwd_kernel[grid](\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/jit.py\"\
+          , line 106, in launcher\n    return self.run(*args, grid=grid, **kwargs)\n\
+          \  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/autotuner.py\"\
+          , line 200, in run\n    return self.fn.run(*args, **kwargs)\n  File \"<string>\"\
+          , line 41, in _fwd_kernel\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+          , line 1256, in compile\n    asm, shared, kernel_name = _compile(fn, signature,\
+          \ device, constants, configs[0], num_warps, num_stages,\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+          , line 901, in _compile\n    name, asm, shared_mem = _triton.code_gen.compile_ttir(backend,\
+          \ module, device, num_warps, num_stages, extern_libs, cc)\nRuntimeError:\
+          \ CUDA: Error- no device\n```\n\nI'm using ubuntu on wsl2 and have a RTX3080.\n\
+          \nDoes someone know of to fix this ? \n\nThanks :) "
+        updatedAt: '2023-07-14T15:49:40.671Z'
+      numEdits: 1
+      reactions: []
+    id: 64b16e74520fa3a154a915a8
+    type: comment
+  author: Wraken
+  content: "Hey ! \n\nI have problems using triton. \nI try to test this model with\
+    \ just this few lines of code : \n```\nfrom transformers import AutoModelForCausalLM\n\
+    from transformers import AutoTokenizer, AutoConfig\nimport torch\nimport time\n\
+    \n# loac config\nconfig = AutoConfig.from_pretrained(\n    \"replit/replit-code-v1-3b\"\
+    ,\n    trust_remote_code=True,\n    low_cpu_mem_usage=True\n)\nconfig.attn_config['attn_impl']\
+    \ = 'triton'\n\n# load model\nmodel = AutoModelForCausalLM.from_pretrained('replit/replit-code-v1-3b',\n\
+    \                                            trust_remote_code=True,\n       \
+    \                                     config=config,\n                       \
+    \                     ).to(device='cuda:0', dtype=torch.float16)\n\n# load tokenizer\n\
+    tokenizer = AutoTokenizer.from_pretrained('replit/replit-code-v1-3b', trust_remote_code=True)\n\
+    \nprompt = 'func main() {'\n\nstart_time = time.time()\n\ninputs = tokenizer.encode(prompt,\
+    \ return_tensors='pt').to(device='cuda:0')\nprint(inputs, inputs.size(), inputs.size(dim=1))\n\
+    \noutputs = model.generate(inputs, do_sample=True, max_length=100, top_p=0.95,\
+    \ top_k=4, temperature=0.2, num_return_sequences=4, eos_token_id=tokenizer.eos_token_id,\
+    \ pad_token_id=tokenizer.pad_token_id)\n\nprompt_len = inputs.size(dim=1)\nprint(prompt_len)\n\
+    output_lens = [len(o)-prompt_len for o in outputs]\nprint(output_lens)\ndecoded\
+    \ = tokenizer.batch_decode([out[prompt_len:prompt_len + g] for g,out in zip(output_lens,\
+    \ outputs)])\n\nfor i,d in enumerate(decoded):\n    print(i,d)\n\n```\n\nI  face\
+    \ an error that I can't fix, I've tried a lot of version of libs but can't fix\
+    \ it.\nCurrently I'm using : `triton==2.0.0.dev20221202` and `flash-attn==v1.0.3.post0`\n\
+    \n```\nTraceback (most recent call last):\n  File \"<string>\", line 21, in _fwd_kernel\n\
+    KeyError: ('2-.-0-.-0-d6e5675c89b63c389326c8b846421ab2-2b0c5161c53c71b37ae20a9996ee4bb8-c1f92808b4e4644c1732e8338187ac87-d962222789c30252d492a16cca3bf467-12f7ac1ca211e037f62a7c0c323d9990-5c5e32ff210f3b7f56c98ca29917c25e-06f0df2d61979d629033f4a22eff5198-0dd03b0bd512a184b3512b278d9dfa59-d35ab04ae841e2714a253c523530b071',\
+    \ (torch.float16, torch.float16, torch.float16, torch.float16, torch.float16,\
+    \ torch.float32, torch.float32, 'fp32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32', 'i32',\
+    \ 'i32', 'i32', 'i32', 'i32', 'i32'), ('vector', True, 128, False, False, False,\
+    \ 128, 128), (True, True, True, True, True, True, True, (False,), (True, False),\
+    \ (True, False), (True, False), (True, False), (True, False), (True, False), (True,\
+    \ False), (True, False), (True, False), (True, False), (False, False), (True,\
+    \ False), (True, False), (True, False), (True, False), (True, False), (False,\
+    \ False), (False, False), (True, False), (True, False), (True, False), (True,\
+    \ False)))\n\nDuring handling of the above exception, another exception occurred:\n\
+    \nTraceback (most recent call last):\n  File \"/home/wraken/FreePilot/test.py\"\
+    , line 52, in <module>\n    outputs = model.generate(inputs, do_sample=True, max_length=100,\
+    \ top_p=0.95, top_k=4, temperature=0.2, num_return_sequences=4, eos_token_id=tokenizer.eos_token_id,\
+    \ pad_token_id=tokenizer.pad_token_id)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 1565, in generate\n    return self.sample(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 2612, in sample\n    outputs = self(\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+    , line 239, in forward\n    outputs = self.transformer(input_ids=input_ids, past_key_values=past_key_values,\
+    \ attention_mask=attention_mask, prefix_mask=prefix_mask, sequence_id=sequence_id,\
+    \ return_dict=return_dict, output_attentions=output_attentions, output_hidden_states=output_hidden_states,\
+    \ use_cache=use_cache)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/modeling_mpt.py\"\
+    , line 185, in forward\n    (x, past_key_value) = block(x, past_key_value=past_key_value,\
+    \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=self.is_causal)\n\
+    \  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/blocks.py\"\
+    , line 36, in forward\n    (b, _, past_key_value) = self.attn(a, past_key_value=past_key_value,\
+    \ attn_bias=attn_bias, attention_mask=attention_mask, is_causal=is_causal)\n \
+    \ File \"/home/wraken/.local/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+    , line 172, in forward\n    (context, attn_weights) = self.attn_fn(query, key,\
+    \ value, self.n_heads, softmax_scale=self.softmax_scale, attn_bias=attn_bias,\
+    \ key_padding_mask=key_padding_mask, is_causal=is_causal, dropout_p=self.attn_dropout_p,\
+    \ training=self.training, needs_weights=needs_weights)\n  File \"/home/wraken/.cache/huggingface/modules/transformers_modules/replit/replit-code-v1-3b/cecad1ade06e7f4db074893929778ae4bc9ed279/attention.py\"\
+    , line 111, in triton_flash_attn_fn\n    attn_output = flash_attn_triton.flash_attn_func(query,\
+    \ key, value, attn_bias, reset_is_causal, softmax_scale)\n  File \"/home/wraken/.local/lib/python3.10/site-packages/torch/autograd/function.py\"\
+    , line 506, in apply\n    return super().apply(*args, **kwargs)  # type: ignore[misc]\n\
+    \  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+    , line 810, in forward\n    o, lse, ctx.softmax_scale = _flash_attn_forward(\n\
+    \  File \"/home/wraken/.local/lib/python3.10/site-packages/flash_attn/flash_attn_triton.py\"\
+    , line 623, in _flash_attn_forward\n    _fwd_kernel[grid](\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/jit.py\"\
+    , line 106, in launcher\n    return self.run(*args, grid=grid, **kwargs)\n  File\
+    \ \"/home/wraken/.local/lib/python3.10/site-packages/triton/runtime/autotuner.py\"\
+    , line 200, in run\n    return self.fn.run(*args, **kwargs)\n  File \"<string>\"\
+    , line 41, in _fwd_kernel\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+    , line 1256, in compile\n    asm, shared, kernel_name = _compile(fn, signature,\
+    \ device, constants, configs[0], num_warps, num_stages,\n  File \"/home/wraken/.local/lib/python3.10/site-packages/triton/compiler.py\"\
+    , line 901, in _compile\n    name, asm, shared_mem = _triton.code_gen.compile_ttir(backend,\
+    \ module, device, num_warps, num_stages, extern_libs, cc)\nRuntimeError: CUDA:\
+    \ Error- no device\n```\n\nI'm using ubuntu on wsl2 and have a RTX3080.\n\nDoes\
+    \ someone know of to fix this ? \n\nThanks :) "
+  created_at: 2023-07-14 14:49:08+00:00
+  edited: true
+  hidden: false
+  id: 64b16e74520fa3a154a915a8
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0fb966dc984eb6dba260baef643656a9.svg
+      fullname: Florent Trust
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Wraken
+      type: user
+    createdAt: '2023-07-16T17:40:34.000Z'
+    data:
+      edited: false
+      editors:
+      - Wraken
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9807477593421936
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0fb966dc984eb6dba260baef643656a9.svg
+          fullname: Florent Trust
+          isHf: false
+          isPro: false
+          name: Wraken
+          type: user
+        html: '<p>Okay I think the problem was ubuntu on WSL2, it works fine on ubuntu
+          system. </p>
+
+          '
+        raw: 'Okay I think the problem was ubuntu on WSL2, it works fine on ubuntu
+          system. '
+        updatedAt: '2023-07-16T17:40:34.451Z'
+      numEdits: 0
+      reactions: []
+    id: 64b42b92966b28317e4d5ef3
+    type: comment
+  author: Wraken
+  content: 'Okay I think the problem was ubuntu on WSL2, it works fine on ubuntu system. '
+  created_at: 2023-07-16 16:40:34+00:00
+  edited: false
+  hidden: false
+  id: 64b42b92966b28317e4d5ef3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/0fb966dc984eb6dba260baef643656a9.svg
+      fullname: Florent Trust
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Wraken
+      type: user
+    createdAt: '2023-07-16T17:41:37.000Z'
+    data:
+      status: closed
+    id: 64b42bd135c2e9909c6cb674
+    type: status-change
+  author: Wraken
+  created_at: 2023-07-16 16:41:37+00:00
+  id: 64b42bd135c2e9909c6cb674
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 27
+repo_id: replit/replit-code-v1-3b
+repo_type: model
+status: closed
+target_branch: null
+title: Error when using attn_impl triton

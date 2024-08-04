@@ -1,0 +1,410 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: samfenske
+conflicting_files: null
+created_at: 2023-09-07 15:18:02+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+      fullname: Sam Fenske
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: samfenske
+      type: user
+    createdAt: '2023-09-07T16:18:02.000Z'
+    data:
+      edited: true
+      editors:
+      - samfenske
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6419969201087952
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+          fullname: Sam Fenske
+          isHf: false
+          isPro: false
+          name: samfenske
+          type: user
+        html: '<p>Hello,</p>
+
+          <p>I have been able to successfully tokenize many single-cell sample count
+          matrices in arrow datasets for handful of fine-tuning classification tasks.
+          The process has been fairly simple to this point, but I have encountered
+          an error that I haven''t been able to troubleshoot. I save individual count
+          matrices to loom files, with my train and test sets being separate folder
+          containing libraries I want to use to fine-tune and evaluate my Geneformer
+          classifier. However, a handful of my libraries are throwing the following
+          error (I will post the full error below this paragraph). I have pulled the
+          updated Geneformer code, tried converting my count matrix from float to
+          int, have made sure that the ''n_count'' column of both my .obs and .var
+          dataframes is stored as integers and not floats, and do not see anything
+          unique about these libraries compared to the other libraries that are tokenized
+          without error. Might you have an idea where these libraries are uniquely
+          presenting float objects where bytes are expected?</p>
+
+          <p>Thank you very much for the upkeep of the repository!</p>
+
+          <p>code --&gt;<br>tk = TranscriptomeTokenizer(obs_dict,nproc=52)<br>tk.tokenize_data(<br>    Path("../../../data/PASC/loom_files/v3_test"),<br>    "../../../data/PASC/token_output",<br>    "v3_PASC_test"<br>)</p>
+
+          <p>output log --&gt;</p>
+
+          <p>Tokenizing ../../../data/PASC/loom_files/v3_test/SC245.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SC230.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SSc_SSc15.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SC299.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SC314.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SC246.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SC215.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SSc_SSc6.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/Mould_S8.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SSc_C3.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SC431.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SSc_C11.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SC329.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/Mould_S5.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/SC296.loom<br>Tokenizing
+          ../../../data/PASC/loom_files/v3_test/SC303.loom<br>Tokenizing ../../../data/PASC/loom_files/v3_test/Mould_S3.loom</p>
+
+          <hr>
+
+          <p>ArrowTypeError                            Traceback (most recent call
+          last)<br>/tmp/ipykernel_257597/3369846383.py in <br>      3     Path("../../../data/PASC/loom_files/v3_test"),<br>      4     "../../../data/PASC/token_output",<br>----&gt;
+          5     "v3_PASC_test"<br>      6 )</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py
+          in tokenize_data(self, loom_data_directory, output_directory, output_prefix)<br>    107         """<br>    108         tokenized_cells,
+          cell_metadata = self.tokenize_files(Path(loom_data_directory))<br>--&gt;
+          109         tokenized_dataset = self.create_dataset(tokenized_cells, cell_metadata)<br>    110<br>    111         output_path
+          = (Path(output_directory) / output_prefix).with_suffix(".dataset")</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py
+          in create_dataset(self, tokenized_cells, cell_metadata)<br>    215<br>    216         #
+          create dataset<br>--&gt; 217         output_dataset = Dataset.from_dict(dataset_dict)<br>    218<br>    219         #
+          truncate dataset</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_dataset.py
+          in from_dict(cls, mapping, features, info, split)<br>    897             arrow_typed_mapping[col]
+          = data<br>    898         mapping = arrow_typed_mapping<br>--&gt; 899         pa_table
+          = InMemoryTable.from_pydict(mapping=mapping)<br>    900         if info
+          is None:<br>    901             info = DatasetInfo()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/table.py
+          in from_pydict(cls, *args, **kwargs)<br>    797             <code>datasets.table.Table</code><br>    798         """<br>--&gt;
+          799         return cls(pa.Table.from_pydict(*args, **kwargs))<br>    800<br>    801     @classmethod</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi
+          in pyarrow.lib.Table.from_pydict()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi
+          in pyarrow.lib._from_pydict()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi
+          in pyarrow.lib.asarray()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi
+          in pyarrow.lib.array()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi
+          in pyarrow.lib._handle_arrow_array_protocol()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_writer.py
+          in <strong>arrow_array</strong>(self, type)<br>    187             else:<br>    188                 trying_cast_to_python_objects
+          = True<br>--&gt; 189                 out = pa.array(cast_to_python_objects(data,
+          only_1d_for_numpy=True))<br>    190             # use smaller integer precisions
+          if possible<br>    191             if self.trying_int_optimization:</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi
+          in pyarrow.lib.array()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi
+          in pyarrow.lib._sequence_to_array()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi
+          in pyarrow.lib.pyarrow_internal_check_status()</p>
+
+          <p>/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi
+          in pyarrow.lib.check_status()</p>
+
+          <p>ArrowTypeError: Expected bytes, got a ''float'' object</p>
+
+          '
+        raw: "Hello,\n\nI have been able to successfully tokenize many single-cell\
+          \ sample count matrices in arrow datasets for handful of fine-tuning classification\
+          \ tasks. The process has been fairly simple to this point, but I have encountered\
+          \ an error that I haven't been able to troubleshoot. I save individual count\
+          \ matrices to loom files, with my train and test sets being separate folder\
+          \ containing libraries I want to use to fine-tune and evaluate my Geneformer\
+          \ classifier. However, a handful of my libraries are throwing the following\
+          \ error (I will post the full error below this paragraph). I have pulled\
+          \ the updated Geneformer code, tried converting my count matrix from float\
+          \ to int, have made sure that the 'n_count' column of both my .obs and .var\
+          \ dataframes is stored as integers and not floats, and do not see anything\
+          \ unique about these libraries compared to the other libraries that are\
+          \ tokenized without error. Might you have an idea where these libraries\
+          \ are uniquely presenting float objects where bytes are expected?\n\nThank\
+          \ you very much for the upkeep of the repository!\n\n\ncode -->\ntk = TranscriptomeTokenizer(obs_dict,nproc=52)\n\
+          tk.tokenize_data(\n    Path(\"../../../data/PASC/loom_files/v3_test\"),\
+          \ \n    \"../../../data/PASC/token_output\", \n    \"v3_PASC_test\"\n)\n\
+          \n\noutput log -->\n\nTokenizing ../../../data/PASC/loom_files/v3_test/SC245.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/SC230.loom\nTokenizing\
+          \ ../../../data/PASC/loom_files/v3_test/SSc_SSc15.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC299.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/SC314.loom\nTokenizing\
+          \ ../../../data/PASC/loom_files/v3_test/SC246.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC215.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/SSc_SSc6.loom\nTokenizing\
+          \ ../../../data/PASC/loom_files/v3_test/Mould_S8.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SSc_C3.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/SC431.loom\nTokenizing\
+          \ ../../../data/PASC/loom_files/v3_test/SSc_C11.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC329.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/Mould_S5.loom\nTokenizing\
+          \ ../../../data/PASC/loom_files/v3_test/SC296.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC303.loom\n\
+          Tokenizing ../../../data/PASC/loom_files/v3_test/Mould_S3.loom\n---------------------------------------------------------------------------\n\
+          ArrowTypeError                            Traceback (most recent call last)\n\
+          /tmp/ipykernel_257597/3369846383.py in <module>\n      3     Path(\"../../../data/PASC/loom_files/v3_test\"\
+          ),\n      4     \"../../../data/PASC/token_output\",\n----> 5     \"v3_PASC_test\"\
+          \n      6 )\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py\
+          \ in tokenize_data(self, loom_data_directory, output_directory, output_prefix)\n\
+          \    107         \"\"\"\n    108         tokenized_cells, cell_metadata\
+          \ = self.tokenize_files(Path(loom_data_directory))\n--> 109         tokenized_dataset\
+          \ = self.create_dataset(tokenized_cells, cell_metadata)\n    110 \n    111\
+          \         output_path = (Path(output_directory) / output_prefix).with_suffix(\"\
+          .dataset\")\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py\
+          \ in create_dataset(self, tokenized_cells, cell_metadata)\n    215 \n  \
+          \  216         # create dataset\n--> 217         output_dataset = Dataset.from_dict(dataset_dict)\n\
+          \    218 \n    219         # truncate dataset\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_dataset.py\
+          \ in from_dict(cls, mapping, features, info, split)\n    897           \
+          \  arrow_typed_mapping[col] = data\n    898         mapping = arrow_typed_mapping\n\
+          --> 899         pa_table = InMemoryTable.from_pydict(mapping=mapping)\n\
+          \    900         if info is None:\n    901             info = DatasetInfo()\n\
+          \n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/table.py\
+          \ in from_pydict(cls, *args, **kwargs)\n    797             `datasets.table.Table`\n\
+          \    798         \"\"\"\n--> 799         return cls(pa.Table.from_pydict(*args,\
+          \ **kwargs))\n    800 \n    801     @classmethod\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi\
+          \ in pyarrow.lib.Table.from_pydict()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi\
+          \ in pyarrow.lib._from_pydict()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+          \ in pyarrow.lib.asarray()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+          \ in pyarrow.lib.array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+          \ in pyarrow.lib._handle_arrow_array_protocol()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_writer.py\
+          \ in __arrow_array__(self, type)\n    187             else:\n    188   \
+          \              trying_cast_to_python_objects = True\n--> 189           \
+          \      out = pa.array(cast_to_python_objects(data, only_1d_for_numpy=True))\n\
+          \    190             # use smaller integer precisions if possible\n    191\
+          \             if self.trying_int_optimization:\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+          \ in pyarrow.lib.array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+          \ in pyarrow.lib._sequence_to_array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi\
+          \ in pyarrow.lib.pyarrow_internal_check_status()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi\
+          \ in pyarrow.lib.check_status()\n\nArrowTypeError: Expected bytes, got a\
+          \ 'float' object"
+        updatedAt: '2023-09-07T16:18:46.210Z'
+      numEdits: 1
+      reactions: []
+    id: 64f9f7ba07b7ab18c0eb17e1
+    type: comment
+  author: samfenske
+  content: "Hello,\n\nI have been able to successfully tokenize many single-cell sample\
+    \ count matrices in arrow datasets for handful of fine-tuning classification tasks.\
+    \ The process has been fairly simple to this point, but I have encountered an\
+    \ error that I haven't been able to troubleshoot. I save individual count matrices\
+    \ to loom files, with my train and test sets being separate folder containing\
+    \ libraries I want to use to fine-tune and evaluate my Geneformer classifier.\
+    \ However, a handful of my libraries are throwing the following error (I will\
+    \ post the full error below this paragraph). I have pulled the updated Geneformer\
+    \ code, tried converting my count matrix from float to int, have made sure that\
+    \ the 'n_count' column of both my .obs and .var dataframes is stored as integers\
+    \ and not floats, and do not see anything unique about these libraries compared\
+    \ to the other libraries that are tokenized without error. Might you have an idea\
+    \ where these libraries are uniquely presenting float objects where bytes are\
+    \ expected?\n\nThank you very much for the upkeep of the repository!\n\n\ncode\
+    \ -->\ntk = TranscriptomeTokenizer(obs_dict,nproc=52)\ntk.tokenize_data(\n   \
+    \ Path(\"../../../data/PASC/loom_files/v3_test\"), \n    \"../../../data/PASC/token_output\"\
+    , \n    \"v3_PASC_test\"\n)\n\n\noutput log -->\n\nTokenizing ../../../data/PASC/loom_files/v3_test/SC245.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SC230.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SSc_SSc15.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SC299.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC314.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SC246.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC215.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SSc_SSc6.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/Mould_S8.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SSc_C3.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC431.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SSc_C11.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC329.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/Mould_S5.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/SC296.loom\n\
+    Tokenizing ../../../data/PASC/loom_files/v3_test/SC303.loom\nTokenizing ../../../data/PASC/loom_files/v3_test/Mould_S3.loom\n\
+    ---------------------------------------------------------------------------\n\
+    ArrowTypeError                            Traceback (most recent call last)\n\
+    /tmp/ipykernel_257597/3369846383.py in <module>\n      3     Path(\"../../../data/PASC/loom_files/v3_test\"\
+    ),\n      4     \"../../../data/PASC/token_output\",\n----> 5     \"v3_PASC_test\"\
+    \n      6 )\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py\
+    \ in tokenize_data(self, loom_data_directory, output_directory, output_prefix)\n\
+    \    107         \"\"\"\n    108         tokenized_cells, cell_metadata = self.tokenize_files(Path(loom_data_directory))\n\
+    --> 109         tokenized_dataset = self.create_dataset(tokenized_cells, cell_metadata)\n\
+    \    110 \n    111         output_path = (Path(output_directory) / output_prefix).with_suffix(\"\
+    .dataset\")\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/geneformer/tokenizer.py\
+    \ in create_dataset(self, tokenized_cells, cell_metadata)\n    215 \n    216 \
+    \        # create dataset\n--> 217         output_dataset = Dataset.from_dict(dataset_dict)\n\
+    \    218 \n    219         # truncate dataset\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_dataset.py\
+    \ in from_dict(cls, mapping, features, info, split)\n    897             arrow_typed_mapping[col]\
+    \ = data\n    898         mapping = arrow_typed_mapping\n--> 899         pa_table\
+    \ = InMemoryTable.from_pydict(mapping=mapping)\n    900         if info is None:\n\
+    \    901             info = DatasetInfo()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/table.py\
+    \ in from_pydict(cls, *args, **kwargs)\n    797             `datasets.table.Table`\n\
+    \    798         \"\"\"\n--> 799         return cls(pa.Table.from_pydict(*args,\
+    \ **kwargs))\n    800 \n    801     @classmethod\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi\
+    \ in pyarrow.lib.Table.from_pydict()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/table.pxi\
+    \ in pyarrow.lib._from_pydict()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+    \ in pyarrow.lib.asarray()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+    \ in pyarrow.lib.array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+    \ in pyarrow.lib._handle_arrow_array_protocol()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/datasets/arrow_writer.py\
+    \ in __arrow_array__(self, type)\n    187             else:\n    188         \
+    \        trying_cast_to_python_objects = True\n--> 189                 out = pa.array(cast_to_python_objects(data,\
+    \ only_1d_for_numpy=True))\n    190             # use smaller integer precisions\
+    \ if possible\n    191             if self.trying_int_optimization:\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+    \ in pyarrow.lib.array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/array.pxi\
+    \ in pyarrow.lib._sequence_to_array()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi\
+    \ in pyarrow.lib.pyarrow_internal_check_status()\n\n/projects/b1038/Pulmonary/sfenske/projects/geneformer_experiments/code/venv_geneformer/lib/python3.7/site-packages/pyarrow/error.pxi\
+    \ in pyarrow.lib.check_status()\n\nArrowTypeError: Expected bytes, got a 'float'\
+    \ object"
+  created_at: 2023-09-07 15:18:02+00:00
+  edited: true
+  hidden: false
+  id: 64f9f7ba07b7ab18c0eb17e1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-09-13T19:43:41.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9481399655342102
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer! I have not encountered
+          this error but I would have suggested checking to ensure the count matrix
+          is uniformly formatted as well - sounds like you already did this. Another
+          place you may consider checking is if any of the custom column attributes
+          have mismatched types (for example checking if some classes are floats whereas
+          others are ints or other types). </p>
+
+          '
+        raw: 'Thank you for your interest in Geneformer! I have not encountered this
+          error but I would have suggested checking to ensure the count matrix is
+          uniformly formatted as well - sounds like you already did this. Another
+          place you may consider checking is if any of the custom column attributes
+          have mismatched types (for example checking if some classes are floats whereas
+          others are ints or other types). '
+        updatedAt: '2023-09-13T19:43:41.560Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 650210ede751d03da923a232
+    id: 650210ede751d03da923a22f
+    type: comment
+  author: ctheodoris
+  content: 'Thank you for your interest in Geneformer! I have not encountered this
+    error but I would have suggested checking to ensure the count matrix is uniformly
+    formatted as well - sounds like you already did this. Another place you may consider
+    checking is if any of the custom column attributes have mismatched types (for
+    example checking if some classes are floats whereas others are ints or other types). '
+  created_at: 2023-09-13 18:43:41+00:00
+  edited: false
+  hidden: false
+  id: 650210ede751d03da923a22f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-09-13T19:43:41.000Z'
+    data:
+      status: closed
+    id: 650210ede751d03da923a232
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-09-13 18:43:41+00:00
+  id: 650210ede751d03da923a232
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+      fullname: Sam Fenske
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: samfenske
+      type: user
+    createdAt: '2023-09-13T20:23:36.000Z'
+    data:
+      edited: false
+      editors:
+      - samfenske
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9430824518203735
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/64b562c0db5ccb303c565876/gU6ncAtkgdvMTnBiubys4.jpeg?w=200&h=200&f=face
+          fullname: Sam Fenske
+          isHf: false
+          isPro: false
+          name: samfenske
+          type: user
+        html: '<p>Thank you for the feedback. I have looked into this, but will double-check
+          to make sure there are no columns from these samples that may be of the
+          wrong datat ype. Otherwise, I will just exclude these from my train/test
+          set and proceed, thanks!</p>
+
+          '
+        raw: Thank you for the feedback. I have looked into this, but will double-check
+          to make sure there are no columns from these samples that may be of the
+          wrong datat ype. Otherwise, I will just exclude these from my train/test
+          set and proceed, thanks!
+        updatedAt: '2023-09-13T20:23:36.170Z'
+      numEdits: 0
+      reactions: []
+    id: 65021a4851990ba05a64d943
+    type: comment
+  author: samfenske
+  content: Thank you for the feedback. I have looked into this, but will double-check
+    to make sure there are no columns from these samples that may be of the wrong
+    datat ype. Otherwise, I will just exclude these from my train/test set and proceed,
+    thanks!
+  created_at: 2023-09-13 19:23:36+00:00
+  edited: false
+  hidden: false
+  id: 65021a4851990ba05a64d943
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 242
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: 'Error tracing back to tokenizer.py: "Expected bytes, got a ''float'' object"'

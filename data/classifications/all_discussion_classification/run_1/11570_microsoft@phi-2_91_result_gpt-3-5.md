@@ -1,0 +1,5 @@
+## https://huggingface.co/microsoft/phi-2/discussions/91
+
+contains_question: yes
+
+question_part: Hey I want to know how to handle Context/ History in this model like we do in GPT API like this messages = [ { "role": "system", "content": "You are a friendly chatbot who always responds in the style of a pirate", }, {"role": "user", "content": "How many helicopters can a human eat in one sitting?"}, ] But How to do this in Phi-2 Model I am using it like this only sample = {"topic":"", "context":"","rephrased_query":""} sample_prompt = f"Question: What is financial planning': Task: Your task is to return a JSON that will analyze the topic, context and rephrsed query of the question and return in JSON format like this {sample}" #Wrap the prompt using the right chat template # [INST] Question:\n {prompt} [/INST] instruction = f"[INST] Question:\n {sample_prompt} [/INST] \n\nResponse:\n"  %%time pipe = pipeline(task="text-generation", model=model, tokenizer=tokenizer, max_length=200) result = pipe(instruction) #Trim the response, remove instruction manually

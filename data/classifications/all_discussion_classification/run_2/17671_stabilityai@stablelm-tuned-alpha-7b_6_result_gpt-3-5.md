@@ -1,0 +1,4 @@
+## https://huggingface.co/stabilityai/stablelm-tuned-alpha-7b/discussions/6
+
+contains_question: yes
+question_part: Yeah, I started this Report with a joke with the intent to lighten up the mood, as nobody at HuggingFace appears to be resolving serious Legal Issues open for months, as there are outstanding claims regarding privacy and infringement, plus ongoing investigations on illegal content such as CSAM.  Yet licensing is a question of human rights as Copyright is directly tied to economic and moral rights that every human being is considered to have.  Stella Rose Biderman recently pointed out the importance of clear & correct licensing in a more pragmatic way [1], and with HuggingFace's Ethics team also claiming to be working on data rights, it's evident that many feel licensing is an important topic.

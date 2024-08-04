@@ -1,0 +1,4 @@
+## https://huggingface.co/Facico/Chinese-Vicuna-lora-7b-1.5epoch-belle-and-guanaco/discussions/1
+
+contains_question: yes
+question_part: "Thank you for your attention, and please do not hesitate to contact us if you have any further questions or concerns."

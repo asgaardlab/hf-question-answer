@@ -1,0 +1,539 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: dataviral
+conflicting_files:
+- modeling_mpt.py
+created_at: 2023-05-18 16:58:21+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T17:58:21.000Z'
+    data:
+      edited: false
+      editors:
+      - dataviral
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+          fullname: Aviral Joshi
+          isHf: false
+          isPro: false
+          name: dataviral
+          type: user
+        html: '<p>Fix multi-gpu inference using accelerate</p>
+
+          '
+        raw: Fix multi-gpu inference using accelerate
+        updatedAt: '2023-05-18T17:58:21.207Z'
+      numEdits: 0
+      reactions: []
+    id: 6466673d9c627c78f86d5500
+    type: comment
+  author: dataviral
+  content: Fix multi-gpu inference using accelerate
+  created_at: 2023-05-18 16:58:21+00:00
+  edited: false
+  hidden: false
+  id: 6466673d9c627c78f86d5500
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionCommit
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T17:58:22.000Z'
+    data:
+      oid: 9c0823ffdb31a0ddfcefee05971082c388ab1e4f
+      parents:
+      - bd1748ec173f1c43e11f1973fc6e61cb3de0f327
+      subject: Update modeling_mpt.py
+    id: 6466673e0000000000000000
+    type: commit
+  author: dataviral
+  created_at: 2023-05-18 16:58:22+00:00
+  id: 6466673e0000000000000000
+  oid: 9c0823ffdb31a0ddfcefee05971082c388ab1e4f
+  summary: Update modeling_mpt.py
+  type: commit
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T18:19:21.000Z'
+    data:
+      edited: false
+      editors:
+      - dataviral
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+          fullname: Aviral Joshi
+          isHf: false
+          isPro: false
+          name: dataviral
+          type: user
+        html: "<p>Hi All,<br>I was trying to get the mosaicml/mpt-7b-instruct model\
+          \ to work with multi-gpu inference using the accelerate library:<br>Following\
+          \ the guide here: <a href=\"https://huggingface.co/docs/accelerate/usage_guides/big_modeling\"\
+          >https://huggingface.co/docs/accelerate/usage_guides/big_modeling</a></p>\n\
+          <p>I was ending up at this error:<br><a rel=\"nofollow\" href=\"https://cdn-uploads.huggingface.co/production/uploads/63d1b3e52036e44c44fd4610/dW48EI7XVsN86yDihQljx.png\"\
+          ><img alt=\"Screen Shot 2023-05-18 at 11.01.17 AM.png\" src=\"https://cdn-uploads.huggingface.co/production/uploads/63d1b3e52036e44c44fd4610/dW48EI7XVsN86yDihQljx.png\"\
+          ></a></p>\n<p>This PR simply moves the <em>outputs.last_hidden_state</em>\
+          \ to the same device as the <em>wte</em> parameter.</p>\n<p>See code for\
+          \ reference:</p>\n<pre><code class=\"language-python\"><span class=\"hljs-keyword\"\
+          >from</span> transformers <span class=\"hljs-keyword\">import</span> AutoConfig,\
+          \ AutoModelForCausalLM, AutoTokenizer, TextGenerationPipeline\n<span class=\"\
+          hljs-keyword\">import</span> torch\n<span class=\"hljs-keyword\">from</span>\
+          \ accelerate <span class=\"hljs-keyword\">import</span> init_empty_weights,\
+          \ load_checkpoint_and_dispatch\n\nmodel_dir = <span class=\"hljs-string\"\
+          >'mosaicml/mpt-7b-instruct'</span>\n\nconfig = AutoConfig.from_pretrained(\n\
+          \  model_dir,\n  trust_remote_code=<span class=\"hljs-literal\">True</span>\n\
+          )\n\n<span class=\"hljs-keyword\">with</span> init_empty_weights():\n  \
+          \  model = AutoModelForCausalLM.from_config(config, trust_remote_code=<span\
+          \ class=\"hljs-literal\">True</span>)\n    \nmodel.tie_weights()\n\nmodel\
+          \ = load_checkpoint_and_dispatch(\n    model, model_dir, device_map=<span\
+          \ class=\"hljs-string\">\"auto\"</span>, no_split_module_classes=[<span\
+          \ class=\"hljs-string\">\"MPTBlock\"</span>]\n)\n\ntokenizer = AutoTokenizer.from_pretrained(<span\
+          \ class=\"hljs-string\">\"EleutherAI/gpt-neox-20b\"</span>)\n\npipeline\
+          \ = TextGenerationPipeline(model=model, tokenizer=tokenizer)\n\npipeline([<span\
+          \ class=\"hljs-string\">\"Answer the following question:\\nQ.What is the\
+          \ capital for Italy?\\nA.\"</span>])\n</code></pre>\n"
+        raw: "Hi All,\nI was trying to get the mosaicml/mpt-7b-instruct model to work\
+          \ with multi-gpu inference using the accelerate library:\nFollowing the\
+          \ guide here: https://huggingface.co/docs/accelerate/usage_guides/big_modeling\n\
+          \nI was ending up at this error:\n![Screen Shot 2023-05-18 at 11.01.17 AM.png](https://cdn-uploads.huggingface.co/production/uploads/63d1b3e52036e44c44fd4610/dW48EI7XVsN86yDihQljx.png)\n\
+          \nThis PR simply moves the *outputs.last_hidden_state* to the same device\
+          \ as the *wte* parameter.\n\nSee code for reference:\n\n```python\nfrom\
+          \ transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextGenerationPipeline\n\
+          import torch\nfrom accelerate import init_empty_weights, load_checkpoint_and_dispatch\n\
+          \nmodel_dir = 'mosaicml/mpt-7b-instruct'\n\nconfig = AutoConfig.from_pretrained(\n\
+          \  model_dir,\n  trust_remote_code=True\n)\n\nwith init_empty_weights():\n\
+          \    model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)\n\
+          \    \nmodel.tie_weights()\n\nmodel = load_checkpoint_and_dispatch(\n  \
+          \  model, model_dir, device_map=\"auto\", no_split_module_classes=[\"MPTBlock\"\
+          ]\n)\n\ntokenizer = AutoTokenizer.from_pretrained(\"EleutherAI/gpt-neox-20b\"\
+          )\n\npipeline = TextGenerationPipeline(model=model, tokenizer=tokenizer)\n\
+          \npipeline([\"Answer the following question:\\nQ.What is the capital for\
+          \ Italy?\\nA.\"])\n```"
+        updatedAt: '2023-05-18T18:19:21.091Z'
+      numEdits: 0
+      reactions:
+      - count: 3
+        reaction: "\u2764\uFE0F"
+        users:
+        - timesler
+        - kdua
+        - ahans1
+    id: 64666c29e0fe831b4794c1c6
+    type: comment
+  author: dataviral
+  content: "Hi All,\nI was trying to get the mosaicml/mpt-7b-instruct model to work\
+    \ with multi-gpu inference using the accelerate library:\nFollowing the guide\
+    \ here: https://huggingface.co/docs/accelerate/usage_guides/big_modeling\n\nI\
+    \ was ending up at this error:\n![Screen Shot 2023-05-18 at 11.01.17 AM.png](https://cdn-uploads.huggingface.co/production/uploads/63d1b3e52036e44c44fd4610/dW48EI7XVsN86yDihQljx.png)\n\
+    \nThis PR simply moves the *outputs.last_hidden_state* to the same device as the\
+    \ *wte* parameter.\n\nSee code for reference:\n\n```python\nfrom transformers\
+    \ import AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextGenerationPipeline\n\
+    import torch\nfrom accelerate import init_empty_weights, load_checkpoint_and_dispatch\n\
+    \nmodel_dir = 'mosaicml/mpt-7b-instruct'\n\nconfig = AutoConfig.from_pretrained(\n\
+    \  model_dir,\n  trust_remote_code=True\n)\n\nwith init_empty_weights():\n   \
+    \ model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)\n \
+    \   \nmodel.tie_weights()\n\nmodel = load_checkpoint_and_dispatch(\n    model,\
+    \ model_dir, device_map=\"auto\", no_split_module_classes=[\"MPTBlock\"]\n)\n\n\
+    tokenizer = AutoTokenizer.from_pretrained(\"EleutherAI/gpt-neox-20b\")\n\npipeline\
+    \ = TextGenerationPipeline(model=model, tokenizer=tokenizer)\n\npipeline([\"Answer\
+    \ the following question:\\nQ.What is the capital for Italy?\\nA.\"])\n```"
+  created_at: 2023-05-18 17:19:21+00:00
+  edited: false
+  hidden: false
+  id: 64666c29e0fe831b4794c1c6
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T18:19:54.000Z'
+    data:
+      status: closed
+    id: 64666c4ae0fe831b4794c427
+    type: status-change
+  author: dataviral
+  created_at: 2023-05-18 17:19:54+00:00
+  id: 64666c4ae0fe831b4794c427
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T18:20:02.000Z'
+    data:
+      status: open
+    id: 64666c529c627c78f86db093
+    type: status-change
+  author: dataviral
+  created_at: 2023-05-18 17:20:02+00:00
+  id: 64666c529c627c78f86db093
+  new_status: open
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionTitleChange
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-18T18:20:41.000Z'
+    data:
+      from: Update modeling_mpt.py
+      to: Multi-GPU inference using accelerate
+    id: 64666c79e0fe831b4794c795
+    type: title-change
+  author: dataviral
+  created_at: 2023-05-18 17:20:41+00:00
+  id: 64666c79e0fe831b4794c795
+  new_title: Multi-GPU inference using accelerate
+  old_title: Update modeling_mpt.py
+  type: title-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+      fullname: Karan Dua
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdua
+      type: user
+    createdAt: '2023-05-19T16:40:24.000Z'
+    data:
+      edited: true
+      editors:
+      - kdua
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+          fullname: Karan Dua
+          isHf: false
+          isPro: false
+          name: kdua
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;dataviral&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/dataviral\">@<span class=\"\
+          underline\">dataviral</span></a></span>\n\n\t</span></span>, thanks for\
+          \ the change. Ran it locally and is working now. I can finally work with\
+          \ longer inputs, after searching for a solution for so long. One issue that\
+          \ I have noticed though is, when I set the max_length to a larger number\
+          \ such as 1024, the generation takes painfully long. Any solution for this?</p>\n"
+        raw: '@dataviral, thanks for the change. Ran it locally and is working now.
+          I can finally work with longer inputs, after searching for a solution for
+          so long. One issue that I have noticed though is, when I set the max_length
+          to a larger number such as 1024, the generation takes painfully long. Any
+          solution for this?'
+        updatedAt: '2023-05-19T16:40:44.341Z'
+      numEdits: 1
+      reactions: []
+    id: 6467a678a48c2b6f0d63d499
+    type: comment
+  author: kdua
+  content: '@dataviral, thanks for the change. Ran it locally and is working now.
+    I can finally work with longer inputs, after searching for a solution for so long.
+    One issue that I have noticed though is, when I set the max_length to a larger
+    number such as 1024, the generation takes painfully long. Any solution for this?'
+  created_at: 2023-05-19 15:40:24+00:00
+  edited: true
+  hidden: false
+  id: 6467a678a48c2b6f0d63d499
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+      fullname: Aviral Joshi
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: dataviral
+      type: user
+    createdAt: '2023-05-19T16:54:00.000Z'
+    data:
+      edited: false
+      editors:
+      - dataviral
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/e6c231a68d79324744b489b8dc0715df.svg
+          fullname: Aviral Joshi
+          isHf: false
+          isPro: false
+          name: dataviral
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;kdua&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/kdua\">@<span class=\"\
+          underline\">kdua</span></a></span>\n\n\t</span></span>, glad that you found\
+          \ it helpful. I find this model slow for inference too. Wondering if it\
+          \ is my hardware or the model itself. I am using 4xT4s and on top of that\
+          \ you cannot batch inputs I hit an assert. Maybe I'll start a different\
+          \ discussion on it.</p>\n"
+        raw: Hi @kdua, glad that you found it helpful. I find this model slow for
+          inference too. Wondering if it is my hardware or the model itself. I am
+          using 4xT4s and on top of that you cannot batch inputs I hit an assert.
+          Maybe I'll start a different discussion on it.
+        updatedAt: '2023-05-19T16:54:00.762Z'
+      numEdits: 0
+      reactions: []
+    id: 6467a9a83a7c8dda23082303
+    type: comment
+  author: dataviral
+  content: Hi @kdua, glad that you found it helpful. I find this model slow for inference
+    too. Wondering if it is my hardware or the model itself. I am using 4xT4s and
+    on top of that you cannot batch inputs I hit an assert. Maybe I'll start a different
+    discussion on it.
+  created_at: 2023-05-19 15:54:00+00:00
+  edited: false
+  hidden: false
+  id: 6467a9a83a7c8dda23082303
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+      fullname: Karan Dua
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: kdua
+      type: user
+    createdAt: '2023-05-23T04:16:57.000Z'
+    data:
+      edited: false
+      editors:
+      - kdua
+      hidden: false
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1b1837277fb9200e22fcf604baa369b0.svg
+          fullname: Karan Dua
+          isHf: false
+          isPro: false
+          name: kdua
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;dataviral&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/dataviral\">@<span class=\"\
+          underline\">dataviral</span></a></span>\n\n\t</span></span> , don't think\
+          \ its the hardware. I am working with a 6xV100 and the inference is still\
+          \ slow for longer output size.</p>\n"
+        raw: '@dataviral , don''t think its the hardware. I am working with a 6xV100
+          and the inference is still slow for longer output size.'
+        updatedAt: '2023-05-23T04:16:57.421Z'
+      numEdits: 0
+      reactions: []
+    id: 646c3e39ed228272134a5df3
+    type: comment
+  author: kdua
+  content: '@dataviral , don''t think its the hardware. I am working with a 6xV100
+    and the inference is still slow for longer output size.'
+  created_at: 2023-05-23 03:16:57+00:00
+  edited: false
+  hidden: false
+  id: 646c3e39ed228272134a5df3
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+      fullname: Abhi Venigalla
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: abhi-mosaic
+      type: user
+    createdAt: '2023-06-03T00:24:48.000Z'
+    data:
+      edited: false
+      editors:
+      - abhi-mosaic
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9269323348999023
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+          fullname: Abhi Venigalla
+          isHf: false
+          isPro: false
+          name: abhi-mosaic
+          type: user
+        html: '<p><code>device_map</code> support and faster KV cacheing is now added
+          in this PR! <a href="https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41">https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41</a></p>
+
+          <p>Note: HF <code>device_map</code> does not speed up inference speed at
+          all, it just gives you more GPU memory to store the model weights. It''s
+          not the same as something like tensor parallelism which would speed up inference
+          as you add more GPUs.</p>
+
+          '
+        raw: '`device_map` support and faster KV cacheing is now added in this PR!
+          https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41
+
+
+          Note: HF `device_map` does not speed up inference speed at all, it just
+          gives you more GPU memory to store the model weights. It''s not the same
+          as something like tensor parallelism which would speed up inference as you
+          add more GPUs.'
+        updatedAt: '2023-06-03T00:24:48.006Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 647a885042abe2774761bc41
+    id: 647a885042abe2774761bc3e
+    type: comment
+  author: abhi-mosaic
+  content: '`device_map` support and faster KV cacheing is now added in this PR! https://huggingface.co/mosaicml/mpt-7b-instruct/discussions/41
+
+
+    Note: HF `device_map` does not speed up inference speed at all, it just gives
+    you more GPU memory to store the model weights. It''s not the same as something
+    like tensor parallelism which would speed up inference as you add more GPUs.'
+  created_at: 2023-06-02 23:24:48+00:00
+  edited: false
+  hidden: false
+  id: 647a885042abe2774761bc3e
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1676410153781-63ebfcf06ef3ce22b887cb04.jpeg?w=200&h=200&f=face
+      fullname: Abhi Venigalla
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: abhi-mosaic
+      type: user
+    createdAt: '2023-06-03T00:24:48.000Z'
+    data:
+      status: closed
+    id: 647a885042abe2774761bc41
+    type: status-change
+  author: abhi-mosaic
+  created_at: 2023-06-02 23:24:48+00:00
+  id: 647a885042abe2774761bc41
+  new_status: closed
+  type: status-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/71d6b53ba2eea94e2bd3f0459c54601d.svg
+      fullname: Sven Heyer
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Sven00
+      type: user
+    createdAt: '2023-07-05T06:29:34.000Z'
+    data:
+      edited: false
+      editors:
+      - Sven00
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9065141677856445
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/71d6b53ba2eea94e2bd3f0459c54601d.svg
+          fullname: Sven Heyer
+          isHf: false
+          isPro: false
+          name: Sven00
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;abhi-mosaic&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/abhi-mosaic\"\
+          >@<span class=\"underline\">abhi-mosaic</span></a></span>\n\n\t</span></span>\
+          \ are you planning to implement tensor parallelism in order to speed up\
+          \ inference?</p>\n"
+        raw: '@abhi-mosaic are you planning to implement tensor parallelism in order
+          to speed up inference?'
+        updatedAt: '2023-07-05T06:29:34.798Z'
+      numEdits: 0
+      reactions: []
+    id: 64a50dceac6c687e8e93548b
+    type: comment
+  author: Sven00
+  content: '@abhi-mosaic are you planning to implement tensor parallelism in order
+    to speed up inference?'
+  created_at: 2023-07-05 05:29:34+00:00
+  edited: false
+  hidden: false
+  id: 64a50dceac6c687e8e93548b
+  type: comment
+is_pull_request: true
+merge_commit_oid: null
+num: 23
+repo_id: mosaicml/mpt-7b-instruct
+repo_type: model
+status: closed
+target_branch: refs/heads/main
+title: Multi-GPU inference using accelerate

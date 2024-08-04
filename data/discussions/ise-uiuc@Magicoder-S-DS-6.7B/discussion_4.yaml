@@ -1,0 +1,263 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: Annorita
+conflicting_files: null
+created_at: 2023-12-13 07:51:49+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+      fullname: Anna Hung
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Annorita
+      type: user
+    createdAt: '2023-12-13T07:51:49.000Z'
+    data:
+      edited: true
+      editors:
+      - Annorita
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.47134217619895935
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+          fullname: Anna Hung
+          isHf: false
+          isPro: false
+          name: Annorita
+          type: user
+        html: "<p>There is no chat_template in token_config.json, which is used by\
+          \ <code>tokenizer.apply_chat_template()</code>.<br>Since this model is based\
+          \ on deepSeek, I assume that the chat_template is similar to deepSeek's\
+          \ template with a bit modification.<br>I try to write the chat_template\
+          \ for this model based on deepSeek and magicCoder README, may I ask your\
+          \ help to confirm if this chat template is correct?</p>\n<pre><code>chat_template\
+          \  = \"{%- set ns = namespace(found=false) -%}\\n{%- for message in messages\
+          \ -%}\\n    {%- if message['role'] == 'system' -%}\\n        {%- set ns.found\
+          \ = true -%}\\n    {%- endif -%}\\n{%- endfor -%}\\n{{bos_token}}{%- if\
+          \ not ns.found -%}\\n{%- endif %}\\n{%- for message in messages %}\\n  \
+          \  {%- if message['role'] == 'system' %}\\n{{ message['content'] + '\\\\\
+          n\\\\n' }}\\n    {%- else %}\\n        {%- if message['role'] == 'user'\
+          \ %}\\n{{'@@ Instruction\\\\n' + message['content'] + '\\\\n\\\\n'}}\\n\
+          \        {%- else %}\\n{{'@@ Response\\\\n' + message['content'] + '\\\\\
+          n' + eos_token + '\\\\n'}}\\n        {%- endif %}\\n    {%- endif %}\\n{%-\
+          \ endfor %}{% if add_generation_prompt %}{{ '@@ Response\\n' }}{% endif\
+          \ %}\"\n</code></pre>\n<p>Usage:</p>\n<pre><code>from transformers import\
+          \ AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(model_path)\n\
+          tokenizer.chat_template = chat_template \n\nconversation_inference =[\n\
+          \    {\"role\": \"system\", \"content\": \"You are an exceptionally intelligent\
+          \ coding assistant that consistently delivers accurate and reliable responses\
+          \ to user instructions.\"},\n   {\"role\": \"user\", \"content\": \"Please\
+          \ write a sorting algorithm in Python\"},\n]\n\n#only show the templated\
+          \ result\ninputs = tokenizer.apply_chat_template(conversation_inference,\
+          \ tokenize=False, add_generation_prompt=True)\nprint(inputs)\n\n#use it\
+          \ for inference\ninputs = tokenizer.apply_chat_template(conversation_inference,\
+          \ add_generation_prompt=True, return_tensors=\"pt\")\noutputs = model.generate(inputs,\
+          \ max_new_tokens=2048, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1)\n\
+          print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))\n\
+          </code></pre>\n<p>reference:</p>\n<ol>\n<li>deepseek: <a href=\"https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct/blob/main/tokenizer_config.json\"\
+          >https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct/blob/main/tokenizer_config.json</a></li>\n\
+          <li>MagicCoder README: <a rel=\"nofollow\" href=\"https://github.com/ise-uiuc/magicoder#-quick-start\"\
+          >https://github.com/ise-uiuc/magicoder#-quick-start</a></li>\n</ol>\n"
+        raw: "There is no chat_template in token_config.json, which is used by `tokenizer.apply_chat_template()`.\
+          \ \nSince this model is based on deepSeek, I assume that the chat_template\
+          \ is similar to deepSeek's template with a bit modification.\nI try to write\
+          \ the chat_template for this model based on deepSeek and magicCoder README,\
+          \ may I ask your help to confirm if this chat template is correct?\n\n\n\
+          ```\nchat_template  = \"{%- set ns = namespace(found=false) -%}\\n{%- for\
+          \ message in messages -%}\\n    {%- if message['role'] == 'system' -%}\\\
+          n        {%- set ns.found = true -%}\\n    {%- endif -%}\\n{%- endfor -%}\\\
+          n{{bos_token}}{%- if not ns.found -%}\\n{%- endif %}\\n{%- for message in\
+          \ messages %}\\n    {%- if message['role'] == 'system' %}\\n{{ message['content']\
+          \ + '\\\\n\\\\n' }}\\n    {%- else %}\\n        {%- if message['role'] ==\
+          \ 'user' %}\\n{{'@@ Instruction\\\\n' + message['content'] + '\\\\n\\\\\
+          n'}}\\n        {%- else %}\\n{{'@@ Response\\\\n' + message['content'] +\
+          \ '\\\\n' + eos_token + '\\\\n'}}\\n        {%- endif %}\\n    {%- endif\
+          \ %}\\n{%- endfor %}{% if add_generation_prompt %}{{ '@@ Response\\n' }}{%\
+          \ endif %}\"\n```\n\nUsage:\n\n```\nfrom transformers import AutoTokenizer\n\
+          tokenizer = AutoTokenizer.from_pretrained(model_path)\ntokenizer.chat_template\
+          \ = chat_template \n\nconversation_inference =[\n    {\"role\": \"system\"\
+          , \"content\": \"You are an exceptionally intelligent coding assistant that\
+          \ consistently delivers accurate and reliable responses to user instructions.\"\
+          },\n   {\"role\": \"user\", \"content\": \"Please write a sorting algorithm\
+          \ in Python\"},\n]\n\n#only show the templated result\ninputs = tokenizer.apply_chat_template(conversation_inference,\
+          \ tokenize=False, add_generation_prompt=True)\nprint(inputs)\n\n#use it\
+          \ for inference\ninputs = tokenizer.apply_chat_template(conversation_inference,\
+          \ add_generation_prompt=True, return_tensors=\"pt\")\noutputs = model.generate(inputs,\
+          \ max_new_tokens=2048, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1)\n\
+          print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))\n\
+          \n```\n\n\nreference:\n1. deepseek: https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct/blob/main/tokenizer_config.json\n\
+          2. MagicCoder README: https://github.com/ise-uiuc/magicoder#-quick-start"
+        updatedAt: '2023-12-14T01:59:12.067Z'
+      numEdits: 1
+      reactions: []
+    id: 657962956db22fc06cd78a27
+    type: comment
+  author: Annorita
+  content: "There is no chat_template in token_config.json, which is used by `tokenizer.apply_chat_template()`.\
+    \ \nSince this model is based on deepSeek, I assume that the chat_template is\
+    \ similar to deepSeek's template with a bit modification.\nI try to write the\
+    \ chat_template for this model based on deepSeek and magicCoder README, may I\
+    \ ask your help to confirm if this chat template is correct?\n\n\n```\nchat_template\
+    \  = \"{%- set ns = namespace(found=false) -%}\\n{%- for message in messages -%}\\\
+    n    {%- if message['role'] == 'system' -%}\\n        {%- set ns.found = true\
+    \ -%}\\n    {%- endif -%}\\n{%- endfor -%}\\n{{bos_token}}{%- if not ns.found\
+    \ -%}\\n{%- endif %}\\n{%- for message in messages %}\\n    {%- if message['role']\
+    \ == 'system' %}\\n{{ message['content'] + '\\\\n\\\\n' }}\\n    {%- else %}\\\
+    n        {%- if message['role'] == 'user' %}\\n{{'@@ Instruction\\\\n' + message['content']\
+    \ + '\\\\n\\\\n'}}\\n        {%- else %}\\n{{'@@ Response\\\\n' + message['content']\
+    \ + '\\\\n' + eos_token + '\\\\n'}}\\n        {%- endif %}\\n    {%- endif %}\\\
+    n{%- endfor %}{% if add_generation_prompt %}{{ '@@ Response\\n' }}{% endif %}\"\
+    \n```\n\nUsage:\n\n```\nfrom transformers import AutoTokenizer\ntokenizer = AutoTokenizer.from_pretrained(model_path)\n\
+    tokenizer.chat_template = chat_template \n\nconversation_inference =[\n    {\"\
+    role\": \"system\", \"content\": \"You are an exceptionally intelligent coding\
+    \ assistant that consistently delivers accurate and reliable responses to user\
+    \ instructions.\"},\n   {\"role\": \"user\", \"content\": \"Please write a sorting\
+    \ algorithm in Python\"},\n]\n\n#only show the templated result\ninputs = tokenizer.apply_chat_template(conversation_inference,\
+    \ tokenize=False, add_generation_prompt=True)\nprint(inputs)\n\n#use it for inference\n\
+    inputs = tokenizer.apply_chat_template(conversation_inference, add_generation_prompt=True,\
+    \ return_tensors=\"pt\")\noutputs = model.generate(inputs, max_new_tokens=2048,\
+    \ do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1)\nprint(tokenizer.decode(outputs[0][len(inputs[0]):],\
+    \ skip_special_tokens=True))\n\n```\n\n\nreference:\n1. deepseek: https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct/blob/main/tokenizer_config.json\n\
+    2. MagicCoder README: https://github.com/ise-uiuc/magicoder#-quick-start"
+  created_at: 2023-12-13 07:51:49+00:00
+  edited: true
+  hidden: false
+  id: 657962956db22fc06cd78a27
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/00c6064ea589e19b87d7e494028a38f9.svg
+      fullname: Yuxiang Wei
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: yuxiang630
+      type: user
+    createdAt: '2023-12-13T21:18:28.000Z'
+    data:
+      edited: false
+      editors:
+      - yuxiang630
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9599481225013733
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/00c6064ea589e19b87d7e494028a38f9.svg
+          fullname: Yuxiang Wei
+          isHf: false
+          isPro: false
+          name: yuxiang630
+          type: user
+        html: "<p>Hi <span data-props=\"{&quot;user&quot;:&quot;Annorita&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/Annorita\"\
+          >@<span class=\"underline\">Annorita</span></a></span>\n\n\t</span></span>,\
+          \ thanks for raising this issue. The <code>chat_template</code> you created\
+          \ seems to work very well! Would you like to a create pull request?</p>\n"
+        raw: Hi @Annorita, thanks for raising this issue. The `chat_template` you
+          created seems to work very well! Would you like to a create pull request?
+        updatedAt: '2023-12-13T21:18:28.378Z'
+      numEdits: 0
+      reactions: []
+    id: 657a1fa4893b13b8f421389f
+    type: comment
+  author: yuxiang630
+  content: Hi @Annorita, thanks for raising this issue. The `chat_template` you created
+    seems to work very well! Would you like to a create pull request?
+  created_at: 2023-12-13 21:18:28+00:00
+  edited: false
+  hidden: false
+  id: 657a1fa4893b13b8f421389f
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+      fullname: Anna Hung
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Annorita
+      type: user
+    createdAt: '2023-12-14T01:49:42.000Z'
+    data:
+      edited: true
+      editors:
+      - Annorita
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.995516836643219
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+          fullname: Anna Hung
+          isHf: false
+          isPro: false
+          name: Annorita
+          type: user
+        html: '<p>Sure! I''m glad to do that.</p>
+
+          '
+        raw: Sure! I'm glad to do that.
+        updatedAt: '2023-12-14T01:56:05.420Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F91D"
+        users:
+        - yuxiang630
+    id: 657a5f36d3e458405b973b6a
+    type: comment
+  author: Annorita
+  content: Sure! I'm glad to do that.
+  created_at: 2023-12-14 01:49:42+00:00
+  edited: true
+  hidden: false
+  id: 657a5f36d3e458405b973b6a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/14822a1d02d5edf0107f002a0a406658.svg
+      fullname: Anna Hung
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Annorita
+      type: user
+    createdAt: '2023-12-14T02:49:06.000Z'
+    data:
+      status: closed
+    id: 657a6d221ccc3c2a5ea761ec
+    type: status-change
+  author: Annorita
+  created_at: 2023-12-14 02:49:06+00:00
+  id: 657a6d221ccc3c2a5ea761ec
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 4
+repo_id: ise-uiuc/Magicoder-S-DS-6.7B
+repo_type: model
+status: closed
+target_branch: null
+title: Lack of chat_template in tokenizer_config.json

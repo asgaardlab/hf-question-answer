@@ -1,0 +1,296 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: NancyQingQing
+conflicting_files: null
+created_at: 2023-12-01 08:29:25+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/62d74b875daf29ed7cd2c602a1c68ae9.svg
+      fullname: Qing Li
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: NancyQingQing
+      type: user
+    createdAt: '2023-12-01T08:29:25.000Z'
+    data:
+      edited: true
+      editors:
+      - NancyQingQing
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44166141748428345
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/62d74b875daf29ed7cd2c602a1c68ae9.svg
+          fullname: Qing Li
+          isHf: false
+          isPro: false
+          name: NancyQingQing
+          type: user
+        html: "<p>I followed the guide for the section: dispatch the model into multiple\
+          \ GPUs with smaller VRAM. This is an example for you have two 24GB GPU and\
+          \ 16GB CPU memory. you can change the arguments of infer_auto_device_map\
+          \ with your own setting.</p>\n<p>But I encountered a issue:<br>RuntimeError:\
+          \ Expected all tensors to be on the same device, but found at least two\
+          \ devices, cuda:0 and cuda:1!</p>\n<p>Here is whole error:</p>\n<pre><code>Traceback\
+          \ (most recent call last):\n  File \"localpath/CogVLM/main.py\", line 45,\
+          \ in &lt;module&gt;\n    outputs = model.generate(**inputs, **gen_kwargs)\n\
+          \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1673, in generate\n    return self.greedy_search(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2521, in greedy_search\n    outputs = self(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/accelerate/hooks.py\"\
+          , line 165, in new_forward\n    output = old_forward(*args, **kwargs)\n\
+          \  File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 610, in forward\n    outputs = self.model(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 378, in forward\n    images_features = self.encode_images(images)\n\
+          \  File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 350, in encode_images\n    images_features = self.vision(images)\n\
+          \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 129, in forward\n    x = self.transformer(x)\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 94, in forward\n    hidden_states = layer_module(hidden_states)\n\
+          \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 83, in forward\n    output = mlp_input + mlp_output\nRuntimeError:\
+          \ Expected all tensors to be on the same device, but found at least two\
+          \ devices, cuda:0 and cuda:1!\n</code></pre>\n<p>Here is my code (main.py):</p>\n\
+          <pre><code>import torch\nimport requests\nfrom PIL import Image\nfrom transformers\
+          \ import AutoModelForCausalLM, LlamaTokenizer\nfrom accelerate import init_empty_weights,\
+          \ infer_auto_device_map, load_checkpoint_and_dispatch, load_checkpoint_in_model\n\
+          \ntokenizer = LlamaTokenizer.from_pretrained('localpath/vicuna-7b-v1.5')\n\
+          with init_empty_weights():\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        'localpath/cogvlm-chat-hf',\n        torch_dtype=torch.float16,\n\
+          \        low_cpu_mem_usage=True,\n        trust_remote_code=True,\n    )\n\
+          #model.tie_weights()\ndevice_map = infer_auto_device_map(model, max_memory={0:'25GiB',1:'25GiB','cpu':'100GiB'},\
+          \ no_split_module_classes='CogVLMDecoderLayer')\n\nmodel = load_checkpoint_and_dispatch(\n\
+          \    model,\n    'localpath/cogvlm-chat-hf',   # typical, '~/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/balabala'\n\
+          \    device_map=device_map,\n    offload_state_dict=True\n)\nmodel = model.eval()\n\
+          \n# check device for weights if u want to\n#for n, p in model.named_parameters():\n\
+          #    print(f\"{n}: {p.device}\")\n\n# chat example\nquery = 'Describe this\
+          \ image'\nimage = Image.open(\"localpath/CogVLM/examples/1.png\").convert('RGB')\n\
+          inputs = model.build_conversation_input_ids(tokenizer, query=query, history=[],\
+          \ images=[image])  # chat mode\ninputs = {\n    'input_ids': inputs['input_ids'].unsqueeze(0).to('cuda'),\n\
+          \    'token_type_ids': inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n\
+          \    'attention_mask': inputs['attention_mask'].unsqueeze(0).to('cuda'),\n\
+          \    'images': [[inputs['images'][0].to('cuda').to(torch.float16)]],\n}\n\
+          gen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n\
+          \    outputs = model.generate(**inputs, **gen_kwargs)\n    outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n    print(tokenizer.decode(outputs[0]))\n\
+          </code></pre>\n"
+        raw: "I followed the guide for the section: dispatch the model into multiple\
+          \ GPUs with smaller VRAM. This is an example for you have two 24GB GPU and\
+          \ 16GB CPU memory. you can change the arguments of infer_auto_device_map\
+          \ with your own setting.\n\nBut I encountered a issue:\nRuntimeError: Expected\
+          \ all tensors to be on the same device, but found at least two devices,\
+          \ cuda:0 and cuda:1!\n\nHere is whole error:\n```\nTraceback (most recent\
+          \ call last):\n  File \"localpath/CogVLM/main.py\", line 45, in <module>\n\
+          \    outputs = model.generate(**inputs, **gen_kwargs)\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+          , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File\
+          \ \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 1673, in generate\n    return self.greedy_search(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+          , line 2521, in greedy_search\n    outputs = self(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/accelerate/hooks.py\"\
+          , line 165, in new_forward\n    output = old_forward(*args, **kwargs)\n\
+          \  File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 610, in forward\n    outputs = self.model(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 378, in forward\n    images_features = self.encode_images(images)\n\
+          \  File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+          , line 350, in encode_images\n    images_features = self.vision(images)\n\
+          \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 129, in forward\n    x = self.transformer(x)\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 94, in forward\n    hidden_states = layer_module(hidden_states)\n\
+          \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+          , line 83, in forward\n    output = mlp_input + mlp_output\nRuntimeError:\
+          \ Expected all tensors to be on the same device, but found at least two\
+          \ devices, cuda:0 and cuda:1!\n```\n\nHere is my code (main.py):\n```\n\
+          import torch\nimport requests\nfrom PIL import Image\nfrom transformers\
+          \ import AutoModelForCausalLM, LlamaTokenizer\nfrom accelerate import init_empty_weights,\
+          \ infer_auto_device_map, load_checkpoint_and_dispatch, load_checkpoint_in_model\n\
+          \ntokenizer = LlamaTokenizer.from_pretrained('localpath/vicuna-7b-v1.5')\n\
+          with init_empty_weights():\n    model = AutoModelForCausalLM.from_pretrained(\n\
+          \        'localpath/cogvlm-chat-hf',\n        torch_dtype=torch.float16,\n\
+          \        low_cpu_mem_usage=True,\n        trust_remote_code=True,\n    )\n\
+          #model.tie_weights()\ndevice_map = infer_auto_device_map(model, max_memory={0:'25GiB',1:'25GiB','cpu':'100GiB'},\
+          \ no_split_module_classes='CogVLMDecoderLayer')\n\nmodel = load_checkpoint_and_dispatch(\n\
+          \    model,\n    'localpath/cogvlm-chat-hf',   # typical, '~/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/balabala'\n\
+          \    device_map=device_map,\n    offload_state_dict=True\n)\nmodel = model.eval()\n\
+          \n# check device for weights if u want to\n#for n, p in model.named_parameters():\n\
+          #    print(f\"{n}: {p.device}\")\n\n# chat example\nquery = 'Describe this\
+          \ image'\nimage = Image.open(\"localpath/CogVLM/examples/1.png\").convert('RGB')\n\
+          inputs = model.build_conversation_input_ids(tokenizer, query=query, history=[],\
+          \ images=[image])  # chat mode\ninputs = {\n    'input_ids': inputs['input_ids'].unsqueeze(0).to('cuda'),\n\
+          \    'token_type_ids': inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n\
+          \    'attention_mask': inputs['attention_mask'].unsqueeze(0).to('cuda'),\n\
+          \    'images': [[inputs['images'][0].to('cuda').to(torch.float16)]],\n}\n\
+          gen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n\
+          \    outputs = model.generate(**inputs, **gen_kwargs)\n    outputs = outputs[:,\
+          \ inputs['input_ids'].shape[1]:]\n    print(tokenizer.decode(outputs[0]))\n\
+          ```"
+        updatedAt: '2023-12-01T08:30:08.070Z'
+      numEdits: 1
+      reactions: []
+    id: 656999658369400a5826e764
+    type: comment
+  author: NancyQingQing
+  content: "I followed the guide for the section: dispatch the model into multiple\
+    \ GPUs with smaller VRAM. This is an example for you have two 24GB GPU and 16GB\
+    \ CPU memory. you can change the arguments of infer_auto_device_map with your\
+    \ own setting.\n\nBut I encountered a issue:\nRuntimeError: Expected all tensors\
+    \ to be on the same device, but found at least two devices, cuda:0 and cuda:1!\n\
+    \nHere is whole error:\n```\nTraceback (most recent call last):\n  File \"localpath/CogVLM/main.py\"\
+    , line 45, in <module>\n    outputs = model.generate(**inputs, **gen_kwargs)\n\
+    \  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/utils/_contextlib.py\"\
+    , line 115, in decorate_context\n    return func(*args, **kwargs)\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 1673, in generate\n    return self.greedy_search(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/transformers/generation/utils.py\"\
+    , line 2521, in greedy_search\n    outputs = self(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    localpath/miniconda3/envs/llama/lib/python3.10/site-packages/accelerate/hooks.py\"\
+    , line 165, in new_forward\n    output = old_forward(*args, **kwargs)\n  File\
+    \ \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+    , line 610, in forward\n    outputs = self.model(\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+    , line 378, in forward\n    images_features = self.encode_images(images)\n  File\
+    \ \"/root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/modeling_cogvlm.py\"\
+    , line 350, in encode_images\n    images_features = self.vision(images)\n  File\
+    \ \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+    , line 129, in forward\n    x = self.transformer(x)\n  File \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+    , line 94, in forward\n    hidden_states = layer_module(hidden_states)\n  File\
+    \ \"localpath/miniconda3/envs/llama/lib/python3.10/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"\
+    /root/.cache/huggingface/modules/transformers_modules/cogvlm-chat-hf/visual.py\"\
+    , line 83, in forward\n    output = mlp_input + mlp_output\nRuntimeError: Expected\
+    \ all tensors to be on the same device, but found at least two devices, cuda:0\
+    \ and cuda:1!\n```\n\nHere is my code (main.py):\n```\nimport torch\nimport requests\n\
+    from PIL import Image\nfrom transformers import AutoModelForCausalLM, LlamaTokenizer\n\
+    from accelerate import init_empty_weights, infer_auto_device_map, load_checkpoint_and_dispatch,\
+    \ load_checkpoint_in_model\n\ntokenizer = LlamaTokenizer.from_pretrained('localpath/vicuna-7b-v1.5')\n\
+    with init_empty_weights():\n    model = AutoModelForCausalLM.from_pretrained(\n\
+    \        'localpath/cogvlm-chat-hf',\n        torch_dtype=torch.float16,\n   \
+    \     low_cpu_mem_usage=True,\n        trust_remote_code=True,\n    )\n#model.tie_weights()\n\
+    device_map = infer_auto_device_map(model, max_memory={0:'25GiB',1:'25GiB','cpu':'100GiB'},\
+    \ no_split_module_classes='CogVLMDecoderLayer')\n\nmodel = load_checkpoint_and_dispatch(\n\
+    \    model,\n    'localpath/cogvlm-chat-hf',   # typical, '~/.cache/huggingface/hub/models--THUDM--cogvlm-chat-hf/snapshots/balabala'\n\
+    \    device_map=device_map,\n    offload_state_dict=True\n)\nmodel = model.eval()\n\
+    \n# check device for weights if u want to\n#for n, p in model.named_parameters():\n\
+    #    print(f\"{n}: {p.device}\")\n\n# chat example\nquery = 'Describe this image'\n\
+    image = Image.open(\"localpath/CogVLM/examples/1.png\").convert('RGB')\ninputs\
+    \ = model.build_conversation_input_ids(tokenizer, query=query, history=[], images=[image])\
+    \  # chat mode\ninputs = {\n    'input_ids': inputs['input_ids'].unsqueeze(0).to('cuda'),\n\
+    \    'token_type_ids': inputs['token_type_ids'].unsqueeze(0).to('cuda'),\n   \
+    \ 'attention_mask': inputs['attention_mask'].unsqueeze(0).to('cuda'),\n    'images':\
+    \ [[inputs['images'][0].to('cuda').to(torch.float16)]],\n}\ngen_kwargs = {\"max_length\"\
+    : 2048, \"do_sample\": False}\n\nwith torch.no_grad():\n    outputs = model.generate(**inputs,\
+    \ **gen_kwargs)\n    outputs = outputs[:, inputs['input_ids'].shape[1]:]\n   \
+    \ print(tokenizer.decode(outputs[0]))\n```"
+  created_at: 2023-12-01 08:29:25+00:00
+  edited: true
+  hidden: false
+  id: 656999658369400a5826e764
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-12-01T13:20:22.000Z'
+    data:
+      edited: false
+      editors:
+      - chenkq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.20136412978172302
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+          fullname: chenkq
+          isHf: false
+          isPro: false
+          name: chenkq
+          type: user
+        html: '<p> try modifying <code>no_split_module_classes=[''CogVLMDecoderLayer'']</code>
+          to <code>no_split_module_classes=[''CogVLMDecoderLayer'', ''TransformerLayer'']</code></p>
+
+          '
+        raw: ' try modifying `no_split_module_classes=[''CogVLMDecoderLayer'']` to
+          `no_split_module_classes=[''CogVLMDecoderLayer'', ''TransformerLayer'']`'
+        updatedAt: '2023-12-01T13:20:22.045Z'
+      numEdits: 0
+      reactions: []
+    id: 6569dd962deb3abcecdc490c
+    type: comment
+  author: chenkq
+  content: ' try modifying `no_split_module_classes=[''CogVLMDecoderLayer'']` to `no_split_module_classes=[''CogVLMDecoderLayer'',
+    ''TransformerLayer'']`'
+  created_at: 2023-12-01 13:20:22+00:00
+  edited: false
+  hidden: false
+  id: 6569dd962deb3abcecdc490c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-12-04T02:11:37.000Z'
+    data:
+      status: closed
+    id: 656d3559c4d6794d7f9aef50
+    type: status-change
+  author: chenkq
+  created_at: 2023-12-04 02:11:37+00:00
+  id: 656d3559c4d6794d7f9aef50
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 9
+repo_id: THUDM/cogvlm-chat-hf
+repo_type: model
+status: closed
+target_branch: null
+title: How to run inference using multiple GPUs

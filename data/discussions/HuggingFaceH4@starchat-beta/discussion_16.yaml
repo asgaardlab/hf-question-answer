@@ -1,0 +1,660 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: LazerJesus
+conflicting_files: null
+created_at: 2023-07-22 18:56:29+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+      fullname: Finn Frotscher
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LazerJesus
+      type: user
+    createdAt: '2023-07-22T19:56:29.000Z'
+    data:
+      edited: false
+      editors:
+      - LazerJesus
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3920850157737732
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+          fullname: Finn Frotscher
+          isHf: false
+          isPro: false
+          name: LazerJesus
+          type: user
+        html: "<p>Ill run through my setup and then get to the problem.</p>\n<p>i\
+          \ am setting up config, tokenizer, model and peftmodel</p>\n<pre><code class=\"\
+          language-python\"><span class=\"hljs-keyword\">from</span> peft <span class=\"\
+          hljs-keyword\">import</span> LoraConfig, TaskType\n<span class=\"hljs-keyword\"\
+          >import</span> torch\n\nCHATPATH = <span class=\"hljs-string\">\"/notebooks/starchat-beta\"\
+          </span>\nBASEPATH = <span class=\"hljs-string\">\"/notebooks/starcoderplus\"\
+          </span>\n\nDEVICE = <span class=\"hljs-string\">\"cuda\"</span> <span class=\"\
+          hljs-keyword\">if</span> torch.cuda.is_available() <span class=\"hljs-keyword\"\
+          >else</span> <span class=\"hljs-string\">\"cpu\"</span>\n<span class=\"\
+          hljs-built_in\">print</span>(DEVICE)\n\npeftconfig = LoraConfig(\n    CHATPATH,\n\
+          \    base_model_name_or_path = BASEPATH,\n    task_type=TaskType.CAUSAL_LM,\
+          \  \n    target_modules = [<span class=\"hljs-string\">\"c_proj\"</span>,\
+          \ <span class=\"hljs-string\">\"c_attn\"</span>, <span class=\"hljs-string\"\
+          >\"q_attn\"</span>],\n    bias=<span class=\"hljs-string\">\"none\"</span>,\n\
+          \    inference_mode=<span class=\"hljs-literal\">False</span>, \n    r=<span\
+          \ class=\"hljs-number\">8</span>, \n    lora_alpha=<span class=\"hljs-number\"\
+          >32</span>, \n    lora_dropout=<span class=\"hljs-number\">0.01</span>\n\
+          )\n\n<span class=\"hljs-keyword\">from</span> transformers <span class=\"\
+          hljs-keyword\">import</span> AutoTokenizer\n\nsystem_token = <span class=\"\
+          hljs-string\">\"&lt;|system|&gt;\"</span>\nuser_token = <span class=\"hljs-string\"\
+          >\"&lt;|user|&gt;\"</span>\nassistant_token = <span class=\"hljs-string\"\
+          >\"&lt;|assistant|&gt;\"</span>\nend_token = <span class=\"hljs-string\"\
+          >\"&lt;|end|&gt;\"</span>\n\ntokenizer = AutoTokenizer.from_pretrained(BASEPATH)\n\
+          tokenizer.pad_token=tokenizer.eos_token\nadded_tokens = tokenizer.add_special_tokens({<span\
+          \ class=\"hljs-string\">\"additional_special_tokens\"</span>: [system_token,\
+          \ user_token, assistant_token, end_token]})\n\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"tokenizer.vocab_size\"</span>,\
+          \ tokenizer.vocab_size, added_tokens)\n&gt; tokenizer.vocab_size <span class=\"\
+          hljs-number\">49152</span> <span class=\"hljs-number\">0</span>\n\n<span\
+          \ class=\"hljs-keyword\">from</span> transformers <span class=\"hljs-keyword\"\
+          >import</span> AutoModelForCausalLM\n<span class=\"hljs-keyword\">import</span>\
+          \ torch\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    BASEPATH,\n\
+          \    torch_dtype=torch.bfloat16,\n    device_map=<span class=\"hljs-string\"\
+          >\"auto\"</span>,\n).to(DEVICE)\n\nfreeze_model(model)\n\n<span class=\"\
+          hljs-keyword\">from</span> peft <span class=\"hljs-keyword\">import</span>\
+          \ get_peft_model\n\npeftmodel = get_peft_model(model, peftconfig)\npeftmodel.resize_token_embeddings(<span\
+          \ class=\"hljs-built_in\">len</span>(tokenizer))\n</code></pre>\n<p>now\
+          \ we have the peftmodel and the tokenizer setup. check that even tho i add\
+          \ the special tokens, they dont get added.</p>\n<p>i continue with setting\
+          \ up the data.</p>\n<pre><code class=\"language-python\"><span class=\"\
+          hljs-keyword\">import</span> pandas <span class=\"hljs-keyword\">as</span>\
+          \ pd\n<span class=\"hljs-keyword\">from</span> datasets <span class=\"hljs-keyword\"\
+          >import</span> Dataset\n\nsystem_token = <span class=\"hljs-string\">\"\
+          &lt;|system|&gt;\"</span>\nuser_token = <span class=\"hljs-string\">\"&lt;|user|&gt;\"\
+          </span>\nassistant_token = <span class=\"hljs-string\">\"&lt;|assistant|&gt;\"\
+          </span>\nend_token = <span class=\"hljs-string\">\"&lt;|end|&gt;\"</span>\n\
+          system_msg = <span class=\"hljs-string\">\"X\"</span>\n\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">prepare_dialogue</span>(<span\
+          \ class=\"hljs-params\">row</span>):\n    <span class=\"hljs-comment\">#\
+          \ print(row)</span>\n    prompt = system_token + <span class=\"hljs-string\"\
+          >\"\\n\"</span> + system_msg + end_token + <span class=\"hljs-string\">\"\
+          \\n\"</span>\n    prompt += user_token + <span class=\"hljs-string\">\"\\\
+          n\"</span> + row[<span class=\"hljs-string\">\"prompt\"</span>] + end_token\
+          \ + <span class=\"hljs-string\">\"\\n\"</span>\n    prompt += assistant_token\
+          \ + <span class=\"hljs-string\">\"\\n\"</span> + row[<span class=\"hljs-string\"\
+          >\"completion\"</span>] + end_token + <span class=\"hljs-string\">\"\\n\"\
+          </span>\n    row[<span class=\"hljs-string\">\"dialogue\"</span>] = prompt\n\
+          \    <span class=\"hljs-keyword\">return</span> row\n\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">strip_quotes</span>(<span\
+          \ class=\"hljs-params\">val</span>): <span class=\"hljs-keyword\">return</span>\
+          \ val.strip(<span class=\"hljs-string\">'\"'</span>) <span class=\"hljs-keyword\"\
+          >if</span> <span class=\"hljs-built_in\">isinstance</span>(val, <span class=\"\
+          hljs-built_in\">str</span>) <span class=\"hljs-keyword\">else</span> val\n\
+          <span class=\"hljs-keyword\">def</span> <span class=\"hljs-title function_\"\
+          >prepare_row</span>(<span class=\"hljs-params\">row</span>):\n    <span\
+          \ class=\"hljs-keyword\">for</span> col <span class=\"hljs-keyword\">in</span>\
+          \ row.index:\n        row[col] = row[col].strip(<span class=\"hljs-string\"\
+          >\"'\"</span>).strip(<span class=\"hljs-string\">\"';\"</span>)\n    <span\
+          \ class=\"hljs-keyword\">return</span> prepare_dialogue(row)\n<span class=\"\
+          hljs-keyword\">def</span> <span class=\"hljs-title function_\">prepare_data</span>(<span\
+          \ class=\"hljs-params\">data</span>):\n    data.rename(columns={<span class=\"\
+          hljs-string\">\"'completion';\"</span>: <span class=\"hljs-string\">'completion'</span>,\
+          \ <span class=\"hljs-string\">\"'prompt'\"</span>: <span class=\"hljs-string\"\
+          >'prompt'</span>}, inplace=<span class=\"hljs-literal\">True</span>)\n \
+          \   data = data.apply(prepare_row, axis=<span class=\"hljs-number\">1</span>)\n\
+          \    <span class=\"hljs-keyword\">return</span> data\n<span class=\"hljs-keyword\"\
+          >def</span> <span class=\"hljs-title function_\">load_data</span>(<span\
+          \ class=\"hljs-params\">path</span>):\n    data = pd.read_csv(path, delimiter=<span\
+          \ class=\"hljs-string\">\";\"</span>, quotechar=<span class=\"hljs-string\"\
+          >\"'\"</span>,skipinitialspace=<span class=\"hljs-literal\">True</span>)\n\
+          \    <span class=\"hljs-keyword\">return</span> Dataset.from_pandas(prepare_data(data))\n\
+          \    \ntrainingdata = load_data(<span class=\"hljs-string\">\"./data/training.csv\"\
+          </span>)\ntestingdata = load_data(<span class=\"hljs-string\">\"./data/testing.csv\"\
+          </span>)\n\n<span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\
+          \ function_\">tokenize</span>(<span class=\"hljs-params\">batch</span>):\n\
+          \    batch_dialogues = batch[<span class=\"hljs-string\">'dialogue'</span>]\
+          \   <span class=\"hljs-comment\"># Fetch the 'dialogue' field</span>\n \
+          \   tokenization = tokenizer(batch_dialogues, padding=<span class=\"hljs-literal\"\
+          >True</span>, return_token_type_ids=<span class=\"hljs-literal\">False</span>)\n\
+          \    labels = tokenization.input_ids.copy()\n    <span class=\"hljs-comment\"\
+          ># mask_user_labels(tokenizer, labels) # not working.</span>\n    tokenization[<span\
+          \ class=\"hljs-string\">'labels'</span>] = labels\n    <span class=\"hljs-keyword\"\
+          >return</span> tokenization\n\n<span class=\"hljs-keyword\">from</span>\
+          \ datasets <span class=\"hljs-keyword\">import</span> DatasetDict\ndataset\
+          \ = DatasetDict({\n    <span class=\"hljs-string\">'train'</span>: trainingdata.<span\
+          \ class=\"hljs-built_in\">map</span>(tokenize, batched=<span class=\"hljs-literal\"\
+          >True</span>),\n    <span class=\"hljs-string\">'test'</span>: testingdata.<span\
+          \ class=\"hljs-built_in\">map</span>(tokenize, batched=<span class=\"hljs-literal\"\
+          >True</span>)\n\n})\n<span class=\"hljs-keyword\">for</span> key <span class=\"\
+          hljs-keyword\">in</span> dataset:\n    dataset[key] = dataset[key].remove_columns([<span\
+          \ class=\"hljs-string\">'dialogue'</span>, <span class=\"hljs-string\">'completion'</span>,\
+          \ <span class=\"hljs-string\">'prompt'</span>])\n</code></pre>\n<p>let me\
+          \ go through the important parts.<br>the <code>prepare_dialogue</code> function\
+          \ takes the data from my csv and formats it according to the dialogue template.<br>the\
+          \ <code>tokenize</code> function takes a batch, tokenizes them and adds\
+          \ them as labels to the dataset.</p>\n<p>here is the crux of the matter.</p>\n\
+          <pre><code class=\"language-python\"><span class=\"hljs-built_in\">print</span>(dataset[<span\
+          \ class=\"hljs-string\">'train'</span>])\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">'torch max: '</span>, torch.<span\
+          \ class=\"hljs-built_in\">max</span>(torch.tensor(dataset[<span class=\"\
+          hljs-string\">'train'</span>][<span class=\"hljs-string\">\"labels\"</span>])))\n\
+          \nfinal_layer = <span class=\"hljs-built_in\">list</span>(peftmodel.modules())[-<span\
+          \ class=\"hljs-number\">1</span>]\n\n<span class=\"hljs-keyword\">if</span>\
+          \ <span class=\"hljs-built_in\">isinstance</span>(final_layer, torch.nn.Linear):\n\
+          \    <span class=\"hljs-built_in\">print</span>(<span class=\"hljs-string\"\
+          >f\"The output dimension is <span class=\"hljs-subst\">{final_layer.out_features}</span>\"\
+          </span>)\n<span class=\"hljs-keyword\">else</span>:\n    <span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"Final layer is\
+          \ not a Linear layer.\"</span>)\n\n\n&gt; Dataset({\n    features: [<span\
+          \ class=\"hljs-string\">'input_ids'</span>, <span class=\"hljs-string\"\
+          >'attention_mask'</span>, <span class=\"hljs-string\">'labels'</span>],\n\
+          \    num_rows: <span class=\"hljs-number\">228</span>\n})\n&gt; torch <span\
+          \ class=\"hljs-built_in\">max</span>:  tensor(<span class=\"hljs-number\"\
+          >49155</span>)\n&gt; The output dimension <span class=\"hljs-keyword\">is</span>\
+          \ <span class=\"hljs-number\">49152</span>\n</code></pre>\n<p>here is the\
+          \ problem.<br>the largest label_id found is 49155, but the output dimension\
+          \ is only 49152.</p>\n<pre><code class=\"language-python\"><span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"system_token_id:\"\
+          </span>, tokenizer.convert_tokens_to_ids(system_token))\n<span class=\"\
+          hljs-built_in\">print</span>(<span class=\"hljs-string\">\"user_token_id:\"\
+          </span>, tokenizer.convert_tokens_to_ids(user_token))\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"assistant_token_id:\"</span>,\
+          \ tokenizer.convert_tokens_to_ids(assistant_token))\n<span class=\"hljs-built_in\"\
+          >print</span>(<span class=\"hljs-string\">\"end_token_id:\"</span>, tokenizer.convert_tokens_to_ids(end_token))\n\
+          \n&gt; system_token_id: <span class=\"hljs-number\">49152</span>\n&gt; user_token_id:\
+          \ <span class=\"hljs-number\">49154</span>\n&gt; assistant_token_id: <span\
+          \ class=\"hljs-number\">49153</span>\n&gt; end_token_id: <span class=\"\
+          hljs-number\">49155</span>\n</code></pre>\n<p>the added token are the difference.</p>\n\
+          <p>what am i to do here?<br>training like this throws errors because of\
+          \ dimension mismatch.<br>not adding the token makes no sense as per the\
+          \ <a href=\"https://huggingface.co/blog/starchat-alpha\">\"documentation\"\
+          </a> or the <a rel=\"nofollow\" href=\"https://github.com/bigcode-project/starcoder/blob/main/chat/dialogues.py#L45-L54\"\
+          >code</a></p>\n"
+        raw: "Ill run through my setup and then get to the problem.\r\n\r\ni am setting\
+          \ up config, tokenizer, model and peftmodel\r\n\r\n```python\r\nfrom peft\
+          \ import LoraConfig, TaskType\r\nimport torch\r\n\r\nCHATPATH = \"/notebooks/starchat-beta\"\
+          \r\nBASEPATH = \"/notebooks/starcoderplus\"\r\n\r\nDEVICE = \"cuda\" if\
+          \ torch.cuda.is_available() else \"cpu\"\r\nprint(DEVICE)\r\n\r\npeftconfig\
+          \ = LoraConfig(\r\n    CHATPATH,\r\n    base_model_name_or_path = BASEPATH,\r\
+          \n    task_type=TaskType.CAUSAL_LM,  \r\n    target_modules = [\"c_proj\"\
+          , \"c_attn\", \"q_attn\"],\r\n    bias=\"none\",\r\n    inference_mode=False,\
+          \ \r\n    r=8, \r\n    lora_alpha=32, \r\n    lora_dropout=0.01\r\n)\r\n\
+          \r\nfrom transformers import AutoTokenizer\r\n\r\nsystem_token = \"<|system|>\"\
+          \r\nuser_token = \"<|user|>\"\r\nassistant_token = \"<|assistant|>\"\r\n\
+          end_token = \"<|end|>\"\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(BASEPATH)\r\
+          \ntokenizer.pad_token=tokenizer.eos_token\r\nadded_tokens = tokenizer.add_special_tokens({\"\
+          additional_special_tokens\": [system_token, user_token, assistant_token,\
+          \ end_token]})\r\n\r\nprint(\"tokenizer.vocab_size\", tokenizer.vocab_size,\
+          \ added_tokens)\r\n> tokenizer.vocab_size 49152 0\r\n\r\nfrom transformers\
+          \ import AutoModelForCausalLM\r\nimport torch\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+          \n    BASEPATH,\r\n    torch_dtype=torch.bfloat16,\r\n    device_map=\"\
+          auto\",\r\n).to(DEVICE)\r\n\r\nfreeze_model(model)\r\n\r\nfrom peft import\
+          \ get_peft_model\r\n\r\npeftmodel = get_peft_model(model, peftconfig)\r\n\
+          peftmodel.resize_token_embeddings(len(tokenizer))\r\n```\r\n\r\nnow we have\
+          \ the peftmodel and the tokenizer setup. check that even tho i add the special\
+          \ tokens, they dont get added.\r\n\r\ni continue with setting up the data.\r\
+          \n\r\n```python\r\nimport pandas as pd\r\nfrom datasets import Dataset\r\
+          \n\r\nsystem_token = \"<|system|>\"\r\nuser_token = \"<|user|>\"\r\nassistant_token\
+          \ = \"<|assistant|>\"\r\nend_token = \"<|end|>\"\r\nsystem_msg = \"X\"\r\
+          \n\r\ndef prepare_dialogue(row):\r\n    # print(row)\r\n    prompt = system_token\
+          \ + \"\\n\" + system_msg + end_token + \"\\n\"\r\n    prompt += user_token\
+          \ + \"\\n\" + row[\"prompt\"] + end_token + \"\\n\"\r\n    prompt += assistant_token\
+          \ + \"\\n\" + row[\"completion\"] + end_token + \"\\n\"\r\n    row[\"dialogue\"\
+          ] = prompt\r\n    return row\r\n\r\ndef strip_quotes(val): return val.strip('\"\
+          ') if isinstance(val, str) else val\r\ndef prepare_row(row):\r\n    for\
+          \ col in row.index:\r\n        row[col] = row[col].strip(\"'\").strip(\"\
+          ';\")\r\n    return prepare_dialogue(row)\r\ndef prepare_data(data):\r\n\
+          \    data.rename(columns={\"'completion';\": 'completion', \"'prompt'\"\
+          : 'prompt'}, inplace=True)\r\n    data = data.apply(prepare_row, axis=1)\r\
+          \n    return data\r\ndef load_data(path):\r\n    data = pd.read_csv(path,\
+          \ delimiter=\";\", quotechar=\"'\",skipinitialspace=True)\r\n    return\
+          \ Dataset.from_pandas(prepare_data(data))\r\n    \r\ntrainingdata = load_data(\"\
+          ./data/training.csv\")\r\ntestingdata = load_data(\"./data/testing.csv\"\
+          )\r\n\r\ndef tokenize(batch):\r\n    batch_dialogues = batch['dialogue']\
+          \   # Fetch the 'dialogue' field\r\n    tokenization = tokenizer(batch_dialogues,\
+          \ padding=True, return_token_type_ids=False)\r\n    labels = tokenization.input_ids.copy()\r\
+          \n    # mask_user_labels(tokenizer, labels) # not working.\r\n    tokenization['labels']\
+          \ = labels\r\n    return tokenization\r\n\r\nfrom datasets import DatasetDict\r\
+          \ndataset = DatasetDict({\r\n    'train': trainingdata.map(tokenize, batched=True),\r\
+          \n    'test': testingdata.map(tokenize, batched=True)\r\n\r\n})\r\nfor key\
+          \ in dataset:\r\n    dataset[key] = dataset[key].remove_columns(['dialogue',\
+          \ 'completion', 'prompt'])\r\n\r\n```\r\nlet me go through the important\
+          \ parts.\r\nthe `prepare_dialogue` function takes the data from my csv and\
+          \ formats it according to the dialogue template.\r\nthe `tokenize` function\
+          \ takes a batch, tokenizes them and adds them as labels to the dataset.\r\
+          \n\r\nhere is the crux of the matter.\r\n\r\n```python\r\nprint(dataset['train'])\r\
+          \nprint('torch max: ', torch.max(torch.tensor(dataset['train'][\"labels\"\
+          ])))\r\n\r\nfinal_layer = list(peftmodel.modules())[-1]\r\n\r\nif isinstance(final_layer,\
+          \ torch.nn.Linear):\r\n    print(f\"The output dimension is {final_layer.out_features}\"\
+          )\r\nelse:\r\n    print(\"Final layer is not a Linear layer.\")\r\n\r\n\r\
+          \n> Dataset({\r\n    features: ['input_ids', 'attention_mask', 'labels'],\r\
+          \n    num_rows: 228\r\n})\r\n> torch max:  tensor(49155)\r\n> The output\
+          \ dimension is 49152\r\n```\r\nhere is the problem.\r\nthe largest label_id\
+          \ found is 49155, but the output dimension is only 49152.\r\n\r\n```python\r\
+          \nprint(\"system_token_id:\", tokenizer.convert_tokens_to_ids(system_token))\r\
+          \nprint(\"user_token_id:\", tokenizer.convert_tokens_to_ids(user_token))\r\
+          \nprint(\"assistant_token_id:\", tokenizer.convert_tokens_to_ids(assistant_token))\r\
+          \nprint(\"end_token_id:\", tokenizer.convert_tokens_to_ids(end_token))\r\
+          \n\r\n> system_token_id: 49152\r\n> user_token_id: 49154\r\n> assistant_token_id:\
+          \ 49153\r\n> end_token_id: 49155\r\n```\r\nthe added token are the difference.\r\
+          \n\r\nwhat am i to do here?\r\ntraining like this throws errors because\
+          \ of dimension mismatch. \r\nnot adding the token makes no sense as per\
+          \ the [\"documentation\"](https://huggingface.co/blog/starchat-alpha) or\
+          \ the [code](https://github.com/bigcode-project/starcoder/blob/main/chat/dialogues.py#L45-L54)\r\
+          \n\r\n"
+        updatedAt: '2023-07-22T19:56:29.662Z'
+      numEdits: 0
+      reactions: []
+    id: 64bc346daf05eb17c7c00223
+    type: comment
+  author: LazerJesus
+  content: "Ill run through my setup and then get to the problem.\r\n\r\ni am setting\
+    \ up config, tokenizer, model and peftmodel\r\n\r\n```python\r\nfrom peft import\
+    \ LoraConfig, TaskType\r\nimport torch\r\n\r\nCHATPATH = \"/notebooks/starchat-beta\"\
+    \r\nBASEPATH = \"/notebooks/starcoderplus\"\r\n\r\nDEVICE = \"cuda\" if torch.cuda.is_available()\
+    \ else \"cpu\"\r\nprint(DEVICE)\r\n\r\npeftconfig = LoraConfig(\r\n    CHATPATH,\r\
+    \n    base_model_name_or_path = BASEPATH,\r\n    task_type=TaskType.CAUSAL_LM,\
+    \  \r\n    target_modules = [\"c_proj\", \"c_attn\", \"q_attn\"],\r\n    bias=\"\
+    none\",\r\n    inference_mode=False, \r\n    r=8, \r\n    lora_alpha=32, \r\n\
+    \    lora_dropout=0.01\r\n)\r\n\r\nfrom transformers import AutoTokenizer\r\n\r\
+    \nsystem_token = \"<|system|>\"\r\nuser_token = \"<|user|>\"\r\nassistant_token\
+    \ = \"<|assistant|>\"\r\nend_token = \"<|end|>\"\r\n\r\ntokenizer = AutoTokenizer.from_pretrained(BASEPATH)\r\
+    \ntokenizer.pad_token=tokenizer.eos_token\r\nadded_tokens = tokenizer.add_special_tokens({\"\
+    additional_special_tokens\": [system_token, user_token, assistant_token, end_token]})\r\
+    \n\r\nprint(\"tokenizer.vocab_size\", tokenizer.vocab_size, added_tokens)\r\n\
+    > tokenizer.vocab_size 49152 0\r\n\r\nfrom transformers import AutoModelForCausalLM\r\
+    \nimport torch\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    BASEPATH,\r\
+    \n    torch_dtype=torch.bfloat16,\r\n    device_map=\"auto\",\r\n).to(DEVICE)\r\
+    \n\r\nfreeze_model(model)\r\n\r\nfrom peft import get_peft_model\r\n\r\npeftmodel\
+    \ = get_peft_model(model, peftconfig)\r\npeftmodel.resize_token_embeddings(len(tokenizer))\r\
+    \n```\r\n\r\nnow we have the peftmodel and the tokenizer setup. check that even\
+    \ tho i add the special tokens, they dont get added.\r\n\r\ni continue with setting\
+    \ up the data.\r\n\r\n```python\r\nimport pandas as pd\r\nfrom datasets import\
+    \ Dataset\r\n\r\nsystem_token = \"<|system|>\"\r\nuser_token = \"<|user|>\"\r\n\
+    assistant_token = \"<|assistant|>\"\r\nend_token = \"<|end|>\"\r\nsystem_msg =\
+    \ \"X\"\r\n\r\ndef prepare_dialogue(row):\r\n    # print(row)\r\n    prompt =\
+    \ system_token + \"\\n\" + system_msg + end_token + \"\\n\"\r\n    prompt += user_token\
+    \ + \"\\n\" + row[\"prompt\"] + end_token + \"\\n\"\r\n    prompt += assistant_token\
+    \ + \"\\n\" + row[\"completion\"] + end_token + \"\\n\"\r\n    row[\"dialogue\"\
+    ] = prompt\r\n    return row\r\n\r\ndef strip_quotes(val): return val.strip('\"\
+    ') if isinstance(val, str) else val\r\ndef prepare_row(row):\r\n    for col in\
+    \ row.index:\r\n        row[col] = row[col].strip(\"'\").strip(\"';\")\r\n   \
+    \ return prepare_dialogue(row)\r\ndef prepare_data(data):\r\n    data.rename(columns={\"\
+    'completion';\": 'completion', \"'prompt'\": 'prompt'}, inplace=True)\r\n    data\
+    \ = data.apply(prepare_row, axis=1)\r\n    return data\r\ndef load_data(path):\r\
+    \n    data = pd.read_csv(path, delimiter=\";\", quotechar=\"'\",skipinitialspace=True)\r\
+    \n    return Dataset.from_pandas(prepare_data(data))\r\n    \r\ntrainingdata =\
+    \ load_data(\"./data/training.csv\")\r\ntestingdata = load_data(\"./data/testing.csv\"\
+    )\r\n\r\ndef tokenize(batch):\r\n    batch_dialogues = batch['dialogue']   # Fetch\
+    \ the 'dialogue' field\r\n    tokenization = tokenizer(batch_dialogues, padding=True,\
+    \ return_token_type_ids=False)\r\n    labels = tokenization.input_ids.copy()\r\
+    \n    # mask_user_labels(tokenizer, labels) # not working.\r\n    tokenization['labels']\
+    \ = labels\r\n    return tokenization\r\n\r\nfrom datasets import DatasetDict\r\
+    \ndataset = DatasetDict({\r\n    'train': trainingdata.map(tokenize, batched=True),\r\
+    \n    'test': testingdata.map(tokenize, batched=True)\r\n\r\n})\r\nfor key in\
+    \ dataset:\r\n    dataset[key] = dataset[key].remove_columns(['dialogue', 'completion',\
+    \ 'prompt'])\r\n\r\n```\r\nlet me go through the important parts.\r\nthe `prepare_dialogue`\
+    \ function takes the data from my csv and formats it according to the dialogue\
+    \ template.\r\nthe `tokenize` function takes a batch, tokenizes them and adds\
+    \ them as labels to the dataset.\r\n\r\nhere is the crux of the matter.\r\n\r\n\
+    ```python\r\nprint(dataset['train'])\r\nprint('torch max: ', torch.max(torch.tensor(dataset['train'][\"\
+    labels\"])))\r\n\r\nfinal_layer = list(peftmodel.modules())[-1]\r\n\r\nif isinstance(final_layer,\
+    \ torch.nn.Linear):\r\n    print(f\"The output dimension is {final_layer.out_features}\"\
+    )\r\nelse:\r\n    print(\"Final layer is not a Linear layer.\")\r\n\r\n\r\n> Dataset({\r\
+    \n    features: ['input_ids', 'attention_mask', 'labels'],\r\n    num_rows: 228\r\
+    \n})\r\n> torch max:  tensor(49155)\r\n> The output dimension is 49152\r\n```\r\
+    \nhere is the problem.\r\nthe largest label_id found is 49155, but the output\
+    \ dimension is only 49152.\r\n\r\n```python\r\nprint(\"system_token_id:\", tokenizer.convert_tokens_to_ids(system_token))\r\
+    \nprint(\"user_token_id:\", tokenizer.convert_tokens_to_ids(user_token))\r\nprint(\"\
+    assistant_token_id:\", tokenizer.convert_tokens_to_ids(assistant_token))\r\nprint(\"\
+    end_token_id:\", tokenizer.convert_tokens_to_ids(end_token))\r\n\r\n> system_token_id:\
+    \ 49152\r\n> user_token_id: 49154\r\n> assistant_token_id: 49153\r\n> end_token_id:\
+    \ 49155\r\n```\r\nthe added token are the difference.\r\n\r\nwhat am i to do here?\r\
+    \ntraining like this throws errors because of dimension mismatch. \r\nnot adding\
+    \ the token makes no sense as per the [\"documentation\"](https://huggingface.co/blog/starchat-alpha)\
+    \ or the [code](https://github.com/bigcode-project/starcoder/blob/main/chat/dialogues.py#L45-L54)\r\
+    \n\r\n"
+  created_at: 2023-07-22 18:56:29+00:00
+  edited: false
+  hidden: false
+  id: 64bc346daf05eb17c7c00223
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/30c59d1d488116d6db1c43b749fa5422.svg
+      fullname: Wouter Tichelaar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Azamorn
+      type: user
+    createdAt: '2023-07-23T17:57:44.000Z'
+    data:
+      edited: true
+      editors:
+      - Azamorn
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6199466586112976
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/30c59d1d488116d6db1c43b749fa5422.svg
+          fullname: Wouter Tichelaar
+          isHf: false
+          isPro: false
+          name: Azamorn
+          type: user
+        html: '<p>When you add the special tokens to the dataset using tokenizer.add_special_tokens,
+          it does not change the vocabulary size of the tokenizer.<br>This means that
+          the tokenizer still has a vocabulary size of 49152 (since you didn''t remove
+          any existing tokens).<br>However, when you tokenize the data using tokenize
+          function, it assumes that the input data has the same vocabulary size as
+          the tokenizer.<br>In this case, the input data has additional tokens with
+          IDs 49153, 49154, and 49155.</p>
+
+          <p>To fix this issue, you need to update the prepare_dialogue function to
+          handle the special tokens correctly. Here''s an updated version of the function:</p>
+
+          <p>def prepare_dialogue(row):<br>    # print(row)<br>    prompt = system_token
+          + "\n" + system_msg + end_token + "\n"<br>    prompt += user_token + "\n"
+          + row["prompt"] + end_token + "\n"<br>    prompt += assistant_token + "\n"
+          + row["completion"] + end_token + "\n"<br>    row["dialogue"] = prompt<br>    #
+          Add the special tokens to the row<br>    row["system_token_id"] = tokenizer.convert_tokens_to_ids(system_token)<br>    row["user_token_id"]
+          = tokenizer.convert_tokens_to_ids(user_token)<br>    row["assistant_token_id"]
+          = tokenizer.convert_tokens_to_ids(assistant_token)<br>    row["end_token_id"]
+          = tokenizer.convert_tokens_to_ids(end_token)<br>    return row</p>
+
+          <p>Now, when you call tokenize on the prepared data, it should work properly.</p>
+
+          '
+        raw: "When you add the special tokens to the dataset using tokenizer.add_special_tokens,\
+          \ it does not change the vocabulary size of the tokenizer.\nThis means that\
+          \ the tokenizer still has a vocabulary size of 49152 (since you didn't remove\
+          \ any existing tokens).\nHowever, when you tokenize the data using tokenize\
+          \ function, it assumes that the input data has the same vocabulary size\
+          \ as the tokenizer.\nIn this case, the input data has additional tokens\
+          \ with IDs 49153, 49154, and 49155.\n\nTo fix this issue, you need to update\
+          \ the prepare_dialogue function to handle the special tokens correctly.\
+          \ Here's an updated version of the function:\n\ndef prepare_dialogue(row):\n\
+          \    # print(row)\n    prompt = system_token + \"\\n\" + system_msg + end_token\
+          \ + \"\\n\"\n    prompt += user_token + \"\\n\" + row[\"prompt\"] + end_token\
+          \ + \"\\n\"\n    prompt += assistant_token + \"\\n\" + row[\"completion\"\
+          ] + end_token + \"\\n\"\n    row[\"dialogue\"] = prompt\n    # Add the special\
+          \ tokens to the row\n    row[\"system_token_id\"] = tokenizer.convert_tokens_to_ids(system_token)\n\
+          \    row[\"user_token_id\"] = tokenizer.convert_tokens_to_ids(user_token)\n\
+          \    row[\"assistant_token_id\"] = tokenizer.convert_tokens_to_ids(assistant_token)\n\
+          \    row[\"end_token_id\"] = tokenizer.convert_tokens_to_ids(end_token)\n\
+          \    return row\n\nNow, when you call tokenize on the prepared data, it\
+          \ should work properly."
+        updatedAt: '2023-07-23T17:58:08.178Z'
+      numEdits: 1
+      reactions:
+      - count: 1
+        reaction: "\U0001F44D"
+        users:
+        - LazerJesus
+    id: 64bd6a18c733e8552fd4a45c
+    type: comment
+  author: Azamorn
+  content: "When you add the special tokens to the dataset using tokenizer.add_special_tokens,\
+    \ it does not change the vocabulary size of the tokenizer.\nThis means that the\
+    \ tokenizer still has a vocabulary size of 49152 (since you didn't remove any\
+    \ existing tokens).\nHowever, when you tokenize the data using tokenize function,\
+    \ it assumes that the input data has the same vocabulary size as the tokenizer.\n\
+    In this case, the input data has additional tokens with IDs 49153, 49154, and\
+    \ 49155.\n\nTo fix this issue, you need to update the prepare_dialogue function\
+    \ to handle the special tokens correctly. Here's an updated version of the function:\n\
+    \ndef prepare_dialogue(row):\n    # print(row)\n    prompt = system_token + \"\
+    \\n\" + system_msg + end_token + \"\\n\"\n    prompt += user_token + \"\\n\" +\
+    \ row[\"prompt\"] + end_token + \"\\n\"\n    prompt += assistant_token + \"\\\
+    n\" + row[\"completion\"] + end_token + \"\\n\"\n    row[\"dialogue\"] = prompt\n\
+    \    # Add the special tokens to the row\n    row[\"system_token_id\"] = tokenizer.convert_tokens_to_ids(system_token)\n\
+    \    row[\"user_token_id\"] = tokenizer.convert_tokens_to_ids(user_token)\n  \
+    \  row[\"assistant_token_id\"] = tokenizer.convert_tokens_to_ids(assistant_token)\n\
+    \    row[\"end_token_id\"] = tokenizer.convert_tokens_to_ids(end_token)\n    return\
+    \ row\n\nNow, when you call tokenize on the prepared data, it should work properly."
+  created_at: 2023-07-23 16:57:44+00:00
+  edited: true
+  hidden: false
+  id: 64bd6a18c733e8552fd4a45c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1679127945240-63ff96aecafc9d54985d50de.jpeg?w=200&h=200&f=face
+      fullname: Sonu Kumar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: skuma307
+      type: user
+    createdAt: '2023-08-23T10:21:59.000Z'
+    data:
+      edited: false
+      editors:
+      - skuma307
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.81553053855896
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1679127945240-63ff96aecafc9d54985d50de.jpeg?w=200&h=200&f=face
+          fullname: Sonu Kumar
+          isHf: false
+          isPro: false
+          name: skuma307
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;LazerJesus&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/LazerJesus\">@<span class=\"\
+          underline\">LazerJesus</span></a></span>\n\n\t</span></span> Can you pls\
+          \ share your notebook on how to fine-tune starchat beta?</p>\n"
+        raw: '@LazerJesus Can you pls share your notebook on how to fine-tune starchat
+          beta?'
+        updatedAt: '2023-08-23T10:21:59.000Z'
+      numEdits: 0
+      reactions: []
+    id: 64e5ddc76c21a851f6a73571
+    type: comment
+  author: skuma307
+  content: '@LazerJesus Can you pls share your notebook on how to fine-tune starchat
+    beta?'
+  created_at: 2023-08-23 09:21:59+00:00
+  edited: false
+  hidden: false
+  id: 64e5ddc76c21a851f6a73571
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+      fullname: Finn Frotscher
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LazerJesus
+      type: user
+    createdAt: '2023-09-01T21:27:00.000Z'
+    data:
+      edited: false
+      editors:
+      - LazerJesus
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9102169275283813
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+          fullname: Finn Frotscher
+          isHf: false
+          isPro: false
+          name: LazerJesus
+          type: user
+        html: "<p>hi <span data-props=\"{&quot;user&quot;:&quot;skuma307&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/skuma307\"\
+          >@<span class=\"underline\">skuma307</span></a></span>\n\n\t</span></span><br>I've\
+          \ moved on to finetuning codellama and its a way better experience.<br>my\
+          \ notebook is here: <a href=\"https://huggingface.co/LazerJesus/EVA/\">https://huggingface.co/LazerJesus/EVA/</a><br>you\
+          \ can adjust the notebook to fine-tune starchat by adjusting a few environment\
+          \ variables. Just don't initiate a new lora adapter, continue from the starchat-beta\
+          \ checkpoint.</p>\n"
+        raw: "hi @skuma307 \nI've moved on to finetuning codellama and its a way better\
+          \ experience. \nmy notebook is here: https://huggingface.co/LazerJesus/EVA/\n\
+          you can adjust the notebook to fine-tune starchat by adjusting a few environment\
+          \ variables. Just don't initiate a new lora adapter, continue from the starchat-beta\
+          \ checkpoint."
+        updatedAt: '2023-09-01T21:27:00.989Z'
+      numEdits: 0
+      reactions: []
+    id: 64f257248b442cbb8209c91c
+    type: comment
+  author: LazerJesus
+  content: "hi @skuma307 \nI've moved on to finetuning codellama and its a way better\
+    \ experience. \nmy notebook is here: https://huggingface.co/LazerJesus/EVA/\n\
+    you can adjust the notebook to fine-tune starchat by adjusting a few environment\
+    \ variables. Just don't initiate a new lora adapter, continue from the starchat-beta\
+    \ checkpoint."
+  created_at: 2023-09-01 20:27:00+00:00
+  edited: false
+  hidden: false
+  id: 64f257248b442cbb8209c91c
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1679127945240-63ff96aecafc9d54985d50de.jpeg?w=200&h=200&f=face
+      fullname: Sonu Kumar
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: skuma307
+      type: user
+    createdAt: '2023-09-02T12:09:54.000Z'
+    data:
+      edited: true
+      editors:
+      - skuma307
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9499622583389282
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1679127945240-63ff96aecafc9d54985d50de.jpeg?w=200&h=200&f=face
+          fullname: Sonu Kumar
+          isHf: false
+          isPro: false
+          name: skuma307
+          type: user
+        html: "<p>Thanks for your reply <span data-props=\"{&quot;user&quot;:&quot;LazerJesus&quot;}\"\
+          \ data-target=\"UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\"\
+          >\n\n<span class=\"inline-block\"><span class=\"contents\"><a href=\"/LazerJesus\"\
+          >@<span class=\"underline\">LazerJesus</span></a></span>\n\n\t</span></span>\
+          \ . Great work! I fine-tuned Llama 2 on my CSV dataset which has 650 rows\
+          \ (2 cols, 1st is prompt and the 2nd one is the code). I ran it for 5000\
+          \ steps on Colab Pro (V100) with high RAM. The output is gibberish and I\
+          \ am disappointed. Maybe I can fine-tune Code Llama which is more coding-specific.\
+          \ Can you please share some tips about for how many steps should I fine\
+          \ tune?</p>\n"
+        raw: Thanks for your reply @LazerJesus . Great work! I fine-tuned Llama 2
+          on my CSV dataset which has 650 rows (2 cols, 1st is prompt and the 2nd
+          one is the code). I ran it for 5000 steps on Colab Pro (V100) with high
+          RAM. The output is gibberish and I am disappointed. Maybe I can fine-tune
+          Code Llama which is more coding-specific. Can you please share some tips
+          about for how many steps should I fine tune?
+        updatedAt: '2023-09-02T12:15:26.076Z'
+      numEdits: 3
+      reactions: []
+    id: 64f32612e492197869ba71aa
+    type: comment
+  author: skuma307
+  content: Thanks for your reply @LazerJesus . Great work! I fine-tuned Llama 2 on
+    my CSV dataset which has 650 rows (2 cols, 1st is prompt and the 2nd one is the
+    code). I ran it for 5000 steps on Colab Pro (V100) with high RAM. The output is
+    gibberish and I am disappointed. Maybe I can fine-tune Code Llama which is more
+    coding-specific. Can you please share some tips about for how many steps should
+    I fine tune?
+  created_at: 2023-09-02 11:09:54+00:00
+  edited: true
+  hidden: false
+  id: 64f32612e492197869ba71aa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+      fullname: Finn Frotscher
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: LazerJesus
+      type: user
+    createdAt: '2023-09-02T12:11:56.000Z'
+    data:
+      edited: false
+      editors:
+      - LazerJesus
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.7405205965042114
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/6313f6772c7ffdd9f50406b7/EH00VFEJBQ3suoWPG8eKA.jpeg?w=200&h=200&f=face
+          fullname: Finn Frotscher
+          isHf: false
+          isPro: false
+          name: LazerJesus
+          type: user
+        html: '<p><a href="https://huggingface.co/LazerJesus/EVA/blob/main/codellama%20-%20Running%20and%20Finetuning.ipynb">https://huggingface.co/LazerJesus/EVA/blob/main/codellama%20-%20Running%20and%20Finetuning.ipynb</a><br>the
+          notebook is in the repo. For me it works as is. </p>
+
+          '
+        raw: 'https://huggingface.co/LazerJesus/EVA/blob/main/codellama%20-%20Running%20and%20Finetuning.ipynb
+
+          the notebook is in the repo. For me it works as is. '
+        updatedAt: '2023-09-02T12:11:56.247Z'
+      numEdits: 0
+      reactions: []
+    id: 64f3268ccb6aa929167bb8be
+    type: comment
+  author: LazerJesus
+  content: 'https://huggingface.co/LazerJesus/EVA/blob/main/codellama%20-%20Running%20and%20Finetuning.ipynb
+
+    the notebook is in the repo. For me it works as is. '
+  created_at: 2023-09-02 11:11:56+00:00
+  edited: false
+  hidden: false
+  id: 64f3268ccb6aa929167bb8be
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 16
+repo_id: HuggingFaceH4/starchat-beta
+repo_type: model
+status: open
+target_branch: null
+title: Tokenizer causes issues in Finetuning because of special tokens in tokenization
+  <|x|>

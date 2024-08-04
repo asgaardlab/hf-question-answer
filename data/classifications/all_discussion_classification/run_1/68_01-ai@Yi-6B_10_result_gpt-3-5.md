@@ -1,0 +1,3 @@
+## https://huggingface.co/01-ai/Yi-6B/discussions/10
+
+contains_question: no

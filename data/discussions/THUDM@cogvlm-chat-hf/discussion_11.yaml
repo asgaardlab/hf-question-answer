@@ -1,0 +1,597 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: miguelcarv
+conflicting_files: null
+created_at: 2023-12-04 16:57:41+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/f72b4e15c6b1743ef88c6bd9eb5d8de9.svg
+      fullname: Miguel Carvalho
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: miguelcarv
+      type: user
+    createdAt: '2023-12-04T16:57:41.000Z'
+    data:
+      edited: false
+      editors:
+      - miguelcarv
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6453677415847778
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/f72b4e15c6b1743ef88c6bd9eb5d8de9.svg
+          fullname: Miguel Carvalho
+          isHf: false
+          isPro: false
+          name: miguelcarv
+          type: user
+        html: "<p>I have been trying to increase throughput of CogVLM by using batches\
+          \ like other issue here advised and with a A100 I've been able to use a\
+          \ batch size of 16 and output on average 3.5 seconds per image. This still\
+          \ needs to be faster for my use case so I tried other methods and the only\
+          \ one that seemed faster to get to work is to load the model in 4 or 8 bit\
+          \ and increase the batch size, but I can't seem to get the inputs data types\
+          \ correct.I get the following message:</p>\n<pre><code>UserWarning: Input\
+          \ type into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+          \ (default). This will lead to slow inference or training speed.\n  warnings.warn(f'Input\
+          \ type into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+          \ (default). This will lead to slow inference or training speed.')\n</code></pre>\n\
+          <p>Any other common datatype raises an error... Here's the code: </p>\n\
+          <pre><code>import torch\nimport requests\nfrom PIL import Image\nfrom transformers\
+          \ import AutoModelForCausalLM, LlamaTokenizer\nimport time\nimport os\n\n\
+          tokenizer = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\n\nmodel\
+          \ = AutoModelForCausalLM.from_pretrained(\n    'THUDM/cogvlm-chat-hf',\n\
+          \    low_cpu_mem_usage=True,\n    trust_remote_code=True,\n    load_in_4bit=True\n\
+          ).eval()\n\nimages = os.listdir(\"/tmp/textcaps/train_images/\")\n\ninput_list\
+          \ = [model.build_conversation_input_ids(\n    tokenizer,\n    images=[Image.open(\"\
+          /tmp/textcaps/train_images/\"+i).convert('RGB'),],\n    query='Describe\
+          \ this image in detail',  # Q1\n    history=[], \n    )\n    for i in images[:16]]\n\
+          \ndef recur_move_to(item, tgt, criterion_func):\n    if criterion_func(item):\n\
+          \        device_copy = item.to(tgt)\n        return device_copy\n    elif\
+          \ isinstance(item, list):\n        return [recur_move_to(v, tgt, criterion_func)\
+          \ for v in item]\n    elif isinstance(item, tuple):\n        return tuple([recur_move_to(v,\
+          \ tgt, criterion_func) for v in item])\n    elif isinstance(item, dict):\n\
+          \        return {k: recur_move_to(v, tgt, criterion_func) for k, v in item.items()}\n\
+          \    else:\n        return item\n\ndef collate_fn(features, tokenizer) -&gt;\
+          \ dict:\n    images = [feature.pop('images') for feature in features]\n\
+          \    tokenizer.padding_side = 'left'\n    padded_features = tokenizer.pad(features)\n\
+          \    inputs = {**padded_features, 'images': images}\n    return inputs\n\
+          \ninput_batch = collate_fn(input_list, tokenizer)\ninput_batch = recur_move_to(input_batch,\
+          \ 'cuda', lambda x: isinstance(x, torch.Tensor))\ninput_batch = recur_move_to(input_batch,\
+          \ torch.float16, lambda x: isinstance(x, torch.Tensor) and torch.is_floating_point(x))\n\
+          \ngen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\n\nt1 = time.time()\n\
+          with torch.no_grad():\n    outputs = model.generate(**input_batch, **gen_kwargs)\n\
+          \    outputs = outputs[:, input_batch['input_ids'].shape[1]:]\n    print(tokenizer.batch_decode(outputs))\n\
+          \nprint(time.time() - t1)\n</code></pre>\n<p>If there are any other suggestions\
+          \ for increasing throughput I am also more than willing to accept. I have\
+          \ a node of 4 A100's and 6 GPUs with 50Gb of memory each.</p>\n"
+        raw: "I have been trying to increase throughput of CogVLM by using batches\
+          \ like other issue here advised and with a A100 I've been able to use a\
+          \ batch size of 16 and output on average 3.5 seconds per image. This still\
+          \ needs to be faster for my use case so I tried other methods and the only\
+          \ one that seemed faster to get to work is to load the model in 4 or 8 bit\
+          \ and increase the batch size, but I can't seem to get the inputs data types\
+          \ correct.I get the following message:\r\n```\r\nUserWarning: Input type\
+          \ into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+          \ (default). This will lead to slow inference or training speed.\r\n  warnings.warn(f'Input\
+          \ type into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+          \ (default). This will lead to slow inference or training speed.')\r\n```\
+          \ \r\nAny other common datatype raises an error... Here's the code: \r\n\
+          ```\r\nimport torch\r\nimport requests\r\nfrom PIL import Image\r\nfrom\
+          \ transformers import AutoModelForCausalLM, LlamaTokenizer\r\nimport time\r\
+          \nimport os\r\n\r\ntokenizer = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\r\
+          \n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\n    'THUDM/cogvlm-chat-hf',\r\
+          \n    low_cpu_mem_usage=True,\r\n    trust_remote_code=True,\r\n    load_in_4bit=True\r\
+          \n).eval()\r\n\r\nimages = os.listdir(\"/tmp/textcaps/train_images/\")\r\
+          \n\r\ninput_list = [model.build_conversation_input_ids(\r\n    tokenizer,\r\
+          \n    images=[Image.open(\"/tmp/textcaps/train_images/\"+i).convert('RGB'),],\r\
+          \n    query='Describe this image in detail',  # Q1\r\n    history=[], \r\
+          \n    )\r\n    for i in images[:16]]\r\n\r\ndef recur_move_to(item, tgt,\
+          \ criterion_func):\r\n    if criterion_func(item):\r\n        device_copy\
+          \ = item.to(tgt)\r\n        return device_copy\r\n    elif isinstance(item,\
+          \ list):\r\n        return [recur_move_to(v, tgt, criterion_func) for v\
+          \ in item]\r\n    elif isinstance(item, tuple):\r\n        return tuple([recur_move_to(v,\
+          \ tgt, criterion_func) for v in item])\r\n    elif isinstance(item, dict):\r\
+          \n        return {k: recur_move_to(v, tgt, criterion_func) for k, v in item.items()}\r\
+          \n    else:\r\n        return item\r\n\r\ndef collate_fn(features, tokenizer)\
+          \ -> dict:\r\n    images = [feature.pop('images') for feature in features]\r\
+          \n    tokenizer.padding_side = 'left'\r\n    padded_features = tokenizer.pad(features)\r\
+          \n    inputs = {**padded_features, 'images': images}\r\n    return inputs\r\
+          \n\r\ninput_batch = collate_fn(input_list, tokenizer)\r\ninput_batch = recur_move_to(input_batch,\
+          \ 'cuda', lambda x: isinstance(x, torch.Tensor))\r\ninput_batch = recur_move_to(input_batch,\
+          \ torch.float16, lambda x: isinstance(x, torch.Tensor) and torch.is_floating_point(x))\r\
+          \n\r\ngen_kwargs = {\"max_length\": 2048, \"do_sample\": False}\r\n\r\n\
+          t1 = time.time()\r\nwith torch.no_grad():\r\n    outputs = model.generate(**input_batch,\
+          \ **gen_kwargs)\r\n    outputs = outputs[:, input_batch['input_ids'].shape[1]:]\r\
+          \n    print(tokenizer.batch_decode(outputs))\r\n\r\nprint(time.time() -\
+          \ t1)\r\n``` \r\nIf there are any other suggestions for increasing throughput\
+          \ I am also more than willing to accept. I have a node of 4 A100's and 6\
+          \ GPUs with 50Gb of memory each."
+        updatedAt: '2023-12-04T16:57:41.821Z'
+      numEdits: 0
+      reactions: []
+    id: 656e05054ab7bc884de4a7f1
+    type: comment
+  author: miguelcarv
+  content: "I have been trying to increase throughput of CogVLM by using batches like\
+    \ other issue here advised and with a A100 I've been able to use a batch size\
+    \ of 16 and output on average 3.5 seconds per image. This still needs to be faster\
+    \ for my use case so I tried other methods and the only one that seemed faster\
+    \ to get to work is to load the model in 4 or 8 bit and increase the batch size,\
+    \ but I can't seem to get the inputs data types correct.I get the following message:\r\
+    \n```\r\nUserWarning: Input type into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+    \ (default). This will lead to slow inference or training speed.\r\n  warnings.warn(f'Input\
+    \ type into Linear4bit is torch.float16, but bnb_4bit_compute_type=torch.float32\
+    \ (default). This will lead to slow inference or training speed.')\r\n``` \r\n\
+    Any other common datatype raises an error... Here's the code: \r\n```\r\nimport\
+    \ torch\r\nimport requests\r\nfrom PIL import Image\r\nfrom transformers import\
+    \ AutoModelForCausalLM, LlamaTokenizer\r\nimport time\r\nimport os\r\n\r\ntokenizer\
+    \ = LlamaTokenizer.from_pretrained('lmsys/vicuna-7b-v1.5')\r\n\r\nmodel = AutoModelForCausalLM.from_pretrained(\r\
+    \n    'THUDM/cogvlm-chat-hf',\r\n    low_cpu_mem_usage=True,\r\n    trust_remote_code=True,\r\
+    \n    load_in_4bit=True\r\n).eval()\r\n\r\nimages = os.listdir(\"/tmp/textcaps/train_images/\"\
+    )\r\n\r\ninput_list = [model.build_conversation_input_ids(\r\n    tokenizer,\r\
+    \n    images=[Image.open(\"/tmp/textcaps/train_images/\"+i).convert('RGB'),],\r\
+    \n    query='Describe this image in detail',  # Q1\r\n    history=[], \r\n   \
+    \ )\r\n    for i in images[:16]]\r\n\r\ndef recur_move_to(item, tgt, criterion_func):\r\
+    \n    if criterion_func(item):\r\n        device_copy = item.to(tgt)\r\n     \
+    \   return device_copy\r\n    elif isinstance(item, list):\r\n        return [recur_move_to(v,\
+    \ tgt, criterion_func) for v in item]\r\n    elif isinstance(item, tuple):\r\n\
+    \        return tuple([recur_move_to(v, tgt, criterion_func) for v in item])\r\
+    \n    elif isinstance(item, dict):\r\n        return {k: recur_move_to(v, tgt,\
+    \ criterion_func) for k, v in item.items()}\r\n    else:\r\n        return item\r\
+    \n\r\ndef collate_fn(features, tokenizer) -> dict:\r\n    images = [feature.pop('images')\
+    \ for feature in features]\r\n    tokenizer.padding_side = 'left'\r\n    padded_features\
+    \ = tokenizer.pad(features)\r\n    inputs = {**padded_features, 'images': images}\r\
+    \n    return inputs\r\n\r\ninput_batch = collate_fn(input_list, tokenizer)\r\n\
+    input_batch = recur_move_to(input_batch, 'cuda', lambda x: isinstance(x, torch.Tensor))\r\
+    \ninput_batch = recur_move_to(input_batch, torch.float16, lambda x: isinstance(x,\
+    \ torch.Tensor) and torch.is_floating_point(x))\r\n\r\ngen_kwargs = {\"max_length\"\
+    : 2048, \"do_sample\": False}\r\n\r\nt1 = time.time()\r\nwith torch.no_grad():\r\
+    \n    outputs = model.generate(**input_batch, **gen_kwargs)\r\n    outputs = outputs[:,\
+    \ input_batch['input_ids'].shape[1]:]\r\n    print(tokenizer.batch_decode(outputs))\r\
+    \n\r\nprint(time.time() - t1)\r\n``` \r\nIf there are any other suggestions for\
+    \ increasing throughput I am also more than willing to accept. I have a node of\
+    \ 4 A100's and 6 GPUs with 50Gb of memory each."
+  created_at: 2023-12-04 16:57:41+00:00
+  edited: false
+  hidden: false
+  id: 656e05054ab7bc884de4a7f1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/8e0c4056a9e8797d20f00deb1628e270.svg
+      fullname: Neil Rodrigues
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: neil651
+      type: user
+    createdAt: '2023-12-04T21:07:07.000Z'
+    data:
+      edited: true
+      editors:
+      - neil651
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4220980703830719
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/8e0c4056a9e8797d20f00deb1628e270.svg
+          fullname: Neil Rodrigues
+          isHf: false
+          isPro: false
+          name: neil651
+          type: user
+        html: "<p>for the issue mentioned, just use the BitsAndBytesConfig to set\
+          \ the compute type</p>\n<pre><code>\nfrom transformers import AutoModelForCausalLM,\
+          \ LlamaTokenizer, BitsAndBytesConfig\n\nbnb_config = BitsAndBytesConfig(\n\
+          load_in_4bit=True,\nbnb_4bit_use_double_quant=True,\nbnb_4bit_quant_type=\"\
+          nf4\",\nbnb_4bit_compute_dtype=torch.bfloat16\n)\n\nmax_memory_mapping =\
+          \ {0: \"23GB\", 1: \"23GB\"}\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    'THUDM/cogvlm-chat-hf',\n    low_cpu_mem_usage=True,\n    trust_remote_code=True,\n\
+          \    quantization_config=bnb_config,\n    max_memory=max_memory_mapping\n\
+          ).eval()\n</code></pre>\n<p>using 4bit quantisation with batch size 16 processing,\
+          \ on an L4 was able to achieve inference time of 4 sec/image. compared to\
+          \ 15s per image without quantisation and batch</p>\n"
+        raw: "for the issue mentioned, just use the BitsAndBytesConfig to set the\
+          \ compute type\n\n```\n\nfrom transformers import AutoModelForCausalLM,\
+          \ LlamaTokenizer, BitsAndBytesConfig\n\nbnb_config = BitsAndBytesConfig(\n\
+          load_in_4bit=True,\nbnb_4bit_use_double_quant=True,\nbnb_4bit_quant_type=\"\
+          nf4\",\nbnb_4bit_compute_dtype=torch.bfloat16\n)\n\nmax_memory_mapping =\
+          \ {0: \"23GB\", 1: \"23GB\"}\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+          \    'THUDM/cogvlm-chat-hf',\n    low_cpu_mem_usage=True,\n    trust_remote_code=True,\n\
+          \    quantization_config=bnb_config,\n    max_memory=max_memory_mapping\n\
+          ).eval()\n```\n\nusing 4bit quantisation with batch size 16 processing,\
+          \ on an L4 was able to achieve inference time of 4 sec/image. compared to\
+          \ 15s per image without quantisation and batch"
+        updatedAt: '2023-12-05T19:57:24.163Z'
+      numEdits: 1
+      reactions: []
+    id: 656e3f7b4390ade20ebae362
+    type: comment
+  author: neil651
+  content: "for the issue mentioned, just use the BitsAndBytesConfig to set the compute\
+    \ type\n\n```\n\nfrom transformers import AutoModelForCausalLM, LlamaTokenizer,\
+    \ BitsAndBytesConfig\n\nbnb_config = BitsAndBytesConfig(\nload_in_4bit=True,\n\
+    bnb_4bit_use_double_quant=True,\nbnb_4bit_quant_type=\"nf4\",\nbnb_4bit_compute_dtype=torch.bfloat16\n\
+    )\n\nmax_memory_mapping = {0: \"23GB\", 1: \"23GB\"}\n\nmodel = AutoModelForCausalLM.from_pretrained(\n\
+    \    'THUDM/cogvlm-chat-hf',\n    low_cpu_mem_usage=True,\n    trust_remote_code=True,\n\
+    \    quantization_config=bnb_config,\n    max_memory=max_memory_mapping\n).eval()\n\
+    ```\n\nusing 4bit quantisation with batch size 16 processing, on an L4 was able\
+    \ to achieve inference time of 4 sec/image. compared to 15s per image without\
+    \ quantisation and batch"
+  created_at: 2023-12-04 21:07:07+00:00
+  edited: true
+  hidden: false
+  id: 656e3f7b4390ade20ebae362
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+      fullname: "\u5357\u6816"
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: Minami-su
+      type: user
+    createdAt: '2023-12-05T05:41:26.000Z'
+    data:
+      edited: false
+      editors:
+      - Minami-su
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.967572808265686
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/62d7f90b102d144db4b4245b/qR4GHvVyWW9KR83ItUMtr.jpeg?w=200&h=200&f=face
+          fullname: "\u5357\u6816"
+          isHf: false
+          isPro: false
+          name: Minami-su
+          type: user
+        html: '<p>I attempted to quantize CogVLM using AutoGPTQ. Quantization was
+          successful, but inference failed.</p>
+
+          '
+        raw: I attempted to quantize CogVLM using AutoGPTQ. Quantization was successful,
+          but inference failed.
+        updatedAt: '2023-12-05T05:41:26.193Z'
+      numEdits: 0
+      reactions: []
+    id: 656eb8062c331f3e07a3ebba
+    type: comment
+  author: Minami-su
+  content: I attempted to quantize CogVLM using AutoGPTQ. Quantization was successful,
+    but inference failed.
+  created_at: 2023-12-05 05:41:26+00:00
+  edited: false
+  hidden: false
+  id: 656eb8062c331f3e07a3ebba
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionEvent
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-12-05T09:50:39.000Z'
+    data:
+      pinned: true
+    id: 656ef26fc5ac4733e9d09e98
+    type: pinning-change
+  author: chenkq
+  created_at: 2023-12-05 09:50:39+00:00
+  id: 656ef26fc5ac4733e9d09e98
+  type: pinning-change
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+      fullname: 'Fred '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: z3ugma
+      type: user
+    createdAt: '2023-12-07T00:03:45.000Z'
+    data:
+      edited: false
+      editors:
+      - z3ugma
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.5916358232498169
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+          fullname: 'Fred '
+          isHf: false
+          isPro: false
+          name: z3ugma
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;neil651&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/neil651\">@<span class=\"\
+          underline\">neil651</span></a></span>\n\n\t</span></span>  I'm following\
+          \ your BitsAndBytes quantization strategy. It loads fine onto the GPU, but\
+          \ when trying inference I get datatype errors for input vs inference. </p>\n\
+          <pre><code>  File \"/home/user/mambaforge/envs/tensorml/lib/python3.11/site-packages/torch/nn/modules/conv.py\"\
+          , line 456, in _conv_forward\n    return F.conv2d(input, weight, bias, self.stride,\n\
+          \           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Input\
+          \ type (c10::BFloat16) and bias type (c10::Half) should be the same\n</code></pre>\n\
+          <p>Can you post a whole example of your bitsandbytes 4bit quant with inference?\
+          \ </p>\n"
+        raw: "@neil651  I'm following your BitsAndBytes quantization strategy. It\
+          \ loads fine onto the GPU, but when trying inference I get datatype errors\
+          \ for input vs inference. \n\n```\n  File \"/home/user/mambaforge/envs/tensorml/lib/python3.11/site-packages/torch/nn/modules/conv.py\"\
+          , line 456, in _conv_forward\n    return F.conv2d(input, weight, bias, self.stride,\n\
+          \           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Input\
+          \ type (c10::BFloat16) and bias type (c10::Half) should be the same\n\n\
+          ```\n\nCan you post a whole example of your bitsandbytes 4bit quant with\
+          \ inference? "
+        updatedAt: '2023-12-07T00:03:45.043Z'
+      numEdits: 0
+      reactions: []
+    id: 65710be10ea91e592a17582a
+    type: comment
+  author: z3ugma
+  content: "@neil651  I'm following your BitsAndBytes quantization strategy. It loads\
+    \ fine onto the GPU, but when trying inference I get datatype errors for input\
+    \ vs inference. \n\n```\n  File \"/home/user/mambaforge/envs/tensorml/lib/python3.11/site-packages/torch/nn/modules/conv.py\"\
+    , line 456, in _conv_forward\n    return F.conv2d(input, weight, bias, self.stride,\n\
+    \           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Input type\
+    \ (c10::BFloat16) and bias type (c10::Half) should be the same\n\n```\n\nCan you\
+    \ post a whole example of your bitsandbytes 4bit quant with inference? "
+  created_at: 2023-12-07 00:03:45+00:00
+  edited: false
+  hidden: false
+  id: 65710be10ea91e592a17582a
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+      fullname: chenkq
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: chenkq
+      type: user
+    createdAt: '2023-12-07T03:36:54.000Z'
+    data:
+      edited: false
+      editors:
+      - chenkq
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.3124804198741913
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/0d95d65d30f6672ec09dc92155324d7f.svg
+          fullname: chenkq
+          isHf: false
+          isPro: false
+          name: chenkq
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;z3ugma&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/z3ugma\">@<span class=\"\
+          underline\">z3ugma</span></a></span>\n\n\t</span></span> change the <code>bnb_4bit_compute_dtype=torch.bfloat16</code>\
+          \ to <code>bnb_4bit_compute_dtype=torch.float16</code> may help</p>\n"
+        raw: '@z3ugma change the `bnb_4bit_compute_dtype=torch.bfloat16` to `bnb_4bit_compute_dtype=torch.float16`
+          may help'
+        updatedAt: '2023-12-07T03:36:54.202Z'
+      numEdits: 0
+      reactions: []
+    id: 65713dd60b27583c9d8e8678
+    type: comment
+  author: chenkq
+  content: '@z3ugma change the `bnb_4bit_compute_dtype=torch.bfloat16` to `bnb_4bit_compute_dtype=torch.float16`
+    may help'
+  created_at: 2023-12-07 03:36:54+00:00
+  edited: false
+  hidden: false
+  id: 65713dd60b27583c9d8e8678
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/ff14b64339217858927ae01c2b2fa28d.svg
+      fullname: Qingsong Lv
+      isHf: false
+      isOrgMember: true
+      isOwner: false
+      isPro: false
+      name: qingsonglv
+      type: user
+    createdAt: '2023-12-07T04:20:20.000Z'
+    data:
+      edited: false
+      editors:
+      - qingsonglv
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.4390815496444702
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/ff14b64339217858927ae01c2b2fa28d.svg
+          fullname: Qingsong Lv
+          isHf: false
+          isPro: false
+          name: qingsonglv
+          type: user
+        html: '<p>Just change your image type from bf16 to fp16 is ok.</p>
+
+          <pre><code class="language-python"><span class="hljs-string">''images''</span>:
+          [[inputs[<span class="hljs-string">''images''</span>][<span class="hljs-number">0</span>].to(<span
+          class="hljs-string">''cuda''</span>).to(torch.float16)]],
+
+          </code></pre>
+
+          '
+        raw: 'Just change your image type from bf16 to fp16 is ok.
+
+
+          ```python
+
+          ''images'': [[inputs[''images''][0].to(''cuda'').to(torch.float16)]],
+
+          ```'
+        updatedAt: '2023-12-07T04:20:20.211Z'
+      numEdits: 0
+      reactions: []
+    id: 65714804b6f7eb7f3118f8b1
+    type: comment
+  author: qingsonglv
+  content: 'Just change your image type from bf16 to fp16 is ok.
+
+
+    ```python
+
+    ''images'': [[inputs[''images''][0].to(''cuda'').to(torch.float16)]],
+
+    ```'
+  created_at: 2023-12-07 04:20:20+00:00
+  edited: false
+  hidden: false
+  id: 65714804b6f7eb7f3118f8b1
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+      fullname: 'Fred '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: z3ugma
+      type: user
+    createdAt: '2023-12-07T04:54:10.000Z'
+    data:
+      edited: false
+      editors:
+      - z3ugma
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9644824862480164
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+          fullname: 'Fred '
+          isHf: false
+          isPro: false
+          name: z3ugma
+          type: user
+        html: "<p><span data-props=\"{&quot;user&quot;:&quot;qingsonglv&quot;}\" data-target=\"\
+          UserMention\" class=\"SVELTE_PARTIAL_HYDRATER contents\">\n\n<span class=\"\
+          inline-block\"><span class=\"contents\"><a href=\"/qingsonglv\">@<span class=\"\
+          underline\">qingsonglv</span></a></span>\n\n\t</span></span> that was the\
+          \ solution to making 4-bit quantized work. With that in place, the model\
+          \ takes up only 12GiB on a 16GB CUDA Nvidia GPU </p>\n"
+        raw: "@qingsonglv that was the solution to making 4-bit quantized work. With\
+          \ that in place, the model takes up only 12GiB on a 16GB CUDA Nvidia GPU\
+          \ \n"
+        updatedAt: '2023-12-07T04:54:10.669Z'
+      numEdits: 0
+      reactions: []
+    id: 65714ff29435343c81f5fe44
+    type: comment
+  author: z3ugma
+  content: "@qingsonglv that was the solution to making 4-bit quantized work. With\
+    \ that in place, the model takes up only 12GiB on a 16GB CUDA Nvidia GPU \n"
+  created_at: 2023-12-07 04:54:10+00:00
+  edited: false
+  hidden: false
+  id: 65714ff29435343c81f5fe44
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+      fullname: 'Fred '
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: z3ugma
+      type: user
+    createdAt: '2023-12-08T04:44:07.000Z'
+    data:
+      edited: false
+      editors:
+      - z3ugma
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.6948298215866089
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/171bfa9094ea98ef340e229d7e99ca38.svg
+          fullname: 'Fred '
+          isHf: false
+          isPro: false
+          name: z3ugma
+          type: user
+        html: '<p>Repo owners updated quantization to be easier at <a rel="nofollow"
+          href="https://github.com/THUDM/CogVLM/commit/2f293fc6b4063791e80e2bf7e1a045c758352d7e">https://github.com/THUDM/CogVLM/commit/2f293fc6b4063791e80e2bf7e1a045c758352d7e</a>
+          </p>
+
+          '
+        raw: "Repo owners updated quantization to be easier at https://github.com/THUDM/CogVLM/commit/2f293fc6b4063791e80e2bf7e1a045c758352d7e\
+          \ \n"
+        updatedAt: '2023-12-08T04:44:07.420Z'
+      numEdits: 0
+      reactions: []
+    id: 65729f177749f1696d4e305f
+    type: comment
+  author: z3ugma
+  content: "Repo owners updated quantization to be easier at https://github.com/THUDM/CogVLM/commit/2f293fc6b4063791e80e2bf7e1a045c758352d7e\
+    \ \n"
+  created_at: 2023-12-08 04:44:07+00:00
+  edited: false
+  hidden: false
+  id: 65729f177749f1696d4e305f
+  type: comment
+is_pull_request: false
+merge_commit_oid: null
+num: 11
+repo_id: THUDM/cogvlm-chat-hf
+repo_type: model
+status: open
+target_branch: null
+title: Increasing throughput with batches and quantization

@@ -1,0 +1,463 @@
+!!python/object:huggingface_hub.community.DiscussionWithDetails
+author: ekernf01
+conflicting_files: null
+created_at: 2023-06-22 13:04:37+00:00
+diff: null
+endpoint: https://huggingface.co
+events:
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: /avatars/1d1eb32b5afe15b8a8d83a4b6f60f5f0.svg
+      fullname: Eric Kernfeld
+      isHf: false
+      isOrgMember: false
+      isOwner: false
+      isPro: false
+      name: ekernf01
+      type: user
+    createdAt: '2023-06-22T14:04:37.000Z'
+    data:
+      edited: false
+      editors:
+      - ekernf01
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.44073668122291565
+      isReport: false
+      latest:
+        author:
+          avatarUrl: /avatars/1d1eb32b5afe15b8a8d83a4b6f60f5f0.svg
+          fullname: Eric Kernfeld
+          isHf: false
+          isPro: false
+          name: ekernf01
+          type: user
+        html: "<p>Hi Dr. Theodoris, I got the following error when doing in silico\
+          \ perturbation. I will provide the full traceback and code/data to reproduce.\
+          \ My GeneFormer version is 0.0.1 and the head of the repo is at  <code><a\
+          \ href=\"/ctheodoris/Geneformer/commit/d20ad0a0\">d20ad0a0</a></code>. Thank\
+          \ you for your seemingly multi-headed attention to all the activity on this\
+          \ repo!</p>\n<p><code>RuntimeError: The size of tensor a (2048) must match\
+          \ the size of tensor b (2047) at non-singleton dimension 1</code></p>\n\
+          <p>Code to reproduce using public PBMC data:</p>\n<pre><code class=\"language-python\"\
+          ><span class=\"hljs-keyword\">import</span> os \n<span class=\"hljs-keyword\"\
+          >import</span> pathlib\n<span class=\"hljs-keyword\">from</span> geneformer\
+          \ <span class=\"hljs-keyword\">import</span> InSilicoPerturber, InSilicoPerturberStats,\
+          \ TranscriptomeTokenizer\n<span class=\"hljs-keyword\">import</span> subprocess\n\
+          <span class=\"hljs-keyword\">import</span> scanpy <span class=\"hljs-keyword\"\
+          >as</span> sc \n\n<span class=\"hljs-comment\"># Prepare for conversion\
+          \ between HGNC symbol and ensembl ID</span>\n<span class=\"hljs-keyword\"\
+          >import</span> biomart\n<span class=\"hljs-keyword\">def</span> <span class=\"\
+          hljs-title function_\">get_ensembl_mappings</span>():                  \
+          \                 \n    <span class=\"hljs-comment\"># Set up connection\
+          \ to server                                               </span>\n    server\
+          \ = biomart.BiomartServer(<span class=\"hljs-string\">'http://useast.ensembl.org/biomart'</span>)\
+          \         \n    mart = server.datasets[<span class=\"hljs-string\">'hsapiens_gene_ensembl'</span>]\
+          \                            \n                                        \
+          \                                                                      \
+          \                                      \n    <span class=\"hljs-comment\"\
+          ># Get the mapping between the attributes                              \
+          \      </span>\n    response = mart.search({<span class=\"hljs-string\"\
+          >'attributes'</span>: [<span class=\"hljs-string\">'hgnc_symbol'</span>,\
+          \ <span class=\"hljs-string\">'ensembl_gene_id'</span>]})              \
+          \            \n    data = response.raw.data.decode(<span class=\"hljs-string\"\
+          >'ascii'</span>)                                    \n                 \
+          \                                                               \n    ensembl_to_genesymbol\
+          \ = {}                                                  \n    genesymbol_to_ensembl\
+          \ = {}\n    <span class=\"hljs-keyword\">for</span> line <span class=\"\
+          hljs-keyword\">in</span> data.splitlines():                            \
+          \                  \n        hgnc_symbol, ensembl_gene_id = line.split(<span\
+          \ class=\"hljs-string\">'\\t'</span>)                                  \
+          \               \n        <span class=\"hljs-keyword\">if</span> hgnc_symbol\
+          \ != <span class=\"hljs-string\">\"\"</span> <span class=\"hljs-keyword\"\
+          >and</span> ensembl_gene_id != <span class=\"hljs-string\">\"\"</span>:\n\
+          \            genesymbol_to_ensembl[hgnc_symbol] = ensembl_gene_id      \
+          \              \n            ensembl_to_genesymbol[ensembl_gene_id] = hgnc_symbol\
+          \                       \n                                             \
+          \                      \n    <span class=\"hljs-keyword\">return</span>\
+          \ {<span class=\"hljs-string\">\"ensembl_to_genesymbol\"</span>: ensembl_to_genesymbol,\n\
+          \            <span class=\"hljs-string\">\"genesymbol_to_ensembl\"</span>:\
+          \ genesymbol_to_ensembl}\n\ngene_name_converter = get_ensembl_mappings()[<span\
+          \ class=\"hljs-string\">\"genesymbol_to_ensembl\"</span>]  \n\n<span class=\"\
+          hljs-comment\"># Download 10X PBMC data</span>\nsubprocess.run([<span class=\"\
+          hljs-string\">\"wget\"</span>, <span class=\"hljs-string\">\"https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+          </span>])\nsubprocess.run([<span class=\"hljs-string\">\"tar\"</span>, <span\
+          \ class=\"hljs-string\">\"-xzvf\"</span>, <span class=\"hljs-string\">\"\
+          pbmc3k_filtered_gene_bc_matrices.tar.gz\"</span>])\nsubprocess.run([<span\
+          \ class=\"hljs-string\">\"mv\"</span>, <span class=\"hljs-string\">\"filtered_gene_bc_matrices/hg19/genes.tsv.gz\"\
+          </span>, <span class=\"hljs-string\">\"filtered_gene_bc_matrices/hg19/features.tsv.gz\"\
+          </span>])\nexample_data = sc.read_10x_mtx(<span class=\"hljs-string\">\"\
+          filtered_gene_bc_matrices/hg19\"</span>)\nsubprocess.run([<span class=\"\
+          hljs-string\">\"rm\"</span>, <span class=\"hljs-string\">\"-r\"</span>,\
+          \ <span class=\"hljs-string\">\"filtered_gene_bc_matrices\"</span>])\nsubprocess.run([<span\
+          \ class=\"hljs-string\">\"rm\"</span>, <span class=\"hljs-string\">\"pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+          </span>])\n\n<span class=\"hljs-comment\"># Tokenize example_data</span>\n\
+          <span class=\"hljs-comment\"># Need ensembl ID's</span>\nexample_data.var[<span\
+          \ class=\"hljs-string\">\"ensembl_id\"</span>] = [gene_name_converter[g]\
+          \ <span class=\"hljs-keyword\">if</span> g <span class=\"hljs-keyword\"\
+          >in</span> gene_name_converter <span class=\"hljs-keyword\">else</span>\
+          \ <span class=\"hljs-string\">\"\"</span> <span class=\"hljs-keyword\">for</span>\
+          \ g <span class=\"hljs-keyword\">in</span> example_data.var_names]\nexample_data\
+          \ = example_data[:, example_data.var[<span class=\"hljs-string\">\"ensembl_id\"\
+          </span>] != <span class=\"hljs-string\">\"\"</span>] \nexample_data.obs[<span\
+          \ class=\"hljs-string\">\"filter_pass\"</span>] = <span class=\"hljs-literal\"\
+          >True</span>\nexample_data.obs[<span class=\"hljs-string\">\"cell_type\"\
+          </span>] = <span class=\"hljs-string\">\"unknown\"</span>\nexample_data.obs[<span\
+          \ class=\"hljs-string\">\"n_counts\"</span>] = example_data.X.<span class=\"\
+          hljs-built_in\">sum</span>(axis = <span class=\"hljs-number\">1</span>)\n\
+          os.makedirs(<span class=\"hljs-string\">\"loom_data\"</span>, exist_ok=<span\
+          \ class=\"hljs-literal\">True</span>)\nexample_data.write_loom(<span class=\"\
+          hljs-string\">\"loom_data/example_data.loom\"</span>)\ntk = TranscriptomeTokenizer({<span\
+          \ class=\"hljs-string\">\"cell_type\"</span>: <span class=\"hljs-string\"\
+          >\"pbmc\"</span>}, nproc=<span class=\"hljs-number\">15</span>)\ntk.tokenize_data(pathlib.Path(<span\
+          \ class=\"hljs-string\">\"loom_data\"</span>), <span class=\"hljs-string\"\
+          >\"tokenized_data\"</span>, <span class=\"hljs-string\">\"demo\"</span>)\n\
+          \nisp = InSilicoPerturber(perturb_type=<span class=\"hljs-string\">\"overexpress\"\
+          </span>,\n                      perturb_rank_shift=<span class=\"hljs-number\"\
+          >4</span>,\n                      genes_to_perturb=<span class=\"hljs-string\"\
+          >\"all\"</span>,\n                      combos=<span class=\"hljs-number\"\
+          >0</span>,\n                      anchor_gene=<span class=\"hljs-literal\"\
+          >None</span>,\n                      model_type=<span class=\"hljs-string\"\
+          >\"Pretrained\"</span>,\n                      emb_mode=<span class=\"hljs-string\"\
+          >\"cell\"</span>,\n                      cell_emb_style=<span class=\"hljs-string\"\
+          >\"mean_pool\"</span>,\n                      filter_data=<span class=\"\
+          hljs-literal\">None</span>,\n                      max_ncells=<span class=\"\
+          hljs-number\">2000</span>,\n                      emb_layer=-<span class=\"\
+          hljs-number\">1</span>,\n                      forward_batch_size=<span\
+          \ class=\"hljs-number\">40</span>,\n                      nproc=<span class=\"\
+          hljs-number\">15</span>,\n                      save_raw_data=<span class=\"\
+          hljs-literal\">False</span>)\n<span class=\"hljs-comment\"># outputs intermediate\
+          \ files from in silico perturbation</span>\n\nisp.perturb_data(\n    model_directory\
+          \ = <span class=\"hljs-string\">\"ctheodoris/Geneformer\"</span>,   \n \
+          \   input_data_file = <span class=\"hljs-string\">\"tokenized_data/demo.dataset\"\
+          </span>,\n    output_directory = <span class=\"hljs-string\">\"output\"\
+          </span>,\n    output_prefix = <span class=\"hljs-string\">\"demo\"</span>\n\
+          )\n</code></pre>\n<p>Full traceback:</p>\n<pre><code>Traceback (most recent\
+          \ call last):                                                          \
+          \                                                    \n  File \".../test_geneformer/test_geneformer.py\"\
+          , line 71, in &lt;module&gt;\n    input_data_file = \"tokenized_data/demo.dataset\"\
+          ,\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 530, in perturb_data\n    self.in_silico_perturb(model,\n  File \"\
+          /home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 628, in in_silico_perturb\n    cos_sims_data = quant_cos_sims(model,\n\
+          \  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 229, in quant_cos_sims\n    cos_sims += [cos(minibatch_emb, minibatch_comparison).to(\"\
+          cpu\")]\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\n    return forward_call(*args, **kwargs)\n \
+          \ File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/distance.py\"\
+          , line 87, in forward\n    return F.cosine_similarity(x1, x2, self.dim,\
+          \ self.eps)\nRuntimeError: The size of tensor a (2048) must match the size\
+          \ of tensor b (2047) at non-singleton dimension 1\n</code></pre>\n"
+        raw: "Hi Dr. Theodoris, I got the following error when doing in silico perturbation.\
+          \ I will provide the full traceback and code/data to reproduce. My GeneFormer\
+          \ version is 0.0.1 and the head of the repo is at  `d20ad0a0`. Thank you\
+          \ for your seemingly multi-headed attention to all the activity on this\
+          \ repo!\r\n\r\n`RuntimeError: The size of tensor a (2048) must match the\
+          \ size of tensor b (2047) at non-singleton dimension 1`\r\n\r\nCode to reproduce\
+          \ using public PBMC data:\r\n\r\n```python\r\nimport os \r\nimport pathlib\r\
+          \nfrom geneformer import InSilicoPerturber, InSilicoPerturberStats, TranscriptomeTokenizer\r\
+          \nimport subprocess\r\nimport scanpy as sc \r\n\r\n# Prepare for conversion\
+          \ between HGNC symbol and ensembl ID\r\nimport biomart\r\ndef get_ensembl_mappings():\
+          \                                   \r\n    # Set up connection to server\
+          \                                               \r\n    server = biomart.BiomartServer('http://useast.ensembl.org/biomart')\
+          \         \r\n    mart = server.datasets['hsapiens_gene_ensembl']      \
+          \                      \r\n                                            \
+          \                                                                      \
+          \                                  \r\n    # Get the mapping between the\
+          \ attributes                                    \r\n    response = mart.search({'attributes':\
+          \ ['hgnc_symbol', 'ensembl_gene_id']})                          \r\n   \
+          \ data = response.raw.data.decode('ascii')                             \
+          \       \r\n                                                           \
+          \                     \r\n    ensembl_to_genesymbol = {}               \
+          \                                   \r\n    genesymbol_to_ensembl = {}\r\
+          \n    for line in data.splitlines():                                   \
+          \           \r\n        hgnc_symbol, ensembl_gene_id = line.split('\\t')\
+          \                                                 \r\n        if hgnc_symbol\
+          \ != \"\" and ensembl_gene_id != \"\":\r\n            genesymbol_to_ensembl[hgnc_symbol]\
+          \ = ensembl_gene_id                    \r\n            ensembl_to_genesymbol[ensembl_gene_id]\
+          \ = hgnc_symbol                       \r\n                             \
+          \                                      \r\n    return {\"ensembl_to_genesymbol\"\
+          : ensembl_to_genesymbol,\r\n            \"genesymbol_to_ensembl\": genesymbol_to_ensembl}\r\
+          \n\r\ngene_name_converter = get_ensembl_mappings()[\"genesymbol_to_ensembl\"\
+          ]  \r\n\r\n# Download 10X PBMC data\r\nsubprocess.run([\"wget\", \"https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+          ])\r\nsubprocess.run([\"tar\", \"-xzvf\", \"pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+          ])\r\nsubprocess.run([\"mv\", \"filtered_gene_bc_matrices/hg19/genes.tsv.gz\"\
+          , \"filtered_gene_bc_matrices/hg19/features.tsv.gz\"])\r\nexample_data =\
+          \ sc.read_10x_mtx(\"filtered_gene_bc_matrices/hg19\")\r\nsubprocess.run([\"\
+          rm\", \"-r\", \"filtered_gene_bc_matrices\"])\r\nsubprocess.run([\"rm\"\
+          , \"pbmc3k_filtered_gene_bc_matrices.tar.gz\"])\r\n\r\n# Tokenize example_data\r\
+          \n# Need ensembl ID's\r\nexample_data.var[\"ensembl_id\"] = [gene_name_converter[g]\
+          \ if g in gene_name_converter else \"\" for g in example_data.var_names]\r\
+          \nexample_data = example_data[:, example_data.var[\"ensembl_id\"] != \"\"\
+          ] \r\nexample_data.obs[\"filter_pass\"] = True\r\nexample_data.obs[\"cell_type\"\
+          ] = \"unknown\"\r\nexample_data.obs[\"n_counts\"] = example_data.X.sum(axis\
+          \ = 1)\r\nos.makedirs(\"loom_data\", exist_ok=True)\r\nexample_data.write_loom(\"\
+          loom_data/example_data.loom\")\r\ntk = TranscriptomeTokenizer({\"cell_type\"\
+          : \"pbmc\"}, nproc=15)\r\ntk.tokenize_data(pathlib.Path(\"loom_data\"),\
+          \ \"tokenized_data\", \"demo\")\r\n\r\nisp = InSilicoPerturber(perturb_type=\"\
+          overexpress\",\r\n                      perturb_rank_shift=4,\r\n      \
+          \                genes_to_perturb=\"all\",\r\n                      combos=0,\r\
+          \n                      anchor_gene=None,\r\n                      model_type=\"\
+          Pretrained\",\r\n                      emb_mode=\"cell\",\r\n          \
+          \            cell_emb_style=\"mean_pool\",\r\n                      filter_data=None,\r\
+          \n                      max_ncells=2000,\r\n                      emb_layer=-1,\r\
+          \n                      forward_batch_size=40,\r\n                     \
+          \ nproc=15,\r\n                      save_raw_data=False)\r\n# outputs intermediate\
+          \ files from in silico perturbation\r\n\r\nisp.perturb_data(\r\n    model_directory\
+          \ = \"ctheodoris/Geneformer\",   \r\n    input_data_file = \"tokenized_data/demo.dataset\"\
+          ,\r\n    output_directory = \"output\",\r\n    output_prefix = \"demo\"\r\
+          \n)\r\n```\r\n\r\nFull traceback:\r\n\r\n```\r\nTraceback (most recent call\
+          \ last):                                                               \
+          \                                               \r\n  File \".../test_geneformer/test_geneformer.py\"\
+          , line 71, in <module>\r\n    input_data_file = \"tokenized_data/demo.dataset\"\
+          ,\r\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 530, in perturb_data\r\n    self.in_silico_perturb(model,\r\n  File\
+          \ \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 628, in in_silico_perturb\r\n    cos_sims_data = quant_cos_sims(model,\r\
+          \n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+          , line 229, in quant_cos_sims\r\n    cos_sims += [cos(minibatch_emb, minibatch_comparison).to(\"\
+          cpu\")]\r\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/module.py\"\
+          , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\
+          \n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/distance.py\"\
+          , line 87, in forward\r\n    return F.cosine_similarity(x1, x2, self.dim,\
+          \ self.eps)\r\nRuntimeError: The size of tensor a (2048) must match the\
+          \ size of tensor b (2047) at non-singleton dimension 1\r\n```"
+        updatedAt: '2023-06-22T14:04:37.282Z'
+      numEdits: 0
+      reactions: []
+    id: 649454f5d9f0a6e05d26cddb
+    type: comment
+  author: ekernf01
+  content: "Hi Dr. Theodoris, I got the following error when doing in silico perturbation.\
+    \ I will provide the full traceback and code/data to reproduce. My GeneFormer\
+    \ version is 0.0.1 and the head of the repo is at  `d20ad0a0`. Thank you for your\
+    \ seemingly multi-headed attention to all the activity on this repo!\r\n\r\n`RuntimeError:\
+    \ The size of tensor a (2048) must match the size of tensor b (2047) at non-singleton\
+    \ dimension 1`\r\n\r\nCode to reproduce using public PBMC data:\r\n\r\n```python\r\
+    \nimport os \r\nimport pathlib\r\nfrom geneformer import InSilicoPerturber, InSilicoPerturberStats,\
+    \ TranscriptomeTokenizer\r\nimport subprocess\r\nimport scanpy as sc \r\n\r\n\
+    # Prepare for conversion between HGNC symbol and ensembl ID\r\nimport biomart\r\
+    \ndef get_ensembl_mappings():                                   \r\n    # Set\
+    \ up connection to server                                               \r\n \
+    \   server = biomart.BiomartServer('http://useast.ensembl.org/biomart')      \
+    \   \r\n    mart = server.datasets['hsapiens_gene_ensembl']                  \
+    \          \r\n                                                              \
+    \                                                                            \
+    \          \r\n    # Get the mapping between the attributes                  \
+    \                  \r\n    response = mart.search({'attributes': ['hgnc_symbol',\
+    \ 'ensembl_gene_id']})                          \r\n    data = response.raw.data.decode('ascii')\
+    \                                    \r\n                                    \
+    \                                            \r\n    ensembl_to_genesymbol = {}\
+    \                                                  \r\n    genesymbol_to_ensembl\
+    \ = {}\r\n    for line in data.splitlines():                                 \
+    \             \r\n        hgnc_symbol, ensembl_gene_id = line.split('\\t')   \
+    \                                              \r\n        if hgnc_symbol != \"\
+    \" and ensembl_gene_id != \"\":\r\n            genesymbol_to_ensembl[hgnc_symbol]\
+    \ = ensembl_gene_id                    \r\n            ensembl_to_genesymbol[ensembl_gene_id]\
+    \ = hgnc_symbol                       \r\n                                   \
+    \                                \r\n    return {\"ensembl_to_genesymbol\": ensembl_to_genesymbol,\r\
+    \n            \"genesymbol_to_ensembl\": genesymbol_to_ensembl}\r\n\r\ngene_name_converter\
+    \ = get_ensembl_mappings()[\"genesymbol_to_ensembl\"]  \r\n\r\n# Download 10X\
+    \ PBMC data\r\nsubprocess.run([\"wget\", \"https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+    ])\r\nsubprocess.run([\"tar\", \"-xzvf\", \"pbmc3k_filtered_gene_bc_matrices.tar.gz\"\
+    ])\r\nsubprocess.run([\"mv\", \"filtered_gene_bc_matrices/hg19/genes.tsv.gz\"\
+    , \"filtered_gene_bc_matrices/hg19/features.tsv.gz\"])\r\nexample_data = sc.read_10x_mtx(\"\
+    filtered_gene_bc_matrices/hg19\")\r\nsubprocess.run([\"rm\", \"-r\", \"filtered_gene_bc_matrices\"\
+    ])\r\nsubprocess.run([\"rm\", \"pbmc3k_filtered_gene_bc_matrices.tar.gz\"])\r\n\
+    \r\n# Tokenize example_data\r\n# Need ensembl ID's\r\nexample_data.var[\"ensembl_id\"\
+    ] = [gene_name_converter[g] if g in gene_name_converter else \"\" for g in example_data.var_names]\r\
+    \nexample_data = example_data[:, example_data.var[\"ensembl_id\"] != \"\"] \r\n\
+    example_data.obs[\"filter_pass\"] = True\r\nexample_data.obs[\"cell_type\"] =\
+    \ \"unknown\"\r\nexample_data.obs[\"n_counts\"] = example_data.X.sum(axis = 1)\r\
+    \nos.makedirs(\"loom_data\", exist_ok=True)\r\nexample_data.write_loom(\"loom_data/example_data.loom\"\
+    )\r\ntk = TranscriptomeTokenizer({\"cell_type\": \"pbmc\"}, nproc=15)\r\ntk.tokenize_data(pathlib.Path(\"\
+    loom_data\"), \"tokenized_data\", \"demo\")\r\n\r\nisp = InSilicoPerturber(perturb_type=\"\
+    overexpress\",\r\n                      perturb_rank_shift=4,\r\n            \
+    \          genes_to_perturb=\"all\",\r\n                      combos=0,\r\n  \
+    \                    anchor_gene=None,\r\n                      model_type=\"\
+    Pretrained\",\r\n                      emb_mode=\"cell\",\r\n                \
+    \      cell_emb_style=\"mean_pool\",\r\n                      filter_data=None,\r\
+    \n                      max_ncells=2000,\r\n                      emb_layer=-1,\r\
+    \n                      forward_batch_size=40,\r\n                      nproc=15,\r\
+    \n                      save_raw_data=False)\r\n# outputs intermediate files from\
+    \ in silico perturbation\r\n\r\nisp.perturb_data(\r\n    model_directory = \"\
+    ctheodoris/Geneformer\",   \r\n    input_data_file = \"tokenized_data/demo.dataset\"\
+    ,\r\n    output_directory = \"output\",\r\n    output_prefix = \"demo\"\r\n)\r\
+    \n```\r\n\r\nFull traceback:\r\n\r\n```\r\nTraceback (most recent call last):\
+    \                                                                            \
+    \                                  \r\n  File \".../test_geneformer/test_geneformer.py\"\
+    , line 71, in <module>\r\n    input_data_file = \"tokenized_data/demo.dataset\"\
+    ,\r\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+    , line 530, in perturb_data\r\n    self.in_silico_perturb(model,\r\n  File \"\
+    /home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+    , line 628, in in_silico_perturb\r\n    cos_sims_data = quant_cos_sims(model,\r\
+    \n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/geneformer/in_silico_perturber.py\"\
+    , line 229, in quant_cos_sims\r\n    cos_sims += [cos(minibatch_emb, minibatch_comparison).to(\"\
+    cpu\")]\r\n  File \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/module.py\"\
+    , line 1501, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File\
+    \ \"/home/ekernf01/mambaforge/envs/ggrn/lib/python3.9/site-packages/torch/nn/modules/distance.py\"\
+    , line 87, in forward\r\n    return F.cosine_similarity(x1, x2, self.dim, self.eps)\r\
+    \nRuntimeError: The size of tensor a (2048) must match the size of tensor b (2047)\
+    \ at non-singleton dimension 1\r\n```"
+  created_at: 2023-06-22 13:04:37+00:00
+  edited: false
+  hidden: false
+  id: 649454f5d9f0a6e05d26cddb
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionComment
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-23T04:27:09.000Z'
+    data:
+      edited: false
+      editors:
+      - ctheodoris
+      hidden: false
+      identifiedLanguage:
+        language: en
+        probability: 0.9478942155838013
+      isReport: false
+      latest:
+        author:
+          avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+          fullname: Christina Theodoris
+          isHf: false
+          isPro: false
+          name: ctheodoris
+          type: user
+        html: '<p>Thank you for your interest in Geneformer and thank you so much
+          for providing the necessary information to reproduce the error. This was
+          due to the overexpression embedding batch not having removed the 0th embedding
+          for the overexpressed gene during the comparison of the remainder of the
+          embeddings to the original cell''s embedding for those genes. I pushed a
+          fix that should address this - please pull the updated version and try it
+          out.</p>
+
+          <p>On another unrelated note, I wanted to mention that the input for transcriptome
+          tokenizer should be raw counts data without any filtering of genes (mentioning
+          this just because the data you are using had the label "filtered_gene" -
+          the data could very well be raw counts without genes having been filtered
+          but wanted to mention this just in case!). The reason for this is because
+          in standard analyses, genes are filtered to include only those that are
+          highly variable, but this is done on a single dataset, so this would exclude
+          genes that are potentially very important for the identity of the cell state
+          represented across that whole dataset. Because Geneformer has previously
+          observed a broad range of cell states during pretraining, those genes could
+          be very informative to the embedding position of the cells within Geneformer''s
+          pretrained embedding space and excluding them may lead to the cell appearing
+          very different to what the model would expect for that state. This is especially
+          important when using the pretrained model directly without fine-tuning as
+          it would result in pre-processing the input data in an importantly different
+          way from the pretraining corpus. Please feel free to disregard all of this
+          if the data is raw counts without feature selection, but just wanted to
+          mention this just in case. (This point and additional information on the
+          format of the input data to the transcriptome tokenizer is also in the example
+          within the repository.)</p>
+
+          '
+        raw: 'Thank you for your interest in Geneformer and thank you so much for
+          providing the necessary information to reproduce the error. This was due
+          to the overexpression embedding batch not having removed the 0th embedding
+          for the overexpressed gene during the comparison of the remainder of the
+          embeddings to the original cell''s embedding for those genes. I pushed a
+          fix that should address this - please pull the updated version and try it
+          out.
+
+
+          On another unrelated note, I wanted to mention that the input for transcriptome
+          tokenizer should be raw counts data without any filtering of genes (mentioning
+          this just because the data you are using had the label "filtered_gene" -
+          the data could very well be raw counts without genes having been filtered
+          but wanted to mention this just in case!). The reason for this is because
+          in standard analyses, genes are filtered to include only those that are
+          highly variable, but this is done on a single dataset, so this would exclude
+          genes that are potentially very important for the identity of the cell state
+          represented across that whole dataset. Because Geneformer has previously
+          observed a broad range of cell states during pretraining, those genes could
+          be very informative to the embedding position of the cells within Geneformer''s
+          pretrained embedding space and excluding them may lead to the cell appearing
+          very different to what the model would expect for that state. This is especially
+          important when using the pretrained model directly without fine-tuning as
+          it would result in pre-processing the input data in an importantly different
+          way from the pretraining corpus. Please feel free to disregard all of this
+          if the data is raw counts without feature selection, but just wanted to
+          mention this just in case. (This point and additional information on the
+          format of the input data to the transcriptome tokenizer is also in the example
+          within the repository.)'
+        updatedAt: '2023-06-23T04:27:09.250Z'
+      numEdits: 0
+      reactions: []
+      relatedEventId: 64951f1dc59c67dd4e12b4ff
+    id: 64951f1dc59c67dd4e12b4fa
+    type: comment
+  author: ctheodoris
+  content: 'Thank you for your interest in Geneformer and thank you so much for providing
+    the necessary information to reproduce the error. This was due to the overexpression
+    embedding batch not having removed the 0th embedding for the overexpressed gene
+    during the comparison of the remainder of the embeddings to the original cell''s
+    embedding for those genes. I pushed a fix that should address this - please pull
+    the updated version and try it out.
+
+
+    On another unrelated note, I wanted to mention that the input for transcriptome
+    tokenizer should be raw counts data without any filtering of genes (mentioning
+    this just because the data you are using had the label "filtered_gene" - the data
+    could very well be raw counts without genes having been filtered but wanted to
+    mention this just in case!). The reason for this is because in standard analyses,
+    genes are filtered to include only those that are highly variable, but this is
+    done on a single dataset, so this would exclude genes that are potentially very
+    important for the identity of the cell state represented across that whole dataset.
+    Because Geneformer has previously observed a broad range of cell states during
+    pretraining, those genes could be very informative to the embedding position of
+    the cells within Geneformer''s pretrained embedding space and excluding them may
+    lead to the cell appearing very different to what the model would expect for that
+    state. This is especially important when using the pretrained model directly without
+    fine-tuning as it would result in pre-processing the input data in an importantly
+    different way from the pretraining corpus. Please feel free to disregard all of
+    this if the data is raw counts without feature selection, but just wanted to mention
+    this just in case. (This point and additional information on the format of the
+    input data to the transcriptome tokenizer is also in the example within the repository.)'
+  created_at: 2023-06-23 03:27:09+00:00
+  edited: false
+  hidden: false
+  id: 64951f1dc59c67dd4e12b4fa
+  type: comment
+- !!python/object:huggingface_hub.community.DiscussionStatusChange
+  _event:
+    author:
+      avatarUrl: https://aeiljuispo.cloudimg.io/v7/https://cdn-uploads.huggingface.co/production/uploads/1671502872617-622d085c8d04fd29a9ccf169.png?w=200&h=200&f=face
+      fullname: Christina Theodoris
+      isHf: false
+      isOrgMember: false
+      isOwner: true
+      isPro: false
+      name: ctheodoris
+      type: user
+    createdAt: '2023-06-23T04:27:09.000Z'
+    data:
+      status: closed
+    id: 64951f1dc59c67dd4e12b4ff
+    type: status-change
+  author: ctheodoris
+  created_at: 2023-06-23 03:27:09+00:00
+  id: 64951f1dc59c67dd4e12b4ff
+  new_status: closed
+  type: status-change
+is_pull_request: false
+merge_commit_oid: null
+num: 54
+repo_id: ctheodoris/Geneformer
+repo_type: model
+status: closed
+target_branch: null
+title: Tensor size error during in silico perturbation

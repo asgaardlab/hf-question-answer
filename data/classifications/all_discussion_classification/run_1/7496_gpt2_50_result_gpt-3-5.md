@@ -1,0 +1,4 @@
+## https://huggingface.co/gpt2/discussions/50
+
+contains_question: yes  
+question_part: What data should I train the model on  Should it just be a long string of text which details MU's season, a list of question-answer pairs - e.g. "prompt": "What could Manchester United do to better manage unexpected changes such as player loans or COVID-19 disruptions?", "completion": "To better manage unexpected changes, Manchester United could invest in contingency planning, including having backup players ready for loan situations, and ensuring strict health protocols to minimize COVID-19 disruptions. Rigorous planning and flexibility can help the team adapt to changing circumstances. - a combination of both, or should I structure my data in another way

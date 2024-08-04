@@ -1,0 +1,4 @@
+## https://huggingface.co/bigscience/bloom/discussions/64
+
+contains_question: yes
+question_part: Why are there some "dense_h_to_4h" and "dense_4h_to_h" layers without any activation layers in between ? Mathematically, putting two dense layers that follow each other without an activation layer in between is equivalent to a single one with fewer parameters (just affine composition). So I am surprised to see these linear layers "dense_h_to_4h" and "dense_4h_to_h" following each other in the model (at least, that's what pytorch shows). What do I miss ? Is that equivalent during inference but not during training or something like that ? Thanks !
