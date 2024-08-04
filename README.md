@@ -106,7 +106,9 @@ To visualize the clusters of the topics, run the following command from the `dis
 ```commandline
 python topic_cluster_visualizer.py
 ```
-- Cluster visualization will be saved in `data/bertopic_model/model_min_cluster_size_60_hierarchy_plot.pdf` file.
+- Topic ids of the same clusters will be printed in the console.
+- Cluster visualization will be saved in `data/bertopic_model/model_min_cluster_size_60_hierarchy_plot.pdf` file. The GPT generated labels for the topics have been used in the visualization. 
+- Cluster visualization with our own labels will be generated in the `data/bertopic_model/custom_label_hierarchy_plot.pdf` file. The labels are available in the `data/bertopic_model/topic_custom_label.csv` file.
 
 ### Result of Manual Question Mapping
 The result of manual question mapping is saved in `data/manual_question_mapping.csv` file.
