@@ -1,4 +1,4 @@
-# Answering User Questions about Machine Learning Models through Standardized Model Cards
+# Official repository of the paper "Answering User Questions about Machine Learning Models through Standardized Model Cards"
 
 
 ## Install packages
